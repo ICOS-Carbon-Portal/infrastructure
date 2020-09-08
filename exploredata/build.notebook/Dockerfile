@@ -5,7 +5,6 @@ FROM jupyter/scipy-notebook@sha256:e89b7047155fdf359152cf3fa34140e4ce8158d96eabb
 
 # Install Python 3 packages
 
-RUN conda install -y -c pyviz pyviz
 RUN conda install -y jupyterlab
 RUN conda install -y basemap-data-hires
 RUN conda install -y bokeh cartopy
