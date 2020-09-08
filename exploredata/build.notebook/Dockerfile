@@ -28,7 +28,6 @@ RUN conda clean --all -f -y
 # PIP libraries 
 RUN pip install icoscp
 
-
 USER root
 
 WORKDIR /home/jovyan
