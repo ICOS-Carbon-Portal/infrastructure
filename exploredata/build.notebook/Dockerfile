@@ -1,17 +1,35 @@
-FROM jupyterhub/jupyterhub:1.0.0
+# change to scipy notebook 
+# remove anaconda
+
+FROM jupyter/scipy-notebook@sha256:e89b7047155fdf359152cf3fa34140e4ce8158d96eabb15fe42cc8cf587b6635
+
+# Install Python 3 packages
 
 RUN conda install -y -c pyviz pyviz
+RUN conda install -y jupyterlab
+RUN conda install -y basemap-data-hires
+RUN conda install -y bokeh cartopy
+RUN conda install -y geoviews holoviews
+RUN conda install -y panel datashader hvplot param
+RUN conda install -y ipywidgets xlrd
+RUN conda install -y cdo python-cdo
+RUN conda install -y geopandas mpld3 pscript
+RUN conda install -y netcdf4
+RUN conda install -y tqdm ipyleaflet netcdf-fortran
+RUN conda install -y folium
+RUN conda install -y pytables hdf5
+RUN conda install -y basemap bottleneck pandas
+RUN conda install -y sparqlwrapper xarray
+RUN conda install -y shapely
 
-RUN conda install -y anaconda ipywidgets xlrd
+RUN conda clean --all -f -y
 
-RUN conda install -y --override-channels -c main -c conda-forge cdo python-cdo mpld3 geopandas pscript netcdf4 netcdf-fortran tqdm ipyleaflet basemap-data-hires jupyterlab
+# PIP libraries 
+RUN pip install icoscp
 
-RUN conda install -y geoviews
+######
 
 RUN apt update -y && apt install -y iproute2 iputils-ping
-
-RUN conda install -y -c conda-forge folium
-
 RUN useradd --create-home jovyan
 
 # These were taken from the jupyter/base-notebook image
