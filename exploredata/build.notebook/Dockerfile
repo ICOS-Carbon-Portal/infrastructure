@@ -37,6 +37,8 @@ ADD icos_jupyter_notebooks ./icos_jupyter_notebooks
 ADD project_jupyter_notebooks ./project_jupyter_notebooks
 ADD introduction ./introduction
 
+RUN chown -R jovyan: /home/jovyan
+
 CMD ["start-notebook.sh"]
 USER jovyan
 
