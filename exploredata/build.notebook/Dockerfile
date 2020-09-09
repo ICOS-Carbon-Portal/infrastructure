@@ -27,6 +27,7 @@ RUN conda clean --all -f -y
 
 # PIP libraries 
 RUN pip install icoscp
+RUN pip install pangaeapy
 
 USER root
 
