@@ -39,6 +39,9 @@ ADD introduction ./introduction
 
 RUN chown -R jovyan: /home/jovyan
 
+#remove backward compatibility folder
+RUN rmdir /home/$NB_USER/work
+
 CMD ["start-notebook.sh"]
 USER jovyan
 
