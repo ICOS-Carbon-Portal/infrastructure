@@ -111,7 +111,7 @@ Either create a new database or restore a backup
 
 ### OR Recover postgis' backup from BorgBackup on fsicos2 (same way as for rdflog).
 The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
-`borg list /disk/data/bbserver/repos/postgis/postgres/default/ | tail`
+`borg list /disk/data/bbserver/repos/postgis.repo | tail`
 
 Restoring from the cluster dump made with `pg_dumpall`:<br>
 `egrep -v '^(CREATE|DROP) ROLE postgres;' ./stdin | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres`
