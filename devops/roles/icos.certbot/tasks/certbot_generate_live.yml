@@ -27,7 +27,7 @@
 - name: Install SSL certificate
   command: >
     {{ certbot_bin }} certonly
-    --authenticator webroot
+    --authenticator nginx
     --non-interactive
     --webroot-path /usr/share/nginx/html/
     {% for domain in certbot_domains %}
