@@ -13,28 +13,14 @@ Installation proceeds as follows:
 
 * The host nginx is setup with Let's Encrypt certificates and then configured
   as a reverse-proxy for the postorious and hyperkitty web GUIs.
-* A special host user ("mailman") is created. All three mailman containers will
-  run as this user and the user will own all data in the volume directories.
-* Everything required to build the images is copied to the host and all three
-  images are built.
 * The mailman service is started through docker-compose.
-
-
-
-# Building the docker images
-All three images are built on the host as part of deployment. During
-the docker build, all three images have their default user's UID
-modified to match the host mailman user.
-
 
 
 # The 'database' container
 * Vanilla postgresql-10.
 
 
-
 # The 'core' container
-
 * Runs the actual mailman backend software.
 * Sends mail through the host postfix.
 * The host postfix then receives mail from the internet and relays it to the
@@ -70,7 +56,6 @@ Mailman core
 
 
 ## Logfiles
-
 + /opt/mailman-web-data/logs
 + which is a docker bind-mount
 

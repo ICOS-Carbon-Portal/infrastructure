@@ -7,6 +7,8 @@
   become: true
   vars:
     mailman_username: mailman
+  vars_files:
+    - vault.yml
   roles:
     - role: icos.mailman
       tags: mailman

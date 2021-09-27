@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mailman-core:
-    build: {{ mailman_build_core }}
+    image: maxking/mailman-core:0.3.12
     container_name: mailman-core
     hostname: mailman-core
     volumes:
@@ -25,7 +25,7 @@ services:
         ipv4_address: {{ mailman_core_ipv4 }}
 
   mailman-web:
-    build: {{ mailman_build_web }}
+    image: maxking/mailman-web:0.3.12
     container_name: mailman-web
     hostname: mailman-web
     depends_on:
@@ -50,7 +50,7 @@ services:
         ipv4_address: {{ mailman_web_ipv4 }}
 
   database:
-    build: {{ mailman_build_database }}
+    image: postgres:10
     container_name: mailman-database
     environment:
       POSTGRES_DB: mailmandb

@@ -1,21 +1,52 @@
-- name: Create user for mailman
-  user:
-    name: "{{ mailman_user }}"
-    state: present
-    home: "{{ mailman_home }}"
-  register: _user
-
-- name: Install mailman docker-compose.yml
+- name: Install configuration
   template:
-    dest: "{{ mailman_home }}/"
-    src: docker-compose.yml
-    mode: 0600
+    dest: "{{ item.dest }}"
+    src: "{{ item.src }}"
+    mode: "{{ item.mode | default(omit) }}"
+  loop:
+    - dest: "{{ mailman_home }}/"
+      src: docker-compose.yml
+      mode: "0600"
+    - dest: "{{ mailman_volume_core }}"
+      src: mailman-extra.cfg
+    - dest: "{{ mailman_volume_web }}"
+      src: settings_local.py
 
-- import_tasks: build.yml
-  tags: mailman_build
+- name: Generate passwords
+  include_role:
+    name: icos.password_env_file
+  vars:
+      file: "{{ item.file }}"
+      set_fact: "{{ item.set_fact }}"
+      file_var: "{{ item.file_var }}"
+  loop:
+    - file: "{{ mailman_home }}/.rest-pass"
+      set_fact: mailman_rest_pass
+      file_var: MAILMAN_REST_PASS
 
-- import_tasks: run.yml
-  tags: mailman_run
+- name: Install Makefile
+  blockinfile:
+    create: yes
+    marker: "# {mark} ansible / icos.mailman"
+    path: "{{ mailman_home }}/Makefile"
+    block: "{{ lookup('template', 'Makefile') }}"
+
+- name: Start containers
+  docker_compose:
+    project_src: "{{ mailman_home }}"
+
+- name: Test the REST API
+  uri:
+    url: "https://{{ mailman_domains | first }}/rest/3.0/domains"
+    user: "{{ mailman_rest_user }}"
+    password: "{{ mailman_rest_pass }}"
+  register: r
+  failed_when:
+    - r.status != 200
+    - "r.json | json_query('entries[*].mail_host') | sort != mailman_domains | sort"
+  retries: 10
+  delay: 20
+  until: not r.failed
 
 - import_role: name=icos.certbot
   tags: mailman_certbot
