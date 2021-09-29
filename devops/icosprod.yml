@@ -2,13 +2,6 @@
 
 - import_playbook: setup.yml
 
-- hosts: fsicos.lunarc.lu.se
-  become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
-  roles:
-
 - hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
