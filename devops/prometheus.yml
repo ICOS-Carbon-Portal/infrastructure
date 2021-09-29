@@ -50,15 +50,13 @@
         timeout: 600
       register: _lxd
 
-    - name: SSH forward to prometheus
-      tags: iptables
-      iptables_raw:
-        name: ssh_forward_to_prometheus
-        table: nat
-        rules: >-
-          -A PREROUTING -p tcp
-          --dport {{ hostvars['prometheus'].ansible_port }}
-          -j DNAT --to-destination {{ prometheus_ip}}:22
+    - name: Forward ssh port and create /etc/hosts entry
+      tags: forward
+      import_role:
+        name: icos.lxd_forward
+      vars:
+        lxd_forward_name: prometheus
+        lxd_forward_ip: "{{ prometheus_ip }}"
 
     - tags: cert
       import_role:
