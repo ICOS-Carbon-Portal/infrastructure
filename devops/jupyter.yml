@@ -19,10 +19,10 @@
         - zfs
         - zfshome
       zfs:
-          name: pool/jupyter
-          state: present
-          extra_zfs_properties:
-            refquota: "5T"
+        name: pool/jupyter
+        state: present
+        extra_zfs_properties:
+          refquota: "5T"
 
     - name: Create jupyter directories for home and project
       tags:
