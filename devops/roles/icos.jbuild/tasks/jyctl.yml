@@ -8,6 +8,14 @@
     append: yes
   register: _user
 
+- name: Change access rights on template directory
+  file:
+    path: "{{ item }}"
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+  loop:
+    - /docker/jupyter/jupyterhub_home/templates
+
 - name: Change access rights on /opt/jyctl
   file:
     path: /opt/jyctl

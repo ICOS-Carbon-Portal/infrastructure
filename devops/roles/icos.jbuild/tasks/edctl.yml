@@ -1,5 +1,3 @@
-- import_role: name=icos.python3
-  
 - name: Create edctl user
   user:
     name: edctl
@@ -12,7 +10,16 @@
   file:
     path: /opt/edctl
     mode: "0700"
-  
+
+- name: Change access rights on template directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+  loop:
+    - /docker/exploredata.test/jupyterhub_home/templates
+    - /docker/exploredata.prod/jupyterhub_home/templates
+    
 - name: Login to registry
   become: yes
   become_user: edctl
@@ -32,7 +39,7 @@
 - name: Copy edctl.py
   copy:
     src: edctl.py
-    dest: /opt/edctl/edctl.py
+    dest: /opt/edctl/edctl.py 
     mode: +x
     # This is useful when developing edctl.py directly on a server.
     force: "{{ jbuild_force | default(True) | bool }}"
@@ -45,3 +52,6 @@
       {% for elt in _jbuild_user_keys.results -%}
       {{ elt.public_key }}
       {% endfor %}
+
+
+      

@@ -129,11 +129,11 @@ def build(ref, what):
 def push(what, local_tag):
     assert what in ('test', 'prod', 'jupyter'), what
 
-    # SETUP
+    # SETUP COMMAND AND TAG
     client = docker.from_env()
     img = client.images.get(local_tag)
     if what in ('prod', 'test'):
-        cmd = ['edctl', 'pull%s' % what]
+        cmd = ['edctl', 'pull', what]
         push_tag = f'registry.icos-cp.eu/exploredata.{what}.notebook'
     else:
         cmd = ['jyctl', 'pull']
@@ -169,6 +169,23 @@ def push(what, local_tag):
     if p.returncode != 0:
         die('%s failed' % ' '.join(cmd))
 
+    # PUSH TEMPLATES
+    push_templates(what)
+
+
+# We'll use rsync but route it through the remote edctl command (which in turn
+# will hand over to rrsync(1)). This requires some unusual options.
+def push_templates(what):
+    tdir = JUPYDIR.joinpath('docker', 'icosbase', 'templates')
+    if what in ('prod', 'test'):
+        cmd = 'edctl templates %s' % what
+        host = 'edctl:'
+    else:
+        cmd = 'jyctl templates'
+        host = 'jyctl:'
+    print('Pushing templates to "%s"' % what)
+    run(['rsync', '--rsync-path', cmd, '-vrplt', '%s/' % tdir, host], check=1)
+
 
 def sync_notebooks():
     run(['rsync', '-vtr',
@@ -181,6 +198,12 @@ def sync_notebooks():
 @click.group()
 def cli():
     pass
+
+
+@cli.command('templates', help='Push templates')
+@click.argument('what', type=click.Choice(['test', 'prod', 'jupyter']))
+def cli_templates(what):
+    push_templates(what)
 
 
 @cli.command('info', help='Shows images in use.')
