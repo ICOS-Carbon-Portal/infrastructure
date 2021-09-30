@@ -93,12 +93,11 @@
         - path: /data/stilt
           src: fsicos3.lunarc.lu.se:/pool/ute/stilt/RINGO/T1.3/STILT
 
-
-        # - path: /data/project/interpolation
-        #   src: fsicos3.lunarc.lu.se:/data/project/interpolation
-
         - path: /data/project/stc
           src: fsicos3.lunarc.lu.se:/data/project/stc
+
+        - path: /data/flexpart/output
+          src: fsicos3.lunarc.lu.se:/data/flexpart/output
 
     - name: Export data via nfs
       tags: export
@@ -187,6 +186,7 @@
           /data/project/interpolation      fsicos*.lunarc.lu.se(ro,no_subtree_check)
           /data/project/eurocom            fsicos*.lunarc.lu.se(ro,no_subtree_check)
           /pool/ute/stilt/RINGO/T1.3/STILT fsicos*.lunarc.lu.se(ro,no_subtree_check)
+          /data/flexpart/output            fsicos2.lunarc.lu.se(rw,no_subtree_check)
       notify: Reload NFS server
 
     - name: Do bind-mount local data
