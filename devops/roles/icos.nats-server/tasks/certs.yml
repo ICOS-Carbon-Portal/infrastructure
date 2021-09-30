@@ -1,0 +1,9 @@
+# These tasks
+
+- import_role: name=icos.certbot2
+
+- name: Add a nginx deploy-hook for nats
+  template:
+    dest: "{{ nats_certbot_hooks }}"
+    src: nats-certbot-lxd.py
+    mode: +x

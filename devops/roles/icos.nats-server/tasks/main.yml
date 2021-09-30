@@ -1,0 +1,67 @@
+# https://docs.nats.io/nats-server/installation
+
+- name: Install nats-server, nats-cli and nats-top
+  apt:
+    deb: "{{ item }}"
+  loop:
+    - "{{ nats_server_deb }}"
+    - "{{ nats_cli_deb }}"
+    - "{{ nats_top_deb }}"
+
+
+- name: Create nats user
+  user:
+    name: "{{ nats_user }}"
+    createhome: no
+    shell: /bin/nologin
+
+
+- name: Copy natsd.conf
+  copy:
+    content: "{{ nats_server_config }}"
+    dest: "{{ nats_config_file }}"
+  register: _conf
+
+
+# https://github.com/nats-io/nats-server/blob/master/util/nats-server.service
+- name: Install NATS systemd unit
+  copy:
+    dest: "/etc/systemd/system/{{ nats_name }}.service"
+    content: |
+      [Unit]
+      Description=NATS messaging server
+      After=network.target ntp.service
+
+      [Service]
+      PrivateTmp=true
+      Type=simple
+      ExecStart={{ nats_server_path }} -c {{ nats_config_file }}
+      ExecReload=/bin/kill -s HUP $MAINPID
+      ExecStop=/bin/kill -s SIGINT $MAINPID
+      User={{ nats_user }}
+      Group={{ nats_user }}
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+  register: _copy
+
+
+- name: Test NATS configuration
+  command: "{{ nats_server_path }} -t -c {{ nats_config_file }}"
+  changed_when: false
+
+
+- name: Start NATS service
+  systemd:
+    name: nats
+    enabled: yes
+    state: >-
+      {%- if _copy.changed -%}
+      restarted
+      {%- elif _conf.changed -%}
+      restarted
+      {%- else -%}
+      started
+      {%- endif -%}
+    daemon-reload: "{% if _copy.changed %}yes{% else %}no{% endif %}"

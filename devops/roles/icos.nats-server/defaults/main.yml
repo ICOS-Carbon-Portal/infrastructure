@@ -1,0 +1,16 @@
+nats_arch: amd64
+
+nats_user: nats
+nats_name: nats
+nats_port: 4222
+nats_config_file: "/etc/nats-server.conf"
+nats_server_path: /usr/local/bin/nats-server
+
+nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v2.3.2/nats-server-v2.3.2-{{ nats_arch }}.deb"
+
+nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/0.0.25/nats-0.0.25-{{ nats_arch }}.deb"
+
+nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v0.4.0/nats-top-v0.4.0-{{ nats_arch }}.deb"
+
+nats_certbot_hooks: "/etc/letsencrypt/renewal-hooks/deploy/"
+nats_server_config: ""
