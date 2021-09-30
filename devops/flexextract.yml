@@ -45,6 +45,11 @@
             source: /disk/data/flexextract
             type: disk
             readonly: "False"
+          flexpart_output:
+            path: /data/flexpart/output
+            source: /disk/data/flexpart/output
+            type: disk
+            readonly: "False"
         wait_for_ipv4_addresses: true
         timeout: 600
       register: _lxd
