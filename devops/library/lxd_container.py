@@ -19,30 +19,47 @@ options:
     name:
         description:
           - Name of a container.
+        type: str
         required: true
     architecture:
         description:
           - The architecture for the container (e.g. "x86_64" or "i686").
             See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)
+        type: str
         required: false
     config:
         description:
           - 'The config for the container (e.g. {"limits.cpu": "2"}).
             See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)'
-          - If the container already exists and its "config" value in metadata
-            obtained from
-            GET /1.0/containers/<name>
+          - If the container already exists and its "config" values in metadata
+            obtained from GET /1.0/containers/<name>
             U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#10containersname)
-            are different, they this module tries to apply the configurations.
-          - The key starts with 'volatile.' are ignored for this comparison.
-          - Not all config values are supported to apply the existing container.
-            Maybe you need to delete and recreate a container.
+            are different, this module tries to apply the configurations.
+          - The keys starting with C(volatile.) are ignored for this comparison when I(ignore_volatile_options=true).
+        type: dict
         required: false
+    ignore_volatile_options:
+        description:
+          - If set to C(true), options starting with C(volatile.) are ignored. As a result,
+            they are reapplied for each execution.
+          - This default behavior can be changed by setting this option to C(false).
+          - The default value C(true) will be deprecated in community.general 4.0.0,
+            and will change to C(false) in community.general 5.0.0.
+        type: bool
+        default: true
+        required: false
+        version_added: 3.7.0
+    profiles:
+        description:
+          - Profile to be used by the container
+        type: list
+        elements: str
     devices:
         description:
           - 'The devices for the container
             (e.g. { "rootfs": { "path": "/dev/kvm", "type": "unix-char" }).
             See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)'
+        type: dict
         required: false
     ephemeral:
         description:
@@ -61,6 +78,7 @@ options:
           - 'See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1) for complete API documentation.'
           - 'Note that C(protocol) accepts two choices: C(lxd) or C(simplestreams)'
         required: false
+        type: dict
     state:
         choices:
           - started
@@ -72,6 +90,7 @@ options:
           - Define the state of a container.
         required: false
         default: started
+        type: str
     target:
         description:
           - For cluster deployments. Will attempt to create a container on a target node.
@@ -88,6 +107,7 @@ options:
             starting or restarting.
         required: false
         default: 30
+        type: int
     wait_for_ipv4_addresses:
         description:
           - If this is true, the C(lxd_container) waits until IPv4 addresses
@@ -117,23 +137,27 @@ options:
           - The unix domain socket path or the https URL for the LXD server.
         required: false
         default: unix:/var/lib/lxd/unix.socket
+        type: str
     snap_url:
         description:
           - The unix domain socket path when LXD is installed by snap package manager.
         required: false
         default: unix:/var/snap/lxd/common/lxd/unix.socket
+        type: str
     client_key:
         description:
           - The client certificate key file path.
+          - If not specified, it defaults to C(${HOME}/.config/lxc/client.key).
         required: false
-        default: '"{}/.config/lxc/client.key" .format(os.environ["HOME"])'
         aliases: [ key_file ]
+        type: path
     client_cert:
         description:
           - The client certificate file path.
+          - If not specified, it defaults to C(${HOME}/.config/lxc/client.crt).
         required: false
-        default: '"{}/.config/lxc/client.crt" .format(os.environ["HOME"])'
         aliases: [ cert_file ]
+        type: path
     trust_password:
         description:
           - The client trusted password.
@@ -144,6 +168,7 @@ options:
           - If trust_password is set, this module send a request for
             authentication before sending any requests.
         required: false
+        type: str
 notes:
   - Containers must have a unique name. If you attempt to create a container
     with a name that already existed in the users namespace the module will
@@ -168,6 +193,7 @@ EXAMPLES = '''
     - name: Create a started container
       community.general.lxd_container:
         name: mycontainer
+        ignore_volatile_options: true
         state: started
         source:
           type: image
@@ -201,6 +227,7 @@ EXAMPLES = '''
     - name: Create a started container
       community.general.lxd_container:
         name: mycontainer
+        ignore_volatile_options: true
         state: started
         source:
           type: image
@@ -271,6 +298,7 @@ EXAMPLES = '''
     - name: Create LXD container
       community.general.lxd_container:
         name: new-container-1
+        ignore_volatile_options: true
         state: started
         source:
           type: image
@@ -281,6 +309,7 @@ EXAMPLES = '''
     - name: Create container on another node
       community.general.lxd_container:
         name: new-container-2
+        ignore_volatile_options: true
         state: started
         source:
           type: image
@@ -366,8 +395,12 @@ class LXDContainerManagement(object):
         self.addresses = None
         self.target = self.module.params['target']
 
-        self.key_file = self.module.params.get('client_key', None)
-        self.cert_file = self.module.params.get('client_cert', None)
+        self.key_file = self.module.params.get('client_key')
+        if self.key_file is None:
+            self.key_file = '{0}/.config/lxc/client.key'.format(os.environ['HOME'])
+        self.cert_file = self.module.params.get('client_cert')
+        if self.cert_file is None:
+            self.cert_file = '{0}/.config/lxc/client.crt'.format(os.environ['HOME'])
         self.debug = self.module._verbosity >= 4
 
         try:
@@ -548,8 +581,16 @@ class LXDContainerManagement(object):
     def _needs_to_change_container_config(self, key):
         if key not in self.config:
             return False
-        if key == 'config':
+        if key == 'config' and self.ignore_volatile_options:  # the old behavior is to ignore configurations by keyword "volatile"
             old_configs = dict((k, v) for k, v in self.old_container_json['metadata'][key].items() if not k.startswith('volatile.'))
+            for k, v in self.config['config'].items():
+                if k not in old_configs:
+                    return True
+                if old_configs[k] != v:
+                    return True
+            return False
+        elif key == 'config':  # next default behavior
+            old_configs = dict((k, v) for k, v in self.old_container_json['metadata'][key].items())
             for k, v in self.config['config'].items():
                 if k not in old_configs:
                     return True
@@ -597,6 +638,7 @@ class LXDContainerManagement(object):
         try:
             if self.trust_password is not None:
                 self.client.authenticate(self.trust_password)
+            self.ignore_volatile_options = self.module.params.get('ignore_volatile_options')
 
             self.old_container_json = self._get_container_json()
             self.old_state = self._container_json_to_module_state(self.old_container_json)
@@ -642,6 +684,10 @@ def main():
             config=dict(
                 type='dict',
             ),
+            ignore_volatile_options=dict(
+                type='bool',
+                default=True
+            ),
             devices=dict(
                 type='dict',
             ),
@@ -650,12 +696,13 @@ def main():
             ),
             profiles=dict(
                 type='list',
+                elements='str',
             ),
             source=dict(
                 type='dict',
             ),
             state=dict(
-                choices=LXD_ANSIBLE_STATES.keys(),
+                choices=list(LXD_ANSIBLE_STATES.keys()),
                 default='started'
             ),
             target=dict(
@@ -685,20 +732,24 @@ def main():
                 default='unix:/var/snap/lxd/common/lxd/unix.socket'
             ),
             client_key=dict(
-                type='str',
-                default='{0}/.config/lxc/client.key'.format(os.environ['HOME']),
+                type='path',
                 aliases=['key_file']
             ),
             client_cert=dict(
-                type='str',
-                default='{0}/.config/lxc/client.crt'.format(os.environ['HOME']),
+                type='path',
                 aliases=['cert_file']
             ),
             trust_password=dict(type='str', no_log=True)
         ),
         supports_check_mode=False,
     )
-
+    # if module.params['ignore_volatile_options'] is None:
+    #     module.params['ignore_volatile_options'] = True
+    #     module.deprecate(
+    #         'If the keyword "volatile" is used in a playbook in the config section, a
+    #         "changed" message will appear with every run, even without a change to the playbook.
+    #         This will change in the future.
+    #         Please test your scripts by "ignore_volatile_options: false"', version='5.0.0', collection_name='community.general')
     lxd_manage = LXDContainerManagement(module=module)
     lxd_manage.run()
 

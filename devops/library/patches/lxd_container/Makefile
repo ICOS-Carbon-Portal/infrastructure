@@ -5,13 +5,13 @@ LXD_ORG=$(ANSIBLE)/../ansible_collections/community/general/plugins/modules/clou
 .PHONY: update
 
 update:
-	cp $(LXD_ORG) ../lxd_container.py
+	cp $(LXD_ORG) ../../lxd_container.py
 
 patch:
-	patch ../lxd_container.py lxd_container.diff
+	patch ../../lxd_container.py lxd_container.diff
 
 diff:
-	diff -u $(LXD_ORG) ../lxd_container.py > lxd_container.diff || :
+	diff -u $(LXD_ORG) ../../lxd_container.py > lxd_container.diff || :
 
 # lxd_container.diff: $(ANSIBLE)/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py ../lxd_container.py
 #	diff -u $+ > $@ || :

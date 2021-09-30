@@ -1,6 +1,6 @@
---- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2020-12-15 07:21:36.066863059 +0100
-+++ ../lxd_container.py	2021-01-13 10:42:15.264123337 +0100
-@@ -96,6 +96,15 @@
+--- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2021-09-21 23:32:43.380274534 +0200
++++ ../../lxd_container.py	2021-09-30 14:20:39.542266293 +0200
+@@ -116,6 +116,15 @@
          required: false
          default: false
          type: bool
@@ -16,7 +16,7 @@
      force_stop:
          description:
            - If this is true, the C(lxd_container) forces to stop the container
-@@ -352,6 +361,7 @@
+@@ -381,6 +390,7 @@
  
          self.timeout = self.module.params['timeout']
          self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
@@ -24,7 +24,7 @@
          self.force_stop = self.module.params['force_stop']
          self.addresses = None
          self.target = self.module.params['target']
-@@ -450,6 +460,8 @@
+@@ -483,6 +493,8 @@
          resp_json = self._get_container_state_json()
          network = resp_json['metadata']['network'] or {}
          network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
@@ -33,7 +33,7 @@
          addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
          return addresses
  
-@@ -657,6 +669,9 @@
+@@ -704,6 +716,9 @@
                  type='bool',
                  default=False
              ),
