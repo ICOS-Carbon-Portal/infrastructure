@@ -1,0 +1,97 @@
+- hosts: fsicos3.lunarc.lu.se
+  vars:
+    nats3_ip: "{{ _lxd.addresses.eth0 | first }}"
+    nats_lxd_name: nats3
+    nats_cert_dest: "{{ nats_lxd_name }}/opt/nats/"
+    certbot_name: nats3
+    certbot_domains:
+      - nats3.icos-cp.eu
+  vars_files:
+    - vault.yml
+    - vars.yml
+  tasks:
+    - name: Create the nats3 container
+      tags:
+        - lxd
+        - iptables
+      lxd_container:
+        name: "{{ nats_lxd_name }}"
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          root:
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "50GB"
+        config:
+          limits.cpu: "4"
+          limits.memory: "10GB"
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 60
+      register: _lxd
+
+    - name: Setup letsencrypt certificates
+      tags: cert
+      import_role:
+        name: icos.nats-server
+        tasks_from: certs.yml
+        
+    - name: SSH forward to nats
+      tags: iptables
+      iptables_raw:
+        name: forward_ssh_to_nats3
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp
+          --dport {{ hostvars['nats3'].ansible_port }}
+          -j DNAT --to-destination {{ nats3_ip }}:22
+
+    - name: NATS forward to nats3
+      tags: iptables
+      iptables_raw:
+        name: forward_nats_to_nats3
+        table: nat
+        rules: |
+          -A PREROUTING -p tcp --dport 60422 -j DNAT --to-destination {{ nats3_ip }}:4222
+          -A PREROUTING -p tcp --dport 60742 -j DNAT --to-destination {{ nats3_ip }}:7422
+
+    - name: Allow NATS from trusted hosts
+      tags: iptables
+      iptables_raw:
+        name: restrict_nats
+        rules: |
+          -N trusted
+          -A trusted -s {{ fsicos1_ip }}/32 -j ACCEPT
+          -A trusted -s {{ fsicos2_ip }}/32 -j ACCEPT
+          -A trusted -s {{ fsicos3_ip }}/32 -j ACCEPT
+          -A trusted -s 194.71.217.76/32 -j ACCEPT
+          -A trusted -j ACCEPT
+          # REJECT --reject-with icmp-port-unreachable
+          -A FORWARD -p tcp -d {{ nats3_ip }} --dport 4222 -j trusted
+          -A FORWARD -p tcp -d {{ nats3_ip }} --dport 7422 -j trusted          
+
+- hosts: nats3
+  become: true
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.nats-server
+      tags: nats-server
+
+    - role: icos.nats-client
+      tags: nats-client
+      nats_client_download_dir: /opt/nats/download
+      nats_client_unzip_parent: /opt/nats/download
