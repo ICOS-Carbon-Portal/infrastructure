@@ -47,10 +47,11 @@
             readonly: "False"
           flexpart_output:
             path: /data/flexpart/output
-            source: /disk/data/flexpart/output
+            source: /data/flexpart/output
             type: disk
             readonly: "False"
         wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
         timeout: 600
       register: _lxd
 
