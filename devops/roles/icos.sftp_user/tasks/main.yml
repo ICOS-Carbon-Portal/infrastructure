@@ -1,0 +1,83 @@
+- fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    # The directory made available to the sftp user
+    - sftp_user_dir
+    # The user name used to login.
+    - sftp_user_login
+
+- name: Check whether sftp parent directory exists
+  stat:
+    path: "{{ sftp_user_dir | dirname }}"
+  register: _parent
+
+# The sftp parent directory cannot be owned by the sftp user (internal-sftp
+# will complain). But we must also take into account that the parent directory
+# may already exist and be owned by another user.
+- name: Create sftp directory parent
+  file:
+    path: "{{ sftp_user_dir | dirname }}"
+    state: directory
+    owner: root
+    group: root
+  when: not _parent.stat.exists
+
+- name: Create sftp user
+  user:
+    name: "{{ sftp_user_login }}"
+    password: "{{ sftp_user_password | password_hash('sha512', vault_pw_salt) }}"
+    home: "{{ sftp_user_dir | dirname }}"
+    create_home: no
+    shell: /usr/sbin/nologin
+  register: _user
+
+- name: Stat parent directory again
+  stat:
+    path: "{{ sftp_user_dir | dirname }}"
+  register: _parent
+
+- name: Fail if parent directory is owned by sftp user
+  fail:
+    msg: >-
+      "{{ sftp_user_dir | dirname }} must not be owned by {{ sftp_user_login }}"
+  when: >-
+    _parent.stat.uid == _user.uid or
+    _parent.stat.gid == _user.group
+
+# This is the actual directory user for uploading/downloading. Depending on
+# "sftp_user_owner", the directory might be read-only or read-write for the
+# sftp user.
+- name: Create sftp directory
+  file:
+    path: "{{ sftp_user_dir }}"
+    state: directory
+    owner: "{{ sftp_user_owner }}"
+    group: "{{ sftp_user_group }}"
+
+# <2021-10-01> It's possible to instead create /etc/ssh/sshd_config.d/X.conf.
+# But then the global "PasswordAuthentication no" will override it (in
+# contradiction with the manual). Tested with "sshd -dd".
+- name: Add sftp user config to sshd to sshd_config
+  blockinfile:
+    marker: "# {mark} ansible / sftp_user / {{ sftp_user_login }}"
+    create: yes
+    insertafter: EOF
+    path: /etc/ssh/sshd_config
+    block: |
+      Match User {{ sftp_user_login }}
+        ChrootDirectory  %h
+        ForceCommand internal-sftp -d {{ sftp_user_dir | basename }}
+        DisableForwarding yes
+        PasswordAuthentication yes
+  notify: reload sshd
+
+- name: Print ssh config
+  debug:
+    msg: |
+      # {{ sftp_user_password}}
+      Host {{ sftp_user_hostdesc }}
+        HostName {{ ansible_host }}
+        Port {{ ansible_port }}
+        User {{ sftp_user_login }}
+        PreferredAuthentications password

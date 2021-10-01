@@ -53,6 +53,10 @@
             source: /data
             type: disk
             recursive: "yes"
+          fluxcom:
+            path: "/ute/fluxcom"
+            source: "/pool/fluxcom"
+            type: disk
           stilt:
             path: "/ute/stilt"
             source: "/pool/ute/stilt"
@@ -116,8 +120,6 @@
 
 
 - hosts: callisto
-  vars:
-    sftp_home: /ute/sftp_home
   vars_files:
     - vault.yml
   roles:
@@ -141,6 +143,22 @@
       tags: jupyter
       jupyter_admins: "{{ vault_callisto_admins }}"
 
+    # This sftp user will only be able to download.
+    - role: icos.sftp_user
+      tags: sftp
+      sftp_user_dir: /ute/sftp_home/data
+      sftp_user_login: sftp
+      sftp_user_owner: ute
+      sftp_user_password: "{{ vault_callisto_sftp_password }}"
+
+    # This sftp user will be able to upload.
+    - role: icos.sftp_user
+      tags: sftp
+      sftp_user_dir: /ute/fluxcom/upload
+      sftp_user_login: "{{ vault_callisto_sftp_fluxcom_upload_username }}"
+      sftp_user_password: "{{ vault_callisto_sftp_fluxcom_upload_password }}"
+      sftp_user_hostdesc: fluxcom-upload
+
   tasks:
     - name: Port forward for filedrop
       tags: iptables
@@ -148,53 +166,5 @@
         name: forward_filedrop
         table: nat
         rules: >-
-          -A PREROUTING -p tcp --dport 8039
-          -j DNAT --to-destination 127.0.0.1:8039
-
-    - name: Create sftp directory parent
-      tags: sftp
-      file:
-        path: "{{ sftp_home }}"
-        state: directory
-        owner: root
-        group: root
-
-    - name: Create sftp directory
-      tags: sftp
-      file:
-        path: "{{ sftp_home }}/data"
-        state: directory
-        owner: ute
-        group: ute
-
-    - name: Create sftp user
-      tags: sftp
-      user:
-        name: sftp
-        password: "{{ vault_callisto_sftp_password }}"
-        home: "{{ sftp_home }}"
-        create_home: no
-        shell: /usr/sbin/nologin
-
-    - name: Set sshd sftp chroot
-      tags: sftp
-      blockinfile:
-        marker: "# {mark} ansible callisto sftp chroot"
-        path: /etc/ssh/sshd_config
-        block: |
-          Match User sftp
-            ChrootDirectory %h
-            ForceCommand internal-sftp -d data
-            DisableForwarding yes
-            PasswordAuthentication yes
-      notify: reload sshd
-
-    - name: Print ssh config
-      tags: sftp
-      debug:
-        msg: |
-          Host {{ inventory_hostname }}
-            HostName {{ ansible_host }}
-            Port {{ ansible_port }}
-            User sftp
-            PreferredAuthentications password
+          -A PREROUTING -p tcp --dport {{ filedrop_port }}
+          -j DNAT --to-destination 127.0.0.1:{{ filedrop_port }}

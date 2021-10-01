@@ -1,0 +1,8 @@
+# The default is that the owner of the sftp directory is the same as the
+# login. This will grant the sftp user read-write access. To grant read-only,
+# change sftp_user_owner to another user.
+sftp_user_owner: "{{ sftp_user_login }}"
+sftp_user_group: "{{ sftp_user_owner }}"
+
+# Descriptive string used for the ssh client config.
+sftp_user_hostdesc: "{{ inventory_hostname }}"
