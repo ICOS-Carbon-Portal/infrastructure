@@ -142,6 +142,7 @@
     - role: icos.jupyter
       tags: jupyter
       jupyter_admins: "{{ vault_callisto_admins }}"
+      jupyter_user_volumes: "{{ vault_callisto_user_volumes }}"
 
     # This sftp user will only be able to download.
     - role: icos.sftp_user
