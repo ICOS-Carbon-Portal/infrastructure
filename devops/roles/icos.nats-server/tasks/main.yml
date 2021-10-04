@@ -7,6 +7,7 @@
     - "{{ nats_server_deb }}"
     - "{{ nats_cli_deb }}"
     - "{{ nats_top_deb }}"
+  register: _deb
 
 
 - name: Create nats user
@@ -57,9 +58,7 @@
     name: nats
     enabled: yes
     state: >-
-      {%- if _copy.changed -%}
-      restarted
-      {%- elif _conf.changed -%}
+      {%- if _copy.changed or _deb.changed or _conf.changed -%}
       restarted
       {%- else -%}
       started

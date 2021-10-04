@@ -6,11 +6,14 @@ nats_port: 4222
 nats_config_file: "/etc/nats-server.conf"
 nats_server_path: /usr/local/bin/nats-server
 
-nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v2.3.2/nats-server-v2.3.2-{{ nats_arch }}.deb"
-
-nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/0.0.25/nats-0.0.25-{{ nats_arch }}.deb"
-
-nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v0.4.0/nats-top-v0.4.0-{{ nats_arch }}.deb"
-
 nats_certbot_hooks: "/etc/letsencrypt/renewal-hooks/deploy/"
 nats_server_config: ""
+
+nats_server_ver: 2.6.1
+nats_cli_ver: 0.0.26
+nats_top_ver: 0.4.0
+
+
+nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_server_ver }}/nats-server-v{{ nats_server_ver }}-{{ nats_arch }}.deb"
+nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
+nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v{{ nats_top_ver }}/nats-top-v{{ nats_top_ver }}-{{ nats_arch }}.deb"
