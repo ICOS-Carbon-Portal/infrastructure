@@ -84,6 +84,34 @@ def ask_for_branch():
 
 
 # ACTIONS
+def maybe_fetch(branch, fetch):
+    if fetch:
+        print('Fetching from origin.')
+        for info in REPO.remotes.origin.fetch(verbose=False):
+            print('  %s' % info)
+
+        if branch is None:
+            ref = ask_for_branch()
+        else:
+            ref = None
+            for r in REPO.refs:
+                if r.name == branch:
+                    ref = r
+                    break
+            else:
+                die(f"Cannot find branch {branch}")
+
+        print(f'Checking out {ref}')
+        try:
+            ref.checkout()
+        except git.GitCommandError as err:
+            die(str(err))
+    else:
+        # Use the local jbuild repo, with any changes.
+        ref = REPO.head
+
+    return ref
+
 
 def build(ref, what):
     # e.g /home/user/jbuild/jupyter/docker/icosbase
@@ -176,14 +204,16 @@ def push(what, local_tag):
 # We'll use rsync but route it through the remote edctl command (which in turn
 # will hand over to rrsync(1)). This requires some unusual options.
 def push_templates(what):
-    tdir = JUPYDIR.joinpath('docker', 'icosbase', 'templates')
+    tdir = JUPYDIR.joinpath('templates')
     if what in ('prod', 'test'):
         cmd = 'edctl templates %s' % what
+        tdir = tdir.joinpath('exploredata')
         host = 'edctl:'
     else:
         cmd = 'jyctl templates'
+        tdir = tdir.joinpath('jupyter')
         host = 'jyctl:'
-    print('Pushing templates to "%s"' % what)
+    print('Pushing %s/ to "%s"' % (tdir, what))
     run(['rsync', '--rsync-path', cmd, '-vrplt', '%s/' % tdir, host], check=1)
 
 
@@ -202,7 +232,10 @@ def cli():
 
 @cli.command('templates', help='Push templates')
 @click.argument('what', type=click.Choice(['test', 'prod', 'jupyter']))
-def cli_templates(what):
+@click.argument('branch', required=False)
+@click.option('--fetch/--no-fetch', default=True, help="Fetch from github")
+def cli_templates(what, branch, fetch):
+    maybe_fetch(branch, fetch)
     push_templates(what)
 
 
@@ -247,30 +280,7 @@ def cli_info():
 def cli_run(branch, fetch):
     os.chdir(JUPYDIR)
 
-    if fetch:
-        print('Fetching from origin.')
-        for info in REPO.remotes.origin.fetch(verbose=False):
-            print('  %s' % info)
-
-        if branch is None:
-            ref = ask_for_branch()
-        else:
-            ref = None
-            for r in REPO.refs:
-                if r.name == branch:
-                    ref = r
-                    break
-            else:
-                die(f"Cannot find branch {branch}")
-
-        print(f'Checking out {ref}')
-        try:
-            ref.checkout()
-        except git.GitCommandError as err:
-            die(str(err))
-    else:
-        # Use the local jbuild repo, with any changes.
-        ref = REPO.head
+    ref = maybe_fetch(branch, fetch)
 
     icosbase_tag = build(ref, 'icosbase')
     exploredata_tag = build(ref, 'exploredata')
