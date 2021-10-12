@@ -10,7 +10,10 @@
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
     zvol_docker: /dev/zvol/pool/docker/jupyter
     jupyter_domains:
+      # Primary domain.
       - jupyter.icos-cp.eu
+      # Old domain, used in publications, just does a redirect.
+      - jupyter3.icos-cp.eu
   vars_files:
     - vault.yml
   pre_tasks:
