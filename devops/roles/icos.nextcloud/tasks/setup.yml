@@ -53,3 +53,9 @@
       dest: "{{ nextcloud_build_postgres }}/init.sql"
     - src: docker-compose.yml
       dest: "{{ nextcloud_home }}"
+
+- name: Check docker-compose config
+  command: docker-compose config
+  args:
+    chdir: "{{ nextcloud_home }}"
+  changed_when: no
