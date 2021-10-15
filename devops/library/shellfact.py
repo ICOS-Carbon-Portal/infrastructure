@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Ansible module sets a fact to the contents of a file.
 
+import json
 from ansible.module_utils.basic import AnsibleModule
 
 ANSIBLE_METADATA = {
@@ -24,6 +25,12 @@ EXAMPLES = '''
       ssh-keyscan localhost | sed "s/^localhost/$IP/"
     fact: hostkeys
 
+- name: Retrive postgresql cluster info
+  shellfact:
+    exec: pg_lsclusters -j
+    fact: pg
+    json: true
+
 - debug: var=hostkeys
 '''
 
@@ -32,16 +39,20 @@ def main():
         argument_spec={'exec': dict(required=True, type='str'),
                        'fact': dict(required=True, type='str'),
                        'list': dict(required=False, type='bool', default=False),
+                       'json': dict(required=False, type='bool', default=False),
                        'rstrip': dict(required=False, type='bool', default=True)})
 
     rc, stdout, stderr = module.run_command(
         module.params['exec'], check_rc=True, use_unsafe_shell=True)
+    value = stdout
     if module.params['rstrip']:
-        stdout = stdout.rstrip()
+        value = value.rstrip()
     if module.params['list']:
-        stdout = stdout.splitlines()
+        value = value.splitlines()
+    if module.params['json']:
+        value = json.loads(stdout)
     result = {'changed': False,
-              'ansible_facts': {module.params['fact']: stdout}}
+              'ansible_facts': {module.params['fact']: value}}
     module.exit_json(**result)
 
 
