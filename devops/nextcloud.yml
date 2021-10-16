@@ -16,6 +16,7 @@
       tags: nextcloud
       nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"
       nextcloud_domain: fileshare.icos-cp.eu
+      nextcloud_exporter_pass: "{{ vault_nextcloud_exporter_pass }}"
 
     - role: icos.onlyoffice
       tags: onlyoffice
@@ -36,3 +37,13 @@
       bbclient_coldbackup_patterns: |
         R /disk/data/nextcloud
         R /docker/nextcloud/volumes
+
+  tasks:
+    - name: Add nextcloud to prometheus
+      tags: prom
+      import_role:
+        name: icos.prometheus
+        tasks_from: fsd
+      vars:
+        fsd_app: nextcloud
+        fsd_port: "{{ nextcloud_exporter_port }}"

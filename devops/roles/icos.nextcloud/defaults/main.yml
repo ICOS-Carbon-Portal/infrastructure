@@ -25,3 +25,12 @@ nextcloud_db_user: nextcloud
 nextcloud_db_host: db
 
 nextcloud_maintenance_ips:
+
+# Config file for prometheus exporter
+# (https://github.com/xperimental/nextcloud-exporter).
+nextcloud_exporter_conf_host: "{{ nextcloud_home }}/nextcloud-exporter.conf"
+# The exporter will login to nextcloud using this username.
+nextcloud_exporter_user: nextcloud-exporter
+
+# The external port that'll forward traffic to/from the exporter container.
+nextcloud_exporter_port: 9205

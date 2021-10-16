@@ -25,3 +25,12 @@ services:
       - {{ nextcloud_volume_postgres }}:/var/lib/postgresql/data
     env_file:
       - postgres.env
+
+  exporter:
+    image: xperimental/nextcloud-exporter:latest
+    ports:
+      - "127.0.0.1:{{ nextcloud_exporter_port }}:9205"
+    volumes:
+      - "{{ nextcloud_exporter_conf_host }}:/config.yml:ro"
+    command: -c /config.yml
+    restart: unless-stopped

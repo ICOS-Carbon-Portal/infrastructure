@@ -6,3 +6,7 @@
 
 - import_tasks: nginx.yml
   tags: nextcloud_nginx
+
+- import_tasks: prometheus.yml
+  tags: nextcloud_prometheus
+  when: nextcloud_exporter_pass is defined

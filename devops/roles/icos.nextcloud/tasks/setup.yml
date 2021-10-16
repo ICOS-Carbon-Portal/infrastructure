@@ -1,3 +1,9 @@
+- name: Create nextcloud docker directory
+  file:
+    path: "{{ nextcloud_home }}"
+    state: directory
+    mode: og-rw
+
 - include_role:
     name: icos.password_env_file
   vars:
