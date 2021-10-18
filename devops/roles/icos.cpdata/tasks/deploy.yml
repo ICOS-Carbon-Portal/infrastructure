@@ -6,6 +6,7 @@
     jarservice_home : "{{ cpdata_home }}"
     jarservice_local: "{{ cpdata_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'cpdata.service') }}"
+    jarservice_check: "https://{{ cpdata_domains | first }}/buildInfo"
 
 - import_tasks: config.yml
   tags: cpdata_config
