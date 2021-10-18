@@ -6,6 +6,7 @@
     jarservice_home : "{{ cpauth_home }}"
     jarservice_local: "{{ cpauth_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'cpauth.service') }}"
+    jarservice_check: "https://{{ cpauth_domains | first }}/buildInfo"
 
 - name: Copy application.conf
   template:
