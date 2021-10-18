@@ -5,7 +5,3 @@ jarservice_keep_n_old: 10
 # link to the actual jarfile.
 jarservice_jar: "{{ jarservice_home }}/{{ jarservice_name }}.jar"
 
-extra_groups: ""
-
-# To support running with certbot disabled, we must have a default.
-certbot_disabled: False
