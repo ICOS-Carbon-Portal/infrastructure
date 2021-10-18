@@ -19,12 +19,14 @@
      - name: Fail if ansible is too old
        fail:
         msg: |
-          This playbook uses features that requires ansible >= 2.8.
+          This playbook uses features that requires ansible >= 4.7.
           Please upgrade your version of ansible, to do this, first run:
-            pip install --user ansible==q
+            pip3 install --user ansible==q
           Then find the latest version from the output and then run:
-            pip install --user ansible==2.8.5
-       when: "ansible_version.full is version_compare('2.8', '<=')"
+            pip3 install --user ansible==4.7
+       # Ansible 3 started separating the ansible version from the versions of
+       # ansible.core (which is what is reported by ansible_version.full).
+       when: ansible_version.full is version('2.11.6', '<')
 
 - hosts: localhost
   tags: always
