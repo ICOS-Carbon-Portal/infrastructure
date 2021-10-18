@@ -6,6 +6,7 @@
     jarservice_home : "{{ doi_home }}"
     jarservice_local: "{{ doi_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'doi.service') }}"
+    jarservice_check: "https://{{ doi_domains | first }}/buildInfo"
 
 - name: Copy application.conf
   template:
