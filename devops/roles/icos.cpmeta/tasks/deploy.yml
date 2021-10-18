@@ -6,6 +6,7 @@
     jarservice_home : "{{ cpmeta_home }}"
     jarservice_local: "{{ cpmeta_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'cpmeta.service') }}"
+    jarservice_check: "https://{{ cpmeta_domains | first }}/buildInfo"
 
 - name: Copy application.conf
   template:
