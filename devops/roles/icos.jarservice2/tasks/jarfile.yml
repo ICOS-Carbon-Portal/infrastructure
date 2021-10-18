@@ -23,7 +23,7 @@
 - name: Compute the destination filename, we'll be using it more than once.
   set_fact:
     destjarfile: >-
-      "{{ jardir.path }}/{{ jarservice_local | basename }}-{{ _stat.stat.checksum }}"
+      {{ jardir.path }}/{{ jarservice_local | basename }}-{{ _stat.stat.checksum }}
 
 - name: Copy {{ jarservice_name }} jar file
   copy:
