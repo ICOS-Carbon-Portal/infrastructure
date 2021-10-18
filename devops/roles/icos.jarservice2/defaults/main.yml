@@ -5,3 +5,6 @@ jarservice_keep_n_old: 10
 # link to the actual jarfile.
 jarservice_jar: "{{ jarservice_home }}/{{ jarservice_name }}.jar"
 
+# The default is to deploy a jarfile. When testing this role, or when only
+# deploying systemd config it can be useful to disable.
+jarservice_jar_enable: true
