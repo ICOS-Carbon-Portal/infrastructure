@@ -1,9 +1,12 @@
-# This ansible playbook will provision our production servers.
+# This ansible playbook will provision our core services.
+#
+# To test everything except copying the jarfile:
+#   deploy icosprod cpmeta_only -ejarservice_jar_enable=false
+
 
 - import_playbook: setup.yml
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars_files:
     - vault.yml
     - vars.yml
