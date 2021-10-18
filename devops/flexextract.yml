@@ -88,6 +88,7 @@
     - role: icos.flexextract
       tags: flexextract
       flexextract_src_dir: /tmp/docker_flexextract_7.1.0
+      flexextract_download_host: /disk/data/flexextract_download
 
     - role: icos.sshlogin
       tags: sshlogin

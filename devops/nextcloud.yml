@@ -14,6 +14,8 @@
   roles:
     - role: icos.nextcloud
       tags: nextcloud
+      nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"
+      nextcloud_domain: fileshare.icos-cp.eu
 
     - role: icos.onlyoffice
       tags: onlyoffice

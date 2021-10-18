@@ -12,6 +12,11 @@
   roles:
     - role: icos.mailman
       tags: mailman
+      mailman_rest_allow_deny: "{{ vault_mailman_rest_allow_deny }}"
+      mailman_domains:
+        - 'lists.icos-ri.eu'
+        - 'lists.eric-forum.eu'
+        - 'lists.icos-cities.eu'
 
     - role: icos.bbclient
       tags: bbclient
