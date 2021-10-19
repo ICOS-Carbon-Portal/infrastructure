@@ -190,6 +190,7 @@
       notify: Reload NFS server
 
     - name: Do bind-mount local data
+      tags: bind
       mount:
         path: "{{ item.path }}"
         src:  "{{ item.src }}"
@@ -199,4 +200,7 @@
       loop:
         - path: /data/stilt
           src: /pool/ute/stilt/RINGO/T1.3/STILT
+          opts: ",ro"
+        - path: /data/fluxcom/pre_release
+          src: /pool/fluxcom/upload
           opts: ",ro"
