@@ -58,7 +58,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/grafana_data:/var/lib/grafana
-      - ./volumes/grafana_conf:/etc/grafana/provisioning/
+      - ./volumes/grafana_conf:/etc/grafana
     networks:
       - prometheus
     ports:

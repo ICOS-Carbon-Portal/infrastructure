@@ -9,6 +9,12 @@
       # On some targets, this is required for the ansible 'pip' module.
       - virtualenv
 
+# This is recommended by pip itself when it fails to install some packages.
+- name: Upgrade to latest pip (using pip!)
+  pip:
+    name: pip
+    state: latest
+
 # Making python3.8 the default python means that system utilities - like apt(1)
 # - will use it. That will not always work. In the case of apt it'll crash
 # which render the ansible apt module inoperable.

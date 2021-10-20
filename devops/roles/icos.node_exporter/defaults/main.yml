@@ -1,23 +1,28 @@
 node_exporter_user: node_exporter
 node_exporter_home: /opt/node_exporter
-node_exporter_download: /opt/node_exporter/download
+node_exporter_download: "{{ node_exporter_home }}/download"
 
 # https://github.com/prometheus/node_exporter#textfile-collector
-node_exporter_textfiles: /opt/node_exporter/textfiles
+node_exporter_textfiles: "{{ node_exporter_home }}/textfiles"
 node_exporter_environ: "{{ node_exporter_home }}/environ"
+node_exporter_scripts: "{{ node_exporter_home }}/textfile-collector-scripts"
 
-# List of releases - https://github.com/prometheus/node_exporter/releases/
-node_exporter_ver: 1.1.1
-node_exporter_bin: "{{ node_exporter_releases[node_exporter_ver].bin }}"
-node_exporter_url: "{{ node_exporter_releases[node_exporter_ver].url }}"
-node_exporter_checksum: "{{ node_exporter_releases[node_exporter_ver].checksum }}"
+# Will be symlinked here by the download_github_bin role.
+node_exporter_bin: /usr/local/sbin/node_exporter
 
-node_exporter_releases:
-  1.1.1:
-    url: https://github.com/prometheus/node_exporter/releases/download/v1.1.1/node_exporter-1.1.1.linux-amd64.tar.gz
-    bin: "{{ node_exporter_download }}/node_exporter-1.1.1.linux-amd64/node_exporter"
-    checksum: "sha1:6a269236d6aa1bb858d1cbae31cf8f20e0a13529"
-  1.0.1:
-    url: https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
-    bin: "{{ node_exporter_download }}/node_exporter-1.0.1.linux-amd64/node_exporter"
-    checksum: "sha256:3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a53857768ae"
+# SMARTMON COLLECTOR
+smartmon_enable: false
+smartmon_home: "{{ node_exporter_home }}/smartmon"
+smartmon_py: "{{ node_exporter_scripts }}/smartmon.py"
+smartmon_prom: "{{ node_exporter_textfiles }}/smartmon.prom"
+
+
+# DIRSIZE COLLECTOR
+dirsize_enable: false
+dirsize_home: "{{ node_exporter_home }}/directory-size"
+dirsize_sh: "{{ node_exporter_scripts }}/directory-size.sh"
+dirsize_dirnames: "{{ dirsize_home }}/dirnames.txt"
+dirsize_prom: "{{ node_exporter_textfiles }}/directory-size.prom"
+
+# The initial list of directories.
+dirsize_initial: []

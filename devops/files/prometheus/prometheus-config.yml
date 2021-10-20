@@ -22,6 +22,32 @@ remote_write:
 
 scrape_configs:
 
+  # STATIC - These are the containers that make up the prometheus stack.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - prometheus:9090
+
+  - job_name: 'victoriametrics'
+    static_configs:
+      - targets:
+          - victoriametrics:8428
+
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets:
+          - pushgateway:9091
+
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets:
+          - alertmanager:9093
+
+  - job_name: 'blackbox'
+    static_configs:
+      - targets:
+          - blackbox:9115
+
   - job_name: 'probe_http_sign_in'
     metrics_path: /probe
     params:
@@ -70,36 +96,16 @@ scrape_configs:
       - target_label: __address__
         replacement: blackbox:9115
 
-  - job_name: 'prometheus'
-    static_configs:
-      - targets:
-          - prometheus:9090
-
-  - job_name: 'victoriametrics'
-    static_configs:
-      - targets:
-          - victoriametrics:8428
-
-  - job_name: 'pushgateway'
-    static_configs:
-      - targets:
-          - pushgateway:9091
-
-  - job_name: 'alertmanager'
-    static_configs:
-      - targets:
-          - alertmanager:9093
-
-  - job_name: 'blackbox'
-    static_configs:
-      - targets:
-          - blackbox:9115
-
   - job_name: 'node_exporter'
     file_sd_configs:
       - files:
           - 'dynamic/node_exporter.yml'
 
+  - job_name: 'ansible'
+    file_sd_configs:
+      - files:
+          - 'ansible/*.yml'
+          - 'ansible/*.json'
 
 alerting:
   alertmanagers:

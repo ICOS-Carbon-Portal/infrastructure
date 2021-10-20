@@ -5,5 +5,4 @@
     dest: "{{ prometheus_home }}/volumes/prometheus_conf/"
     delete: yes
   notify:
-    - check prom config
     - reload prom config

@@ -16,10 +16,32 @@ prometheus_users:
     password: "{{ prometheus_admin_password }}"
 
 prometheus_options: []
-
-# https://github.com/prometheus/prometheus/releases/
-prometheus_promtool_ver: 2.27.1
-prometheus_promtool_sha: "sha256:ce637d0167d5e6d2561f3bd37e1c58fe8601e13e4e1ea745653c068f6e1317ae"
 prometheus_host_conf: "{{ prometheus_home }}/volumes/prometheus_conf/prometheus.yml"
-
 prometheus_backup_script: "{{ prometheus_home }}/bin/prometheus-backup.py"
+
+
+# GRAFANA
+prometheus_graf_cf: grafana.ini
+
+
+# FSD - File-based Service Discovery
+# Used to configure scraping of the nextcloud-exporter.
+
+# This is the host that's running prometheus, to which we want to add a config
+# file. By default we rely on the inventory having a host called "prometheus".
+fsd_prom_host: prometheus
+
+# The directory that prometheus monitors for changes and new files.
+fsd_prom_path: "{{ prometheus_home }}/volumes/prometheus_conf/ansible"
+
+# The __metrics_path__ label used to scrape the target.
+fsd_metrics_path: "/host/{{ fsd_port }}/metrics"
+
+# The host from which metrics is to be retrieved
+fsd_host: "{{ inventory_hostname }}"
+
+# The complete url used by ansible to check for metrics.
+fsd_url: "https://{{ fsd_host }}{{ fsd_metrics_path }}"
+
+# The prometheus label 'server'. By default derived from the complete hostname.
+fsd_server: "{{ fsd_host.split('.')[0] }}"

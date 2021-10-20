@@ -1,0 +1,21 @@
+- import_tasks: smartmon_remove_old.yml
+  tags: node_exporter_smartmon_remove_old
+
+- name: Create smartmon home directory
+  file:
+    path: "{{ smartmon_home }}"
+    state: directory
+
+- name: Install packages
+  apt:
+    name:
+      - smartmontools # smartctl(1)
+
+- import_role: name=icos.timer
+  vars:
+    timer_home: "{{ smartmon_home }}"
+    timer_name: node-exporter-smartmon
+    timer_conf: OnCalendar=*:0/5
+    timer_content: |
+      #!/bin/bash
+      {{ smartmon_py }} | sponge {{ smartmon_prom }}

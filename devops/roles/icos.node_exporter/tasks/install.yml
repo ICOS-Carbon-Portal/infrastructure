@@ -1,0 +1,64 @@
+- name: Create node_exporter user
+  user:
+    name: "{{ node_exporter_user }}"
+    home: "{{ node_exporter_home }}"
+    shell: /usr/sbin/nologin
+
+- name: Clone textfile-collector-scripts
+  git:
+    repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
+    version: master
+    dest: "{{ node_exporter_scripts }}"
+
+- name: Install utils needed for the collector-scripts
+  apt:
+    name: moreutils  # sponge(1)
+
+- name: Install node_exporter
+  import_role:
+    name: icos.github_download_bin
+  vars:
+    dbin_download_dir: "{{ node_exporter_download }}"
+    dbin_list:
+      - user: prometheus
+        repo: node_exporter
+        path: node_exporter
+
+# FIXME: Remove in 2022.
+- name: Remove node_exporter service
+  systemd:
+    name: node_exporter.service
+    state: stopped
+    enabled: no
+  register: r
+  failed_when:
+    - r.failed
+    - not r.msg.startswith('Could not find the requested service')
+
+- name: Copy node-exporter service file
+  template:
+    src: node-exporter.service
+    dest: /etc/systemd/system/
+  register: _srv
+
+- name: Create the textfile collector directory
+  file:
+    path: "{{ node_exporter_textfiles }}"
+    # Setup this directory in the same way as /tmp, i.e anyone can write to it
+    # but not remove other user's files.
+    mode: '1777'
+    state: directory
+
+- name: Make sure that {{ node_exporter_environ }} exists
+  copy:
+    dest: "{{ node_exporter_environ }}"
+    content: |
+      OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
+  register: _env
+
+- name: Start node-exporter service
+  systemd:
+    name: node-exporter
+    enabled: yes
+    state: "{{ 'restarted' if (_srv.changed or _env.changed) else 'started' }}"
+    daemon-reload: "{{ 'yes' if (_srv.changed or _env.changed) else 'no' }}"

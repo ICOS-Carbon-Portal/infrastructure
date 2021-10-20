@@ -1,57 +1,10 @@
-- name: Create node_exporter user
-  user:
-    name: "{{ node_exporter_user }}"
-    home: "{{ node_exporter_home }}"
-    shell: /usr/sbin/nologin
+- import_tasks: install.yml
+  tags: node_exporter_install
 
-- name: Create download directory
-  file:
-    path: "{{ node_exporter_download }}"
-    state: directory
+- import_tasks: smartmon.yml
+  tags: node_exporter_smartmon
+  when: smartmon_enable
 
-- name: Download node_exporter binary
-  get_url:
-    url: "{{ node_exporter_url }}"
-    dest: "{{ node_exporter_download }}"
-    checksum: "{{ node_exporter_checksum or omit }}"
-    mode: +x
-  register: _download
-
-- name: Display checksum of downloaded binary
-  debug:
-    msg: "Binary have checksum sha1:{{ _download.checksum_dest }}"
-  when: not node_exporter_checksum
-
-- name: Unarchive {{ _download.dest }}
-  unarchive:
-    src: "{{ _download.dest }}"
-    dest: "{{ node_exporter_download }}"
-    remote_src: yes
-
-- name: Copy node_exporter service file
-  template:
-    src: node_exporter.service
-    dest: /etc/systemd/system/
-  register: _srv
-
-- name: Create the textfile collector directory
-  file:
-    path: "{{ node_exporter_textfiles }}"
-    # Setup this directory in the same way as /tmp, i.e anyone can write to it
-    # but not remove other user's files.
-    mode: '1777'
-    state: directory
-
-- name: Make sure that {{ node_exporter_environ }} exists
-  copy:
-    dest: "{{ node_exporter_environ }}"
-    content: |
-      OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
-  register: _env
-
-- name: Start node_exporter service
-  systemd:
-    name: node_exporter
-    enabled: yes
-    state: "{{ 'restarted' if (_srv.changed or _env.changed) else 'started' }}"
-    daemon-reload: "{{ 'yes' if (_srv.changed or _env.changed) else 'no' }}"
+- import_tasks: dirsize.yml
+  tags: node_exporter_dirsize
+  when: dirsize_enable

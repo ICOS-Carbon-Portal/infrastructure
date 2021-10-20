@@ -1,0 +1,21 @@
+- name: Check whether /opt/smartmon exists
+  stat:
+    path: /opt/smartmon
+  register: _r
+
+- name: Disable smartmon and remove directory
+  when: _r.stat.exists
+  block:
+    - name: Stop smartmon units
+      systemd:
+        name: "{{ item }}"
+        enabled: no
+        state: stopped
+      loop:
+        - smartmon.timer
+        - smartmon.service
+
+    - name: Remove directory
+      file:
+        path: /opt/smartmon
+        state: absent

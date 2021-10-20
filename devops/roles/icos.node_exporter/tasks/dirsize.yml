@@ -1,0 +1,32 @@
+# A prometheus node_exporter textfile collector that gathers metrics about
+# directory size. Uses the ready-made collector from the
+# textfile-collector-scripts repo.
+
+- name: Create dirsize home directory
+  file:
+    path: "{{ dirsize_home }}"
+    state: directory
+
+- name: Make sure that the dirnames file exists.
+  copy:
+    dest: "{{ dirsize_dirnames }}"
+    force: no
+    content: ""
+
+- name: Ensure that initial directories are in dirnames.txt
+  lineinfile:
+    path: "{{ dirsize_dirnames }}"
+    line: "{{ item }}"
+    state: present
+  loop: "{{ dirsize_initial }}"
+
+- import_role: name=icos.timer
+  vars:
+    timer_home: "{{ dirsize_home }}"
+    timer_name: node-exporter-dirsize
+    timer_conf: OnCalendar=hourly
+    timer_content: |
+      #!/bin/bash
+      # Read directory name from a file that can be dynamically populated by
+      # ansible.
+      xargs -r -a {{ dirsize_dirnames }} {{ dirsize_sh }} | sponge {{ dirsize_prom }}

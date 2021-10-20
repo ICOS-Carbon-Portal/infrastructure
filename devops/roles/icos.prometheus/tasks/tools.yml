@@ -1,0 +1,19 @@
+# We download tarballs and symlink these tools so that syntax checking is faster then using 'docker-compose run'.
+
+- name: Install promtool, amtool and blackbox_exporter
+  import_role:
+    name: icos.github_download_bin
+  vars:
+    dbin_list:
+      - user: prometheus
+        repo: prometheus
+        path: promtool
+        
+      - user: prometheus
+        repo: alertmanager
+        path: amtool
+        
+      - user: prometheus
+        repo: blackbox_exporter
+        path: blackbox_exporter
+  

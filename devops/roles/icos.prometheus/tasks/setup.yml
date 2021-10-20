@@ -9,6 +9,7 @@
   loop:
     - path: "{{ prometheus_home }}/volumes/prometheus_conf/"
     - path: "{{ prometheus_home }}/volumes/prometheus_conf/dynamic"
+    - path: "{{ prometheus_ansible_path }}"
     - path: "{{ prometheus_home }}/volumes/prometheus_data"
       owner: "65534"
     - path: "{{ prometheus_home }}/volumes/grafana_data"
@@ -23,8 +24,14 @@
     src: docker-compose.yml
     dest: "{{ prometheus_home }}"
 
-- import_tasks: promtool.yml
-  tags: prometheus_promtool
+- import_tasks: build.yml
+  tags: prometheus_build
 
-- import_tasks: cli.yml
-  tags: prometheus_cli
+- import_tasks: tools.yml
+  tags: prometheus_tools
+
+- import_tasks: config.yml
+  tags: prometheus_config
+
+- import_tasks: backup.yml
+  tags: prometheus_backup
