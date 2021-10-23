@@ -1,0 +1,26 @@
+- name: Retrieving latest tag for {{ dbin.repo }}
+  github_release:
+    user: "{{ dbin.user }}"
+    repo: "{{ dbin.repo }}"
+    action: latest_release
+  register: _release
+
+- name: Download {{ dbin.repo }} tarball
+  get_url:
+    url: "{{ dbin.url | default(dbin_url) }}"
+    dest: "{{ dbin_download_dir }}"
+  register: _down
+
+- name: Unarchive {{ dbin_name }} tarball
+  unarchive:
+    src: "{{ _down.dest }}"
+    dest: "{{ dbin_download_dir }}"
+    remote_src: true
+    list_files: true
+  register: _unar
+
+- name: Create symlink for {{ dbin_name }} in /usr/local/sbin
+  file:
+    dest: "/usr/local/sbin/{{ dbin.path | basename }}"
+    src: "{{ dbin_download_dir }}/{{ _unar.files[0].rstrip('/') }}/{{ dbin.path | basename }}"
+    state: link

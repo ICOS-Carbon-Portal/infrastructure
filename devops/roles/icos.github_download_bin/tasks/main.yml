@@ -1,0 +1,17 @@
+- include_vars: "{{ ansible_machine }}.yml"
+
+# Required by the github_releases module.
+- name: pip install github3
+  pip:
+    name: github3.py
+    state: present
+
+- name: Create downloads directory
+  file:
+    path: "{{ dbin_download_dir }}"
+    state: directory
+
+- include_tasks: single.yml
+  loop: "{{ dbin_list }}"
+  loop_control:
+    loop_var: dbin

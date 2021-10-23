@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+</head>
+
+<body>
+
+<p>This role will install commandline tools from github and symlink them into PATH.</p>
+
+<pre><code>- name: Install promtool, amtool and blackbox_exporter
+  import_role:
+    name: icos.github_download_bin
+  vars:
+    dbin_list:
+      - user: prometheus
+        repo: prometheus
+        path: promtool
+
+      - user: prometheus
+        repo: alertmanager
+        path: amtool
+
+      - user: prometheus
+        repo: blackbox_exporter
+        path: blackbox_exporter
+</code></pre>
+
+<p>The previous will:</p>
+
+<ul>
+<li>Create /opt/download</li>
+<li>Download tarballs.</li>
+<li>Unpack tarballs.</li>
+<li>Symlink /opt/download/unpacked/{{ path }} to /usr/local/sbin/</li>
+</ul>
+
+</body>
+</html>
