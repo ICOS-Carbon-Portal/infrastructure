@@ -1,5 +1,7 @@
 # Pull new docker versions
-#   deploy prometheus setup build -eprometheus_pull_latest=true
+#   deploy prometheus prometheus_build -eprometheus_pull_latest=true
+# Deploy new config files
+#   deploy prometheus prometheus_config
 
 - hosts: prometheus_host
   become: true
