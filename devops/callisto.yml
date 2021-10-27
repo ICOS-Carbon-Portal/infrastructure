@@ -57,6 +57,10 @@
             path: "/ute/fluxcom"
             source: "/pool/fluxcom"
             type: disk
+          fluxcom_eo:
+            path: "/ute/fluxcom_eo"
+            source: "/nfs/fluxcom_eo"
+            type: disk
           stilt:
             path: "/ute/stilt"
             source: "/pool/ute/stilt"
