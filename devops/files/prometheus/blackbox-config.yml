@@ -8,7 +8,7 @@ modules:
 
   http_2xx:
     prober: http
-    timeout: 5s
+    timeout: 30s
     http:
       method: GET
       fail_if_ssl: false
@@ -20,7 +20,7 @@ modules:
 
   https_2xx:
     prober: http
-    timeout: 5s
+    timeout: 30s
     http:
       method: GET
       fail_if_ssl: false
