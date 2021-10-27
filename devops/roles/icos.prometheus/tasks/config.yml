@@ -30,3 +30,13 @@
     dest: "{{ prometheus_home }}/volumes/grafana_conf/grafana.ini"
   notify: restart grafana
   when: prometheus_graf_cf
+
+# Prometheus will dynamically re-read these files.
+- name: Synchronize source
+  ansible.posix.synchronize:
+    src: "{{ prometheus_prom_dynamic }}"
+    dest: "{{ prometheus_home }}/volumes/prometheus_conf/"
+    delete: yes
+  notify:
+    - reload prom config
+  

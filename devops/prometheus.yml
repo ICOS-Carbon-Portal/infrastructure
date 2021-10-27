@@ -100,7 +100,7 @@
         tasks_from: setup
 
     - name: Update prometheus dynamic configuration
-      tags: dynamic
+      tags: config
       import_role:
         name: icos.prometheus
-        tasks_from: dynamic
+        tasks_from: config
