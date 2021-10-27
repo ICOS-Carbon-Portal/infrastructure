@@ -79,7 +79,7 @@
   vars:
     prometheus_alrt_slack_url: "{{ vault_prometheus_alrt_slack_url }}"
     prometheus_graf_pass: "{{ vault_prometheus_graf_pass }}"
-    vprometheus_prom_dynamic: files/prometheus/dynamic
+    prometheus_prom_dynamic: files/prometheus/dynamic
     prometheus_alrt_cf: files/prometheus/alertmanager-config.yml
     prometheus_bbox_cf: files/prometheus/blackbox-config.yml
     prometheus_prom_cf: files/prometheus/prometheus-config.yml
