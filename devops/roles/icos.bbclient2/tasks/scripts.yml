@@ -1,6 +1,6 @@
-- name: Create scripts directory
+- name: Create bin directory
   file:
-    path: "{{ bbclient_script_dir }}"
+    path: "{{ bbclient_bin_dir }}"
     state: directory
 
 - name: Install borg wrapper that contains our ssh info
@@ -16,7 +16,7 @@
 - name: Create helper scripts
   template:
     src: "{{ item }}"
-    dest: "{{ bbclient_script_dir }}"
+    dest: "{{ bbclient_bin_dir }}"
     mode: +x
   loop:
     - bbclient

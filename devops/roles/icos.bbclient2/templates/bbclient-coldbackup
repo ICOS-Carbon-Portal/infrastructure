@@ -6,19 +6,24 @@
 # 5. Prune backups.
 #
 # Designed to run from cron.
+#
+# It's belongs to a certain bbclient installation so it contains paths
+# hardcoded at templating time.
 
 import sys
 import shlex
 import datetime
 from contextlib import contextmanager
-from os import access, X_OK, environ
+from os import access, X_OK, environ, chdir
 from os.path import exists, isdir, getsize
 from subprocess import run, DEVNULL, CalledProcessError, STDOUT
+
+chdir("{{ bbclient_coldbackup | mandatory }}")
 
 # The script relies on the current directory having a certain structure.
 assert exists('docker-compose.yml')
 assert isdir('volumes')
-assert access('bin/bbclient-all', X_OK)
+assert access('{{ bbclient_all }}', X_OK)
 
 
 environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = 'yes'
@@ -30,7 +35,7 @@ def nullcontext(result):
 
 
 def logfile():
-    if sys.stdin.isatty():
+    if sys.stdin.isattysss():
         return nullcontext(sys.stdout)
     else:
         return open('backup.log', 'a')
@@ -44,7 +49,7 @@ def logfmt(msg):
 def bbclient(what, arg):
     with logfile() as log:
         print(logfmt(what), file=log, flush=True)
-        run(['bin/bbclient-all'] + shlex.split(arg),
+        run(['{{ bbclient_all }}'] + shlex.split(arg),
             check=1, stdout=log, stderr=STDOUT)
 
 
@@ -58,8 +63,8 @@ def prune():
 
 
 def backup():
-    if exists('.bbclient/patterns.lst'):
-        patterns = '--patterns-from .bbclient/patterns.lst'
+    if exists('{{ bbclient_patterns }}'):
+        patterns = '--patterns-from {{ bbclient_patterns }}'
     else:
         patterns = 'volumes'
     try:
