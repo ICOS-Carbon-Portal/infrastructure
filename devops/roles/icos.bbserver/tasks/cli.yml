@@ -10,3 +10,15 @@
     src: bbserver.py
     mode: +x
     dest: "{{ bbserver_home }}/bin/bbserver"
+
+# One might think that the cache would be kept sufficiently hot by the monitor
+# script but apparently not.
+# If this crontab is not in place, then logging in as bbserver and running
+# 'bbserver list' might take 10 minutes !
+- name: Prime borg cache by running 'bbserver list' each night
+  cron:
+    user: bbserver
+    job: "{{ bbserver_home }}/bin/bbserver list > /dev/null 2>&1"
+    hour: "{{ 4 | random(seed='bbserver') }}"
+    minute: "{{ 60 | random(seed='bbserver') }}"
+    name: "bbserver_prime_borg_cache"
