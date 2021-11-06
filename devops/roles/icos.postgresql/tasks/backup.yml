@@ -19,6 +19,7 @@
   cron:
     user: postgres
     job: "{{ postgresql_bin_dir }}/{{ postgresql_backup_script }}"
-    special_time: daily
+    hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
+    minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
     state: present
     name: "postgis_backup"
