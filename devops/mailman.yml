@@ -1,8 +1,12 @@
-# Build mainman images
+# Build mailman images
 #   deploy mailman mailman_build
 #
 # Copy build files but do not build nor start containers.
 #   deploy mailman mailman_build -edocker_do_build=False
+#
+# Redeploy backup scripts
+#   deploy mailman bbclient
+
 - hosts: fsicos2.lunarc.lu.se
   become: true
   vars:
@@ -18,8 +22,10 @@
         - 'lists.eric-forum.eu'
         - 'lists.icos-cities.eu'
 
-    - role: icos.bbclient
+    - role: icos.bbclient2
       tags: bbclient
       vars:
-        bbclient_user: "{{ mailman_username }}"
-        bbclient_coldbackup_crontab: { hour: 02, minute: 40 }
+        bbclient_name: mailman
+        bbclient_user: root
+        bbclient_home: "{{ mailman_home }}/bbclient"
+        bbclient_coldbackup: "{{ mailman_home }}"
