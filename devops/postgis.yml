@@ -1,7 +1,10 @@
 # Create users for the cplog database:
 #   deploy postgis cplog
+#
+# Redeploy backup script and bbclient
+#   deploy postgis backup
 
-- hosts: postgis_host
+- hosts: cdb.nateko.lu.se
   vars:
     postgis_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:
