@@ -59,8 +59,6 @@ services:
     restart: always
     volumes:
     - {{ mailman_volume_database }}:/var/lib/postgresql/data
-# Breaks with 'AssertionError: database connection isn't set to UTC'
-#    - /etc/localtime:/etc/localtime:ro
     networks:
       mailman:
         ipv4_address: {{ mailman_database_ipv4 }}

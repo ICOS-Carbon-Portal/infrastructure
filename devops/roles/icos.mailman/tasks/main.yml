@@ -48,19 +48,23 @@
   delay: 20
   until: not r.failed
 
-- import_role: name=icos.certbot
-  tags: mailman_certbot
-
-- name: Install the mailman nginx conf to nginx/conf.d
-  template:
-    dest: /etc/nginx/conf.d/
-    src: mailman.conf
-  notify: reload nginx config
-  when: not certbot_disabled
-
 - name: Set postfix parameters
   postconf:
     param: "{{ item.param }}"
     value: "{{ item.value }}"
     append: "{{ item.append | default(omit) }}"
   loop: "{{ mailman_postfix_config }}"
+
+- import_role:
+    name: icos.certbot2
+  vars:
+    certbot_domains: "{{ mailman_domains | mandatory }}"
+    certbot_name: mailman
+  tags: mailman_certbot
+
+- import_role:
+    name: icos.nginxsite
+  vars:
+    nginxsite_name: mailman
+    nginxsite_file: mailman-nginx.conf
+  tags: mailman_nginx

@@ -25,9 +25,6 @@ mailman_core_ipv4: 172.19.199.2
 mailman_web_ipv4: 172.19.199.3
 mailman_database_ipv4: 172.19.199.4
 
-certbot_domains: "{{ mailman_domains | mandatory }}"
-certbot_conf_name: mailman
-
 mailman_postfix_config:
   # https://github.com/maxking/docker-mailman#setting-up-your-mta
   - param: recipient_delimiter
