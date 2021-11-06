@@ -3,7 +3,7 @@
 # Deploy new config files
 #   deploy prometheus prometheus_config
 
-- hosts: prometheus_host
+- hosts: cdb.nateko.lu.se
   become: true
   vars_files:
     - vault.yml
