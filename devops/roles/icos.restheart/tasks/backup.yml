@@ -1,13 +1,14 @@
-- name: Create bin directory
-  file:
-    path: "{{ restheart_home }}/bin"
-    state: directory
-  register: _bin
+- import_role:
+    name: icos.bbclient2
+  vars:
+    bbclient_user: root
+    bbclient_home: "{{ restheart_home }}/bbclient"
+    bbclient_name: restheart
 
 - name: Copy backup.sh
   template:
     src: backup.sh
-    dest: "{{ _bin.path }}/"
+    dest: "{{ restheart_home }}"
     mode: +x
   register: _backup
 
@@ -16,5 +17,4 @@
     job: "{{ _backup.dest }}"
     hour: "*/6"
     minute: "36"
-    state: present
     name: "restheart_backup"
