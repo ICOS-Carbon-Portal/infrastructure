@@ -17,9 +17,9 @@ bbclient_all        : "{{ bbclient_bin_dir }}/bbclient-all"
 # These are used when delegating to the remote host. There are all
 # based on the bbclient_remote variable which is set to the inventory
 # name of the remote.
-bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user }}"
-bbclient_remote_bin  : "{{ hostvars[bbclient_remote].bbserver_bin }}"
-bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home }}/{{ bbclient_name }}.repo"
+bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user | default('bbserver') }}"
+bbclient_remote_bin  : "{{ hostvars[bbclient_remote].bbserver_bin | default('/usr/local/bin/borg') }}"
+bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home | default('repos') }}/{{ bbclient_name }}.repo"
 
 # Default to run coldback at a randomized but deterministic time between 00:00
 # and 03:59.
