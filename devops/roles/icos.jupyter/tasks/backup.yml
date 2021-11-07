@@ -1,0 +1,23 @@
+- import_role:
+    name: icos.bbclient2
+  vars:
+    bbclient_name: jupyter
+    bbclient_user: root
+    bbclient_home: /opt/bbclient-jupyter
+
+- name: Create backup script
+  copy:
+    mode: +x
+    dest: "{{ bbclient_bin_dir }}/backup.sh"
+    content: |
+      #!/bin/bash
+      set -eu
+      {{ bbclient_all }} create "::{now}" /home /project /root/jusers.yml
+      {{ bbclient_all }} prune --keep-within 2w --keep-daily=30 --keep-weekly=150
+  register: _backup_script
+
+- name: Add backup script to crontab
+  cron:
+    job: "{{ _backup_script.dest }}"
+    special_time: hourly
+    name: "bbclient_backup"
