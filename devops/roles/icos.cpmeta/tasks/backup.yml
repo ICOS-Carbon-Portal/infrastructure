@@ -1,22 +1,20 @@
-- name: Create bin directory
-  file:
-    path: "{{ cpmeta_home }}/bin"
-    state: directory
-  register: _bin
-
 - name: Copy backup.sh
-  tags: cpmeta_backup
   template:
     src: backup.sh
-    dest: "{{ _bin.path }}/"
+    dest: "{{ cpmeta_home }}/"
     mode: +x
   register: _backup
 
 - name: Add backup to crontab
-  tags: cpmeta_backup
   cron:
     job: "{{ _backup.dest }} cron"
     hour: "*"
     minute: "18"
-    state: present
     name: "cpmeta_backup"
+
+- import_role:
+    name: icos.bbclient2
+  vars:
+    bbclient_user: root
+    bbclient_name: cpmeta
+    bbclient_home: "{{ cpmeta_home }}/.bbclient"

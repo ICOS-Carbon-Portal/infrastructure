@@ -2,11 +2,11 @@
 #   deploy cpmeta
 #
 # To do step-by-step deployment:
-#  $ deploy cpmeta cpmeta_setup
-#  $ deploy cpmeta cpmeta_nginx
-#  $ deploy cpmeta cpmeta_deploy -ecpmeta_jar_file=cpmeta.jar
-#  $ deploy cpmeta bbclient
-#  $ deploy cpmeta cpmeta_backup
+#  deploy cpmeta cpmeta_setup
+#  deploy cpmeta cpmeta_nginx
+#  deploy cpmeta cpmeta_deploy -ecpmeta_jar_file=cpmeta.jar
+#  deploy cpmeta bbclient
+#  deploy cpmeta cpmeta_backup
 
 - hosts: fsicos2.lunarc.lu.se
   become: true
@@ -15,8 +15,3 @@
     - vars.yml
   roles:
     - role: icos.cpmeta
-
-    - role: icos.bbclient
-      tags: bbclient
-      vars:
-        bbclient_user: "{{ cpmeta_user }}"
