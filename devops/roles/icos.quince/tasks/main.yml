@@ -34,6 +34,5 @@
     - quince_backup_script
   import_tasks: quince-backup.yml
 
-
 - import_tasks: quince-logging.yml
   tags: quince_logging

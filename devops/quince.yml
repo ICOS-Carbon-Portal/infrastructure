@@ -122,10 +122,6 @@
     - role: icos.quince
       tags: quince
 
-    - role: icos.bbclient
-      tags: backup
-      bbclient_user: "{{ quince_username }}"
-
   tasks:
     - import_role:
         name: icos.quince
