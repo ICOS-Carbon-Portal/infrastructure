@@ -35,3 +35,19 @@
   copy:
     dest: "{{ jupyter_home }}/jupyterhub_home/"
     src: templates
+
+- name: Start the proxy
+  docker_compose:
+    project_src: "{{ jupyter_home }}"
+    services:
+      - proxy
+    state: present
+
+- name: Restart the hub
+  docker_compose:
+    project_src: "{{ jupyter_home }}"
+    services:
+      - hub
+    state: present
+    restarted: yes
+    build: yes
