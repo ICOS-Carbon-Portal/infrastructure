@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -Eeo pipefail
-
-export BORG_REPO="$(head -1 {{ bbclient_repo_file }})"
-
-"{{ bbclient_wrapper }}" "$@"
