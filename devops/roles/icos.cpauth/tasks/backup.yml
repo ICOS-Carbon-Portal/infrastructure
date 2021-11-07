@@ -1,26 +1,18 @@
-- import_role: name=icos.bbclient2
-  tags: bbclient
+- import_role:
+    name: icos.bbclient2
   vars:
     bbclient_name: cpauth
     bbclient_user: "{{ cpauth_user }}"
     bbclient_home: "{{ cpauth_home }}/.bbclient"
 
-- name: Create bin directory
-  file:
-    path: "{{ cpauth_home }}/bin"
-    state: directory
-  register: _bin
-
 - name: Copy backup.sh
-  tags: cpauth_backup
   template:
     src: backup.sh
-    dest: "{{ _bin.path }}/"
+    dest: "{{ cpauth_home }}/backup.sh"
     mode: +x
   register: _backup
 
 - name: Add backup to crontab
-  tags: cpauth_backup
   cron:
     job: "{{ _backup.dest }}"
     special_time: daily
