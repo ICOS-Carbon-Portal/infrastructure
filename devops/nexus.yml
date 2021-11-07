@@ -1,10 +1,14 @@
 - hosts: fsicos2.lunarc.lu.se
-  roles:
-    - role: icos.nexus
+  tasks:
+    - import_role:
+        name: icos.nexus
       tags: nexus
     
-    - role: icos.bbclient
-      bbclient_name: "{{ nexus_user }}"
-      bbclient_home: "{{ nexus_home }}"
-      bbclient_coldbackup_crontab: { hour: 02, minute: 50 }
+    - import_role:
+        name: icos.bbclient2
+      vars:
+        bbclient_name: nexus
+        bbclient_user: root
+        bbclient_home: "{{ nexus_home }}/bbclient"
+        bbclient_coldbackup: "{{ nexus_home }}"
       tags: bbclient
