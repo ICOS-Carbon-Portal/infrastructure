@@ -3,7 +3,6 @@
     msg: "Failed to set all required parameters, this is a bug."
   when: >-
     bbclient_name is undefined or
-    bbclient_user is undefined or
     bbclient_home is undefined
 
 - name: Install borg
