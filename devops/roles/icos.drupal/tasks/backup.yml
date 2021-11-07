@@ -1,19 +1,18 @@
----
-- include_role: name=icos.bbclient
+- import_role: name=icos.bbclient2
   vars:
-    bbclient_name: "drupal"
-    bbclient_home: "{{ drupal_home }}"
+    bbclient_name: drupal
+    bbclient_home: "{{ drupal_home }}/.bbclient"
 
 - name: Create drupal backup script
   template:
     src: borgbackup.sh
-    dest: "{{ drupal_home }}/bin/borgbackup"
+    dest: "{{ bbclient_bin_dir }}/borgbackup"
     mode: +x
+  register: _backup
 
 - name: Add drupal borgbackup to crontab
   cron:
-    job: "{{ drupal_home }}/bin/borgbackup"
+    job: "{{ _backup.dest }}"
     hour: "3"
     minute: "10"
-    state: present
     name: "drupal_borg"

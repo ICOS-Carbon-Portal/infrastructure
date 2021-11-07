@@ -25,4 +25,4 @@
   tags: drupal
 
 - import_tasks: backup.yml
-  tags: drupal_borg
+  tags: drupal_backup
