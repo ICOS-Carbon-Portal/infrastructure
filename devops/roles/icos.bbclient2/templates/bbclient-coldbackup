@@ -35,7 +35,7 @@ def nullcontext(result):
 
 
 def logfile():
-    if sys.stdin.isattysss():
+    if sys.stdin.isatty():
         return nullcontext(sys.stdout)
     else:
         return open('backup.log', 'a')

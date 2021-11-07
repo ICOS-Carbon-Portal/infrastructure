@@ -23,7 +23,7 @@ bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home | defaul
 
 # Default to run coldback at a randomized but deterministic time between 00:00
 # and 03:59.
-bbclient_coldbackup_hour: "{{ random(4, seed=bbclient_name) }}"
-bbclient_coldbackup_minute: "{{ random(60, seed=bbclient_name) }}"
+bbclient_coldbackup_hour: "{{ 4 | random(seed=bbclient_name) }}"
+bbclient_coldbackup_minute: "{{ 60 | random(seed=bbclient_name) }}"
 
 bbclient_patterns: "{{ bbclient_home }}/patterns.lst"

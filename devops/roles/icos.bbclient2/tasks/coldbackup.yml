@@ -14,7 +14,7 @@
     minute: "{{ bbclient_coldbackup_minute }}"
     state: present
     name: "bbclient_{{ bbclient_name }}_coldbackup"
-  when: bbclient_coldbackup_crontab is defined
+  when: bbclient_coldbackup is defined
 
 - name: Create patterns.lst
   copy:
