@@ -12,8 +12,6 @@ services:
     # https://github.com/prometheus/prometheus/issues/5976
     # This should've been handled by their entrypoint.
     user: "65534"
-    depends_on:
-      - victoriametrics
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/prometheus_data:/prometheus
@@ -33,28 +31,9 @@ services:
       - "{{ prometheus_prom_port }}:{{ prometheus_prom_port }}"
     restart: unless-stopped
 
-  victoriametrics:
-    container_name: victoriametrics
-    image: victoriametrics/victoria-metrics
-    volumes:
-      - ./volumes/victoriametrics_data:/storage
-    command:
-      - '-storageDataPath=/storage'
-      # This is the port used by prometheus when it writes data to vm.
-      - '-httpListenAddr=:8428'
-      # Keep data around for this many months, the default is 1.
-      - '-retentionPeriod=24'
-    networks:
-      - prometheus
-    expose:
-      - "8428"
-    restart: unless-stopped
-
   grafana:
     container_name: grafana
     image: grafana/grafana
-    depends_on:
-      - victoriametrics
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/grafana_data:/var/lib/grafana
