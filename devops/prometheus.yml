@@ -84,7 +84,7 @@
     prometheus_bbox_cf: files/prometheus/blackbox-config.yml
     prometheus_prom_cf: files/prometheus/prometheus-config.yml
     prometheus_options:
-      - --storage.tsdb.retention.size=500MB
+      - --storage.tsdb.retention.time=90d
   roles:
     - role: icos.lxd_guest
       tags: guest
