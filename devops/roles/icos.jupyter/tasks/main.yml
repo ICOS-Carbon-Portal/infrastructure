@@ -1,4 +1,4 @@
-- import_tasks: docker.yml
+- import_tasks: setup.yml
   tags: jupyter_setup
 
 - import_tasks: registry.yml
