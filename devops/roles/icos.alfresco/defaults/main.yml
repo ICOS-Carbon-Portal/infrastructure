@@ -1,2 +1,0 @@
-certbot_domains: [docs.icos-cp.eu]
-certbot_conf_name: alfresco
