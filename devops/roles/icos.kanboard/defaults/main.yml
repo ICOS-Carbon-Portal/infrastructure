@@ -1,2 +1,0 @@
-certbot_domains: [kanboard.icos-cp.eu]
-certbot_conf_name: kanban
