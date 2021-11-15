@@ -44,6 +44,16 @@
     src: Makefile
     dest: /docker/Makefile
 
+# Upgrading docker will restart containerd. Restarting containerd, even with
+# live-restore enabled, will mess up networking for some applications - notably
+# jupyterhub.
+- name: Make sure docker isn't upgraded
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: "{{ 'hold' if docker_prevent_upgrade else 'install' }}"
+  loop:
+    - docker.io
+    - containerd
 
 
 - import_tasks: cleanup.yml

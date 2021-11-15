@@ -1,1 +1,2 @@
 docker_periodic_cleanup: True
+docker_prevent_upgrade: False

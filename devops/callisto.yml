@@ -133,6 +133,7 @@
     - role: icos.docker
       tags: docker
       docker_periodic_cleanup: true
+      docker_prevent_upgrade: true
 
     - role: icos.superuser
       tags: users
