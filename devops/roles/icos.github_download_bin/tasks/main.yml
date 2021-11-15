@@ -1,17 +1,36 @@
-- include_vars: "{{ ansible_machine }}.yml"
+- include_tasks: setup.yml
+  when: not _download_bin_setup | default(False)
 
-# Required by the github_releases module.
-- name: pip install github3
-  pip:
-    name: github3.py
-    state: present
+- name: Retrieving latest tag for {{ dbin_repo }}
+  github_release:
+    user: "{{ dbin_user }}"
+    repo: "{{ dbin_repo }}"
+    action: latest_release
+  register: _release
 
-- name: Create downloads directory
+- name: Download {{ dbin_repo }}
+  get_url:
+    url: "{{ _dbin_url }}"
+    dest: "{{ dbin_download_dir }}"
+  register: _down
+
+- name: Unarchive {{ _dbin_name }} tarball
+  unarchive:
+    src: "{{ _down.dest }}"
+    dest: "{{ dbin_download_dir }}"
+    remote_src: true
+    list_files: true
+  register: _unar
+  when: _dbin_unar
+
+- name: Create symlink for {{ _dbin_name }} in {{ dbin_bin_dir }}
   file:
-    path: "{{ dbin_download_dir }}"
-    state: directory
+    dest: "{{ dbin_bin_dir }}/{{ _dbin_name }}"
+    src: "{{ _dbin_src }}"
+    state: link
+    force: '{{ download_force_symlink | default(False) | bool() }}'
 
-- include_tasks: single.yml
-  loop: "{{ dbin_list }}"
-  loop_control:
-    loop_var: dbin
+- name: Make sure {{ _dbin_src }} is executable
+  file:
+    path: "{{ _dbin_src }}"
+    mode: +x

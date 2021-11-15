@@ -44,17 +44,11 @@
     src: Makefile
     dest: /docker/Makefile
 
-- name: Download ctop binary
-  get_url:
-    url: "https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64"
-    dest: "/usr/local/sbin/ctop"
-    checksum: "sha256:e2949316cdfe360374b76d45ea512f603b42c0db693a70a6a4c11624aa200b8c"
-    mode: +x
 
-- name: Install dive
-  apt:
-    deb: https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb
 
 - import_tasks: cleanup.yml
   tags: docker_cleanup
   when: docker_periodic_cleanup
+
+- import_tasks: utils.yml
+  tags: docker_utils

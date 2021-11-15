@@ -1,7 +1,28 @@
+# DEFAULTS - these control all downloads
 dbin_download_dir: /opt/downloads
-dbin_bin_dir: /usr/local/sbin/
+dbin_bin_dir: /usr/local/sbin
+dbin_default_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}-{{ dbin__vers }}.{{ dbin__plat }}.tar.gz"
 
-dbin_name: "{{ dbin.path | basename }}"
 
+# USED BY TASKS - BASE ON PARAMS
 # Example: https://github.com/prometheus/prometheus/releases/download/v2.30.3/prometheus-2.30.3.linux-amd64.tar.gz
-dbin_url: "https://github.com/{{ dbin.user }}/{{ dbin.repo }}/releases/download/{{ _release.tag }}/{{ dbin.repo }}-{{ _release.tag.lstrip('v') }}.linux-{{ dbin_arch }}.tar.gz"
+_dbin_url: "{{ dbin_url | default(dbin_default_url) }}"
+_dbin_unar: "{{ dbin_unar | default(True) }}"
+_dbin_path: "{{ dbin_path | default(dbin_repo) }}"
+_dbin_name: "{{ _dbin_path | basename }}"
+
+_dbin_src: |-
+  {% if dbin_src is defined -%}
+  {{ dbin_download_dir }}/{{ dbin_src -}}
+  {% elif _dbin_unar -%}
+  {{ dbin_download_dir }}/{{ _unar.files[0].rstrip('/') }}/{{ _dbin_name -}}
+  {%- else %}
+  {{- _down.dest }}
+  {%- endif %}
+
+
+# PROVIDED FOR USE IN CUSTOM URL
+# These can be used by caller to construct download url.
+dbin__down: "https://github.com/{{ dbin_user }}/{{ dbin_repo }}/releases/download"
+dbin__vers: "{{ _release.tag.lstrip('v') }}"
+dbin__plat: "linux-{{ dbin_arch }}"
