@@ -8,7 +8,7 @@
 # though it works very well - rspamd is written in C and it segfaults every now
 # and then.
 
-- hosts: rspamd_host
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars:
     rspamd_domain: rspamd.icos-cp.eu

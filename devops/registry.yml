@@ -1,4 +1,4 @@
-- hosts: registry_host
+- hosts: fsicos3.lunarc.lu.se
   vars_files:
     - vault.yml
   vars:

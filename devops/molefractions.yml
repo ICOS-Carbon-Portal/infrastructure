@@ -1,4 +1,4 @@
-- hosts: molefractions_host
+- hosts: fsicos3.lunarc.lu.se
   vars_files:
     - vault.yml
   pre_tasks:

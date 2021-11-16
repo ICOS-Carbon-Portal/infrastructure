@@ -1,4 +1,4 @@
-- hosts: wordpress_host
+- hosts: fsicos2.lunarc.lu.se
   vars:
     wordpress_ip: "{{ _lxd.addresses.eth0 | first }}"
     wordpress_domains:

@@ -1,7 +1,7 @@
 # update domains
 #   deploy erddap cert nginx
 
-- hosts: erddap_host
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars:
     certbot_name: erddap

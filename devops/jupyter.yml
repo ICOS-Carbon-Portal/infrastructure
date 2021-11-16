@@ -5,7 +5,7 @@
 #   deploy jupyter jupyter
 
 
-- hosts: jupyter_host
+- hosts: fsicos3.lunarc.lu.se
   vars:
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
     zvol_docker: /dev/zvol/pool/docker/jupyter

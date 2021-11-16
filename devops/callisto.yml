@@ -5,7 +5,7 @@
 #  deploy callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
 #
 # Deploy filedrop website
-#  deploy callisto filedrop -lcallisto_host
+#  deploy callisto filedrop -lfsicos3.lunarc.lu.se
 
 - hosts: fsicos3.lunarc.lu.se
   vars:

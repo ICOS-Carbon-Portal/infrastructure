@@ -1,4 +1,4 @@
-- hosts: amalthea_host
+- hosts: fsicos3.lunarc.lu.se
   vars:
     amalthea_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:

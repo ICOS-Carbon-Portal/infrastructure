@@ -14,7 +14,7 @@
 #   + Setup a systemd service that runs QuinCe using Tomcat.
 #
 # To provision the host and create the quince container:
-#   $ deploy quince -lquince_host
+#   $ deploy quince -lfsicos2.lunarc.lu.se
 #
 # To provision the container
 #   $ deploy quince -lquince
@@ -30,7 +30,7 @@
 
 - import_playbook: setup.yml
 
-- hosts: quince_host
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars:
     quince_host: quince.lxd

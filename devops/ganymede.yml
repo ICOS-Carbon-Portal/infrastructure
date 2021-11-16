@@ -5,7 +5,7 @@
 # Deploy new users, keys, edctl and rsync.
 #   icos ganymede users jbuild_users jbuild_rsync
 
-- hosts: ganymede_host
+- hosts: fsicos3.lunarc.lu.se
   vars:
     # These variable are prefixed with 'jupyter_' instead of 'ganymede_' so
     # that we can reuse files/jupyter.conf without change.

@@ -1,5 +1,5 @@
 # Update nginx config (need lxd_host_create to get lxd_host_ip)
-# $ deploy eddyetc -leddyetc_host lxd_host_create nginx
+# $ deploy eddyetc -lfsicos2.lunarc.lu.se lxd_host_create nginx
 #
 # Build the docker image and deploy the wrapper script:
 #   deploy eddyetc -leddyetc eddyetc
@@ -14,7 +14,7 @@
 #   deploy eddyetc cert auth nginx
 
 
-- hosts: eddyetc_host
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vault.yml

@@ -1,4 +1,4 @@
-- hosts: exploredata_host
+- hosts: fsicos3.lunarc.lu.se
   vars:
     exploredata_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:
