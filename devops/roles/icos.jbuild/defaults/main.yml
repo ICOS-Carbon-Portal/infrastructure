@@ -12,3 +12,5 @@ jbuild_jyctl_host_port: "{{ hostvars[jbuild_jyctl_host].ansible_port }}"
 jbuild_rsync_host_name: "{{ hostvars[jbuild_rsync_host].ansible_host }}"
 jbuild_rsync_host_port: "{{ hostvars[jbuild_rsync_host].ansible_port }}"
 jbuild_rsync_user: project
+
+jbuild_rrsync_bin: /usr/bin/rrsync
