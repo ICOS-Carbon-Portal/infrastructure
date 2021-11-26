@@ -5,7 +5,7 @@
 #   tasks:
 #     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
-- hosts: fsicos2.lunarc.lu.se stiltcluster
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vault.yml
@@ -27,14 +27,14 @@
     - vars.yml
   roles:
     - role: icos.stiltweb
-      tags: stiltweb
+      tags: stiltweb_only
     - role: icos.stiltrun
       tags: stiltrun
     - role: icos.stiltcluster
-      tags: stiltcluster
+      tags: stiltcluster_only
 
 
-- hosts: stiltcluster
+- hosts: fsicos2.lunarc.lu.se
   name: Install stilt on all the backend nodes
   become: true
   vars_files:
@@ -70,20 +70,20 @@
         comment: fsicos1
 
 
-- hosts: fsicos.lunarc.lu.se
-  name: Mount stiltdata from fsicos2
-  become: true
-  tags: stilt_export
-  tasks:
-    - name: Create mountpoint {{ item.path }}
-      file: path="{{ item.path }}" state=directory
-      loop: "{{ stilt_nfs_mounts }}"
+# - hosts: fsicos.lunarc.lu.se
+#   name: Mount stiltdata from fsicos2
+#   become: true
+#   tags: stilt_export
+#   tasks:
+#     - name: Create mountpoint {{ item.path }}
+#       file: path="{{ item.path }}" state=directory
+#       loop: "{{ stilt_nfs_mounts }}"
 
-    - name: Mount "{{ item.path }}" from fsicos2
-      loop: "{{ stilt_nfs_mounts }}"
-      mount:
-        path: "{{ item.path }}"
-        src: "{{ item.src }}"
-        fstype: nfs
-        opts: ro
-        state: mounted
+#     - name: Mount "{{ item.path }}" from fsicos2
+#       loop: "{{ stilt_nfs_mounts }}"
+#       mount:
+#         path: "{{ item.path }}"
+#         src: "{{ item.src }}"
+#         fstype: nfs
+#         opts: ro
+#         state: mounted
