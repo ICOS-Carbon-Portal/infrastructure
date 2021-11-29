@@ -1,3 +1,0 @@
-FROM postgres:{{ nextcloud_postgres_version }}
-
-COPY init.sql /docker-entrypoint-initdb.d/ 

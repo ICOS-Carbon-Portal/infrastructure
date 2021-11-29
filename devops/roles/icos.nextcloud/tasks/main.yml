@@ -1,9 +1,6 @@
 - import_tasks: setup.yml
   tags: nextcloud_setup
 
-- import_tasks: build.yml
-  tags: nextcloud_build
-
 - import_tasks: nginx.yml
   tags: nextcloud_nginx
 

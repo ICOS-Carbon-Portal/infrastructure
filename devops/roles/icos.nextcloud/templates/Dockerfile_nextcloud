@@ -1,1 +1,0 @@
-FROM nextcloud:{{ nextcloud_nextcloud_version }}-fpm

@@ -1,9 +1,9 @@
 # https://hub.docker.com/_/nextcloud/
 # nextcloud_nextcloud_version: 19.0.10
-nextcloud_nextcloud_version: 20.0.9
+nextcloud_nextcloud_version: 21.0.7
 
 # https://hub.docker.com/_/postgres/
-nextcloud_postgres_version: 10.16
+nextcloud_postgres_version: 10.19
 
 nextcloud_port: 9000
 
@@ -16,9 +16,6 @@ certbot_conf_name: nextcloud
 
 nextcloud_volume_nextcloud: "/disk/data/nextcloud"
 nextcloud_volume_postgres: "{{ nextcloud_home }}/volumes/postgres"
-
-nextcloud_build_nextcloud: "{{ nextcloud_home }}/build/nextcloud"
-nextcloud_build_postgres: "{{ nextcloud_home }}/build/postgres"
 
 nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
