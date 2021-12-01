@@ -122,7 +122,7 @@ Restoring from the cluster dump made with `pg_dumpall`:<br>
 meta
 ----
 Deploy rdflog on your development machine. Clone the repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>
-```json
+```
 cpmeta{
 	rdfLog{
 		server.port: 5433
@@ -136,7 +136,7 @@ cpmeta{
 }
 ```
 When starting `meta` for the first time, if you don't have RDF storage folder preserved from another machine/drive, the service will go into a "fresh init" mode of initialization from RDF logs, with no indices created, neither RDF4J nor CP ones. The service will issue a warning. This mode can also be triggered by a local config:
-```json
+```
 cpmeta.rdfStorage.recreateAtStartup = true
 ```
 You'll need to restart the service after the "fresh init". Initialization may take long time (~1 hour)
