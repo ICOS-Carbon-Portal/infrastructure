@@ -1,10 +1,88 @@
-- hosts: fsicos.lunarc.lu.se
-  roles:
-    - role: icos.pgrep,
-      tags: pgrep,
-      arg: "{{ pgrep_rdflog_instance }}"
-
+# FSICOS2 - RDFLOG
 - hosts: fsicos2.lunarc.lu.se
+  tasks:
+    - name: Port forward for rdflog
+      tags: forward
+      iptables_raw:
+        name: forward_rdflog
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp --dport 60002
+          -j DNAT --to-destination 172.20.0.2:5432
+
+
+# FSICOS3 - REPLICA
+- hosts: fsicos3.lunarc.lu.se
+  tags: fsicos3
   roles:
-    - role: icos.rdflog
-      tags: rdflog
+    - role: icos.lxd_vm
+      lxd_vm_name: pgrep-rdflog
+      lxd_vm_docker: true
+      lxd_forward_port: "{{ hostvars['pgrep-rdflog@fsicos3'].ansible_port }}"
+
+
+- hosts: pgrep-rdflog@fsicos3
+  tags: fsicos3
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      name: lxd
+
+    - role: icos.docker
+
+    - role: icos.pgrep
+      tags: rdflog3
+      pgrep_user: rdflog
+      pgrep_arg:
+        suffix: rdflog
+        peer_host: fsicos2.lunarc.lu.se
+        peer_port: 60002
+        peer_user: pgrepuser
+        peer_slot: fsicos3
+        peer_pass: "{{ vault_rdflog_rep_pass }}"
+        peer_cert: roles/icos.rdflog/files/server.crt
+
+
+# CDB - REPLICA
+- hosts: cdb.nateko.lu.se
+  tags: cdb
+  roles:
+    - role: icos.lxd_vm
+      lxd_vm_name: pgrep-rdflog
+      lxd_vm_docker: true
+      lxd_forward_port: "{{ hostvars['pgrep-rdflog@cdb'].ansible_port }}"
+
+- hosts: pgrep-rdflog@cdb
+  tags: cdb
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      name: lxd
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.pgrep
+      tags: pgrep
+      pgrep_user: rdflog
+      pgrep_arg:
+        suffix: rdflog
+        peer_host: fsicos2.lunarc.lu.se
+        peer_port: 60002
+        peer_user: pgrepuser
+        peer_slot: cdb
+        peer_pass: "{{ vault_rdflog_rep_pass }}"
+        peer_cert: roles/icos.rdflog/files/server.crt
+
+  tasks:
+    - name: Add pgrep-rdflog to prometheus
+      tags: prom
+      import_role:
+        name: icos.prometheus
+        tasks_from: fsd
+      vars:
+        fsd_name: "postgres-exporter@pgrep-rdflog@cdb"
+        fsd_app: "rdflog"
+        fsd_url: "/lxd/pgrep-rdflog/{{ pgrep_metric_port }}"
