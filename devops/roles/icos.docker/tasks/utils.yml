@@ -19,3 +19,14 @@
     dbin_repo: dive
     dbin_src: dive
     dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_linux_{{ dbin_arch }}.tar.gz"
+
+- include_role:
+    name: icos.github_download_bin
+    apply:
+      tags:
+        - docker_utils
+  vars:
+    dbin_user: jesseduffield
+    dbin_repo: lazydocker
+    dbin_src: lazydocker
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_Linux_{{ ansible_machine }}.tar.gz"
