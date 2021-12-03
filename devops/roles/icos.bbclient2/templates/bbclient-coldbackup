@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 # 1. Do (dirty) backup while service is running.
 # 2. Shut down service.
 # 3. Do backup again.
@@ -13,7 +13,9 @@
 import sys
 import shlex
 import datetime
-from contextlib import contextmanager
+import click
+
+from contextlib import nullcontext
 from os import access, X_OK, environ, chdir
 from os.path import exists, isdir, getsize
 from subprocess import run, DEVNULL, CalledProcessError, STDOUT
@@ -27,11 +29,6 @@ assert access('{{ bbclient_all }}', X_OK)
 
 
 environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = 'yes'
-
-# Python < 3.7 workaround
-@contextmanager
-def nullcontext(result):
-    yield result
 
 
 def logfile():
@@ -61,8 +58,7 @@ def prune():
     bbclient('prune dirty',
              'prune -P dirty- --verbose --stats --keep-last 1')
 
-
-def backup():
+def backup(down=False):
     if exists('{{ bbclient_patterns }}'):
         patterns = '--patterns-from {{ bbclient_patterns }}'
     else:
@@ -72,24 +68,38 @@ def backup():
         # currently running images. Don't care if it fails.
         run("docker-builds > volumes/build.info", shell=1, stderr=DEVNULL)
 
-        # Dirty means that we'll take a backup while the service is still
-        # running. The idea is that the cold backup will go much faster.
-        bbclient('dirty backup',
-                 'create --verbose --stats "::dirty-{now}" %s' % patterns)
+        # If --down is given, we're running interactively and want to bring the
+        # project down and leave it down.
+        if down:
+            print("bringing project down")
+        else:
+            # Otherwise we're probably running from crontab and proceed as
+            # usual. Dirty means that we'll take a backup while the service is
+            # still running. The idea is that the cold backup will go much
+            # faster.
+            bbclient('dirty backup',
+                     'create --verbose --stats "::dirty-{now}" %s' % patterns)
 
         run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
 
         bbclient('cold backup',
                  'create --verbose --stats "::{now}" %s' % patterns)
     finally:
-        run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
+        if down:
+            print("not bringing project up again")
+        else:
+            run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
 
 
-def main():
+@click.command()
+# This option is useful when doing maintenance and wanting to do a last backup
+# before upgrading the project, then it shouldn't be brought up again.
+@click.option('--down', is_flag=True, help="Leave the application down.")
+def main(down):
     logsize = getsize('backup.log') if exists('backup.log') else 0
 
     try:
-        backup()
+        backup(down)
         prune()
         with logfile() as log:
             print(logfmt('done'), file=log)
@@ -100,4 +110,5 @@ def main():
             f = open('backup.log'); f.seek(logsize); print(f.read())  # noqa
 
 
-main()
+if __name__ == '__main__':
+    main()
