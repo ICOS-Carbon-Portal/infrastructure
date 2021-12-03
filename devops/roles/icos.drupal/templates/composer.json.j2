@@ -41,7 +41,8 @@
         {{ '"drupal/toc_js": "^2.0", "toc/toc": "*",'   if "toc_js" in drupal_modules }}
         {{ '"drupal/token": "^1.7",'                    if "token" in drupal_modules }}
         {{ '"drupal/webform": "^6.0",'                  if "webform" in drupal_modules }}
-        "drush/drush": "^10.4"
+        "drush/drush": "^10.4",
+        "wikimedia/composer-merge-plugin": "^2.0"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -56,6 +57,11 @@
             "locations": {
                 "web-root": "web/"
             }
+        },
+        "merge-plugin": {
+            "include": [
+                "web/modules/contrib/webform/composer.libraries.json"
+            ]
         },
         "installer-paths": {
             "web/core": [
