@@ -1,0 +1,34 @@
+- name: Create storage pool
+  tags: pool
+  shell: >-
+    /snap/bin/lxc storage show {{ lxd_vm_name }} > /dev/null 2>&1 ||
+    /snap/bin/lxc storage create {{ lxd_vm_name }} btrfs size={{ lxd_vm_pool_size }}
+  register: _r
+  changed_when:
+    - '("Storage pool %s created" % lxd_vm_name) in _r.stdout'
+
+- name: Create the container
+  lxd_container:
+    name: "{{ lxd_vm_name }}"
+    state: started
+    config:
+      security.nesting: "{{ lxd_vm_docker | string }}"
+    profiles:
+      - default
+      - ssh_root
+    source:
+      type: image
+      mode: pull
+      server: https://cloud-images.ubuntu.com/releases
+      protocol: simplestreams
+      alias: "20.04"
+    devices:
+      root:
+        path: /
+        type: disk
+        pool: "{{ lxd_vm_name }}"
+        size: "{{ lxd_vm_pool_size }}"
+    wait_for_ipv4_addresses: true
+    wait_for_ipv4_interfaces: eth0
+    timeout: 600
+  register: _lxd

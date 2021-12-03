@@ -1,0 +1,12 @@
+- include_tasks: cdb.yml
+  when: ansible_host == 'cdb.nateko.lu.se'
+
+- include_tasks: fsicos3.yml
+  when: ansible_host == 'fsicos3.lunarc.lu.se'
+
+- name: Forward ssh port and create /etc/hosts entry
+  import_role:
+    name: icos.lxd_forward
+  vars:
+    lxd_forward_name: "{{ lxd_vm_name }}"
+    lxd_forward_ip: "{{ lxd_vm_ip }}"

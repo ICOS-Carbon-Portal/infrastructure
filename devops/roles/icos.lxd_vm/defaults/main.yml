@@ -1,0 +1,6 @@
+lxd_vm_ip: "{{ _lxd.addresses.eth0 | first }}"
+lxd_vm_ssh_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
+
+# When a separate btrfs pool is used, this is the default size.
+lxd_vm_pool_size: 50GB
+lxd_vm_docker: False
