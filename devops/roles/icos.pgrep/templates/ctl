@@ -25,7 +25,7 @@ case "${1:-}" in
     "status")
 	if ! is_running; then abort "postgres is not running, try './ctl up'"
 	elif not_connected_to_peer; then abort "postgres is up but not connected to its peer"
-	else ./psql -q < .status.sql; fi
+	else ./psql -q < status.sql; fi
 	;;
     *)
 	abort "unknown subcommand - try 'help'"

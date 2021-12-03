@@ -1,9 +1,42 @@
-version: '3.5'
+version: '3.8'
 
 services:
   db:
     restart: unless-stopped
-    build: build
+    image: {{ pgrep_image }}
     volumes:
       - ./volumes/data:/var/lib/postgresql/data:rw
+      - ./pgpass:/var/lib/postgresql/.pgpass:rw
+      - ./peer.crt:/var/lib/postgresql/.postgresql/root.crt:rw
+      - ./entrypoint.sh:/entrypoint.sh:ro
       - /etc/localtime:/etc/localtime:ro
+    # The entrypoint will do initial replication (basebackup) and then hand
+    # over to postgres.
+    entrypoint:
+      - /entrypoint.sh
+    # Start of as root, then the entrypoint will switch to postgres.
+    user: root
+    environment:
+      CONNINFO: "{{ pgrep_conninfo }}"
+      SLOTNAME: "{{ pgrep_peer_slot }}"
+
+  prom:
+    depends_on:
+      - db
+    # This will expose the metrics port directly on the host. However, we rely
+    # on the "host" being an LXD VM! Then an nginx reverse-proxy will connect
+    # to this port.
+    ports:
+      - "{{ pgrep_metric_port }}:{{ pgrep_metric_port }}"
+    restart: unless-stopped
+    image: quay.io/prometheuscommunity/postgres-exporter
+    volumes:
+      # Extra queries that the prometheus exporter will execute and include as
+      # metrics.
+      - ./queries.yml:/queries.yml:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      # Since we're a replica, the only users we have are those that exist in
+      # master. Thus we use the pgrepuser for the prometheus exporter as well.
+      DATA_SOURCE_NAME: "postgresql://{{ pgrep_peer_user }}:{{ pgrep_peer_pass }}@db/postgres?sslmode=disable"
+      PG_EXPORTER_EXTEND_QUERY_PATH: /queries.yml

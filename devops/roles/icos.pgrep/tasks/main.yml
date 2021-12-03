@@ -1,2 +1,33 @@
-- import_tasks: pgrep.yml
-  tags: [pgrep_only]
+- name: Create pgrep directories
+  file:
+    path: "{{ pgrep_home }}/volumes"
+    state: directory
+    mode: "0700"
+
+- name: Install peer certificate
+  copy:
+    src: "{{ pgrep_peer_cert }}"
+    dest: "{{ pgrep_home }}/peer.crt"
+
+- name: Install runtime files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ pgrep_home }}"
+    mode: "{{ item.mode | default(omit) }}"
+  loop:
+    - src: docker-compose.yml
+    - src: pgpass
+    - src: status.sql
+    - src: queries.yml
+    - src: entrypoint.sh
+      mode: +x
+    - src: psql
+      mode: +x
+    - src: psql-peer
+      mode: +x
+    - src: ctl
+      mode: +x
+
+- name: Start containers
+  docker_compose:
+    project_src: "{{ pgrep_home }}"
