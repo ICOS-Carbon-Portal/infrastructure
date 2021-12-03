@@ -39,11 +39,6 @@
     path: /docker
     state: directory
 
-- name: Copy Makefile for docker-compose projects
-  copy:
-    src: Makefile
-    dest: /docker/Makefile
-
 # Upgrading docker will restart containerd. Restarting containerd, even with
 # live-restore enabled, will mess up networking for some applications - notably
 # jupyterhub.
@@ -54,7 +49,6 @@
   loop:
     - docker.io
     - containerd
-
 
 - import_tasks: cleanup.yml
   tags: docker_cleanup
