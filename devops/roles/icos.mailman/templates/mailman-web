@@ -1,0 +1,2 @@
+#!/bin/bash
+exec docker-compose --project-directory {{ mailman_home }} exec -u mailman mailman-web python3 manage.py "$@"

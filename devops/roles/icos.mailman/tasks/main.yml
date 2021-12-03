@@ -12,17 +12,15 @@
     - dest: "{{ mailman_volume_web }}"
       src: settings_local.py
 
-- name: Generate passwords
-  include_role:
-    name: icos.password_env_file
-  vars:
-      file: "{{ item.file }}"
-      set_fact: "{{ item.set_fact }}"
-      file_var: "{{ item.file_var }}"
+- name: Install cli wrappers
+  template:
+    dest: /usr/local/sbin
+    src: "{{ item }}"
+    mode: +x
   loop:
-    - file: "{{ mailman_home }}/.rest-pass"
-      set_fact: mailman_rest_pass
-      file_var: MAILMAN_REST_PASS
+    - mailman
+    - mailman-web
+    - mailman-psql
 
 - name: Install Makefile
   blockinfile:

@@ -9,13 +9,12 @@
 
 - hosts: fsicos2.lunarc.lu.se
   become: true
-  vars:
-    mailman_username: mailman
   vars_files:
     - vault.yml
   roles:
     - role: icos.mailman
       tags: mailman
+      mailman_rest_pass: "{{ vault_mailman_rest_pass }}"
       mailman_rest_allow_deny: "{{ vault_mailman_rest_allow_deny }}"
       mailman_domains:
         - 'lists.icos-ri.eu'
