@@ -1,18 +1,17 @@
 - name: Check that the metrics endpoint responds
   delegate_to: "{{ fsd_prom_host }}"
   uri:
-    url: "{{ fsd_url }}"
+    url: "https://{{ fsd_host }}{{ fsd_url }}"
   retries: 10
-  delay: 6
 
 - name: Install prometheus config
   delegate_to: "{{ fsd_prom_host }}"
   copy:
-    dest: "{{ fsd_prom_path }}/{{ fsd_server }}-{{ fsd_app }}.yml"
+    dest: "{{ fsd_prom_path }}/{{ fsd_name }}.yml"
     content: |
       - targets:
           - {{ fsd_host }}
         labels:
-          __metrics_path__: "{{ fsd_metrics_path }}"
+          __metrics_path__: "{{ fsd_url }}"
           app: {{ fsd_app }}
           server: {{ fsd_server }}

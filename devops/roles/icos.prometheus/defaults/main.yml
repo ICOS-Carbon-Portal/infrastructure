@@ -34,14 +34,8 @@ fsd_prom_host: prometheus
 # The directory that prometheus monitors for changes and new files.
 fsd_prom_path: "{{ prometheus_home }}/volumes/prometheus_conf/ansible"
 
-# The __metrics_path__ label used to scrape the target.
-fsd_metrics_path: "/host/{{ fsd_port }}/metrics"
-
 # The host from which metrics is to be retrieved
-fsd_host: "{{ inventory_hostname }}"
-
-# The complete url used by ansible to check for metrics.
-fsd_url: "https://{{ fsd_host }}{{ fsd_metrics_path }}"
+fsd_host: "{{ ansible_host }}"
 
 # The prometheus label 'server'. By default derived from the complete hostname.
 fsd_server: "{{ fsd_host.split('.')[0] }}"
