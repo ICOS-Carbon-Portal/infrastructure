@@ -7,7 +7,9 @@
     password: "{{ postgresql_postgres_password }}"
     login_unix_socket: /var/run/postgresql
   when:
-    - postgresql_postgres_password != ""
+    - postgresql_postgres_password
+
+- debug: var=postgresql_listen_addresses
 
 - name: Change with addresses postgresql listens to
   copy:
@@ -16,7 +18,7 @@
       listen_addresses = {{ postgresql_listen_addresses }}
   notify: restart postgresql
   when:
-    - postgresql_listen_addresses != ""
+    - postgresql_listen_addresses
 
 - name: Install public keys for postgres user
   tags: keys
