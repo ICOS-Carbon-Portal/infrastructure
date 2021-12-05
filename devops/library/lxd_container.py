@@ -742,15 +742,6 @@ def main():
         supports_check_mode=False,
     )
 
-    if module.params['ignore_volatile_options'] is None:
-        module.params['ignore_volatile_options'] = True
-        module.deprecate(
-            'If the keyword "volatile" is used in a playbook in the config'
-            'section, a "changed" message will appear with every run, even without a change'
-            'to the playbook.'
-            'This will change in the future. Please test your scripts'
-            'by "ignore_volatile_options: false". To keep the old behavior, set that option explicitly to "true"',
-            version='6.0.0', collection_name='community.general')
     lxd_manage = LXDContainerManagement(module=module)
     lxd_manage.run()
 

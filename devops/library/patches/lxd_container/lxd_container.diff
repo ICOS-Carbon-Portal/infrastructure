@@ -1,5 +1,5 @@
 --- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2021-11-30 17:43:01.913400411 +0100
-+++ ../../lxd_container.py	2021-12-05 10:12:57.806486015 +0100
++++ ../../lxd_container.py	2021-12-05 10:24:47.813167146 +0100
 @@ -115,6 +115,15 @@
          required: false
          default: false
@@ -43,3 +43,19 @@
              force_stop=dict(
                  type='bool',
                  default=False
+@@ -727,15 +742,6 @@
+         supports_check_mode=False,
+     )
+ 
+-    if module.params['ignore_volatile_options'] is None:
+-        module.params['ignore_volatile_options'] = True
+-        module.deprecate(
+-            'If the keyword "volatile" is used in a playbook in the config'
+-            'section, a "changed" message will appear with every run, even without a change'
+-            'to the playbook.'
+-            'This will change in the future. Please test your scripts'
+-            'by "ignore_volatile_options: false". To keep the old behavior, set that option explicitly to "true"',
+-            version='6.0.0', collection_name='community.general')
+     lxd_manage = LXDContainerManagement(module=module)
+     lxd_manage.run()
+ 
