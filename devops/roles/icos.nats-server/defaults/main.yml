@@ -1,5 +1,6 @@
 nats_arch: amd64
 
+
 nats_user: nats
 nats_name: nats
 nats_port: 4222
@@ -9,8 +10,8 @@ nats_server_path: /usr/local/bin/nats-server
 nats_certbot_hooks: "/etc/letsencrypt/renewal-hooks/deploy/"
 nats_server_config: ""
 
-nats_server_ver: 2.6.1
-nats_cli_ver: 0.0.26
+nats_server_ver: 2.6.6
+nats_cli_ver: 0.0.28
 nats_top_ver: 0.4.0
 
 
