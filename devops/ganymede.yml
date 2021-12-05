@@ -45,7 +45,7 @@
             path: "/"
             pool: "default"
             type: "disk"
-            size: "50GB"
+            size: "500GB"
           docker:
             path: /var/lib/docker
             source: "{{ zfsdocker_zvol }}"
