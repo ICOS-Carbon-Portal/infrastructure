@@ -23,14 +23,14 @@ options:
         required: true
     architecture:
         description:
-          - The architecture for the container (e.g. "x86_64" or "i686").
-            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)
+          - 'The architecture for the container (for example C(x86_64) or C(i686)).
+            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1).'
         type: str
         required: false
     config:
         description:
-          - 'The config for the container (e.g. {"limits.cpu": "2"}).
-            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)'
+          - 'The config for the container (for example C({"limits.cpu": "2"})).
+            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1).'
           - If the container already exists and its "config" values in metadata
             obtained from GET /1.0/containers/<name>
             U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#10containersname)
@@ -43,28 +43,27 @@ options:
           - If set to C(true), options starting with C(volatile.) are ignored. As a result,
             they are reapplied for each execution.
           - This default behavior can be changed by setting this option to C(false).
-          - The default value C(true) will be deprecated in community.general 4.0.0,
-            and will change to C(false) in community.general 5.0.0.
+          - The current default value C(true) is deprecated since community.general 4.0.0,
+            and will change to C(false) in community.general 6.0.0.
         type: bool
-        default: true
         required: false
         version_added: 3.7.0
     profiles:
         description:
-          - Profile to be used by the container
+          - Profile to be used by the container.
         type: list
         elements: str
     devices:
         description:
           - 'The devices for the container
-            (e.g. { "rootfs": { "path": "/dev/kvm", "type": "unix-char" }).
-            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)'
+            (for example C({ "rootfs": { "path": "/dev/kvm", "type": "unix-char" }})).
+            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1).'
         type: dict
         required: false
     ephemeral:
         description:
-          - Whether or not the container is ephemeral (e.g. true or false).
-            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1)
+          - Whether or not the container is ephemeral (for example C(true) or C(false)).
+            See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1).
         required: false
         type: bool
     source:
@@ -76,7 +75,7 @@ options:
                     "protocol": "lxd",
                     "alias": "ubuntu/xenial/amd64" }).'
           - 'See U(https://github.com/lxc/lxd/blob/master/doc/rest-api.md#post-1) for complete API documentation.'
-          - 'Note that C(protocol) accepts two choices: C(lxd) or C(simplestreams)'
+          - 'Note that C(protocol) accepts two choices: C(lxd) or C(simplestreams).'
         required: false
         type: dict
     state:
@@ -161,10 +160,10 @@ options:
     trust_password:
         description:
           - The client trusted password.
-          - You need to set this password on the LXD server before
-            running this module using the following command.
-            lxc config set core.trust_password <some random password>
-            See U(https://www.stgraber.org/2016/04/18/lxd-api-direct-interaction/)
+          - 'You need to set this password on the LXD server before
+            running this module using the following command:
+            C(lxc config set core.trust_password <some random password>).
+            See U(https://www.stgraber.org/2016/04/18/lxd-api-direct-interaction/).'
           - If trust_password is set, this module send a request for
             authentication before sending any requests.
         required: false
@@ -686,7 +685,6 @@ def main():
             ),
             ignore_volatile_options=dict(
                 type='bool',
-                default=True
             ),
             devices=dict(
                 type='dict',
@@ -743,13 +741,16 @@ def main():
         ),
         supports_check_mode=False,
     )
-    # if module.params['ignore_volatile_options'] is None:
-    #     module.params['ignore_volatile_options'] = True
-    #     module.deprecate(
-    #         'If the keyword "volatile" is used in a playbook in the config section, a
-    #         "changed" message will appear with every run, even without a change to the playbook.
-    #         This will change in the future.
-    #         Please test your scripts by "ignore_volatile_options: false"', version='5.0.0', collection_name='community.general')
+
+    if module.params['ignore_volatile_options'] is None:
+        module.params['ignore_volatile_options'] = True
+        module.deprecate(
+            'If the keyword "volatile" is used in a playbook in the config'
+            'section, a "changed" message will appear with every run, even without a change'
+            'to the playbook.'
+            'This will change in the future. Please test your scripts'
+            'by "ignore_volatile_options: false". To keep the old behavior, set that option explicitly to "true"',
+            version='6.0.0', collection_name='community.general')
     lxd_manage = LXDContainerManagement(module=module)
     lxd_manage.run()
 
