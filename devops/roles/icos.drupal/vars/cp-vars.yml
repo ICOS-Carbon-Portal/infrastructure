@@ -17,6 +17,7 @@ drupal_modules: [
   pathauto,
   readonlymode,
   redirect,
+  scheduler,
   smtp,
   toc_js,
   token,
