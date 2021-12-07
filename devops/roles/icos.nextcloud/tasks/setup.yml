@@ -34,6 +34,12 @@
     - name: init.sql
     - name: docker-compose.yml
 
+- name: Create /usr/local/sbin/occ symlink
+  file:
+    dest: "/usr/local/sbin/occ"
+    src: "{{ nextcloud_home }}/occ"
+    state: link
+
 - name: Check docker-compose config
   command: docker-compose config
   args:
