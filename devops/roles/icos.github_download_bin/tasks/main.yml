@@ -20,6 +20,8 @@
     dest: "{{ dbin_download_dir }}"
     remote_src: true
     list_files: true
+    extra_opts:
+      - --no-same-owner
   register: _unar
   when: _dbin_unar
 
