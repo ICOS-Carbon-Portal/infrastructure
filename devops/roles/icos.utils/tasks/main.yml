@@ -47,6 +47,16 @@
     dest: /usr/local/bin/broot
     mode: +x
 
+- tags: utils_jc
+  import_role:
+    name: icos.github_download_bin
+  vars:
+    dbin_user: kellyjonbrazil
+    dbin_repo: jc
+    dbin_src: jc
+    dbin_unar: true
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/jc-{{ dbin__vers }}-linux-{{ ansible_machine }}.tar.gz"
+
 # - name: Install broot shell function
 #   command: /usr/local/bin/broot --install
 #   args:
