@@ -1,4 +1,6 @@
 - hosts: fsicos2.lunarc.lu.se
+  vars_files:
+    - vault.yml
   tasks:
     - import_role:
         name: icos.nexus

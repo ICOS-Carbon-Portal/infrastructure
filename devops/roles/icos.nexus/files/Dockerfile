@@ -1,7 +1,7 @@
 # Default version, docker-compose.yml will specify specific version.
-ARG VERSION=2.14.13-01
+ARG VERSION=
 
-FROM sonatype/nexus:$VERSION
+FROM
 
 # These are the default uid/gid of the user, as created by the base nexus image.
 # docker-compose will specify the host-specific uid/gid.

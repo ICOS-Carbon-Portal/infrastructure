@@ -1,0 +1,13 @@
+- name: Create nexus home directory
+  file:
+    path: "{{ nexus_home }}"
+    state: directory
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ nexus_home }}"
+
+- name: Start containers
+  docker_compose:
+    project_src: "{{ nexus_home }}"
