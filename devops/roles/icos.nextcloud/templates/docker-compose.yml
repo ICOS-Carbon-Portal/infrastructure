@@ -11,6 +11,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - {{ nextcloud_home }}/tweak.conf:/usr/local/etc/php-fpm.d/zzz-tweak.conf
       - {{ nextcloud_volume_nextcloud }}:/var/www/html
+      {% for extra in nextcloud_volumes -%}
+      - {{ extra }}
+      {% endfor %}
+
     restart: unless-stopped
     env_file:
       - nextcloud.env

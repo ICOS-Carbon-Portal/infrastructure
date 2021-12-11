@@ -1,5 +1,4 @@
 # https://hub.docker.com/_/nextcloud/
-# nextcloud_nextcloud_version: 19.0.10
 nextcloud_nextcloud_version: 21.0.7
 
 # https://hub.docker.com/_/postgres/
@@ -31,3 +30,5 @@ nextcloud_exporter_user: nextcloud-exporter
 
 # The external port that'll forward traffic to/from the exporter container.
 nextcloud_exporter_port: 9205
+
+nextcloud_volumes: []
