@@ -8,32 +8,6 @@
 #   deploy icosdata -lfsicos2* bind
 
 
-
-# FSICOS1
-
-- hosts: fsicos.lunarc.lu.se
-  handlers:
-    - name: Reload NFS server
-      service:
-        name: nfs-server
-        state: reloaded
-  tasks:
-    - name: Create /etc/exports.d directory
-      tags: exports
-      file:
-        path: "/etc/exports.d"
-        state: directory
-
-    - name: Add icosdata exports
-      tags: exports
-      copy:
-        dest: /etc/exports.d/icosdata.exports
-        content: |
-          /disk/data/flexpart		      fsicos*.lunarc.lu.se(ro)
-      notify: Reload NFS server
-
-
-
 # FSICOS2
 
 - hosts: fsicos2.lunarc.lu.se
