@@ -78,12 +78,12 @@ def backup(down=False):
             # still running. The idea is that the cold backup will go much
             # faster.
             bbclient('dirty backup',
-                     'create --verbose --stats "::dirty-{now}" %s' % patterns)
+                     'create -x -v --stats "::dirty-{now}" %s' % patterns)
 
         run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
 
         bbclient('cold backup',
-                 'create --verbose --stats "::{now}" %s' % patterns)
+                 'create -x -v --stats "::{now}" %s' % patterns)
     finally:
         if down:
             print("not bringing project up again")
