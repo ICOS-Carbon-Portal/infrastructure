@@ -4,6 +4,7 @@
   notify: restart crond
 
 - import_role: name=icos.utils
+  tags: utils
 
 - import_role: name=icos.python3
 
