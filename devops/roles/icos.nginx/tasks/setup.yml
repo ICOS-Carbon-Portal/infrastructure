@@ -1,0 +1,58 @@
+- name: Install nginx and pip
+  apt:
+    name:
+      - nginx
+      - python3-pip
+      - python3-cryptography
+
+- name: Add mitigation for systemd/nginx race-condition
+  block:
+    - name: Create systemd override directory for nginx
+      file:
+        path: /etc/systemd/system/nginx.service.d
+        state: directory
+    - name: Add nginx override file
+      copy:
+        content: |
+          # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864
+          [Service]
+          ExecStartPost=/bin/sleep 0.1
+        dest: /etc/systemd/system/nginx.service.d/override.conf
+      notify: reload systemd config
+  when: nginx_enable_1581864
+
+- name: Install nginx.conf
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    backup: yes
+  tags: nginx_conf
+  notify: reload nginx config
+
+- name: Create /etc/nginx/vhost.conf
+  copy:
+    dest: /etc/nginx/vhost.conf
+    content: "{{ nginx_vhost_content }}"
+  notify: reload nginx config
+
+- name: Create dhparams.pem
+  community.crypto.openssl_dhparam:
+    path: "{{ nginx_dhparam_path }}"
+    backup: true
+    force: no
+  notify: reload nginx config
+
+- name: Allow nginx through firewall
+  iptables_raw:
+    name: allow_nginx
+    rules: |
+      -A INPUT -p tcp --dport 80 -j ACCEPT -m comment --comment 'nginx'
+      -A INPUT -p tcp --dport 443 -j ACCEPT -m comment --comment 'nginx'
+
+- name: Start nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true

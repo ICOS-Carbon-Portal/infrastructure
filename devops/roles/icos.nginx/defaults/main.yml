@@ -6,3 +6,5 @@ nginx_certbot_bin: /usr/local/bin/certbot
 nginx_enable_1581864: "{{ ansible_distribution_major_version | int < 20 }}"
 
 nginx_dhparam_path: /etc/nginx/ssl/dhparams.pem
+
+nginx_vhost_content: ""
