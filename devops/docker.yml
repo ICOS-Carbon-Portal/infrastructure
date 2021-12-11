@@ -1,0 +1,4 @@
+- hosts: ganymede jupyter flexpart callisto exploredata
+  roles:
+    - role: icos.docker
+      tags: docker
