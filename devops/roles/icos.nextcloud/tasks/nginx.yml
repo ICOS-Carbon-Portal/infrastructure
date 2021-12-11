@@ -6,14 +6,14 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   loop:
-    - src: nextcloud.conf
+    - src: nextcloud-nginx.conf
       dest: /etc/nginx/sites-available/
 
     - src: nextcloud-nextcloud.inc
-      dest: /etc/nginx/conf.d/
+      dest: /etc/nginx/conf.d
 
-    - src: nextcloud-maintenance.conf
-      dest: /etc/nginx/conf.d/
+    - src: nextcloud-maintenance.inc
+      dest: /etc/nginx/conf.d
   notify: reload nginx config
 
 
