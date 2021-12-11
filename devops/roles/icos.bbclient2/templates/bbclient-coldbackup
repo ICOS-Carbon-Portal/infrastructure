@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.8
 # 1. Do (dirty) backup while service is running.
 # 2. Shut down service.
 # 3. Do backup again.
