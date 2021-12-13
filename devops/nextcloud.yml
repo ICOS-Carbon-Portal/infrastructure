@@ -17,6 +17,8 @@
       nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"
       nextcloud_domain: fileshare.icos-cp.eu
       nextcloud_exporter_pass: "{{ vault_nextcloud_exporter_pass }}"
+      nextcloud_volumes:
+        - /share/with_nextcloud:/share
 
     - role: icos.onlyoffice
       tags: onlyoffice
