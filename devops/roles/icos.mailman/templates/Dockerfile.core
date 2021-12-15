@@ -1,0 +1,4 @@
+FROM maxking/mailman-core:{{ mailman_version }}
+
+# https://github.com/maxking/docker-mailman/issues/527
+RUN python3 -m pip install mailman-hyperkitty==1.2.0

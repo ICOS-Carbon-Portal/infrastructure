@@ -1,3 +1,8 @@
+- name: Create directories
+  file:
+    path: "{{ mailman_home }}/build/mailman-core"
+    state: directory
+
 - name: Install configuration
   template:
     dest: "{{ item.dest }}"
@@ -11,6 +16,12 @@
       src: mailman-extra.cfg
     - dest: "{{ mailman_volume_web }}"
       src: settings_local.py
+  register: _config
+
+- name: Copy Dockerfile.core
+  template:
+    src: Dockerfile.core
+    dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
 
 - name: Install cli wrappers
   template:
@@ -32,6 +43,7 @@
 - name: Start containers
   docker_compose:
     project_src: "{{ mailman_home }}"
+    restarted: "{{ _config.changed }}"
 
 - name: Test the REST API
   uri:

@@ -1,6 +1,9 @@
 mailman_user: mailman
 mailman_home: /docker/mailman
 
+# https://registry.hub.docker.com/r/maxking/mailman-core/tags
+mailman_version: 0.4.2
+
 mailman_serve_from_domain: "{{ mailman_domains | mandatory | first}}"
 
 mailman_postgres_password: "{{ vault_mailman_postgres_password }}"
