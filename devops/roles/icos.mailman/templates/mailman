@@ -1,2 +1,2 @@
 #!/bin/bash
-exec docker-compose --project-directory {{ mailman_home }} exec -u mailman mailman-core mailman "$@"
+exec docker-compose -f {{ mailman_home }}/docker-compose.yml exec -u mailman mailman-core mailman "$@"
