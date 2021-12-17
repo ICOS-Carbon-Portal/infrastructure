@@ -15,7 +15,7 @@
     name: moreutils  # sponge(1)
 
 - name: Install node_exporter
-  import_role:
+  include_role:
     name: icos.github_download_bin
   vars:
     dbin_download_dir: "{{ node_exporter_download }}"

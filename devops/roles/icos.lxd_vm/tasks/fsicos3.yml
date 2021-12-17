@@ -1,6 +1,6 @@
 - name: Create storage for docker
   when: lxd_vm_docker
-  import_role:
+  include_role:
     name: icos.zfsdocker
   vars:
     zfsdocker_name: "{{ lxd_vm_name }}"
@@ -47,7 +47,7 @@
 - set_fact: |
     {{ lxd_vm_name | replace('-', '_') }}_ip={{ _lxd.addresses.eth0 | first }}
 
-- import_role:
+- include_role:
     name: icos.lxd_forward
   vars:
     lxd_forward_name: "{{ lxd_vm_name }}"

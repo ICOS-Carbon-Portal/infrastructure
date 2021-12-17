@@ -42,7 +42,7 @@ The official postgresql package repos packages PostGIS as well, set
 
 Extra ssh keys can be installed for the postgres user.
 
-    - import_role: name=icos.postgresql
+    - include_role: name=icos.postgresql
       tags: postgresql
       vars:
         postgresql_ssh_keys: "{{ vault_postgis_extra_keys }}"
@@ -53,7 +53,7 @@ Extra ssh keys can be installed for the postgres user.
 
 The following will install the pg_stat_statements extension and _restart_ postgres. 
 
-    - import_role: name=icos.postgresql
+    - include_role: name=icos.postgresql
       vars:
         postgresql_pg_stat_enable: true
 
@@ -73,7 +73,7 @@ The role will install the latest version of postgresql that has been tested by
 us. To lock the role to a specific version, do like this:
 
 
-    - import_role: name=icos.postgresql
+    - include_role: name=icos.postgresql
       tags: postgresql
       vars:
         # Lock the version in case the role gets upgraded.

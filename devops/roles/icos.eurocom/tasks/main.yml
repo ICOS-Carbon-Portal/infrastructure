@@ -1,17 +1,14 @@
-- import_role: name=icos.certbot2
-  tags: eurocom_cert
+- include_role: name=icos.certbot2
   vars:
     certbot_domain: "{{ eurocom_domain }}"
 
-- import_role: name=icos.nginxauth
-  tags: eurocom_auth
+- include_role: name=icos.nginxauth
   vars:
     nginxauth_file: "{{ eurocom_auth_file }}"
     nginxauth_users: "{{ eurocom_users }}"
   when: eurocom_users is defined
 
-- import_role: name=icos.nginxsite
-  tags: eurocom_nginx
+- include_role: name=icos.nginxsite
   vars:
     nginxsite_name: eurocom
     nginxsite_file: roles/icos.eurocom/templates/eurocom.conf

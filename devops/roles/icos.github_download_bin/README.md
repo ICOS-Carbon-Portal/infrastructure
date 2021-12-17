@@ -1,7 +1,7 @@
 This role will install commandline tools from github and symlink them into PATH.
 
     - name: Install promtool, amtool and blackbox_exporter
-      import_role:
+      include_role:
         name: icos.github_download_bin
       vars:
         dbin_list:

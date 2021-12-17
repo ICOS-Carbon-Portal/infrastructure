@@ -50,7 +50,7 @@
 
     - name: Forward port
       tags: forward
-      import_role:
+      include_role:
         name: icos.lxd_forward
       vars:
         lxd_forward_name: wordpress
@@ -58,7 +58,7 @@
 
     - name: Create certificate
       tags: cert
-      import_role:
+      include_role:
         name: icos.certbot2
       vars:
         certbot_name: wordpress
@@ -66,7 +66,7 @@
 
     - name: Install nginx configuration
       tags: nginx
-      import_role:
+      include_role:
         name: icos.nginxsite
       vars:
         nginxsite_name: wordpress

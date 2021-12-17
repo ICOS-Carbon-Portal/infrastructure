@@ -1,14 +1,14 @@
 - import_tasks: docker.yml
   tags: onlyoffice_docker
 
-- import_role: name=icos.certbot2
+- include_role: name=icos.certbot2
   tags: onlyoffice_certbot
   vars:
     certbot_name: "{{ onlyoffice_cert_name }}"
     certbot_domains:
       - "{{ onlyoffice_domain }}"
 
-- import_role: name=icos.nginxsite
+- include_role: name=icos.nginxsite
   tags: onlyoffice_nginx
   vars:
     nginxsite_name: "{{ onlyoffice_site_name }}"

@@ -40,7 +40,7 @@
         - home
         - project
 
-    - import_role: name=icos.zfsdocker
+    - include_role: name=icos.zfsdocker
       tags:
         - zfs
         - zfsdocker

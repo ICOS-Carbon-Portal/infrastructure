@@ -1,4 +1,4 @@
-- import_role: name=icos.bbclient2
+- include_role: name=icos.bbclient2
   vars:
     bbclient_user: root
     bbclient_home: "{{ prometheus_home }}/bbclient"
@@ -10,7 +10,7 @@
     name: "prometheus_backup"
     state: absent
 
-- import_role:
+- include_role:
     name: icos.timer
   vars:
     timer_home: "{{ prometheus_home }}/bbclient/backup"

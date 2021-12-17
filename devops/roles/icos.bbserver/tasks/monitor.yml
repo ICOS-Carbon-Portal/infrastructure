@@ -9,7 +9,7 @@
     state: absent
     name: "bbserver_borgmon"
 
-- import_role:
+- include_role:
     name: icos.timer
   vars:
     timer_user: bbserver

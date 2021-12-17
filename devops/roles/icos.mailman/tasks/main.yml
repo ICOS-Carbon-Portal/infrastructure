@@ -65,14 +65,14 @@
     append: "{{ item.append | default(omit) }}"
   loop: "{{ mailman_postfix_config }}"
 
-- import_role:
+- include_role:
     name: icos.certbot2
   vars:
     certbot_domains: "{{ mailman_domains | mandatory }}"
     certbot_name: mailman
   tags: mailman_certbot
 
-- import_role:
+- include_role:
     name: icos.nginxsite
   vars:
     nginxsite_name: mailman

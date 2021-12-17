@@ -51,7 +51,7 @@
 
     - name: Forward ssh port and create /etc/hosts entry
       tags: forward
-      import_role:
+      include_role:
         name: icos.lxd_forward
       vars:
         lxd_forward_name: prometheus
@@ -63,7 +63,7 @@
         tasks_from: cert
 
     - tags: nginx
-      import_role:
+      include_role:
         name: icos.prometheus
         tasks_from: nginx
       vars:

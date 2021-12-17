@@ -8,7 +8,7 @@
       tags:
         - zfs
         - lxd
-      import_role:
+      include_role:
         name: icos.zfsdocker
       vars:
         zfsdocker_name: exploredata
@@ -61,13 +61,13 @@
 
     - name: Forward ssh port and create /etc/hosts entry
       tags: forward
-      import_role:
+      include_role:
         name: icos.lxd_forward
       vars:
         lxd_forward_name: exploredata
         lxd_forward_ip: "{{ exploredata_ip }}"
 
-    - import_role: name=icos.certbot2
+    - include_role: name=icos.certbot2
       tags:
         - cert
       vars:
@@ -78,7 +78,7 @@
 
     - name: Setup exploretest
       tags: nginx
-      import_role:
+      include_role:
         name: icos.nginxsite
       vars:
         nginxsite_name: exploredata-test
@@ -91,7 +91,7 @@
 
     - name: Setup exploredata
       tags: nginx
-      import_role:
+      include_role:
         name: icos.nginxsite
       vars:
         nginxsite_name: exploredata-prod

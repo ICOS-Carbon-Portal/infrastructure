@@ -1,4 +1,4 @@
-- import_role: name=icos.bbclient2
+- include_role: name=icos.bbclient2
   vars:
     bbclient_name: drupal
     bbclient_home: "{{ drupal_home }}/.bbclient"

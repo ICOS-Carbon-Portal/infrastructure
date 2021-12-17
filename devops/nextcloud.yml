@@ -44,7 +44,7 @@
   tasks:
     - name: Add nextcloud to prometheus
       tags: prom
-      import_role:
+      include_role:
         name: icos.prometheus
         tasks_from: fsd
       vars:

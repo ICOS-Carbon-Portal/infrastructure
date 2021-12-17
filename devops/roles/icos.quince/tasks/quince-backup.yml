@@ -1,4 +1,4 @@
-- import_role:
+- include_role:
     name: icos.bbclient2
   become: yes
   become_user: root

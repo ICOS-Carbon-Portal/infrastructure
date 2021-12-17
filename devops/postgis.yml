@@ -47,7 +47,7 @@
         wait_for_ipv4_addresses: true
       register: _lxd
 
-    - import_role: name=icos.lxd_forward
+    - include_role: name=icos.lxd_forward
       tags: forward
       vars:
         lxd_forward_ip: "{{ postgis_ip }}"
@@ -59,10 +59,10 @@
   vars_files:
     - vault.yml
   tasks:
-    - import_role: name=icos.lxd_guest
+    - include_role: name=icos.lxd_guest
       tags: guest
 
-    - import_role: name=icos.postgresql
+    - include_role: name=icos.postgresql
       tags: postgresql
       vars:
         postgresql_postgis_enable: true
@@ -73,7 +73,7 @@
 
     - name: Install backup for postgresql
       tags: backup
-      import_role:
+      include_role:
         name: icos.postgresql
         tasks_from: backup
       vars:

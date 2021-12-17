@@ -15,7 +15,7 @@
   pre_tasks:
     - name: Create storage for docker
       tags: zfs
-      import_role:
+      include_role:
         name: icos.zfsdocker
       vars:
         zfsdocker_name: callisto
@@ -103,7 +103,7 @@
   tasks:
     - name: Proxy filedrop
       tags: filedrop
-      import_role:
+      include_role:
         name: icos.filedrop
         tasks_from: proxy
       vars:
@@ -113,7 +113,7 @@
 
     - name: Proxy jupyter
       tags: jupyter
-      import_role:
+      include_role:
         name: icos.jupyter
         tasks_from: proxy
       vars:

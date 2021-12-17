@@ -79,7 +79,7 @@
   tasks:
     - name: Add pgrep-rdflog to prometheus
       tags: prom
-      import_role:
+      include_role:
         name: icos.prometheus
         tasks_from: fsd
       vars:

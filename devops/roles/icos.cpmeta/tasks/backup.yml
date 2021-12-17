@@ -12,7 +12,7 @@
     minute: "18"
     name: "cpmeta_backup"
 
-- import_role:
+- include_role:
     name: icos.bbclient2
   vars:
     bbclient_user: root

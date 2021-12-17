@@ -8,7 +8,7 @@
       tags:
         - zfs
         - lxd
-      import_role:
+      include_role:
         name: icos.zfsdocker
       vars:
         zfsdocker_name: amalthea

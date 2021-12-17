@@ -2,11 +2,11 @@
   vars_files:
     - vault.yml
   tasks:
-    - import_role:
+    - include_role:
         name: icos.nexus
       tags: nexus
     
-    - import_role:
+    - include_role:
         name: icos.bbclient2
       vars:
         bbclient_name: nexus

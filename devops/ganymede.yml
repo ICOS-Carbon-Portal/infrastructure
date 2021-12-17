@@ -15,7 +15,7 @@
   vars_files:
     - vault.yml
   pre_tasks:
-    - import_role: name=icos.zfsdocker
+    - include_role: name=icos.zfsdocker
       tags:
         - zfs
         - zfsdocker

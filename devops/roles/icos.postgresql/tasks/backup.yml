@@ -1,5 +1,5 @@
 - name: Install bbclient
-  import_role:
+  include_role:
     name: icos.bbclient2
   vars:
     bbclient_name: "{{ postgresql_bbclient_name }}"

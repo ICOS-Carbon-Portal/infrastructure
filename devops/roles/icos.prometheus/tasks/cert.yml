@@ -1,4 +1,4 @@
-- import_role: name=icos.certbot2
+- include_role: name=icos.certbot2
   tags:
     - cert
   vars:

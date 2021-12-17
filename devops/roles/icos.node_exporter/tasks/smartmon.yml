@@ -11,7 +11,7 @@
     name:
       - smartmontools # smartctl(1)
 
-- import_role: name=icos.timer
+- include_role: name=icos.timer
   vars:
     timer_home: "{{ smartmon_home }}"
     timer_name: node-exporter-smartmon

@@ -5,11 +5,11 @@
   loop:
     - jupyter_domain
 
-- import_role: name=icos.certbot2
+- include_role: name=icos.certbot2
   vars:
     certbot_domain: "{{ jupyter_domain }}"
 
-- import_role: name=icos.nginxsite
+- include_role: name=icos.nginxsite
   vars:
     nginxsite_file: jupyter-nginx.conf
     jupyter_cert_name: "{{ jupyter_domain }}"
