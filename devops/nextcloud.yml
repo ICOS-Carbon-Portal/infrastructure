@@ -37,7 +37,7 @@
       bbclient_coldbackup_hour: 1
       bbclient_coldbackup_minute: 0
       bbclient_coldbackup: "{{ nextcloud_home }}"
-      bbclient_coldbackup_patterns: |
+      bbclient_patterns: |
         R /disk/data/nextcloud
         R /docker/nextcloud/volumes
 

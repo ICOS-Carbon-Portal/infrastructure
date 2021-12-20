@@ -59,8 +59,8 @@ def prune():
              'prune -P dirty- --verbose --stats --keep-last 1')
 
 def backup(down=False):
-    if exists('{{ bbclient_patterns }}'):
-        patterns = '--patterns-from {{ bbclient_patterns }}'
+    if exists('{{ bbclient_patterns_path }}'):
+        patterns = '--patterns-from {{ bbclient_patterns_path }}'
     else:
         patterns = 'volumes'
     try:

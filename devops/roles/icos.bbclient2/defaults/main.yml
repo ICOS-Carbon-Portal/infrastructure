@@ -1,5 +1,9 @@
 # PARAMS - can be changed by user
 bbclient_user: root
+bbclient_home: "/opt/bbclient-{{ bbclient_name }}"
+bbclient_timer_conf: |
+    OnCalendar=daily
+    RandomizedDelaySec=2h
 
 # DEFAULTS - should not be changed
 bbclient_ssh_dir    : "{{ bbclient_home }}/ssh"
@@ -24,9 +28,9 @@ bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user | default('bb
 bbclient_remote_bin  : "{{ hostvars[bbclient_remote].bbserver_bin | default('/usr/local/bin/borg') }}"
 bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home | default('repos') }}/{{ bbclient_name }}.repo"
 
-# Default to run coldback at a randomized but deterministic time between 00:00
-# and 03:59.
+# Default to run coldback - in enabled - at a randomized but deterministic time
+# between 00:00 and 03:59.
 bbclient_coldbackup_hour: "{{ 4 | random(seed=bbclient_name) }}"
 bbclient_coldbackup_minute: "{{ 60 | random(seed=bbclient_name) }}"
 
-bbclient_patterns: "{{ bbclient_home }}/patterns.lst"
+bbclient_patterns_path: "{{ bbclient_home }}/patterns.lst"

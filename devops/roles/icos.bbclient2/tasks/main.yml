@@ -22,8 +22,25 @@
 
 - import_tasks: repos.yml
 
+- name: Create patterns.lst
+  copy:
+    dest: "{{ bbclient_patterns_path }}"
+    content: "{{ bbclient_patterns }}"
+  when: bbclient_patterns is defined
+
 - import_tasks: coldbackup.yml
   become: yes
   become_user: "{{ bbclient_user }}"
   tags: bbclient_coldbackup
   when: bbclient_coldbackup is defined
+
+- name: Install bbclient backup script
+  include_role: name=icos.timer
+  vars:
+    timer_home: "{{ bbclient_home }}/timer"
+    timer_name: "bbclient-{{ bbclient_name }}"
+    timer_conf: "{{ bbclient_timer_conf }}"
+    timer_content: "{{ bbclient_timer_content }}"
+  tags: bbclient_timer
+  when:
+    - bbclient_timer_content is defined
