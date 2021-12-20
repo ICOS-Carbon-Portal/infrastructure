@@ -165,6 +165,18 @@
       sftp_user_password: "{{ vault_callisto_sftp_fluxcom_upload_password }}"
       sftp_user_hostdesc: fluxcom-upload
 
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_name: callisto_home_ute
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -eu
+        echo "Creating"
+        {{ bbclient_all }} create --stats --verbose "::{now}" /home/ute
+
+        echo "Pruning"
+        {{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
+
   tasks:
     - name: Port forward for filedrop
       tags: iptables
