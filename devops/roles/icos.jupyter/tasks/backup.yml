@@ -1,7 +1,6 @@
 - include_role:
     name: icos.bbclient2
   vars:
-    bbclient_name: jupyter
     bbclient_user: root
     bbclient_home: /opt/bbclient-jupyter
 

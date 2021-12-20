@@ -146,6 +146,7 @@
       tags: jupyter
       jupyter_admins: "{{ vault_jupyter_admins }}"
       jupyter_jusers_enable: true
+      bbclient_name: jupyter
 
   tasks:
     - name: Create project user
