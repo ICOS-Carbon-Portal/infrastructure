@@ -27,6 +27,7 @@
         #!/bin/bash
         set -eu
         echo "Creating"
-        {{ bbclient_home }}/bin/bbclient-all create --stats --verbose "::{now}" /usr/share/nginx/static
+        {{ bbclient_all}} create --stats --verbose "::{now}" /usr/share/nginx/static
+
         echo "Pruning"
-        {{ bbclient_home }}/bin/bbclient-all prune --stats --keep-within=100d --keep-weekly=-1
+        {{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
