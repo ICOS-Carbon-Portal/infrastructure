@@ -1,6 +1,5 @@
 nats_arch: amd64
 
-
 nats_user: nats
 nats_name: nats
 nats_port: 4222
@@ -16,5 +15,5 @@ nats_top_ver: 0.4.0
 
 
 nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_server_ver }}/nats-server-v{{ nats_server_ver }}-{{ nats_arch }}.deb"
-nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
+nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/v{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
 nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v{{ nats_top_ver }}/nats-top-v{{ nats_top_ver }}-{{ nats_arch }}.deb"
