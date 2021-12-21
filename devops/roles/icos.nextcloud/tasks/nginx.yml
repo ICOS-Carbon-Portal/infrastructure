@@ -7,7 +7,7 @@
     dest: "{{ item.dest }}"
   loop:
     - src: nextcloud-nginx.conf
-      dest: /etc/nginx/sites-available/
+      dest: /etc/nginx/sites-available/nextcloud.conf
 
     - src: nextcloud-nextcloud.inc
       dest: /etc/nginx/conf.d
