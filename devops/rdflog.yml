@@ -31,8 +31,13 @@
     - vault.yml
   roles:
     - role: icos.lxd_guest
+      tags: guest
+
     - role: icos.docker
+      tags: docker
+
     - role: icos.pgrep
+      tags: pgrep
   tasks:
     - name: Add pgrep-rdflog to prometheus
       tags: prom
