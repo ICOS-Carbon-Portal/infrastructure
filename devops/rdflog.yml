@@ -1,9 +1,8 @@
 # FSICOS2 - RDFLOG
 - hosts: fsicos2.lunarc.lu.se
+  tags: rdflog
   roles:
     - role: icos.rdflog
-      tags: rdflog
-
   tasks:
     - name: Port forward for rdflog
       tags: forward
@@ -15,28 +14,19 @@
           -j DNAT --to-destination 172.20.0.2:5432
 
 
-# FSICOS3 - VM
-- hosts: fsicos3.lunarc.lu.se
-  tags: fsicos3
+# CREATE VMS
+- hosts: fsicos3.lunarc.lu.se cdb.nateko.lu.se
+  tags: vm
   roles:
     - role: icos.lxd_vm
       lxd_vm_name: pgrep-rdflog
       lxd_vm_docker: true
-      lxd_forward_port: "{{ hostvars['pgrep-rdflog@fsicos3'].ansible_port }}"
-
-
-# CDB - VM
-- hosts: cdb.nateko.lu.se
-  tags: cdb
-  roles:
-    - role: icos.lxd_vm
-      lxd_vm_name: pgrep-rdflog
-      lxd_vm_docker: true
-      lxd_forward_port: "{{ hostvars['pgrep-rdflog@cdb'].ansible_port }}"
+      lxd_forward_port: "{{ hostvars[pgrep_vm_name].ansible_port }}"
 
 
 # REPLICAS
 - hosts: pgrep-rdflog@fsicos3 pgrep-rdflog@cdb
+  tags: replica
   vars_files:
     - vault.yml
   roles:
