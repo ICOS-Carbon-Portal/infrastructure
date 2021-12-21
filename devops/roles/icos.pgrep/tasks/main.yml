@@ -29,3 +29,14 @@
 - name: Start containers
   docker_compose:
     project_src: "{{ pgrep_home }}"
+
+- name: Check that psql wrappers works
+  shell: |
+    {{ pgrep_home }}/{{ item }} -c 'select version()'
+  changed_when: no
+  register: _r
+  failed_when:
+    - "not 'PostgreSQL' in _r.stdout"
+  loop:
+    - psql
+    - psql-peer # requires peer to be online

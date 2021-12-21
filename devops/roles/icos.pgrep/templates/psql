@@ -7,5 +7,5 @@ set -Eueo pipefail
 if [ -t 0 ] && [ -t 1 ]; then O=""; else O="-T"; fi
 
 docker-compose --project-directory "{{ pgrep_home }}" \
-               exec --user=postgres --rm --entrypoint=/usr/bin/psql -- db \
-               -d 'host=db user={{ pgrep_peer_user }} password={{ pgrep_peer_pass }}'
+               exec $O --user=postgres -- db psql "$@"
+
