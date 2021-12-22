@@ -5,6 +5,7 @@
       alias sc=systemctl
       alias jc=journalctl
       alias df='df -h -x tmpfs -x overlay -x devtmpfs'
+      alias dc=docker-compose
 
 - name: Copy utilities
   tags: linux_utils
