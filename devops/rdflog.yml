@@ -1,3 +1,6 @@
+# Deploy the postgres replication containers
+#   deploy rdflog pgrep
+
 # FSICOS2 - RDFLOG
 - hosts: fsicos2.lunarc.lu.se
   tags: rdflog
@@ -38,12 +41,14 @@
 
     - role: icos.pgrep
       tags: pgrep
+
   tasks:
     - name: Add pgrep-rdflog to prometheus
       tags: prom
       include_role:
         name: icos.prometheus
         tasks_from: fsd
+        apply: {tags: ['prom']}
       vars:
         fsd_name: "postgres-exporter@{{ inventory_hostname }}"
         fsd_app: "rdflog"

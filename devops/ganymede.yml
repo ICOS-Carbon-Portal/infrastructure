@@ -131,8 +131,7 @@
     - tags: sshlogin
       include_role:
         name: icos.sshlogin
-        apply:
-          tags: sshlogin
+        apply: {tags: sshlogin}
       vars:
         sshlogin_dst: "{{ login.dst }}"
         sshlogin_src_user: "{{ login.src_user }}"

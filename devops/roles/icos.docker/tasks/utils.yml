@@ -1,8 +1,6 @@
 - include_role:
     name: icos.github_download_bin
-    apply:
-      tags:
-        - docker_utils
+    apply: {tags: ['docker_utils']}
   vars:
     dbin_user: bcicen
     dbin_repo: ctop
@@ -11,9 +9,7 @@
 
 - include_role:
     name: icos.github_download_bin
-    apply:
-      tags:
-        - docker_utils
+    apply: {tags: ['docker_utils']}
   vars:
     dbin_user: wagoodman
     dbin_repo: dive
@@ -22,9 +18,7 @@
 
 - include_role:
     name: icos.github_download_bin
-    apply:
-      tags:
-        - docker_utils
+    apply: {tags: ['docker_utils']}
   vars:
     dbin_user: jesseduffield
     dbin_repo: lazydocker
