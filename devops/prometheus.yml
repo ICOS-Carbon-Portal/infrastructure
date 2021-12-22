@@ -4,68 +4,27 @@
 #   deploy prometheus prometheus_config
 
 - hosts: cdb.nateko.lu.se
-  become: true
   vars_files:
     - vault.yml
   vars:
-    prometheus_ip: "{{ _lxd.addresses.eth0 | first }}"
     prometheus_admin_password: "{{ vault_prometheus_admin_password }}"
+  roles:
+    - role: icos.lxd_vm
+      tags: vm
+      lxd_vm_name: prometheus
+      lxd_vm_docker: true
   tasks:
-    - name: Create prometheus storage pool
-      tags: pool
-      shell: >-
-        /snap/bin/lxc storage show prometheus > /dev/null 2>&1 ||
-        /snap/bin/lxc storage create prometheus btrfs size=50GB
-      register: _r
-      changed_when:
-        - '"Storage pool prometheus created" in _r.stdout'
-
-    - name: Create the prometheus container
-      tags:
-        - lxd
-        - iptables
-      lxd_container:
-        name: prometheus
-        state: started
-        config:
-          security.nesting: "true"
-        profiles:
-          - default
-          - ssh_root
-        source:
-          type: image
-          mode: pull
-          server: https://cloud-images.ubuntu.com/releases
-          protocol: simplestreams
-          alias: "20.04"
-        devices:
-          root:
-            path: /
-            type: disk
-            pool: prometheus
-            size: "50GB"
-        wait_for_ipv4_addresses: true
-        wait_for_ipv4_interfaces: eth0
-        timeout: 600
-      register: _lxd
-
-    - name: Forward ssh port and create /etc/hosts entry
-      tags: forward
-      include_role:
-        name: icos.lxd_forward
-      vars:
-        lxd_forward_name: prometheus
-        lxd_forward_ip: "{{ prometheus_ip }}"
-
     - tags: cert
       import_role:
         name: icos.prometheus
         tasks_from: cert
 
-    - tags: nginx
+    - name: Setup nginx for prometheus
+      tags: nginx
       include_role:
         name: icos.prometheus
         tasks_from: nginx
+        apply: {tags: ['nginx']}
       vars:
         prometheus_prom_host: prometheus.lxd
         prometheus_graf_host: prometheus.lxd
