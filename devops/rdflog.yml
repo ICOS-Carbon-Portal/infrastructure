@@ -24,7 +24,7 @@
     - role: icos.lxd_vm
       lxd_vm_name: pgrep-rdflog
       lxd_vm_docker: true
-      lxd_forward_port: "{{ hostvars[pgrep_vm_name].ansible_port }}"
+      lxd_vm_port: "{{ hostvars[pgrep_vm_name].ansible_port }}"
 
 
 # REPLICAS

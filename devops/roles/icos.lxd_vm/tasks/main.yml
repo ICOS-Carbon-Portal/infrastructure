@@ -10,3 +10,4 @@
   vars:
     lxd_forward_name: "{{ lxd_vm_name }}"
     lxd_forward_ip: "{{ lxd_vm_ip }}"
+    lxd_forward_port: "{{ lxd_vm_port }}"
