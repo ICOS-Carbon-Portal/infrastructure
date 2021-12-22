@@ -11,8 +11,10 @@
     # "OCI runtime create failed: container_linux.go:345: starting container
     # process caused "process_linux.go:430: container init caused \"join
     # session keyring: create session key: disk quota exceeded\"": unknown"
+    #
+    # https://discuss.linuxcontainers.org/t/error-with-docker-inside-lxc-container/922/2
     - name: kernel.keys.maxkeys
-      value: 2000
+      value: 4000
 
     # "This is the maximum number of entries in ARP table. You should increase
     # this if you create over 1024 containers"
