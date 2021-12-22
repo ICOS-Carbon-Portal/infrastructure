@@ -16,6 +16,10 @@
     - name: kernel.keys.maxkeys
       value: 4000
 
+    # Turns out that maxkeys isn't enough, one need to bump maxbytes as well.
+    - name: kernel.keys.maxbytes
+      value: 100000
+
     # "This is the maximum number of entries in ARP table. You should increase
     # this if you create over 1024 containers"
     - name: net.ipv4.neigh.default.gc_thresh3
