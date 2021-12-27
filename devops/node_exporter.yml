@@ -1,4 +1,4 @@
-- hosts: fsicos2_vms fsicos3_vms
+- hosts: fsicos2_vms fsicos3_vms cdb_vms
   tags: vms
   roles:
     - icos.python3
