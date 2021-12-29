@@ -1,10 +1,11 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.8
 # Collect statistics for export to prometheus.
 
 import collections
 import datetime
 import json
 import os
+import re
 import subprocess
 import sys
 from concurrent import futures
@@ -41,16 +42,25 @@ def wrap_stdout(func):
 # BORG STUFF
 
 def get_repos():
-    for d in os.listdir(REPOS):
+    # If this program is used interactively, allow user to specify repos as
+    # arguments.
+    if sys.stdin.isatty() and len(sys.argv) > 1:
+        lst = [os.path.basename(os.path.realpath(e)) for e in sys.argv[1:]]
+    else:
+        lst = os.listdir(REPOS)
+    for d in lst:
         if not d.endswith('.repo'):
             continue
         yield (d[:-len('.repo')], os.path.realpath(os.path.join(REPOS, d)))
 
 
 def list_archives(repo):
-    s = subprocess.check_output(
-        ['borg', 'list', '--json', '--sort-by', 'timestamp', repo])
-    return json.loads(s)
+    # capture_output=1 will capture both stdout and stderr, check=1 will throw
+    # an exception if borg errors out. An exception handler can then use the
+    # stderr attribute to determine cause of error.
+    r = subprocess.run(['borg', 'list', '--json', '--sort-by', 'timestamp',
+                        repo], text=1, check=1, capture_output=1)
+    return json.loads(r.stdout)
 
 
 def repo_size(repo):
@@ -89,7 +99,14 @@ def main():
             try:
                 repo = future.result()
             except Exception as e:
-                print(name, "failed with", e)
+                # This particular repo is locked by a backup.
+                if re.search('Permission denied:.*/lock', e.stderr):
+                    pass
+                else:
+                    # Note, this message will end up in the text file read by
+                    # prometheus textfiles collector and will generate a
+                    # warning.
+                    print(name, "failed with", e)
             else:
                 # This file is deployed as a ansible template, that means that
                 # too many braces in the below code (i.e by turning it into a
