@@ -19,6 +19,9 @@ prometheus_options: []
 prometheus_host_conf: "{{ prometheus_home }}/volumes/prometheus_conf/prometheus.yml"
 prometheus_backup_script: "{{ prometheus_home }}/bin/prometheus-backup.py"
 
+# https://www.robustperception.io/configuring-prometheus-storage-retention
+prometheus_retention_time: 90d
+prometheus_retention_size: 30GB
 
 # GRAFANA
 prometheus_graf_cf: grafana.ini

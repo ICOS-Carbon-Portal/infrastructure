@@ -23,6 +23,7 @@
   template:
     src: docker-compose.yml
     dest: "{{ prometheus_home }}"
+    lstrip_blocks: yes
 
 - import_tasks: build.yml
   tags: prometheus_build
