@@ -1,8 +1,17 @@
-- hosts: fsicos2_vms fsicos3_vms cdb_vms
-  tags: vms
+- hosts:
+    # hosts
+    - fsicos2.lunarc.lu.se
+    - fsicos3.lunarc.lu.se
+    - cdb.nateko.lu.se
+    # vms
+    - fsicos2_vms
+    - fsicos3_vms
+    - cdb_vms
+  tags: node_exporter
   roles:
     - icos.python3
     - icos.node_exporter
+
 
 - hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se cdb.nateko.lu.se
   vars_files:
@@ -20,11 +29,6 @@
         nginxsite_name: node-exporter
         nginxsite_file: files/node-exporter-nginx.conf
 
-    - include_role: name=icos.node_exporter
-      tags: node_exporter
-      vars:
-        smartmon_enable: true
-        dirsize_enable: true
 
 - hosts: localhost
   connection: local
