@@ -28,10 +28,7 @@
 # Note that new versions of quince are supposed to be deployed using quince's
 # own scripts, run interactively, from inside the container.
 
-- import_playbook: setup.yml
-
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars:
     quince_host: quince.lxd
   pre_tasks:
