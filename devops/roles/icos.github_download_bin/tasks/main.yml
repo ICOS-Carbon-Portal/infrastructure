@@ -12,11 +12,14 @@
   get_url:
     url: "{{ _dbin_url }}"
     dest: "{{ dbin_download_dir }}"
-  register: _down
+  # This variable can be checked by our users to determine whether anything has
+  # changed.
+  register: dbin_download
 
+# This task sometimes reports "changed" even though it shouldn't.
 - name: Unarchive {{ _dbin_name }} tarball
   unarchive:
-    src: "{{ _down.dest }}"
+    src: "{{ dbin_download.dest }}"
     dest: "{{ dbin_download_dir }}"
     remote_src: true
     list_files: true
