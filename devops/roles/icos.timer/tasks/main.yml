@@ -5,9 +5,10 @@
 
 - name: Create timer script
   copy:
-    dest: "{{ timer_home }}/{{ timer_name }}"
+    dest: "{{ timer_dest }}"
     mode: +x
     content: "{{ timer_content }}"
+  when: timer_content is defined
   register: _script
 
 - name: Create systemd timer 
@@ -37,7 +38,7 @@
       Environment={{ env }}
       {% endfor -%}
       Type=oneshot
-      ExecStart={{ _script.dest }}
+      ExecStart={{ timer_exec }}
   register: _service
 
 - name: Link systemd files
