@@ -1,15 +1,11 @@
-- name: Create monitor directory
-  file:
-    path: "{{ bbserver_monitor_home }}"
-    state: directory
-
 - name: Remove cron job
   cron:
     user: "{{ bbserver_user }}"
     state: absent
     name: "bbserver_borgmon"
 
-- include_role:
+- name: Create borgmon timer
+  include_role:
     name: icos.timer
   vars:
     timer_user: bbserver
