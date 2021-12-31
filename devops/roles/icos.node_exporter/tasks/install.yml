@@ -19,21 +19,9 @@
     name: icos.github_download_bin
   vars:
     dbin_download_dir: "{{ node_exporter_download }}"
-    dbin_list:
-      - user: prometheus
-        repo: node_exporter
-        path: node_exporter
-
-# FIXME: Remove in 2022.
-- name: Remove node_exporter service
-  systemd:
-    name: node_exporter.service
-    state: stopped
-    enabled: no
-  register: r
-  failed_when:
-    - r.failed
-    - not r.msg.startswith('Could not find the requested service')
+    dbin_user: prometheus
+    dbin_repo: node_exporter
+    dbin_path: node_exporter
 
 - name: Copy node-exporter service file
   template:
@@ -60,5 +48,5 @@
   systemd:
     name: node-exporter
     enabled: yes
-    state: "{{ 'restarted' if (_srv.changed or _env.changed) else 'started' }}"
+    state: "{{ node_exporter_state }}"
     daemon-reload: "{{ 'yes' if (_srv.changed or _env.changed) else 'no' }}"

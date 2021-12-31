@@ -1,0 +1,15 @@
+- name: Create dockermon timer
+  include_role:
+    name: icos.timer
+  vars:
+    timer_user:
+    timer_home: "{{ dockermon_home }}"
+    timer_name: node-exporter-dockermon
+    timer_conf: "OnCalendar=*:0/5"
+    timer_envs:
+      - PYTHONUNBUFFERED=1
+      - PATH=/usr/bin:/usr/local/bin
+    timer_content: "{{ lookup('template', 'dockermon.py') }}"
+    timer_exec: >-
+      /bin/bash -c 'set -o pipefail &&
+      {{ timer_dest }} | sponge {{ dockermon_prom }}'

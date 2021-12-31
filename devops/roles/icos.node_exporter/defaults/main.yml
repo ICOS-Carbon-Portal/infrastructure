@@ -26,3 +26,13 @@ dirsize_prom: "{{ node_exporter_textfiles }}/directory-size.prom"
 
 # The initial list of directories.
 dirsize_initial: []
+
+# By default we restart node_exporter if the service file or the environment
+# has changed or if a new version has been downloaded.
+node_exporter_state: |-
+  {{ 'restarted' if (_srv.changed or _env.changed or dbin_download.changed) else 'started' }}
+
+# DOCKER COLLECTOR
+dockermon_enable: false
+dockermon_home: "{{ node_exporter_home }}/dockermon"
+dockermon_prom: "{{ node_exporter_textfiles }}/dockermon.prom"
