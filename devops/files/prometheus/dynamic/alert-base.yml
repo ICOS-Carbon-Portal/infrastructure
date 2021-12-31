@@ -3,21 +3,21 @@
 groups:
 - name: alert.rules
   rules:
-  - alert: EndpointDown
-    expr: probe_success == 0
-    for: 10s
-    labels:
-      severity: "critical"
-    annotations:
-      summary: "Endpoint {{ $labels.instance }} down!"
+  # - alert: EndpointDown
+  #   expr: probe_success == 0
+  #   for: 10s
+  #   labels:
+  #     severity: "critical"
+  #   annotations:
+  #     summary: "Endpoint {{ $labels.instance }} down!"
 
-  - alert: Borg backup late
-    expr: borg_age_secs > (86400*2)
-    for: 10s
-    labels:
-      severity: "warning"
-    annotations:
-      summary: "Backup of {{ $labels.name }} on {{ $labels.instance }} is late."
+  # - alert: Borg backup late
+  #   expr: borg_age_secs > (86400*2)
+  #   for: 10s
+  #   labels:
+  #     severity: "warning"
+  #   annotations:
+  #     summary: "Backup of {{ $labels.name }} on {{ $labels.instance }} is late."
 
   - alert: RootdiskFull
     expr: >-
