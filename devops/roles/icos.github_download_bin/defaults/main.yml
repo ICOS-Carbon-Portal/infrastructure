@@ -17,7 +17,7 @@ _dbin_src: |-
   {% elif _dbin_unar -%}
   {{ dbin_download_dir }}/{{ _unar.files[0].rstrip('/') }}/{{ _dbin_name -}}
   {%- else %}
-  {{- _down.dest }}
+  {{- dbin_download.dest }}
   {%- endif %}
 
 
