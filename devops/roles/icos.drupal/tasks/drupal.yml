@@ -35,11 +35,6 @@
     src: services.yml
     dest: "{{ project_dir }}/files/default/"
 
-- name: Copy theme library
-  template:
-    src: cp_theme_d8.libraries.yml.j2
-    dest: "{{ project_dir }}/themes/cp_theme_d8/cp_theme_d8.libraries.yml"
-
 - name: Create {{ project_dir }}/docker/ directory
   file: path={{ project_dir }}/docker/ state=directory recurse=yes
 

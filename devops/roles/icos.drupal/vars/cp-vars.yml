@@ -5,10 +5,10 @@ trusted_host: ^www\.icos-cp\.eu$
 domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 redirect_to_www: true
-extra_js: cp
 drupal_modules: [
   editor_advanced_link,
   field_group,
+  google_analytics,
   honeypot,
   html_title,
   linkit,
