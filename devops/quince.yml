@@ -53,6 +53,7 @@
             type: "disk"
             size: "100GB"
         config:
+          limits.cpu: "20"
           security.nesting: "true"
         wait_for_ipv4_addresses: true
         timeout: 600
