@@ -183,17 +183,13 @@ Working dir of a process by id:
 Restheart
 ---------
 
-Specify aggregations for a collection:
-
-`curl -H "Content-Type: application/json" --upload-file dobjAggrs.json http://127.0.0.1:8088/db/dobjdls`
-
 Users that specified ORCID ID in their user profile:
 
 `curl -G --data-urlencode 'keys={"_id":1, "profile.orcid":1}' --data-urlencode 'filter={"profile.orcid":{"$regex": ".+"}}' http://127.0.0.1:8088/db/users?count=true`
 
-Get download counts per IP address:
+Get popular variables in time serie previews:
 
-`curl -o page1.json 'https://restheart.icos-cp.eu/db/dobjdls/_aggrs/perIp?pagesize=1000&page=1'`
+`curl -o page1.json 'https://restheart.icos-cp.eu/db/portaluse/_aggrs/getPopularTimeserieVars?pagesize=10&page=1'`
 
 Transform download counts json from the previous command to tsv (requires jq installed):
 
