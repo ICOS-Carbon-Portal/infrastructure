@@ -51,8 +51,8 @@
             path: "/"
             pool: "quince2"
             type: "disk"
-            size: "100GB"
-        config:
+            size: "200GB"
+
           limits.cpu: "20"
           security.nesting: "true"
         wait_for_ipv4_addresses: true
