@@ -7,3 +7,4 @@ FROM onlyoffice/documentserver-ee:$ONLYOFFICE_VERSION
 
 # https://helpcenter.onlyoffice.com/server/linux/document/install-fonts.aspx
 ADD droidserif.tgz /usr/share/fonts
+ADD calibri.tgz /usr/share/fonts

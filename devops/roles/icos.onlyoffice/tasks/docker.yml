@@ -35,9 +35,9 @@
       ONLYOFFICE_PORT={{ onlyoffice_port }}
       ONLYOFFICE_VERSION={{ onlyoffice_version }}
 
-- name: Build and start
-  docker_compose:
-    project_src: "{{ onlyoffice_home }}"
-    build: yes
-    state: present
-    restarted: yes
+# - name: Build and start
+#   docker_compose:
+#     project_src: "{{ onlyoffice_home }}"
+#     build: yes
+#     state: present
+#     restarted: yes
