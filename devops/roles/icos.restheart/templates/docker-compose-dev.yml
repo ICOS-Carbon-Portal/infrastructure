@@ -20,7 +20,7 @@ services:
          - "./security.yml:/opt/restheart/etc/security.yml:ro"
 
    mongodb:
-      image: mongo:3.6
+      image: mongo:5.0.5
       container_name: restheart-mongo
       command: --bind_ip_all
       volumes:
