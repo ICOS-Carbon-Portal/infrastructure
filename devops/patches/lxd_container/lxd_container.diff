@@ -1,6 +1,6 @@
---- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2021-11-30 17:43:01.913400411 +0100
-+++ ../../lxd_container.py	2021-12-05 10:24:47.813167146 +0100
-@@ -115,6 +115,15 @@
+--- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2022-01-12 22:24:16.480636119 +0100
++++ ../../library/lxd_container.py	2022-01-25 11:09:31.225262564 +0100
+@@ -124,6 +124,15 @@
          required: false
          default: false
          type: bool
@@ -15,8 +15,8 @@
 +        type: list
      force_stop:
          description:
-           - If this is true, the C(lxd_container) forces to stop the container
-@@ -380,6 +389,7 @@
+           - If this is true, the C(lxd_container) forces to stop the instance
+@@ -411,6 +420,7 @@
  
          self.timeout = self.module.params['timeout']
          self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
@@ -24,8 +24,8 @@
          self.force_stop = self.module.params['force_stop']
          self.addresses = None
          self.target = self.module.params['target']
-@@ -482,6 +492,8 @@
-         resp_json = self._get_container_state_json()
+@@ -522,6 +532,8 @@
+         resp_json = self._get_instance_state_json()
          network = resp_json['metadata']['network'] or {}
          network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
 +        if self.wait_for_ipv4_interfaces:
@@ -33,7 +33,7 @@
          addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
          return addresses
  
-@@ -702,6 +714,9 @@
+@@ -749,6 +761,9 @@
                  type='bool',
                  default=False
              ),
@@ -43,7 +43,7 @@
              force_stop=dict(
                  type='bool',
                  default=False
-@@ -727,15 +742,6 @@
+@@ -774,16 +789,6 @@
          supports_check_mode=False,
      )
  
@@ -56,6 +56,7 @@
 -            'This will change in the future. Please test your scripts'
 -            'by "ignore_volatile_options: false". To keep the old behavior, set that option explicitly to "true"',
 -            version='6.0.0', collection_name='community.general')
+-
      lxd_manage = LXDContainerManagement(module=module)
      lxd_manage.run()
  
