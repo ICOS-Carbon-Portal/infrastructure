@@ -14,7 +14,7 @@
       tags: docker
 
     - role: icos.nginx
-      togs: nginx
+      tags: nginx
 
 - hosts: bbservers
   roles:
