@@ -1,18 +1,14 @@
-- name: Install certbot and certbot-nginx via pip3
-  pip:
-    name:
-      - certbot
-      - certbot-nginx
-    state: "{{ certbot_state | default('present') }}"
-    executable: pip3
+# It used to be pip but these days letsencrypt recommends snap for Ubuntu.
+- name: Install certbot
+  community.general.snap:
+    name: certbot
+    classic: yes
 
 - name: Add job to renew certificates
   cron:
     name: Certbot renewal
-    # Make sure to use the full path, otherwise cron won't find since
-    # /usr/local/bin is not in cron's PATH.
     job: >-
-      PATH="/bin:/usr/bin:/usr/sbin" {{ nginx_certbot_bin }} renew -q
+      {{ nginx_certbot_bin }} renew -q
     special_time: daily
 
 - name: Create /etc/letsencrypt/renewal-hooks/deploy directory
