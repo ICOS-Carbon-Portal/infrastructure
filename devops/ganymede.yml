@@ -15,10 +15,12 @@
   vars_files:
     - vault.yml
   pre_tasks:
-    - include_role: name=icos.zfsdocker
+    - include_role:
+        name: icos.zfsdocker
+        public: yes
       tags:
         - zfs
-        - zfsdocker
+        - lxd
       vars:
         zfsdocker_name: ganymede
         zfsdocker_size: "100G"

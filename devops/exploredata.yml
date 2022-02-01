@@ -10,6 +10,7 @@
         - lxd
       include_role:
         name: icos.zfsdocker
+        public: yes
       vars:
         zfsdocker_name: exploredata
         zfsdocker_size: "50G"
