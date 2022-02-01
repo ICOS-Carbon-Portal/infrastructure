@@ -55,3 +55,28 @@
         path: "{{ item.path }}"
         opts: "{{ item.opts | default('ro') }}"
       loop: "{{ icosdata_nfs_mounts }}"
+
+- hosts: fsicos3.lunarc.lu.se
+  tasks:
+    - name: Create icosdata LXD profile
+      tags: profile
+      lxd_profile:
+        name: icosdata
+        devices:
+          radonmap:
+            path: /data/radon_map
+            source: /pool/ute/radon_map
+            type: disk
+            readonly: "true"
+
+          stilt:
+            path: /data/stilt
+            source: /pool/ute/stilt/RINGO/T1.3/STILT
+            type: disk
+            readonly: "true"
+
+          fluxcom_upload:
+            path: /data/fluxcom/pre_release
+            source: /pool/fluxcom/upload
+            type: disk
+            readonly: "true"

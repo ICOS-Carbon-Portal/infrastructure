@@ -28,6 +28,7 @@
         - lxd
         - forward
         - nginx
+        - icosdata
       lxd_container:
         name: ganymede
         state: started
