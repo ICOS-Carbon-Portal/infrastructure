@@ -14,9 +14,11 @@
     - vault.yml
   pre_tasks:
     - name: Create storage for docker
-      tags: zfs
+      tags:
+        - lxd
       include_role:
         name: icos.zfsdocker
+        public: yes
       vars:
         zfsdocker_name: callisto
         zfsdocker_size: "50G"
@@ -81,6 +83,10 @@
           datademo:
             path: "/ute/dataDemo"
             source: "/pool/ute/dataDemo"
+            type: disk
+          radonmap:
+            path: "/ute/radon_map"
+            source: "/pool/ute/radon_map"
             type: disk
         config:
           security.nesting: "true"
@@ -174,6 +180,18 @@
         set -eu
         echo "Creating"
         {{ bbclient_all }} create --stats --verbose "::{now}" /home/ute
+
+        echo "Pruning"
+        {{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_name: radon_map
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -eu
+        echo "Creating"
+        {{ bbclient_all }} create --stats --verbose "::{now}" /data/radon_map
 
         echo "Pruning"
         {{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
