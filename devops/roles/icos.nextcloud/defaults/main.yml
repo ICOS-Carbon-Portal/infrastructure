@@ -10,6 +10,7 @@ nextcloud_user: nextcloud
 nextcloud_home: /docker/nextcloud
 nextcloud_domain: fileshare.icos-cp.eu
 
+nextcloud_certbot_enable: true
 certbot_domains: ["{{ nextcloud_domain }}"]
 certbot_conf_name: nextcloud
 
