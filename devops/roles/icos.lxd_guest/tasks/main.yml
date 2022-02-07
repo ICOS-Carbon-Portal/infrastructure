@@ -1,18 +1,21 @@
-- name: Set timezone to Europe/Stockholm
-  timezone:
-    name: Europe/Stockholm
-  notify: restart crond
+- name: Install latest python3
+  import_role:
+    name: icos.python3
 
-- import_role: name=icos.utils
-  tags: utils
-
-- import_role: name=icos.python3
+- name: Install icos utilities
+  import_role:
+    name: icos.utils
 
 - name: Install packages
   apt:
     name:
       - iptables-persistent
       - "{{ 'fail2ban' if lxd_guest_fail2ban else 'iptables-persistent' }}"
+
+- name: Set timezone to Europe/Stockholm
+  timezone:
+    name: Europe/Stockholm
+  notify: restart crond
 
 - name: Install public keys
   authorized_key:
