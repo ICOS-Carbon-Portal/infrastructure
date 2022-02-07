@@ -1,19 +1,23 @@
-- name: Include tasks for cdb
-  include_tasks: cdb.yml
-  when: ansible_host == 'cdb.nateko.lu.se'
+- name: Include tasks for ext4 variant
+  include_tasks: ext4.yml
+  when: lxd_vm_variant == 'ext4'
 
-- name: Include tasks for fsicos2
-  include_tasks: fsicos2.yml
-  when: ansible_host == 'fsicos2.lunarc.lu.se'
+- name: Include tasks for zfs variant
+  include_tasks: zfs.yml
+  when: lxd_vm_variant == 'zfs'
 
-- name: Include tasks for fsicos3
-  include_tasks: fsicos3.yml
-  when: ansible_host == 'fsicos3.lunarc.lu.se'
-
-- name: One of the host-specific task files must have run.
-  assert:
-    that: _lxd is defined
-  changed_when: no
+- name: Create the {{ lxd_vm_name }} container
+  lxd_container:
+    name: "{{ lxd_vm_name }}"
+    state: started
+    profiles: "{{ __lxd_profiles }}"
+    source: "{{ lxd_source }}"
+    config: "{{ __lxd_config }}"
+    devices: "{{ __lxd_devices }}"
+    wait_for_ipv4_addresses: true
+    wait_for_ipv4_interfaces: eth0
+    timeout: 600
+  register: _lxd
 
 - name: Set fact {{ lxd_vm_name }}_ip = {{ lxd_vm_ip }}
   set_fact: |
@@ -25,6 +29,9 @@
     awk '{print $1, $2}' /etc/ssh/ssh_host_ecdsa_key.pub
   register: _key
   changed_when: no
+  retries: 10
+  delay: 5
+
 
 - name: Forward ssh port and create /etc/hosts entry
   include_role:

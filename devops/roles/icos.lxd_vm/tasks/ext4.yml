@@ -1,0 +1,12 @@
+- name: Include vars for ext4
+  include_vars: "ext4.yml"
+
+- name: Create {{ lxd_vm_name }} storage pool
+  tags: pool
+  shell: >-
+    /snap/bin/lxc storage show {{ lxd_vm_name }} > /dev/null 2>&1 ||
+    /snap/bin/lxc storage create
+      {{ lxd_vm_name }} btrfs size={{ lxd_vm_root_size }}
+  register: _r
+  changed_when:
+    - '("Storage pool %s created" % lxd_vm_name) in _r.stdout'

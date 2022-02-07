@@ -2,7 +2,7 @@ lxd_vm_ip: "{{ _lxd.addresses.eth0 | first }}"
 lxd_vm_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
 
 # When a separate btrfs pool is used, this is the default size.
-lxd_vm_pool_size: 50GB
+lxd_vm_root_size: 50GB
 lxd_vm_docker: False
 
 lxd_profiles: []
@@ -14,3 +14,10 @@ lxd_config: {}
 __lxd_profiles: "{{ lxd_default_profiles + lxd_profiles }}"
 __lxd_devices: "{{ lxd_default_devices | combine(lxd_devices) }}"
 __lxd_config: "{{ lxd_default_config | combine(lxd_config) }}"
+
+lxd_source:
+  type: image
+  mode: pull
+  server: https://cloud-images.ubuntu.com/releases
+  protocol: simplestreams
+  alias: "20.04"
