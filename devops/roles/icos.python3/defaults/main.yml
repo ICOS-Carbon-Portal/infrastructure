@@ -1,0 +1,2 @@
+python3_version: 3.9
+python3_command: "/usr/bin/python{{ python3_version }}"

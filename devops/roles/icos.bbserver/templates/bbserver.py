@@ -1,4 +1,4 @@
-#!/usr/bin/python3.8
+#!{{ python3_command }}
 # Collect statistics for export to prometheus.
 
 import click

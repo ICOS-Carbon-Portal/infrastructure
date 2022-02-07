@@ -1,0 +1,29 @@
+- name: Include vars for fsicos2
+  include_vars: "fsicos2.yml"
+
+- name: Create {{ lxd_vm_name }} storage pool
+  tags: pool
+  shell: >-
+    /snap/bin/lxc storage show {{ lxd_vm_name }} > /dev/null 2>&1 ||
+    /snap/bin/lxc storage create
+      {{ lxd_vm_name }} btrfs size={{ lxd_vm_pool_size }}
+  register: _r
+  changed_when:
+    - '("Storage pool %s created" % lxd_vm_name) in _r.stdout'
+
+- name: Create the {{ lxd_vm_name }} container
+  lxd_container:
+    name: "{{ lxd_vm_name }}"
+    state: started
+    profiles: "{{ __lxd_profiles }}"
+    source:
+      type: image
+      mode: pull
+      server: https://cloud-images.ubuntu.com/releases
+      protocol: simplestreams
+      alias: "20.04"
+    config: "{{ __lxd_config }}"
+    devices: "{{ __lxd_devices }}"
+    wait_for_ipv4_addresses: true
+    timeout: 600
+  register: _lxd

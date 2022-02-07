@@ -1,9 +1,9 @@
-- name: Install python 3.8
-  when: ansible_facts['python_version'] is version('3.8', '<')
+- name: Install python {{ python3_version }}
+  when: ansible_facts['python_version'] is version(python3_version, '<')
   apt:
     name:
-      - python3.8
-      - python3.8-venv
+      - "python{{ python3_version }}"
+      - "python{{ python3_version }}-venv"
 
 - name: Install pip and venv
   apt:

@@ -4,3 +4,13 @@ lxd_vm_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
 # When a separate btrfs pool is used, this is the default size.
 lxd_vm_pool_size: 50GB
 lxd_vm_docker: False
+
+lxd_profiles: []
+lxd_devices: {}
+lxd_config: {}
+
+# The variables are used to pass arguments to the lxd_container module. The
+# arguments will be a merge of default values and values passed by user.
+__lxd_profiles: "{{ lxd_default_profiles + lxd_profiles }}"
+__lxd_devices: "{{ lxd_default_devices | combine(lxd_devices) }}"
+__lxd_config: "{{ lxd_default_config | combine(lxd_config) }}"

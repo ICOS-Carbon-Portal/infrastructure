@@ -1,4 +1,4 @@
-#!/usr/bin/python3.8
+#!{{ python3_command }}
 import subprocess
 import re
 

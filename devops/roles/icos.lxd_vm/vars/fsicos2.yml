@@ -1,0 +1,14 @@
+lxd_default_profiles:
+  - default
+  - ssh_root
+
+lxd_default_devices:
+  root:
+    path: /
+    type: disk
+    pool: "{{ lxd_vm_name }}"
+    size: "{{ lxd_vm_pool_size }}"
+
+lxd_default_config:
+  limits.cpu: "2"
+  limits.memory: "2GB"
