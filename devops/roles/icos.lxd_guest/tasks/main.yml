@@ -1,4 +1,5 @@
 - name: Install latest python3
+  tags: python3
   import_role:
     name: icos.python3
 
