@@ -1,9 +1,7 @@
-- name: Install nginx and pip
+- name: Install nginx
   apt:
     name:
       - nginx
-      - python3-pip
-      - python3-cryptography
 
 - name: Add mitigation for systemd/nginx race-condition
   block:
@@ -31,17 +29,10 @@
   tags: nginx_conf
   notify: reload nginx config
 
-- name: Create /etc/nginx/vhost.conf
-  copy:
-    dest: /etc/nginx/vhost.conf
-    content: "{{ nginx_vhost_content }}"
-  notify: reload nginx config
-
-- name: Create dhparams.pem
-  community.crypto.openssl_dhparam:
-    path: "{{ nginx_dhparam_path }}"
-    backup: true
-    force: no
+- name: Remove nginx default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
   notify: reload nginx config
 
 - name: Allow nginx through firewall

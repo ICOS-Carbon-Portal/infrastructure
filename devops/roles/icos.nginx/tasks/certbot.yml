@@ -24,14 +24,11 @@
       #!/bin/bash
       service nginx reload
 
-- name: Create the certbot-retrieve-cert script
-  copy:
-    src: certbot-retrieve-cert.sh
-    dest: /usr/local/sbin/certbot-retrieve-cert
+- name: Create the {{ item }} script
+  template:
+    dest: "/usr/local/sbin/{{ item | splitext | first }}"
     mode: +x
-
-- name: Create the certbot-find-unused script
-  copy:
-    src: certbot-find-unused.py
-    dest: /usr/local/sbin/certbot-find-unused
-    mode: +x
+    src: "{{ item }}"
+  loop:
+    - certbot-retrieve-cert.sh
+    - certbot-find-unused.py
