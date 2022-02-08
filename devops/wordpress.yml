@@ -36,8 +36,8 @@
           protocol: simplestreams
           alias: "18.04"
         config:
-          limits.cpu: "2"
-          limits.memory: "2GB"
+          limits.cpu: "4"
+          limits.memory: "8GB"
         devices:
           root:
             path: /
