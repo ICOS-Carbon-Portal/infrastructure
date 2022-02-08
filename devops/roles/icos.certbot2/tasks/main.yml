@@ -1,30 +1,7 @@
-- name: Setting name and domains to the same value.
-  set_fact:
-    certbot_name: "{{ certbot_domain }}"
-    certbot_domains: ["{{ certbot_domain }}"]
-  when:
-    - certbot_domain is defined
-    - certbot_name is undefined
-    - certbot_domains is undefined
+# Generate certificates using certbot.
+- import_tasks: generate.yml
+  when: not certbot_fetch_host
 
-- name: Check that all parameters are defined
-  fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - certbot_name
-    - certbot_domains
-
-- name: Run certbot for {{ certbot_name }}
-  command: |
-    {{ certbot_bin }}
-    certonly
-    --nginx
-    --non-interactive
-    --agree-tos
-    --expand
-    --cert-name {{ certbot_name }}
-    --email {{ certbot_email }}
-    {% for d in certbot_domains %} -d {{ d }} {% endfor %}
-  register: _r
-  changed_when: "'Certificate not yet due for renewal;' not in _r.stdout"
+# Fetch existing certificates from an existing host. Useful for testing.
+- import_tasks: fetch.yml
+  when: certbot_fetch_host

@@ -1,0 +1,14 @@
+- name: Create {{ certbot_site_path }} directory
+  file:
+    path: "{{ certbot_site_path }}"
+    state: directory
+
+- name: Fetch certificate from {{ certbot_fetch_host }}
+  include_tasks: fetch_single.yml
+  vars:
+    _fetch_path: "{{ certbot_site_path }}/{{ item }}"
+  loop:
+    - cert.pem
+    - chain.pem
+    - fullchain.pem
+    - privkey.pem

@@ -8,3 +8,5 @@ certbot_key_path: "{{ certbot_site_path }}/privkey.pem"
 certbot_nginx_conf: |
    ssl_certificate {{ certbot_cert_path }};
    ssl_certificate_key {{ certbot_key_path }};
+
+certbot_fetch_host: False
