@@ -23,6 +23,9 @@
       tags: cpdata
       cpdata_netcdf_folder: /disk/data/common/netcdf/dataDemo
 
+    - role: icos.dataold
+      tags: dataold
+
   tasks:
     - name: Create mountpoint for netcdf
       file:
