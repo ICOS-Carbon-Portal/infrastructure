@@ -14,7 +14,7 @@ nextcloud_certbot_enable: true
 certbot_domains: ["{{ nextcloud_domain }}"]
 certbot_conf_name: nextcloud
 
-nextcloud_volume_nextcloud: "/disk/data/nextcloud"
+nextcloud_volume_nextcloud: "{{ nextcloud_home }}/volumes/nextcloud"
 nextcloud_volume_postgres: "{{ nextcloud_home }}/volumes/postgres"
 
 nextcloud_db_name: nextcloud

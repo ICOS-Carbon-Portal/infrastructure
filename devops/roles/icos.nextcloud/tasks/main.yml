@@ -1,7 +1,7 @@
-- include_role:
+- import_role:
     name: icos.certbot2
-    public: yes
   when: nextcloud_certbot_enable
+  tags: nextcloud_nginx
 
 - import_tasks: setup.yml
   tags: nextcloud_setup
