@@ -10,6 +10,7 @@
         - lxd
       include_role:
         name: icos.zfsdocker
+        public: yes
       vars:
         zfsdocker_name: amalthea
         zfsdocker_size: "50G"
@@ -41,6 +42,11 @@
             source: "{{ zfsdocker_zvol }}"
             type: disk
             raw.mount.options: user_subvol_rm_allowed
+          flexextract:
+            path: /data/flexextract
+            source: /nfs/flexextract
+            type: disk
+            readonly: "False"
         config:
           security.nesting: "true"
           limits.cpu: "32"
