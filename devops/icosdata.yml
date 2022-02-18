@@ -35,7 +35,7 @@
         path: "{{ item.path }}"
         src:  "{{ item.src }}"
         opts: "bind{{ item.opts | default('') }}"
-      loop: "{{ icosdata_bind_mounts }}"
+      loop: "{{ icosdata_bind_mounts | default([]) }}"
 
     - name: Export data via nfs
       tags: export
