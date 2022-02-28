@@ -12,6 +12,11 @@
   vars_files:
     - vault.yml
   roles:
+    - role: icos.python3
+      tags:
+        - python3
+        - bbclient
+
     - role: icos.mailman
       tags: mailman
       mailman_rest_pass: "{{ vault_mailman_rest_pass }}"
