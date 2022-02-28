@@ -81,11 +81,13 @@
     location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+)\.php(?:$|/) {
         fastcgi_split_path_info ^(.+?\.php)(/.*)$;
         try_files $fastcgi_script_name =404;
+
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
         fastcgi_param PATH_INFO $fastcgi_path_info;
         fastcgi_param HTTPS on;
-        #Avoid sending the security headers twice
+
+        # Avoid sending the security headers twice
         fastcgi_param modHeadersAvailable true;
         fastcgi_param front_controller_active true;
         fastcgi_pass php-handler;
