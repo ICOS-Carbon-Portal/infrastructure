@@ -89,6 +89,7 @@
             source: "/pool/ute/radon_map"
             type: disk
         config:
+          limits.memory: "256GB"
           security.nesting: "true"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0

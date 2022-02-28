@@ -90,7 +90,9 @@
             path: /project
             source: /pool/jupyter/project
             type: "disk"
+            recursive: "yes"
         config:
+          limits.memory: "200GB"
           security.nesting: "true"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0

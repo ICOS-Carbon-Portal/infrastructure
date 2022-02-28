@@ -43,6 +43,7 @@
             type: "disk"
             size: "50GB"
         config:
+          limits.memory: "8GB"
           security.nesting: "true"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
