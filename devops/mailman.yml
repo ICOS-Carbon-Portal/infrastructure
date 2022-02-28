@@ -25,6 +25,7 @@
         - 'lists.icos-ri.eu'
         - 'lists.eric-forum.eu'
         - 'lists.icos-cities.eu'
+        - 'lists.kadi-project.eu'
 
     - role: icos.bbclient2
       tags: bbclient
