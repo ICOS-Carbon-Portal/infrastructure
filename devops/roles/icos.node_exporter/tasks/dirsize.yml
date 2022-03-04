@@ -29,4 +29,4 @@
       #!/bin/bash
       # Read directory name from a file that can be dynamically populated by
       # ansible.
-      xargs -r -a {{ dirsize_dirnames }} {{ dirsize_sh }} | sponge {{ dirsize_prom }}
+      xargs -r -a {{ dirsize_dirnames }} {{ dirsize_sh }} | uniq | sponge {{ dirsize_prom }}

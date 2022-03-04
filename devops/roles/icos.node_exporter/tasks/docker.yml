@@ -12,4 +12,4 @@
     timer_content: "{{ lookup('template', 'dockermon.py') }}"
     timer_exec: >-
       /bin/bash -c 'set -o pipefail &&
-      {{ timer_dest }} | sponge {{ dockermon_prom }}'
+      {{ timer_dest }} | uniq | sponge {{ dockermon_prom }}'
