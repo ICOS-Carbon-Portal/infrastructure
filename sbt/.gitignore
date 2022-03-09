@@ -11,3 +11,5 @@ project/target
 .metals
 .bloop
 bin
+.vscode
+metals.sbt

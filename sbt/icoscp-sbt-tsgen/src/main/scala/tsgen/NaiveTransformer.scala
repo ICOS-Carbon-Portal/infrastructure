@@ -59,18 +59,20 @@ class NaiveTransformer(writer: Writer){
 	}
 
 	private def fromCaseClassMember(name: String, declType: Type): Unit = {
-		def appendFor(forType: Type): Unit = typeRepresentation(forType).foreach{typeRepr =>
-			writer.append(s"$name: $typeRepr")
+		def appendFor(tname: String, forType: Type): Unit = {
+			val typeRepr = typeRepresentation(forType)
+			writer.append(s"$tname: $typeRepr")
 		}
 
 		declType match{
-			case Type.Apply(Type.Name("Option"), typeArgs) =>
-				fromCaseClassMember(name.stripSuffix("?") + "?", typeArgs.head)
+			case Type.Apply(Type.Name("Option"), typeArg :: Nil) =>
+				fromCaseClassMember(name.stripSuffix("?") + "?", typeArg)
 
-			case _: Type.Name | _: Type.Apply =>
-				appendFor(declType)
+			case Type.Apply(Type.Name("OptionalOneOrSeq"), _) =>
+				appendFor(name.stripSuffix("?") + "?", declType)
 
 			case _ =>
+				appendFor(name, declType)
 		}
 	}
 }
@@ -84,21 +86,27 @@ object NaiveTransformer{
 		case _ => scala
 	}
 
-	def typeRepresentation(t: Type): Option[String] = t match{
+	def typeRepresentation(t: Type): String = t match{
 		case Type.Name(name) =>
-			Some(typeNameConversion(name))
+			typeNameConversion(name)
+
+		case Type.Tuple(ttypes) =>
+			ttypes.map(typeRepresentation).mkString("[", ", ", "]")
 
 		case Type.Apply(Type.Name(collName), typeArg :: Nil) if collsToArray.contains(collName) =>
-			typeRepresentation(typeArg).map(inner => s"Array<$inner>")
+			val inner = typeRepresentation(typeArg)
+			s"Array<$inner>"
 
 		case Type.Apply(Type.Name("OptionalOneOrSeq"), typeArg :: Nil) =>
-			typeRepresentation(typeArg).map(inner => s"$inner | Array<$inner> | undefined")
+			val inner = typeRepresentation(typeArg)
+			s"$inner | Array<$inner>"
 
 		case Type.Apply(Type.Name("Either"), List(type1, type2)) =>
-			for(t1 <- typeRepresentation(type1); t2 <- typeRepresentation(type2))
-			yield s"$t1 | $t2"
+			val t1 = typeRepresentation(type1)
+			val t2 = typeRepresentation(type2)
+			s"$t1 | $t2"
 
-		case _ => None
+		case _ => "unknown"
 	}
 
 	private val collsToArray = Set("Seq", "Array", "IndexedSeq", "Vector")
