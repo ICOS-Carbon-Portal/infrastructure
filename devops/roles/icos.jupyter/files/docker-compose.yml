@@ -9,6 +9,7 @@ networks:
 
 services:
   proxy:
+    restart: unless-stopped
     container_name: proxy
     image: jupyterhub/configurable-http-proxy
     ports:
