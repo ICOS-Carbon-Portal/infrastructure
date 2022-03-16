@@ -156,6 +156,7 @@
       tags: jupyter
       jupyter_admins: "{{ vault_callisto_admins }}"
       jupyter_user_volumes: "{{ vault_callisto_user_volumes }}"
+      jupyter_backup_enable: False
 
     # This sftp user will only be able to download.
     - role: icos.sftp_user

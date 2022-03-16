@@ -116,6 +116,7 @@
     - role: icos.jupyter
       tags: jupyter
       jupyter_admins: "{{ vault_ganymede_jupyter_admins }}"
+      jupyter_backup_enable: False
 
     - role: icos.jbuild
       tags: jbuild
