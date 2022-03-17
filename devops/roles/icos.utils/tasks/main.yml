@@ -30,15 +30,15 @@
       - git            # useful
       - tree           # directory overview
       - tcpdump        # network troubleshooting
-      - mailutils
-      - mutt
+      - mailutils      # so cron can deliver failure reports
+      - mutt           # for reading said reports
     update_cache: yes
 
 - name: Install ripgrep
   apt:
     deb: "{{ utils_ripgrep_url }}"
-    
-- name: Install fd(1)
+
+- name: Install fd
   apt:
     deb: "{{ utils_fd_url }}"
 
