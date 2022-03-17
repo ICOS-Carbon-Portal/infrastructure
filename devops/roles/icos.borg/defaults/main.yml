@@ -1,10 +1,13 @@
-borg_ver: 1.1.17
+borg_ver: 1.2.0
 borg_bin: "/usr/local/bin/borg"
 
 borg_url: "{{ borg_releases[borg_ver].url }}"
 borg_checksum: "{{ borg_releases[borg_ver].checksum | default(None) }}"
 
 borg_releases:
+  1.2.0:
+    url: "https://github.com/borgbackup/borg/releases/download/1.2.0/borg-linux64"
+    checksum: "sha1:c77ae27863b53c1bd3db9ecd38436a1cb72ae124"
   1.1.17:
     url: "https://github.com/borgbackup/borg/releases/download/1.1.17/borg-linux64"
     checksum: "sha1:dbcd359c495b0d73bc7c5d67baa69ad7388c9db9"
