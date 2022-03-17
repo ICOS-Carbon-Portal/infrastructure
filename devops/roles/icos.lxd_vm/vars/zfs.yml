@@ -16,12 +16,12 @@ __docker_device: >-
     "raw.mount.options": "user_subvol_rm_allowed" }}
   {% else -%}{}{% endif -%}
 
-lxd_default_devices: >-
+lxd_vm_default_devices: >-
   {{ __root_device | combine(__docker_device) }}
 
 
 # PROFILES
-lxd_default_profiles:
+lxd_vm_default_profiles:
   - default
   - ssh_root
 
@@ -36,5 +36,5 @@ __docker_config: >-
   {"security.nesting": "true"}
   {% else %}{}{% endif -%}
 
-lxd_default_config: >-
+lxd_vm_default_config: >-
   {{ __base_config | combine(__docker_config) }}

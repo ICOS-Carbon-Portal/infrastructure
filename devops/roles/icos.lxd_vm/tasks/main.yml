@@ -10,10 +10,10 @@
   lxd_container:
     name: "{{ lxd_vm_name }}"
     state: started
-    profiles: "{{ __lxd_profiles }}"
+    profiles: "{{ __lxd_vm_profiles }}"
     source: "{{ lxd_source }}"
-    config: "{{ __lxd_config }}"
-    devices: "{{ __lxd_devices }}"
+    config: "{{ __lxd_vm_config }}"
+    devices: "{{ __lxd_vm_devices }}"
     wait_for_ipv4_addresses: true
     wait_for_ipv4_interfaces: eth0
     timeout: 600
@@ -31,7 +31,6 @@
   changed_when: no
   retries: 10
   delay: 5
-
 
 - name: Forward ssh port and create /etc/hosts entry
   include_role:
