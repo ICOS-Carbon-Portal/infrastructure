@@ -6,6 +6,7 @@
 - name: Install python {{ python3_version }}
   when: ansible_facts['python_version'] is version(python3_version, '<')
   apt:
+    update_cache: yes
     name:
       - "python{{ python3_version }}"
       - "python{{ python3_version }}-venv"
