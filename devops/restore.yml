@@ -1,0 +1,19 @@
+- hosts: fsicos2.lunarc.lu.se
+  roles:
+    - role: icos.lxd_vm
+      lxd_vm_name: restore
+      lxd_vm_port: "{{ hostvars['restore'].ansible_port }}"
+      lxd_vm_root_size: "10GB"
+      lxd_vm_config:
+          limits.cpu: "2"
+          limits.memory: "10GB"
+      lxd_vm_devices:
+        borgbackup:
+          type: disk
+          source: /disk/data/bbserver/repos
+          path: /repos
+          readonly: "true"
+
+- hosts: restore
+  roles:
+    - role: icos.lxd_guest
