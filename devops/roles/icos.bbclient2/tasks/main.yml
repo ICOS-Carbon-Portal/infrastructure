@@ -1,9 +1,7 @@
-- name: Fail if not all parameters are provided
-  fail:
-    msg: "Failed to set all required parameters, this is a bug."
-  when: >-
-    bbclient_name is undefined or
-    bbclient_home is undefined
+- name: That bbclient_name is set
+  assert:
+    that: bbclient_name is defined
+  changed_when: no
 
 - name: Install borg
   tags: bbclient_borg
