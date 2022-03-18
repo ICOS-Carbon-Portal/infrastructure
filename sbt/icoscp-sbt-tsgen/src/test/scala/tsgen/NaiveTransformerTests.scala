@@ -14,13 +14,29 @@ class NaiveTransformerTests extends FunSuite{
 	|	case class Organization(self: UriResource, name: String) extends Agent
 	|	case class Person(self: UriResource, firstName: String, lastName: String) extends Agent
 
-
 	|	case class Station(
 	|		org: Organization,
 	|		id: String,
 	|		name: String,
-	|		coverage: Option[GeoFeature]
+	|		coverage: Option[GeoFeature],
+	|		funding: Option[Seq[Funding]]
 	|	)
+	|	case class Funding(
+	|		self: UriResource,
+	|		funder: Funder,
+	|		awardTitle: Option[String],
+	|		awardNumber: Option[String],
+	|		awardUrl: Option[URI],
+	|		start: Option[LocalDate],
+	|		stop: Option[LocalDate],
+	|	)
+
+	|	object FunderIdType extends Enumeration{
+	|		val Crossref = Value("Crossref Funder ID")
+	|		val GRID, ISNI, ROR, Other = Value
+	|	}
+	|
+	|	case class Funder(org: Organization, id: Option[(String,FunderIdType.Value)])
 
 	|	case class DataTheme(self: UriResource, icon: URI, markerIcon: Option[URI])
 

@@ -1,8 +1,8 @@
 
-scalaVersion in ThisBuild := "2.12.9"
+scalaVersion in ThisBuild := "2.12.15"
 name := "icoscp-sbt-tsgen"
 organization := "se.lu.nateko.cp"
-version := "0.1.1"
+version := "0.2.0"
 
 sbtPlugin := true
 
@@ -17,6 +17,6 @@ publishTo := {
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 libraryDependencies ++= Seq(
-	"org.scalameta" %% "scalameta" % "4.2.3",
+	"org.scalameta" %% "scalameta" % "4.5.0",
 	"org.scalatest" %% "scalatest" % "3.0.8" % "test"
 )
