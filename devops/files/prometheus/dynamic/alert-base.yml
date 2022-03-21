@@ -38,7 +38,7 @@ groups:
       and ON (instance, device, mountpoint)
         node_filesystem_readonly == 0
     # Long enough so it doesn't trigger on e.g a large rsync transfer.
-    for: 120m
+    for: 180m
     labels:
       severity: warning
     annotations:
