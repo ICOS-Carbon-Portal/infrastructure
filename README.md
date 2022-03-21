@@ -24,7 +24,7 @@ To install all of the above, run
 
 followed by
 
-`pip3 install --user ansible==2.9.4`
+`pip3 install --user ansible==2.11.6`
 
 (the recommended Ansible version will keep changing, so check with the team which one is relevant)
 
@@ -44,21 +44,21 @@ To be able to publish JAR artefacts to CP's Nexus repo, get the `.credentials` f
 ---
 rdflog
 -------
-Needed by the `meta` service to be run locally on developer's machine. First, obtain the latest rdflog backup from `fsicos.lunarc.lu.se`.
+Needed by the `meta` service to be run locally on developer's machine. First, obtain the latest rdflog backup from `fsicos2.lunarc.lu.se`.
 
 The following approach does not require installation of BorgBackup client.
 
 Login to fsicos and run the following to see the available snapshots of `rdflog` backup:<br/>
-`borg list /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/ | tail`
+`borg list /disk/data/bbserver/repos/rdflog.repo | tail`
 
 Choose the snapshot to reconstruct your local environment from, and extract it to current directory by running e.g. the following (last part is the snapshot timestamp):<br/>
-`borg extract /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/::2020-03-24T04:43:20`
+`borg extract /disk/data/bbserver/repos/rdflog.repo/::2020-03-24T04:43:20`
 
 Archive the backup to a file:<br/>
 `tar cvfz rdflog_volumes.tar.gz volumes/ && rm -rf volumes/`
 
 Copy `rdflog_volumes.tar.gz` to a folder on your machine, for example with<br/>
-`scp fsicos.lunarc.lu.se:/root/rdflog_volumes.tar.gz .`<br/>
+`scp fsicos2.lunarc.lu.se:/root/rdflog_volumes.tar.gz .`<br/>
 (Delete the archive from the server afterwards)
 
 Extract the rdflog Postgres data with `tar xfz rdflog_volumes.tar.gz`
@@ -82,7 +82,7 @@ Create and start RestHeart and MongoDB containers with<br>
 `docker-compose up -d`
 
 Recover RestHeart's MongoDB backup from BorgBackup in the same way as for rdflog.<br>
-`borg list /disk/data/bbserver/repos/fsicos2.lunarc.lu.se/restheart/default/`
+`borg list /disk/data/bbserver/repos/restheart.repo`
 
 Copy the backup file `server.archive` to your machine and restore it into your MongoDB with<br>
 `docker exec -i restheart-mongo mongorestore --archive --drop < server.archive`
