@@ -1,5 +1,4 @@
-Deployment and development tools for ICOS Carbon Portal services
-====================================================
+# Deployment and development tools for ICOS Carbon Portal services
 
 Deployment and provisioning of CP services is automated using Ansible.
 All related configurations and definitions are found in `devops` folder of this repository.
@@ -8,8 +7,8 @@ Some of CP's own, in-house-developed, services, are built, packaged and deployed
 
 Other folders in this Git repository mostly contain legacy Docker files (used before the Ansible era).
 
-Getting started (common)
-===============
+
+# Getting started (common)
 To get started, one needs:
 - Ubuntu 20.04 LTS or an equivalent Linux distribution (e.g. Linux Mint 20)
 - Git
@@ -30,8 +29,7 @@ followed by
 
 Make sure `ansible-playbook` is on your path. Get the ansible-vault password from a colleague and place it in file `~/.vault_password`.
 
-Getting started (Scala services)
-===
+# Getting started (Scala services)
 
 To develop/build/deploy Scala-based services, install Java with
 
@@ -41,36 +39,70 @@ and SBT by following the instructions on https://www.scala-sbt.org/
 
 To be able to publish JAR artefacts to CP's Nexus repo, get the `.credentials` file from a colleague and place it into `~/.ivy2/` folder.
 
----
-rdflog
--------
-Needed by the `meta` service to be run locally on developer's machine. First, obtain the latest rdflog backup from `fsicos2.lunarc.lu.se`.
 
-The following approach does not require installation of BorgBackup client.
+## rdflog
+`rdflog` is a postgres database. It is a dependency of the `meta` service. To
+setup a development environment for `meta` you first have to setup
+`rdflog`.
 
-Login to fsicos and run the following to see the available snapshots of `rdflog` backup:<br/>
-`borg list /disk/data/bbserver/repos/rdflog.repo | tail`
+The easiest way is to retrieve a copy of the production database and run it in
+a docker container. In order to retrieve a copy of the production database
+you'll need root access to the fsicos2 server, the following instructions
+depends on it.
 
-Choose the snapshot to reconstruct your local environment from, and extract it to current directory by running e.g. the following (last part is the snapshot timestamp):<br/>
-`borg extract /disk/data/bbserver/repos/rdflog.repo/::2020-03-24T04:43:20`
+Please note that the following commands - even though fairly detailed - are
+meant more as a guide than a precise step-by-step manual. The important thing
+to understand is that we're dumping a postgresql database and then we're
+restoring it again. Currently the source database is in docker, but it doesn't
+have to be; currently it's on another host (requiring ssh), but it doesn't have
+to be.
 
-Archive the backup to a file:<br/>
-`tar cvfz rdflog_volumes.tar.gz volumes/ && rm -rf volumes/`
+### Retrieve database
+`ssh -p 6022 root@fsicos2.lunarc.lu.se 'cd /docker/rdflog && docker-compose exec -T db pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz`
 
-Copy `rdflog_volumes.tar.gz` to a folder on your machine, for example with<br/>
-`scp fsicos2.lunarc.lu.se:/root/rdflog_volumes.tar.gz .`<br/>
-(Delete the archive from the server afterwards)
+This command will ssh to fsicos2, then change to the rdflog directory (in order to access docker-compose.yml) and execute `pg_dump` within the running rdflog database container. The `pg_dump` command makes sure to include `create database` commands. The default output of `pg_dump` is a text format which we pipe through gzip in order to cut down on transfer time. The result - basically a compressed sql file - is stored in /tmp on the local host.
 
-Extract the rdflog Postgres data with `tar xfz rdflog_volumes.tar.gz`
 
-Disable Postgres replication-slave behavior by `rm volumes/data/recovery.conf`
+### Start postgres container
+`docker run -d --name postgres -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
 
-Create a Postgres containser with the rdflog database:<br>
-`docker run --name rdflog -v <abs_path_to_here>/volumes/data:/var/lib/postgresql/data -p 127.0.0.1:5433:5432 -d postgres:10`
+This will create a docker container or localhost. It requires that you've setup
+docker on your machine and that you have enough privileges to run docker.
 
-----
-restheart
---------
+The docker container will:
+* have the container name `postgres`
+* be running in the background
+* be available on port 5433 on localhost. note that 5433 is chosen as not to
+  conflict with postgres' default port of 5432 which might be in use on
+  localhost
+
+### Restore backup into container
+`zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres postgres psql -q`
+
+Now we extract the compressed sql file to standard output and pipe it into the
+running postgres docker container, where the `psql` command will receive it and
+execute it.
+
+
+### Connect to database
+If you don't have postgres installed on host:
+
+`docker exec -it -u postgres postgres psql rdflog`
+
+If you do have postgres installed on host:
+
+`psql --host localhost --port 5433 -U postgres`
+
+Likewise, if you need to connect to the postgres database using programmatic
+means, point your program to localhost:5433 (don't forget the port number which
+is not the default one)
+
+
+### Shutdown and remove container.
+`docker rm -f postgres`
+
+
+## restheart
 Needed by `data` and `cpauth` to run locally.
 
 First, fetch `docker-compose.yml` and `security.yml` files:<br>
@@ -87,9 +119,8 @@ Recover RestHeart's MongoDB backup from BorgBackup in the same way as for rdflog
 Copy the backup file `server.archive` to your machine and restore it into your MongoDB with<br>
 `docker exec -i restheart-mongo mongorestore --archive --drop < server.archive`
 
-----
-postgis
-----
+
+## postgis
 Used by `data` service to log object downloads and query for download stats.
 
 Creating Docker container and installing PostGIS in it:<br>
@@ -103,13 +134,15 @@ Specify the password in `data` application.conf `cpdata.downloads.admin.password
 
 Either create a new database or restore a backup
 
+
 ### Create the database
 - Login to postgres inside the container `psql -U postgres`
 - Create the two databases `CREATE DATABASE cplog; CREATE DATABASE siteslog;`
 - Create two roles `CREATE USER reader WITH PASSWORD 'blabla'; CREATE USER writer WITH PASSWORD 'blabla';`
 - Specify the passwords in `data` application.conf `cpdata.downloads.reader.password` and `cpdata.downloads.writer.password`
 
-### OR Recover postgis' backup from BorgBackup on fsicos2 (same way as for rdflog).
+
+### OR Recover postgis' backup from BorgBackup on fsicos2
 The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
 `borg list /disk/data/bbserver/repos/postgis.repo | tail`
 
@@ -117,22 +150,19 @@ Restoring from the cluster dump made with `pg_dumpall`:<br>
 `egrep -v '^(CREATE|DROP) ROLE postgres;' ./stdin | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres`
 
 
-
------
-meta
-----
+## meta
 Deploy rdflog on your development machine. Clone the repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>
 ```
 cpmeta{
-	rdfLog{
-		server.port: 5433
-		credentials{
-			db: "rdflog"
-			user: "rdflog"
-			password: "look up in fsicos2:/home/cpmeta/application.conf"
-		}
-	}
-	citations.eagerWarmUp = false
+    rdfLog{
+        server.port: 5433
+        credentials{
+            db: "rdflog"
+            user: "rdflog"
+            password: "look up in fsicos2:/home/cpmeta/application.conf"
+        }
+    }
+    citations.eagerWarmUp = false
 }
 ```
 When starting `meta` for the first time, if you don't have RDF storage folder preserved from another machine/drive, the service will go into a "fresh init" mode of initialization from RDF logs, with no indices created, neither RDF4J nor CP ones. The service will issue a warning. This mode can also be triggered by a local config:
@@ -141,27 +171,19 @@ cpmeta.rdfStorage.recreateAtStartup = true
 ```
 You'll need to restart the service after the "fresh init". Initialization may take long time (~1 hour)
 
-----
 
-Getting started (front end apps)
-=======
-
-Nodejs and npm
-------
+# Getting started (front end apps)
+## Nodejs and npm
 Needed for running the front-end build tools.
 
 Install Node.js according to [NodeSource](https://github.com/nodesource/distributions#debinstall) (choose Node.js v12.x), it will include npm (Ubuntu 20.04 will be supported only after its official release).
 
----
 
-Nginx
------
+## Nginx
 Move `/etc/nginx` folder and `/etc/hosts` file from your previous machine.
 
-----
-Useful commands
-===============
 
+# Useful commands
 To get a list of Docker container IDs together with their Linux process IDs (run as root):
 `docker ps | awk '{print $1}' | tail -n +2 | xargs docker inspect -f '{{ .Config.Hostname }} {{ .State.Pid }}'`
 
@@ -180,9 +202,8 @@ To see all parents and direct children of a process:
 Working dir of a process by id:
 `pwdx <pid>`
 
-Restheart
----------
 
+## Restheart
 Users that specified ORCID ID in their user profile:
 
 `curl -G --data-urlencode 'keys={"_id":1, "profile.orcid":1}' --data-urlencode 'filter={"profile.orcid":{"$regex": ".+"}}' http://127.0.0.1:8088/db/users?count=true`
