@@ -168,11 +168,13 @@ in java. It's needed by our `data` and `cpauth` services. Restheart uses
 We run restheart and mongodb in docker (using a docker-compose.yml file). Once
 it's up and running we'll populate mongodb by restoring a database from backup.
 
-### Retrieve docker-compose and start up restheart/mongodb
-First, fetch `docker-compose.yml` and `security.yml` files:<br>
-<!---`wget https://raw.githubusercontent.com/SoftInstigate/restheart/3.10.1/docker-compose.yml` --->
-`curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml`<br>
-`wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/security.yml`
+### Retrieve files and start restheart/mongodb
+First, fetch `docker-compose.yml` and `security.yml` files:
+
+```
+curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml
+wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/security.yml
+```
 
 Create and start RestHeart and MongoDB containers with:
 
