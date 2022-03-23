@@ -3,12 +3,17 @@
 Deployment and provisioning of CP services is automated using Ansible.
 All related configurations and definitions are found in `devops` folder of this repository.
 
-Some of CP's own, in-house-developed, services, are built, packaged and deployed using SBT build tool. Source code of CP-specific SBT plugins can be found in folder `sbt`.
+Some of CP's own, in-house-developed, services, are built, packaged and
+deployed using SBT build tool. Source code of CP-specific SBT plugins can be
+found in folder `sbt`.
 
-Other folders in this Git repository mostly contain legacy Docker files (used before the Ansible era).
+Other folders in this Git repository mostly contain legacy Docker files (used
+before the Ansible era).
 
 
-# Getting started (common)
+# Getting started
+
+## Install required utilities
 To get started, one needs:
 - Ubuntu 20.04 LTS or an equivalent Linux distribution (e.g. Linux Mint 20)
 - Git
@@ -17,27 +22,72 @@ To get started, one needs:
 - pip
 - Ansible
 
-To install all of the above, run
+To install all of the above except ansible, run:
 
-`sudo apt install git docker.io docker-compose python3-pip`
+`$ sudo apt install git docker.io docker-compose python3-pip`
 
-followed by
+To install the latest version of ansible, first run:
 
-`pip3 install --user ansible==2.11.6`
+`$ pip3 install --user ansible==q`
 
-(the recommended Ansible version will keep changing, so check with the team which one is relevant)
+This will result in an error message - since there is no version named `q`;
+however, the error message will include the available versions. Choose the
+highest version which is a proper release (e.g `5.5.0` is a proper release, but
+`5.0.0a1` is an alpha, `5.0.0b2` is a beta, and `5.0.0rc1` is a release
+candidate.)
 
-Make sure `ansible-playbook` is on your path. Get the ansible-vault password from a colleague and place it in file `~/.vault_password`.
+`$ pip3 install --user ansible==5.5.0`
 
-# Getting started (Scala services)
+Make sure `ansible-playbook` is on your path. Get the ansible-vault password
+from a colleague and place it in file `~/.vault_password`.
+
+
+## Install java and scala
 
 To develop/build/deploy Scala-based services, install Java with
 
-`sudo apt install openjdk-11-jdk`
+`$ sudo apt install openjdk-11-jdk`
 
 and SBT by following the instructions on https://www.scala-sbt.org/
 
-To be able to publish JAR artefacts to CP's Nexus repo, get the `.credentials` file from a colleague and place it into `~/.ivy2/` folder.
+To be able to publish JAR artefacts to CP's Nexus repo, get the `.credentials`
+file from a colleague and place it into `~/.ivy2/` folder.
+
+
+## Setup ssh
+
+We have several servers, each running several virtual machine containers (using
+[LXD](https://linuxcontainers.org/lxd/)). When deploying software and restoring
+backups we will access these servers using ssh. Your personal ssh key will have
+been installed on the servers.
+
+**IMPORTANT** - it's your personal responsibility to protect your private ssh
+key, at a minimum it should be password protected.
+
+Check that you can access our primary production server by running this
+command:
+
+`$ ssh -p 60022 root@fsicos2.lunarc.lu.se hostname`
+
+The output should be:
+
+`fsicos2.lunarc.lu.se`
+
+If you want to save some on typing, you can create a ssh config file. Add the
+following to `~/.ssh/config`:
+```
+host fsicos2
+    hostname fsicos2.lunarc.lu.se
+    user root
+    port 60022
+```
+
+Now you can re-run the same command in a simpler way:
+
+`$ ssh fsicos2 hostname`
+
+The results should be the same. The rest of this document will use the simpler
+syntax (i.e `ssh fsicos2` instead of `ssh -p 60022 root@fsicos2.lunarc.lu.se`)
 
 
 ## rdflog
@@ -57,14 +107,20 @@ restoring it again. Currently the source database is in docker, but it doesn't
 have to be; currently it's on another host (requiring ssh), but it doesn't have
 to be.
 
-### Retrieve database
-`ssh -p 6022 root@fsicos2.lunarc.lu.se 'cd /docker/rdflog && docker-compose exec -T db pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz`
 
-This command will ssh to fsicos2, then change to the rdflog directory (in order to access docker-compose.yml) and execute `pg_dump` within the running rdflog database container. The `pg_dump` command makes sure to include `create database` commands. The default output of `pg_dump` is a text format which we pipe through gzip in order to cut down on transfer time. The result - basically a compressed sql file - is stored in /tmp on the local host.
+### Retrieve database
+`$ ssh fsicos2 'cd /docker/rdflog && docker-compose exec -T db pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz`
+
+This command will ssh to fsicos2, then change to the rdflog directory (in order
+to access docker-compose.yml) and execute `pg_dump` within the running rdflog
+database container. The `pg_dump` command makes sure to include `create
+database` commands. The default output of `pg_dump` is a text format which we
+pipe through gzip in order to cut down on transfer time. The result - basically
+a compressed sql file - is stored in /tmp on the local host.
 
 
 ### Start postgres container
-`docker run -d --name postgres -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
+`$ docker run -d --name postgres -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
 
 This will create a docker container or localhost. It requires that you've setup
 docker on your machine and that you have enough privileges to run docker.
@@ -75,9 +131,11 @@ The docker container will:
 * be available on port 5433 on localhost. note that 5433 is chosen as not to
   conflict with postgres' default port of 5432 which might be in use on
   localhost
+* have a user named `postgres` with the password `p`
+
 
 ### Restore backup into container
-`zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres postgres psql -q`
+`$ zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres postgres psql -q`
 
 Now we extract the compressed sql file to standard output and pipe it into the
 running postgres docker container, where the `psql` command will receive it and
@@ -87,11 +145,11 @@ execute it.
 ### Connect to database
 If you don't have postgres installed on host:
 
-`docker exec -it -u postgres postgres psql rdflog`
+`$ docker exec -it -u postgres postgres psql rdflog`
 
 If you do have postgres installed on host:
 
-`psql --host localhost --port 5433 -U postgres`
+`$ psql --host localhost --port 5433 -U postgres`
 
 Likewise, if you need to connect to the postgres database using programmatic
 means, point your program to localhost:5433 (don't forget the port number which
@@ -99,25 +157,116 @@ is not the default one)
 
 
 ### Shutdown and remove container.
-`docker rm -f postgres`
+`$ docker rm -f postgres`
 
 
 ## restheart
-Needed by `data` and `cpauth` to run locally.
+[Restheart](https://restheart.org/) is an open source "Web API" server written
+in java. It's needed by our `data` and `cpauth` services. Restheart uses
+[MongoDB](https://www.mongodb.com/) for storage.
 
+We run restheart and mongodb in docker (using a docker-compose.yml file). Once
+it's up and running we'll populate mongodb by restoring a database from backup.
+
+### Retrieve docker-compose and start up restheart/mongodb
 First, fetch `docker-compose.yml` and `security.yml` files:<br>
 <!---`wget https://raw.githubusercontent.com/SoftInstigate/restheart/3.10.1/docker-compose.yml` --->
 `curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml`<br>
 `wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/security.yml`
 
-Create and start RestHeart and MongoDB containers with<br>
-`docker-compose up -d`
+Create and start RestHeart and MongoDB containers with:
 
-Recover RestHeart's MongoDB backup from BorgBackup in the same way as for rdflog.<br>
-`borg list /disk/data/bbserver/repos/restheart.repo`
+`$ docker-compose up -d`
 
-Copy the backup file `server.archive` to your machine and restore it into your MongoDB with<br>
-`docker exec -i restheart-mongo mongorestore --archive --drop < server.archive`
+Now restheart is up and running and talking to mongodb. Next we'll restore a
+backup of the production database and use to populate mongodb.
+
+
+### Using borgbackup to restore a copy restheart's production database
+
+Many of our services use a backup software called
+[BorgBackup](https://www.borgbackup.org/). It's an application written in
+python and as such we can install it using python. Use the same procedure as
+for ansible to find the latest version and then install it:
+
+`$ pip3 install --user borgbackup==1.2.0`
+
+Each of our services backups to a borg `repository`. A borg repository is can
+be thought of as a database contained in a single directory. The borg client
+can interact with this repository, even over ssh.
+
+We have two locations (i.e directories on a server) where we store borg
+repositories, one on fsicos2 and on cdb. In this example we'll restore from
+fsicos2.
+
+First issue a ssh command (which uses the `fsicos2` ssh-alias setup earlier) to
+list the available borg repositories:
+
+```
+$ ssh fsicos2 ls ~bbserver/repos
+callisto_home_ute.repo
+cpauth.repo
+cpmeta.repo
+drupal.repo
+jupyter.repo
+mailman.repo
+nextcloud.repo
+nexus.repo
+nginx-static.repo
+postgis.repo
+prometheus.repo
+quince.repo
+radon_map.repo
+restheart.repo
+```
+
+Each of these directories are a borgbackup repository. Each `repository`
+contains several `archives`. Each time a backup is done, a new archive is
+created. We'll now use borgbackup (which you've just installed using pip) to
+list all the archives within the restheart repository.
+
+```
+$ borg list --short fsicos2:~bbserver/repos/restheart.repo
+Warning: Attempting to access a previously unknown unencrypted repository!
+Do you want to continue? [yN] y
+...
+2022-03-22T18:36:10
+2022-03-23T00:36:11
+2022-03-23T06:36:11
+```
+
+I've removed some of the output, keeping only the last three lines. Each line
+is the name of an `archive`. The archives are named after the time they're were
+created. The last backup in this example was taken on 2022-03-23 at 06:36:11 in
+the morning.
+
+Next we'll show which files are present in the latest archive:
+```
+$ borg list fsicos2:~bbserver/repos/restheart.repo::2022-03-23T06:36:11
+drwxr-xr-x root   root          0 Wed, 2022-03-23 06:36:01 backup
+-rw-r--r-- root   root   758834973 Wed, 2022-03-23 06:36:10 backup/server.archive
+```
+
+It turns out to be a single directory `backup` with a single file
+`server.archive`. Let's extract that backup (i.e restore from the borg repo on
+fsicos2 to our local directory).
+```
+$ borg extract fsicos2:~bbserver/repos/restheart.repo::2022-03-23T06:36:11
+$ tree
+.
+└── backup
+    └── server.archive
+
+1 directory, 1 file
+```
+
+We now have our own local copy of the restheart production database taken this
+very morning.
+
+Finally we'll use the freshly restored backup to populate the mongodb database
+that we have running in a docker container (which we started in the previous step.)
+
+`$ docker exec -i restheart-mongo mongorestore --archive --drop < backup/server.archive`
 
 
 ## postgis
