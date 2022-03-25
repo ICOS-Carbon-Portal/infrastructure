@@ -45,7 +45,7 @@
         config:
           security.nesting: "true"
           limits.cpu: "50"
-          limits.memory: "250GB"
+          limits.memory: "500GB"
         devices:
           root:
             path: "/"
