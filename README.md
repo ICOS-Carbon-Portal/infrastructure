@@ -331,7 +331,10 @@ Install Node.js according to [NodeSource](https://github.com/nodesource/distribu
 
 
 ## Nginx
-Move `/etc/nginx` folder and `/etc/hosts` file from your previous machine.
+
+Install Nginx with `sudo apt install nginx`
+
+Move `/etc/nginx` folder and `/etc/hosts` file from your previous machine, or get needed config files from your fellow developers.
 
 
 # Useful commands
