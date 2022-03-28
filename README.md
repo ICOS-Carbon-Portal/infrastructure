@@ -327,7 +327,7 @@ You'll need to restart the service after the "fresh init". Initialization may ta
 ## Nodejs and npm
 Needed for running the front-end build tools.
 
-Install Node.js according to [NodeSource](https://github.com/nodesource/distributions#debinstall) (choose Node.js v12.x), it will include npm (Ubuntu 20.04 will be supported only after its official release).
+Install Node.js according to [NodeSource](https://github.com/nodesource/distributions#debinstall) (choose the latest LTS release, which is v16.x at the time of writing this, but will change in the future). Node.js includes npm.
 
 
 ## Nginx
