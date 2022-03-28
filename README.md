@@ -119,14 +119,14 @@ pipe through gzip in order to cut down on transfer time. The result - basically
 a compressed sql file - is stored in /tmp on the local host.
 
 
-### Start postgres container
-`$ docker run -d --name postgres -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
+### Start postgres container for rdflog
+`$ docker run -d --name rdflog -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
 
 This will create a docker container or localhost. It requires that you've setup
 docker on your machine and that you have enough privileges to run docker.
 
 The docker container will:
-* have the container name `postgres`
+* have the container name `rdflog`
 * be running in the background
 * be available on port 5433 on localhost. note that 5433 is chosen as not to
   conflict with postgres' default port of 5432 which might be in use on
@@ -135,7 +135,7 @@ The docker container will:
 
 
 ### Restore backup into container
-`$ zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres postgres psql -q`
+`$ zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres rdflog psql -q`
 
 Now we extract the compressed sql file to standard output and pipe it into the
 running postgres docker container, where the `psql` command will receive it and
@@ -145,7 +145,7 @@ execute it.
 ### Connect to database
 If you don't have postgres installed on host:
 
-`$ docker exec -it -u postgres postgres psql rdflog`
+`$ docker exec -it -u postgres rdflog psql rdflog`
 
 If you do have postgres installed on host:
 
@@ -157,7 +157,7 @@ is not the default one)
 
 
 ### Shutdown and remove container.
-`$ docker rm -f postgres`
+`$ docker rm -f rdflog`
 
 
 ## restheart
@@ -190,6 +190,12 @@ Many of our services use a backup software called
 [BorgBackup](https://www.borgbackup.org/). It's an application written in
 python and as such we can install it using python. Use the same procedure as
 for ansible to find the latest version and then install it:
+
+`$ sudo apt install libssl-dev`
+
+`$ sudo apt install libacl1-dev`
+
+`$ pip3 install pkgconfig`
 
 `$ pip3 install --user borgbackup==1.2.0`
 
@@ -286,7 +292,7 @@ Specify the password in `data` application.conf `cpdata.downloads.admin.password
 Either create a new database or restore a backup
 
 
-### Create the database
+### EITHER Create the database
 - Login to postgres inside the container `psql -U postgres`
 - Create the two databases `CREATE DATABASE cplog; CREATE DATABASE siteslog;`
 - Create two roles `CREATE USER reader WITH PASSWORD 'blabla'; CREATE USER writer WITH PASSWORD 'blabla';`
