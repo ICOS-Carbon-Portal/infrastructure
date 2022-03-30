@@ -108,7 +108,7 @@ have to be; currently it's on another host (requiring ssh), but it doesn't have
 to be.
 
 
-### Retrieve database
+#### Retrieve database
 `$ ssh fsicos2 'cd /docker/rdflog && docker-compose exec -T db pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz`
 
 This command will ssh to fsicos2, then change to the rdflog directory (in order
@@ -119,7 +119,7 @@ pipe through gzip in order to cut down on transfer time. The result - basically
 a compressed sql file - is stored in /tmp on the local host.
 
 
-### Start postgres container for rdflog
+#### Start postgres container for rdflog
 `$ docker run -d --name rdflog -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
 
 This will create a docker container or localhost. It requires that you've setup
@@ -134,15 +134,19 @@ The docker container will:
 * have a user named `postgres` with the password `p`
 
 
-### Restore backup into container
+#### Restore backup into container
 `$ zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres rdflog psql -q`
 
 Now we extract the compressed sql file to standard output and pipe it into the
 running postgres docker container, where the `psql` command will receive it and
 execute it.
 
+It shows error messages like "ERROR:  role "rdflog" does not exist", they can be ignored.
 
-### Connect to database
+
+#### Connect to database
+(This step is only informative, so it is ok to skip)
+
 If you don't have postgres installed on host:
 
 `$ docker exec -it -u postgres rdflog psql rdflog`
@@ -155,8 +159,18 @@ Likewise, if you need to connect to the postgres database using programmatic
 means, point your program to localhost:5433 (don't forget the port number which
 is not the default one)
 
+#### Grant all on all tables in schema "public" to rdflog
 
-### Shutdown and remove container.
+`docker exec -it rdflog bash`
+`psql -U postgres`
+`\c rdflog`
+`\d` to list all the tables
+`\dg`  list the roles
+`CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD 'Password matches your meta application.conf'; `
+` GRANT ALL ON ALL TABLES IN SCHEMA "public*" TO rdflog;`
+
+#### Shutdown and remove container
+When the container is not needed any more:
 `$ docker rm -f rdflog`
 
 
