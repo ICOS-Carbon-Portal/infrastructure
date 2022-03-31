@@ -162,12 +162,19 @@ is not the default one)
 #### Grant all on all tables in schema "public" to rdflog
 
 `docker exec -it rdflog bash`
+
 `psql -U postgres`
+
 `\c rdflog`
+
 `\d` to list all the tables
+
 `\dg`  list the roles
+
 `CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD 'Password matches your meta application.conf'; `
+
 ` GRANT ALL ON ALL TABLES IN SCHEMA "public*" TO rdflog;`
+
 
 #### Shutdown and remove container
 When the container is not needed any more:
