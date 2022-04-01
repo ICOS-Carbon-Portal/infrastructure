@@ -2,35 +2,34 @@ package se.lu.nateko.cp.sbtfrontend
 
 import sbt.internal.util.ExitHook
 import scala.sys.process.Process
-import java.lang.{Process => JProcess, ProcessBuilder}
+import java.lang.{Process => JProcess, ProcessBuilder, ProcessHandle}
 
-class KillUnixProcWithChildren(val pid: Int) extends ExitHook{
-	def runBeforeExiting(): Unit = UnixProcessWithChildren.terminate(pid)
+class KillUnixProcWithChildren(val hdl: ProcessHandle) extends ExitHook{
+	def runBeforeExiting(): Unit = UnixProcessWithChildren.terminate(hdl)
 
 	override def equals(x: Any): Boolean = x match{
-		case other: KillUnixProcWithChildren => other.pid == pid
+		case other: KillUnixProcWithChildren => other.hdl.pid() == hdl.pid()
 		case _ => false
 	}
 
-	override def hashCode(): Int = pid
+	override def hashCode(): Int = hdl.pid().toInt
 }
 
-class UnixProcessWithChildren(val pid: Int, proc: JProcess){
+class UnixProcessWithChildren(val proc: JProcess){
 
-	val exitHook = new KillUnixProcWithChildren(pid)
-
-	def isAlive: Boolean = proc.isAlive()
+	val exitHook = new KillUnixProcWithChildren(proc.toHandle)
 
 	def killAndWaitFor(): Int = {
-		if(proc.isAlive()) UnixProcessWithChildren.terminate(pid)
+		if(proc.isAlive()) UnixProcessWithChildren.terminate(proc.toHandle)
 		proc.waitFor()
 	}
 }
 
 object UnixProcessWithChildren{
 
-	def terminate(pid: Int): Unit = {
-		(Process(s"pkill --signal SIGTERM -P $pid") ### Process (s"kill -s SIGTERM $pid")).!
+	def terminate(hdl: ProcessHandle): Unit = {
+		hdl.children().forEach(terminate)
+		hdl.destroy()
 	}
 
 	def run(dir: java.io.File, command: String*): UnixProcessWithChildren = {
@@ -38,10 +37,7 @@ object UnixProcessWithChildren{
 		pb.directory(dir)
 		pb.redirectOutput(ProcessBuilder.Redirect.INHERIT)
 		val proc = pb.start()
-		val pidField = proc.getClass.getDeclaredField("pid")
-		pidField.setAccessible(true)
-		val pid = pidField.getInt(proc)
-		new UnixProcessWithChildren(pid, proc)
+		new UnixProcessWithChildren(proc)
 	}
 
 	implicit class ExitHooksProcReplacementOpt(val set: Set[ExitHook]) extends AnyVal{

@@ -87,11 +87,11 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 	def stopFrontendBuildProc(state: State): Unit = {
 		val log = state.log
 		state.get(frontentBuildProcKey).foreach{proc =>
-			if(proc.isAlive) {
-				log.info(s"Terminating the front end build process (PID ${proc.pid}) (with children) and waiting for it to finish")
+			if(proc.proc.isAlive) {
+				log.info(s"Terminating the front end build process (PID ${proc.proc.pid}) (with children) and waiting for it to finish")
 				proc.killAndWaitFor()
 			}
-			else log.info(s"The resident front end build process (PID ${proc.pid}) has already stopped")
+			else log.info(s"The resident front end build process (PID ${proc.proc.pid}) has already stopped")
 		}
 	}
 

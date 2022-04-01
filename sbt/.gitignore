@@ -10,6 +10,7 @@ project/target
 .settings
 .metals
 .bloop
+.bsp
 bin
 .vscode
 metals.sbt
