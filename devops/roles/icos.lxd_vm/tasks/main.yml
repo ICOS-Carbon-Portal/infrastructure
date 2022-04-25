@@ -31,6 +31,8 @@
   changed_when: no
   retries: 10
   delay: 5
+  until: _key.rc == 0
+
 
 - name: Forward ssh port and create /etc/hosts entry
   include_role:
