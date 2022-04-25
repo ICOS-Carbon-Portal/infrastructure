@@ -13,6 +13,7 @@
       -A PREROUTING -p tcp
       --dport {{ lxd_forward_port }}
       -j DNAT --to-destination {{ lxd_forward_ip }}:22
+  when: lxd_forward_port
 
 - name: Modify /etc/hosts - {{ lxd_forward_name }} = {{ lxd_forward_ip }}
   lineinfile:
