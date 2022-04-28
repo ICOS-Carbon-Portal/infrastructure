@@ -2,6 +2,7 @@ package se.lu.nateko.cp.sbttsgen
 import scala.meta._
 import java.io.Writer
 import scala.collection.mutable
+import scala.meta.dialects.Scala3
 
 class NaiveTransformer(writer: Writer){
 
