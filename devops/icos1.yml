@@ -1,0 +1,11 @@
+- hosts: icos1.gis.lu.se
+  roles:
+    - role: icos.server
+      tags: server
+
+  tasks:
+    - name: Install zfs and nfs
+      apt:
+        - name:
+            - zfsutils-linux
+            - nfs-kernel-server
