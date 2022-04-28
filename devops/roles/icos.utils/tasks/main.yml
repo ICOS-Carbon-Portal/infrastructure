@@ -32,6 +32,7 @@
       - tcpdump        # network troubleshooting
       - mailutils      # so cron can deliver failure reports
       - mutt           # for reading said reports
+      - unzip          # required by ansible's unarchive
     update_cache: yes
 
 - name: Install ripgrep
