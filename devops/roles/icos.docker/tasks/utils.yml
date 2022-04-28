@@ -5,7 +5,7 @@
     dbin_user: bcicen
     dbin_repo: ctop
     dbin_unar: false
-    dbin_url: "{{ dbin__down }}/{{ dbin__vers }}/ctop-{{ dbin__vers }}-{{ dbin__plat }}"
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/ctop-{{ dbin__vers }}-{{ dbin__plat }}"
 
 - include_role:
     name: icos.github_download_bin
