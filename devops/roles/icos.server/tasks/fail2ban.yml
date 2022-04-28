@@ -3,6 +3,12 @@
     name:
       - fail2ban
 
+- name: Start fail2ban service
+  systemd:
+    name: fail2ban
+    enabled: yes
+    state: started
+
 - name: Block all ports for jail sshd
   copy:
     dest: /etc/fail2ban/jail.d/sshd-allports.local
