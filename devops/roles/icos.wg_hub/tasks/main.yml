@@ -1,0 +1,80 @@
+- name: Retrieve server's private key
+  shellfact:
+    exec: cat /etc/wireguard/privatekey
+    fact: _privatekey
+
+- name: Install wireguard hub config
+  when: wg_hub_ishub
+  register: _hub_conf
+  copy:
+    dest: "/etc/wireguard/wg-{{ wg_hub_config.name }}.conf"
+    mode: 0600
+    content: |
+      [Interface]
+      Address = {{ wg_hub_self.addr }}
+      ListenPort = {{ wg_hub_config.hub.port }}
+      PrivateKey = {{ _privatekey }}
+
+      {% for name, conf in wg_hub_config.peers.items() %}
+      {% if name != inventory_hostname %}
+      # {{ name }}
+      [Peer]
+      PublicKey = {{ conf.key | default(lookup('file', 'files/wireguard/%s' % name)) }}
+      AllowedIPs = {{ conf.allowed_ips | default("%s/32" % conf.addr) }}
+      PersistentKeepalive = 25
+      {% endif %}
+
+      {% endfor %}
+
+- name: Install wireguard spoke config
+  when: not wg_hub_ishub
+  register: _spoke_conf
+  copy:
+    dest: "/etc/wireguard/wg-{{ wg_hub_config.name }}.conf"
+    mode: 0600
+    content: |
+      [Interface]
+      Address = {{ wg_hub_self.addr }}
+      {% if wg_hub_self.port is defined %}
+      ListenPort =  {{ wg_hub_self.port }}
+      {% endif %}
+      PrivateKey = {{ _privatekey }}
+
+      [Peer]
+      PublicKey = {{ wg_hub_key }}
+      Endpoint = {{ wg_hub_config.hub.addr }}:{{ wg_hub_config.hub.port }}
+      AllowedIPs = {{ wg_hub_config.allowed_ips }}
+      PersistentKeepalive = 25
+
+# FIXME: Remove in 2023
+- name: Remove old wg_server block
+  blockinfile:
+    marker: "# {mark} cloud.wg_server {{ wg_hub_config.name }}"
+    path: /etc/hosts
+    state: absent
+
+- name: Add hosts
+  blockinfile:
+    marker: "# {mark} cloud.wg_hub {{ wg_hub_config.name }}"
+    path: /etc/hosts
+    block: |
+      {% for name, conf in wg_hub_config.peers.items() %}
+      {{ conf.addr }} {{ conf.name | default(name) }}.wg-{{ wg_hub_config.name }}
+      {% if name == wg_hub_peer %}
+      {{ conf.addr }} hub.wg-{{ wg_hub_config.name }}
+      {% endif %}
+      {% endfor %}
+
+- name: Allow wireguard through firewall
+  when: wg_hub_ishub
+  iptables_raw:
+    name: wireguard_{{ wg_hub_config.name }}
+    rules: |
+      -A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
+      -A FORWARD -i wg-{{ wg_hub_config.name }} -j ACCEPT
+
+- name: Start wg-quick service
+  systemd:
+    name: "wg-quick@wg-{{ wg_hub_config.name }}.service"
+    state: "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed else 'started' }}"
+    enabled: yes

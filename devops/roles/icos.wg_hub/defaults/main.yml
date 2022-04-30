@@ -1,0 +1,23 @@
+# Configuration for the current host
+wg_hub_self: "{{ wg_hub_config.peers[inventory_hostname] }}"
+
+# Which peer is the hub.
+wg_hub_peer: >-
+  {{ wg_hub_config.hub.addr if wg_hub_config.hub.addr in wg_hub_config.peers
+  else wg_hub_config.hub.peer }}
+
+# Is the current host the hub.
+wg_hub_ishub: >-
+  {{ wg_hub_config.hub.addr == inventory_hostname or
+     wg_hub_config.hub.peer | default("") == inventory_hostname }}
+
+wg_hub_port: >-
+  {% if wg_hub_self.port is defined -%}
+  {{ wg_hub_self.port }}
+  {% elif wg_hub_ishub %}
+  {{ wg_hub_config.hub.port }}
+  {% endif %}
+
+wg_hub_key: >-
+  {{ wg_hub_config.peers[wg_hub_peer].key |
+  default(lookup('file', 'files/wireguard/%s' % wg_hub_peer)) }}
