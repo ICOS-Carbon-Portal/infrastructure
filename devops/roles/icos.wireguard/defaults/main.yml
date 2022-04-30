@@ -1,0 +1,4 @@
+wireguard_update: no
+wireguard_reresolve_script: /usr/local/sbin/wireguard-reresolve-dns.sh
+
+_wg_is_installed: false

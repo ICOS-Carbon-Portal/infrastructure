@@ -1,0 +1,42 @@
+# https://github.com/adrianmihalko/raspberrypiwireguard#1-wireguard-installation-raspberry-pi-2-v12-and-above
+
+# https://xdeb.org/post/2019/01/24/using-ansible-to-setup-a-wireguard-vpn-server-on-debian/
+# https://engineerworkshop.com/2020/02/20/how-to-set-up-wireguard-on-a-raspberry-pi/
+
+- name: Add key for debian {{ ansible_lsb.release }}
+  apt_key:
+    url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release}}.asc
+    state: present
+
+- name: Add debian apt repository
+  apt_repository:
+    filename: debian_unstable.list
+    repo: |
+      deb http://deb.debian.org/debian/ unstable main
+
+- name: Set debian unstable packages to a lower priority
+  copy:
+    dest: /etc/apt/preferences.d/debian_unstable
+    content: |
+      Package: *
+      Pin: release o=Debian,a=unstable
+      Pin-Priority: 150
+
+- name: Install wireguard
+  apt:
+    name:
+      # https://github.com/pivpn/pivpn/issues/920#issuecomment-577775030
+      - raspberrypi-kernel-headers
+      - wireguard
+    state: present
+
+- name: Create wireguard-reresolve-dns.sh symlink
+  file:
+    dest: "{{ wireguard_reresolve_script }}"
+    src: /usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh
+    state: link
+    
+- name: Making a note that wireguard is installed
+  set_fact:
+    _wg_is_installed: 1
+    cacheable: yes

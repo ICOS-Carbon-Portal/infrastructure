@@ -1,0 +1,17 @@
+- name: Install wireguard
+  apt:
+    name: wireguard
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Create wireguard-reresolve-dns.sh symlink
+  file:
+    dest: "{{ wireguard_reresolve_script }}"
+    src: /usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh
+    state: link
+
+- name: Making a note that wireguard is installed
+  set_fact:
+    _wg_is_installed: 1
+    cacheable: yes
