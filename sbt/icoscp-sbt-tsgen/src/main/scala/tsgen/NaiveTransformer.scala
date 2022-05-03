@@ -160,6 +160,11 @@ object NaiveTransformer{
 						stats
 					)
 				) => enumName -> stats.flatMap(collectValues)
+			case e : Defn.Enum =>
+				e.name.value -> e.collect{
+					case ec: Defn.EnumCase => ec.name.value
+				}
+
 		}.filterNot(_._2.isEmpty).toMap
 	}
 }
