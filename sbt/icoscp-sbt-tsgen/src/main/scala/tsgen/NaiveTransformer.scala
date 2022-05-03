@@ -161,9 +161,13 @@ object NaiveTransformer{
 					)
 				) => enumName -> stats.flatMap(collectValues)
 			case e : Defn.Enum =>
-				e.name.value -> e.collect{
-					case ec: Defn.EnumCase => ec.name.value
-				}
+				val name = e.name.value
+				val cases = e.collect{
+					case ec: Defn.EnumCase => List(ec.name.value)
+					case rec: Defn.RepeatedEnumCase =>
+						rec.cases.map(_.value)
+				}.flatten
+				name -> cases
 
 		}.filterNot(_._2.isEmpty).toMap
 	}
