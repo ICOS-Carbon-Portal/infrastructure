@@ -47,11 +47,14 @@
       PersistentKeepalive = 25
 
 # FIXME: Remove in 2023
-- name: Remove old wg_server block
+- name: Remove old {{ item }} block
   blockinfile:
-    marker: "# {mark} cloud.wg_server {{ wg_hub_config.name }}"
+    marker: "# {mark} {{ item }} {{ wg_hub_config.name }}"
     path: /etc/hosts
     state: absent
+  loop:
+    - cloud.wg_server
+    - cloud.wg_client
 
 - name: Add hosts
   blockinfile:
