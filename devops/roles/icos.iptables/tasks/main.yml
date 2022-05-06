@@ -47,6 +47,10 @@
       -A INPUT -p udp -d 239.255.255.250 --dport 1900 -j ACCEPT
       {% endif -%}
 
+      # policy
+      -P INPUT DROP
+      -P FORWARD DROP
+
 
 - name: Allow ssh through firewall
   iptables_raw:
