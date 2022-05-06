@@ -1,0 +1,6 @@
+- name: restart nfs-kernel-server
+  systemd:
+    name: nfs-kernel-server
+    state: restarted
+    # This is needed to pick up changes to /etc/default
+    daemon-reload: yes
