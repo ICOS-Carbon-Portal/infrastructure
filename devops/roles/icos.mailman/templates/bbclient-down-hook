@@ -1,0 +1,5 @@
+#!/bin/bash
+# https://github.com/maxking/docker-mailman/issues/535
+set -e
+cd {{ mailman_home }}
+logrotate logrotate.conf

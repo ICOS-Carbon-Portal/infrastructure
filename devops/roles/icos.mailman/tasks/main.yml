@@ -3,7 +3,7 @@
     path: "{{ mailman_home }}/build/mailman-core"
     state: directory
 
-- name: Install configuration
+- name: Copy files
   template:
     dest: "{{ item.dest }}"
     src: "{{ item.src }}"
@@ -12,16 +12,21 @@
     - dest: "{{ mailman_home }}/"
       src: docker-compose.yml
       mode: "0600"
+    - dest: "{{ mailman_home }}"
+      src: logrotate.conf
+    - dest: "{{ mailman_home }}"
+      src: bbclient-down-hook
+      mode: +x
     - dest: "{{ mailman_volume_core }}"
       src: mailman-extra.cfg
     - dest: "{{ mailman_volume_web }}"
       src: settings_local.py
-  register: _config
+    - dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
+      src: Dockerfile.core
+  register: _files
 
 - name: Copy Dockerfile.core
   template:
-    src: Dockerfile.core
-    dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
 
 - name: Install cli wrappers
   template:
@@ -43,7 +48,7 @@
 - name: Start containers
   docker_compose:
     project_src: "{{ mailman_home }}"
-    restarted: "{{ _config.changed }}"
+    restarted: "{{ _files.changed }}"
 
 - name: Test the REST API
   uri:
