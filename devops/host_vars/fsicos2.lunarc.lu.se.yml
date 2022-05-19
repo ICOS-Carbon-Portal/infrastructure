@@ -1,0 +1,83 @@
+iptables_ssh_port: 60022
+lxd_vm_variant: ext4
+nextcloud_volume_nextcloud: /disk/data/nextcloud
+dockermon_enable: true
+dirsize_initial:
+  - /disk/data/nextcloud
+  - /var/log
+flexpart_install_run: true
+flexpart_max_parallel: 12
+flexpart_export_output_to: "194.47.223.133(ro,no_subtree_check)"
+
+cpmeta_filestorage_target: /disk/data/metaAppStorage
+cpdata_filestorage_target: /disk/data/dataAppStorage
+
+stilt_nfs_exports: |
+      /disk/data/stiltweb   {{ fsicos1_ip }}(ro)
+      /disk/data/stilt      {{ fsicos1_ip }}(ro)
+stiltcluster_port: 2561
+stiltcluster_front_port: 2550
+stiltcluster_maxcores: 20
+
+bbclient_remotes:
+  - fsicos2.lunarc.lu.se
+  - cdb.nateko.lu.se
+
+icosdata_exports: |
+  /disk/data/nextcloud/data/__groupfolders/14/Data/FLUXCOM fsicos*.lunarc.lu.se(ro,no_root_squash)
+  # CoCO2
+  /disk/data/nextcloud/data/__groupfolders/32 fsicos3.lunarc.lu.se(ro,no_root_squash)
+  /disk/data/flexextract            fsicos*.lunarc.lu.se(rw)
+  /disk/data/project                fsicos*.lunarc.lu.se(ro)
+  /disk/data/flexpart/meteo         fsicos*.lunarc.lu.se(ro)
+  /disk/data/dataAppStorage         fsicos*.lunarc.lu.se(ro)
+  /disk/data/stiltweb               fsicos*.lunarc.lu.se(ro)
+  /disk/data/obspack                fsicos*.lunarc.lu.se(ro)
+  /disk/data/stilt                  fsicos*.lunarc.lu.se(ro)
+  /disk/data/common/netcdf/dataDemo fsicos*.lunarc.lu.se(rw)
+
+icosdata_mkdirs:
+  - /data/stilt
+  - /share/fsicos3
+  - /share/with_nextcloud/jupyter_coco2
+
+icosdata_bind_mounts:
+  - path: /data/stiltweb
+    src: /disk/data/stiltweb
+    opts: ",ro"
+
+  - path: /data/project
+    src: /disk/data/project
+
+  - path: /data/dataAppStorage
+    src: /disk/data/dataAppStorage
+    opts: ",ro"
+
+  - path: /data/stilt_legacy
+    src: /disk/data/stilt
+    opts: ",ro"
+
+icosdata_nfs_mounts:
+  - path: /share/with_nextcloud/jupyter_coco2
+    src: fsicos3.lunarc.lu.se:/pool/jupyter/project/coco2/jupyter
+    opts: "ro,soft"
+
+  - path: /share/fsicos3
+    src: fsicos3.lunarc.lu.se:/incoming
+    opts: rw
+
+  - path: /data/project/eurocom
+    src: fsicos3.lunarc.lu.se:/data/project/eurocom
+    opts: "ro,soft"
+
+  - path: /data/stilt
+    src: fsicos3.lunarc.lu.se:/pool/ute/stilt/RINGO/T1.3/STILT
+    opts: "ro,soft"
+
+  - path: /data/project/stc
+    src: fsicos3.lunarc.lu.se:/data/project/stc
+    opts: "ro,soft"
+
+  - path: /data/flexpart/output
+    src: fsicos3.lunarc.lu.se:/data/flexpart/output
+    opts: "ro,soft"

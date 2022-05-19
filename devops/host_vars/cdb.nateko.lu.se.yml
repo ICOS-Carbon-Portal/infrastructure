@@ -1,0 +1,3 @@
+lxd_vm_variant: ext4
+dockermon_enable: true
+pgrep_vm_name: 'pgrep-rdflog@cdb'
