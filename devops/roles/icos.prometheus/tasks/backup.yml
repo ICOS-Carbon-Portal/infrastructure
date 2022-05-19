@@ -4,12 +4,6 @@
     bbclient_home: "{{ prometheus_home }}/bbclient"
     bbclient_name: prometheus
 
-# FIXME: Remove in 2022. Migration from earlier version
-- name: Remove cron job
-  cron:
-    name: "prometheus_backup"
-    state: absent
-
 - include_role:
     name: icos.timer
   vars:
