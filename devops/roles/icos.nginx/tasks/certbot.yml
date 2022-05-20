@@ -1,8 +1,14 @@
 # It used to be pip but these days letsencrypt recommends snap for Ubuntu.
-- name: Install certbot
+- name: Install certbot using snap
   community.general.snap:
     name: certbot
     classic: yes
+
+# FIXME: Remove in 2023
+- name: Remove pip-installed certbot
+  pip:
+    name: certbot
+    state: absent
 
 - name: Add job to renew certificates
   cron:
