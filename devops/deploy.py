@@ -25,45 +25,48 @@
 # Deploy new version of cpmeta to production.
 # $ deploy cpmeta app -ecpmeta_jar_file=cpmeta.jar
 
-
 import sys
 import os
-
-INVENTORY = "production.inventory"
+import click
 
 def die(msg):
     print(msg, file=sys.stderr)
     sys.exit(1)
 
 
-# Try to find out in which directory this script lives.
-DEVOPS = os.path.dirname(os.path.realpath(sys.argv.pop(0)))
+@click.command(context_settings={"ignore_unknown_options": True})
+@click.option('-i', 'inventory', default='production')
+@click.argument('playbook')
+@click.argument("args", nargs=-1, required=False)
+def main(inventory, playbook, args):
+    inventory += ".inventory"
+    if not os.path.exists(inventory):
+        die("Cannot find %s in %s" % (inventory, os.getcwd()))
 
-# Change to the directory where the playbooks lives. Ansible uses the current
-# working directory as a starting point when locating its files.
-os.chdir(DEVOPS)
+    # Special case - print facts for host.
+    if len(args) == 1 and playbook == "facts":
+        ARGS = ["ansible", args[0], '-m', 'setup', '-i', inventory]
+    # Standard case - run playbook.
+    else:
+        playbook += ".yml"
+        if not os.path.exists(playbook):
+            die("Cannot find %s in %s" % (playbook, os.getcwd()))
 
-if len(sys.argv) < 1:
-    die("usage: deploy name(.yml) {tags}")
+        # The remaining arguments are either tags or options to ansible.
+        TAGS = ["-t%s" % tag for tag in args if not tag.startswith('-')]
+        OPTS = [opt for opt in args if opt.startswith('-')]
+        ARGS = ['ansible-playbook', '-i', inventory, playbook] + TAGS + OPTS
 
-if not os.path.exists(INVENTORY):
-    die("Cannot find %s in %s" % (INVENTORY, DEVOPS))
+    print(*ARGS)
+    os.execvp(ARGS[0], ARGS)
 
-NAME = sys.argv.pop(0)
 
-# Special case - print facts for host.
-if len(sys.argv) == 1 and NAME == "facts":
-    ARGS = ["ansible", sys.argv[0], '-m', 'setup', '-i', INVENTORY]
-# Standard case - run playbook.
-else:
-    PLAYBOOK = "%s.yml" % NAME
-    if not os.path.exists(PLAYBOOK):
-        die("Cannot find %s in %s" % (PLAYBOOK, DEVOPS))
+if __name__ == '__main__':
+    # Try to find out in which directory this script lives.
+    home = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-    # The remaining arguments are either tags or options to ansible.
-    TAGS = ["-t%s" % tag for tag in sys.argv if not tag.startswith('-')]
-    OPTS = [opt for opt in sys.argv if opt.startswith('-')]
-    ARGS = ['ansible-playbook', '-i', INVENTORY, PLAYBOOK] + TAGS + OPTS
+    # Change to the directory where the playbooks lives. Ansible uses the
+    # current working directory as a starting point when locating its files.
+    os.chdir(home)
 
-print(*ARGS)
-os.execvp(ARGS[0], ARGS)
+    main()
