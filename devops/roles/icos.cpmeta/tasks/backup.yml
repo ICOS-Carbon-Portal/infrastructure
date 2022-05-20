@@ -1,3 +1,11 @@
+- include_role:
+    name: icos.bbclient2
+    public: yes
+  vars:
+    bbclient_user: root
+    bbclient_name: cpmeta
+    bbclient_home: "{{ cpmeta_home }}/.bbclient"
+
 - name: Copy backup.sh
   template:
     src: backup.sh
@@ -11,10 +19,3 @@
     hour: "*"
     minute: "18"
     name: "cpmeta_backup"
-
-- include_role:
-    name: icos.bbclient2
-  vars:
-    bbclient_user: root
-    bbclient_name: cpmeta
-    bbclient_home: "{{ cpmeta_home }}/.bbclient"
