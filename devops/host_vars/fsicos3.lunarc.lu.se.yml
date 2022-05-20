@@ -1,6 +1,17 @@
+# ANSIBLE
+666ansible_user: root
+
+
+# SERVER
 iptables_ssh_port: 60022
 lxd_vm_variant: zfs
+
+
+# MISC
 pgrep_vm_name: 'pgrep-rdflog@fsicos3'
+
+
+# ICOSDATA
 icosdata_mkdirs:
   - /nfs
 

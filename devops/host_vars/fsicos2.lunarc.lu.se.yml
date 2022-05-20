@@ -1,17 +1,39 @@
+# ANSIBLE
+ansible_user: root
+ansible_python_interpreter: /usr/bin/python3
+
+
+# SERVER
 iptables_ssh_port: 60022
 lxd_vm_variant: ext4
-nextcloud_volume_nextcloud: /disk/data/nextcloud
+bbclient_remotes:
+  - fsicos2.lunarc.lu.se
+  - cdb.nateko.lu.se
+
+  
+# PROMETHEUS
 dockermon_enable: true
 dirsize_initial:
   - /disk/data/nextcloud
   - /var/log
+
+  
+# NEXTCLOUD  
+nextcloud_volume_nextcloud: /disk/data/nextcloud
+
+
+# FLEXPART
 flexpart_install_run: true
 flexpart_max_parallel: 12
 flexpart_export_output_to: "194.47.223.133(ro,no_subtree_check)"
 
+
+# CORE
 cpmeta_filestorage_target: /disk/data/metaAppStorage
 cpdata_filestorage_target: /disk/data/dataAppStorage
 
+
+# STILT
 stilt_nfs_exports: |
       /disk/data/stiltweb   {{ fsicos1_ip }}(ro)
       /disk/data/stilt      {{ fsicos1_ip }}(ro)
@@ -19,10 +41,7 @@ stiltcluster_port: 2561
 stiltcluster_front_port: 2550
 stiltcluster_maxcores: 20
 
-bbclient_remotes:
-  - fsicos2.lunarc.lu.se
-  - cdb.nateko.lu.se
-
+# ICOSDATA
 icosdata_exports: |
   /disk/data/nextcloud/data/__groupfolders/14/Data/FLUXCOM fsicos*.lunarc.lu.se(ro,no_root_squash)
   # CoCO2
