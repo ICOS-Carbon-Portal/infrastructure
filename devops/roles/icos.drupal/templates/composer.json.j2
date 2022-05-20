@@ -26,6 +26,7 @@
         "composer/installers": "^1.9",
         "drupal/core-composer-scaffold": "^{{ drupal_version }}",
         "drupal/core-recommended": "^{{ drupal_version }}",
+        "drupal/coffee": "^1.2",
         {{ '"drupal/editor_advanced_link": "^1.8",'     if "editor_advanced_link" in drupal_modules }}
         {{ '"drupal/editor_file": "^1.5",'              if "editor_file" in drupal_modules }}
         {{ '"drupal/field_group": "^3.1",'              if "field_group" in drupal_modules }}
@@ -33,8 +34,8 @@
         {{ '"drupal/honeypot": "^2.0",'                 if "honeypot" in drupal_modules }}
         {{ '"drupal/html_title": "^1.1",'               if "html_title" in drupal_modules }}
         {{ '"drupal/linkit": "6.0.*@dev",'              if "linkit" in drupal_modules }}
-        {{ '"drupal/menu_breadcrumb": "^1.16",'          if "menu_breadcrumb" in drupal_modules }}
-        {{ '"drupal/metatag": "^1.19",'                  if "metatag" in drupal_modules }}
+        {{ '"drupal/menu_breadcrumb": "^1.16",'         if "menu_breadcrumb" in drupal_modules }}
+        {{ '"drupal/metatag": "^1.19",'                 if "metatag" in drupal_modules }}
         {{ '"drupal/pathauto": "^1.6",'                 if "pathauto" in drupal_modules }}
         {{ '"drupal/redirect": "^1.5",'                 if "redirect" in drupal_modules }}
         {{ '"drupal/restui": "^1.20",'                  if "restui" in drupal_modules }}

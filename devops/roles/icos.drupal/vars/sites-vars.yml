@@ -1,0 +1,23 @@
+nginx_conf_name: fieldsites
+drupal_docker_port: 8122
+mysql_docker_port: 3344
+database_name: sites
+database_user: sites
+trusted_host: ^demo\.fieldsites\.se$
+domain: demo.fieldsites.se
+ssl_domains: [demo.fieldsites.se]
+redirect_to_www: true
+drupal_modules: [
+  editor_advanced_link,
+  field_group,
+  google_analytics,
+  honeypot,
+  linkit,
+  menu_breadcrumb,
+  metatag,
+  pathauto,
+  redirect,
+  smtp,
+  token,
+  webform
+]

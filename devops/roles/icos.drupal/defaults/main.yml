@@ -1,5 +1,5 @@
-drupal_version: 9.3
-drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "se"]
+drupal_version: 9.3.13
+drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "se", "sites"]
 drupal_home: /disk/data/drupal
 drupal_modules: []
 update_modules: false
