@@ -52,6 +52,10 @@ def bbclient(what, arg):
         run(['{{ bbclient_all }}'] + shlex.split(arg),
             check=1, stdout=log, stderr=STDOUT)
 
+def log(msg):
+    with logfile as log:
+        print(logfmt(msg), file=log, flush=True)
+
 
 def prune():
     bbclient('prune', 'prune --verbose --stats '
@@ -67,11 +71,11 @@ def start_down_hook():
     try:
         p = Popen([DOWN_HOOK])
     except FileNotFoundError:
-        print("No down hook (%s)" % DOWN_HOOK)
+        log("No down hook (%s)" % DOWN_HOOK)
     except OSError as e:
-        print("Could not run down hook - %s" % str(e))
+        log("Could not run down hook - %s" % str(e))
     else:
-        print("Starting down hook", DOWN_HOOK, "in the background")
+        log("Starting down hook", DOWN_HOOK, "in the background")
     return p
 
 
@@ -93,9 +97,9 @@ def backup(down=False, dirty=True):
             bbclient('dirty backup',
                      'create -x -v --stats "::dirty-{now}" %s' % patterns)
         else:
-            print("Not performing dirty backup.")
+            log("Not performing dirty backup.")
 
-        print("Bringing project down.")
+        log("Bringing project down.")
         run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
         hook = start_down_hook()
 
@@ -103,13 +107,13 @@ def backup(down=False, dirty=True):
                  'create -x -v --stats "::{now}" %s' % patterns)
         if hook:
             hook.wait()
-            print("Down hook finished with returncode ", hook.returncode)
+            log("Down hook finished with returncode ", hook.returncode)
 
     finally:
         if down:
-            print("Not bringing project up again")
+            log("Not bringing project up again")
         else:
-            print("Bringing project back up")
+            log("Bringing project back up")
             run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
 
 
@@ -125,8 +129,7 @@ def main(down, dirty):
     try:
         backup(down, dirty)
         prune()
-        with logfile() as log:
-            print(logfmt('done'), file=log)
+        log('done')
     except CalledProcessError:
         # For the sake of cron.
         if not sys.stdin.isatty():
