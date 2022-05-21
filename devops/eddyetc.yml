@@ -15,7 +15,6 @@
 
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars:
     eddyetc_ip: "{{ _lxd.addresses.eth0 | first }}"
     eddyetc_domains:
@@ -82,7 +81,6 @@
 
 
 - hosts: eddyetc
-  become: true
   roles:
     - role: icos.lxd_guest
       tags: linux

@@ -8,7 +8,6 @@
 #   deploy mailman bbclient
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   roles:
     - role: icos.python3
       tags:

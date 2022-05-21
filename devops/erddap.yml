@@ -2,7 +2,6 @@
 #   deploy erddap cert nginx
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars:
     certbot_name: erddap
     certbot_domains:
@@ -65,7 +64,6 @@
 
 
 - hosts: erddap
-  become: true
   roles:
     - role: icos.lxd_guest
       tags: guest

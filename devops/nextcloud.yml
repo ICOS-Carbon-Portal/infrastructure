@@ -8,7 +8,6 @@
 #   deploy nextcloud onlyoffice
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   roles:
     - role: icos.nextcloud
       tags: nextcloud

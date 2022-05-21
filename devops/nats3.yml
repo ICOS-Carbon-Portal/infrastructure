@@ -78,7 +78,6 @@
           -A FORWARD -p tcp -d {{ nats3_ip }} --dport 7422 -j trusted          
 
 - hosts: nats3
-  become: true
   roles:
     - role: icos.lxd_guest
       tags: guest

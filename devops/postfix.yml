@@ -1,5 +1,4 @@
 - hosts: fsicos2.lunarc.lu.se
-  become: yes
   roles:
     - role: icos.postfix
       tags: postfix

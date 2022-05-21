@@ -5,7 +5,6 @@
 #   deploy base bbserver_monitor -lfsicos2*
 
 - hosts: physical_servers
-  become: true
   roles:
     - role: icos.server
       tags: server

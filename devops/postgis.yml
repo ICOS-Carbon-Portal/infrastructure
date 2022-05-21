@@ -53,7 +53,6 @@
 
 
 - hosts: postgis
-  become: true
   tasks:
     - include_role: name=icos.lxd_guest
       tags: guest
@@ -87,7 +86,7 @@
 
     # Switch to postgres so we use socket authentication.
     - become: true
-      become_user: postgres
+      Become_user: postgres
       tags: cplog
       block:
         - name: Create postgres cplog users

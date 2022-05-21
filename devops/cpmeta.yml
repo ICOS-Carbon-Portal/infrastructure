@@ -9,6 +9,5 @@
 #  deploy cpmeta cpmeta_backup
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   roles:
     - role: icos.cpmeta

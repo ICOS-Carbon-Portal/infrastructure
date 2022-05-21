@@ -1,5 +1,4 @@
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars:
     doi_jar_file: /home/andre/tmp/doi.jar
   roles:

@@ -99,7 +99,6 @@
         - icoslabelling.bcdc.no
 
 - hosts: quince
-  become: true
   vars:
     quince_username: quince
   roles:

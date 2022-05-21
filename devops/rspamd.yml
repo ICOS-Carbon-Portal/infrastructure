@@ -9,7 +9,6 @@
 # and then.
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars:
     rspamd_domain: rspamd.icos-cp.eu
     rspamd_user_file: /etc/nginx/auth/rspamd
@@ -85,7 +84,6 @@
 - hosts: rspamd
   vars:
     rspamd_admin_password_hashed: "{{ vault_rspamd_admin_password_hashed }}"
-  become: true
   roles:
     - role: icos.lxd_guest
       tags: guest
