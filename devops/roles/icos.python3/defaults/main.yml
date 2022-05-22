@@ -1,2 +1,5 @@
 python3_version: 3.9
 python3_command: "/usr/bin/python{{ python3_version }}"
+python3_should_install: |
+  {{ ansible_facts['python_version'] is version(python3_version, '<')}}
+python3_pip: "/usr/local/bin/pip{{ python3_version }}"

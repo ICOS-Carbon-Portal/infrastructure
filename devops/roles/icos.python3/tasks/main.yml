@@ -3,21 +3,13 @@
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_version == "18.04"
 
-- name: Install python {{ python3_version }}
-  when: ansible_facts['python_version'] is version(python3_version, '<')
-  apt:
-    update_cache: yes
-    name:
-      - "python{{ python3_version }}"
-      - "python{{ python3_version }}-venv"
-
 - name: Install pip and venv
   apt:
     name:
       - python3-venv
       - python3-pip
       - python3-virtualenv
-      - python3-click
+      - python3-pip
       # On some targets, this is required for the ansible 'pip' module.
       - virtualenv
 
@@ -27,11 +19,5 @@
     name: pip
     state: latest
 
-# Making python3.8 the default python means that system utilities - like apt(1)
-# - will use it. That will not always work. In the case of apt it'll crash
-# which render the ansible apt module inoperable.
-#
-# - name: Make python3.8 the default python3
-#   community.general.alternatives:
-#     name: python3
-#     link: /usr/bin/python3
+- import_tasks: install.yml
+  tags: python3_install
