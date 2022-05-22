@@ -12,11 +12,22 @@
     client_body_timeout 300s;
     fastcgi_buffers 64 4K;
 
-    add_header X-Content-Type-Options nosniff;
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Robots-Tag none;
-    add_header X-Download-Options noopen;
-    add_header X-Permitted-Cross-Domain-Policies none;
+    # Enable gzip but do not remove ETag headers
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 4;
+    gzip_min_length 256;
+    gzip_proxied expired no-cache no-store private no_last_modified no_etag auth;
+    gzip_types application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/wasm application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;
+
+    # HTTP response headers borrowed from Nextcloud `.htaccess`
+    add_header Referrer-Policy                      "no-referrer"   always;
+    add_header X-Content-Type-Options               "nosniff"       always;
+    add_header X-Download-Options                   "noopen"        always;
+    add_header X-Frame-Options                      "SAMEORIGIN"    always;
+    add_header X-Permitted-Cross-Domain-Policies    "none"          always;
+    add_header X-Robots-Tag                         "none"          always;
+    add_header X-XSS-Protection                     "1; mode=block" always;
 
     # Remove X-Powered-By, which is an information leak
     fastcgi_hide_header X-Powered-By;
@@ -24,36 +35,53 @@
     # Path to the root of your installation
     root {{ nextcloud_volume_nextcloud }}/;
 
+    # Specify how to handle directories -- specifying `/index.php$request_uri`
+    # here as the fallback means that Nginx always exhibits the desired
+    # behaviour when a client requests a path that corresponds to a directory
+    # that exists on the server. In particular, if that directory contains an
+    # index.php file, that file is correctly served; if it doesn't, then the
+    # request is passed to the front-end controller. This consistent behaviour
+    # means that we don't need to specify custom rules for certain paths
+    # (e.g. images and other assets, `/updater`, `/ocm-provider`,
+    # `/ocs-provider`), and thus `try_files $uri $uri/ /index.php$request_uri`
+    # always provides the desired behaviour.
+    index index.php index.html /index.php$request_uri;
+
+    # Rule borrowed from `.htaccess` to handle Microsoft DAV clients
+    location = / {
+        if ( $http_user_agent ~ ^DavClnt ) {
+            return 302 /remote.php/webdav/$is_args$args;
+        }
+    }
+
     location = /robots.txt {
         allow all;
         log_not_found off;
         access_log off;
     }
 
-    # The following 2 rules are only needed for the user_webfinger app.
-    # Uncomment it if you're planning to use this app.
-    #rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
-    #rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json
-    # last;
+    # Make a regex exception for `/.well-known` so that clients can still
+    # access it despite the existence of the regex rule
+    # `location ~ /(\.|autotest|...)` which would otherwise handle requests
+    # for `/.well-known`.
+    location ^~ /.well-known {
+        # The rules in this block are an adaptation of the rules
+        # in `.htaccess` that concern `/.well-known`.
 
-    location = /.well-known/carddav {
-      return 301 $scheme://$host/remote.php/dav;
+        location = /.well-known/carddav { return 301 /remote.php/dav/; }
+        location = /.well-known/caldav  { return 301 /remote.php/dav/; }
+
+        location /.well-known/acme-challenge    { try_files $uri $uri/ =404; }
+        location /.well-known/pki-validation    { try_files $uri $uri/ =404; }
+
+        # Let Nextcloud's API for `/.well-known` URIs handle all other
+        # requests by passing them to the front-end controller.
+        return 301 /index.php$request_uri;
     }
-    location = /.well-known/caldav {
-      return 301 $scheme://$host/remote.php/dav;
-    }
 
-    # Enable gzip but do not remove ETag headers
-    gzip on;
-    gzip_vary on;
-    gzip_comp_level 4;
-    gzip_min_length 256;
-    gzip_proxied expired no-cache no-store private no_last_modified no_etag auth;
-    gzip_types application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;
-
-    # Uncomment if your server is build with the ngx_pagespeed module
-    # This module is currently not supported.
-    #pagespeed off;
+    # Rules borrowed from `.htaccess` to hide certain paths from clients
+    location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/)  { return 404; }
+    location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console)                { return 404; }
 
     location / {
         {% if nextcloud_maintenance_ips %}
