@@ -1,17 +1,17 @@
     # This file is the default nginx config file as recommended by nextcloud.
     # https://docs.nextcloud.com/server/13/admin_manual/installation/nginx.html
+    # https://docs.nextcloud.com/server/23/admin_manual/installation/nginx.html
 
     # Add headers to serve security related headers
     # Before enabling Strict-Transport-Security headers please read into this
     # topic first.
-    # add_header Strict-Transport-Security "max-age=15768000;
-    # includeSubDomains; preload;";
-    #
-    # WARNING: Only add the preload option once you read about
-    # the consequences in https://hstspreload.org/. This option
-    # will add the domain to a hardcoded list that is shipped
-    # in all major browsers and getting removed from this list
-    # could take several months.
+    add_header Strict-Transport-Security "max-age=15768000; includeSubDomains";
+
+    # set max upload size and increase upload timeout:
+    client_max_body_size 512M;
+    client_body_timeout 300s;
+    fastcgi_buffers 64 4K;
+
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Robots-Tag none;
@@ -42,10 +42,6 @@
     location = /.well-known/caldav {
       return 301 $scheme://$host/remote.php/dav;
     }
-
-    # set max upload size
-    client_max_body_size 512M;
-    fastcgi_buffers 64 4K;
 
     # Enable gzip but do not remove ETag headers
     gzip on;

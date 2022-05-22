@@ -1,8 +1,8 @@
 # https://hub.docker.com/_/nextcloud/
-nextcloud_nextcloud_version: 22.2.3
+nextcloud_nextcloud_version: 23.0.5
 
 # https://hub.docker.com/_/postgres/
-nextcloud_postgres_version: 10.19
+nextcloud_postgres_version: 13.7
 
 nextcloud_port: 9000
 
@@ -12,7 +12,7 @@ nextcloud_domain: fileshare.icos-cp.eu
 
 nextcloud_certbot_enable: true
 certbot_domains: ["{{ nextcloud_domain }}"]
-certbot_conf_name: nextcloud
+certbot_name: nextcloud
 
 nextcloud_volume_nextcloud: "{{ nextcloud_home }}/volumes/nextcloud"
 nextcloud_volume_postgres: "{{ nextcloud_home }}/volumes/postgres"

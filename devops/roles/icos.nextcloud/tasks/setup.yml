@@ -18,7 +18,7 @@
       set_fact: nextcloud_db_pass
       file_var: NEXTCLOUD_PASSWORD
 
-- name: Copy {{ item.name }}
+- name: Copy files
   template:
     src: "{{ item.name }}"
     dest: "{{ nextcloud_home }}"

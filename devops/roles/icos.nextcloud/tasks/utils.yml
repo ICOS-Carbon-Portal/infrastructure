@@ -1,0 +1,6 @@
+- name: Copy nextcloud cli
+  template:
+    src: nextcloud.py
+    dest: /usr/local/sbin/nextcloud
+    lstrip_blocks: yes
+    mode: +x
