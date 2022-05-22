@@ -1,7 +1,9 @@
 - import_tasks: docker.yml
   tags: onlyoffice_docker
 
-- include_role: name=icos.certbot2
+- include_role:
+    name: icos.certbot2
+    public: yes
   tags: onlyoffice_certbot
   vars:
     certbot_name: "{{ onlyoffice_cert_name }}"
