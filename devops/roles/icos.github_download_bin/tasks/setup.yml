@@ -1,5 +1,3 @@
-- include_vars: "{{ ansible_machine }}.yml"
-
 # Required by the github_releases module.
 - name: pip install github3
   pip:
@@ -11,5 +9,7 @@
     path: "{{ dbin_download_dir }}"
     state: directory
 
-- set_fact:
+- name: Remember that we've done setup
+  set_fact:
+    cacheable: yes
     _download_bin_setup: True

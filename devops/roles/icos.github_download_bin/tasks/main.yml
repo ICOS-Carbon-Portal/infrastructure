@@ -1,3 +1,5 @@
+- include_vars: "{{ ansible_machine }}.yml"
+
 - include_tasks: setup.yml
   when: not _download_bin_setup | default(False)
 
@@ -16,15 +18,12 @@
   # changed.
   register: dbin_download
 
-# This task sometimes reports "changed" even though it shouldn't.
 - name: Unarchive {{ _dbin_name }} tarball
   unarchive:
     src: "{{ dbin_download.dest }}"
     dest: "{{ dbin_download_dir }}"
     remote_src: true
     list_files: true
-    extra_opts:
-      - --no-same-owner
   register: _unar
   when: _dbin_unar
 
