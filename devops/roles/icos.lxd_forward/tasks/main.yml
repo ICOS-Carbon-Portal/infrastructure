@@ -1,10 +1,10 @@
-- name: Remove {{ lxd_forward_name }} from /etc/ufw/before.rules
+- name: Remove lxd_forward_name from /etc/ufw/before.rules
   blockinfile:
     path: /etc/ufw/before.rules
     marker: "# {mark} ansible / ssh to lxd {{ lxd_forward_name }}"
     state: absent
 
-- name: Add rule to iptables {{ lxd_forward_port }} -> {{ lxd_forward_ip }}:22
+- name: Add iptables rule to forward lxd_forward_port
   tags: iptables
   iptables_raw:
     name: "forward_ssh_to_{{ lxd_forward_name }}"
@@ -15,7 +15,7 @@
       -j DNAT --to-destination {{ lxd_forward_ip }}:22
   when: lxd_forward_port
 
-- name: Modify /etc/hosts - {{ lxd_forward_name }} = {{ lxd_forward_ip }}
+- name: Modify /etc/hosts to add lxd_forward_name.lxd
   lineinfile:
     path: /etc/hosts
     regex: '(?:^{{ lxd_forward_ip | regex_escape}}.*)|(?:.*{{ lxd_forward_name }})\.lxd$'
