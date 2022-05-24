@@ -1,0 +1,35 @@
+all:
+  vars:
+    rdflog_ext_port: 60002
+    
+# The server running the main database.
+rdflog_server:
+  hosts:
+    fsicos2.lunarc.lu.se:
+
+# The servers hosting VMs that run replicas.
+pgrep_rdflog_server:
+  vars:
+      lxd_vm_name: pgrep-rdflog
+      lxd_vm_docker: true
+  hosts:
+    fsicos3.lunarc.lu.se:
+      lxd_vm_inventory_hostname: pgrep-rdflog@fsicos3
+    cdb.nateko.lu.se:
+      lxd_vm_inventory_hostname: pgrep-rdflog@cdb
+
+# The VMs running replicas.
+pgrep_rdflog:
+  vars:
+    ansible_user: root
+    pgrep_name: rdflog
+    pgrep_peer_user: pgrepuser
+    pgrep_peer_host: fsicos2.lunarc.lu.se
+    pgrep_peer_port: "{{ rdflog_ext_port }}"
+    pgrep_peer_pass: "{{ vault_rdflog_rep_pass }}"
+    pgrep_peer_cert: roles/icos.rdflog/files/server.crt
+  hosts:
+    pgrep-rdflog@cdb:
+      pgrep_peer_slot: cdb
+    pgrep-rdflog@fsicos3:
+      pgrep_peer_slot: fsicos3
