@@ -1,5 +1,9 @@
 lxd_vm_ip: "{{ _lxd.addresses.eth0 | first }}"
-lxd_vm_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
+lxd_vm_port: "{{ hostvars[lxd_vm_inventory_hostname].ansible_port }}"
+
+# The name the VM has in the inventory. This is usually, but not always the
+# same as lxd_vm_name (which is the lxc name).
+lxd_vm_inventory_hostname: "{{ lxd_vm_name }}"
 
 # When a separate btrfs pool is used, this is the default size.
 lxd_vm_root_size: 50GB
@@ -20,4 +24,4 @@ lxd_source:
   mode: pull
   server: https://cloud-images.ubuntu.com/releases
   protocol: simplestreams
-  alias: "20.04"
+  alias: "22.04"

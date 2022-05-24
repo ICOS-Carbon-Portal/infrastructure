@@ -6,7 +6,7 @@
   include_tasks: zfs.yml
   when: lxd_vm_variant == 'zfs'
 
-- name: Create the {{ lxd_vm_name }} container
+- name: Create container
   lxd_container:
     name: "{{ lxd_vm_name }}"
     state: started
@@ -19,11 +19,11 @@
     timeout: 600
   register: _lxd
 
-- name: Set fact {{ lxd_vm_name }}_ip = {{ lxd_vm_ip }}
+- name: Set fact ip fact for lxd_vm
   set_fact: |
     {{ lxd_vm_name | replace('-', '_') }}_ip={{ lxd_vm_ip }}
 
-- name: Extract host_ecdsa_key from the {{ lxd_vm_name }} VM
+- name: Extract host_ecdsa_key from the VM
   command: >-
     lxc exec {{ lxd_vm_name }}
     awk '{print $1, $2}' /etc/ssh/ssh_host_ecdsa_key.pub
@@ -33,7 +33,6 @@
   delay: 5
   until: _key.rc == 0
 
-
 - name: Forward ssh port and create /etc/hosts entry
   include_role:
     name: icos.lxd_forward
@@ -42,7 +41,7 @@
     lxd_forward_ip: "{{ lxd_vm_ip }}"
     lxd_forward_port: "{{ lxd_vm_port }}"
 
-- name: Add local known_host {{ inventory_hostname }}:{{ lxd_vm_port }}
+- name: Add local known_host
   local_action:
     module: known_hosts
     name: "[{{ inventory_hostname }}]:{{ lxd_vm_port }}"
@@ -54,6 +53,6 @@
     ssh_config_file: "~{{ lookup('env', 'USER') }}/.ssh/config.icos"
     hostname: "{{ inventory_hostname }}"
     remote_user: root
-    host: "{{ lxd_vm_name }}"
+    host: "{{ lxd_vm_inventory_hostname }}"
     port: "{{ lxd_vm_port }}"
     state: present
