@@ -5,6 +5,8 @@
 
 - name: Install pip and venv
   apt:
+    # This role is included by lxd_guest, and as such is often the first
+    update_cache: true
     name:
       - python3-venv
       - python3-pip
@@ -12,6 +14,12 @@
       - python3-pip
       # On some targets, this is required for the ansible 'pip' module.
       - virtualenv
+  when: apt_update_cache | default(True)
+
+- name: Set facts
+  set_fact:
+    apt_update_cache: False
+    cacheable: yes
 
 # This is recommended by pip itself when it fails to install some packages.
 - name: Upgrade to latest pip (using pip!)
