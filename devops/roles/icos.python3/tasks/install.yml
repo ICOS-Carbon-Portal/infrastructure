@@ -1,28 +1,14 @@
+- name: Add ppa:deadsnakes repository
+  apt_repository:
+    repo: ppa:deadsnakes/ppa
+
 - name: Install python {{ python3_version }}
   apt:
     update_cache: yes
     name:
-      - "python{{ python3_version }}"
       - "python{{ python3_version }}-venv"
 
-# <2022-05-21> - Ubuntu 20.04 ships python3.8, which provides a pip3
-# binary. Installing python3.9 on top of that gives us python3.9 but no pip3.9,
-# so there is no easy way to install packages for python3.9 using ansible's pip
-# module unless we provide this hack.
-- name: Install our own pip3
-  template:
-    force: no
-    src: pip3.py
-    dest: "{{ python3_pip }}"
-    mode: +x
-    lstrip_blocks: yes
-
-# Install packages for our own python3
-- name: pip install packages
-  when: python3_should_install
-  pip:
-    name:
-      - click>=8
-      - pyyaml
-    state: present
-    executable: "{{ python3_pip }}"
+# # Make sure that pip is available, of the correct version, and not broken.
+# - name: Upgrade pip using pip
+#   command: |
+#     {{ python3_command }} -m ensurepip -U

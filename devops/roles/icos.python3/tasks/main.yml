@@ -1,31 +1,25 @@
-- include_vars: vars/ubuntu-1804.yml
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "18.04"
-
+# First install pip and venv for the system version of python. This is for the
+# sake of later ansible modules.
 - name: Install pip and venv
   apt:
     # This role is included by lxd_guest, and as such is often the first
     update_cache: true
     name:
-      - python3-venv
       - python3-pip
       - python3-virtualenv
-      - python3-pip
       # On some targets, this is required for the ansible 'pip' module.
       - virtualenv
-  when: apt_update_cache | default(True)
 
-- name: Set facts
-  set_fact:
-    apt_update_cache: False
-    cacheable: yes
-
-# This is recommended by pip itself when it fails to install some packages.
-- name: Upgrade to latest pip (using pip!)
-  pip:
-    name: pip
-    state: latest
-
+# Now check whether we need to install our own version of
 - import_tasks: install.yml
+  when: python3_should_install
   tags: python3_install
+
+# Install packages for our preferred python3
+- name: pip install packages
+  pip:
+    name:
+      - click>=8
+      - pyyaml
+    state: present
+    executable: "{{ python3_pip }}"
