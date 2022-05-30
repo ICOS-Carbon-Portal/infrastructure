@@ -5,12 +5,12 @@
     line: "    port = {{ dovecot_port }}"
     state: present
 
-- name: Open firewall
-  ufw:
-    rule: allow
-    port: "{{ dovecot_port }}"
-    proto: tcp
-    comment: dovecot
+- name: Allow dovecot through firewall
+  iptables_raw:
+    name: allow_dovecot
+    rules: >-
+      -A INPUT -p tcp --dport {{ dovecot_port }} -j ACCEPT
+      -m comment --comment 'dovecot'
 
 - name: Add postfix lmtp listener
   blockinfile:
