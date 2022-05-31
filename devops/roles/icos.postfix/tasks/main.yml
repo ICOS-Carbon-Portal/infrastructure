@@ -18,10 +18,10 @@
     separator: "{{ item.separator | default(omit) }}"
   loop: "{{ postfix_config_list }}"
 
-- name: Allowing inbound SMTP
-  ufw:
-    rule: allow
-    port: smtp
-    comment: postfix
+- name: Allow SMTP through firewall
+  iptables_raw:
+    name: allow_SMTP
+    rules: >-
+      -A INPUT -p tcp --dport 25 -j ACCEPT -m comment --comment 'smtp'
 
 - import_tasks: postfix_fail2ban.yml
