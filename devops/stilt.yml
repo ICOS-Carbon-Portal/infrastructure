@@ -63,13 +63,6 @@
       service: name=nfs-server state=reloaded enabled=yes
       when: _exports.changed
 
-    - name: Completely open firewall to fsicos
-      ufw:
-        rule: allow
-        src: "{{ fsicos1_ip }}"
-        comment: fsicos1
-
-
 # - hosts: fsicos.lunarc.lu.se
 #   name: Mount stiltdata from fsicos2
 #   become: true
