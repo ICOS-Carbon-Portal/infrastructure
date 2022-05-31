@@ -56,4 +56,5 @@
   iptables_raw:
     name: allow_ssh
     rules: >-
-      -A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT -m comment --comment 'ssh'
+      -A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT
+      -m comment --comment 'ssh'
