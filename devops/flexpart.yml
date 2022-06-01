@@ -50,31 +50,36 @@
             pool: "default"
             type: "disk"
             size: "50GB"
-          docker:
+          1_docker:
             path: /var/lib/docker
             pool: docker
             source: flexpart_docker
             type: disk
-          flexextract:
+          2_flexextract:
             path: /data/flexextract
             source: /data/flexextract
             type: disk
-          output:
+            recursive: "true"
+          3_flexextract_meteo:
+            path: /data/flexextract/meteo
+            source: /nfs/flexextract_meteo
+            type: disk
+          4_output:
             path: /data/flexpart/output
             source: /data/flexpart/output
             type: disk
             readonly: "False"
-          meteo:
+          5_meteo:
             path: /data/flexpart/meteo
             source: /data/flexpart/meteo
             type: disk
             readonly: "True"
-          ct2018:
+          6_ct2018:
             path: /data/flexpart/CT2018
             source: /data/flexpart/CT2018
             type: disk
             readonly: "True"
-          vprm:
+          7_vprm:
             path: "/data/VPRM2007n"
             source: "/pool/ute/stilt/VPRM/VPRM_ECMWF/VPRM2007n"
             readonly: "True"
