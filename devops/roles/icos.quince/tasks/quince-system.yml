@@ -4,7 +4,7 @@
     home: "{{ quince_home | default(omit) }}"
     shell: /bin/bash
 
-- name: Create {{ quince_filestore }}/opt/quince_filestore directory
+- name: Create quince filestore directory
   file:
     path: "{{ quince_filestore }}"
     state: directory
@@ -18,8 +18,10 @@
     cache_valid_time: 3600
     force_apt_get: true
   loop:
+    # This will be mysql-5 for the original quince (running on ubuntu 18.04)
+    # and mysql-8 for the new quince VM (running ubuntu 22.04).
     - mysql-server
-    - openjdk-11-jdk
+    - openjdk-{{ quince_jdk_version }}
     - git
     - patch
 

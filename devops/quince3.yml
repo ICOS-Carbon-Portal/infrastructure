@@ -1,0 +1,13 @@
+- hosts: fsicos2.lunarc.lu.se
+  roles:
+    - name: Create the quince3 VM
+      role: icos.lxd_vm
+      lxd_vm_name: quince3
+      lxd_vm_root_size: "200GB"
+      lxd_vm_config:
+        limits.cpu: "20"
+        limits.memory: "64GB"
+
+- hosts: quince3
+  roles:
+    - role: icos.lxd_guest
