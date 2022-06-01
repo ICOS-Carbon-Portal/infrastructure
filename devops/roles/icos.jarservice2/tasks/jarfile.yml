@@ -29,6 +29,7 @@
   copy:
     src: "{{ jarservice_local }}"
     dest: "{{ destjarfile }}"
+  register: jarservice_copy
 
 - name: Create the {{ jarservice_name}} jar symlink used by systemd
   file:
@@ -36,6 +37,7 @@
     dest: "{{ jarservice_jar }}"
     state: link
   notify: restart {{ jarservice_name }}
+  when: jarservice_restart
 
 - name: Keep the jarfiles directory from filling up
   shell: >-
