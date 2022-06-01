@@ -1,7 +1,4 @@
-lxd_vm_default_profiles:
-  - default
-  - ssh_root
-
+# DEVICES
 lxd_vm_default_devices:
   root:
     path: /
@@ -9,6 +6,22 @@ lxd_vm_default_devices:
     pool: "{{ lxd_vm_name }}"
     size: "{{ lxd_vm_root_size }}"
 
-lxd_vm_default_config:
+
+# PROFILES
+lxd_vm_default_profiles:
+  - default
+  - ssh_root
+
+
+# CONFIG
+__base_config:
   limits.cpu: "2"
   limits.memory: "2GB"
+
+__docker_config: >-
+  {% if lxd_vm_docker -%}
+  {"security.nesting": "true"}
+  {% else %}{}{% endif -%}
+
+lxd_vm_default_config: >-
+  {{ __base_config | combine(__docker_config) }}
