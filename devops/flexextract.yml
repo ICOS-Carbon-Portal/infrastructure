@@ -1,61 +1,24 @@
 - hosts: fsicos2.lunarc.lu.se
-  pre_tasks:
-    - name: Create flexextract storage pool
-      tags: pool
-      shell: >-
-        /snap/bin/lxc storage show flexextract > /dev/null 2>&1 ||
-        /snap/bin/lxc storage create flexextract btrfs size=50GB
-      register: _r
-      changed_when:
-        - '"Storage pool flexextract created" in _r.stdout'
-
-    - name: Create the flexextract container
-      tags: lxd
-      lxd_container:
-        name: flexextract
-        state: started
-        profiles:
-          - default
-          - ssh_root
-        source:
-          type: image
-          mode: pull
-          server: https://cloud-images.ubuntu.com/releases
-          protocol: simplestreams
-          alias: "18.04"
-        config:
-          security.nesting: "true"
-          limits.cpu: "10"
-          limits.memory: "55GB"
-        devices:
-          root:
-            path: /
-            type: disk
-            pool: flexextract
-            size: "50GB"
-          ida:
-            path: "/home/ida"
-            source: "/disk/data/ida"
-            type: disk
-          flexextract:
-            path: /data/flexextract
-            source: /disk/data/flexextract
-            type: disk
-            readonly: "False"
-          flexpart_output:
-            path: /data/flexpart/output
-            source: /data/flexpart/output
-            type: disk
-            readonly: "False"
-        wait_for_ipv4_addresses: true
-        wait_for_ipv4_interfaces: eth0
-        timeout: 600
-      register: _lxd
-
   roles:
-    - role: icos.lxd_forward
-      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
-      lxd_forward_name: flexextract
+    - name: Create the flexextract VM
+      tags: vm
+      role: icos.lxd_vm
+      lxd_vm_name: flexextract
+      lxd_vm_docker: true
+      lxd_vm_config:
+        limits.cpu: "10"
+        limits.memory: "55GB"
+      lxd_vm_devices:
+        flexextract:
+          path: /data/flexextract
+          source: /disk/data/flexextract
+          type: disk
+          recursive: "true"
+        flexpart_output:
+          path: /data/flexpart/output
+          source: /data/flexpart/output
+          type: disk
+          readonly: "False"
 
     - role: icos.certbot2
       tags: cert
@@ -70,8 +33,6 @@
 
 
 - hosts: flexextract
-  vars:
-    flexextract_sudo: true
   roles:
     - role: icos.lxd_guest
       tags: guest
@@ -89,16 +50,3 @@
       sshlogin_dst: flexpart
       sshlogin_src_user: root
       sshlogin_dst_user: ubuntu
-
-    - role: icos.superuser
-      tags: superuser
-      superuser_disable_coredump: true
-      superuser_list: "{{ vault_flexextract_superuser_list }}"
-
-  tasks:
-    - name: Install additional ssh keys
-      tags: keys
-      authorized_key:
-        user: flexextract
-        state: present
-        key: "{{ vault_flexextract_extra_keys }}"
