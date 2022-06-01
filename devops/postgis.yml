@@ -5,65 +5,29 @@
 #   deploy postgis backup
 
 - hosts: cdb.nateko.lu.se
-  vars:
-    postgis_ip: "{{ _lxd.addresses.eth0 | first }}"
-  tasks:
-    - name: Create postgis storage pool
-      tags: pool
-      shell: >-
-        /snap/bin/lxc storage show postgis > /dev/null 2>&1 ||
-        /snap/bin/lxc storage create postgis btrfs size=20GB
-      register: _r
-      changed_when:
-        - '"Storage pool postgis created" in _r.stdout'
-
-    - name: Create the postgis container
-      tags:
-        - lxd
-        - forward
-      lxd_container:
-        name: postgis
-        state: started
-        profiles:
-          - default
-          - ssh_root
-        config:
-          limits.cpu: "4"
-          limits.memory: "10GB"
-        source:
-          type: image
-          mode: pull
-          server: https://cloud-images.ubuntu.com/releases
-          protocol: simplestreams
-          alias: "20.04"
-        devices:
-          root:
-            path: /
-            type: disk
-            pool: postgis
-            size: "20GB"
-        wait_for_ipv4_addresses: true
-      register: _lxd
-
-    - include_role: name=icos.lxd_forward
-      tags: forward
-      vars:
-        lxd_forward_ip: "{{ postgis_ip }}"
-        lxd_forward_name: postgis
-
+  roles:
+    - name: Create the postgis VM
+      tags: vm
+      role: icos.lxd_vm
+      lxd_vm_name: postgis
+      lxd_vm_root_size: "20GB"
+      lxd_vm_config:
+        security.nesting: "true"
+        limits.cpu: "4"
+        limits.memory: "10GB"
 
 - hosts: postgis
-  tasks:
-    - include_role: name=icos.lxd_guest
+  roles:
+    - role: icos.lxd_guest
       tags: guest
 
+  tasks:
     - include_role: name=icos.postgresql
       tags: postgresql
       vars:
         postgresql_postgis_enable: true
         postgresql_postgres_password: "{{ vault_postgis_postgres_password }}"
         postgresql_listen_addresses: "'*'"
-        postgresql_ssh_keys: "{{ vault_postgis_extra_keys }}"
         postgresql_pg_stat_enable: true
 
     - name: Install backup for postgresql
@@ -86,7 +50,7 @@
 
     # Switch to postgres so we use socket authentication.
     - become: true
-      Become_user: postgres
+      become_user: postgres
       tags: cplog
       block:
         - name: Create postgres cplog users
