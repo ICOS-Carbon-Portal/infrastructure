@@ -7,9 +7,17 @@
     jarservice_local: "{{ cpmeta_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'cpmeta.service') }}"
     jarservice_check: "https://{{ cpmeta_domains | first }}/buildInfo"
+    jarservice_restart: false
 
 - name: Copy application.conf
   template:
     src: application.conf
     dest: "{{ cpmeta_home }}"
+  notify: restart cpmeta
+
+- name: Tell cpmeta to switch to readonly mode
+  uri:
+    url: "http://{{ cpmeta_host }}}:{{ cpmeta_port }}/admin/switchToReadonlyMode"
+    # timeout: 30
+  when: jarservice_copy.changed
   notify: restart cpmeta

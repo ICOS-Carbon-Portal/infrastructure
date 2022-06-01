@@ -1,6 +1,9 @@
 # The name of the linux user that runs the service.
 cpmeta_user: cpmeta
 
+cpmeta_port: 9094
+cpmeta_host: localhost
+
 # The name of the systemd service
 cpmeta_servicename: cpmeta
 
