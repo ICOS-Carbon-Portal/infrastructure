@@ -1,12 +1,12 @@
 - include_tasks: user.yml
-  loop: "{{ user_conf.create_users }}"
+  loop: "{{ user_conf.create_users | default([]) }}"
 
 - name: Remove user
   user:
     name: "{{ item.name }}"
     remove: "{{ item.remove | default(omit) }}"
     state: absent
-  loop: "{{ user_conf.remove_users }}"
+  loop: "{{ user_conf.remove_users | default([]) }}"
 
 # # A workaround for certain versions of sudo.
 # # https://github.com/sudo-project/sudo/issues/42#issuecomment-609079906
