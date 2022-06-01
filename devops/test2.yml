@@ -1,0 +1,31 @@
+- hosts: fsicos2.lunarc.lu.se
+  tags: vm
+  roles:
+    - name: Create the test2 VM
+      role: icos.lxd_vm
+      lxd_vm_name: test2
+      lxd_vm_docker: true
+      lxd_vm_root_size: "200GB"
+      lxd_vm_config:
+        security.nesting: "true"
+        limits.cpu: "16"
+        limits.memory: "64GB"
+      lxd_vm_devices:
+        1_flexextract:
+          type: disk
+          source: /disk/data/flexextract
+          path: /data/flexextract
+          recursive: "true"
+        2_foo:
+          type: disk
+          source: /disk/data/foo_ro
+          path: /foo
+        # 3_flexextract_meteo_writable:
+        #   path: /meteo_writable
+        #   source: /mounts/flexextract_meteo
+        #   type: disk
+        #   readonly: "false"
+
+- hosts: test2
+  roles:
+    - role: icos.lxd_guest
