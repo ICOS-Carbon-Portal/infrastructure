@@ -10,8 +10,5 @@
 
 - hosts: fsicos2.lunarc.lu.se
   become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
   roles:
     - role: icos.cpmeta

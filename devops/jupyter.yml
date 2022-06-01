@@ -14,8 +14,6 @@
       - jupyter.icos-cp.eu
       # Old domain, used in publications, just does a redirect.
       - jupyter3.icos-cp.eu
-  vars_files:
-    - vault.yml
   pre_tasks:
     - name: Create zfs filesystem for jupyter home directories
       tags:
@@ -120,8 +118,6 @@
 
 
 - hosts: jupyter
-  vars_files:
-    - vault.yml
   handlers:
     - name: reload sshd
       systemd:

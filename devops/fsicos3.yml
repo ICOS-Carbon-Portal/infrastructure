@@ -1,8 +1,6 @@
 # deploy fsicos3 nginx_certbot
 
 - hosts: fsicos3.lunarc.lu.se
-  vars_files:
-    - vault.yml
   roles:
     - role: icos.server
       tags: server

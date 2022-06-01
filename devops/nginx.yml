@@ -2,8 +2,6 @@
     - fsicos2.lunarc.lu.se
     - fsicos3.lunarc.lu.se
     - cdb.nateko.lu.se
-  vars_files:
-    - vault.yml
   vars:
     nginx_vhost_content: |
       if ($http_user_agent ~* jndi:ldap) {
@@ -15,8 +13,6 @@
       tags: nginx
 
 - hosts: fsicos2.lunarc.lu.se
-  vars_files:
-    - vault.yml
   tasks:
     - import_role:
         name: icos.nexus

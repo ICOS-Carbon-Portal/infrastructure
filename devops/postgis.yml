@@ -7,8 +7,6 @@
 - hosts: cdb.nateko.lu.se
   vars:
     postgis_ip: "{{ _lxd.addresses.eth0 | first }}"
-  vars_files:
-    - vault.yml
   tasks:
     - name: Create postgis storage pool
       tags: pool
@@ -56,8 +54,6 @@
 
 - hosts: postgis
   become: true
-  vars_files:
-    - vault.yml
   tasks:
     - include_role: name=icos.lxd_guest
       tags: guest

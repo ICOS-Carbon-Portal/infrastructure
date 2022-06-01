@@ -4,10 +4,6 @@
 # Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
-  vars_files:
-    - vars.yml
-    - vault.yml
   roles:
     - role: icos.certbot2
       tags: cert

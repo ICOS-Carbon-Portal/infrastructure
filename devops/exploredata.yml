@@ -1,8 +1,6 @@
 - hosts: fsicos3.lunarc.lu.se
   vars:
     exploredata_ip: "{{ _lxd.addresses.eth0 | first }}"
-  vars_files:
-    - vault.yml
   tasks:
     - name: Create storage for docker
       tags:
@@ -109,9 +107,6 @@
     lxd_guest_root_keys: "{{ vault_exploredata_root_keys }}"
     exploredata_password: "{{ vault_exploredata_password }}"
     exploredata_max_notebooks: 100
-  vars_files:
-    - vars.yml
-    - vault.yml
   roles:
     - role: icos.lxd_guest
       tags: guest

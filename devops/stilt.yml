@@ -6,10 +6,6 @@
 #     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
   roles:
     - role: icos.server
       tags: server
@@ -21,10 +17,6 @@
 
 - hosts: fsicos2.lunarc.lu.se
   name: Install stilt along with its web frontend and cluster control
-  become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
   roles:
     - role: icos.stiltweb
       tags: stiltweb_only
@@ -36,10 +28,6 @@
 
 - hosts: fsicos2.lunarc.lu.se
   name: Install stilt on all the backend nodes
-  become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
   roles:
     - role: icos.stiltrun
       tags: stiltrun
@@ -49,7 +37,6 @@
 
 - hosts: fsicos2.lunarc.lu.se
   name: Export stiltdata to fsicos
-  become: true
   tags: stilt_export
   tasks:
     - name: Install nfs server

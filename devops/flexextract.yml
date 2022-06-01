@@ -1,7 +1,5 @@
 - hosts: fsicos2.lunarc.lu.se
   become: true
-  vars_files:
-    - vault.yml
   pre_tasks:
     - name: Create flexextract storage pool
       tags: pool
@@ -74,8 +72,6 @@
 
 - hosts: flexextract
   become: true
-  vars_files:
-    - vault.yml
   vars:
     flexextract_sudo: true
   roles:

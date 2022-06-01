@@ -30,8 +30,6 @@
 
 
 - hosts: ctehires
-  vars_files:
-    - vault.yml
   pre_tasks:
     - name: Create the ctehires group
       ansible.builtin.group:

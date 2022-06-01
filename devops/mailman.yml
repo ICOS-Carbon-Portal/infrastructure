@@ -9,8 +9,6 @@
 
 - hosts: fsicos2.lunarc.lu.se
   become: true
-  vars_files:
-    - vault.yml
   roles:
     - role: icos.python3
       tags:

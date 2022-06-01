@@ -1,6 +1,4 @@
 - hosts: fsicos2.lunarc.lu.se
-  vars_files:
-    - vault.yml
   vars:
      bbclient_home: /opt/bbclient-nginx-static
      backup_script: "{{ bbclient_home }}/backup.sh"

@@ -30,8 +30,6 @@
 # REPLICAS
 - hosts: pgrep-rdflog@fsicos3 pgrep-rdflog@cdb
   tags: replica
-  vars_files:
-    - vault.yml
   roles:
     - role: icos.lxd_guest
       tags: guest

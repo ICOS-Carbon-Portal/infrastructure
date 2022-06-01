@@ -4,8 +4,6 @@
 #   deploy prometheus prometheus_config
 
 - hosts: cdb.nateko.lu.se
-  vars_files:
-    - vault.yml
   vars:
     prometheus_admin_password: "{{ vault_prometheus_admin_password }}"
   roles:
@@ -33,8 +31,6 @@
 
 
 - hosts: prometheus
-  vars_files:
-    - vault.yml
   vars:
     prometheus_alrt_slack_url: "{{ vault_prometheus_alrt_slack_url }}"
     prometheus_graf_pass: "{{ vault_prometheus_graf_pass }}"

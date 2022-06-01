@@ -12,8 +12,8 @@
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
     jupyter_domains:
       - ganymede.icos-cp.eu
-  vars_files:
-    - vault.yml
+    ganymede_domains:
+      - future.ganymede.icos-cp.eu
   pre_tasks:
     - include_role:
         name: icos.zfsdocker
@@ -76,7 +76,7 @@
     - role: icos.certbot2
       tags: cert
       certbot_name: ganymede
-      certbot_domains: "{{ jupyter_domains }}"
+      certbot_domains: "{{ jupyter_domains + ganymede_domains }}"
 
     - role: icos.nginxsite
       tags: nginx
@@ -86,11 +86,19 @@
       jupyter_cert_name: ganymede
       jupyter_port: 8000
 
+    - role: icos.nginxforward
+      tags: future
+      nginxforward_name: future_ganymede
+      nginxforward_host: ganymede.lxd
+      nginxforward_port: 8081
+      nginxforward_cert: ganymede
+      nginxforward_domains:
+        - future.ganymede.icos-cp.eu
+
+
+
 
 - hosts: ganymede
-  vars_files:
-    - vars.yml
-    - vault.yml
   handlers:
     - name: reload sshd
       systemd:

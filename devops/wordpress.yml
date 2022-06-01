@@ -6,8 +6,6 @@
       - www.eric-forum.eu
       - www.icos-summerschool.eu
       - www.envriplus.eu
-  vars_files:
-    - vault.yml
   tasks:
     - name: Create wordpress storage pool
       tags: pool
@@ -76,8 +74,6 @@
 - hosts: wordpress
   vars:
     lxd_guest_root_keys: "{{ vault_wordpress_root_keys }}"
-  vars_files:
-    - vault.yml
   tasks:
     - import_role: name=icos.lxd_guest
       tags: guest

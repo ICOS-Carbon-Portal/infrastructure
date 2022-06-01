@@ -14,8 +14,6 @@
     rspamd_domain: rspamd.icos-cp.eu
     rspamd_user_file: /etc/nginx/auth/rspamd
     rspamd_admin_password: "{{ vault_rspamd_admin_password }}"
-  vars_files:
-    - vault.yml
   pre_tasks:
     - name: Create rspamd storage pool
       tags: pool
@@ -85,8 +83,6 @@
 
 
 - hosts: rspamd
-  vars_files:
-    - vault.yml
   vars:
     rspamd_admin_password_hashed: "{{ vault_rspamd_admin_password_hashed }}"
   become: true

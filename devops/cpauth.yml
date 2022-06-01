@@ -13,9 +13,6 @@
 #   $ deploy cpauth bbclient cpauth_backup
 
 - hosts: fsicos2.lunarc.lu.se
-  vars_files:
-    - vars.yml
-    - vault.yml
   roles:
     - role: icos.certbot2
       tags: cert

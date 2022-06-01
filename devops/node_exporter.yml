@@ -14,9 +14,6 @@
 
 
 - hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se cdb.nateko.lu.se
-  vars_files:
-    - vars.yml
-    - vault.yml
   tasks:
     - include_role: name=icos.certbot2
       tags: cert
@@ -47,8 +44,6 @@
 
 
 - hosts: prometheus
-  vars_files:
-    - vault.yml
   vars:
     prometheus_prom_dynamic: files/prometheus/dynamic
   tasks:
