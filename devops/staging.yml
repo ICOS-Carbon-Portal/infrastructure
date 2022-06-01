@@ -1,0 +1,11 @@
+- hosts: staging_server
+  roles:
+    - role: icos.lxd_vm
+      tags: vm
+      lxd_vm_name: staging
+      lxd_vm_docker: true
+
+- hosts: staging
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
