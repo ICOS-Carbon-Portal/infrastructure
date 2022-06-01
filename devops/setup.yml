@@ -1,16 +1,3 @@
----
-# Include local_vars.yml if it exist but don't fail if it doesn't.
-# That file is meant for local variables (not checked into git).
-- hosts: localhost
-  tags: always
-  gather_facts: no
-  pre_tasks:
-    - name: Include local variables (if present)
-      include_vars: "{{ item }}"
-      with_first_found:
-        - local_vars.yml
-        - /dev/null
-
 # Version check play.
 - hosts: localhost
   tags: always
