@@ -1,0 +1,4 @@
+# The python3 version that is available on all servers and vms for use with
+# system scripts.
+python3_version: "3.10"
+python3_command: "/usr/bin/python{{ python3_version }}"
