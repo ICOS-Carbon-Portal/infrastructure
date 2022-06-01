@@ -1,0 +1,24 @@
+- name: Install packages
+  apt:
+    name:
+      - iptables-persistent
+      - "{{ 'fail2ban' if lxd_guest_fail2ban else 'iptables-persistent' }}"
+
+- name: Set timezone to Europe/Stockholm
+  timezone:
+    name: Europe/Stockholm
+  notify: restart crond
+
+- name: Install public keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lxd_guest_root_keys }}"
+  when: lxd_guest_root_keys is truthy
+
+- name: Add default gateway as host
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_default_ipv4.gateway }} gateway.lxd"
+    regex: "gateway.lxd$"
+    state: present
