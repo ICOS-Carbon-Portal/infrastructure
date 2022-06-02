@@ -17,7 +17,7 @@
 
 - name: Tell cpmeta to switch to readonly mode
   uri:
-    url: "http://{{ cpmeta_host }}}:{{ cpmeta_port }}/admin/switchToReadonlyMode"
+    url: "http://{{ cpmeta_host }}:{{ cpmeta_port }}/admin/switchToReadonlyMode"
     # timeout: 30
   when: jarservice_copy.changed
   notify: restart cpmeta
