@@ -48,15 +48,15 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 		val log = streams.value.log
 		val args: Seq[String] = sbt.Def.spaceDelimited().parsed
 
-		val (check, test) = args.toList match{
+		val (check, staging) = args.toList match{
 			case "to" :: "production" :: Nil =>
 				log.info("Performing a REAL deployment to production environment")
 				(false, false)
-			case "to" :: "test" :: Nil =>
-				log.info("Performing a REAL deployment to test environment")
+			case "to" :: "staging" :: Nil =>
+				log.info("Performing a REAL deployment to staging environment")
 				(false, true)
 			case _ =>
-				log.warn("""Performing a TEST deployment to production environment, use\
+				log.warn("""Performing a STAGING deployment to production environment, use\
 								cpDeploy to production' for a real one""")
 				(true, false)
 		}
@@ -67,10 +67,9 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 		// The ansible inventory file. This file contains a list of servers
 		// that we deploy to. Running "cpDeploy to production" will make
-		// ansible use our production environment and "cpDeploy to test"
-		// will make ansible use test servers (i.e virtual machines running
-		// on the developer host)
-		val inventory = if (test) "test.inventory" else "production.inventory"
+		// ansible use our production environment and "cpDeploy to staging"
+		// will make ansible use staging servers.
+		val inventory = if (staging) "staging.inventory" else "production.inventory"
 
 		// The name of the target, i.e the name of the current project
 		// ("cpauth", "data", "meta" etc).
@@ -80,7 +79,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 		val ansibleArgs = Seq(
 			// "--check" will make ansible simulate all its actions. It's
 			// only useful when running against the production inventory.
-			if (check && !test) "--check" else None,
+			if (check && !staging) "--check" else None,
 
 			// Add an ansible tag, e.g '-tcpdata_only'. Each ansible role that we use
 			// is required to have a 'project_only' tag that will only to
@@ -92,7 +91,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 			"-e", s"""${target}_jar_file="$jarPath"""",
 
 			// Specify which inventory to use
-			"-i", (if (test) "test.inventory" else "production.inventory"),
+			"-i", (if (staging) "staging.inventory" else "production.inventory"),
 
 			playbook
 
@@ -109,7 +108,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 	}
 
 	override lazy val projectSettings = Seq(
-		cpDeployPlaybook := "icosprod.yml",
+		cpDeployPlaybook := "core.yml",
 		cpDeploy := cpAnsible.dependsOn(gitChecksTask).evaluated,
 		buildInfoKeys := Seq[BuildInfoKey](name, version),
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
