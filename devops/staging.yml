@@ -3,9 +3,27 @@
     - role: icos.lxd_vm
       tags: vm
       lxd_vm_name: staging
-      lxd_vm_docker: true
+      lxd_vm_docker: True
 
 - hosts: staging
   roles:
     - role: icos.lxd_guest
       tags: guest
+
+    - role: icos.docker
+      tags: docker
+
+  tasks:
+    - name: Enable IP forwarding to localhost
+      sysctl:
+        name: net.ipv4.conf.eth0.route_localnet
+        value: "1"
+
+    - name: Port forward for meta
+      iptables_raw:
+        name: forward_meta
+        table: nat
+        rules: >-
+          iptables -t nat -A PREROUTING
+          -p tcp -i 'eth+' --dport {{ cpmeta_port }}
+          -j DNAT --to-destination 127.0.0.1:{{ cpmeta_port }}
