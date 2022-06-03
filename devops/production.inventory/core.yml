@@ -1,0 +1,28 @@
+all:
+  hosts:
+    core_host:
+      # ansible
+      ansible_host: fsicos2.lunarc.lu.se
+      ansible_port: 60520
+
+      # icos.user
+      user_conf:
+            create_users:
+              - name: root
+                key: "{{ vault_core_host_keys }}"
+
+      # icos.cpmeta - the application
+      cpmeta_backup_enable: true
+      cpmeta_config_files:
+        - files/cpmeta/application_production.conf
+      cpmeta_filestorage_target: /disk/data/metaAppStorage
+
+    core_server:
+      # ansible
+      ansible_host: fsicos2.lunarc.lu.se
+
+      # cpmeta - proxy
+      cpmeta_certbot_name: meta.icos-cp.eu
+      cpmeta_certbot_domains:
+        - meta.icos-cp.eu
+        - meta.fieldsites.se
