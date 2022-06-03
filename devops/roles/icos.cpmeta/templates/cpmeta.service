@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User={{ cpmeta_user }}
-ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
+ExecStart=/usr/bin/java -jar cpmeta.jar
 Restart=always
 RestartSec=30
 WorkingDirectory=/home/{{ cpmeta_user }}

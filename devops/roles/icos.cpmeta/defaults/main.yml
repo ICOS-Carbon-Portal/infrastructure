@@ -1,20 +1,17 @@
-# The name of the linux user that runs the service.
 cpmeta_user: cpmeta
-
-cpmeta_port: 9094
-cpmeta_host: localhost
-
-# The name of the systemd service
-cpmeta_servicename: cpmeta
-
-cpmeta_db_name: "{{ rdflog_db_name }}"
-cpmeta_db_user: "{{ rdflog_db_user }}"
-cpmeta_db_port: "{{ rdflog_db_port }}"
-cpmeta_db_pass: "{{ rdflog_db_pass }}"
-
 cpmeta_home: /home/cpmeta
 
-cpmeta_domains: [meta.icos-cp.eu, meta.fieldsites.se]
-cpmeta_cert_name: meta.icos-cp.eu
+cpmeta_servicename: cpmeta
 
-cpmeta_jarservice_disable: True
+cpmeta_db_name: rdflog
+cpmeta_db_user: rdflog
+cpmeta_db_port: 2345
+cpmeta_db_pass: "{{ rdflog_db_pass }}"
+
+cpmeta_nginxsite_name: cpmeta
+cpmeta_backup_enable: true
+
+cpmeta_host: 127.0.0.1
+cpmeta_port: 9094
+
+cpmeta_jre_package: openjdk-11-jre-headless

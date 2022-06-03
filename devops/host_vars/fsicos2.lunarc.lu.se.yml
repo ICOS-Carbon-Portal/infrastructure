@@ -28,10 +28,8 @@ flexpart_max_parallel: 12
 flexpart_export_output_to: "194.47.223.133(ro,no_subtree_check)"
 
 
-# CORE
-cpmeta_filestorage_target: /disk/data/metaAppStorage
+# CPDATA
 cpdata_filestorage_target: /disk/data/dataAppStorage
-
 
 # STILT
 stilt_nfs_exports: |
