@@ -16,6 +16,7 @@ flowchart LR
 
 user[User Web browser]
 cpdata[data]
+postgis[(PostGIS)]
 datastorage[(Local storage:<br>data objects)]
 b2safe[(B2SAFE:<br>external trusted<br>file repository)]
 cpmeta[meta]
@@ -29,17 +30,9 @@ subgraph cpauth[cpauth]
     profileproxy[User-profile<br>authentication proxy]
 end
 geoip[(geoip:<br>CP's own<br>caching proxy)]
-postgis[(PostGIS)]
 ipstack[(ipstack.com<br>API)]
 restheart[(RestHeart API)]
 mongo[(MongoDB:<br>User profiles<br>CP usage logs)]
-restheart --is a proxy for--> mongo
-geoip --HTTP API call--> ipstack
-downloadslogproxy --logs downloads,<br>enriching with geo info--> postgis
-downloadslogproxy --asks for IP geo info--> geoip
-usagelogproxy --asks for IP geo info--> geoip
-usagelogproxy --logs usage of CP services,<br>enriching with geo info--> restheart
-profileproxy --accesses user profiles--> restheart
 user --gets Web apps, data--> cpdata
 user --gets Web apps, metadata, SPARQL results--> cpmeta
 user --logs usage of CP services--> usagelogproxy
@@ -54,6 +47,14 @@ cpmeta --saves to filesystem--> metastorage
 cpmeta --asks for download stats--> postgis
 cpmeta --registers PID--> handle
 cpmeta --registers DOI--> doi
+cpmeta --asks for preview stats--> restheart
+restheart --is a proxy for--> mongo
+downloadslogproxy --logs downloads,<br>enriching with geo info--> postgis
+downloadslogproxy --asks for IP geo info--> geoip
+usagelogproxy --asks for IP geo info--> geoip
+usagelogproxy --logs usage of CP services,<br>enriching with geo info--> restheart
+profileproxy --accesses user profiles--> restheart
+geoip --HTTP API call--> ipstack
 ```
 
 # Getting started
