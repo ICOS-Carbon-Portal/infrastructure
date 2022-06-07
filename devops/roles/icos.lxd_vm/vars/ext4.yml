@@ -14,9 +14,7 @@ lxd_vm_default_profiles:
 
 
 # CONFIG
-__base_config:
-  limits.cpu: "2"
-  limits.memory: "2GB"
+__base_config: {}
 
 __docker_config: >-
   {% if lxd_vm_docker -%}
