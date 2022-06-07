@@ -10,6 +10,51 @@ found in folder `sbt`.
 Other folders in this Git repository mostly contain legacy Docker files (used
 before the Ansible era).
 
+# Operational aspect of the CP core services organization
+```mermaid
+flowchart LR
+
+user[User Web browser]
+cpdata[data]
+datastorage[(Local storage:<br>data objects)]
+b2safe[(B2SAFE:<br>external trusted<br>file repository)]
+cpmeta[meta]
+rdflog[(rdflog:<br>postgres DB)]
+metastorage[(Local storage:<br>RDF4J NativeStore<br>Labeling app files<br>Magic index dump<br>DOI citations cache)]
+handle[(Handle.net:<br>external PID<br>registry)]
+doi[(DataCite:<br>external DOI<br>registry)]
+subgraph cpauth[cpauth]
+    downloadslogproxy[Data downloads<br>log proxy]
+    usagelogproxy[CP usage<br>log proxy]
+    profileproxy[User-profile<br>authentication proxy]
+end
+geoip[(geoip:<br>CP's own<br>caching proxy)]
+postgis[(PostGIS)]
+ipstack[(ipstack.com<br>API)]
+restheart[(RestHeart API)]
+mongo[(MongoDB:<br>User profiles<br>CP usage logs)]
+restheart --is a proxy for--> mongo
+geoip --HTTP API call--> ipstack
+downloadslogproxy --logs downloads,<br>enriching with geo info--> postgis
+downloadslogproxy --asks for IP geo info--> geoip
+usagelogproxy --asks for IP geo info--> geoip
+usagelogproxy --logs usage of CP services,<br>enriching with geo info--> restheart
+profileproxy --accesses user profiles--> restheart
+user --gets Web apps, data--> cpdata
+user --gets Web apps, metadata, SPARQL results--> cpmeta
+user --logs usage of CP services--> usagelogproxy
+user --accesses user profile--> profileproxy
+cpdata --initializes DB schema,<br>updates downloaded item metadata--> postgis
+cpdata --saves to filesystem--> datastorage
+cpdata --forwards uploaded data streams--> b2safe
+cpdata --sends upload completion  metadata<br>asks for data item metadata--> cpmeta
+cpdata --logs downloads--> downloadslogproxy
+cpmeta --logs RDF updates--> rdflog
+cpmeta --saves to filesystem--> metastorage
+cpmeta --asks for download stats--> postgis
+cpmeta --registers PID--> handle
+cpmeta --registers DOI--> doi
+```
 
 # Getting started
 
