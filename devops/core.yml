@@ -2,11 +2,14 @@
 #
 # To test everything except copying the jarfile:
 #   deploy icosprod cpmeta_only -ejarservice_jar_enable=false
+#
+# Deploy rdflog
+#   deploy -istaging core rdflog
 
 
-- import_playbook: setup.yml
+- hosts: core_server
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: core_host
   tasks:
     - import_role:
         name: icos.cpmeta
@@ -31,3 +34,6 @@
   roles:
     - role: icos.nexus
       tags: nexus
+
+    - role: icos.rdflog
+      tags: rdflog
