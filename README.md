@@ -10,15 +10,15 @@ found in folder `sbt`.
 Other folders in this Git repository mostly contain legacy Docker files (used
 before the Ansible era).
 
-# Operational aspect of the CP core services organization
+# Communications diagram for the core CP services
 ```mermaid
 flowchart LR
 
-user[User Web browser]
-cpdata[data]
-postgis[(PostGIS)]
 datastorage[(Local storage:<br>data objects)]
 b2safe[(B2SAFE:<br>external trusted<br>file repository)]
+user[User Web browser]
+cpdata[data]
+postgis[(PostGIS:<br>Download stats)]
 cpmeta[meta]
 rdflog[(rdflog:<br>postgres DB)]
 metastorage[(Local storage:<br>RDF4J NativeStore<br>Labeling app files<br>Magic index dump<br>DOI citations cache)]
@@ -33,21 +33,23 @@ geoip[(geoip:<br>CP's own<br>caching proxy)]
 ipstack[(ipstack.com<br>API)]
 restheart[(RestHeart API)]
 mongo[(MongoDB:<br>User profiles<br>CP usage logs)]
+cpdata --saves to filesystem--> datastorage
+cpdata --forwards uploaded data streams--> b2safe
+cpdata --init usage DB--> restheart
+cpdata --sends upload completion  metadata<br>asks for data item metadata--> cpmeta
+cpdata --initializes DB schema,<br>updates downloaded item metadata--> postgis
+cpdata --logs downloads--> downloadslogproxy
 user --gets Web apps, data--> cpdata
 user --gets Web apps, metadata, SPARQL results--> cpmeta
 user --logs usage of CP services--> usagelogproxy
 user --accesses user profile--> profileproxy
-cpdata --initializes DB schema,<br>updates downloaded item metadata--> postgis
-cpdata --saves to filesystem--> datastorage
-cpdata --forwards uploaded data streams--> b2safe
-cpdata --sends upload completion  metadata<br>asks for data item metadata--> cpmeta
-cpdata --logs downloads--> downloadslogproxy
-cpmeta --logs RDF updates--> rdflog
-cpmeta --saves to filesystem--> metastorage
-cpmeta --asks for download stats--> postgis
-cpmeta --registers PID--> handle
-cpmeta --registers DOI--> doi
-cpmeta --asks for preview stats--> restheart
+user --gets service usage stats--> restheart
+cpmeta --logs RDF updates---> rdflog
+cpmeta --saves to filesystem---> metastorage
+postgis --provides download stats--> cpmeta
+cpmeta --registers PID---> handle
+cpmeta --registers DOI---> doi
+cpmeta --asks for<br>preview stats--> restheart
 restheart --is a proxy for--> mongo
 downloadslogproxy --logs downloads,<br>enriching with geo info--> postgis
 downloadslogproxy --asks for IP geo info--> geoip
