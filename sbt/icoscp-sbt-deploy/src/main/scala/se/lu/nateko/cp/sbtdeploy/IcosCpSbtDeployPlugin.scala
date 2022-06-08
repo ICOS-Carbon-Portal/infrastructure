@@ -104,7 +104,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 		log.info(ansibleCmd.mkString("RUNNING:\n", " ", "\nIN DIRECTORY " + ansiblePath))
 
-		Process(ansibleCmd, ansibleDir).run(true).exitValue()
+		Process(ansibleCmd, ansibleDir) ! log
 	}
 
 	override lazy val projectSettings = Seq(
