@@ -1,4 +1,6 @@
 all:
+  vars:
+    cpmeta_port: 9094
   hosts:
     core_host:
       # ansible
