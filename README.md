@@ -221,7 +221,10 @@ is not the default one)
 
 `CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD 'Password matches your meta application.conf'; `
 
-` GRANT ALL ON ALL TABLES IN SCHEMA "public*" TO rdflog;`
+` GRANT ALL ON ALL TABLES IN SCHEMA public TO rdflog;`
+
+You could also need to:
+`GRANT ALL ON SEQUENCE icos_id_seq to rdflog;`
 
 
 #### Shutdown and remove container
