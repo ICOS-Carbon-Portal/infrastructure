@@ -26,6 +26,6 @@ all:
         - metastaging.icos-cp.eu
 
       restheart_nginxsite_name: restheart-staging
-      restheart_cert_name: restheart-staging
+      restheart_certbot_name: restheart-staging
       restheart_domains:
-        - restheart-staging.icos-cp.eu
+        - restheartstaging.icos-cp.eu
