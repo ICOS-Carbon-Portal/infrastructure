@@ -31,6 +31,6 @@ all:
 
       # restheart
       restheart_nginxsite_name: restheart
-      restheart_cert_name: restheart.icos-cp.eu
+      restheart_certbot_name: restheart.icos-cp.eu
       restheart_domains:
         - restheart.icos-cp.eu
