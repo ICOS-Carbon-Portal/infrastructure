@@ -22,7 +22,7 @@ libraryDependencies ++= {
 		Defaults.sbtPluginExtra(pluginModule, sbtBinaryVersion.value, scalaBinaryVersion.value)
 
 	Seq(
-		pluginDependency("com.eed3si9n" % "sbt-assembly" % "2.0.0-RC1"),
+		pluginDependency("com.eed3si9n" % "sbt-assembly" % "1.2.0"),
 		pluginDependency("com.eed3si9n" % "sbt-buildinfo" % "0.11.0")
 	)
 }

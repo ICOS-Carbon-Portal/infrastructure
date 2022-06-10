@@ -23,6 +23,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 		val cpDeployTarget = settingKey[String]("Ansible target role for cpDeploy")
 		val cpDeployBuildInfoPackage = settingKey[String]("Java/Scala package to put BuildInfo object into")
 		val cpDeployPlaybook = settingKey[String]("The ansible playbook")
+		val cpDeployInfraBranch = settingKey[String]("The branch of 'infrastructure' repository to execute Ansible against")
 	}
 
 	import autoImport._
@@ -38,9 +39,10 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 		log.info("Check infrastructure version")
 		val infrastructureDir = new java.io.File("../infrastructure/").getCanonicalFile
+		val branch = cpDeployInfraBranch.value
 		Process("git -C " + infrastructureDir + " fetch")
-		if (Process("git -C " + infrastructureDir + " rev-list HEAD...origin/master --count").!!.trim.toInt > 0) {
-			sys.error("Your infrastructure repo is not in sync with origin/master.")
+		if (Process("git -C " + infrastructureDir + s" rev-list HEAD...origin/$branch --count").!!.trim.toInt > 0) {
+			sys.error(s"Your infrastructure repo is not in sync with origin/$branch.")
 		}
 	}
 
@@ -104,12 +106,13 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 		log.info(ansibleCmd.mkString("RUNNING:\n", " ", "\nIN DIRECTORY " + ansiblePath))
 
-		Process(ansibleCmd, ansibleDir) ! log
+		Process(ansibleCmd, ansibleDir).run(log, false).exitValue()
 	}
 
 	override lazy val projectSettings = Seq(
 		cpDeployPlaybook := "core.yml",
 		cpDeploy := cpAnsible.dependsOn(gitChecksTask).evaluated,
+		cpDeployInfraBranch := "master",
 		buildInfoKeys := Seq[BuildInfoKey](name, version),
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
 		buildInfoKeys ++= Seq(
