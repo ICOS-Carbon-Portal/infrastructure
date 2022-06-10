@@ -1,4 +1,11 @@
 restheart_user: restheart
 restheart_home: "{{ docker_compose_home | default('/docker') }}/restheart"
-restheart_host_addr: 127.0.0.1
-restheart_host_port: 8088
+
+# This is the host and port we (docker-compose) _bind_ to.
+restheart_bind_host: 127.0.0.1
+restheart_bind_port: 8088
+
+# This is the host and port we _forward_ to. The default values will work when
+# docker-compose is running on the same host as the nginx reverse-proxy.
+restheart_proxy_host: "{{ restheart_bind_host }}"
+restheart_proxy_port: "{{ restheart_bind_port }}"
