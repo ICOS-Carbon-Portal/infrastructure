@@ -24,3 +24,7 @@ all:
       cpmeta_certbot_name: cpmeta-staging
       cpmeta_domains:
         - metastaging.icos-cp.eu
+
+      restheart_cert_name: restheart-staging
+      restheart_domains:
+        - restheart-staging.icos-cp.eu
