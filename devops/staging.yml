@@ -13,6 +13,9 @@
     - role: icos.docker
       tags: docker
 
+    - role: icos.restheart
+      tags: restheart
+
   tasks:
     - name: Enable IP forwarding to localhost
       tags: forward
@@ -23,7 +26,9 @@
     # The port forward inside the VM, from the external port to the same port
     # on 127.0.0.1.
     - name: Port forward for meta
-      tags: forward
+      tags:
+        - forward
+        - meta
       iptables_raw:
         name: forward_meta
         table: nat
