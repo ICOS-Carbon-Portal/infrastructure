@@ -6,9 +6,11 @@
 - import_role:
     name: icos.python3
   tags: python3
-    
-- import_role: name=icos.utils
+
+- import_role:
+    name: icos.utils
+  tags: utils
+
 - import_role: name=icos.iptables
 - import_role: name=icos.mosh
 - import_tasks: fail2ban.yml
-  
