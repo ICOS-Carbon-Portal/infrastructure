@@ -440,6 +440,10 @@ Users that specified ORCID ID in their user profile:
 
 `curl -G --data-urlencode 'keys={"_id":1, "profile.orcid":1}' --data-urlencode 'filter={"profile.orcid":{"$regex": ".+"}}' http://127.0.0.1:8088/db/users?count=true`
 
+Count Finnish cpauth users (only works if the total user count is below 1000):
+
+`curl -G --data-urlencode 'keys={"_id":1}' 'http://127.0.0.1:8088/db/users?pagesize=1000' | jq -r '._embedded[] | [._id] | @tsv' | grep -E "\.fi$" | sort -uf | wc -l`
+
 Get popular variables in time serie previews:
 
 `curl -o page1.json 'https://restheart.icos-cp.eu/db/portaluse/_aggrs/getPopularTimeserieVars?pagesize=10&page=1'`
