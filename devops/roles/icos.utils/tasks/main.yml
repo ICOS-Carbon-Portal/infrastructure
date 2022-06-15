@@ -9,7 +9,7 @@
 
 - name: Copy utilities
   tags: linux_utils
-  copy:
+  template:
     src: "{{ item }}"
     dest: "/usr/local/sbin/{{ item }}"
     mode: 0755
