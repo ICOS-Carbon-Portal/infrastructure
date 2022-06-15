@@ -6,16 +6,46 @@
     - nginxsite_name
     - nginxsite_file
 
-- name: Copy {{ nginxsite_name }} config
-  template:
-    src: "{{ nginxsite_file }}"
-    dest: "{{ nginxsite_path_available }}"
-  notify: reload nginx config
+- block:
+    - name: Copy config
+      template:
+        src: "{{ nginxsite_file }}"
+        dest: "{{ nginxsite_path_available }}"
+        backup: true
+      register: update
 
-- name: Create symlink to sites-enabled
-  file:
-    dest: "{{ nginxsite_path_enable }}"
-    src: "{{ nginxsite_path_available }}"
-    state: "{% if nginxsite_enable %}link{% else %}absent{% endif %}"
-  when: nginxsite_enable
-  notify: reload nginx config
+    - name: Check syntax
+      shell: nginx -t
+
+    - name: Create symlink to sites-enabled
+      file:
+        dest: "{{ nginxsite_path_enable }}"
+        src: "{{ nginxsite_path_available }}"
+        state: "{% if nginxsite_enable %}link{% else %}absent{% endif %}"
+      when: nginxsite_enable
+
+    - name: Reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
+
+  rescue:
+    - name: Restore old config
+      copy:
+        remote_src: yes
+        dest: "{{ update.dest }}"
+        src: "{{ update.backup_file }}"
+      when: update.backup_file is defined
+
+    - name: Remove broken config
+      file:
+        path: "{{ update.dest }}"
+        state: absent
+      when: update.backup_file is not defined
+
+  always:
+    - name: Remove backup file
+      file:
+        path: "{{ update.backup_file }}"
+        state: absent
+      when: update.backup_file is defined
