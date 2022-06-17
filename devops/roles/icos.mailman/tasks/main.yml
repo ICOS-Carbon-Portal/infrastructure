@@ -3,7 +3,7 @@
     path: "{{ mailman_home }}/build/mailman-core"
     state: directory
 
-- name: Copy files
+- name: Copy mailman files
   template:
     dest: "{{ item.dest }}"
     src: "{{ item.src }}"
@@ -23,10 +23,11 @@
       src: settings_local.py
     - dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
       src: Dockerfile.core
+    - dest: "{{ mailman_home }}/build/mailman-core/"
+      src: 932.diff
+    - dest: "{{ mailman_home }}/build/mailman-core/"
+      src: 933.diff
   register: _files
-
-- name: Copy Dockerfile.core
-  template:
 
 - name: Install cli wrappers
   template:
