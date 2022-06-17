@@ -3,29 +3,15 @@ quince_home: /opt/quince
 quince_filestore: /opt/quince_filestore
 quince_log_file: /var/log/quince.log
 
-quince_qdk_version: 17
+quince_jdk_version: 17
+quince_tomcat_url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz
 
-quince_git_repo: https://github.com/BjerknesClimateDataCentre/QuinCe.git
-# The default branch is 'next_release' which is not what we want.
-quince_git_version: master
-
-quince_gradle_url: https://services.gradle.org/distributions/gradle-5.6-bin.zip
-quince_gradle_sha: a8d15141093d0df419e925f906578053565de99d
-
-quince_tomcat_url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.63/bin/apache-tomcat-9.0.63.tar.gz
-quince_tomcat_port: "8080"
-
-quince_db_user: quince
-quince_db_pass: quince
-quince_db_name: quince
-
-quince_domain: "quince.bcdc.no"
-quince_webapp_dir: /opt/tomcat/webapps/
-quince_build_war: "{{ quince_home }}/build/libs/QuinCe.war"
+# Setting this to true will enable the cron job that does the actual
+# backups. Setting it to false will still install and configure bbclient
+# thought, which is useful for doing restores.
+quince_backup_enable: true
 
 quince_tomcat_home: "/opt/tomcat"
-quince_tomcat_war: "{{ quince_tomcat_home }}/webapps/ROOT.war"
-
 quince_slack_url: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66303732346131626538333962623435343666323838346363666665373131653539326138626334

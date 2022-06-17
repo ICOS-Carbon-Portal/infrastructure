@@ -14,24 +14,8 @@
 - name: Install packages
   apt:
     name: "{{ item }}"
-    state: present
-    cache_valid_time: 3600
-    force_apt_get: true
   loop:
     # This will be mysql-5 for the original quince (running on ubuntu 18.04)
     # and mysql-8 for the new quince VM (running ubuntu 22.04).
     - mysql-server
-    - openjdk-{{ quince_jdk_version }}
-    - git
-    - patch
-
-# We've pre-populated the containers authorized_keys file with keys from the
-# host system. Now add extra keys.
-- name: Install extra authorized_keys
-  authorized_key:
-    user: root
-    state: present
-    key: "{{ item }}"
-  with_file:
-    - extra_authorized_keys
-    
+    - openjdk-{{ quince_jdk_version }}-jdk

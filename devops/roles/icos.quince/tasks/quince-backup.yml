@@ -1,4 +1,4 @@
-- include_role:
+- import_role:
     name: icos.bbclient2
   vars:
     bbclient_name: quince
@@ -10,7 +10,6 @@
     src: quince-backup.sh
     dest: "{{ quince_home }}/backup.sh"
     mode: +x
-  register: _b
 
 - name: Install cron job for backups
   cron:
@@ -18,4 +17,5 @@
     name: quince borg backup
     minute: "15"
     hour: "*/3"
-    job: "{{ _b.dest }}"
+    job: "{{ quince_home }}/backup.sh"
+  when: quince_backup_enable
