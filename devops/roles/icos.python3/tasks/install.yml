@@ -8,7 +8,7 @@
     name:
       - "python{{ python3_version }}-venv"
 
-# # Make sure that pip is available, of the correct version, and not broken.
-# - name: Upgrade pip using pip
-#   command: |
-#     {{ python3_command }} -m ensurepip -U
+# Make sure that pip is available, of the correct version, and not broken.
+- name: Install pip3
+  command: |
+    {{ python3_command }} -m ensurepip -U --altinstall
