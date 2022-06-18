@@ -14,8 +14,18 @@ wg_hub_ishub: >-
 wg_hub_port: >-
   {% if wg_hub_self.port is defined -%}
   {{ wg_hub_self.port }}
-  {% elif wg_hub_ishub %}
+  {% elif wg_hub_ishub -%}
   {{ wg_hub_config.hub.port }}
+  {% endif %}
+
+# Each peer can override the hub address by setting hub_addr, otherwise we
+# default to hub.addr. The usecase is LXD containers that have their LXD host
+# as wireguard hub and get bitten by the lack of SNAT.
+wg_hub_addr: >-
+  {% if wg_hub_self.hub_addr is defined -%}
+  {{ wg_hub_self.hub_addr -}}
+  {% else -%}
+  {{ wg_hub_config.hub.addr -}}
   {% endif %}
 
 wg_hub_key: >-

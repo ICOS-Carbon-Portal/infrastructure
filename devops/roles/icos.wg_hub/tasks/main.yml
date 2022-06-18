@@ -40,14 +40,15 @@
       {% endif %}
       PrivateKey = {{ _privatekey }}
 
+      # {{ wg_hub_peer }}
       [Peer]
       PublicKey = {{ wg_hub_key }}
-      Endpoint = {{ wg_hub_config.hub.addr }}:{{ wg_hub_config.hub.port }}
+      Endpoint = {{ wg_hub_addr -}}:{{ wg_hub_config.hub.port }}
       AllowedIPs = {{ wg_hub_config.allowed_ips }}
       PersistentKeepalive = 25
 
 # FIXME: Remove in 2023
-- name: Remove old {{ item }} block
+- name: Remove old config block
   blockinfile:
     marker: "# {mark} {{ item }} {{ wg_hub_config.name }}"
     path: /etc/hosts
