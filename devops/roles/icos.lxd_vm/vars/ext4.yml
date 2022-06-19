@@ -1,6 +1,5 @@
 lxd_vm_default_profiles:
   - default
-  - ssh_root
 
 lxd_vm_default_devices:
   root:

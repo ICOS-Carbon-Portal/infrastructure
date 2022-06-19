@@ -3,7 +3,6 @@ __root_device:
   root:
     path: /
     type: disk
-    # fsicos3 uses zfs and can utilize the default pool.
     pool: "default"
     size: "{{ lxd_vm_root_size }}"
 
@@ -23,7 +22,6 @@ lxd_vm_default_devices: >-
 # PROFILES
 lxd_vm_default_profiles:
   - default
-  - ssh_root
 
 
 # CONFIG
