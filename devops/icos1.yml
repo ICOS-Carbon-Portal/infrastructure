@@ -1,11 +1,3 @@
-- hosts: wg_icos1_hosts
-  tags: wg
-  roles:
-    - role: icos.wireguard
-    - role: icos.wg_hub
-      wg_hub_config: "{{ wg_icos1_config }}"
-
-
 - hosts: icos1.gis.lu.se
   roles:
     - role: icos.server
