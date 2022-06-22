@@ -1,39 +1,12 @@
 # This ansible playbook will provision our core services.
-#
-# To test everything except copying the jarfile:
-#   deploy icosprod cpmeta_only -ejarservice_jar_enable=false
-#
-# Deploy rdflog
-#   deploy -istaging core rdflog
-
 
 - hosts: core_server
 
 - hosts: core_host
-  tasks:
-    - import_role:
-        name: icos.cpmeta
-        tasks_from: deploy
-      tags: cpmeta_only
-
-    - import_role:
-        name: icos.cpdata
-        tasks_from: deploy
-      tags: cpdata_only
-
-    - import_role:
-        name: icos.cpauth
-        tasks_from: deploy
-      tags: cpauth_only
-
-    - import_role:
-        name: icos.doi
-        tasks_from: deploy
-      tags: doi_only
-
   roles:
+    - role: icos.cpmeta
+    - role: icos.cpdata
+    - role: icos.cpauth
+    - role: icos.doi
     - role: icos.nexus
-      tags: nexus
-
     - role: icos.rdflog
-      tags: rdflog
