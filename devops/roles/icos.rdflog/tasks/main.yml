@@ -1,97 +1,52 @@
-- name: Create rdflog user
-  user:
-    name: "{{ rdflog_user }}"
-    state: present
-    create_home: no
-    home: "{{ rdflog_home }}"
-  register: _user
-
-- name: Create docker home for rdflog
+# We create the rdflog home directory with mode 0700 to protect the key and
+# certificate files.
+- name: Create directories
   file:
-    path: "{{ rdflog_home }}/build"
+    path: "{{ rdflog_home }}"
     state: directory
-  register: _build
+    mode: 0700
 
-- name: Create rdflog data volume
+- name: Create rdflog initdb
   file:
-    path: "{{ rdflog_home }}/volumes/data"
+    path: "{{ rdflog_home }}/initdb"
     state: directory
-    owner: "{{ _user.uid }}"
-    group: "{{ _user.group }}"
-  register: _data
 
-- name: Create ssl key/certificate home
-  file:
-    path: "{{ rdflog_home }}/volumes/ssl"
-    state: directory
-  register: _ssl
-
+# The key and certificate files must be world readable, since the postgres init
+# script must be able to read them.
 - name: Install postgres ssl key/certificate
   copy:
-    dest: "{{ _ssl.path }}/"
+    dest: "{{ rdflog_home }}/initdb"
     src: "{{ item }}"
-    owner: "{{ _user.uid }}"
-    group: "{{ _user.group }}"
-    mode: 0600
   loop:
     - server.crt
     - server.key
 
-- name: Install docker build requirements
+- name: Install templates
   template:
-    dest: "{{ _build.path }}"
-    src: "{{ item }}"
+    dest: "{{ item.dest | default(rdflog_home) }}"
+    src: "{{ item.src }}"
+    mode: "{{ item.mode | default(omit) }}"
   loop:
-    - Dockerfile
-    - init.sql
-    - init.sh
-
-- name: Install docker-compose.yml
-  template:
-    dest: "{{ rdflog_home }}"
-    src: docker-compose.yml
-
-- name: Build image using docker-compose
-  shell: |
-    ( echo -n '=== starting build '; date; docker-compose build --pull ) \
-    | tee -a build.log
-  args:
-    chdir: "{{ rdflog_home }}"
-  register: _output
-  changed_when: '" ---> Running in " in _output.stdout'
+    - src: status.sql
+    - src: ctl.sql
+    - src: docker-compose.yml
+    - src: init.sql
+      dest: "{{ rdflog_home }}/initdb"
+    - src: init.sh
+      dest: "{{ rdflog_home }}/initdb"
+    - src: psql.sh
+      mode: "+x"
 
 - name: Start containers
   docker_compose:
     project_src: "{{ rdflog_home }}"
 
-- name: Install psql script specialized for rdflog
-  template:
-    dest: "{{ rdflog_home }}/psql"
-    src: psql.sh
-    mode: 0755
-  register: _psql
-
-- name: Install rdflog control script
-  template:
-    src: ctl.sh
-    dest: "{{ rdflog_home }}/ctl"
-    mode: 0755
-  register: _ctl
-
-- name: Install sql status files
-  template:
-    src: "{{ item }}"
-    dest: "{{ rdflog_home }}/.{{ item }}"
-  loop:
-    - status.sql
-    - ctl.sql
-
-- name: Reload the ctl sql file while also testing database connection
+- name: Test database connection (by loading ctl.sql)
   shell: >-
-    {{ _psql.dest }} {{ rdflog_db_name }} < {{ rdflog_home }}/.ctl.sql
+    {{ rdflog_home }}/psql.sh {{ rdflog_db_name }} < {{ rdflog_home }}/ctl.sql
   register: r
   changed_when: false
   # The database might not have come up yet (if postgres needs to initialize)
-  retries: 2
+  retries: 10
   delay: 5
   until: r.rc == 0

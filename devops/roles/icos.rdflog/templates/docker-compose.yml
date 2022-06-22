@@ -1,15 +1,15 @@
-version: '2'
+version: '3'
 
 services:
   db:
     container_name: rdflog
     restart: unless-stopped
-    build: build
+    image: postgres:10
     environment:
-      - POSTGRES_PASSWORD={{ rdflog_root_pass }}
+      - POSTGRES_PASSWORD={{ rdflog_db_pass }}
     ports:
-      - localhost:{{ rdflog_db_port }}:5432
+      - 127.0.0.1:{{ rdflog_db_port }}:5432
     volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
       - ./volumes/data:/var/lib/postgresql/data:rw
-      - ./volumes/ssl:/ssl:ro
       - /etc/localtime:/etc/localtime:ro

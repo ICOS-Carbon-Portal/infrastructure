@@ -1,4 +1,4 @@
--- This is the status report used the rdflog's 'ctl' tool.
+-- Gives a status report for rdflog.
 
 \pset footer
 \pset title

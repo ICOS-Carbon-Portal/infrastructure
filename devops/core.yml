@@ -1,0 +1,12 @@
+# This ansible playbook will provision our core services.
+
+- hosts: core_server
+
+- hosts: core_host
+  roles:
+    - role: icos.cpmeta
+    - role: icos.cpdata
+    - role: icos.cpauth
+    - role: icos.doi
+    - role: icos.nexus
+    - role: icos.rdflog

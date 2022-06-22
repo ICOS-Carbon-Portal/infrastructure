@@ -1,16 +1,16 @@
 # deploy restheart restheart_backup
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: core_server
+  tags: server
+  tasks:
+    - name: Setup restheart proxy
+      tags: proxy
+      import_role:
+        name: icos.restheart
+        tasks_from: proxy.yml
+
+- hosts: core_host
+  tags: host
   roles:
-    - role: icos.certbot2
-      tags: cert
-      certbot_name: "{{ restheart_cert_name }}"
-      certbot_domains: "{{ restheart_domains }}"
-
-    - role: icos.nginxsite
-      tags: nginx
-      nginxsite_name: restheart
-      nginxsite_file: roles/icos.restheart/templates/restheart.conf
-
     - role: icos.restheart
       tags: restheart

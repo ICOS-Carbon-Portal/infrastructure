@@ -1,9 +1,9 @@
 - include_role: name=icos.certbot2
   vars:
-    certbot_name: "{{ cpmeta_cert_name }}"
+    certbot_name: "{{ cpmeta_certbot_name }}"
     certbot_domains: "{{ cpmeta_domains }}"
 
 - include_role: name=icos.nginxsite
   vars:
-    nginxsite_name: cpmeta
+    nginxsite_name: "{{ cpmeta_nginxsite_name }}"
     nginxsite_file: cpmeta.conf

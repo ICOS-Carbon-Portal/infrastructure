@@ -1,0 +1,36 @@
+all:
+  hosts:
+    core_host:
+      # ansible
+      ansible_host: fsicos2.lunarc.lu.se
+      ansible_port: 60520
+
+      # cpmeta - application
+      cpmeta_domains:
+        - metastaging.icos-cp.eu
+      cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
+      cpmeta_jar_file: /home/andre/tmp/meta-assembly-0.7.0.jar
+      cpmeta_backup_enable: false
+      cpmeta_config_files:
+        - files/cpmeta/application_production.conf
+        - files/cpmeta/application_staging_amendment.conf
+
+      cpdata_filestorage_target: /home/cpdata/dataAppStorage
+      cpdata_config_files:
+        - files/cpdata/application_production.conf
+        - files/cpdata/application_staging_amendment.conf
+
+    core_server:
+      ansible_host: fsicos2.lunarc.lu.se
+
+      # cpmeta - proxy
+      cpmeta_host: staging.lxd
+      cpmeta_nginxsite_name: cpmeta-staging
+      cpmeta_certbot_name: cpmeta-staging
+      cpmeta_domains:
+        - metastaging.icos-cp.eu
+
+      restheart_nginxsite_name: restheart-staging
+      restheart_certbot_name: restheart-staging
+      restheart_domains:
+        - restheartstaging.icos-cp.eu

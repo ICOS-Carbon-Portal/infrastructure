@@ -1,0 +1,9 @@
+- include_role: name=icos.certbot2
+  vars:
+    certbot_name: "{{ restheart_certbot_name }}"
+    certbot_domains: "{{ restheart_domains }}"
+
+- include_role: name=icos.nginxsite
+  vars:
+    nginxsite_name: "{{ restheart_nginxsite_name }}"
+    nginxsite_file: restheart-nginx.conf

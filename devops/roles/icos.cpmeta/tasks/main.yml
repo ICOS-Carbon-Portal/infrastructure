@@ -1,11 +1,9 @@
 - import_tasks: setup.yml
   tags: cpmeta_setup
 
-- import_tasks: nginx.yml
-  tags: cpmeta_nginx
-
 - import_tasks: deploy.yml
   tags: cpmeta_deploy
 
 - import_tasks: backup.yml
   tags: cpmeta_backup
+  when: cpmeta_backup_enable
