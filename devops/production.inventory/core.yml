@@ -13,11 +13,15 @@ all:
               - name: root
                 key: "{{ vault_core_host_keys }}"
 
-      # icos.cpmeta - the application
+      # icos.cpmeta - application
       cpmeta_backup_enable: true
       cpmeta_config_files:
         - files/cpmeta/application_production.conf
       cpmeta_filestorage_target: /disk/data/metaAppStorage
+
+      # icos.cpdata - application
+      cpdata_config_files:
+        - files/cpdata/application_production.conf
 
     core_server:
       # ansible

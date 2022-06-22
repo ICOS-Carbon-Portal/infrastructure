@@ -15,6 +15,10 @@ all:
         - files/cpmeta/application_production.conf
         - files/cpmeta/application_staging_amendment.conf
 
+      cpdata_config_files:
+        - files/cpdata/application_production.conf
+        - files/cpdata/application_staging_amendment.conf
+
     core_server:
       ansible_host: fsicos2.lunarc.lu.se
 
