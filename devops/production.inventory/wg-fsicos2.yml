@@ -1,0 +1,31 @@
+# FSICOS2 WIREGUARD
+wg_fsicos2_hosts:
+  hosts:
+    fsicos2.lunarc.lu.se:
+    fsicos3.lunarc.lu.se:
+    cdb.nateko.lu.se:
+    pgrep1:
+    pgrep2:
+  vars:
+    wg_fsicos2_config:
+      name: fsicos2
+      allowed_ips: 172.30.2.0/24
+      hub:
+        addr: fsicos2.lunarc.lu.se
+        port: 60801
+      peers:
+        fsicos2.lunarc.lu.se:
+          name: fsicos2
+          addr: 172.30.2.1
+        fsicos3.lunarc.lu.se:
+          name: fsicos3
+          addr: 172.30.2.2
+        cdb.nateko.lu.se:
+          name: cdb
+          addr: 172.30.2.3
+        pgrep1:
+          name: pgrep1
+          addr: 172.30.2.4
+        pgrep2:
+          name: pgrep2
+          addr: 172.30.2.5
