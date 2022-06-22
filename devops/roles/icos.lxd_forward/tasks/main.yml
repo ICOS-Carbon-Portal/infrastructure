@@ -1,9 +1,3 @@
-- name: Remove lxd_forward_name from /etc/ufw/before.rules
-  blockinfile:
-    path: /etc/ufw/before.rules
-    marker: "# {mark} ansible / ssh to lxd {{ lxd_forward_name }}"
-    state: absent
-
 - name: Add iptables rule to forward lxd_forward_port
   tags: iptables
   iptables_raw:
