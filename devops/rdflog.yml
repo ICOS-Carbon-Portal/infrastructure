@@ -47,4 +47,4 @@
       vars:
         fsd_name: "postgres-exporter@{{ inventory_hostname }}"
         fsd_app: "rdflog"
-        fsd_url: "/lxd/pgrep-rdflog/{{ pgrep_metric_port }}"
+        fsd_url: "/lxd/{{ inventory_hostname }}/{{ pgrep_metric_port }}"

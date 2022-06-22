@@ -1,13 +1,10 @@
 lxd_vm_ip: "{{ _lxd.addresses.eth0 | first }}"
-lxd_vm_port: "{{ hostvars[lxd_vm_inventory_hostname].ansible_port }}"
+lxd_vm_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
+
 # By default, we enable ssh port forward from a host on the host to the VM. The
 # exception is when the VM uses the macvlan profile.
 lxd_vm_forward: true
 lxd_vm_root_key: "{{ vault_lxd_ssh_pub }}"
-
-# The name the VM has in the inventory. This is usually, but not always the
-# same as lxd_vm_name (which is the lxc name).
-lxd_vm_inventory_hostname: "{{ lxd_vm_name }}"
 
 # When a separate btrfs pool is used, this is the default size.
 lxd_vm_root_size: 50GB

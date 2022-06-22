@@ -14,9 +14,9 @@ pgrep_rdflog_server:
       lxd_vm_docker: true
   hosts:
     fsicos3.lunarc.lu.se:
-      lxd_vm_inventory_hostname: pgrep-rdflog@fsicos3
+      rdflog_vm_name: pgrep1
     cdb.nateko.lu.se:
-      lxd_vm_inventory_hostname: pgrep-rdflog@cdb
+      rdflog_vm_name: pgrep2
 
 # The VMs running replicas.
 pgrep_rdflog:
