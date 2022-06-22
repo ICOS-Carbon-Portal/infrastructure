@@ -14,6 +14,9 @@ all:
                 key: "{{ vault_core_host_keys }}"
 
       # icos.cpmeta - application
+      cpmeta_domains:
+        - meta.icos-cp.eu
+        - meta.fieldsites.se
       cpmeta_backup_enable: true
       cpmeta_config_files:
         - files/cpmeta/application_production.conf
@@ -30,7 +33,7 @@ all:
 
       # cpmeta - proxy
       cpmeta_certbot_name: meta.icos-cp.eu
-      cpmeta_certbot_domains:
+      cpmeta_domains:
         - meta.icos-cp.eu
         - meta.fieldsites.se
 
