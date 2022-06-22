@@ -1,9 +1,0 @@
-- name: Create application.conf
-  copy:
-    dest: "{{ cpdata_home }}/application.conf"
-    content: |
-      {% for item in cpdata_config_files %}
-      # {{ item }}
-      {{ lookup('template', item) }}
-
-      {% endfor %}
