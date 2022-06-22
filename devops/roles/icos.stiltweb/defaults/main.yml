@@ -11,7 +11,7 @@ stiltweb_statedir: /disk/data/stiltweb
 # The root of the classic stilt data directory (Footprints, RData, etc)
 stiltweb_stiltdir: /disk/data/stilt
 
-# The port that netty/akka/rpc port on the stiltweb host. Incoming stiltcluster
+# The netty/akka/rpc port on the stiltweb host. Incoming stiltcluster
 # connections will be redirected here.
 stiltweb_port: 2550
 
