@@ -1,11 +1,9 @@
 all:
-  vars:
-    cpmeta_port: 9094
   hosts:
     core_host:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
-      ansible_port: 60520
+      ansible_port: 60022
 
       # icos.user
       user_conf:

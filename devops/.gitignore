@@ -1,3 +1,6 @@
 .vagrant/
 *.pyc
 local_vars.yml
+
+.metals/
+.vscode/
