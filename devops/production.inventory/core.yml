@@ -20,6 +20,7 @@ all:
       cpmeta_filestorage_target: /disk/data/metaAppStorage
 
       # icos.cpdata - application
+      cpdata_filestorage_target: /disk/data/dataAppStorage
       cpdata_config_files:
         - files/cpdata/application_production.conf
 

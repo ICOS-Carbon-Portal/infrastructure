@@ -15,6 +15,7 @@ all:
         - files/cpmeta/application_production.conf
         - files/cpmeta/application_staging_amendment.conf
 
+      cpdata_filestorage_target: /home/cpdata/dataAppStorage
       cpdata_config_files:
         - files/cpdata/application_production.conf
         - files/cpdata/application_staging_amendment.conf
