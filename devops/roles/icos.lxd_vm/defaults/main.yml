@@ -20,9 +20,11 @@ __lxd_vm_profiles: "{{ lxd_vm_default_profiles + lxd_vm_profiles }}"
 __lxd_vm_devices: "{{ lxd_vm_default_devices | combine(lxd_vm_devices) }}"
 __lxd_vm_config: "{{ lxd_vm_default_config | combine(lxd_vm_config) }}"
 
+lxd_vm_ubuntu_version: "22.04"
+
 lxd_source:
   type: image
   mode: pull
   server: https://cloud-images.ubuntu.com/releases
   protocol: simplestreams
-  alias: "22.04"
+  alias: "{{ lxd_vm_ubuntu_version }}"
