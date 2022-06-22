@@ -6,15 +6,6 @@
   tags: rdflog
   roles:
     - role: icos.rdflog
-  tasks:
-    - name: Port forward for rdflog
-      tags: forward
-      iptables_raw:
-        name: forward_rdflog
-        table: nat
-        rules: >-
-          -A PREROUTING -p tcp --dport {{ rdflog_ext_port }}
-          -j DNAT --to-destination 127.0.0.1:{{ rdflog_db_port }}
 
 
 # CREATE VMS
@@ -22,6 +13,8 @@
   tags: vm
   roles:
     - role: icos.lxd_vm
+      lxd_vm_name: "{{ rdflog_vm_name }}"
+      lxd_vm_docker: true
 
 
 # REPLICAS
@@ -38,12 +31,13 @@
       tags: pgrep
 
   tasks:
-    - name: Add pgrep-rdflog to prometheus
+    - name: Add vms to prometheus
       tags: prom
       include_role:
         name: icos.prometheus
         tasks_from: fsd
-        apply: {tags: ['prom']}
+        apply:
+          tags: prom
       vars:
         fsd_name: "postgres-exporter@{{ inventory_hostname }}"
         fsd_app: "rdflog"
