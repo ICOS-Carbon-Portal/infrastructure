@@ -8,6 +8,9 @@ all:
     cpdata_domains:
       - datastaging.icos-cp.eu
 
+    cpauth_domains:
+      - authstaging.icos-cp.eu
+
   hosts:
     core_host:
       # ansible
@@ -39,6 +42,10 @@ all:
       # cpdata - proxy
       cpdata_certbot_name: cpdata-staging
       cpdata_nginxsite_name: cpdata-staging
+
+      # cpauth - proxy
+      cpauth_certbot_name: cpauth-staging
+      cpauth_nginxsite_name: cpauth-staging
 
       # restheart - proxy
       restheart_nginxsite_name: restheart-staging

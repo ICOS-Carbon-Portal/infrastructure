@@ -8,6 +8,10 @@ all:
       - data.icos-cp.eu
       - data.fieldsites.se
 
+    cpauth_domains:
+      - cpauth.icos-cp.eu
+      - auth.fieldsites.se
+
   hosts:
     core_host:
       # ansible
@@ -36,6 +40,10 @@ all:
       # cpdata - proxy
       cpdata_certbot_name: data.icos-cp.eu
       cpdata_nginxsite_name: cpdata
+
+      # cpauth - proxy
+      cpauth_certbot_name: cpauth.icos-cp.eu
+      cpauth_nginxsite_name: cpauth
 
       # restheart - proxy
       restheart_nginxsite_name: restheart

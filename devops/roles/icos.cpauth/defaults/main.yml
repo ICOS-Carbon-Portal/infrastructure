@@ -7,5 +7,4 @@ cpauth_masteradmin_pass: "{{ vault_cpauth_masteradmin_pass }}"
 cpauth_pgwriter_pass: "{{ vault_cpdata_pgreslog_writer_pass }}"
 cpauth_user_secret_salt: "{{ vault_cpauth_user_secret_salt }}"
 
-cpauth_domains: [cpauth.icos-cp.eu, auth.fieldsites.se]
-cpauth_cert_name: cpauth.icos-cp.eu
+cpauth_port: 8080
