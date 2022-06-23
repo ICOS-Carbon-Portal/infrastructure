@@ -16,6 +16,7 @@
 
     - name: Check syntax
       shell: nginx -t
+      changed_when: no
 
     - name: Create symlink to sites-enabled
       file:
@@ -28,6 +29,7 @@
       systemd:
         name: nginx
         state: reloaded
+      changed_when: no
 
   rescue:
     - name: Restore old config
