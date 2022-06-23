@@ -26,6 +26,8 @@
     method: "POST"
     url: "http://{{ cpmeta_host }}:{{ cpmeta_port }}/admin/switchToReadonlyMode"
     # timeout: 30
+  # if meta is not responding, it should still be possible to deploy
+  failed_when: no
   when:
     - _jarfile.changed or _config.changed
 
