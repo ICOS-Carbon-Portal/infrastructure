@@ -52,6 +52,7 @@ all:
       cpauth_nginxsite_name: cpauth-staging
 
       # restheart - proxy
+      restheart_host: staging.lxd
       restheart_nginxsite_name: restheart-staging
       restheart_certbot_name: restheart-staging
       restheart_domains:
