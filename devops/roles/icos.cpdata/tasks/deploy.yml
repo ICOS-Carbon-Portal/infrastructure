@@ -38,9 +38,3 @@
   retries: 30
   delay: 10
   until: not r.failed
-
-- name: Check that the gitHash is correct
-  assert:
-    that:
-      - jarservice_githash in r.content
-  when: jarservice_githash is defined
