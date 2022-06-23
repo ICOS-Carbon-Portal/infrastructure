@@ -7,7 +7,7 @@ restheart_bind_port: 8088
 
 # This is the host and port we _forward_ to. The default values will work when
 # docker-compose is running on the same host as the nginx reverse-proxy.
-restheart_proxy_host: "{{ restheart_bind_host }}"
-restheart_proxy_port: "{{ restheart_bind_port }}"
+restheart_host: "{{ restheart_bind_host }}"
+restheart_port: "{{ restheart_bind_port }}"
 
 restheart_nginxsite_name: restheart
