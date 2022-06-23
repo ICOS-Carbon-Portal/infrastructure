@@ -9,8 +9,3 @@
     src: privateKeys
     dest: "{{ cpauth_home }}"
     owner: "{{ cpauth_user }}"
-
-- include_role: name=icos.nginxsite
-  vars:
-    nginxsite_name: cpauth
-    nginxsite_file: cpauth.conf

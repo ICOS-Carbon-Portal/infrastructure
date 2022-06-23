@@ -18,6 +18,14 @@
         name: icos.cpdata
         tasks_from: proxy.yml
 
+    - name: Setup cpauth proxy
+      tags:
+        - proxy
+        - cpauth_proxy
+      import_role:
+        name: icos.cpauth
+        tasks_from: proxy.yml
+
 
 - hosts: core_host
   roles:
