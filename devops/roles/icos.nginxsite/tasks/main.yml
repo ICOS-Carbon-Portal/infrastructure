@@ -50,4 +50,5 @@
       file:
         path: "{{ update.backup_file }}"
         state: absent
+      changed_when: no
       when: update.backup_file is defined
