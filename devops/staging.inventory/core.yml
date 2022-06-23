@@ -43,6 +43,7 @@ all:
       cpmeta_certbot_name: cpmeta-staging
 
       # cpdata - proxy
+      cpdata_host: staging.lxd
       cpdata_certbot_name: cpdata-staging
       cpdata_nginxsite_name: cpdata-staging
 
