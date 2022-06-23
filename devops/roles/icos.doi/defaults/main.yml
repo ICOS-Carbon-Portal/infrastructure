@@ -2,5 +2,6 @@ doi_user: doi
 doi_home: /home/doi
 doi_servicename: doi
 doi_port: 8079
+doi_host: 127.0.0.1
 doi_password: "{{ vault_doi_password }}"
 doi_admins: "{{ vault_doi_admins }}"

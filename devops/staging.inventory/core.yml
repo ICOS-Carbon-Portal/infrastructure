@@ -57,4 +57,5 @@ all:
         - restheartstaging.icos-cp.eu
 
       # doi - proxy
+      doi_host: staging.lxd
       doi_certbot_name: doi-staging
