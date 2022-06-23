@@ -48,6 +48,7 @@ all:
       cpdata_nginxsite_name: cpdata-staging
 
       # cpauth - proxy
+      cpauth_host: staging.lxd
       cpauth_certbot_name: cpauth-staging
       cpauth_nginxsite_name: cpauth-staging
 
