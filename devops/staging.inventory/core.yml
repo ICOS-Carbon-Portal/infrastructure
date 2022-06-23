@@ -11,6 +11,9 @@ all:
     cpauth_domains:
       - authstaging.icos-cp.eu
 
+    doi_domains:
+      - doistaging.icos-cp.eu
+
   hosts:
     core_host:
       # ansible
@@ -52,3 +55,6 @@ all:
       restheart_certbot_name: restheart-staging
       restheart_domains:
         - restheartstaging.icos-cp.eu
+
+      # doi - proxy
+      doi_certbot_name: doi-staging

@@ -12,6 +12,9 @@ all:
       - cpauth.icos-cp.eu
       - auth.fieldsites.se
 
+    doi_domains:
+      - doi.icos-cp.eu
+
   hosts:
     core_host:
       # ansible
@@ -50,3 +53,6 @@ all:
       restheart_certbot_name: restheart.icos-cp.eu
       restheart_domains:
         - restheart.icos-cp.eu
+
+      # doi -proxy
+      doi_certbot_name: doi.icos-cp.eu
