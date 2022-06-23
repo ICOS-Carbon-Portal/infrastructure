@@ -31,9 +31,11 @@ all:
 
       # cpmeta - proxy
       cpmeta_certbot_name: meta.icos-cp.eu
+      cpmeta_nginxsite_name: cpmeta
 
       # cpdata - proxy
-      cpdata_cert_name: data.icos-cp.eu
+      cpdata_certbot_name: data.icos-cp.eu
+      cpdata_nginxsite_name: cpdata
 
       # restheart - proxy
       restheart_nginxsite_name: restheart

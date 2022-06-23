@@ -8,7 +8,6 @@ cpmeta_db_user: rdflog
 cpmeta_db_port: 2345
 cpmeta_db_pass: "{{ rdflog_db_pass }}"
 
-cpmeta_nginxsite_name: cpmeta
 cpmeta_backup_enable: true
 
 cpmeta_host: 127.0.0.1

@@ -37,7 +37,8 @@ all:
       cpmeta_certbot_name: cpmeta-staging
 
       # cpdata - proxy
-      cpdata_cert_name: cpdata-staging
+      cpdata_certbot_name: cpdata-staging
+      cpdata_nginxsite_name: cpdata-staging
 
       # restheart - proxy
       restheart_nginxsite_name: restheart-staging

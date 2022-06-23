@@ -1,6 +1,23 @@
 # This ansible playbook will provision our core services.
 
 - hosts: core_server
+  tasks:
+    - name: Setup cpmeta proxy
+      tags:
+        - proxy
+        - cpmeta_proxy
+      import_role:
+        name: icos.cpmeta
+        tasks_from: proxy.yml
+
+    - name: Setup cpdata proxy
+      tags:
+        - proxy
+        - cpdata_proxy
+      import_role:
+        name: icos.cpdata
+        tasks_from: proxy.yml
+
 
 - hosts: core_host
   roles:
