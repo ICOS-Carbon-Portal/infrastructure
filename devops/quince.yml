@@ -1,115 +1,42 @@
-# Install the QuinCe software in a LXD container on a remote host.
-#
-# 1. Setup the host.
-#   + Create the LXD container.
-#   + Forwarding a port on the host to the container ssh port.
-#   + Generate a nginx certificate for the quince domains.
-#   + Setting up nginx proxy to the container tomcat server.
-#
-# 2. Setting up the container
-#   + Connect directly to the container through the forwarded ssh port.
-#   + Install MySQL and Java using system packages.
-#   + Install Gradle and Tomcat by downloading specific versions.
-#   + Clone the QuinCe source code and compile it using Gradle.
-#   + Setup a systemd service that runs QuinCe using Tomcat.
-#
-# To provision the host and create the quince container:
-#   $ deploy quince -lfsicos2.lunarc.lu.se
-#
-# To provision the container
-#   $ deploy quince -lquince
-#
-# To provision backups
-#   $ deploy quince -lquince backup
-#
-# To redeploy only the nginx config.
-#   $ deploy quince nginx
-#
-# Note that new versions of quince are supposed to be deployed using quince's
-# own scripts, run interactively, from inside the container.
-
 - hosts: fsicos2.lunarc.lu.se
   vars:
-    quince_host: quince.lxd
-  pre_tasks:
-    - name: Create the QuinCe container
-      tags:
-        - lxd
-        - forward
-        - nginx
-      lxd_container:
-        name: quince
-        state: started
-        source:
-          type: image
-          mode: pull
-          server: https://cloud-images.ubuntu.com/releases
-          protocol: simplestreams
-          alias: "18.04"
-        devices:
-          root:
-            path: "/"
-            pool: "quince2"
-            type: "disk"
-            size: "200GB"
-
-          limits.cpu: "20"
-          security.nesting: "true"
-        wait_for_ipv4_addresses: true
-        timeout: 600
-      register: _lxd
-
+    quince_host: quince3.lxd
   roles:
-    - role: icos.lxd_forward
-      tags: forward
-      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
-      lxd_forward_name: quince
-
-    # Regular quince.
-    - role: icos.certbot2
-      tags: cert
-      certbot_name: quince
-      certbot_domains: ["quince.bcdc.no"]
-
-    - role: icos.nginxsite
-      tags: nginx
-      nginxsite_name: quince
-      nginxsite_file: files/quince.conf
-      certbot_domains:
-        - quince.bcdc.no
-
-    # Quince Intercomparison.
-    - role: icos.certbot2
-      tags: cert-ic
-      certbot_name: quince-ic
-      certbot_domains:
-        - quince-ic1.bcdc.no
-        - quince-ic2.bcdc.no
-        - icoslabelling.bcdc.no
-
-    - role: icos.nginxsite
-      tags: nginx-ic
-      nginxsite_name: quince-ic
-      nginxsite_file: files/quince-ic.conf
-      certbot_name: quince-ic
-      quince_port: 8180
-      quince_domains:
-        - quince-ic1.bcdc.no
-        - quince-ic2.bcdc.no
-        - icoslabelling.bcdc.no
-
-- hosts: quince
-  vars:
-    quince_username: quince
-  roles:
-    - role: icos.lxd_guest
-      tags: guest
-
-    - role: icos.quince
-      tags: quince
+    - name: Create the quince3 VM
+      role: icos.lxd_vm
+      lxd_vm_name: quince3
+      lxd_vm_root_size: "200GB"
+      lxd_vm_config:
+        limits.cpu: "20"
+        limits.memory: "64GB"
 
   tasks:
-    - import_role:
+    # Regular quince.
+    - name: Setup proxy for quince
+      tags: proxy
+      import_role:
         name: icos.quince
-        tasks_from: quince-backup
-      tags: backup
+        tasks_from: proxy.yml
+      vars:
+        quince_name: quince
+        quince_domains:
+          - quince.bcdc.no
+
+    # Quince Intercomparison.
+    - name: Setup proxy for quince intercomparison
+      tags: proxy
+      import_role:
+        name: icos.quince
+        tasks_from: proxy.yml
+      vars:
+        quince_name: quince-ic
+        quince_domains:
+          - icoslabelling.bcdc.no
+
+
+- hosts: quince3
+  roles:
+    - role: icos.lxd_guest
+
+    - role: icos.quince
+      quince_backup_enable: false

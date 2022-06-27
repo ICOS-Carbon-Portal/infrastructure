@@ -54,5 +54,5 @@ all:
       restheart_domains:
         - restheart.icos-cp.eu
 
-      # doi -proxy
+      # doi - proxy
       doi_certbot_name: doi.icos-cp.eu
