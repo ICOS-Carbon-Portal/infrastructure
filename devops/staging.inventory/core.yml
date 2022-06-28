@@ -28,6 +28,9 @@ all:
         - application_staging_amendment.conf
 
       # cpdata - application
+      # when running in an lxd VM, bind all interfaces so that we're reachable
+      # from the host.
+      cpdata_bind_addr: "0.0.0.0"
       cpdata_filestorage_target: "{{ cpdata_home }}/dataAppStorage"
       cpdata_config_files:
         - application_production.conf
@@ -44,9 +47,6 @@ all:
 
       # cpdata - proxy
       cpdata_host: staging.lxd
-      # when running in an lxd VM, bind all interfaces so that we're reachable
-      # from the host.
-      cpdata_bind_addr: "0.0.0.0"
       cpdata_certbot_name: cpdata-staging
       cpdata_nginxsite_name: cpdata-staging
 
