@@ -9,34 +9,28 @@
       lxd_vm_config:
         limits.cpu: "20"
         limits.memory: "64GB"
-
   tasks:
-    # Regular quince.
-    - name: Setup proxy for quince
+    - name: Setup proxying for quince
       tags: proxy
-      import_role:
+      include_role:
         name: icos.quince
+        apply:
+          tags: proxy
         tasks_from: proxy.yml
       vars:
-        quince_name: quince
-        quince_domains:
-          - quince.bcdc.no
-
-    # Quince Intercomparison.
-    - name: Setup proxy for quince intercomparison
-      tags: proxy
-      import_role:
-        name: icos.quince
-        tasks_from: proxy.yml
-      vars:
-        quince_name: quince-ic
-        quince_domains:
-          - icoslabelling.bcdc.no
-
+        quince_name: "{{ item.name }}"
+        quince_domains: "{{ item.domains }}"
+      loop:
+        # Regular quince.
+        - name: quince
+          domains:
+            - quince.bcdc.no
+        # InterComparison
+        - name: quince-ic
+          domains:
+            - icoslabelling.bcdc.no
 
 - hosts: quince3
   roles:
     - role: icos.lxd_guest
-
     - role: icos.quince
-      quince_backup_enable: false
