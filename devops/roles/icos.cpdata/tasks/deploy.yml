@@ -19,7 +19,18 @@
   copy:
     src: "{{ cpdata_jar_file }}"
     dest: "{{ cpdata_home }}/cpdata.jar"
+    backup: true
   register: _jarfile
+
+- name: Prune old jarfiles
+  ansible.builtin.shell: |
+    ls -1t *jar*~ | tail +6 | tee /dev/stderr | xargs rm -f
+  args:
+    executable: /bin/bash
+    chdir: "{{ cpdata_home }}"
+  register: _r
+  changed_when:
+    - _r.stderr
 
 - name: Start/restart service
   systemd:
