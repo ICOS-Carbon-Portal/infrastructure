@@ -41,5 +41,3 @@
     - role: icos.cpdata
     - role: icos.cpauth
     - role: icos.doi
-    - role: icos.nexus
-    - role: icos.rdflog
