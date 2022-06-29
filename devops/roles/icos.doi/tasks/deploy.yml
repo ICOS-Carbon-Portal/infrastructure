@@ -36,7 +36,7 @@
       {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
 
 - name: Check that the service responds
-    uri:
+  uri:
     url: "https://{{ doi_domains | first }}/buildInfo"
     return_content: yes
   register: r
