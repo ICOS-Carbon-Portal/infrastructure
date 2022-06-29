@@ -56,3 +56,4 @@ all:
 
       # doi - proxy
       doi_certbot_name: doi.icos-cp.eu
+      doi_nginxsite_name: doi

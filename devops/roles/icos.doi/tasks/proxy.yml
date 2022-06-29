@@ -7,5 +7,5 @@
 - name: Add doi nginx config
   include_role: name=icos.nginxsite
   vars:
-    nginxsite_name: doi
+    nginxsite_name: "{{ doi_nginxsite_name }}"
     nginxsite_file: doi.conf

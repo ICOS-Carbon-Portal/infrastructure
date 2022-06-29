@@ -67,3 +67,4 @@ all:
       # doi - proxy
       doi_host: staging.lxd
       doi_certbot_name: doi-staging
+      doi_nginxsite_name: doi-staging
