@@ -1,15 +1,46 @@
-- name: Deploy jarfile as a service
-  include_role:
-    name: icos.jarservice2
-  vars:
-    jarservice_name : doi
-    jarservice_home : "{{ doi_home }}"
-    jarservice_local: "{{ doi_jar_file }}"
-    jarservice_unit : "{{ lookup('template', 'doi.service') }}"
-    jarservice_check: "https://{{ doi_domains | first }}/buildInfo"
-
-- name: Copy application.conf
+- name: Add systemd service
   template:
+    src: doi.service
+    dest: /etc/systemd/system/doi.service
+  register: _service
+
+- name: Create application.conf
+  template:
+    dest: "{{ doi_home }}/application.conf"
     src: application.conf
-    dest: "{{ doi_home }}"
-  notify: restart doi
+  register: _config
+
+- name: Copy jarfile
+  copy:
+    src: "{{ doi_jar_file }}"
+    dest: "{{ doi_home }}/doi.jar"
+    backup: true
+  register: _jarfile
+
+- name: Prune old jarfiles
+  ansible.builtin.shell: |
+    ls -1t *jar*~ | tail +6 | tee /dev/stderr | xargs rm -f
+  args:
+    executable: /bin/bash
+    chdir: "{{ doi_home }}"
+  register: _r
+  changed_when:
+    - _r.stderr
+
+- name: Start/restart service
+  systemd:
+    name: doi.service
+    enabled: yes
+    daemon-reload: "{{ 'yes' if _service.changed else 'no' }}"
+    state: >-
+      {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
+
+- name: Check that the service responds
+    uri:
+    url: "https://{{ doi_domains | first }}/buildInfo"
+    return_content: yes
+  register: r
+  failed_when: r.failed
+  retries: 30
+  delay: 10
+  until: not r.failed

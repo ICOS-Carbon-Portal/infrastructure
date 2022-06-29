@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 User={{ doi_user }}
-ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
+ExecStart=/usr/bin/java -jar doi.jar
 Restart=always
 RestartSec=30
 WorkingDirectory={{ doi_home }}

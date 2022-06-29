@@ -36,6 +36,7 @@ all:
         - application_production.conf
         - application_staging_amendment.conf
 
+      # doi - application
       doi_bind_addr: "0.0.0.0"
 
     core_server:
