@@ -1,0 +1,75 @@
+- name: Install postgresql and postgis
+  include_role:
+    name: icos.postgresql
+    public: yes
+    apply:
+      tags: postgresql
+  tags: postgresql
+  vars:
+    postgresql_postgis_enable: true
+
+- name: Install bbclient
+  include_role:
+    name: icos.bbclient2
+  vars:
+    bbclient_name: "{{ postgis_bbclient_name }}"
+    bbclient_user: postgres
+    bbclient_home: "{{ postgresql_home_dir }}/.bbclient"
+
+- name: Copy backup script
+  template:
+    src: backup-dumpall-bbclient
+    dest: "{{ postgresql_bin_dir }}"
+    mode: +x
+    owner: postgres
+    group: postgres
+
+- name: Add postgres backup to crontab
+  tags: cron
+  cron:
+    user: postgres
+    job: "{{ postgresql_bin_dir }}/backup-dumpall-bbclient"
+    hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
+    minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
+    state: present
+    name: "postgis_backup"
+  when: postgis_backup_enable
+
+- name: Stop here
+  meta: end_play
+
+# - name: Allow postgres user to connect from same subnet
+#   tags: hba
+#   postgresql_pg_hba:
+#     dest: "{{ postgresql_hba_file }}"
+#     users: postgres
+#     source: samenet
+#     method: md5
+#     contype: hostssl
+
+# Switch to postgres so we use socket authentication.
+- become: true
+  become_user: postgres
+  tags: cplog
+  block:
+    - name: Create postgres cplog users
+      postgresql_user:
+        db: cplog
+        name: "{{ item.username }}"
+        password: "{{ item.password }}"
+      loop: "{{ vault_postgis_cplog_users }}"
+
+    - name: Allow users to connect from same subnet
+      postgresql_pg_hba:
+        dest: "{{ postgresql_hba_file }}"
+        users: "{{ item.username }}"
+        source: samenet
+        method: md5
+        contype: hostssl
+      loop: "{{ vault_postgis_cplog_users }}"
+
+    - name: Add the pg_stat_statements extension
+      community.postgresql.postgresql_ext:
+        name: pg_stat_statements
+        db: cplog
+        schema: public

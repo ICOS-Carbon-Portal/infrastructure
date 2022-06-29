@@ -1,0 +1,2 @@
+postgis_bbclient_name: postgis
+postgis_backup_enable: true
