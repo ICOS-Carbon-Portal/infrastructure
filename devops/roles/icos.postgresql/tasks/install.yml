@@ -19,7 +19,6 @@
   apt:
     name:
       - "{{ postgresql_package }}"
-      - python3-pip
 
 - name: Extract postgresql version and cluster info
   when: not (postgresql_version and postgresql_cluster)
