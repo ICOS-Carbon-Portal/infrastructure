@@ -36,6 +36,9 @@ all:
         - application_production.conf
         - application_staging_amendment.conf
 
+      # cpauth - application
+      cpauth_bind_addr: "0.0.0.0"
+
       # doi - application
       doi_bind_addr: "0.0.0.0"
 

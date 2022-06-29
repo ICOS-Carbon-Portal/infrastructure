@@ -9,3 +9,4 @@ cpauth_user_secret_salt: "{{ vault_cpauth_user_secret_salt }}"
 
 cpauth_port: 8080
 cpauth_host: 127.0.0.1
+cpauth_bind_addr: 127.0.0.1
