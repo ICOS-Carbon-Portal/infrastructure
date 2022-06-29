@@ -40,6 +40,7 @@
         Host {{ bbclient_remote }}
           HostName {{ bbclient_remote_ip }}
           User {{ bbclient_remote_user }}
+          Port {{ bbclient_remote_port }}
 
   - name: Update known_hosts
     blockinfile:
