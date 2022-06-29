@@ -43,7 +43,7 @@ def cli():
 @click.argument("host")
 @click.option('-i', 'inventory', default='production')
 def facts(host, inventory):
-    args = ["ansible", host, '-m', 'setup', '-i', inventory]
+    args = ["ansible", host, '-m', 'setup', f'-i{inventory}.inventory']
     print(*args)
     os.execvp(args[0], args)
 
