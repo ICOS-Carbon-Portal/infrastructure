@@ -8,32 +8,22 @@
   vars:
     postgresql_postgis_enable: true
 
+# We install bbclient even when backup is disabled, in order to retrieve backup
+# data which is useful when istalling in staging.
 - name: Install bbclient
+  tags: postgis_bbclient
   include_role:
     name: icos.bbclient2
+    public: yes
+    apply:
+      tags: postgis_bbclient
   vars:
     bbclient_name: "{{ postgis_bbclient_name }}"
     bbclient_user: postgres
-    bbclient_home: "{{ postgresql_home_dir }}/.bbclient"
+    bbclient_home: "{{ postgresql_home }}/.bbclient"
 
-- name: Copy backup script
-  template:
-    src: backup-dumpall-bbclient
-    dest: "{{ postgresql_bin_dir }}"
-    mode: +x
-    owner: postgres
-    group: postgres
-
-- name: Add postgres backup to crontab
-  tags: cron
-  cron:
-    user: postgres
-    job: "{{ postgresql_bin_dir }}/backup-dumpall-bbclient"
-    hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
-    minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
-    state: present
-    name: "postgis_backup"
-  when: postgis_backup_enable
+- import_tasks: backup.yml
+  tags: postgis_backup
 
 - name: Stop here
   meta: end_play

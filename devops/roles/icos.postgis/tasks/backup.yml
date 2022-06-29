@@ -1,0 +1,19 @@
+- name: Copy backup script
+  template:
+    src: postgis-dumpall-bbclient
+    dest: "{{ postgresql_bin_dir }}"
+    mode: +x
+    owner: postgres
+    group: postgres
+  when: postgis_backup_enable
+
+- name: Add postgres backup to crontab
+  tags: cron
+  cron:
+    user: postgres
+    job: "{{ postgresql_bin_dir }}/postgis-dumpall-bbclient"
+    hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
+    minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
+    state: present
+    name: "postgis_backup"
+  when: postgis_backup_enable
