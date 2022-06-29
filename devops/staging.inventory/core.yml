@@ -9,7 +9,7 @@ all:
       - datastaging.icos-cp.eu
 
     cpauth_domains:
-      - authstaging.icos-cp.eu
+      - cpauthstaging.icos-cp.eu
 
     doi_domains:
       - doistaging.icos-cp.eu
