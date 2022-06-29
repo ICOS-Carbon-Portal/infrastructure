@@ -1,6 +1,6 @@
 ### REMOTE ###
 
-- name: Configure remote host
+- name: Configure remote - bbserver - host
   delegate_to: "{{ bbclient_remote }}"
   block:
     - name: Retrieve remote SSH IP
@@ -26,7 +26,7 @@
 
 ### LOCAL ###
 
-- name: Configure local host
+- name: Configure local - bbclient - host
   become: yes
   become_user: "{{ bbclient_user }}"
   block:
@@ -34,7 +34,6 @@
     blockinfile:
       create: yes
       path: "{{ bbclient_ssh_config }}"
-      mode: 0600
       marker: "# {mark} bbclient {{ bbclient_remote }}"
       block: |
         Host {{ bbclient_remote }}
@@ -46,7 +45,6 @@
     blockinfile:
       create: yes
       path: "{{ bbclient_ssh_hosts }}"
-      mode: 0600
       marker: "# {mark} {{ bbclient_remote }}"
       block: |
         {{ bbclient_remote_keys }}
@@ -55,13 +53,14 @@
     command: |
       {{ bbclient_wrapper }} init {{ bbclient_repo_url }} --encryption=none
     register: r
+    changed_when:
+      - r.rc == 0
     failed_when:
       - r.rc != 0
       - not r.stderr.startswith('A repository already exists at')
 
   - name: Remember repo url
     lineinfile:
-      mode: 0600
       path: "{{ bbclient_repo_file }}"
       line: "{{ bbclient_repo_url }}"
       state: present

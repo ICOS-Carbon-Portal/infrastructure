@@ -2,3 +2,9 @@
   loop: "{{ bbclient_remotes }}"
   loop_control:
     loop_var: bbclient_remote
+
+- name: Run bbclient-all info to verify access
+  command: "{{ bbclient_all }} info"
+  environment:
+    BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: y
+  changed_when: no

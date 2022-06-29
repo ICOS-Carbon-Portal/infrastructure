@@ -1,8 +1,3 @@
-- name: That bbclient_name is set
-  assert:
-    that: bbclient_name is defined
-  changed_when: no
-
 - name: Install borg
   tags: borg
   import_role:
