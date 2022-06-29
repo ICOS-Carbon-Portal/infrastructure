@@ -2,19 +2,14 @@
 postgresql_postgis_enable: false
 postgresql_pg_stat_enable: true
 
-postgresql_backup_script:
 postgresql_postgres_password:
 postgresql_listen_addresses:
 postgresql_ssh_keys:
 
-postgresql_etc_dir: "/etc/postgresql/{{ postgresql_version }}/{{ postgresql_cluster }}"
-postgresql_confd_dir: "{{ postgresql_etc_dir }}/conf.d"
-postgresql_hba_file: "{{ postgresql_etc_dir }}/pg_hba.conf"
-postgresql_home_dir: /var/lib/postgresql
-postgresql_bin_dir: "{{ postgresql_home_dir }}/bin"
+# We hardcode the "main" cluster for now.
+postgresql_etc: "/etc/postgresql/{{ postgresql_version }}/main"
+postgresql_confd: "{{ postgresql_etc }}/conf.d"
+postgresql_pg_hba: "{{ postgresql_etc }}/pg_hba.conf"
 
-postgresql_version:
-postgresql_cluster:
-
-postgresql_package: >-
-  {{ 'postgresql' if not postgresql_version else 'postgresql-%s' % postgresql_version }}
+postgresql_home: /var/lib/postgresql
+postgresql_bin: "{{ postgresql_home }}/bin"

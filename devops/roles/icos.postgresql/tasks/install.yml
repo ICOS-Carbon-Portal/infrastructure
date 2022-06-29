@@ -17,28 +17,11 @@
 
 - name: Install postgresql
   apt:
-    name:
-      - "{{ postgresql_package }}"
-
-- name: Extract postgresql version and cluster info
-  when: not (postgresql_version and postgresql_cluster)
-  block:
-    - name: Retrive postgresql cluster info
-      shellfact:
-        exec: "pg_lsclusters -j {{ postgresql_version }}"
-        fact: _clusters
-        json: true
-
-    - name: Set facts
-      set_fact:
-        postgresql_version: "{{ _clusters[0].version }}"
-        # The output from pg_lsclusters looks like "14/main"
-        postgresql_cluster: "{{ _clusters[0].config.cluster_name | basename }}"
-
+    name: "{{ 'postgresql-%s' % postgresql_version }}"
 
 - name: Install postgis
   apt:
-    name: postgis
+    name: "{{ 'postgresql-%s-postgis-3' % postgresql_version }}"
   when: postgresql_postgis_enable
 
 # Needed for ansible's postgresql_* modules
@@ -48,9 +31,9 @@
     state: present
 
 # We'll keep various scripts in $HOME/bin
-- name: Create {{ postgresql_bin_dir }} directory
+- name: Create {{ postgresql_bin }} directory
   file:
-    path: "{{ postgresql_bin_dir }}"
+    path: "{{ postgresql_bin }}"
     state: directory
     owner: postgres
     group: postgres
@@ -60,7 +43,7 @@
     owner: postgres
     group: postgres
     create: yes
-    path: "{{ postgresql_home_dir }}/.profile"
+    path: "{{ postgresql_home }}/.profile"
     regex: '^PATH='
     line: 'PATH=$HOME/bin:$PATH'
     state: present

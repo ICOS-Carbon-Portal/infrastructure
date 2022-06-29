@@ -9,16 +9,13 @@
   when:
     - postgresql_postgres_password
 
-- debug: var=postgresql_listen_addresses
-
 - name: Change with addresses postgresql listens to
   copy:
-    dest: "{{ postgresql_confd_dir }}/listen.conf"
+    dest: "{{ postgresql_confd }}/listen.conf"
     content: |
       listen_addresses = {{ postgresql_listen_addresses }}
   notify: restart postgresql
-  when:
-    - postgresql_listen_addresses
+  when: postgresql_listen_addresses
 
 - name: Install public keys for postgres user
   tags: keys
