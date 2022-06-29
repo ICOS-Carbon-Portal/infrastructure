@@ -7,9 +7,6 @@ Some of CP's own, in-house-developed, services, are built, packaged and
 deployed using SBT build tool. Source code of CP-specific SBT plugins can be
 found in folder `sbt`.
 
-Other folders in this Git repository mostly contain legacy Docker files (used
-before the Ansible era).
-
 # Communications diagram for the core CP services
 ```mermaid
 flowchart LR
