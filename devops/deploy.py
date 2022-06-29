@@ -34,31 +34,59 @@ def die(msg):
     sys.exit(1)
 
 
-@click.command(context_settings={"ignore_unknown_options": True})
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.argument("host")
+@click.option('-i', 'inventory', default='production')
+def facts(host, inventory):
+    args = ["ansible", host, '-m', 'setup', '-i', inventory]
+    print(*args)
+    os.execvp(args[0], args)
+
+
+@cli.command()
+@click.argument('glob')
+@click.option('-i', 'inventory', default='production')
+@click.option('--diff', is_flag=True)
+def vars(glob, inventory, diff):
+    """Show variables matching a glob."""
+    bash = '/usr/bin/bash'
+    if not diff:
+        cmd = f"ansible-inventory -i{inventory}.inventory --toml --list | awk '$1 ~ /{glob}/' | sort -u"
+        print(cmd)
+        os.execvp(bash, [bash, '-c', cmd])
+    else:
+        print(f"Showing the difference from staging to production for variables matching '{glob}'")
+        cmds = f"ansible-inventory -istaging.inventory --toml --list | awk '$1 ~ /{glob}/' | sort -u"
+        cmdp = f"ansible-inventory -iproduction.inventory --toml --list | awk '$1 ~ /{glob}/' | sort -u"
+        os.execvp(bash, ['bash', '-c', f"diff <({cmds}) <({cmdp})"])
+
+
+@cli.command(context_settings={"ignore_unknown_options": True})
 @click.option('-i', 'inventory', default='production')
 @click.argument('playbook')
 @click.argument("args", nargs=-1, required=False)
-def main(inventory, playbook, args):
+def run(inventory, playbook, args):
+    """Run a playbook."""
     inventory += ".inventory"
     if not os.path.exists(inventory):
         die("Cannot find %s in %s" % (inventory, os.getcwd()))
 
-    # Special case - print facts for host.
-    if len(args) == 1 and playbook == "facts":
-        ARGS = ["ansible", args[0], '-m', 'setup', '-i', inventory]
-    # Standard case - run playbook.
-    else:
-        playbook += ".yml"
-        if not os.path.exists(playbook):
-            die("Cannot find %s in %s" % (playbook, os.getcwd()))
+    playbook += ".yml"
+    if not os.path.exists(playbook):
+        die("Cannot find %s in %s" % (playbook, os.getcwd()))
 
-        # The remaining arguments are either tags or options to ansible.
-        TAGS = ["-t%s" % tag for tag in args if not tag.startswith('-')]
-        OPTS = [opt for opt in args if opt.startswith('-')]
-        ARGS = ['ansible-playbook', '-i', inventory, playbook] + TAGS + OPTS
+    # The remaining arguments are either tags or options to ansible.
+    TAGS = ["-t%s" % tag for tag in args if not tag.startswith('-')]
+    OPTS = [opt for opt in args if opt.startswith('-')]
+    args = ['ansible-playbook', '-i', inventory, playbook] + TAGS + OPTS
 
-    print(*ARGS)
-    os.execvp(ARGS[0], ARGS)
+    print(*args)
+    os.execvp(args[0], args)
 
 
 if __name__ == '__main__':
@@ -69,4 +97,4 @@ if __name__ == '__main__':
     # current working directory as a starting point when locating its files.
     os.chdir(home)
 
-    main()
+    cli()
