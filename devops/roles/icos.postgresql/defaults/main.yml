@@ -16,5 +16,5 @@ postgresql_bin_dir: "{{ postgresql_home_dir }}/bin"
 postgresql_version:
 postgresql_cluster:
 
-postgresql_package: |
-  {{ 'postgresql' if not postgresql_version else 'postgresql-'+postgresql_version }}
+postgresql_package: >-
+  {{ 'postgresql' if not postgresql_version else 'postgresql-%s' % postgresql_version }}
