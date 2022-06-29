@@ -27,6 +27,7 @@ all:
       cpmeta_backup_enable: true
       cpmeta_config_files:
         - application_production.conf
+        - application_production_sensitive.conf
 
       # cpdata - application
       cpdata_filestorage_target: /disk/data/dataAppStorage
