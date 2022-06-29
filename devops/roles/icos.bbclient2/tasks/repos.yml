@@ -1,12 +1,4 @@
-- name: Read available repos
-  slurpfact:
-    path: "{{ bbclient_repo_file }}"
-    fact: bbclient_repos
-    list: true
-    fail: false
-
 - include_tasks: single_repo.yml
   loop: "{{ bbclient_remotes }}"
-  when: bbclient_repo_url not in bbclient_repos
   loop_control:
     loop_var: bbclient_remote
