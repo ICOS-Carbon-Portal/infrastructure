@@ -1,15 +1,46 @@
-- name: Deploy jarfile as a service
-  include_role:
-    name: icos.jarservice2
-  vars:
-    jarservice_name : cpauth
-    jarservice_home : "{{ cpauth_home }}"
-    jarservice_local: "{{ cpauth_jar_file }}"
-    jarservice_unit : "{{ lookup('template', 'cpauth.service') }}"
-    jarservice_check: "https://{{ cpauth_domains | first }}/buildInfo"
-
-- name: Copy application.conf
+- name: Add systemd service
   template:
+    src: cpauth.service
+    dest: /etc/systemd/system/cpauth.service
+  register: _service
+
+- name: Create application.conf
+  template:
+    dest: "{{ cpauth_home }}/application.conf"
     src: application.conf
-    dest: "{{ cpauth_home }}"
-  notify: restart cpauth
+  register: _config
+
+- name: Copy jarfile
+  copy:
+    src: "{{ cpauth_jar_file }}"
+    dest: "{{ cpauth_home }}/cpauth.jar"
+    backup: true
+  register: _jarfile
+
+- name: Prune old jarfiles
+  ansible.builtin.shell: |
+    ls -1t *jar*~ | tail +6 | tee /dev/stderr | xargs rm -f
+  args:
+    executable: /bin/bash
+    chdir: "{{ cpauth_home }}"
+  register: _r
+  changed_when:
+    - _r.stderr
+
+- name: Start/restart service
+  systemd:
+    name: cpauth.service
+    enabled: yes
+    daemon-reload: "{{ 'yes' if _service.changed else 'no' }}"
+    state: >-
+      {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
+
+- name: Check that the service responds
+  uri:
+    url: "https://{{ cpauth_domains | first }}/buildInfo"
+    return_content: yes
+  register: r
+  failed_when: r.failed
+  retries: 30
+  delay: 10
+  until: not r.failed
