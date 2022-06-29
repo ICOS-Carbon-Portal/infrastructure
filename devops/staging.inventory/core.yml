@@ -19,6 +19,7 @@ all:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
       ansible_port: 60520
+      coreapp_bind_addr: "0.0.0.0"
 
       # cpmeta - application
       cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
@@ -30,17 +31,14 @@ all:
       # cpdata - application
       # when running in an lxd VM, bind all interfaces so that we're reachable
       # from the host.
-      cpdata_bind_addr: "0.0.0.0"
       cpdata_filestorage_target: "{{ cpdata_home }}/dataAppStorage"
       cpdata_config_files:
         - application_production.conf
         - application_staging_amendment.conf
 
       # cpauth - application
-      cpauth_bind_addr: "0.0.0.0"
 
       # doi - application
-      doi_bind_addr: "0.0.0.0"
 
     core_server:
       # ansible
