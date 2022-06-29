@@ -1,7 +1,7 @@
 - become: true
   become_user: postgres
   block:
-    - name: Set postgresql config
+    - name: Add pg_stat_statements to postgresql shared_preload_libraries
       community.postgresql.postgresql_set:
         name: shared_preload_libraries
         value: 'pg_stat_statements'
