@@ -15,10 +15,3 @@
 
     - role: icos.restheart
       tags: restheart
-
-  tasks:
-    - name: Enable IP forwarding to localhost
-      tags: forward
-      sysctl:
-        name: net.ipv4.conf.eth0.route_localnet
-        value: "1"
