@@ -20,7 +20,8 @@ all:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
       ansible_port: 60022
-      coreapp_bind_addr: "127.0.0.1"
+      coreapp_bind_addr: 127.0.0.1
+      coreapp_httpproxy_host: 127.0.0.1
 
       # cpmeta - application
       cpmeta_filestorage_target: /disk/data/metaAppStorage

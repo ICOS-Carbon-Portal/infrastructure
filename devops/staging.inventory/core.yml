@@ -19,7 +19,8 @@ all:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
       ansible_port: 60520
-      coreapp_bind_addr: "0.0.0.0"
+      coreapp_bind_addr: 0.0.0.0
+      coreapp_httpproxy_host: staging.lxd
 
       # cpmeta - application
       cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
@@ -46,17 +47,14 @@ all:
       ansible_host: fsicos2.lunarc.lu.se
 
       # cpmeta - proxy
-      cpmeta_host: staging.lxd
       cpmeta_nginxsite_name: cpmeta-staging
       cpmeta_certbot_name: cpmeta-staging
 
       # cpdata - proxy
-      cpdata_host: staging.lxd
       cpdata_certbot_name: cpdata-staging
       cpdata_nginxsite_name: cpdata-staging
 
       # cpauth - proxy
-      cpauth_host: staging.lxd
       cpauth_certbot_name: cpauth-staging
       cpauth_nginxsite_name: cpauth-staging
 
@@ -68,6 +66,5 @@ all:
         - restheartstaging.icos-cp.eu
 
       # doi - proxy
-      doi_host: staging.lxd
       doi_certbot_name: doi-staging
       doi_nginxsite_name: doi-staging
