@@ -34,6 +34,10 @@ all:
       cpdata_config_files:
         - application_production.conf
 
+      # cpauth - application
+      cpauth_config_files:
+        - application_production.conf
+
     core_server:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se

@@ -5,9 +5,14 @@
   register: _service
 
 - name: Create application.conf
-  template:
+  copy:
     dest: "{{ cpauth_home }}/application.conf"
-    src: application.conf
+    content: |
+      {% for item in cpauth_config_files %}
+      # {{ item }}
+      {{ lookup('template', item) }}
+
+      {% endfor %}
   register: _config
 
 - name: Copy jarfile

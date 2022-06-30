@@ -38,6 +38,9 @@ all:
         - application_staging_amendment.conf
 
       # cpauth - application
+      cpauth_config_files:
+        - application_production.conf
+        - application_staging_amendment.conf
 
       # doi - application
 
