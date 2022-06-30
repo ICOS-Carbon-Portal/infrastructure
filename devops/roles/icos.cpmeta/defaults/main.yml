@@ -10,7 +10,8 @@ cpmeta_db_pass: "{{ rdflog_db_pass }}"
 
 cpmeta_backup_enable: true
 
-cpmeta_host: 127.0.0.1
+cpmeta_bind_addr: "{{ coreapp_bind_addr }}"
+cpmeta_host: "{{ coreapp_httpproxy_host }}"
 cpmeta_port: 9094
 
 cpmeta_jre_package: openjdk-11-jre-headless

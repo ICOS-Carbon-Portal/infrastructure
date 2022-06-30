@@ -15,24 +15,3 @@
 
     - role: icos.restheart
       tags: restheart
-
-  tasks:
-    - name: Enable IP forwarding to localhost
-      tags: forward
-      sysctl:
-        name: net.ipv4.conf.eth0.route_localnet
-        value: "1"
-
-    # The port forward inside the VM, from the external port to the same port
-    # on 127.0.0.1.
-    - name: Port forward for meta
-      tags:
-        - forward
-        - meta
-      iptables_raw:
-        name: forward_meta
-        table: nat
-        rules: >-
-          -A PREROUTING
-          -p tcp -i 'eth+' --dport {{ cpmeta_port }}
-          -j DNAT --to-destination 127.0.0.1:{{ cpmeta_port }}

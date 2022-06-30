@@ -5,12 +5,10 @@ cpdata_service: cpdata
 cpdata_meta_port: 9094
 cpdata_meta_addr: 127.0.0.1
 
-cpdata_bind_port: 9011
-cpdata_bind_addr: 127.0.0.1
-
 # nginx proxy config
-cpdata_host: "{{ cpdata_bind_addr }}"
-cpdata_port: "{{ cpdata_bind_port }}"
+cpdata_bind_addr: "{{ coreapp_bind_addr }}"
+cpdata_host: "{{ coreapp_httpproxy_host }}"
+cpdata_port: 9011
 
 cpdata_b2safe_pass:          "{{ vault_cpdata_b2safe_pass }}"
 cpdata_dlreporter_pass:      "{{ vault_cpdata_dlreporter_pass }}"

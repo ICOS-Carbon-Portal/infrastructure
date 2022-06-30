@@ -19,45 +19,42 @@ all:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
       ansible_port: 60520
+      coreapp_bind_addr: 0.0.0.0
+      coreapp_httpproxy_host: staging.lxd
 
       # cpmeta - application
       cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
       cpmeta_backup_enable: false
       cpmeta_config_files:
         - application_production.conf
+        - application_production_sensitive.conf
         - application_staging_amendment.conf
 
       # cpdata - application
       # when running in an lxd VM, bind all interfaces so that we're reachable
       # from the host.
-      cpdata_bind_addr: "0.0.0.0"
       cpdata_filestorage_target: "{{ cpdata_home }}/dataAppStorage"
       cpdata_config_files:
         - application_production.conf
         - application_staging_amendment.conf
 
       # cpauth - application
-      cpauth_bind_addr: "0.0.0.0"
 
       # doi - application
-      doi_bind_addr: "0.0.0.0"
 
     core_server:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
 
       # cpmeta - proxy
-      cpmeta_host: staging.lxd
       cpmeta_nginxsite_name: cpmeta-staging
       cpmeta_certbot_name: cpmeta-staging
 
       # cpdata - proxy
-      cpdata_host: staging.lxd
       cpdata_certbot_name: cpdata-staging
       cpdata_nginxsite_name: cpdata-staging
 
       # cpauth - proxy
-      cpauth_host: staging.lxd
       cpauth_certbot_name: cpauth-staging
       cpauth_nginxsite_name: cpauth-staging
 
@@ -69,6 +66,5 @@ all:
         - restheartstaging.icos-cp.eu
 
       # doi - proxy
-      doi_host: staging.lxd
       doi_certbot_name: doi-staging
       doi_nginxsite_name: doi-staging
