@@ -20,7 +20,6 @@ all:
       ansible_host: fsicos2.lunarc.lu.se
       ansible_port: 60520
       coreapp_bind_addr: 0.0.0.0
-      coreapp_httpproxy_host: staging.lxd
 
       # cpmeta - application
       cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
@@ -45,6 +44,7 @@ all:
     core_server:
       # ansible
       ansible_host: fsicos2.lunarc.lu.se
+      coreapp_httpproxy_host: staging.lxd
 
       # cpmeta - proxy
       cpmeta_nginxsite_name: cpmeta-staging
