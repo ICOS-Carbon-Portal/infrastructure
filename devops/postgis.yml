@@ -4,7 +4,7 @@
 # Redeploy backup script and bbclient
 #   deploy postgis backup
 
-- hosts: cdb.nateko.lu.se
+- hosts: postgis_server
   roles:
     - name: Create the postgis VM
       tags: vm
@@ -16,10 +16,13 @@
         limits.cpu: "4"
         limits.memory: "10GB"
 
-- hosts: postgis
+- hosts: postgis_host
   roles:
     - role: icos.lxd_guest
       tags: guest
+
+    - role: icos.postgis
+      tags: postgis
 
   tasks:
     - include_role: name=icos.postgresql
