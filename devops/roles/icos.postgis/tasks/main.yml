@@ -10,6 +10,13 @@
   import_role:
     name: icos.bbclient2
 
+- name: Install control script
+  tags: postgis_script
+  template:
+    src: postgis.py
+    dest: /usr/local/bin/postgis
+    mode: +x
+
 - import_tasks: backup.yml
   tags: postgis_backup
 
