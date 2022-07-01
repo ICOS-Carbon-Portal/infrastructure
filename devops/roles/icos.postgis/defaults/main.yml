@@ -1,2 +1,8 @@
 postgis_bbclient_name: postgis
 postgis_backup_enable: true
+
+bbclient_name: "{{ postgis_bbclient_name }}"
+bbclient_user: postgres
+bbclient_home: "{{ postgresql_home }}/.bbclient"
+
+postgresql_postgis_enable: true

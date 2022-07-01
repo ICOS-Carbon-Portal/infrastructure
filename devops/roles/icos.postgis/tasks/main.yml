@@ -1,26 +1,14 @@
 - name: Install postgresql and postgis
-  include_role:
-    name: icos.postgresql
-    public: yes
-    apply:
-      tags: postgresql
   tags: postgresql
-  vars:
-    postgresql_postgis_enable: true
+  import_role:
+    name: icos.postgresql
 
 # We install bbclient even when backup is disabled, in order to retrieve backup
 # data which is useful when istalling in staging.
 - name: Install bbclient
   tags: postgis_bbclient
-  include_role:
+  import_role:
     name: icos.bbclient2
-    public: yes
-    apply:
-      tags: postgis_bbclient
-  vars:
-    bbclient_name: "{{ postgis_bbclient_name }}"
-    bbclient_user: postgres
-    bbclient_home: "{{ postgresql_home }}/.bbclient"
 
 - import_tasks: backup.yml
   tags: postgis_backup
