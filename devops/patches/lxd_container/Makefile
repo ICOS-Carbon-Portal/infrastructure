@@ -12,6 +12,3 @@ patch:
 
 diff:
 	diff -u $(LXD_ORG) $(LIBRARY)/lxd_container.py > lxd_container.diff || :
-
-# lxd_container.diff: $(ANSIBLE)/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py $(LIBRARY)/lxd_container.py
-#	diff -u $+ > $@ || :

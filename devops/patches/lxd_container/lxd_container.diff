@@ -1,6 +1,6 @@
---- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2022-01-12 22:24:16.480636119 +0100
-+++ ../../library/lxd_container.py	2022-01-25 11:09:31.225262564 +0100
-@@ -124,6 +124,15 @@
+--- /home/andre/.local/pipx/venvs/ansible/lib/python3.10/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2022-07-15 08:27:36.697448545 +0200
++++ ../../library/lxd_container.py	2022-07-15 08:32:52.460497230 +0200
+@@ -131,6 +131,15 @@
          required: false
          default: false
          type: bool
@@ -13,10 +13,10 @@
 +        required: false
 +        default: [] (wait for all interfaces)
 +        type: list
-     force_stop:
+     wait_for_container:
          description:
-           - If this is true, the C(lxd_container) forces to stop the instance
-@@ -411,6 +420,7 @@
+             - If set to C(true), the tasks will wait till the task reports a
+@@ -446,6 +455,7 @@
  
          self.timeout = self.module.params['timeout']
          self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
@@ -24,7 +24,7 @@
          self.force_stop = self.module.params['force_stop']
          self.addresses = None
          self.target = self.module.params['target']
-@@ -522,6 +532,8 @@
+@@ -569,6 +579,8 @@
          resp_json = self._get_instance_state_json()
          network = resp_json['metadata']['network'] or {}
          network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
@@ -33,7 +33,7 @@
          addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
          return addresses
  
-@@ -749,6 +761,9 @@
+@@ -806,6 +818,9 @@
                  type='bool',
                  default=False
              ),
@@ -43,7 +43,7 @@
              force_stop=dict(
                  type='bool',
                  default=False
-@@ -774,16 +789,6 @@
+@@ -831,16 +846,6 @@
          supports_check_mode=False,
      )
  
