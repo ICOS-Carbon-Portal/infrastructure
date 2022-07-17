@@ -8,6 +8,9 @@ lxd_vm_root_key: "{{ vault_lxd_ssh_pub }}"
 
 # When a separate btrfs pool is used, this is the default size.
 lxd_vm_root_size: 50GB
+# The name of the btrfs pool.
+lxd_vm_root_pool: "{{ lxd_vm_name }}"
+
 lxd_vm_docker: False
 
 lxd_vm_profiles: []

@@ -1,4 +1,4 @@
-- name: Include vars for fsicos3
+- name: Include vars for zfs
   include_vars: "zfs.yml"
 
 - name: Create docker storage {{ lxd_vm_name }} VM

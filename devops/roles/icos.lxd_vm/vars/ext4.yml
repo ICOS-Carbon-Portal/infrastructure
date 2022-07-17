@@ -3,7 +3,7 @@ lxd_vm_default_devices:
   root:
     path: /
     type: disk
-    pool: "{{ lxd_vm_name }}"
+    pool: "{{ lxd_vm_root_pool }}"
     size: "{{ lxd_vm_root_size }}"
 
 
