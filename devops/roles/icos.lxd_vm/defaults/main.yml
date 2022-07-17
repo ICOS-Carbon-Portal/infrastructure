@@ -1,4 +1,4 @@
-lxd_vm_ip: "{{ _lxd.addresses.eth0 | first }}"
+lxd_vm_ip: "{{ _lxd_static_ip.ip }}"
 lxd_vm_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
 
 # By default, we enable ssh port forward from a host on the host to the VM. The
@@ -17,8 +17,10 @@ lxd_vm_config: {}
 # The variables are used to pass arguments to the lxd_container module. The
 # arguments will be a merge of default values and values passed by user.
 __lxd_vm_profiles: "{{ lxd_vm_default_profiles + lxd_vm_profiles }}"
-__lxd_vm_devices: "{{ lxd_vm_default_devices | combine(lxd_vm_devices) }}"
-__lxd_vm_config: "{{ lxd_vm_default_config | combine(lxd_vm_config) }}"
+__lxd_vm_devices: "{{ lxd_vm_default_devices |
+                      combine(_static_ip_info.devices) |
+                      combine(lxd_vm_devices)  }}"
+__lxd_vm_config: "{{ lxd_vm_default_config | combine(lxd_vm_config)  }}"
 
 lxd_vm_ubuntu_version: "22.04"
 

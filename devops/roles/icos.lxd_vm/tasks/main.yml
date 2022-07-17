@@ -6,6 +6,29 @@
   include_tasks: zfs.yml
   when: lxd_vm_variant == 'zfs'
 
+# CONTAINER IP CONFIGURATION.
+# When the container is created, we let lxd assign a dynamic IP to the
+# container (using dhcp on lxdbr0).
+#
+# We then take that IP and make it static (this is done by the "Set static lxd
+# IP" task). This  way this works is by addding a special device to the
+# container configuration.
+#
+# However, since we provide a list of all devices to be used by the container
+# (the "__lxd_vm_devices" variable), we will overwrite the "static IP device"
+# on subsequent runs if we're not careful.
+#
+# To work around this, we first extract any static IP devices and then add them
+# to the list of devices to be used when configuring the container.
+#
+# Note that the "lxd_static_ip_info" module is written to return an empty list
+# of devices for non-existing containers.
+
+- name: Retrive static IP devices
+  lxd_static_ip_info:
+    name: "{{ lxd_vm_name }}"
+  register: _static_ip_info
+
 - name: Create container
   lxd_container:
     name: "{{ lxd_vm_name }}"
@@ -19,9 +42,10 @@
     timeout: 600
   register: _lxd
 
-- name: Set fact ip fact for lxd_vm
-  set_fact: |
-    {{ lxd_vm_name | replace('-', '_') }}_ip={{ lxd_vm_ip }}
+- name: Set static lxd IP
+  lxd_static_ip:
+    name: "{{ lxd_vm_name }}"
+  register: _lxd_static
 
 - name: Extract host_ecdsa_key from the VM
   command: >-
