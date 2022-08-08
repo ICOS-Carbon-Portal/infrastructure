@@ -20,6 +20,7 @@ c.JupyterHub.shutdown_on_logout = True
 # https://jupyterhub.readthedocs.io/en/stable/reference/templates.html
 c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
 
+{% if exploredata_type == "prod" %}
 # https://github.com/jupyterhub/jupyterhub-idle-culler
 c.JupyterHub.services = [
     {
@@ -31,7 +32,7 @@ c.JupyterHub.services = [
             '--timeout=3660'
         ],
     }]
-
+{% endif %}
 
 # AUTHENTICATION
 

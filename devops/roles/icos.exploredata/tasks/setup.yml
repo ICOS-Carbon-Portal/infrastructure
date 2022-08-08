@@ -16,6 +16,8 @@
   template:
     src: jupyterhub_config.py
     dest: "{{ exploredata_home }}/jupyterhub_home/"
+    backup: true
+    validate: python3 -m py_compile %s
 
 - name: Install runtime environment file
   copy:
