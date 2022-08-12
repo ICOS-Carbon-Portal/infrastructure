@@ -1,0 +1,42 @@
+- name: Block podman from being apt-installed
+  copy:
+    dest: /etc/apt/preferences.d/podman
+    content: |
+      Package: podman
+      Pin: release *
+      Pin-Priority: -1
+
+
+# Podman configuration files as mentioned in the instructions:
+# https://podman.io/getting-started/installation#configuration-files.
+#
+# We're installing some of them directly and some are pulled in by apt.
+#
+# /etc/containers/registries.conf.d/shortnames.conf
+# We're installing a copy from Ubuntu 22.04
+#
+# /etc/containers/registries.conf -
+# Using the copy from the installation instructions for podman, with the fedora
+# repos removed.
+#
+# /usr/share/containers/mounts.conf
+# Not adding at the moment.
+#
+# /usr/share/containers/seccomp.json
+# Apt-installed by golang-github-containers-common which is a dependency of
+# something.
+#
+# /etc/containers/policy.json
+# Using the Ubuntu 22.04 version verbatim. It's a subset of the default fedora
+# version.
+
+- name: Synchronize configuration files to /etc/containers
+  ansible.posix.synchronize:
+    src: containers
+    dest: /etc/
+
+# https://docs.podman.io/en/latest/markdown/podman-completion.1.html
+- name: Setup bash completion for podman
+  command: podman completion -f /etc/bash_completion.d/podman bash
+  args:
+    creates: /etc/bash_completion.d/podman

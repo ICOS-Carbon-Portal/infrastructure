@@ -1,0 +1,86 @@
+- name: Install golang
+  include_role:
+    name: icos.golang
+  vars:
+    golang_min_version: 1.16
+
+# These are straight out of the podman documentation.
+- name: Install podman requirements
+  apt:
+    name:
+      - btrfs-progs
+      - git
+      - go-md2man
+      - iptables
+      - libassuan-dev
+      - libbtrfs-dev
+      - libc6-dev
+      - libdevmapper-dev
+      - libglib2.0-dev
+      - libgpgme-dev
+      - libgpg-error-dev
+      - libprotobuf-dev
+      - libprotobuf-c-dev
+      - libseccomp-dev
+      - libselinux1-dev
+      - libsystemd-dev
+      - pkg-config
+      # crun is smaller than runc
+      - crun
+      - uidmap
+      # FIXME: maybe compile from source instead?
+      - conmon
+
+# ansible_kernel == $(uname -r) == 5.15.0-30-generic
+- name: Assert that user namespaces are available
+  command: grep -q CONFIG_USER_NS=y /boot/config-{{ ansible_kernel }}
+  changed_when: false
+
+# https://podman.io/getting-started/installation.html
+- name: Clone podman
+  git:
+    repo: https://github.com/containers/podman
+    version: "v{{ podman_version }}"
+    dest: "{{ podman_src_dir }}"
+
+- name: Build podman
+  make:
+    chdir: "{{ podman_src_dir }}"
+    target: default
+    params:
+      BUILDTAGS: "seccomp selinux systemd"
+
+- name: Install podman
+  make:
+    chdir: "{{ podman_src_dir }}"
+    target: install
+
+
+# CNI PLUGINS
+
+- name: Create directory
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /opt/cni/download
+    - /opt/cni/bin
+
+- name: Find latest release of CNI networking plugins
+  github_release:
+    user: containernetworking
+    repo: plugins
+    action: latest_release
+  delegate_to: localhost
+  register: podman_release
+
+- name: Download cni plugins
+  get_url:
+    url: "{{ podman_cni_plugin_url }}"
+    dest: /opt/cni/download/plugins.tgz
+
+- name: Unarchive cni plugins
+  unarchive:
+    src: /opt/cni/download/plugins.tgz
+    dest: /opt/cni/bin
+    remote_src: true
