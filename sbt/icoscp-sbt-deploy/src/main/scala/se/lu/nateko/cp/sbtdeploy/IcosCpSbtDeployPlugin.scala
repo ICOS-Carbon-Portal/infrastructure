@@ -20,6 +20,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 	object autoImport {
 		val cpDeploy = inputKey[Unit]("Deploys to production using Ansible (depends on 'infrastructure' project)")
+		val cpDeployPreAssembly = taskKey[Unit]("Task for operations to be performed before packaging of the fat JAR")
 		val cpDeployTarget = settingKey[String]("Ansible target role for cpDeploy")
 		val cpDeployBuildInfoPackage = settingKey[String]("Java/Scala package to put BuildInfo object into")
 		val cpDeployPlaybook = settingKey[String]("The ansible playbook")
@@ -112,7 +113,9 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 	override lazy val projectSettings = Seq(
 		cpDeployPlaybook := "core.yml",
 		cpDeploy := cpAnsible.dependsOn(gitChecksTask).evaluated,
+		cpDeployPreAssembly := {},
 		cpDeployInfraBranch := "master",
+		assembly := assembly.dependsOn(cpDeployPreAssembly).value,
 		buildInfoKeys := Seq[BuildInfoKey](name, version),
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
 		buildInfoKeys ++= Seq(
