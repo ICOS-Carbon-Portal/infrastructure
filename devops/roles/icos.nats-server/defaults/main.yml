@@ -2,17 +2,28 @@ nats_arch: amd64
 
 nats_user: nats
 nats_name: nats
-nats_port: 4222
 nats_config_file: "/etc/nats-server.conf"
-nats_server_path: /usr/local/bin/nats-server
+nats_server_path: /usr/bin/nats-server
+nats_cli: /usr/local/bin/nats
 
+nats_enable_tls: false
 nats_certbot_hooks: "/etc/letsencrypt/renewal-hooks/deploy/"
 nats_server_config: ""
 
-nats_server_ver: 2.6.6
-nats_cli_ver: 0.0.28
-nats_top_ver: 0.4.0
+# The directory, accessible by the nats user, where we'll copy certificates.
+nats_cert_dir: /var/lib/nats
 
+# The name of the ansible certificate (i.e what you'd pass to certbot
+# --cert-name).mark
+nats_cert_name: "{{ ansible_fqdn }}"
+
+
+# https://github.com/nats-io/nats-server/releases
+nats_server_ver: 2.8.4
+# https://github.com/nats-io/natscli/releases/
+nats_cli_ver: 0.0.33
+# https://github.com/nats-io/nats-top/releases/
+nats_top_ver: 0.5.2
 
 nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_server_ver }}/nats-server-v{{ nats_server_ver }}-{{ nats_arch }}.deb"
 nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/v{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
