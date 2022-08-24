@@ -1,0 +1,27 @@
+- hosts: nats_core_servers
+  roles:
+    - role: icos.nats-server
+      tags: core
+
+  tasks:
+    - name: Allow NATS from core servers
+      iptables_raw:
+        name: nats_allow_core
+        rules: |
+          {% for host in groups.nats_core_servers %}
+          -A INPUT -p tcp --dport {{ nats_cluster_port }} -s {{ hostvars[host].nats_cluster_ip }}/32 -j ACCEPT
+          {% endfor %}
+
+    - name: Allow NATS from leaf servers
+      iptables_raw:
+        name: nats_allow_leaf
+        rules: |
+          -A INPUT -p tcp --dport 60423 -s 10.0.0.0/8 -j ACCEPT
+          {% for host in nats_leaf_servers %}
+          -A INPUT -p tcp --dport {{ nats_leaf_port }} -s {{ hostvars[host].external_ip }}/32 -j ACCEPT
+          {% endfor %}
+
+- hosts: nats_leaf_servers
+  roles:
+    - role: icos.nats-server
+      tags: leaf
