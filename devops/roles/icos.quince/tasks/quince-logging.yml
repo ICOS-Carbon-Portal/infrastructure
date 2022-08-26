@@ -2,6 +2,7 @@
   copy:
     dest: /etc/rsyslog.d/30-quince.conf
     content: |
+      $FileCreateMode 0644
       :programname,isequal,"catalina.sh"          {{ quince_log_file }}
       & stop
   notify: restart rsyslog
