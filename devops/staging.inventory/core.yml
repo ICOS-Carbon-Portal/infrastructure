@@ -4,12 +4,15 @@ all:
     # for the server (to set up proxy)
     cpmeta_domains:
       - metastaging.icos-cp.eu
+      - metastaging.fieldsites.se
 
     cpdata_domains:
       - datastaging.icos-cp.eu
+      - datastaging.fieldsites.se
 
     cpauth_domains:
       - cpauthstaging.icos-cp.eu
+      - authstaging.fieldsites.se
 
     doi_domains:
       - doistaging.icos-cp.eu
