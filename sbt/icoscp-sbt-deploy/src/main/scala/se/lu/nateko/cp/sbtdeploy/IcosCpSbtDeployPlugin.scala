@@ -120,11 +120,11 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
 		buildInfoKeys ++= Seq(
 			BuildInfoKey.action("buildTime") {java.time.Instant.now()},
-			BuildInfoKey.action("gitOriginRemote") {
-				Process("git config --get remote.origin.url").lineStream.mkString("")
-			},
 			BuildInfoKey.action("gitHash") {
 				Process("git rev-parse HEAD").lineStream.mkString("")
+			},
+			BuildInfoKey.action("gitBranch") {
+				Process("git branch --show-current").lineStream.mkString("")
 			}
 		)
 	)
