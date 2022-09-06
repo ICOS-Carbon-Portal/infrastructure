@@ -45,7 +45,7 @@
 - name: Set static lxd IP
   lxd_static_ip:
     name: "{{ lxd_vm_name }}"
-  register: _lxd_static
+  register: _lxd_static_ip
 
 - name: Extract host_ecdsa_key from the VM
   command: >-
