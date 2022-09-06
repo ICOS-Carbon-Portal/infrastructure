@@ -4,6 +4,12 @@
       tags: vm
       lxd_vm_name: staging
       lxd_vm_docker: True
+      lxd_vm_devices:
+        dataprod:
+          path: /data/dataAppStorage/
+          source: /disk/data/dataAppStorage/
+          type: disk
+          readonly: "true"
 
 - hosts: staging
   roles:
