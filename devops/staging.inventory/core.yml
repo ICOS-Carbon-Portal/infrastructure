@@ -35,7 +35,7 @@ all:
       # cpdata - application
       # when running in an lxd VM, bind all interfaces so that we're reachable
       # from the host.
-      cpdata_filestorage_target: "{{ cpdata_home }}/dataAppStorage"
+      cpdata_filestorage_target: "/data/dataAppStorage"
       cpdata_config_files:
         - application_production.conf
         - application_staging_amendment.conf
