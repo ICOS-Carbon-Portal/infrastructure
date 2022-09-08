@@ -1,4 +1,8 @@
 # This ansible playbook will provision our core services.
+#
+# Redeploy proxy config, updates certs and reloads nginx.
+#   icos run core -istaging proxy
+
 
 - hosts: core_server
   tasks:
