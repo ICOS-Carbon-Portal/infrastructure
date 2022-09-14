@@ -1,23 +1,31 @@
 - include_role:
     name: icos.bbclient2
+    # export bbclient2 defaults so that they can be used in the timer script
+    public: yes
   vars:
     # bbclient_name is provided by caller
     bbclient_user: root
     bbclient_home: /opt/bbclient-jupyter
 
-- name: Create backup script
-  copy:
-    mode: +x
-    dest: "{{ bbclient_bin_dir }}/backup.sh"
-    content: |
+- name: Setup backup script and systemd timer
+  include_role:
+    name: icos.timer
+  vars:
+    timer_home: "/opt/bbclient-jupyter/backup"
+    timer_name: "bbclient-jupyter"
+    timer_conf: |
+      OnCalendar=daily
+      RandomizedDelaySec=2h
+    timer_content: |
       #!/bin/bash
       set -eu
-      {{ bbclient_all }} create "::{now}" /home /project /root/jusers.yml
-      {{ bbclient_all }} prune --keep-within 2w --keep-daily=30 --keep-weekly=150
-  register: _backup_script
 
-- name: Add backup script to crontab
-  cron:
-    job: "{{ _backup_script.dest }}"
-    special_time: hourly
-    name: "bbclient_backup"
+      # If the repos get moved to another disk - maybe because of storage
+      # running out - we don't want the backup to fail.
+      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+      {{ bbclient_all }} create --verbose --stats -x "::{now}" /home /project /root/jusers.yml
+      {{ bbclient_all }} prune --stats --list --keep-daily=30 --keep-weekly=150
+
+      # since borg 1.2, a separate compaction is needed
+      {{ bbclient_all }} compact
