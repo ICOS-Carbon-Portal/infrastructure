@@ -4,6 +4,7 @@
       tags: vm
       lxd_vm_name: staging
       lxd_vm_docker: True
+      lxd_vm_root_size: 200GB
       lxd_vm_devices:
         dataprod:
           path: /data/dataAppStorage/
