@@ -49,9 +49,11 @@ icosdata_exports: |
   /disk/data/obspack                fsicos*.lunarc.lu.se(ro)
   /disk/data/stilt                  fsicos*.lunarc.lu.se(ro)
   /disk/data/common/netcdf/dataDemo fsicos*.lunarc.lu.se(rw)
+  /disk/data/incoming               *.wg-fsicos2(rw)
 
 icosdata_mkdirs:
-  - /data/stilt
+  - /disk/data/incoming
+  - /disk/data/stilt
   - /share/fsicos3
   - /share/with_nextcloud/jupyter_coco2
 
@@ -60,6 +62,9 @@ icosdata_bind_mounts:
     src: /disk/data/stiltweb
     opts: ",ro"
 
+  - path: /incoming
+    src: /disk/data/incoming
+    
   - path: /data/project
     src: /disk/data/project
 
