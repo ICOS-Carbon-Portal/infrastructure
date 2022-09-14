@@ -24,6 +24,8 @@
       timer_content: |
         #!/bin/bash
         set -eu
+        export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
         echo "Creating"
         {{ bbclient_all}} create --stats --verbose "::{now}" /usr/share/nginx/static
 
