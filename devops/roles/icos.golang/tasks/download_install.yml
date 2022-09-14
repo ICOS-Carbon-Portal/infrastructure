@@ -1,0 +1,41 @@
+# https://www.digitalocean.com/community/tutorials/how-to-install-go-on-ubuntu-20-04
+
+# Never overwrite apt-installed go with downloaded version.
+- name: Fail if golang-go is apt-installed
+  ansible.builtin.shell: |
+    dpkg --get-selections golang-go | grep -vq '\binstall'
+  changed_when: false
+  register: r
+  failed_when: r.rc == 0
+
+- name: We only support amd64 for now
+  assert:
+    that: ansible_machine == "x86_64"
+  changed_when: no
+
+- name: Download go binary
+  get_url:
+    url: "{{ golang_url }}"
+    dest: "/tmp"
+  register: _download
+
+- name: Create golang /opt directory
+  file:
+    path: "{{ golang_opt_dir }}"
+    state: directory
+
+- name: Unarchive golang
+  unarchive:
+    src: "{{ _download.dest }}"
+    dest: "{{ golang_opt_dir }}"
+    remote_src: true
+
+- name: Create symlinks for go binaries
+  file:
+    dest: "/usr/local/bin/{{ item }}"
+    src: "{{ golang_bin_dir }}/{{ item }}"
+    state: link
+  loop:
+    - go
+    - gofmt
+    

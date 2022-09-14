@@ -1,0 +1,12 @@
+- name: Retrieve golang_apt_version fact
+  shellfact:
+    # "Version: 2:1.13~1ubuntu2' => "1.13"
+    exec: >-
+      apt show golang-go 2>/dev/null |
+      perl -ne '/Version: 2:([0-9.]+)/ && print $1'
+    fact: golang_apt_version
+
+- name: install golang using apt
+  apt:
+    name: golang
+  when: golang_apt_version_ok

@@ -1,0 +1,22 @@
+- name: Retrieve version of installed golang (if any)
+  shellfact:
+    # go version go1.13.8 linux/amd64 -> "1.13.8 "
+    exec: go version | cut -c14-20
+    fact: golang_local_version
+  # it might not be installed
+  failed_when: no
+
+# If golang is already installed and of a sufficient version, just state that.
+- debug:
+    msg: Installed version of golang is sufficient
+  when: golang_local_version_ok
+
+# Otherwise, attempt to install by using apt.
+- import_tasks: apt_install.yml
+  when: not golang_local_version_ok
+
+# Finally, fall back to downloading and installing.
+- import_tasks: download_install.yml
+  when:
+    - not golang_local_version_ok
+    - not golang_apt_version_ok

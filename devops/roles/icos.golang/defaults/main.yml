@@ -1,0 +1,11 @@
+golang_version_install: 1.19.1
+golang_local_version_ok: >-
+  {{ golang_local_version and
+     golang_local_version is version(golang_min_version, ">=") }}
+
+golang_apt_version_ok: >-
+  {{ golang_apt_version is version(golang_min_version, ">=") }}
+
+golang_url: "https://go.dev/dl/go{{ golang_version_install }}.linux-amd64.tar.gz  "
+golang_opt_dir: "/opt/golang-{{ golang_version_install }}"
+golang_bin_dir: "{{ golang_opt_dir }}/go/bin"
