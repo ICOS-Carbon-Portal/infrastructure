@@ -1,7 +1,9 @@
 all:
   vars:
+    cpmeta_icos_domain: meta.icos-cp.eu
+
     cpmeta_domains:
-      - meta.icos-cp.eu
+      - {{ cpmeta_icos_domain }}
       - meta.fieldsites.se
 
     cpdata_domains:
