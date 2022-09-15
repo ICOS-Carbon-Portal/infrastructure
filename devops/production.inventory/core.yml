@@ -3,7 +3,7 @@ all:
     cpmeta_icos_domain: meta.icos-cp.eu
 
     cpmeta_domains:
-      - {{ cpmeta_icos_domain }}
+      - "{{ cpmeta_icos_domain }}"
       - meta.fieldsites.se
 
     cpdata_domains:
