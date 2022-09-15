@@ -14,6 +14,12 @@
   apt:
     name: moreutils  # sponge(1)
 
+# needed by the dockermon script
+- name: pip install docker
+  pip:
+    name: docker
+    state: present
+
 - name: Install node_exporter
   include_role:
     name: icos.github_download_bin
