@@ -32,6 +32,10 @@
     - import_tasks: configure.yml
       tags: podman_configure
 
+- name: Install conmon
+  import_role:
+    name: icos.conmon
+
 
 # TODO
 # registries.conf

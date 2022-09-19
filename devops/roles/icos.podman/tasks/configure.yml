@@ -6,7 +6,6 @@
       Pin: release *
       Pin-Priority: -1
 
-
 # Podman configuration files as mentioned in the instructions:
 # https://podman.io/getting-started/installation#configuration-files.
 #
@@ -34,6 +33,9 @@
   ansible.posix.synchronize:
     src: containers
     dest: /etc/
+    # required to set the owner/group to root
+    owner: no
+    group: no
 
 # https://docs.podman.io/en/latest/markdown/podman-completion.1.html
 - name: Setup bash completion for podman
