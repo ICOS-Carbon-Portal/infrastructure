@@ -1,0 +1,29 @@
+- name: Retrieve version of installed conmon (if any)
+  shellfact:
+    # "conmon version 2.0.9\ncommit: unknown"
+    exec: |
+      for f in /usr/local/libexec/podman/conmon\
+               /usr/libexec/podman/conmon; do
+        if [ -e $f ]; then
+          $f --version | awk 'NR == 1 { print $3 }';
+          break
+        fi
+      done
+    fact: conmon_local_version
+
+# If conmon is already installed and of a sufficient version, just state that.
+- debug:
+    msg: >-
+      Installed version of conmon
+      ({{ conmon_local_version }}) is sufficient
+  when: conmon_local_version_ok
+
+# Otherwise, attempt to install by using apt.
+- import_tasks: apt_install.yml
+  when: not conmon_local_version_ok
+
+# Finally, fall back to downloading and installing.
+- import_tasks: download_install.yml
+  when:
+    - not conmon_local_version_ok
+    - not conmon_apt_version_ok

@@ -1,0 +1,10 @@
+conmon_version_install: "2.1.4"
+conmon_local_version_ok: >-
+  {{ conmon_local_version and
+     conmon_local_version is version(conmon_min_version, ">=") }}
+
+conmon_apt_version_ok: >-
+  {{ conmon_apt_version is version(conmon_min_version, ">=") }}
+
+# https://github.com/containers/conmon/archive/refs/tags/v2.1.4.tar.gz
+conmon_url: "https://github.com/containers/conmon/archive/refs/tags/v{{ conmon_version_install }}.tar.gz"
