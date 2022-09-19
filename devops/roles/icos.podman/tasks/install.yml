@@ -1,8 +1,6 @@
 - name: Install golang
-  include_role:
+  import_role:
     name: icos.golang
-  vars:
-    golang_min_version: 1.16
 
 # These are straight out of the podman documentation.
 - name: Install podman requirements
@@ -28,8 +26,6 @@
       # crun is smaller than runc
       - crun
       - uidmap
-      # FIXME: maybe compile from source instead?
-      - conmon
 
 # ansible_kernel == $(uname -r) == 5.15.0-30-generic
 - name: Assert that user namespaces are available
@@ -55,32 +51,6 @@
     chdir: "{{ podman_src_dir }}"
     target: install
 
-
-# CNI PLUGINS
-
-- name: Create directory
-  file:
-    path: "{{ item }}"
-    state: directory
-  loop:
-    - /opt/cni/download
-    - /opt/cni/bin
-
-- name: Find latest release of CNI networking plugins
-  github_release:
-    user: containernetworking
-    repo: plugins
-    action: latest_release
-  delegate_to: localhost
-  register: podman_release
-
-- name: Download cni plugins
-  get_url:
-    url: "{{ podman_cni_plugin_url }}"
-    dest: /opt/cni/download/plugins.tgz
-
-- name: Unarchive cni plugins
-  unarchive:
-    src: /opt/cni/download/plugins.tgz
-    dest: /opt/cni/bin
-    remote_src: true
+- name: Install cni_plugins
+  import_role:
+    name: icos.cni_plugins
