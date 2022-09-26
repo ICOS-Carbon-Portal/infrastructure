@@ -53,7 +53,7 @@ def bbclient(what, arg):
             check=1, stdout=log, stderr=STDOUT)
 
 def log(msg):
-    with logfile as log:
+    with logfile() as log:
         print(logfmt(msg), file=log, flush=True)
 
 
