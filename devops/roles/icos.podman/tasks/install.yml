@@ -26,6 +26,9 @@
       # crun is smaller than runc
       - crun
       - uidmap
+      # slirp4netns is the default network mode for rootless
+      # containers. https://github.com/containers/podman/issues/7810
+      - slirp4netns
 
 # ansible_kernel == $(uname -r) == 5.15.0-30-generic
 - name: Assert that user namespaces are available
