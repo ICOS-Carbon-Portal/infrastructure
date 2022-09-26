@@ -10,7 +10,6 @@
     - role: icos.dovecot
       tags: dovecot
       dovecot_domains:
-        - test.icos-cp.eu
         - otc-nrt.icos-cp.eu
 
   tasks:
