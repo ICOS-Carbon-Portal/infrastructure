@@ -34,3 +34,30 @@
   tags: bbserver_monitor
   # Only enable monitoring via node_exporter if its textfiles directory exist.
   when: _textfiles.stat.exists
+
+- name: Install borg-compact timer
+  include_role:
+    name: icos.timer
+    apply:
+      tags: bbserver_compact
+  vars:
+    timer_user: "{{ bbserver_user }}"
+    timer_home: "{{ bbserver_home }}/bbserver-compact"
+    timer_name: "bbserver-compact"
+    timer_conf: |
+      OnCalendar=weekly
+      RandomizedDelaySec=3h
+    timer_envs:
+      - BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+      - BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+    timer_content: |
+      #!/bin/bash
+      # Since borg 1.2, it's not enough to prune repos, they have to be
+      # compacted as well.
+      set -eux
+
+      cd $HOME/repos
+      for repo in *.repo; do
+        time borg compact --verbose $repo
+      done
+  tags: bbserver_compact
