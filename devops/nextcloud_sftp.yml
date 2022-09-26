@@ -1,0 +1,123 @@
+- hosts: fsicos2.lunarc.lu.se
+  tags: setup
+  roles:
+    - role: icos.podman
+      tags: podman
+
+    - role: icos.conmon
+      tags: conmon
+
+- hosts: fsicos2.lunarc.lu.se
+  tags: sftp
+  vars:
+    groupfolder_name: PAUL
+    groupfolder_id: 27
+    groupfolder_dir: >
+      /disk/data/nextcloud/data/__groupfolders/{{ groupfolder_id}}
+    host_uid: 33
+    host_user: www-data
+    sftp_image: docker.io/atmoz/sftp:debian
+    sftp_user: nc_paul_upload
+    sftp_exec: "/usr/libexec/podman-sftp-only-{{ sftp_user }}"
+    sftp_dirs:
+      - src: "{{ groupfolder_dir}}/WP4/DATA"
+        dst: WP4_DATA
+      - src: "{{ groupfolder_dir }}/WP2/data"
+        dst: WP2_data
+  handlers:
+    - name: reload sshd
+      systemd:
+        name: sshd
+        state: reloaded
+
+  tasks:
+    - name: Retrieve _gfid fact
+      shellfact:
+        exec: >-
+          occ groupfolder:list --output json |
+          jq  '.[] | select(.mount_point == "{{ groupfolder_name }}") | .id'
+        fact: _gfid
+
+    - name: Make sure we're dealing with the correct groupfolder
+      assert:
+        that: (_gfid | int) == groupfolder_id
+
+    - name: Retrive passwd data for www-data user
+      getent:
+        database: passwd
+        key: www-data
+      register: getent
+
+    - name: Check our assumptions about www-data uid
+      assert:
+        that: (getent.ansible_facts.getent_passwd[host_user][1] | int) == host_uid
+
+    - name: Create sftp user
+      user:
+        name: "{{ sftp_user }}"
+        uid: "{{ host_uid }}"
+        group: "{{ host_uid }}"
+        password: "{{ vault_nc_paul_upload_password }}"
+        non_unique: yes
+        create_home: yes
+
+    - name: Retrieve podman image
+      become: yes
+      become_user: "{{ sftp_user }}"
+      containers.podman.podman_image:
+        name: "{{ sftp_image }}"
+
+    - name: Create sftp command script
+      copy:
+        dest: "{{ sftp_exec }}"
+        mode: +x
+        content: |
+          #!/bin/bash
+          # note, don't add '-t', it will break when running from sshd
+          exec podman run -i --rm {% for d in sftp_dirs %}{{ "-v%s:/upload/%s:rw" % (d.src, d.dst) }} {% endfor %} --entrypoint=/usr/lib/sftp-server {{ sftp_image }} -d /upload
+
+    - name: Add user-specific config to sshd
+      blockinfile:
+        marker: "# {mark} ansible / nc_paul_upload"
+        insertafter: EOF
+        path: /etc/ssh/sshd_config
+        block: |
+          # https://bugzilla.mindrot.org/show_bug.cgi?id=3122
+          # When using sshd 8.2 (ubuntu 20.04), this config cannot be in an
+          # include file.
+          Match User {{ sftp_user }}
+            PasswordAuthentication yes
+            ForceCommand {{ sftp_exec }}
+          Match All
+      notify: reload sshd
+
+    - name: Create nextcloud re-scan script
+      copy:
+        dest: /usr/libexec/nextcloud-paul-upload-scan.sh
+        mode: +x
+        content: |
+          #!/bin/bash
+          while :; do
+              /usr/local/sbin/occ groupfolders:scan -- {{ groupfolder_id }}
+              sleep 120
+          done
+      register: _script
+
+    - name: Create systemd service file
+      copy:
+        dest: /etc/systemd/system/nextcloud-paul-upload-scan.service
+        content: |
+          [Service]
+          User=root
+          WorkingDirectory=/docker/nextcloud
+          ExecStart={{ _script.dest }}
+
+          [Unit]
+          Description=Rescannextcloud groupfolder {{ groupfolder_id }}
+          # Shut down when the user logs out.
+          PartOf=user@{{ host_uid }}.service
+
+          [Install]
+          # Start when any user with this uid logs in. Note that processes for
+          # www-data will be active, but www-data won't be logged in.
+          WantedBy=user@{{ host_uid }}.service
