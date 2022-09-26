@@ -18,7 +18,7 @@
       RandomizedDelaySec=2h
     timer_content: |
       #!/bin/bash
-      set -eu
+      set -xeu
 
       # If the repos get moved to another disk - maybe because of storage
       # running out - we don't want the backup to fail.
