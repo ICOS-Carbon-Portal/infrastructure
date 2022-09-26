@@ -238,11 +238,11 @@ We run restheart and mongodb in docker (using a docker-compose.yml file). Once
 it's up and running we'll populate mongodb by restoring a database from backup.
 
 ### Retrieve files and start restheart/mongodb
-First, fetch `docker-compose.yml` and `security.yml` files:
+First, fetch `docker-compose.yml` and `restheart.yml` files:
 
 ```
-curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml
-wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/security.yml
+curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose.yml
+wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/restheart.yml
 ```
 
 Create and start RestHeart and MongoDB containers with:
