@@ -3,19 +3,26 @@
     src: "{{ dovecot_cert_file }}"
     dest: /etc/dovecot/conf.d/
 
-- name: Require SSL for dovecot
+- name: Configure dovecot ssl
   lineinfile:
     path: /etc/dovecot/conf.d/10-ssl.conf
-    regex: "(?:ssl = yes)|(?:ssl = required)"
-    line: "ssl = required"
     state: present
+    regex: "{{ item.regex | default(omit) }}"
+    line: "{{ item.line }}"
+  loop:
+    - line: "ssl = required"
+      regex: "(?:ssl = yes)|(?:ssl = required)"
 
-- name: Include {{ dovecot_cert_file }}
-  lineinfile:
-    path: /etc/dovecot/conf.d/10-ssl.conf
-    line: "!include {{ dovecot_cert_file }}"
-    state: present
-    insertafter: EOF
+      # All of a sudden, this was required for dovecot to start.
+    - line: "ssl_dh = </usr/share/dovecot/dh.pem"
+
+      # <2022-09-26> Thunderbird could no longer connect because of "TLS
+      # handshaking ... alert 42". Solution is to disabled old SSL versions.
+    - line: "ssl_protocols = TLSv1.2 TLSv1.1 TLSv1 !SSLv3 !SSLv2"
+      regex: "^#?\\s*ssl_protocols.*"
+
+      # include our own certificates
+    - line: "!include {{ dovecot_cert_file }}"
 
 - name: Add a dovecot deploy-hook for certbot
   copy:

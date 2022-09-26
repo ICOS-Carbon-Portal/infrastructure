@@ -12,8 +12,8 @@ We use [virtual users](https://wiki.dovecot.org/VirtualUsers) in a [passwd datab
 	# generate the password hash
 	doveadm pw -s sha256
 
-	# add user
-	echo "user@domain.com:{SHA256}longstring:" >> /etc/dovecot/users
+	# add user - note the 6 ':' needed at the end
+	echo "user@domain.com:{SHA256}longstring::::::" >> /etc/dovecot/users
 
 	# no need to reload the user database
 
