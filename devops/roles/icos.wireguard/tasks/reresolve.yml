@@ -1,0 +1,29 @@
+- name: Create reresolve template service
+  copy:
+    dest: /etc/systemd/system/wg-reresolve@.service
+    content: |
+      [Unit]
+      Description=Reresolve dns names for wireguard
+
+      [Service]
+      Type=oneshot
+      ExecStart={{ wireguard_reresolve_script }} %i
+  notify: systemd daemon-reload
+
+- name: Create reresolve timer
+  copy:
+    dest: /etc/systemd/system/wg-reresolve@.timer
+    content: |
+      [Unit]
+      Description=Run wireguard reresolve every 30 seconds
+      PartOf=wg-quick@%i.service
+
+      [Timer]
+      OnCalendar=*-*-* *:*:00,30
+
+      [Install]
+      WantedBy=wg-quick@%i.service
+  notify: systemd daemon-reload
+
+# Howto enable this service.
+# systemctl disable --now wg-reresolve@wg-home.timer

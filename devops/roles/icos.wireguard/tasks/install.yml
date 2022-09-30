@@ -1,0 +1,31 @@
+- name: Install wireguard for modern kernels
+  include_tasks: wireguard-ubuntu.yml
+  when:
+    - ansible_kernel is version('5.6', '>=')
+
+- name: Include install tasks for raspbian
+  include_tasks: wireguard-raspbian-zero.yml
+  when:
+    - not _wg_is_installed
+    - ansible_distribution == "Debian"
+    - ansible_lsb.id == "Raspbian"
+    - ansible_machine == "armv6l"
+
+- name: Include install tasks for raspbian
+  include_tasks: wireguard-raspbian.yml
+  when:
+    - not _wg_is_installed
+    - ansible_distribution == "Debian"
+    - ansible_lsb.id == "Raspbian"
+    - ansible_machine != "armv6l"
+
+- name: Include install tasks for ubuntu
+  include_tasks: wireguard-ubuntu.yml
+  when:
+    - not _wg_is_installed
+    - ansible_distribution == "Ubuntu"
+
+- name: Fail if wireguard wasn't installed
+  fail:
+    msg: "Couldn't install wireguard for {{ ansible_distribution }}/{{ ansible_lsb.id }}"
+  when: not _wg_is_installed

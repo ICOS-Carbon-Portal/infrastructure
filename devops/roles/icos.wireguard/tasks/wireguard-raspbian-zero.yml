@@ -39,7 +39,7 @@
   register: _r
   failed_when: _r.rc != 0
 
-- name: Create /usr/local/sbin/wireguard-reresolve-dns.sh symlink
+- name: Create wireguard-reresolve-dns.sh symlink
   file:
     dest: "{{ wireguard_reresolve_script }}"
     src: /root/wireguard-tools/contrib/reresolve-dns/reresolve-dns.sh
