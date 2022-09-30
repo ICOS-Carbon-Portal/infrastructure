@@ -11,7 +11,7 @@
     dest: "{{ restheart_home }}"
   loop:
     - docker-compose.yml
-    - security.yml
+    - restheart.yml
 
 - name: Build and start the images
   docker_compose:
