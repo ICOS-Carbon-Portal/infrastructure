@@ -385,7 +385,7 @@ cpmeta{
         credentials{
             db: "rdflog"
             user: "rdflog"
-            password: "look up in fsicos2:/home/cpmeta/application.conf"
+            password: "as used with the command above: CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD '...'"
         }
     }
     citations.eagerWarmUp = false
