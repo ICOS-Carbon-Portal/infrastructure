@@ -19,9 +19,9 @@ nats_cert_name: "{{ ansible_fqdn }}"
 
 
 # https://github.com/nats-io/nats-server/releases
-nats_server_ver: 2.8.4
+nats_server_ver: 2.9.2
 # https://github.com/nats-io/natscli/releases/
-nats_cli_ver: 0.0.33
+nats_cli_ver: 0.0.34
 # https://github.com/nats-io/nats-top/releases/
 nats_top_ver: 0.5.2
 
