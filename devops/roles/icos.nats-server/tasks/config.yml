@@ -50,7 +50,6 @@
       WantedBy=multi-user.target
   register: _copy
 
-
 - name: Start NATS service
   systemd:
     name: nats
@@ -62,3 +61,12 @@
       started
       {%- endif -%}
     daemon-reload: "{% if _copy.changed %}yes{% else %}no{% endif %}"
+
+- name: Make sure NATS is up and running correct version
+  ansible.builtin.shell: |
+    nats server info | awk '$1 == "Version:" {print $2}'
+  changed_when: no
+  register: _r
+  until: _r.stdout.strip() == nats_server_ver
+  retries: 3
+  delay: 5
