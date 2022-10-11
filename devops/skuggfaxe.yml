@@ -1,0 +1,19 @@
+- hosts: fsicos3.lunarc.lu.se
+  roles:
+    - name: Create the skuggfaxe VM
+      role: icos.lxd_vm
+      lxd_vm_name: skuggfaxe
+      lxd_vm_ubuntu_version: "22.04"
+      lxd_vm_docker: true
+      lxd_vm_root_size: "100GB"
+      lxd_vm_config:
+        limits.cpu: "16"
+        limits.memory: "64GB"
+
+- hosts: skuggfaxe
+  roles:
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.lxd_guest
+      tags: guest
