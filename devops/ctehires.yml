@@ -30,6 +30,10 @@
 
 
 - hosts: ctehires
+  vars:
+    user_conf: "{{ vault_ctehires_user_conf }}"
+    user_disable_coredump: true
+
   pre_tasks:
     - name: Create the ctehires group
       ansible.builtin.group:
@@ -42,7 +46,5 @@
     - role: icos.docker
       tags: docker
 
-    - role: icos.superuser
-      tags: superuser
-      superuser_list: "{{ vault_ctehires_superusers }}"
-      superuser_disable_coredump: true
+    - role: icos.users
+      tags: users
