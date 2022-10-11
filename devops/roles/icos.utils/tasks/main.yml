@@ -35,9 +35,10 @@
       - unzip          # required by ansible's unarchive
     update_cache: yes
 
-- name: Install ripgrep
-  apt:
-    deb: "{{ utils_ripgrep_url }}"
+# It's already installed ?
+# - name: Install ripgrep
+#   apt:
+#     deb: "{{ utils_ripgrep_url }}"
 
 - name: Install fd
   apt:
