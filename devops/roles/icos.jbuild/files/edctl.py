@@ -15,6 +15,11 @@ TEMPLATES = {'test': '/docker/exploredata.test/jupyterhub_home/templates',
              'prod': '/docker/exploredata.prod/jupyterhub_home/templates'}
 
 
+def die(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(1)
+
+
 @click.group()
 def cli():
     pass
@@ -34,11 +39,14 @@ def cli_images():
 @cli.command('pull')
 @click.argument('what', type=click.Choice(PRODTEST))
 def cli_pull(what):
-    dock = docker.from_env()
-    for update in dock.api.pull(REPO_URL % what, stream=True, decode=True):
+    client = docker.from_env()
+    tag = REPO_URL % what
+    for update in client.api.pull(tag, stream=True, decode=True):
+        if error := update.get('error'):
+            die(f"Error while pulling '{tag}' - {error}")
         print(update.get('id'))
     print('done')
-    img = dock.images.get(REPO_URL % what)
+    img = client.images.get(REPO_URL % what)
     # sha256:c166280023
     print('short_id %s' % img.short_id)
 
