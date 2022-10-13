@@ -108,6 +108,7 @@
   roles:
     - role: icos.lxd_guest
       tags: guest
+      user_conf: "{{ vault_ganymede_user_conf }}"
 
     - role: icos.python3
       tags: python3
@@ -115,11 +116,6 @@
     - role: icos.docker
       tags: docker
       docker_periodic_cleanup: True
-
-    - role: icos.superuser
-      tags: users
-      superuser_list: "{{ vault_ganymede_superusers }}"
-      superuser_disable_coredump: true
 
     - role: icos.jupyter
       tags: jupyter
