@@ -8,19 +8,8 @@
     name:
       - "python{{ python3_version }}-venv"
 
-- name: Create our own pip3 command
-  copy:
-    dest: "{{ python3_pip }}"
-    mode: +x
-    # By default, ppa:deadsnakes doesn't ship with its own pip3.X. But should
-    # it exst, don't overwrite it.
-    force: no
-    content: |
-      #!{{ python3_command }}
-      # -*- coding: utf-8 -*-
-      import re
-      import sys
-      from pip._internal.cli.main import main
-      if __name__ == '__main__':
-          sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-          sys.exit(main())
+- name: Install pip
+  command: |
+    curl -sS https://bootstrap.pypa.io/get-pip.py | {{ python3_command }}
+  args:
+    creates: "/usr/local/bin/{{ python3_pip }}"
