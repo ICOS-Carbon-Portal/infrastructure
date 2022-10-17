@@ -49,6 +49,16 @@ def facts(host, inventory):
 
 
 @cli.command()
+@click.argument("host")
+@click.option('-i', 'inventory', default='production')
+def inventory(host, inventory):
+    args = ["ansible", host, '-m', 'debug', '-a',
+            'var=hostvars[inventory_hostname]', f'-i{inventory}.inventory']
+    print(*args)
+    os.execvp(args[0], args)
+
+
+@cli.command()
 @click.argument('glob')
 @click.option('-i', 'inventory', default='production')
 @click.option('--diff', is_flag=True)
