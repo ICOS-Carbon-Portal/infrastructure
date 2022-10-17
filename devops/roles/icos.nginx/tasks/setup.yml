@@ -39,8 +39,8 @@
   iptables_raw:
     name: allow_nginx
     rules: |
-      -A INPUT -p tcp --dport 80 -j ACCEPT -m comment --comment 'nginx'
-      -A INPUT -p tcp --dport 443 -j ACCEPT -m comment --comment 'nginx'
+      -A INPUT -p tcp --dport 80 -j ACCEPT
+      -A INPUT -p tcp --dport 443 -j ACCEPT
 
 - name: Start nginx
   service:

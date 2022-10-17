@@ -9,7 +9,7 @@
     rules: >-
       -A INPUT
       {{ "-i %s" % nfs4_interface if nfs4_interface else "" }}
-      -p tcp --dport 2049 -j ACCEPT -m comment --comment 'nfs4'
+      -p tcp --dport 2049 -j ACCEPT
 
 # https://peteris.rocks/blog/nfs4-single-port/
 - name: Modify nfs-kernel parameters
