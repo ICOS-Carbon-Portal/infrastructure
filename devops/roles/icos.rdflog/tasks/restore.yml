@@ -1,0 +1,25 @@
+- name: List tables in the rdflog database
+  command: ./psql.sh -c '\d' rdflog
+  args:
+    chdir: "{{ rdflog_home }}"
+    creates: /some/file
+  register: _r
+  changed_when: no
+
+- debug:
+    msg: |
+      The 'rdflog' database is not empty, not restoring.
+  when:
+    - _r.stderr != 'Did not find any relations.'
+    - _r.stdout != ''
+
+- name: Restore database from file
+  ansible.builtin.shell: |
+    zcat {{ rdflog_restore_file }} | ./psql.sh -q rdflog
+  args:
+    chdir: "{{ rdflog_home }}"
+  register: _r
+  # Only restore backup when the current database is empty.
+  when:
+    - _r.stderr == 'Did not find any relations.'
+    - _r.stdout == ''

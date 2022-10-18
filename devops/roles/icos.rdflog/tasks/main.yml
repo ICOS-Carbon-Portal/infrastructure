@@ -50,3 +50,7 @@
   retries: 10
   delay: 5
   until: r.rc == 0
+
+- import_tasks: restore.yml
+  tags: rdflog_restore
+  when: rdflog_restore_file is defined
