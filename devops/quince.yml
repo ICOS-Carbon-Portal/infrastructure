@@ -18,17 +18,11 @@
           tags: proxy
         tasks_from: proxy.yml
       vars:
-        quince_name: "{{ item.name }}"
-        quince_domains: "{{ item.domains }}"
-      loop:
-        # Regular quince.
-        - name: quince
-          domains:
-            - quince.bcdc.no
-        # InterComparison
-        - name: quince-ic
-          domains:
-            - icoslabelling.bcdc.no
+        quince_name: quince
+        quince_domains:
+          - quince.bcdc.no
+          - icoslabelling.bcdc.no
+          - quince-training.bcdc.no
 
 - hosts: quince3
   roles:
