@@ -4,7 +4,7 @@ services:
   db:
     container_name: rdflog
     restart: unless-stopped
-    image: postgres:10
+    image: postgres:{{ rdflog_postgres_version }}
     environment:
       - POSTGRES_PASSWORD={{ rdflog_db_pass }}
     ports:

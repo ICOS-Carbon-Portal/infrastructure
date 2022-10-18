@@ -1,4 +1,5 @@
 rdflog_home: /docker/rdflog
+rdflog_postgres_version: 10
 
 rdflog_db_name: rdflog
 rdflog_db_user: rdflog
