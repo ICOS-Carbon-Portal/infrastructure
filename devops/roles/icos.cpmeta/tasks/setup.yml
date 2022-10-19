@@ -21,3 +21,4 @@
     state: directory
     owner: "{{ cpmeta_user }}"
     group: "{{ cpmeta_user }}"
+    recurse: yes
