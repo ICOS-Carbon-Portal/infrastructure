@@ -136,9 +136,9 @@ syntax (i.e `ssh fsicos2` instead of `ssh -p 60022 root@fsicos2.lunarc.lu.se`)
 
 
 ## rdflog
-`rdflog` is a postgres database. It is a dependency of the `meta` service. To
-setup a development environment for `meta` you first have to setup
-`rdflog`.
+The `rdflog` service is just a postgres database. It is a dependency of the
+`meta` service. To setup a development environment for `meta` you first have to
+setup `rdflog`.
 
 The easiest way is to retrieve a copy of the production database and run it in
 a docker container. In order to retrieve a copy of the production database
@@ -160,8 +160,8 @@ This command will ssh to fsicos2, then change to the rdflog directory (in order
 to access docker-compose.yml) and execute `pg_dump` within the running rdflog
 database container. The `pg_dump` command makes sure to include `create
 database` commands. The default output of `pg_dump` is a text format which we
-pipe through gzip in order to cut down on transfer time. The result - basically
-a compressed sql file - is stored in /tmp on the local host.
+pipe through gzip in order to cut down on transfer time. The result is a
+compressed sql file which is stored as /tmp/rdflog_dump.gz on the local host.
 
 
 #### Start postgres container for rdflog
