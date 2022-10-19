@@ -30,11 +30,10 @@
   register: _r
   changed_when: _r.stdout.startswith("removed")
 
-- name: Tell cpmeta to switch to readonly mode
+- name: Temporarily switch cpmeta to readonly mode before restart
   uri:
     method: "POST"
     url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
-    # timeout: 30
   # if meta is not responding, it should still be possible to deploy
   failed_when: no
   when:
@@ -57,3 +56,15 @@
   retries: 30
   delay: 10
   until: not r.failed
+
+- name: Leave cpmeta in readonly mode
+  uri:
+    method: "POST"
+    url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
+  register: r
+  failed_when: r.failed
+  retries: 30
+  delay: 10
+  until: not r.failed
+  when:
+    - cpmeta_readonly_mode

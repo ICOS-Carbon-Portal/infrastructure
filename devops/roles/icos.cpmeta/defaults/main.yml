@@ -3,6 +3,10 @@ cpmeta_home: /home/cpmeta
 
 cpmeta_servicename: cpmeta
 
+# Readonly mode is used to host an extra (readonly) instance of cpmeta while
+# the ordinary one is undergoing maintenance.
+cpmeta_readonly_mode: false
+
 cpmeta_db_name: rdflog
 cpmeta_db_user: rdflog
 cpmeta_db_port: 2345
