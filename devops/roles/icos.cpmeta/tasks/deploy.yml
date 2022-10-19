@@ -22,15 +22,13 @@
     backup: true
   register: _jarfile
 
-- name: Prune old jarfiles
+- name: Remove all but the five newest of jar file backups
   ansible.builtin.shell: |
-    ls -1t *jar*~ | tail +6 | tee /dev/stderr | xargs rm -f
+    ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
   args:
-    executable: /bin/bash
     chdir: "{{ cpmeta_home }}"
   register: _r
-  changed_when:
-    - _r.stderr
+  changed_when: _r.stdout.startswith("removed")
 
 - name: Tell cpmeta to switch to readonly mode
   uri:
