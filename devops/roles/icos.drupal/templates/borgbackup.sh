@@ -1,11 +1,10 @@
 #!/bin/bash
 
 set -Eeuo pipefail
-cd "{{ drupal_home }}"
-
 LOGFILE=backup.log
 
 for project in {{ drupal_websites | join(" ") }}; do
+    cd "{{ drupal_home }}"
 
     if [ ! -d "$project" ]; then
         echo "$project directory not found. Skipping." >> "$LOGFILE"
@@ -21,8 +20,6 @@ for project in {{ drupal_websites | join(" ") }}; do
     {{ bbclient_all }} create --verbose --stats "::$project-{now}" {{ drupal_home }}/$project/drupal >> "$LOGFILE" 2>&1 || :
     docker-compose up -d >& /dev/null
 
-    cd "{{ drupal_home }}"
+    # prune backups
+    {{ bbclient_all }} prune --keep-daily=90 --keep-weekly=-1 --prefix="$project-"
 done
-
-# prune backups
-{{ bbclient_all }} prune --keep-daily=90 --keep-weekly=-1
