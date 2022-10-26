@@ -1,3 +1,6 @@
+# display instructions
+#   run nextcloud_sftp.yml howto
+
 - hosts: fsicos2.lunarc.lu.se
   tags: setup
   roles:
@@ -24,6 +27,7 @@
         dst: WP4_DATA
       - src: "{{ groupfolder_dir }}/WP2/data"
         dst: WP2_data
+    sftp_port: 60022
   handlers:
     - name: reload sshd
       systemd:
@@ -31,7 +35,7 @@
         state: reloaded
 
   tasks:
-    - name: Retrieve _gfid fact
+    - name: Retrieve groupfolder id
       shellfact:
         exec: >-
           occ groupfolder:list --output json |
@@ -57,7 +61,9 @@
         name: "{{ sftp_user }}"
         uid: "{{ host_uid }}"
         group: "{{ host_uid }}"
-        password: "{{ vault_nc_paul_upload_password }}"
+        password: >-
+          {{ vault_nc_paul_upload_password |
+             password_hash('sha512', vault_pw_salt) }}
         non_unique: yes
         create_home: yes
 
@@ -121,3 +127,21 @@
           # Start when any user with this uid logs in. Note that processes for
           # www-data will be active, but www-data won't be logged in.
           WantedBy=user@{{ host_uid }}.service
+
+    - name: Display instructions
+      tags: howto
+      debug:
+        msg: |
+          # ssh config is as follows
+          host sftp-paul-nextcloud
+            hostname fsicos2.lunarc.lu.se
+            port {{ sftp_port }}
+            user {{ sftp_user }}
+            preferredauthentications password
+
+          # With that config in place, the command used to connect looks like:
+          sftp sftp-paul-nextcloud
+
+          # Without a ssh config, use the longer command:
+          sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.lunarc.lu.se
+          # The password is {{ vault_nc_paul_upload_password }}
