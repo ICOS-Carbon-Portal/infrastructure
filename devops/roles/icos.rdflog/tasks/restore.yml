@@ -15,7 +15,7 @@
 
 - name: Restore database from file
   ansible.builtin.shell: |
-    zcat {{ rdflog_restore_file }} | ./psql.sh -q rdflog
+    zcat {{ rdflog_restore_file }} | ./psql.sh
   args:
     chdir: "{{ rdflog_home }}"
   register: _r
