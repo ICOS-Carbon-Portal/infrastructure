@@ -1,5 +1,9 @@
 # https://hub.docker.com/r/jupyterhub/jupyterhub/tags
-FROM jupyterhub/jupyterhub:1.3
+# FROM jupyterhub/jupyterhub:1.3
+
+# <2022-10-24> jupyterhub:3.0.0
+FROM jupyterhub/jupyterhub:latest@sha256:15ad3278c339227d4aa20c93a91450c7d283d53640dd390eb361a819e3dfc14e
+
 
 ENV DEBIAN_FRONTEND=noninteractive
 
