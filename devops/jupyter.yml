@@ -128,9 +128,6 @@
     - role: icos.lxd_guest
       tags: guest
 
-    - role: icos.python3
-      tags: python3
-
     - role: icos.docker
       tags: docker
 

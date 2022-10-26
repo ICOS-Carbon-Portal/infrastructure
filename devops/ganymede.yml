@@ -110,9 +110,6 @@
       tags: guest
       user_conf: "{{ vault_ganymede_user_conf }}"
 
-    - role: icos.python3
-      tags: python3
-
     - role: icos.docker
       tags: docker
       docker_periodic_cleanup: True
