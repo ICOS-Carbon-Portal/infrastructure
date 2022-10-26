@@ -1,15 +1,13 @@
-- name: Add ppa:deadsnakes repository
-  apt_repository:
-    repo: ppa:deadsnakes/ppa
+# Now check whether we need to install our own version of
+- import_tasks: deadsnakes.yml
+  when: python3_should_install
+  tags: python3_install
 
-- name: Install python {{ python3_version }}
-  apt:
-    update_cache: yes
+# Install packages for our preferred python3
+- name: pip install packages
+  pip:
     name:
-      - "python{{ python3_version }}-venv"
-
-- name: Install pip
-  command: |
-    curl -sS https://bootstrap.pypa.io/get-pip.py | {{ python3_command }}
-  args:
-    creates: "/usr/local/bin/{{ python3_pip }}"
+      - click>=8
+      - pyyaml
+    state: present
+    executable: "{{ python3_pip }}"

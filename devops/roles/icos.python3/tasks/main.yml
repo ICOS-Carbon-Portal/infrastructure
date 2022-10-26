@@ -10,16 +10,21 @@
       # On some targets, this is required for the ansible 'pip' module.
       - virtualenv
 
-# Now check whether we need to install our own version of
-- import_tasks: install.yml
-  when: python3_should_install
-  tags: python3_install
-
-# Install packages for our preferred python3
-- name: pip install packages
+# Install pipx using ansible's python. This will allow us to use the ansible
+# pipx module to install utils written in python.
+- name: Install pipx
   pip:
-    name:
-      - click>=8
-      - pyyaml
-    state: present
-    executable: "{{ python3_pip }}"
+    name: pipx
+
+- name: Installing several versions of python3
+  include_tasks: install.yml
+  when: python3_version_list is defined
+  loop: "{{ python3_version_list }}"
+  loop_control:
+    loop_var: python3_install_version
+
+- name: Installing a single version of python3
+  include_tasks: install.yml
+  when:
+    - python3_version_list is not defined
+    - python3_version is defined
