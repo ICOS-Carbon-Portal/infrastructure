@@ -220,8 +220,7 @@ is not the default one)
 
 ` GRANT ALL ON ALL TABLES IN SCHEMA public TO rdflog;`
 
-You could also need to:
-`GRANT ALL ON SEQUENCE icos_id_seq to rdflog;`
+` GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rdflog;`
 
 
 #### Shutdown and remove container
