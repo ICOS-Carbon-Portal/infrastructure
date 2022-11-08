@@ -1,6 +1,6 @@
 #!/usr/bin/python{{ python3_version }}
 # Perform various sysadmin task for nextcloud.
-# Used from the host which is running nextcloud in a docker container.
+# Used on the host which is running nextcloud in a docker container.
 
 import click
 import datetime
@@ -50,6 +50,13 @@ def cli_active(hours):
 @cli.command('psql', help='Run psql in the db container')
 def cli_psql():
     cmd = "docker-compose exec db psql --user nextcloud"
+    print("Executing: ", cmd)
+    subprocess.check_call(cmd.split())
+
+
+@cli.command('shell', help='Start a bash shell in the app container')
+def cli_shell():
+    cmd = "docker-compose exec app bash"
     print("Executing: ", cmd)
     subprocess.check_call(cmd.split())
 
