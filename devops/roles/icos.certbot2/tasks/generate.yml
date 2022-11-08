@@ -27,4 +27,4 @@
     --email {{ certbot_email }}
     {% for d in certbot_domains %} -d {{ d }} {% endfor %}
   register: _r
-  changed_when: "'Certificate not yet due for renewal;' not in _r.stdout"
+  changed_when: "'Successfully received certificate.' in _r.stdout"
