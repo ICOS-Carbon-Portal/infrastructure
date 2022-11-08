@@ -76,6 +76,7 @@
           key: "{{ vault_erddap_ssh_keys }}"
   tasks:
     - name: Print ssh config
+      tags: howto
       debug:
         msg: |
           # Put this in $HOME/.ssh/config,
