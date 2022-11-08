@@ -16,6 +16,14 @@
   pip:
     name: pipx
 
+- name: Create "global" version of pipx
+  copy:
+    dest: /usr/local/sbin/pipx-global
+    mode: +x
+    content: |
+      #!/usr/bin/bash
+      PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin pipx "$@"
+
 - name: Installing several versions of python3
   include_tasks: install.yml
   when: python3_version_list is defined
