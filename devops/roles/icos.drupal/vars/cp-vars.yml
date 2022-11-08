@@ -25,3 +25,4 @@ drupal_modules: [
   token,
   webform
 ]
+robots_txt: cp-robots.txt

@@ -58,6 +58,12 @@
     dest: "{{ project_dir }}/composer/composer.json"
   register: composer_json
 
+- name: Copy robots.txt
+  copy:
+    src: "{{ robots_txt }}"
+    dest: "{{ project_dir }}/composer/robots.txt.append"
+  when: robots_txt is defined
+
 - name: (Re)start docker containers
   docker_compose:
     project_src: "{{ project_dir }}/docker"

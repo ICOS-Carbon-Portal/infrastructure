@@ -6,7 +6,6 @@ database_user: sites
 trusted_host: ^demo\.fieldsites\.se$
 domain: demo.fieldsites.se
 ssl_domains: [demo.fieldsites.se]
-redirect_to_www: true
 drupal_modules: [
   editor_advanced_link,
   field_group,

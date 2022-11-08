@@ -3,3 +3,23 @@ drupal_docker_port: 8110
 mysql_docker_port: 3337
 domain: demo.icos-cp.eu
 trusted_host: ^demo\.icos-cp\.eu$
+drupal_modules: [
+  conflict,
+  editor_advanced_link,
+  field_group,
+  google_analytics,
+  honeypot,
+  html_title,
+  linkit,
+  menu_breadcrumb,
+  metatag,
+  pathauto,
+  readonlymode,
+  redirect,
+  scheduler,
+  simple_sitemap,
+  smtp,
+  toc_js,
+  token,
+  webform
+]

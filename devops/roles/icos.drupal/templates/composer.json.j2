@@ -28,6 +28,7 @@
         "drupal/core-recommended": "^{{ drupal_version }}",
         "drupal/coffee": "^1.2",
         {{ '"drupal/conflict": "^2.0@alpha",'           if "conflict" in drupal_modules }}
+        {{ '"drupal/ctools": "^3.8",'                   if "pathauto" in drupal_modules }}
         {{ '"drupal/editor_advanced_link": "^1.8",'     if "editor_advanced_link" in drupal_modules }}
         {{ '"drupal/editor_file": "^1.5",'              if "editor_file" in drupal_modules }}
         {{ '"drupal/field_group": "^3.1",'              if "field_group" in drupal_modules }}
@@ -45,7 +46,7 @@
         {{ '"drupal/smtp": "^1.0",'                     if "smtp" in drupal_modules }}
         {{ '"drupal/toc_js": "^2.0", "toc/toc": "*",'   if "toc_js" in drupal_modules }}
         {{ '"drupal/token": "^1.10",'                   if "token" in drupal_modules }}
-        {{ '"drupal/webform": "^6.1",'                  if "webform" in drupal_modules }}
+        {{ '"drupal/webform": "^6.2@beta",'             if "webform" in drupal_modules }}
         "drush/drush": "^10.4",
         "wikimedia/composer-merge-plugin": "^2.0"
     },
@@ -55,13 +56,26 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-project-message": true,
+            "drupal/core-composer-scaffold": true,
+            "wikimedia/composer-merge-plugin": true
+        }
     },
     "extra": {
         "drupal-scaffold": {
             "locations": {
                 "web-root": "web/"
+            },
+{% if robots_txt is defined %}
+            "file-mapping": {
+                "[web-root]/robots.txt": {
+                    "append": "robots.txt.append"
+                }
             }
+{% endif %}
         },
         "merge-plugin": {
             "include": [

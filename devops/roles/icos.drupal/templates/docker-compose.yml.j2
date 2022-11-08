@@ -8,6 +8,9 @@ services:
       - "127.0.0.1:{{ drupal_docker_port }}:80"
     volumes:
       - ../composer/composer.json:/opt/drupal/composer.json
+{% if robots_txt is defined %}
+      - ../composer/robots.txt.append:/opt/drupal/robots.txt.append
+{% endif %}
       - vendor:/opt/drupal/vendor
       - ../themes:/var/www/html/themes
       - ../modules:/var/www/html/modules
