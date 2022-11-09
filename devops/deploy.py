@@ -63,7 +63,8 @@ def inventory(host, inventory):
 @click.option('-i', 'inventory', default='production')
 @click.option('--diff', is_flag=True)
 def vars(glob, inventory, diff):
-    """Show variables matching a glob."""
+    """Show variables matching a glob.
+    """
     bash = '/usr/bin/bash'
     if not diff:
         cmd = f"ansible-inventory -i{inventory}.inventory --toml --list | awk '$1 ~ /{glob}/' | sort -u"
@@ -76,12 +77,15 @@ def vars(glob, inventory, diff):
         os.execvp(bash, ['bash', '-c', f"diff <({cmds}) <({cmdp})"])
 
 
-@cli.command(context_settings={"ignore_unknown_options": True})
+@cli.command(context_settings=dict(ignore_unknown_options=True,
+                                   allow_interspersed_args=False,
+                                   allow_extra_args=True))
 @click.option('-i', 'inventory', default='production')
 @click.argument('playbook')
-@click.argument("args", nargs=-1, required=False)
-def run(inventory, playbook, args):
-    """Run a playbook."""
+@click.pass_context
+def run(ctx, inventory, playbook):
+    """Run a playbook.
+    """
     inventory += ".inventory"
     if not os.path.exists(inventory):
         die("Cannot find %s in %s" % (inventory, os.getcwd()))
@@ -91,8 +95,8 @@ def run(inventory, playbook, args):
         die("Cannot find %s in %s" % (playbook, os.getcwd()))
 
     # The remaining arguments are either tags or options to ansible.
-    TAGS = ["-t%s" % tag for tag in args if not tag.startswith('-')]
-    OPTS = [opt for opt in args if opt.startswith('-')]
+    TAGS = ["-t%s" % tag for tag in ctx.args if not tag.startswith('-')]
+    OPTS = [opt for opt in ctx.args if opt.startswith('-')]
     args = ['ansible-playbook', '-i', inventory, playbook] + TAGS + OPTS
 
     print(*args)
