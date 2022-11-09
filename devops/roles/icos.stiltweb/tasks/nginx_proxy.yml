@@ -1,0 +1,16 @@
+- name: Create stiltweb certificate
+  include_role:
+    name: icos.certbot2
+    # This will expose certbot2's defaults, among them certbot_nginx_conf,
+    # which can then be used when we include nginxsite.
+    public: yes
+  vars:
+    certbot_name: "{{ stiltweb_certbot_name }}"
+    certbot_domains: "{{ stiltweb_domains }}"
+
+- name: Add stiltweb nginx config
+  include_role:
+    name: icos.nginxsite
+  vars:
+    nginxsite_name: "{{ stiltweb_nginxsite_name }}"
+    nginxsite_file: stiltweb-nginx.conf

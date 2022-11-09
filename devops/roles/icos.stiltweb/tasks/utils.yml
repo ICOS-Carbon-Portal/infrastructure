@@ -5,13 +5,13 @@
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
   with_items:
-    - {name: Makefile, dest: "{{ stiltweb_home_dir }}" }
+    - {name: Makefile, dest: "{{ stiltweb_home }}" }
 
 
 - name: Install scripts
   template:
     src:   "{{ item }}"
-    dest:  "{{ stiltweb_bin_dir }}/{{ item }}"
+    dest:  "{{ stiltweb_bindir }}/{{ item }}"
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
     mode:  0755

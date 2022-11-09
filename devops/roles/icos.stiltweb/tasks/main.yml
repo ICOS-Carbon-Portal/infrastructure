@@ -1,25 +1,11 @@
-# This task must always be run to ensure that the _stiltweb variable is present.
-- name: Create stiltweb user
-  user:
-    name: "{{ stiltweb_username }}"
-    state: present
-    shell: /bin/bash
-  register: _stiltweb
-  tags:
-    - stiltweb_only
-    - stiltweb_utils
-    - stiltweb_sync
+- import_tasks: setup.yml
+  tags: stiltweb_setup
 
-- import_tasks: stiltweb.yml
-  tags:
-    - stiltweb_only
+- import_tasks: deploy.yml
+  tags: stiltweb_deploy
 
-- import_tasks: stiltweb_utils.yml
-  tags:
-    - stiltweb_only
-    - stiltweb_utils
+- import_tasks: utils.yml
+  tags: stiltweb_utils
 
-- import_tasks: stiltweb_sync.yml
-  tags:
-    - stiltweb_only
-    - stiltweb_sync
+- import_tasks: sync.yml
+  tags: stiltweb_sync

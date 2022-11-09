@@ -1,16 +1,14 @@
-# /etc/systemd/system/stiltweb.service
 [Unit]
 Description=STILT web frontend
 After=network.target
-Wants=stiltweb_tunnels.target
 
 [Service]
 Type=simple
-User=stiltweb
-ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
+User={{ stiltweb_username }}
+ExecStart={{ stiltweb_java }} -jar stiltweb.jar
 Restart=always
 RestartSec=30
-WorkingDirectory=/home/stiltweb
+WorkingDirectory={{ stiltweb_home }}
 
 [Install]
 WantedBy=multi-user.target

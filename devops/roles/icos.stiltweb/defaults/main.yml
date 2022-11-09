@@ -2,18 +2,18 @@ stiltweb_username: stiltweb
 stiltweb_servicename: stiltweb
 
 # delegate to the result of ansible's user creation
-stiltweb_home_dir: "{{ _stiltweb.home }}"
-stiltweb_bin_dir: "{{ stiltweb_home_dir }}/bin"
-
-# This is where stiltweb keeps it's archive of of stilt files
-stiltweb_statedir: /disk/data/stiltweb
-
-# The root of the classic stilt data directory (Footprints, RData, etc)
-stiltweb_stiltdir: /disk/data/stilt
+stiltweb_home: "/home/{{ stiltweb_username }}"
+stiltweb_bindir: "{{ stiltweb_home }}/bin"
 
 # The netty/akka/rpc port on the stiltweb host. Incoming stiltcluster
 # connections will be redirected here.
-stiltweb_port: 2550
+stiltweb_akka_port: 2550
 
-certbot_domains: [stilt.icos-cp.eu]
-certbot_conf_name: stiltweb
+# The hostname used by akka.
+stiltweb_akka_hostname: "{{ inventory_hostname }}"
+
+stiltweb_java: /usr/bin/java
+stiltweb_jre_package: openjdk-11-jre-headless
+
+stiltweb_certbot_name: stiltweb
+stiltweb_nginxsite_name: stiltweb

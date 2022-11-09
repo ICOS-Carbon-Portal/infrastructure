@@ -4,7 +4,7 @@
 - name: Install stiltweb->stilt sync script
   template:
     src: sync-stiltweb-to-stilt.py
-    dest: "{{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py"
+    dest: "{{ stiltweb_bindir }}/sync-stiltweb-to-stilt.py"
     mode: 0755
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
@@ -16,8 +16,9 @@
     content: |
         [Service]
         User={{ stiltweb_username }}
-        WorkingDirectory={{ stiltweb_home_dir }}
-        ExecStart={{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py --sync
+        WorkingDirectory={{ stiltweb_home }}
+
+        ExecStart={{ stiltweb_bindir }}/sync-stiltweb-to-stilt.py --sync
         # Since this service might run often and since it spawn a lot of
         # parallel processes we use niceness to avoid disrupting other services.
         Nice=10

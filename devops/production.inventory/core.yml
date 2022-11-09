@@ -17,6 +17,9 @@ all:
     doi_domains:
       - doi.icos-cp.eu
 
+    stiltweb_domains:
+      - stilt.icos-cp.eu
+
   hosts:
     core_host:
       # ansible
@@ -39,6 +42,12 @@ all:
       # cpauth - application
       cpauth_config_files:
         - application_production.conf
+
+      # stiltweb - application
+      # This is where stiltweb keeps it's archive of of stilt files
+      stiltweb_statedir: /disk/data/stiltweb
+      # The root of the classic stilt data directory (Footprints, RData, etc)
+      stiltweb_stiltdir: /disk/data/stilt
 
     core_server:
       # ansible

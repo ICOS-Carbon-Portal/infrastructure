@@ -5,15 +5,6 @@
 #   tasks:
 #     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
-- hosts: fsicos2.lunarc.lu.se
-  roles:
-    - role: icos.server
-      tags: server
-    - role: icos.docker
-      tags: docker
-    - role: icos.nginx
-      tags: nginx
-
 
 - hosts: fsicos2.lunarc.lu.se
   name: Install stilt along with its web frontend and cluster control
