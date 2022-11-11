@@ -32,7 +32,17 @@
     - import_tasks: configure.yml
       tags: podman_configure
 
+- name: Create docker wrapper
+  when: podman_docker
+  copy:
+    dest: /usr/local/bin/docker
+    mode: +x
+    content: |
+      #!/bin/sh
+      exec /usr/local/bin/podman "$@"
+
 - name: Install conmon
+  tags: podman_conmon
   import_role:
     name: icos.conmon
 
