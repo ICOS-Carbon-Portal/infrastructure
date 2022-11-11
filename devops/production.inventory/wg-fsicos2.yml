@@ -6,10 +6,12 @@ wg_fsicos2_hosts:
     cdb.nateko.lu.se:
     pgrep1:
     pgrep2:
+    icos1.gis.lu.se:
   vars:
     wg_fsicos2_config:
       name: fsicos2
       allowed_ips: 172.30.2.0/24
+      allow_all: True
       hub:
         addr: fsicos2.lunarc.lu.se
         port: 60801
@@ -29,3 +31,6 @@ wg_fsicos2_hosts:
         pgrep2:
           name: pgrep2
           addr: 172.30.2.5
+        icos1.gis.lu.se:
+          name: icos1
+          addr: 172.30.2.6
