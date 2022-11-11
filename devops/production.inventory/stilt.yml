@@ -1,0 +1,18 @@
+stiltcluster_hosts:
+  vars:
+    stiltrun_stiltdir: "{{ stilt_input_dir | dirname }}"
+    stiltcluster_hostname: >-
+      {{ wg_fsicos2_config.peers[inventory_hostname].name }}.wg-fsicos2
+    stiltcluster_stiltweb_hostname: fsicos2.wg-fsicos2
+
+  hosts:
+    fsicos2.lunarc.lu.se:
+      stilt_input_dir: /disk/data/stilt/Input
+
+    icos1.gis.lu.se:
+      stilt_input_dir: /data/stilt/Input
+      stilt_input_mount: True
+
+    fsicos3.lunarc.lu.se:
+      stiltcluster_maxcores: 40
+      stilt_input_dir: /data/stilt_legacy/Input
