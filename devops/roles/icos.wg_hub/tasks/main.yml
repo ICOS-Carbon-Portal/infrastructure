@@ -77,6 +77,13 @@
       -A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
       -A FORWARD -i {{ wg_hub_intf }} -j ACCEPT
 
+- name: Allow all inbound traffic on the wireguard interface
+  iptables_raw:
+    name: wireguard_{{ wg_hub_config.name }}_allow_all
+    state: "{{ 'present' if wg_hub_allow_all else 'absent' }}"
+    rules: |
+      -A INPUT -i {{ wg_hub_intf }} -j ACCEPT
+
 - name: Start wg-quick service
   systemd:
     name: "wg-quick@{{ wg_hub_intf }}.service"

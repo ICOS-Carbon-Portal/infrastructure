@@ -35,3 +35,8 @@ wg_hub_key: >-
 wg_hub_intf: >-
   wg-{{ wg_hub_config.name }}
 
+# If all hosts on the network are trusted, we can completely open the wireguard
+# network. This adds a firewall rule allowing all INPUT on the wireguard
+# interface.
+wg_hub_allow_all: >-
+  {{ wg_hub_self.allow_all | default(wg_hub_config.allow_all) | default(False) }}
