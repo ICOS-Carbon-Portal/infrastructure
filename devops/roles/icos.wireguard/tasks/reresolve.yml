@@ -25,5 +25,5 @@
       WantedBy=wg-quick@%i.service
   notify: systemd daemon-reload
 
-# Howto enable this service.
-# systemctl disable --now wg-reresolve@wg-home.timer
+# Howto disable this service.
+# systemctl disable --now wg-reresolve@wg-X.timer
