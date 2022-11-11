@@ -1,0 +1,56 @@
+- name: Create bin directory
+  file:
+    path: "{{ stiltcluster_bindir }}"
+    state: directory
+
+- name: Install scripts
+  template:
+    src:   "{{ item }}.j2"
+    dest:  "{{ stiltcluster_bindir }}/{{ item }}"
+    owner: "{{ stiltcluster_username }}"
+    group: "{{ stiltcluster_username }}"
+    mode:  0755
+  with_items:
+    - remove-old-stiltruns.sh
+
+- name: Add the remove-old-stiltruns cron job
+  cron:
+    name: remove old stiltruns
+    job: "$HOME/bin/remove-old-stiltruns.sh"
+    minute: 22
+    user: "{{ stiltcluster_username }}"
+
+- name: Add systemd service
+  template:
+    src: stiltcluster.service
+    dest: /etc/systemd/system/stiltcluster.service
+  register: _service
+
+- name: Create configuration file
+  template:
+    dest: "{{ stiltcluster_home }}"
+    src: local.conf
+  register: _config
+
+- name: Copy jarfile
+  copy:
+    src: "{{ stiltcluster_jar_file }}"
+    dest: "{{ stiltcluster_home }}"
+    backup: true
+  register: _jarfile
+
+- name: Remove all but the five newest of jar file backups
+  ansible.builtin.shell: |
+    ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
+  args:
+    chdir: "{{ stiltcluster_home }}"
+  register: _r
+  changed_when: _r.stdout.startswith("removed")
+
+- name: Start/restart service
+  systemd:
+    name: stiltcluster.service
+    enabled: yes
+    daemon-reload: "{{ 'yes' if _service.changed else 'no' }}"
+    state: >-
+      {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}

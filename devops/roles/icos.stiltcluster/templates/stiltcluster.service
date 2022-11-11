@@ -1,15 +1,14 @@
-# /etc/systemd/system/stiltcluster.service
 [Unit]
 Description=STILT cluster node
 After=network.target
 
 [Service]
 Type=simple
-User=stiltcluster
-ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
+User={{ stiltcluster_username }}
+ExecStart={{ stiltcluster_java }} -jar stiltcluster.jar
 Restart=always
 RestartSec=30
-WorkingDirectory=/home/stiltcluster
+WorkingDirectory={{ stiltcluster_home }}
 LimitNOFILE=65536
 
 [Install]

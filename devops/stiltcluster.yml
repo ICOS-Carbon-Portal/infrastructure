@@ -1,0 +1,48 @@
+# This playbook depends on:
+#  Each host having been installed with docker etc.
+#  The wg-fsicos2.yml playbook have been run
+
+- hosts: fsicos2.lunarc.lu.se
+  handlers:
+    - name: reload nfs server
+      service:
+        name: nfs-server
+        state: reloaded
+  tasks:
+    - name: Export stilt input data
+      tags: inputdata
+      blockinfile:
+        marker: "# {mark} stiltcluster"
+        create: yes
+        path: /etc/exports
+        block: |
+          /disk/data/stilt/Input            *.wg-fsicos2(ro,no_root_squash)
+      notify: reload nfs server
+
+- hosts:
+    - icos1.gis.lu.se
+    - fsicos2.lunarc.lu.se
+    - fsicos3.lunarc.lu.se
+  pre_tasks:
+    # Some hosts already have the stilt input data present
+    - when: stilt_input_mount | default(False)
+      tags: inputdata
+      block:
+        - name: Create stilt input dir
+          file:
+            path: "{{ stilt_input_dir }}"
+            state: directory
+
+        - name: Mount stilt input data
+          mount:
+            src: fsicos2.wg-fsicos2:/disk/data/stilt/Input
+            path: "{{ stilt_input_dir }}"
+            state: mounted
+            fstype: nfs4
+
+  roles:
+    - role: icos.stiltrun
+      tags: stiltrun
+
+    - role: icos.stiltcluster
+      tags: stiltcluster

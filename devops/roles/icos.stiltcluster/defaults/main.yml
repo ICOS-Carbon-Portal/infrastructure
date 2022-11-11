@@ -1,4 +1,25 @@
 stiltcluster_username: stiltcluster
 stiltcluster_servicename: stiltcluster
-stiltcluster_home_dir: "{{ _stiltcluster.home }}"
-stiltcluster_bin_dir: "{{ stiltcluster_home_dir }}/bin"
+
+stiltcluster_home: /home/stiltcluster
+stiltcluster_bindir: "{{ stiltcluster_home }}/bin"
+
+# These hostnames used by akka. They control which interface akka will bind to
+# (through the usual unix interface mechanisms). They also needs to be
+# reachable by other hosts in the cluster - i.e they need to be resolveable and
+# rechable.
+stiltcluster_hostname: "{{ inventory_hostname }}"
+stiltcluster_stiltweb_hostname: "{{ inventory_hostname }}"
+
+# The port which stiltweb uses for akka.
+stiltcluster_stiltweb_port: 2550
+
+# The port which stiltcluster uses for akka. It differs from the one stiltweb
+# uses so that they can both run on the same host if need be.
+stiltcluster_port: 2561
+
+# 0 == all of them
+stiltcluster_maxcores: 0
+
+stiltcluster_jre_package: openjdk-11-jre-headless
+stiltcluster_java: /usr/lib/jvm/java-11-openjdk-amd64/bin/java
