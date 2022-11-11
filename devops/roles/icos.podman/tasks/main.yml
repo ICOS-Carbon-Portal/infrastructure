@@ -46,6 +46,10 @@
   import_role:
     name: icos.conmon
 
+- name: Install cni_plugins
+  tags: podman_cni_plugins
+  import_role:
+    name: icos.cni_plugins
 
 # TODO
 # registries.conf

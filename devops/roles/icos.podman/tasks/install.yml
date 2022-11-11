@@ -1,3 +1,5 @@
+# https://podman.io/getting-started/installation.html#building-from-scratch
+
 - name: Install golang
   import_role:
     name: icos.golang
@@ -53,7 +55,3 @@
   make:
     chdir: "{{ podman_src_dir }}"
     target: install
-
-- name: Install cni_plugins
-  import_role:
-    name: icos.cni_plugins
