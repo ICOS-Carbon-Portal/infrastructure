@@ -7,7 +7,7 @@
   when: wg_hub_ishub
   register: _hub_conf
   copy:
-    dest: "/etc/wireguard/wg-{{ wg_hub_config.name }}.conf"
+    dest: "/etc/wireguard/{{ wg_hub_intf }}.conf"
     mode: 0600
     content: |
       [Interface]
@@ -30,7 +30,7 @@
   when: not wg_hub_ishub
   register: _spoke_conf
   copy:
-    dest: "/etc/wireguard/wg-{{ wg_hub_config.name }}.conf"
+    dest: "/etc/wireguard/{{ wg_hub_intf }}.conf"
     mode: 0600
     content: |
       [Interface]
@@ -63,9 +63,9 @@
     path: /etc/hosts
     block: |
       {% for name, conf in wg_hub_config.peers.items() %}
-      {{ conf.addr }} {{ conf.name | default(name) }}.wg-{{ wg_hub_config.name }}
+      {{ conf.addr }} {{ conf.name | default(name) }}.{{ wg_hub_intf }}
       {% if name == wg_hub_peer %}
-      {{ conf.addr }} hub.wg-{{ wg_hub_config.name }}
+      {{ conf.addr }} hub.{{ wg_hub_intf }}
       {% endif %}
       {% endfor %}
 
@@ -75,10 +75,10 @@
     name: wireguard_{{ wg_hub_config.name }}
     rules: |
       -A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
-      -A FORWARD -i wg-{{ wg_hub_config.name }} -j ACCEPT
+      -A FORWARD -i {{ wg_hub_intf }} -j ACCEPT
 
 - name: Start wg-quick service
   systemd:
-    name: "wg-quick@wg-{{ wg_hub_config.name }}.service"
+    name: "wg-quick@{{ wg_hub_intf }}.service"
     state: "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed else 'started' }}"
     enabled: yes
