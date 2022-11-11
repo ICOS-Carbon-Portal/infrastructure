@@ -1,5 +1,5 @@
 # https://github.com/containers/podman/releases
-podman_version: "4.2.1"
+podman_version: "4.3.1"
 podman_src_dir: "/tmp/podman_v{{ podman_version }}_src"
 
 # 2.0.24 is the least version required by podman 4.2.1
