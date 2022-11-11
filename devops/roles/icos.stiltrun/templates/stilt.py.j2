@@ -387,8 +387,8 @@ def post_stilt_run_cleanup(rundir, verbose=True):
         if e.name == 'Copy1':
             continue
         if sorted(os.listdir(e.path)) != expected_crap:
-            debug("Not removing %s because it didn't exectly "
-                  "what was expected" % e.path)
+            debug("Not removing %s because it didn't contain "
+                  "exactly what was expected" % e.path)
         else:
             shutil.rmtree(e.path)
             debug("Removing %s" % e.path)
