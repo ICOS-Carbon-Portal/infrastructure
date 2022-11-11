@@ -1,4 +1,5 @@
-golang_version_install: 1.19.1
+# bump me - https://go.dev/dl/
+golang_version_install: 1.19.3
 golang_local_version_ok: >-
   {{ golang_local_version and
      golang_local_version is version(golang_min_version, ">=") }}
