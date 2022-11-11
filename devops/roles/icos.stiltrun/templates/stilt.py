@@ -37,13 +37,17 @@ import sys
 import tempfile
 from pathlib import Path
 
+
 # GLOBALS
 
-# Classic stilt data
-STILT_INPUT_DIR = Path("{{ stiltrun_input_dir }}")
-METFILES_DIR = STILT_INPUT_DIR / "Metdata" / "Europe2"
-STILT_IMAGE = "{{ stiltrun_image_name }}"
+# Classic stilt data. Using os.environ + jinja template allows us to use either
+# the templated or un-templated python file.
+STILT_INPUT_DIR = Path(os.environ.get("STILT_INPUT_DIR",
+                                      "{{ stiltrun_input_dir }}"))
+STILT_IMAGE = os.environ.get('STILT_IMAGE', "{{ stiltrun_image_name }}")
 RUN_DIRECTORY = Path(os.environ['HOME'], '.stiltruns')
+
+METFILES_DIR = STILT_INPUT_DIR / "Metdata" / "Europe2"
 DEBUG_FILES = []
 DEFAULT_SITE_NAME = 'XXX'
 
@@ -263,6 +267,9 @@ class STILTContainer:
     def remove_container(self):
         debug("Removing container %s" % self._cid)
         subprocess.check_call(['docker', 'rm', self._cid],
+                              # eat the container id that docker rm prints on
+                              # stdout. note that this might eat error messages
+                              # as well.
                               stdout=subprocess.DEVNULL,
                               stderr=subprocess.STDOUT)
 
@@ -296,7 +303,10 @@ class STILTContainer:
     def _start_foreground(self):
         assert self._cid is not None
         debug("Starting docker in foreground")
-        subprocess.check_call(['docker', 'start', '-i', self._cid])
+        # podman requires the extra '-a', otherwise it might return before the
+        # container is finished, resulting in an error when we immediately
+        # tries to remove it.
+        subprocess.check_call(['docker', 'start', '-ia', self._cid])
         debug("Docker has finished.")
 
     def run(self, cmd=None, background=False):
