@@ -1,6 +1,8 @@
 # ANSIBLE
 666ansible_user: root
 
+# DOCKER
+podman_docker: True
 
 # SERVER
 iptables_ssh_port: 60022

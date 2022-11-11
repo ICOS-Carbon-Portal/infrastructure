@@ -10,3 +10,6 @@
 
     - role: icos.nginx
       tags: nginx
+
+    - role: icos.podman
+      tags: podman
