@@ -1,2 +1,4 @@
 utils_ripgrep_url: https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
 utils_fd_url: https://github.com/sharkdp/fd/releases/download/v8.4.0/fd_8.4.0_amd64.deb
+
+utils_github_arch: "{{ ansible_architecture }}"

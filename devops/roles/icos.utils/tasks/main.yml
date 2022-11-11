@@ -1,3 +1,9 @@
+# Required by the github_release module
+- name: pip install github3
+  pip:
+    name: github3.py
+    state: present
+
 - name: Create common aliases
   copy:
     dest: /etc/profile.d/aliases.sh
@@ -33,12 +39,8 @@
       - mailutils      # so cron can deliver failure reports
       - mutt           # for reading said reports
       - unzip          # required by ansible's unarchive
+      - ripgrep
     update_cache: yes
-
-# It's already installed ?
-# - name: Install ripgrep
-#   apt:
-#     deb: "{{ utils_ripgrep_url }}"
 
 - name: Install fd
   apt:
@@ -58,3 +60,7 @@
     dbin_src: jc
     dbin_unar: true
     dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/jc-{{ dbin__vers }}-linux-{{ ansible_machine }}.tar.gz"
+
+
+- import_tasks: watchexec.yml
+  tags: utils_watchexec
