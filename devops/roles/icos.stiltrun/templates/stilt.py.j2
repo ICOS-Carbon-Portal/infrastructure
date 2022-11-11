@@ -35,16 +35,15 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 # GLOBALS
 
 # Classic stilt data
-STILT_DATA_DIR = "{{ stiltrun_stiltdir }}"
-STILT_INPUT_DIR = os.path.join(STILT_DATA_DIR, 'Input')
-
-METFILES_DIR = os.path.join(STILT_DATA_DIR, "Input/Metdata/Europe2")
+STILT_INPUT_DIR = Path("{{ stiltrun_input_dir }}")
+METFILES_DIR = STILT_INPUT_DIR / "Metdata" / "Europe2"
 STILT_IMAGE = "{{ stiltrun_image_name }}"
-RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
+RUN_DIRECTORY = Path(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
 DEFAULT_SITE_NAME = 'XXX'
 
