@@ -1,2 +1,5 @@
 docker_periodic_cleanup: True
-docker_prevent_upgrade: False
+docker_prevent_upgrade: True
+
+# Can be set to force a docker upgrade before marking it as hold again.
+docker_upgrade: False

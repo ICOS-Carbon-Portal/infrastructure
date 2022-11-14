@@ -1,9 +1,36 @@
-- name: Install docker and pip3
+# Upgrading docker will restart containerd. Restarting containerd, even with
+# live-restore enabled, will mess up networking for some applications - notably
+# jupyterhub.
+#
+# Hence we mark docker.io and containerd as "hold" which will stop
+# unattended-upgrades from upgrading them. However, one can upgrade them on
+# demand using this role by setting docker_upgrade=True. In that case we must
+# first mark them as "install".
+
+- name: Make sure docker is upgraded if requested
+  when: docker_upgrade | bool
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  loop:
+    - docker.io
+    - containerd
+
+- name: Install/upgrade docker
   apt:
     name:
       - docker.io
-      - python3-pip
+      - containerd
+    state: '{{ "latest" if docker_upgrade | bool else "present" }}'
     update_cache: yes
+
+- name: Make sure docker isn't upgraded
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: "{{ 'hold' if docker_prevent_upgrade else 'install' }}"
+  loop:
+    - docker.io
+    - containerd
 
 - name: Install docker-compose
   pip:
@@ -39,17 +66,6 @@
   file:
     path: /docker
     state: directory
-
-# Upgrading docker will restart containerd. Restarting containerd, even with
-# live-restore enabled, will mess up networking for some applications - notably
-# jupyterhub.
-- name: Make sure docker isn't upgraded
-  dpkg_selections:
-    name: "{{ item }}"
-    selection: "{{ 'hold' if docker_prevent_upgrade else 'install' }}"
-  loop:
-    - docker.io
-    - containerd
 
 - import_tasks: cleanup.yml
   tags: docker_cleanup
