@@ -1,9 +1,14 @@
 - include_vars: "{{ ansible_machine }}.yml"
 
-- include_tasks: setup.yml
-  when: not _download_bin_setup | default(False)
+- name: Create download directory
+  file:
+    path: "{{ dbin_download_dir }}"
+    state: directory
+    force: yes
 
 - name: Retrieving latest tag for {{ dbin_repo }}
+  run_once: true
+  delegate_to: localhost
   github_release:
     user: "{{ dbin_user }}"
     repo: "{{ dbin_repo }}"
@@ -23,18 +28,17 @@
     src: "{{ dbin_download.dest }}"
     dest: "{{ dbin_download_dir }}"
     remote_src: true
-    list_files: true
   register: _unar
   when: _dbin_unar
 
-- name: Create symlink for {{ _dbin_name }} in {{ dbin_bin_dir }}
+- name: Create symlink for {{ _dbin_name }}
   file:
     dest: "{{ dbin_bin_dir }}/{{ _dbin_name }}"
     src: "{{ _dbin_src }}"
     state: link
     force: '{{ download_force_symlink | default(False) | bool() }}'
 
-- name: Make sure {{ _dbin_src }} is executable
+- name: Make sure {{ _dbin_name }} is executable
   file:
     path: "{{ _dbin_src }}"
     mode: +x
