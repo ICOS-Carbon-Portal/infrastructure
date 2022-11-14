@@ -1,16 +1,12 @@
 - name: Find the latest release of watchexec
+  run_once: true
+  delegate_to: localhost
   github_release:
     user: watchexec
     repo: watchexec
     action: latest_release
   register: release
 
-# "release": {
-#     "changed": false,
-#     "failed": false,
-#     "tag": "v2.30.3"
-# }
-
 - name: Install watchexec
   apt:
-    deb: "https://github.com/watchexec/watchexec/releases/download/{{ release.tag }}/watchexec-{{ release.tag.lstrip('v') }}-{{ utils_github_arch }}-unknown-linux-gnu.deb"
+    deb: "https://github.com/watchexec/watchexec/releases/download/{{ release.tag }}/watchexec-{{ release.tag.lstrip('v') }}-{{ watchexec_arch }}-unknown-linux-gnu.deb"
