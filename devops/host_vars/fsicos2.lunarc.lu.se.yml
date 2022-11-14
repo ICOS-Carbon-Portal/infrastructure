@@ -32,9 +32,6 @@ flexpart_export_output_to: "194.47.223.133(ro,no_subtree_check)"
 stilt_nfs_exports: |
       /disk/data/stiltweb   {{ fsicos1_ip }}(ro)
       /disk/data/stilt      {{ fsicos1_ip }}(ro)
-stiltcluster_port: 2561
-stiltcluster_front_port: 2550
-stiltcluster_maxcores: 20
 
 # ICOSDATA
 icosdata_exports: |
