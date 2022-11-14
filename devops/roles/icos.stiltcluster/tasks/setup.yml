@@ -5,7 +5,7 @@
     state: present
     shell: /bin/bash
     groups: '{{ "docker" if stiltcluster_docker else omit }}'
-    append: yes
+    append: '{{ "yes" if stiltcluster_docker else omit }}'
 
 - name: Install jre
   apt:
