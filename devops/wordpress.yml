@@ -1,59 +1,21 @@
 - hosts: fsicos2.lunarc.lu.se
   vars:
-    wordpress_ip: "{{ _lxd.addresses.eth0 | first }}"
     wordpress_domains:
       - www.ingos-infrastructure.eu
       - www.eric-forum.eu
       - www.icos-summerschool.eu
       - www.envriplus.eu
-  tasks:
-    - name: Create wordpress storage pool
-      tags: pool
-      shell: >-
-        /snap/bin/lxc storage show wordpress > /dev/null 2>&1 ||
-        /snap/bin/lxc storage create wordpress btrfs size=500GB
-      register: _r
-      changed_when:
-        - '"Storage pool wordpress created" in _r.stdout'
-
-    - name: Create the wordpress container
-      tags:
-        - lxd
-        - nginx
-        - forward
-      lxd_container:
-        name: wordpress
-        state: started
-        profiles:
-          - default
-          - ssh_root
-        source:
-          type: image
-          mode: pull
-          server: https://cloud-images.ubuntu.com/releases
-          protocol: simplestreams
-          alias: "18.04"
-        config:
+  roles:
+    - name: Create the wordpress VM
+      tags: lxd
+      role: icos.lxd_vm
+      vars:
+        lxd_vm_name: wordpress
+        lxd_vm_root_size: "500GB"
+        lxd_vm_config:
           limits.cpu: "4"
           limits.memory: "8GB"
-        devices:
-          root:
-            path: /
-            type: disk
-            pool: wordpress
-            size: "500GB"
-        wait_for_ipv4_addresses: true
-        timeout: 600
-      register: _lxd
-
-    - name: Forward port
-      tags: forward
-      include_role:
-        name: icos.lxd_forward
-      vars:
-        lxd_forward_name: wordpress
-        lxd_forward_ip: "{{ wordpress_ip }}"
-
+  tasks:
     - name: Create certificate
       tags: cert
       include_role:
