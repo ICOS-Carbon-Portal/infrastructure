@@ -20,58 +20,61 @@ all:
     stiltweb_domains:
       - stilt.icos-cp.eu
 
-  hosts:
+  children:
     core_host:
-      # ansible
-      ansible_host: fsicos2.lunarc.lu.se
-      ansible_port: 60022
-      coreapp_bind_addr: 127.0.0.1
+      hosts:
+        fsicos2.lunarc.lu.se:
 
-      # cpmeta - application
-      cpmeta_filestorage_target: /disk/data/metaAppStorage
-      cpmeta_backup_enable: true
-      cpmeta_config_files:
-        - application_production.conf
-        - application_production_sensitive.conf
+      vars:
+        coreapp_bind_addr: 127.0.0.1
 
-      # cpdata - application
-      cpdata_filestorage_target: /disk/data/dataAppStorage
-      cpdata_config_files:
-        - application_production.conf
+        # cpmeta - application
+        cpmeta_filestorage_target: /disk/data/metaAppStorage
+        cpmeta_backup_enable: true
+        cpmeta_config_files:
+          - application_production.conf
+          - application_production_sensitive.conf
 
-      # cpauth - application
-      cpauth_config_files:
-        - application_production.conf
+        # cpdata - application
+        cpdata_filestorage_target: /disk/data/dataAppStorage
+        cpdata_config_files:
+          - application_production.conf
 
-      # stiltweb - application
-      # This is where stiltweb keeps it's archive of of stilt files
-      stiltweb_statedir: /disk/data/stiltweb
-      # The root of the classic stilt data directory (Footprints, RData, etc)
-      stiltweb_stiltdir: /disk/data/stilt
+        # cpauth - application
+        cpauth_config_files:
+          - application_production.conf
+
+        # stiltweb - application
+        # This is where stiltweb keeps it's archive of of stilt files
+        stiltweb_statedir: /disk/data/stiltweb
+        # The root of the classic stilt data directory (Footprints, RData, etc)
+        stiltweb_stiltdir: /disk/data/stilt
 
     core_server:
-      # ansible
-      ansible_host: fsicos2.lunarc.lu.se
-      coreapp_httpproxy_host: 127.0.0.1
+      hosts:
+        fsicos2.lunarc.lu.se:
 
-      # cpmeta - proxy
-      cpmeta_certbot_name: meta.icos-cp.eu
-      cpmeta_nginxsite_name: cpmeta
+      vars:
+        coreapp_httpproxy_host: 127.0.0.1
 
-      # cpdata - proxy
-      cpdata_certbot_name: data.icos-cp.eu
-      cpdata_nginxsite_name: cpdata
+        # cpmeta - proxy
+        cpmeta_certbot_name: meta.icos-cp.eu
+        cpmeta_nginxsite_name: cpmeta
 
-      # cpauth - proxy
-      cpauth_certbot_name: cpauth.icos-cp.eu
-      cpauth_nginxsite_name: cpauth
+        # cpdata - proxy
+        cpdata_certbot_name: data.icos-cp.eu
+        cpdata_nginxsite_name: cpdata
 
-      # restheart - proxy
-      restheart_nginxsite_name: restheart
-      restheart_certbot_name: restheart.icos-cp.eu
-      restheart_domains:
-        - restheart.icos-cp.eu
+        # cpauth - proxy
+        cpauth_certbot_name: cpauth.icos-cp.eu
+        cpauth_nginxsite_name: cpauth
 
-      # doi - proxy
-      doi_certbot_name: doi.icos-cp.eu
-      doi_nginxsite_name: doi
+        # restheart - proxy
+        restheart_nginxsite_name: restheart
+        restheart_certbot_name: restheart.icos-cp.eu
+        restheart_domains:
+          - restheart.icos-cp.eu
+
+        # doi - proxy
+        doi_certbot_name: doi.icos-cp.eu
+        doi_nginxsite_name: doi

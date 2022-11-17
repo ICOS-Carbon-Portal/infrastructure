@@ -18,60 +18,62 @@ all:
     doi_domains:
       - doistaging.icos-cp.eu
 
-  hosts:
+  children:
     core_host:
-      # ansible
-      ansible_host: fsicos2.lunarc.lu.se
-      ansible_port: 60520
-      coreapp_bind_addr: 0.0.0.0
+      hosts:
+        staging:
 
-      # cpmeta - application
-      cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
-      cpmeta_backup_enable: false
-      cpmeta_config_files:
-        - application_production.conf
-        - application_production_sensitive.conf
-        - application_staging_amendment.conf
+      vars:
+        coreapp_bind_addr: 0.0.0.0
 
-      # cpdata - application
-      # when running in an lxd VM, bind all interfaces so that we're reachable
-      # from the host.
-      cpdata_filestorage_target: "/data/dataAppStorage"
-      cpdata_config_files:
-        - application_production.conf
-        - application_staging_amendment.conf
+        # cpmeta - application
+        cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
+        cpmeta_backup_enable: false
+        cpmeta_config_files:
+          - application_production.conf
+          - application_production_sensitive.conf
+          - application_staging_amendment.conf
 
-      # cpauth - application
-      cpauth_config_files:
-        - application_production.conf
-        - application_staging_amendment.conf
+        # cpdata - application
+        # when running in an lxd VM, bind all interfaces so that we're reachable
+        # from the host.
+        cpdata_filestorage_target: "/data/dataAppStorage"
+        cpdata_config_files:
+          - application_production.conf
+          - application_staging_amendment.conf
 
-      # doi - application
+        # cpauth - application
+        cpauth_config_files:
+          - application_production.conf
+          - application_staging_amendment.conf
+
 
     core_server:
-      # ansible
-      ansible_host: fsicos2.lunarc.lu.se
-      coreapp_httpproxy_host: staging.lxd
+      hosts:
+        fsicos2.lunarc.lu:
 
-      # cpmeta - proxy
-      cpmeta_nginxsite_name: cpmeta-staging
-      cpmeta_certbot_name: cpmeta-staging
+      vars:
+        coreapp_httpproxy_host: staging.lxd
 
-      # cpdata - proxy
-      cpdata_certbot_name: cpdata-staging
-      cpdata_nginxsite_name: cpdata-staging
+        # cpmeta - proxy
+        cpmeta_nginxsite_name: cpmeta-staging
+        cpmeta_certbot_name: cpmeta-staging
 
-      # cpauth - proxy
-      cpauth_certbot_name: cpauth-staging
-      cpauth_nginxsite_name: cpauth-staging
+        # cpdata - proxy
+        cpdata_certbot_name: cpdata-staging
+        cpdata_nginxsite_name: cpdata-staging
 
-      # restheart - proxy
-      restheart_host: staging.lxd
-      restheart_nginxsite_name: restheart-staging
-      restheart_certbot_name: restheart-staging
-      restheart_domains:
-        - restheartstaging.icos-cp.eu
+        # cpauth - proxy
+        cpauth_certbot_name: cpauth-staging
+        cpauth_nginxsite_name: cpauth-staging
 
-      # doi - proxy
-      doi_certbot_name: doi-staging
-      doi_nginxsite_name: doi-staging
+        # restheart - proxy
+        restheart_host: staging.lxd
+        restheart_nginxsite_name: restheart-staging
+        restheart_certbot_name: restheart-staging
+        restheart_domains:
+          - restheartstaging.icos-cp.eu
+
+        # doi - proxy
+        doi_certbot_name: doi-staging
+        doi_nginxsite_name: doi-staging
