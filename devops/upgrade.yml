@@ -1,0 +1,30 @@
+# This playbook can be used to:
+#   1. Find out which hosts run a specific distribution of ubuntu.
+#   2. Dist-upgrade those hosts.
+
+- hosts: all
+  tasks:
+    - group_by:
+        key: "{{ ansible_distribution_release }}_hosts"
+
+
+- hosts: bionic_hosts
+  tasks:
+    - debug: var=inventory_hostname
+
+
+- hosts: # bionic_hosts
+  tasks:
+    - name: upgrade everything
+      apt:
+        update_cache: yes
+        upgrade: full
+
+    - name: reboot
+      reboot:
+
+    - name: release upgrade
+      command: do-release-upgrade -f DistUpgradeViewNonInteractive
+
+    - name: reboot
+      reboot:
