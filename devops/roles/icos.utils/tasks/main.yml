@@ -1,9 +1,3 @@
-# Required by the github_release module
-- name: pip install github3
-  pip:
-    name: github3.py
-    state: present
-
 - name: Create common aliases
   copy:
     dest: /etc/profile.d/aliases.sh
@@ -14,7 +8,6 @@
       alias dc=docker-compose
 
 - name: Copy utilities
-  tags: linux_utils
   template:
     src: "{{ item }}"
     dest: "/usr/local/sbin/{{ item }}"
@@ -26,6 +19,7 @@
 
 - name: Install utilities
   apt:
+    update_cache: yes
     name:
       - mg             # microemacs
       - htop           # a better top(1)
@@ -40,27 +34,63 @@
       - mutt           # for reading said reports
       - unzip          # required by ansible's unarchive
       - ripgrep
-    update_cache: yes
 
+# FD
 - name: Install fd
+  tags: fd
   apt:
     deb: "{{ utils_fd_url }}"
 
+- name: Test fd
+  tags: fd
+  command: fd --version
+
+
+# BROOT
 - name: Download broot binary
+  tags: broot
   get_url:
-    url: https://dystroy.org/broot/download/x86_64-linux/broot
+    url: https://dystroy.org/broot/download/x86_64-unknown-linux-musl/broot
     dest: /usr/local/bin/broot
     mode: +x
+  register: _broot
 
-- include_role:
+- name: Install broot shell helper
+  tags: broot
+  command: "{{ _broot.dest }} --install"
+  changed_when: false
+
+
+# JC
+- name: Install jc
+  tags: jc
+  include_role:
     name: icos.github_download_bin
+    apply: {tags: jc}
   vars:
     dbin_user: kellyjonbrazil
     dbin_repo: jc
     dbin_src: jc
-    dbin_unar: true
     dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/jc-{{ dbin__vers }}-linux-{{ ansible_machine }}.tar.gz"
 
+- name: Test jc
+  command: "{{ dbin_symlink.dest }} --version"
+  changed_when: false
 
-- import_tasks: watchexec.yml
-  tags: utils_watchexec
+
+# WATCHEXEC
+- name: Install watchexec
+  tags: watchexec
+  include_role:
+    name: icos.github_download_bin
+    apply: {tags: watchexec}
+  vars:
+    dbin_user: watchexec
+    dbin_repo: watchexec
+    # https://github.com/watchexec/watchexec/releases/download/v1.20.6/watchexec-1.20.6-x86_64-unknown-linux-musl.tar.xz
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/watchexec-{{ dbin__vers.lstrip('v') }}-{{ watchexec_arch }}-unknown-linux-musl.tar.xz"
+
+- name: Test watchexec
+  tags: watchexec
+  command: "{{ dbin_symlink.dest }} --version"
+  changed_when: false
