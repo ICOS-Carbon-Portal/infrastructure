@@ -1,10 +1,24 @@
 - include_vars: "{{ ansible_machine }}.yml"
 
-- name: Create download directory
-  file:
-    path: "{{ dbin_download_dir }}"
-    state: directory
-    force: yes
+- block:
+    - name: Create download directory
+      file:
+        path: "{{ dbin_download_dir }}"
+        state: directory
+      register: _create
+
+  # FIXME: Remove in 2024
+  rescue:
+    - name: Remove file that blocks download dir
+      when: _create.msg.endswith('already exists as a file')
+      file:
+        path: "{{ dbin_download_dir }}"
+        state: absent
+
+    - name: Create download directory
+      file:
+        path: "{{ dbin_download_dir }}"
+        state: directory
 
 - name: Retrieving latest tag for {{ dbin_repo }}
   run_once: true
@@ -24,19 +38,20 @@
   register: dbin_download
 
 - name: Unarchive {{ _dbin_name }} tarball
+  when: _dbin_unar
   unarchive:
     src: "{{ dbin_download.dest }}"
     dest: "{{ dbin_download_dir }}"
     remote_src: true
+    list_files: true
   register: _unar
-  when: _dbin_unar
 
 - name: Create symlink for {{ _dbin_name }}
   file:
     dest: "{{ dbin_bin_dir }}/{{ _dbin_name }}"
     src: "{{ _dbin_src }}"
     state: link
-    force: '{{ download_force_symlink | default(False) | bool() }}'
+  register: dbin_symlink
 
 - name: Make sure {{ _dbin_name }} is executable
   file:
