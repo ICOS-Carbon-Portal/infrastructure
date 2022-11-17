@@ -1,0 +1,16 @@
+- hosts: fsicos2.lunarc.lu.se
+  vars:
+    nginxsite_name: foo
+    lxd_vm_name: foo
+  tasks:
+    - name: "Remove nginx config for {{ nginxsite_name }}"
+      tags: nginx
+      import_role:
+        name: icos.nginxsite
+        tasks_from: remove.yml
+
+    - name: "Remove lxd vm {{ lxd_vm_name }}"
+      tags: lxd
+      import_role:
+        name: icos.lxd_vm
+        tasks_from: remove.yml
