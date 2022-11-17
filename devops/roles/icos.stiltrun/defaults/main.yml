@@ -4,3 +4,5 @@ stiltrun_image_url: https://static.icos-cp.eu/share/docker/stilt/stiltcustom_148
 
 # /somewhere/data/stilt/Input
 stiltrun_input_dir: "{{ stilt_input_dir }}"
+
+stiltrun_user: stiltcluster

@@ -3,22 +3,23 @@
   register: docker_images
   changed_when: False
 
-- block:
-    - name: Set image tmp name
-      set_fact: stiltrun_image_tmp_fname="/tmp/{{ stiltrun_image_url | basename }}"
-      changed_when: false
-
-    - name: Download image
+# We need to run this as a particular user, because in the case we're using
+# podman, images are stored per-user and not shared by a global daemon.
+- when: stiltrun_image_id not in docker_images.stdout
+  become: '{{ stiltrun_user != "root" }}'
+  become_user: "{{ stiltrun_user }}"
+  block:
+    - name: Download stilt docker image
       get_url:
         url: "{{ stiltrun_image_url }}"
-        dest: "{{ stiltrun_image_tmp_fname }}"
+        dest: /tmp
+      register: _get_url
 
-    - name: Load stiltrun_image into docker
-      command: docker load -i "{{ stiltrun_image_tmp_fname }}"
+    - name: Load stil image into docker
+      command: docker load -i "{{ _get_url.dest }}"
 
     - name: Check that stiltrun_image was properly loaded
       shell: docker images -q | grep {{ stiltrun_image_id }} -q
-  when: stiltrun_image_id not in docker_images.stdout
 
 - name: Install the stilt python wrapper
   template:
@@ -28,16 +29,17 @@
     # main user of the stilt python wrapper).
     dest: /usr/local/bin/stilt
     mode: 0755
+  register: _stilt_py
 
 # If this task fails, it's most probably because the stilt input data directory
 # does not exists. {{ stiltrun_input_dir }} needs to exist. In a test
 # environment, just run 'mkdir -p /disk/data/stilt/Input/Metdata/Europe2'
 - name: Test stiltrun by running listmetfiles
-  command: /usr/local/bin/stilt listmetfiles
+  command: "{{ _stilt_py.dest }} listmetfiles"
   changed_when: no
 
 - name: Test stiltrun by running calcslots
-  command: /usr/local/bin/stilt calcslots 2012010100 2012010106
+  command: "{{ _stilt_py.dest }} calcslots 2012010100 2012010106"
   register: stilt_output
   changed_when: no
   failed_when: no
