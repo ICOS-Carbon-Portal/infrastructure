@@ -1,0 +1,22 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - nginxsite_name
+
+- name: Remove symlink to sites-enabled
+  file:
+    dest: "{{ nginxsite_path_enable }}"
+    state: absent
+
+- name: Remove config
+  file:
+    dest: "{{ nginxsite_path_available }}"
+    state: absent
+
+- name: Reload nginx
+  systemd:
+    name: nginx
+    state: reloaded
+  changed_when: no
