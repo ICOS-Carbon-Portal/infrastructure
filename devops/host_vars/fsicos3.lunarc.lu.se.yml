@@ -24,14 +24,6 @@ icosdata_exports: |
   /pool/jupyter/project/coco2/jupyter fsicos2.lunarc.lu.se(ro,no_subtree_check,no_root_squash)
 
 icosdata_nfs_mounts:
-  - path: /pool/jupyter/project/coco2/fileshare
-    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/32
-    opts: "ro,soft,x-systemd.after=zfs-mount.service"
-
-  - path: /nfs/fluxcom_eo
-    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/14/Data/FLUXCOM
-    opts: "ro,soft,x-systemd.after=zfs-mount.service"
-
   # flexextract - read-write
   - path: /nfs/flexextract
     src: fsicos2.lunarc.lu.se:/disk/data/flexextract
@@ -40,6 +32,15 @@ icosdata_nfs_mounts:
   # flexextract - read-only
   - path: /data/flexextract
     src: fsicos2.lunarc.lu.se:/disk/data/flexextract
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  # other
+  - path: /pool/jupyter/project/coco2/fileshare
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/32
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /nfs/fluxcom_eo
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/14/Data/FLUXCOM
     opts: "ro,soft,x-systemd.after=zfs-mount.service"
 
   - path: /data/flexpart/meteo
@@ -69,3 +70,7 @@ icosdata_nfs_mounts:
   - path: /pool/ute/dataDemo
     src: fsicos2.lunarc.lu.se:/disk/data/common/netcdf/dataDemo
     opts: "rw,x-systemd.after=zfs-mount.service"
+
+  - path: /nfs/flexextract_meteo
+    src: icos1.wg-icos1:/pool/flexextract/meteo
+    opts: "rw,soft,x-systemd.after=wg-quick@wg-icos1"
