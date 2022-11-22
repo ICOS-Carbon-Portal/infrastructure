@@ -40,3 +40,6 @@ wg_hub_intf: >-
 # interface.
 wg_hub_allow_all: >-
   {{ wg_hub_self.allow_all | default(wg_hub_config.allow_all) | default(False) }}
+
+wg_hub_reresolve: >-
+  {{ wg_hub_self.reresolve | default(wg_hub_config.reresolve) | default(False) }}

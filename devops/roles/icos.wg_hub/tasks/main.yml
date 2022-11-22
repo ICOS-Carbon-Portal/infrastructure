@@ -84,8 +84,16 @@
     rules: |
       -A INPUT -i {{ wg_hub_intf }} -j ACCEPT
 
+- name: Setup reresolve dependency
+  when: wg_hub_reresolve and not wg_hub_ishub
+  command: >-
+    systemctl add-wants wg-quick@{{ wg_hub_intf }}.service
+    wireguard-reresolve-dns.timer
+  register: _reresolve
+  changed_when: _reresolve.stderr.startswith("Created symlink")
+
 - name: Start wg-quick service
   systemd:
     name: "wg-quick@{{ wg_hub_intf }}.service"
-    state: "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed else 'started' }}"
+    state: "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed or _reresolve.changed else 'started' }}"
     enabled: yes
