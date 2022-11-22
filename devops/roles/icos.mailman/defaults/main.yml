@@ -2,7 +2,7 @@ mailman_user: mailman
 mailman_home: /docker/mailman
 
 # https://registry.hub.docker.com/r/maxking/mailman-core/tags
-mailman_version: 0.4.2
+mailman_version: 0.4.4
 
 mailman_serve_from_domain: "{{ mailman_domains | mandatory | first}}"
 
