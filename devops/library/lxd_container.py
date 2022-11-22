@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright: (c) 2016, Hiroaki Nakamura <hnakamur@gmail.com>
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# Copyright (c) 2016, Hiroaki Nakamura <hnakamur@gmail.com>
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -49,10 +50,10 @@ options:
           - If set to C(true), options starting with C(volatile.) are ignored. As a result,
             they are reapplied for each execution.
           - This default behavior can be changed by setting this option to C(false).
-          - The current default value C(true) is deprecated since community.general 4.0.0,
-            and will change to C(false) in community.general 6.0.0.
+          - The default value changed from C(true) to C(false) in community.general 6.0.0.
         type: bool
         required: false
+        default: false
         version_added: 3.7.0
     profiles:
         description:
@@ -402,7 +403,7 @@ actions:
   description: List of actions performed for the instance.
   returned: success
   type: list
-  sample: '["create", "start"]'
+  sample: ["create", "start"]
 '''
 import datetime
 import os
@@ -780,6 +781,7 @@ def main():
             ),
             ignore_volatile_options=dict(
                 type='bool',
+                default=False,
             ),
             devices=dict(
                 type='dict',
