@@ -6,7 +6,8 @@
     dbin_user: bcicen
     dbin_repo: ctop
     dbin_unar: false
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/ctop-{{ dbin__vers }}-{{ dbin__plat }}"
+    # https://github.com/bcicen/ctop/releases/
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/ctop-{{ dbin__vers }}-linux-{{ ctop_arch }}"
 
 - include_role:
     name: icos.github_download_bin
@@ -16,7 +17,8 @@
     dbin_user: wagoodman
     dbin_repo: dive
     dbin_src: dive
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_linux_{{ dbin_arch }}.tar.gz"
+    # https://github.com/wagoodman/dive/releases
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_linux_{{ dive_arch }}.tar.gz"
 
 - include_role:
     name: icos.github_download_bin
@@ -26,4 +28,5 @@
     dbin_user: jesseduffield
     dbin_repo: lazydocker
     dbin_src: lazydocker
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_Linux_{{ ansible_machine }}.tar.gz"
+    # https://github.com/jesseduffield/lazydocker/releases
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_Linux_{{ lazydocker_arch }}.tar.gz"
