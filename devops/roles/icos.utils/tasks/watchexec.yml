@@ -1,7 +1,0 @@
-- include_role:
-    name: icos.github_download_bin
-  vars:
-    dbin_user: watchexec
-    dbin_repo: watchexec
-    # https://github.com/watchexec/watchexec/releases/download/v1.20.6/watchexec-1.20.6-x86_64-unknown-linux-musl.tar.xz
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/watchexec-{{ dbin__vers.lstrip('v') }}-{{ watchexec_arch }}-unknown-linux-musl.tar.xz"
