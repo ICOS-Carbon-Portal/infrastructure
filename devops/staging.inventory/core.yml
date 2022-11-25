@@ -50,7 +50,7 @@ all:
 
     core_server:
       hosts:
-        fsicos2.lunarc.lu:
+        fsicos2.lunarc.lu.se:
 
       vars:
         coreapp_httpproxy_host: staging.lxd
