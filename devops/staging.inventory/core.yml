@@ -51,6 +51,7 @@ all:
     core_server:
       hosts:
         fsicos2.lunarc.lu.se:
+          ansible_port: 60022
 
       vars:
         coreapp_httpproxy_host: staging.lxd
