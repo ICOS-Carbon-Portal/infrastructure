@@ -34,6 +34,15 @@ icosdata_nfs_mounts:
     src: fsicos2.lunarc.lu.se:/disk/data/flexextract
     opts: "ro,soft,x-systemd.after=zfs-mount.service"
 
+  # PAUL
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP4_DATA
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP4/DATA
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP2_data
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP2/data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
   # other
   - path: /pool/jupyter/project/coco2/fileshare
     src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/32

@@ -38,6 +38,8 @@ icosdata_exports: |
   /disk/data/nextcloud/data/__groupfolders/14/Data/FLUXCOM fsicos*.lunarc.lu.se(ro,no_root_squash)
   # CoCO2
   /disk/data/nextcloud/data/__groupfolders/32 fsicos3.lunarc.lu.se(ro,no_root_squash)
+  # PAUL
+  /disk/data/nextcloud/data/__groupfolders/27 fsicos3.lunarc.lu.se(ro,no_root_squash)
   /disk/data/flexextract            fsicos*.lunarc.lu.se(rw)
   /disk/data/project                fsicos*.lunarc.lu.se(ro)
   /disk/data/flexpart/meteo         fsicos*.lunarc.lu.se(ro)
