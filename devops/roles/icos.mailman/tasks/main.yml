@@ -70,9 +70,3 @@
     value: "{{ item.value }}"
     append: "{{ item.append | default(omit) }}"
   loop: "{{ mailman_postfix_config }}"
-
-- import_role: name=icos.certbot2
-  tags: mailman_certbot
-
-- import_role: name=icos.nginxsite
-  tags: mailman_nginx

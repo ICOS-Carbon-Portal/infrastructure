@@ -62,10 +62,9 @@ mailman_rest_allow_deny:
 
 
 # CERTBOT
-certbot_domains: "{{ mailman_domains | mandatory }}"
-certbot_name: mailman
+mailman_certbot_name: mailman
 
 
 # NGINX
-nginxsite_name: mailman
-nginxsite_file: mailman-nginx.conf
+mailman_nginxsite_name: mailman
+mailman_nginxsite_file: mailman-nginx.conf
