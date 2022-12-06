@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+# Merge ssh includes into main config and strip comments.
+# Makes it less buggy, easier to read and easier to manipulate with ansible.
+
+set -xEueo pipefail
+
+cd /etc/ssh
+
+cp -n sshd_config sshd_config.bak
+
+# Merge sub-configs into main ssh config.
+# The reason is that there's a bug in Ubuntu 20.04 that breaks this kind of
+# config https://bugzilla.mindrot.org/show_bug.cgi?id=3122
+ls -1 sshd_config.d | xargs -r cat >> sshd_config
+
+rm -f -- ./sshd_config.d/*
+
+# Remove commented lines and blank lines.
+sed -i -re '/^#/d' -e '/^\s*$/d' sshd_config
+
+sshd -t

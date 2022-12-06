@@ -11,6 +11,7 @@
 
 
 - name: Copy utilities
+  tags: utils_copy
   template:
     src: "{{ item }}"
     dest: "/usr/local/sbin/{{ item }}"
@@ -19,6 +20,7 @@
     - retrieve-original
     - iptables-remove-duplicates
     - ss
+    - ssh-merge-config
 
 - name: Install utilities
   apt:
