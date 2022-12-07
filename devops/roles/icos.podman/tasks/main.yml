@@ -12,12 +12,14 @@
   failed_when: r.rc == 0
 
 - name: Checking for version of installed podman
+  check_mode: no
   command: podman --version
   failed_when: no
   changed_when: no
   register: _podman
 
-- import_tasks: install.yml
+- name: Installing podman
+  import_tasks: install.yml
   tags: podman_install
   when: not _podman.stdout.endswith(podman_version)
 

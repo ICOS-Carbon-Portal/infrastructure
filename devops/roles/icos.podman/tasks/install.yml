@@ -34,7 +34,12 @@
 
 # ansible_kernel == $(uname -r) == 5.15.0-30-generic
 - name: Assert that user namespaces are available
+  check_mode: no
   command: grep -q CONFIG_USER_NS=y /boot/config-{{ ansible_kernel }}
+  args:
+    # When running in LXD, /boot/config-* won't exist and grep will fail.
+    # Use "removes" as a way to avoid this check completely.
+    removes: "/boot/config-{{ ansible_kernel }}"
   changed_when: false
 
 # https://podman.io/getting-started/installation.html

@@ -19,7 +19,7 @@
     dest: "/tmp"
   register: _download
 
-- name: Create golang /opt directory
+- name: Create golang directory
   file:
     path: "{{ golang_opt_dir }}"
     state: directory
