@@ -1,4 +1,5 @@
 - name: Retrieve version of installed conmon (if any)
+  check_mode: no
   shellfact:
     # "conmon version 2.0.9\ncommit: unknown"
     exec: |
@@ -12,11 +13,9 @@
       done
     fact: conmon_local_version
 
-# If conmon is already installed and of a sufficient version, just state that.
-- debug:
-    msg: >-
-      Installed version of conmon
-      ({{ conmon_local_version }}) is sufficient
+- name: Is installed version of conmon sufficient?
+  debug:
+    msg: "Version ({{ conmon_local_version }}) is sufficient"
   when: conmon_local_version_ok
 
 # Otherwise, attempt to install by using apt.
