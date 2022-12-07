@@ -4,8 +4,7 @@
       tags: postfix
       postfix_config_list:
         - param: mynetworks
-          value: "172.16.0.0/12"
-          append: yes
+          value: "127.0.0.0/8,172.16.0.0/12,10.0.0.0/8"
 
     - role: icos.dovecot
       tags: dovecot
