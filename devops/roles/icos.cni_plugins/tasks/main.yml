@@ -7,11 +7,13 @@
     - /opt/cni/bin
 
 - name: Find latest release of CNI networking plugins
+  check_mode: false
+  delegate_to: localhost
+  run_once: true
   github_release:
     user: containernetworking
     repo: plugins
     action: latest_release
-  delegate_to: localhost
   register: podman_release
 
 - name: Download cni plugins
