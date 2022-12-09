@@ -1,0 +1,14 @@
+# https://discuss.linuxcontainers.org/t/problems-to-run-podman-containers-inside-lxd-container/14091
+
+- name: Install fuse-overlayfs
+  apt:
+    name:
+      - fuse-overlayfs
+
+- name: Configure storage.conf
+  copy:
+    dest: /etc/containers/storage.conf
+    content: |
+      [storage]
+      driver = "overlay"
+      graphroot = "/var/lib/containers/storage"

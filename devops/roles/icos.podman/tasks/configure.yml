@@ -42,3 +42,9 @@
   command: podman completion -f /etc/bash_completion.d/podman bash
   args:
     creates: /etc/bash_completion.d/podman
+
+- name: Configure storage for LXD + ZFS
+  import_tasks: zfs-and-lxd.yml
+  when:
+    - icos.inside_lxd
+    - icos.root_is_zfs
