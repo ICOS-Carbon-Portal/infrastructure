@@ -1,4 +1,5 @@
 - name: Retrieve conmon_apt_version fact
+  check_mode: no
   shellfact:
     # "Version: 2.0.9-1" => "2.0.9"
     exec: >-
