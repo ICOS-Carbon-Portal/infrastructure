@@ -40,10 +40,16 @@ def main():
                        'fact': dict(required=True, type='str'),
                        'list': dict(required=False, type='bool', default=False),
                        'json': dict(required=False, type='bool', default=False),
+                       'bool': dict(required=False, type='bool', default=False),
                        'rstrip': dict(required=False, type='bool', default=True)})
 
     rc, stdout, stderr = module.run_command(
         module.params['exec'], check_rc=True, use_unsafe_shell=True)
+
+    excl = ['list', 'json', 'bool']
+    if sum(1 for n in excl if module.params[n]) > 1:
+        module.fail_json(f"Can only specify one of {','.join(excl)}")
+
     value = stdout
     if module.params['rstrip']:
         value = value.rstrip()
@@ -51,6 +57,9 @@ def main():
         value = value.splitlines()
     if module.params['json']:
         value = json.loads(stdout)
+    if module.params['bool']:
+        value = value.strip().lower() in ('yes', 'true', '1')
+
     result = {'changed': False,
               'ansible_facts': {module.params['fact']: value}}
     module.exit_json(**result)

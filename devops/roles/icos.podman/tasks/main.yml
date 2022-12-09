@@ -37,6 +37,7 @@
 - name: Create docker wrapper
   when: podman_docker
   copy:
+    # The real docker cli lives in /usr/local/bin, so this won't override.
     dest: /usr/local/bin/docker
     mode: +x
     content: |
@@ -53,7 +54,16 @@
   import_role:
     name: icos.cni_plugins
 
+# Podman uses the containers/storage library but doesn't istall its manpages.
+# When installing from apt, they are part of "containers-storage". They live
+# at https://github.com/containers/storage/tree/main/docs
+- name: Install containers-storage
+  apt:
+    name:
+      - containers-storage
+
 # TODO
+# storage.conf
 # registries.conf
 # mounts.conf
 # seccomp.json
