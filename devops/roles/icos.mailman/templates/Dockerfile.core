@@ -1,11 +1,1 @@
 FROM maxking/mailman-core:{{ mailman_version }}
-
-# https://github.com/maxking/docker-mailman/issues/527
-RUN python3 -m pip install mailman-hyperkitty==1.2.0
-
-ADD 932.diff 933.diff /tmp/
-
-RUN apk add patch
-
-# https://lists.mailman3.org/archives/list/mailman-users@mailman3.org/message/LO3ZNVXMQPRY3GH4TEUUU5ASNT2V3VMS/
-RUN cat /tmp/932.diff /tmp/933.diff | patch -p3 -d /usr/lib/python3.8/site-packages/mailman

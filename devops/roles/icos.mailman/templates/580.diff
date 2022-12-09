@@ -1,0 +1,20 @@
+diff --git a/web/mailman-web/urls.py b/web/mailman-web/urls.py
+index 0e14f66..19d49f9 100644
+--- a/web/mailman-web/urls.py
++++ b/web/mailman-web/urls.py
+@@ -22,7 +22,7 @@
+ from django.views.generic import RedirectView
+ 
+ urlpatterns = [
+-    path(r'^$', RedirectView.as_view(
++    path(r'', RedirectView.as_view(
+         url=reverse_lazy('list_index'),
+         permanent=True)),
+     path(r'postorius/', include('postorius.urls')),
+@@ -30,5 +30,5 @@
+     path(r'', include('django_mailman3.urls')),
+     path(r'accounts/', include('allauth.urls')),
+     # Django admin
+-    path(r'^admin/', admin.site.urls),
++    path(r'admin/', admin.site.urls),
+ ]

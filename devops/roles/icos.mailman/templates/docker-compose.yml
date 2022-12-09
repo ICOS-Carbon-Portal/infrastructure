@@ -25,7 +25,7 @@ services:
         ipv4_address: {{ mailman_core_ipv4 }}
 
   mailman-web:
-    image: maxking/mailman-web:{{ mailman_version }}
+    build: ./build/mailman-web
     container_name: mailman-web
     hostname: mailman-web
     depends_on:
