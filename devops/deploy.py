@@ -39,13 +39,16 @@ def cli():
     pass
 
 
-@cli.command()
+@cli.command(context_settings=dict(ignore_unknown_options=True,
+                                   allow_interspersed_args=False,
+                                   allow_extra_args=True))
 @click.argument("host")
 @click.option('-i', 'inventory', default='production')
-def facts(host, inventory):
-    args = ["ansible", host, '-m', 'setup', f'-i{inventory}.inventory']
-    print(*args)
-    os.execvp(args[0], args)
+@click.pass_context
+def facts(ctx, host, inventory):
+    cmd = ["ansible", host, '-m', 'setup', f'-i{inventory}.inventory']
+    print(*cmd, *ctx.args)
+    os.execvp(cmd[0], cmd + ctx.args)
 
 
 @cli.command()
