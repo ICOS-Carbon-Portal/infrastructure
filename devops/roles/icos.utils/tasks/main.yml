@@ -9,6 +9,12 @@
       alias dc=docker-compose
       alias psc='ps xawf -eo pid,user,cgroup,args'
 
+- name: Change default pager
+  copy:
+    dest: /etc/profile.d/use_most_pager.sh
+    content: |
+      export PAGER=most
+
 
 - name: Copy utilities
   tags: utils_copy
@@ -38,7 +44,9 @@
       - mailutils      # so cron can deliver failure reports
       - mutt           # for reading said reports
       - unzip          # required by ansible's unarchive
-      - ripgrep
+      - ripgrep        # fast searching
+      - most           # colorized man pages
+
 
 # FD
 - name: Install fd
