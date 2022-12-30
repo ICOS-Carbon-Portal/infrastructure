@@ -21,6 +21,7 @@
 - name: Retrieving latest tag for {{ dbin_repo }}
   run_once: true
   delegate_to: localhost
+  check_mode: false
   github_release:
     user: "{{ dbin_user }}"
     repo: "{{ dbin_repo }}"

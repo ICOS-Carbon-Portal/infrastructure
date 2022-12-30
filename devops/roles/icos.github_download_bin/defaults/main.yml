@@ -2,6 +2,7 @@
 dbin_download_base: /opt/downloads
 dbin_download_dir: "{{ dbin_download_base }}/{{ _dbin_name }}"
 dbin_bin_dir: /usr/local/sbin
+
 dbin_default_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}-{{ dbin__vers }}.{{ dbin__plat }}.tar.gz"
 dbin_arch: amd64
 
