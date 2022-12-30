@@ -57,5 +57,6 @@
   tags: docker_cleanup
   when: docker_periodic_cleanup
 
-- import_tasks: utils.yml
+- import_role:
+    name: docker_utils
   tags: docker_utils

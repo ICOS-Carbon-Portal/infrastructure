@@ -1,0 +1,17 @@
+dive_arch: >-
+  {{ dive_arch_map[ansible_machine] | default(ansible_machine) }}
+dive_arch_map:
+  "x86_64": "amd64"
+
+lazydocker_arch: >-
+  {{ lazydocker_arch_map[ansible_machine] | default(ansible_machine) }}
+lazydocker_arch_map:
+  "armv7l": "armv7"
+  "armv6l": "armv6"
+  "amd64": "x86_64"
+
+ctop_arch: >-
+  {{ ctop_arch_map[ansible_machine] | default(ansible_machine) }}
+ctop_arch_map:
+  "armv7l": "arm"
+  "x86_64": "amd64"

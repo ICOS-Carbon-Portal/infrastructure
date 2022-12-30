@@ -1,8 +1,7 @@
 #!/bin/sh
 # https://github.com/jpetazzo/nsenter/blob/master/docker-enter
 # https://github.com/jpetazzo/nsenter/commit/3d5dfca3e2cf670210ddebeb1837c4eabc0c46f8#
-# This script does the same thing as 'docker exec' but with the added benefit
-  of ignoring cgroups.
+# This script does the same thing as 'docker exec' but with the added benefit of ignoring cgroups.
 
 if [ -e $(dirname "$0")/nsenter ]; then
     # with boot2docker, nsenter is not in the PATH but it is in the same folder
