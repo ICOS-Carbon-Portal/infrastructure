@@ -1,19 +1,30 @@
+# FIXME: Remove in 2024
+- name: Remove backup from crontab
+  cron:
+    state: absent
+    name: "cpauth_backup"
+
+# FIXME: Remove in 2024
+- name: Remove old backup script
+  file:
+    path: "{{ cpauth_home }}/backup.sh"
+    state: absent
+
 - include_role:
     name: icos.bbclient2
   vars:
     bbclient_name: cpauth
     bbclient_user: "{{ cpauth_user }}"
     bbclient_home: "{{ cpauth_home }}/.bbclient"
+    bbclient_timer_conf: |
+      OnCalendar=daily
+      RandomizedDelaySec=1h
+    bbclient_timer_content: |
+      #!/bin/bash
 
-- name: Copy backup.sh
-  template:
-    src: backup.sh
-    dest: "{{ cpauth_home }}/backup.sh"
-    mode: +x
-  register: _backup
+      set -xEeo pipefail
+      cd "{{ cpauth_home }}"
+      export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 
-- name: Add backup to crontab
-  cron:
-    job: "{{ _backup.dest }}"
-    special_time: daily
-    name: "cpauth_backup"
+      {{ bbclient_all }} create -xvs "::{now}" .
+      {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=50
