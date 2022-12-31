@@ -14,7 +14,9 @@
       become: no # without this, the env disappear
       check_mode: false
       shellfact:
-        exec: ssh-keyscan localhost | sed "s/^localhost/{{ bbclient_remote_ip }}/"
+        # The keys don't always appear in the same order, so sort them.
+        # Otherwise the known_hosts task on LOCAL will keep changing.
+        exec: ssh-keyscan localhost | sed "s/^localhost/{{ bbclient_remote_ip }}/" | sort -u
         fact: bbclient_remote_keys
 
     - name: Install public key
