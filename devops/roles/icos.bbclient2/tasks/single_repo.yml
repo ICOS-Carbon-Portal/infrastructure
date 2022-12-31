@@ -5,12 +5,14 @@
   block:
     - name: Retrieve remote SSH IP
       become: no # without this, the env disappear
+      check_mode: false
       shellfact:
         exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
         fact: bbclient_remote_ip
 
     - name: Retrieve host keys
       become: no # without this, the env disappear
+      check_mode: false
       shellfact:
         exec: ssh-keyscan localhost | sed "s/^localhost/{{ bbclient_remote_ip }}/"
         fact: bbclient_remote_keys
