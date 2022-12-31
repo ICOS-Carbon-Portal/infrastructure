@@ -108,3 +108,19 @@
   tags: watchexec
   command: "{{ dbin_symlink.dest }} --version"
   changed_when: false
+
+
+# BTOP
+
+
+- name: Install btop
+  tags: btop
+  include_role:
+    name: icos.github_download_bin
+    apply: {tags: btop}
+  vars:
+    dbin_user: aristocratos
+    dbin_repo: btop
+    # https://github.com/aristocratos/btop/releases/download/v1.2.13/btop-arm-linux-musleabi.tbz
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ btop_arch_url }}"
+    dbin_src: btop/bin/btop

@@ -5,3 +5,9 @@ watchexec_arch: >-
   {{ watchexec_arch_map[ansible_architecture] | default(ansible_architecture) }}
 watchexec_arch_map:
   "armv7l": "armv7"
+
+btop_arch_url: "{{ btop_arch_map[ansible_architecture] }}"
+btop_arch_map:
+  "armv7l": "btop-arm-linux-musleabi.tbz"
+  "armv6l": "btop-arm-linux-musleabi.tbz"
+  "x86_64": "btop-x86_64-linux-musl.tbz"
