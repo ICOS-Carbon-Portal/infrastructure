@@ -1,4 +1,5 @@
 - name: Create home directory
+  when: timer_home is defined
   file:
     path: "{{ timer_home }}"
     state: directory
@@ -9,11 +10,10 @@
     mode: +x
     content: "{{ timer_content }}"
   when: timer_content is defined
-  register: _script
 
-- name: Create systemd timer 
+- name: Create systemd timer definition
   copy:
-    dest: "{{ timer_home }}/{{ timer_name }}.timer"
+    dest: "{{ _timer_sysd_timer }}"
     content: |
       [Unit]
       Description={{ timer_name }}
@@ -23,26 +23,24 @@
 
       [Install]
       WantedBy=timers.target
-  register: _timer
 
 - name: Create systemd service
   copy:
-    dest: "{{ timer_home }}/{{ timer_name }}.service"
+    dest: "{{ _timer_sysd_service }}"
     content: |
       [Unit]
       Description={{ timer_name }}
 
       [Service]
       User={{ timer_user }}
+      Type=oneshot
+      ExecStart={{ timer_exec }}
       {% for env in timer_envs | default([]) -%}
       Environment={{ env }}
       {% endfor -%}
-      Type=oneshot
-      ExecStart={{ timer_exec }}
-  register: _service
 
 - name: Link systemd files
-  command:  systemctl link {{ _timer.dest }} {{ _service.dest }}
+  command:  systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}
   register: _r
   failed_when: _r.rc != 0
   changed_when: '"Created" in _r.stdout'
