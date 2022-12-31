@@ -1,24 +1,21 @@
-#!{{ python3_command }}
+#!/usr/bin/python3
 # 1. Do (dirty) backup while service is running.
 # 2. Shut down service.
 # 3. Do backup again.
 # 4. Start service
 # 5. Prune backups.
 #
-# Designed to run from cron.
+# It'll output to stdout and is meant to run from a systemd timer.
 #
 # It's belongs to a certain bbclient installation so it contains paths
 # hardcoded at templating time.
 
-import sys
 import shlex
-import datetime
 import click
 
-from contextlib import nullcontext
 from os import access, X_OK, environ, chdir
-from os.path import exists, isdir, getsize
-from subprocess import Popen, run, DEVNULL, CalledProcessError, STDOUT
+from os.path import exists, isdir
+from subprocess import Popen, run, DEVNULL
 
 chdir("{{ bbclient_coldbackup | mandatory }}")
 
@@ -34,28 +31,12 @@ environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = 'yes'
 DOWN_HOOK = './bbclient-down-hook'
 
 
-def logfile():
-    if sys.stdin.isatty():
-        return nullcontext(sys.stdout)
-    else:
-        return open('backup.log', 'a')
-
-
-def logfmt(msg):
-    now = datetime.datetime.now().astimezone()
-    return "=== %s %s" % (msg, now.strftime('%a %b %d %H:%M:%S %Z %Y'))
-
+def log(arg):
+    print(arg)
 
 def bbclient(what, arg):
-    with logfile() as log:
-        print(logfmt(what), file=log, flush=True)
-        run(['{{ bbclient_all }}'] + shlex.split(arg),
-            check=1, stdout=log, stderr=STDOUT)
-
-def log(msg):
-    with logfile() as log:
-        print(logfmt(msg), file=log, flush=True)
-
+    print(f"{what} - {{ bbclient_all }} {arg}")
+    run(['{{ bbclient_all }}'] + shlex.split(arg), check=1)
 
 def prune():
     bbclient('prune', 'prune --verbose --stats '
@@ -71,11 +52,11 @@ def start_down_hook():
     try:
         p = Popen([DOWN_HOOK])
     except FileNotFoundError:
-        log("No down hook (%s)" % DOWN_HOOK)
+        log(f"No down hook {DOWN_HOOK}")
     except OSError as e:
-        log("Could not run down hook - %s" % str(e))
+        log(f"Could not run down hook - {DOWN_HOOK} - {e}")
     else:
-        log("Starting down hook", DOWN_HOOK, "in the background")
+        log(f"Running down hook {DOWN_HOOK} in background.")
     return p
 
 
@@ -100,21 +81,21 @@ def backup(down=False, dirty=True):
             log("Not performing dirty backup.")
 
         log("Bringing project down.")
-        run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
+        run(['docker-compose', 'down'], check=1)
         hook = start_down_hook()
 
         bbclient('cold backup',
                  'create -x -v --stats "::{now}" %s' % patterns)
         if hook:
             hook.wait()
-            log("Down hook finished with returncode ", hook.returncode)
+            log(f"Down hook finished with returncode {hook.returncode}")
 
     finally:
         if down:
-            log("Not bringing project up again")
+            log("Down flag is set - not bringing project up again")
         else:
             log("Bringing project back up")
-            run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
+            run(['docker-compose', 'up', '-d'])
 
 
 @click.command()
@@ -124,17 +105,9 @@ def backup(down=False, dirty=True):
 # Used when testing to skip the dirty backup.
 @click.option('--dirty/--no-dirty', default=True)
 def main(down, dirty):
-    logsize = getsize('backup.log') if exists('backup.log') else 0
-
-    try:
-        backup(down, dirty)
-        prune()
-        log('done')
-    except CalledProcessError:
-        # For the sake of cron.
-        if not sys.stdin.isatty():
-            # In case of error, print logs created since we started.
-            f = open('backup.log'); f.seek(logsize); print(f.read())  # noqa
+    backup(down, dirty)
+    prune()
+    log('done')
 
 
 if __name__ == '__main__':

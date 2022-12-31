@@ -7,11 +7,20 @@
     - bbclient-coldbackup
     - bbclient-coldrestore
 
-- name: Add coldbackup to crontab
+- name: Remove coldbackup from crontab
   cron:
-    job: "{{ bbclient_bin_dir }}/bbclient-coldbackup"
-    hour: "{{ bbclient_coldbackup_hour }}"
-    minute: "{{ bbclient_coldbackup_minute }}"
-    state: present
+    state: absent
     name: "bbclient_{{ bbclient_name }}_coldbackup"
   when: bbclient_coldbackup is defined
+
+- name: Add coldbackup systemd timer
+  include_role:
+    name: icos.timer
+  vars:
+    timer_home: "{{ bbclient_home }}"
+    timer_exec: "{{ bbclient_bin_dir }}/bbclient-coldbackup"
+    timer_name: "bbclient-{{ bbclient_name }}-coldbackup"
+    timer_conf: |
+      OnCalendar={{ bbclient_coldbackup_hour }}:{{ bbclient_coldbackup_minute }}
+    timer_envs:
+      - PYTHONUNBUFFERED=1
