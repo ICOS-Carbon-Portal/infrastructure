@@ -34,16 +34,6 @@
     - import_tasks: configure.yml
       tags: podman_configure
 
-- name: Create docker wrapper
-  when: podman_docker
-  copy:
-    # The real docker cli lives in /usr/local/bin, so this won't override.
-    dest: /usr/local/bin/docker
-    mode: +x
-    content: |
-      #!/bin/sh
-      exec /usr/local/bin/podman "$@"
-
 - name: Install conmon
   tags: podman_conmon
   import_role:
@@ -59,8 +49,17 @@
 # at https://github.com/containers/storage/tree/main/docs
 - name: Install containers-storage
   apt:
-    name:
-      - containers-storage
+    name: containers-storage
+
+- name: Emulate docker
+  when: podman_docker
+  tags: podman_docker
+  import_tasks: docker.yml
+
+- import_role:
+    name: icos.docker_utils
+  tags: podman_utils
+
 
 # TODO
 # storage.conf

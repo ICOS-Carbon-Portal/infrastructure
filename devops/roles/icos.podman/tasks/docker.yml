@@ -1,0 +1,14 @@
+- name: Create docker wrapper
+  copy:
+    # The real docker cli lives in /usr/local/bin, so this won't override.
+    dest: /usr/local/bin/docker
+    mode: +x
+    content: |
+      #!/bin/sh
+      exec /usr/local/bin/podman "$@"
+
+- name: Create /run/docker.sock symlink
+  file:
+    dest: /run/docker.sock
+    src: /run/podman/podman.sock
+    state: link

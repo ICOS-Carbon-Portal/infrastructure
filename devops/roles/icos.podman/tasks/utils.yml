@@ -1,0 +1,21 @@
+- name: Install docker-compose
+  community.general.pipx:
+    name: docker-compose
+    executable: pipx-global
+
+- name: Install docker support for ansible's python
+  pip:
+    name:
+      - docker
+      - docker-compose
+
+- include_role:
+    name: icos.github_download_bin
+    apply:
+      tags: podman_utils
+  vars:
+    dbin_user: jesseduffield
+    dbin_repo: lazydocker
+    dbin_src: lazydocker
+    # https://github.com/jesseduffield/lazydocker/releases
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_Linux_{{ lazydocker_arch }}.tar.gz"
