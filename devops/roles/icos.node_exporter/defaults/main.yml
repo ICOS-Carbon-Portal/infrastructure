@@ -10,6 +10,21 @@ node_exporter_scripts: "{{ node_exporter_home }}/textfile-collector-scripts"
 # Will be symlinked here by the download_github_bin role.
 node_exporter_bin: /usr/local/sbin/node_exporter
 
+# This goes into systemd.socket:ListenStream
+node_exporter_listen: 9100
+
+# If set, goes into systemd.socket:BindToDevice
+node_exporter_bindto:
+
+# Help download_github_bin choose architecture.
+node_exporter_arch: >-
+  {{ node_exporter_arch_map[ansible_architecture] | default(ansible_architecture) }}
+node_exporter_arch_map:
+  "armv6l": "armv6"
+  "armv7l": "armv7"
+  "x86_64": "amd64"
+
+
 # SMARTMON COLLECTOR
 smartmon_enable: false
 smartmon_home: "{{ node_exporter_home }}/smartmon"
@@ -27,10 +42,6 @@ dirsize_prom: "{{ node_exporter_textfiles }}/directory-size.prom"
 # The initial list of directories.
 dirsize_initial: []
 
-# By default we restart node_exporter if the service file or the environment
-# has changed or if a new version has been downloaded.
-node_exporter_state: |-
-  {{ 'restarted' if (_srv.changed or _env.changed or dbin_download.changed) else 'started' }}
 
 # DOCKER COLLECTOR
 dockermon_enable: false

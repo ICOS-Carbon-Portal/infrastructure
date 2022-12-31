@@ -1,3 +1,9 @@
+# needed by the dockermon script
+- name: pip install docker
+  pip:
+    name: docker
+    state: present
+
 - name: Create dockermon timer
   include_role:
     name: icos.timer

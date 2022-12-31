@@ -1,11 +1,12 @@
 # https://github.com/prometheus/node_exporter/blob/master/examples/systemd/node_exporter.service
 [Unit]
 Description=Node Exporter
+Requires=node-exporter.socket
 
 [Service]
 User={{ node_exporter_user }}
 EnvironmentFile={{ node_exporter_environ }}
-ExecStart={{ node_exporter_bin }} $OPTIONS
+ExecStart={{ node_exporter_bin }} --web.systemd-socket $OPTIONS
 
 [Install]
 WantedBy=multi-user.target

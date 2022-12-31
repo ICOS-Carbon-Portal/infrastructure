@@ -14,13 +14,7 @@
   apt:
     name: moreutils  # sponge(1)
 
-# needed by the dockermon script
-- name: pip install docker
-  pip:
-    name: docker
-    state: present
-
-- name: Install node_exporter
+- name: Download node_exporter
   include_role:
     name: icos.github_download_bin
   vars:
@@ -28,12 +22,7 @@
     dbin_user: prometheus
     dbin_repo: node_exporter
     dbin_path: node_exporter
-
-- name: Copy node-exporter service file
-  template:
-    src: node-exporter.service
-    dest: /etc/systemd/system/
-  register: _srv
+    dbin_arch: "{{ node_exporter_arch }}"
 
 - name: Create the textfile collector directory
   file:
@@ -43,16 +32,5 @@
     mode: '1777'
     state: directory
 
-- name: Make sure that {{ node_exporter_environ }} exists
-  copy:
-    dest: "{{ node_exporter_environ }}"
-    content: |
-      OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
-  register: _env
-
-- name: Start node-exporter service
-  systemd:
-    name: node-exporter
-    enabled: yes
-    state: "{{ node_exporter_state }}"
-    daemon-reload: "{{ 'yes' if (_srv.changed or _env.changed) else 'no' }}"
+- import_tasks: systemd.yml
+  tags: node_exporter_systemd
