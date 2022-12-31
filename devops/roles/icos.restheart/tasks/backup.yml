@@ -1,20 +1,32 @@
+# FIXME: Remove in 2024
+- name: Remove backup from crontab
+  cron:
+    state: absent
+    name: "restheart_backup"
+
+# FIXME: Remove in 2024
+- name: Remove old backup script
+  file:
+    path: "{{ restheart_home }}/backup.sh"
+    state: absent
+
 - include_role:
     name: icos.bbclient2
   vars:
     bbclient_user: root
     bbclient_home: "{{ restheart_home }}/bbclient"
     bbclient_name: restheart
+    bbclient_timer_conf: "OnCalendar=00/6:36"
+    bbclient_timer_content: |
+      #!/bin/bash
+      set -Eueo pipefail
 
-- name: Copy backup.sh
-  template:
-    src: backup.sh
-    dest: "{{ restheart_home }}"
-    mode: +x
-  register: _backup
+      cd "{{ restheart_home }}"
+      mkdir -p backup
 
-- name: Add backup to crontab
-  cron:
-    job: "{{ _backup.dest }}"
-    hour: "*/6"
-    minute: "36"
-    name: "restheart_backup"
+      docker-compose exec -T mongodb mongodump --quiet --archive > backup/server.archive
+
+      {{ bbclient_all }} create -xvs '::{now}' backup
+      {{ bbclient_all }} prune -v --keep-within 7d --keep-daily=30 --keep-weekly=150
+
+      rm -rf -- ./backup
