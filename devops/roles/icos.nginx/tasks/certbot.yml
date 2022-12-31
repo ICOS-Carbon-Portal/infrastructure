@@ -4,12 +4,6 @@
     name: certbot
     classic: yes
 
-# FIXME: Remove in 2023
-- name: Remove pip-installed certbot
-  pip:
-    name: certbot
-    state: absent
-
 - name: Add job to renew certificates
   cron:
     name: Certbot renewal
