@@ -1,4 +1,4 @@
-#!{{ python3_command }}
+#!/usr/bin/python3
 # Remove duplicate or stale rules from the DNAT target.
 import click
 import re
