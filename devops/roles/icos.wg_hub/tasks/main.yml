@@ -1,3 +1,7 @@
+- name: Install iptables-persistent
+  apt:
+    name: iptables-persistent
+
 - name: Retrieve server's private key
   shellfact:
     exec: cat /etc/wireguard/privatekey
@@ -77,8 +81,9 @@
 - name: Setup reresolve dependency
   when: wg_hub_reresolve and not wg_hub_ishub
   command: >-
-    systemctl add-wants wg-quick@{{ wg_hub_intf }}.service
-    wireguard-reresolve-dns.timer
+    systemctl add-wants
+    wg-quick@{{ wg_hub_intf }}.service
+    wg-reresolve@{{ wg_hub_intf }}.timer
   register: _reresolve
   changed_when: _reresolve.stderr.startswith("Created symlink")
 

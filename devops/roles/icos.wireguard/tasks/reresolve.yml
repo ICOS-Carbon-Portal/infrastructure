@@ -1,3 +1,6 @@
+# Create a reresolve service and timer.
+# It can then be activated be each wireguard network that needs it.
+
 - name: Create reresolve template service
   copy:
     dest: /etc/systemd/system/wg-reresolve@.service
@@ -20,10 +23,4 @@
 
       [Timer]
       OnCalendar=*-*-* *:*:00,30
-
-      [Install]
-      WantedBy=wg-quick@%i.service
   notify: systemd daemon-reload
-
-# Howto disable this service.
-# systemctl disable --now wg-reresolve@wg-X.timer
