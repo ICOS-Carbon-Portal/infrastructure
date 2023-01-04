@@ -1,0 +1,82 @@
+# - name: Check whether /usr/local/bin/podman exists
+#   stat:
+#     path: /usr/local/bin/podman
+#   register: _r
+
+# - name: Remove manually installed podman
+#   when: _r.stat.exists and not _r.stat.islnk
+#   import_tasks: remove_manual.yml
+
+# - name: Stop here
+#   meta: end_play
+
+- name: Check whether podman is dpkg-installed
+  command: dpkg -s podman
+  failed_when: no
+  changed_when: no
+  register: _dpkg
+
+- name: Fail if podman is apt-installed
+  ansible.builtin.shell: |
+    dpkg --get-selections podman | grep -vq '\binstall'
+  changed_when: false
+  register: r
+  failed_when: r.rc == 0
+
+- name: Checking for version of installed podman
+  check_mode: no
+  command: podman --version
+  failed_when: no
+  changed_when: no
+  register: _podman
+
+- name: Installing podman
+  import_tasks: install.yml
+  tags: podman_install
+  when: not _podman.stdout.endswith(podman_version)
+
+- name: Podman is installed and the correct version.
+  # _podman will be undefined if we use the podman_configure tag
+  when: _podman is undefined or _podman.stdout.endswith(podman_version)
+  block:
+    - debug:
+        msg: "The correct version of podman is installed."
+      when: _podman is undefined
+
+    - import_tasks: configure.yml
+      tags: podman_configure
+
+- name: Install conmon
+  tags: podman_conmon
+  import_role:
+    name: icos.conmon
+
+- name: Install cni_plugins
+  tags: podman_cni_plugins
+  import_role:
+    name: icos.cni_plugins
+
+# Podman uses the containers/storage library but doesn't istall its manpages.
+# When installing from apt, they are part of "containers-storage". They live
+# at https://github.com/containers/storage/tree/main/docs
+- name: Install containers-storage
+  apt:
+    name: containers-storage
+
+- name: Emulate docker
+  when: podman_docker
+  tags: podman_docker
+  import_tasks: docker.yml
+
+- import_role:
+    name: icos.docker_utils
+  tags: podman_utils
+
+
+# TODO
+# storage.conf
+# registries.conf
+# mounts.conf
+# seccomp.json
+# policy.json
+# systemd services (apt-installed podman enables
