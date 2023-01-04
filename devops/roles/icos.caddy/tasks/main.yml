@@ -6,7 +6,6 @@
     dest: /etc/apt/trusted.gpg.d/caddy.asc
     mode: '0644'
     force: true
-  register: _keyring
 
 - name: Add caddy apt repository
   apt_repository:
