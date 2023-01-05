@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Extend 'wg show' with hostnames.
+# Extend the builtin wg(1).
 
 import glob
 import re
@@ -9,6 +9,9 @@ import os
 
 
 REAL_WG = '/usr/bin/wg'
+CONTROL = '/sys/kernel/debug/dynamic_debug/control'
+DEBUG_1 = f"echo 'module wireguard +p' | sudo tee {CONTROL}"
+DEBUG_0 = f"echo 'module wireguard -p' | sudo tee {CONTROL}"
 
 
 def parse_hosts():
@@ -25,7 +28,7 @@ def parse_hosts():
 
 
 if __name__ == '__main__':
-    # We only override wg when it's the 'show' subcommand (the default).
+    # Override the 'show' subcommand to also show hostnames.
     if len(sys.argv) == 1 or sys.argv[1] == 'show':
         hosts = parse_hosts()
         env = os.environ.copy()
@@ -38,6 +41,17 @@ if __name__ == '__main__':
             m = re.search('peer[^:]+: \x1b.{4}(.{43}=)', l)
             if m:
                 print('  name: %s' % hosts.get(m.group(1), 'n/a'))
+    # Add a 'debug' subcommand.
+    elif len(sys.argv) > 1 and sys.argv[1] == 'debug':
+        if not os.path.exists(CONTROL):
+            print(f"Sorry, but {CONTROL} doesn't exist.")
+            sys.exit(1)
+        subprocess.check_call(DEBUG_1, shell=1)
+        try:
+            subprocess.run(('dmesg', '-Tw'), check=0)
+        finally:
+            subprocess.check_call(DEBUG_0, shell=1)
+            print('Exit.')
+    # For all other cases we hand over directly to the real wg.
     else:
-        # For all other cases we hand over directly to the real wg.
         os.execv(REAL_WG, sys.argv)
