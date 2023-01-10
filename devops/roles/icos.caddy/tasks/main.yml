@@ -21,3 +21,17 @@
 - name: Check that caddy was properly installed
   ansible.builtin.shell: caddy version
   changed_when: no
+
+- name: Create /etc/caddy/sites directory
+  file:
+    path: /etc/caddy/sites
+    state: directory
+
+- name: Create Caddyfile
+  copy:
+    dest: /etc/caddy/Caddyfile
+    content: "{{ caddy_config }}"
+
+
+- import_tasks: site.yml
+  when: caddy_name is defined

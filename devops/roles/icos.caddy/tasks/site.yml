@@ -1,0 +1,16 @@
+- name: Install Caddyfile
+  copy:
+    dest: "/etc/caddy/sites/Caddyfile.{{ caddy_name }}"
+    content: "{{ caddy_conf }}"
+
+- name: Remove Caddyfiles
+  file:
+    state: absent
+    path: "/etc/caddy/sites/Caddyfile.{{ item }}"
+  loop: "{{ caddy_site_remove | default([]) }}"
+
+- name: caddy reload
+  command: caddy reload
+  args:
+    chdir: /etc/caddy
+  changed_when: false
