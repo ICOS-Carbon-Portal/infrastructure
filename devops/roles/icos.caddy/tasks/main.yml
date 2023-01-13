@@ -32,6 +32,5 @@
     dest: /etc/caddy/Caddyfile
     content: "{{ caddy_config }}"
 
-
 - import_tasks: site.yml
   when: caddy_name is defined
