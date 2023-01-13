@@ -19,11 +19,11 @@ nats_cert_name: "{{ ansible_fqdn }}"
 
 
 # https://github.com/nats-io/nats-server/releases
-nats_server_ver: 2.9.2
+nats_server_ver: 2.9.11
 # https://github.com/nats-io/natscli/releases/
-nats_cli_ver: 0.0.34
+nats_cli_ver: 0.0.35
 # https://github.com/nats-io/nats-top/releases/
-nats_top_ver: 0.5.2
+nats_top_ver: 0.5.3
 
 nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_server_ver }}/nats-server-v{{ nats_server_ver }}-{{ nats_arch }}.deb"
 nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/v{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
