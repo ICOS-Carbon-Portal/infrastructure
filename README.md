@@ -451,3 +451,15 @@ Transform download counts json from the previous command to tsv (requires jq ins
 Sort the results by download count descending:
 
 `cat page1.tsv page2.tsv | sort -nr > icos_dl_stats_2018-03-27.tsv`
+
+## Postgis
+
+Example of command line access to the downloads database (on the production server):
+
+`root@fsicos2:~# lxc exec -t postgis -- bash`
+
+`root@postgis:~# su postgres`
+
+`postgres@postgis:/root$ psql -d cplog`
+
+`cplog=# SELECT ip, COUNT(id) AS cnt FROM public.downloads WHERE ts::date > date '2022-12-31' GROUP BY ip ORDER BY cnt DESC LIMIT 20;`
