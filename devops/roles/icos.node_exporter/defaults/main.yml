@@ -14,7 +14,7 @@ node_exporter_bin: /usr/local/sbin/node_exporter
 node_exporter_listen: 9100
 
 # If set, goes into systemd.socket:BindToDevice
-node_exporter_bindto:
+node_exporter_bindto: lo
 
 # Help download_github_bin choose architecture.
 node_exporter_arch: >-
