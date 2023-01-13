@@ -14,16 +14,16 @@
       OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
   register: _env
 
-- name: Start/restart node-exporter.socket
-  systemd:
-    daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
-    name: node-exporter.socket
-    enabled: yes
-    state: "{{ 'restarted' if _sysd.changed else 'started' }}"
-
 # FIXME: Remove in 2024.
 # Not needed since it became socket activated.
 - name: Stop node-exporter service
   systemd:
     name: node-exporter.service
     state: stopped
+
+- name: Start/restart node-exporter.socket
+  systemd:
+    daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
+    name: node-exporter.socket
+    enabled: yes
+    state: "{{ 'restarted' if _sysd.changed else 'started' }}"
