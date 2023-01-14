@@ -34,9 +34,9 @@ DOWN_HOOK = './bbclient-down-hook'
 def log(arg):
     print(arg)
 
-def bbclient(what, arg):
+def bbclient(what, arg, check=True):
     print(f"{what} - {{ bbclient_all }} {arg}")
-    run(['{{ bbclient_all }}'] + shlex.split(arg), check=1)
+    run(['{{ bbclient_all }}'] + shlex.split(arg), check=check)
 
 def prune():
     bbclient('prune', 'prune --verbose --stats '
@@ -75,8 +75,12 @@ def backup(down=False, dirty=True):
             # usual. Dirty means that we'll take a backup while the service is
             # still running. The idea is that the cold backup will go much
             # faster.
+            # The dirty backup is run with check=False because borg signals an
+            # error if any file changes during backup, which would make run()
+            # throw an exception.
             bbclient('dirty backup',
-                     'create -x -v --stats "::dirty-{now}" %s' % patterns)
+                     'create -x -v --stats "::dirty-{now}" %s' % patterns,
+                     check=False)
         else:
             log("Not performing dirty backup.")
 
@@ -89,7 +93,6 @@ def backup(down=False, dirty=True):
         if hook:
             hook.wait()
             log(f"Down hook finished with returncode {hook.returncode}")
-
     finally:
         if down:
             log("Down flag is set - not bringing project up again")
