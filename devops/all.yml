@@ -2,22 +2,3 @@
   roles:
     - role: icos.utils
       tags: utils
-
-  tasks:
-    - tags: facts
-      block:
-        - name: Create /etc/ansible/facts.d
-          file:
-            path: "/etc/ansible/facts.d"
-            state: directory
-
-        - name: Install custom fact
-          copy:
-            src: icos_fact.py
-            dest: /etc/ansible/facts.d/icos.fact
-            mode: +x
-          register: _icos_fact
-
-        - name: Test custom fact
-          when: _icos_fact.changed
-          gather_facts:
