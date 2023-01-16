@@ -4,18 +4,15 @@
 - hosts: fsicos2.lunarc.lu.se
   tags: setup
   roles:
-    - role: icos.podman
+    - role: icos.podman_manual
       tags: podman
-
-    - role: icos.conmon
-      tags: conmon
 
 - hosts: fsicos2.lunarc.lu.se
   tags: sftp
   vars:
     groupfolder_name: PAUL
     groupfolder_id: 27
-    groupfolder_dir: >
+    groupfolder_dir: >-
       /disk/data/nextcloud/data/__groupfolders/{{ groupfolder_id}}
     host_uid: 33
     host_user: www-data
@@ -23,10 +20,14 @@
     sftp_user: nc_paul_upload
     sftp_exec: "/usr/libexec/podman-sftp-only-{{ sftp_user }}"
     sftp_dirs:
-      - src: "{{ groupfolder_dir}}/WP4/DATA"
-        dst: WP4_DATA
-      - src: "{{ groupfolder_dir }}/WP2/data"
-        dst: WP2_data
+      - src: "{{ groupfolder_dir}}/WP1/Data"
+        dst: WP1_Data
+      - src: "{{ groupfolder_dir}}/WP2/Data"
+        dst: WP2_Data
+      - src: "{{ groupfolder_dir}}/WP3/Data"
+        dst: WP3_Data
+      - src: "{{ groupfolder_dir}}/WP4/Data"
+        dst: WP4_Data
     sftp_port: 60022
   handlers:
     - name: reload sshd
@@ -45,6 +46,13 @@
     - name: Make sure we're dealing with the correct groupfolder
       assert:
         that: (_gfid | int) == groupfolder_id
+
+    - name: Check that all the src directories exists
+      stat:
+        path: "{{ item.src }}"
+      register: r
+      failed_when: "not r.stat.exists"
+      loop: "{{ sftp_dirs }}"
 
     - name: Retrive passwd data for www-data user
       getent:
@@ -79,6 +87,13 @@
         mode: +x
         content: |
           #!/bin/bash
+
+          # echo "### environment ###"  >> /tmp/sftp.log
+          # env >> /tmp/sftp.log
+          # echo "### starting ###" >> /tmp/sftp.log
+          # exec > >(tee -ai /tmp/sftp.log)
+          # exec 2>&1
+
           # note, don't add '-t', it will break when running from sshd
           exec podman run -i --rm {% for d in sftp_dirs %}{{ "-v%s:/upload/%s:rw" % (d.src, d.dst) }} {% endfor %} --entrypoint=/usr/lib/sftp-server {{ sftp_image }} -d /upload
 
@@ -127,6 +142,31 @@
           # Start when any user with this uid logs in. Note that processes for
           # www-data will be active, but www-data won't be logged in.
           WantedBy=user@{{ host_uid }}.service
+
+    - name: Test logging in to sftp
+      tags: login
+      delegate_to: localhost
+      expect:
+        command: >-
+          sftp -P 60022 -oPreferredAuthentications=password
+          {{ sftp_user }}@fsicos2.lunarc.lu.se
+        responses:
+          "password:": "{{ vault_nc_paul_upload_password }}"
+          "sftp>":
+            - "ls -1"
+            - "quit"
+      register: expect
+      changed_when: no
+
+    - name: Check directories
+      tags: login
+      assert:
+        that:
+          - expect.stdout_lines[-2] == "WP4_Data"
+          - expect.stdout_lines[-3] == "WP3_Data"
+          - expect.stdout_lines[-4] == "WP2_Data"
+          - expect.stdout_lines[-5] == "WP1_Data"
+      changed_when: no
 
     - name: Display instructions
       tags: howto
