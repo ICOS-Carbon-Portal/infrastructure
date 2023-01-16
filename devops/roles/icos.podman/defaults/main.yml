@@ -7,4 +7,4 @@ conmon_min_version: "2.0.24"
 golang_min_version: 1.16
 
 # Install a docker wrapper that calls podman.
-podman_docker: True
+podman_docker: False
