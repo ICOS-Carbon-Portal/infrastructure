@@ -50,9 +50,11 @@
       tags: mount
       mount:
         fstype: nfs
-        state: mounted
-        src: "{{ item.src }}"
-        path: "{{ item.path }}"
+        state: "{{ item.state | default('mounted') }}"
+        # The next two default to omit so that they can be left out when state
+        # is "unmounted".
+        src: "{{ item.src | default(omit) }}"
+        path: "{{ item.path | default(omit) }}"
         opts: "{{ item.opts | default('ro') }}"
       loop: "{{ icosdata_nfs_mounts }}"
 

@@ -35,12 +35,20 @@ icosdata_nfs_mounts:
     opts: "ro,soft,x-systemd.after=zfs-mount.service"
 
   # PAUL
-  - path: /pool/jupyter/project/icos_cities/fileshare/WP4_DATA
-    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP4/DATA
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP1_Data
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP1/Data
     opts: "ro,soft,x-systemd.after=zfs-mount.service"
 
-  - path: /pool/jupyter/project/icos_cities/fileshare/WP2_data
-    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP2/data
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP2_Data
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP2/Data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP3_Data
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP3/Data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP4_Data
+    src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP4/Data
     opts: "ro,soft,x-systemd.after=zfs-mount.service"
 
   # other
