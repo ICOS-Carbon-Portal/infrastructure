@@ -9,6 +9,7 @@
 
 - hosts: fsicos2.lunarc.lu.se
   tags: sftp
+
   vars:
     groupfolder_name: PAUL
     groupfolder_id: 27
@@ -29,6 +30,7 @@
       - src: "{{ groupfolder_dir}}/WP4/Data"
         dst: WP4_Data
     sftp_port: 60022
+
   handlers:
     - name: reload sshd
       systemd:
@@ -37,6 +39,7 @@
 
   tasks:
     - name: Retrieve groupfolder id
+      check_mode: no
       shellfact:
         exec: >-
           occ groupfolder:list --output json |
