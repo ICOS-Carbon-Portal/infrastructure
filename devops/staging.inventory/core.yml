@@ -55,6 +55,7 @@ all:
 
       vars:
         coreapp_httpproxy_host: staging.lxd
+        coreapp_host_ip: "{{ staging_lxd_ip }}"
 
         # cpmeta - proxy
         cpmeta_nginxsite_name: cpmeta-staging
