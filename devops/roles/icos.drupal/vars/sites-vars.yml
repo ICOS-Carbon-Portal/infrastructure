@@ -8,6 +8,7 @@ domain: demo.fieldsites.se
 ssl_domains: [demo.fieldsites.se]
 drupal_modules: [
   editor_advanced_link,
+  feeds,
   field_group,
   google_analytics,
   honeypot,

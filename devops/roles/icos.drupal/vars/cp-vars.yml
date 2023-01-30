@@ -6,6 +6,7 @@ domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 redirect_to_www: true
 drupal_modules: [
+  color_field,
   conflict,
   editor_advanced_link,
   field_group,
@@ -21,6 +22,7 @@ drupal_modules: [
   redirect,
   scheduler,
   simple_sitemap,
+  single_content_sync,
   smtp,
   toc_js,
   token,

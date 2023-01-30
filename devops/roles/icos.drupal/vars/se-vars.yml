@@ -7,8 +7,12 @@ ssl_domains: [sweden.icos-cp.eu,icos-sweden.se,www.icos-sweden.se]
 redirect_to_www: true
 drupal_modules: [
   editor_file,
+  honeypot,
   linkit,
+  pathauto,
   redirect,
   restui,
-  toc_js
+  smtp,
+  toc_js,
+  webform
 ]
