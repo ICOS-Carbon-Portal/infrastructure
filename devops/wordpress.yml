@@ -5,6 +5,7 @@
       - www.eric-forum.eu
       - www.icos-summerschool.eu
       - www.envriplus.eu
+      - ggmt2022.online
   roles:
     - name: Create the wordpress VM
       tags: lxd
