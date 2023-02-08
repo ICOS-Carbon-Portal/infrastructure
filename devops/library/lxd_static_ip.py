@@ -41,7 +41,8 @@ def main():
     global module
     module = AnsibleModule(
         argument_spec=dict(
-            name=dict(required=True, type='str')))
+            name=dict(required=True, type='str')),
+        supports_check_mode=True)
 
     name = module.params['name']
 
@@ -50,10 +51,11 @@ def main():
               'ansible_facts': { f'{name}_ip': ip }}
 
     if not static:
-        interface = find_interface_name(module, name, ip)
-        configure_static_override(module, name, interface, ip)
-        result['interface'] = interface
         result['changed'] = True
+        if not module.check_mode:
+            interface = find_interface_name(module, name, ip)
+            configure_static_override(module, name, interface, ip)
+            result['interface'] = interface
 
     module.exit_json(**result)
 
