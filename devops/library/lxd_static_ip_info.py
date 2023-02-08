@@ -18,7 +18,8 @@ def main():
     global module
     module = AnsibleModule(
         argument_spec=dict(
-            name=dict(required=True, type='str')))
+            name=dict(required=True, type='str')),
+        supports_check_mode=True)
 
     name = module.params['name']
 
