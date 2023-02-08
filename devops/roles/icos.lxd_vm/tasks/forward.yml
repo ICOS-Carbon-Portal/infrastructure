@@ -7,8 +7,8 @@
     lxd_forward_port: "{{ lxd_vm_port }}"
 
 - name: Add local known_host
-  local_action:
-    module: known_hosts
+  delegate_to: localhost
+  known_hosts:
     name: "[{{ inventory_hostname }}]:{{ lxd_vm_port }}"
     key: "[{{ inventory_hostname }}]:{{ lxd_vm_port }} {{ _key.stdout}}"
 
