@@ -6,6 +6,7 @@
       - www.icos-summerschool.eu
       - www.envriplus.eu
       - ggmt2022.online
+      - www.ggmt2022.online
   roles:
     - name: Create the wordpress VM
       tags: lxd
@@ -21,6 +22,8 @@
       tags: cert
       include_role:
         name: icos.certbot2
+        apply:
+          tags: cert
       vars:
         certbot_name: wordpress
         certbot_domains: "{{ wordpress_domains }}"
@@ -29,6 +32,8 @@
       tags: nginx
       include_role:
         name: icos.nginxsite
+        apply:
+          tags: nginx
       vars:
         nginxsite_name: wordpress
         nginxsite_file: files/wordpress.conf
