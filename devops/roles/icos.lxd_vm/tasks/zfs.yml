@@ -1,11 +1,11 @@
 - name: Include vars for zfs
   include_vars: "zfs.yml"
 
-- name: Create docker storage {{ lxd_vm_name }} VM
+- name: Create docker storage for LXD
   when: lxd_vm_docker
   include_role:
     name: icos.zfsdocker
     public: yes
   vars:
     zfsdocker_name: "{{ lxd_vm_name }}"
-    zfsdocker_size: "50G"
+    zfsdocker_size: "{{ lxd_vm_docker_size }}"

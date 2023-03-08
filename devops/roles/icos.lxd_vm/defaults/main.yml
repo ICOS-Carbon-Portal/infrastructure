@@ -12,6 +12,7 @@ lxd_vm_root_size: 50GB
 lxd_vm_root_pool: "{{ lxd_vm_name }}"
 
 lxd_vm_docker: False
+lxd_vm_docker_size: "50G"
 
 lxd_vm_profiles: []
 lxd_vm_devices: {}
