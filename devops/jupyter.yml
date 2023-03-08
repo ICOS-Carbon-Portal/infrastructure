@@ -7,18 +7,11 @@
 
 - hosts: fsicos3.lunarc.lu.se
   vars:
-    jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
-    zvol_docker: /dev/zvol/pool/docker/jupyter
     jupyter_domains:
-      # Primary domain.
       - jupyter.icos-cp.eu
-      # Old domain, used in publications, just does a redirect.
-      - jupyter3.icos-cp.eu
   pre_tasks:
     - name: Create zfs filesystem for jupyter home directories
-      tags:
-        - zfs
-        - zfshome
+      tags: zfs
       zfs:
         name: pool/jupyter
         state: present
@@ -26,9 +19,7 @@
           refquota: "5T"
 
     - name: Create jupyter directories for home and project
-      tags:
-        - zfs
-        - zfshome
+      tags: zfs
       file:
         name: "/pool/jupyter/{{ item }}"
         state: directory
@@ -38,70 +29,38 @@
         - home
         - project
 
-    - include_role: name=icos.zfsdocker
-      tags:
-        - zfs
-        - zfsdocker
-      vars:
-        zfsdocker_name: jupyter
-        zfsdocker_size: "100G"
-
-    - name: Create the jupyter container
-      tags:
-        - lxd
-        - forward
-        - nginx
-      lxd_container:
-        name: jupyter
-        state: started
-        profiles:
-          - default
-          - ssh_root
-          - icosdata
-        source:
-          type: image
-          mode: pull
-          server: https://cloud-images.ubuntu.com/releases
-          protocol: simplestreams
-          alias: "20.04"
-        devices:
-          root:
-            path: "/"
-            pool: "default"
-            type: "disk"
-            size: "50GB"
-          docker:
-            path: /var/lib/docker
-            source: "{{ zvol_docker }}"
-            type: disk
-            raw.mount.options: user_subvol_rm_allowed
-          data:
-            path: /data
-            source: /data
-            type: disk
-            recursive: "yes"
-          home:
-            path: /home
-            source: /pool/jupyter/home
-            type: "disk"
-          jupyterproject:
-            path: /project
-            source: /pool/jupyter/project
-            type: "disk"
-            recursive: "yes"
-        config:
-          limits.memory: "200GB"
-          security.nesting: "true"
-        wait_for_ipv4_addresses: true
-        wait_for_ipv4_interfaces: eth0
-        timeout: 60
-      register: _lxd
-
   roles:
-    - role: icos.lxd_forward
-      tags: forward
-      lxd_forward_ip: "{{ jupyter_ip }}"
-      lxd_forward_name: jupyter
+    - role: icos.lxd_vm
+      tags: lxd
+      lxd_vm_name: jupyter
+      lxd_vm_ubuntu_version: '20.04'
+      lxd_vm_docker: true
+      lxd_vm_docker_size: "100G"
+      lxd_vm_root_pool: "default"
+      lxd_vm_root_size: "50GB"
+      lxd_vm_config:
+        limits.memory: "300GB"
+      lxd_vm_profiles:
+        - icosdata
+      lxd_vm_devices:
+        ctehires:
+          path: /ctehires
+          source: /pool/ctehires
+          type: disk
+        data:
+          path: /data
+          source: /data
+          type: disk
+          recursive: "yes"
+        home:
+          path: /home
+          source: /pool/jupyter/home
+          type: "disk"
+        jupyterproject:
+          path: /project
+          source: /pool/jupyter/project
+          type: "disk"
+          recursive: "yes"
 
     - role: icos.certbot2
       tags: cert
