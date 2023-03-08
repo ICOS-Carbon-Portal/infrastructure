@@ -7,6 +7,7 @@
       - www.envriplus.eu
       - ggmt2022.online
       - www.ggmt2022.online
+      - avengers-project.eu
   roles:
     - name: Create the wordpress VM
       tags: lxd
