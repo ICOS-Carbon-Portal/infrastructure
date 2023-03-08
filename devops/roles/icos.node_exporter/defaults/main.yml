@@ -11,10 +11,14 @@ node_exporter_scripts: "{{ node_exporter_home }}/textfile-collector-scripts"
 node_exporter_bin: /usr/local/sbin/node_exporter
 
 # This goes into systemd.socket:ListenStream
+# If set to something other than a port number, node_exporer_allow will break.
 node_exporter_listen: 9100
 
 # If set, goes into systemd.socket:BindToDevice
 node_exporter_bindto: lo
+
+# If true, open the node_exporter port in the firewall
+node_exporter_allow: False
 
 # Help download_github_bin choose architecture.
 node_exporter_arch: >-

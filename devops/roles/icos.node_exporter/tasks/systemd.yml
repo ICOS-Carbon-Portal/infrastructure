@@ -20,6 +20,7 @@
   systemd:
     name: node-exporter.service
     state: stopped
+  changed_when: no
 
 - name: Start/restart node-exporter.socket
   systemd:

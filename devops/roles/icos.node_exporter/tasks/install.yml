@@ -34,3 +34,10 @@
 
 - import_tasks: systemd.yml
   tags: node_exporter_systemd
+
+- name: Allow node_exporter through firewall
+  when: node_exporter_allow
+  iptables_raw:
+    name: allow_node_exporter
+    rules: >-
+      -A INPUT -p tcp --dport {{ node_exporter_listen }} -j ACCEPT
