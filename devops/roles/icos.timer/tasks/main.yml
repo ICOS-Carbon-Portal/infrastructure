@@ -16,7 +16,7 @@
     dest: "{{ _timer_sysd_timer }}"
     content: |
       [Unit]
-      Description={{ timer_name }}
+      Description={{ timer_desc }}
 
       [Timer]
       {{ timer_conf }}
@@ -29,7 +29,7 @@
     dest: "{{ _timer_sysd_service }}"
     content: |
       [Unit]
-      Description={{ timer_name }}
+      Description={{ timer_desc }}
 
       [Service]
       User={{ timer_user }}
