@@ -29,6 +29,8 @@
   template:
     src: jupyterhub_config.py
     dest: "{{ jupyter_home }}/jupyterhub_home/"
+  vars:
+    conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}"
   register: _config
 
 - name: Create the templates directory
@@ -51,3 +53,4 @@
     state: present
     restarted: yes
     build: yes
+  changed_when: no

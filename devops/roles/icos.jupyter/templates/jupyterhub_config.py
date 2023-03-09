@@ -5,9 +5,8 @@ from dockerspawner import SystemUserSpawner
 
 
 # CUSTOM SPAWNER
-
 class CustomDockerSpawner(SystemUserSpawner):
-    user_volumes = {{ jupyter_user_volumes }}
+    user_volumes = {{ conf.user_volumes }}
 
     def start(self):
         self.volumes.update(self.user_volumes.get(self.user.name, {}))
@@ -24,6 +23,7 @@ c.JupyterHub.spawner_class = CustomDockerSpawner
 # Workaround to allow usernames with '-' in them.
 c.DockerSpawner.escape = 'legacy'
 
+
 # CONFIGURATION OF THE HUB
 # The ip address for the Hub process to *bind* to.
 c.JupyterHub.hub_ip = '0.0.0.0'
@@ -36,6 +36,15 @@ c.JupyterHub.authenticate_prometheus = False
 # c.JupyterHub.allow_named_servers = True
 # c.JupyterHub.named_server_limit_per_user = 5
 
+{% if conf.mem_limit is defined %}
+# Maximum number of bytes a single-user notebook server is allowed to use.
+c.Spawner.mem_limit = '{{ conf.mem_limit }}'
+{% endif %}
+
+{% if conf.cpu_limit is defined %}
+# Maximum number of cpu-cores a single-user notebook server is allowed to use.
+c.Spawner.cpu_limit = {{ conf.cpu_limit }}
+{% endif %}
 
 # CONFIGURATION OF THE PROXY
 # We're not starting the proxy, it's a separate docker-compose service.
@@ -46,9 +55,10 @@ c.ConfigurableHTTPProxy.api_url = 'http://proxy:8001'
 # this is assigned to the hub image by docker-compose.
 c.JupyterHub.hub_connect_ip = 'hub'
 
+
 # USER MANAGEMENT
 c.JupyterHub.admin_access = True
-c.Authenticator.admin_users = set({{ jupyter_admins }})
+c.Authenticator.admin_users = set({{ conf.admin_users }})
 
 
 # CONFIGURATION OF THE NOTEBOOK CONTAINERS
@@ -61,7 +71,7 @@ c.DockerSpawner.network_name = os.environ.get("NETWORK_NAME", "jupyter")
 c.DockerSpawner.remove = True
 
 c.DockerSpawner.use_internal_hostname = True
-c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "{{ jupyter_notebook_image }}")
+c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "{{ conf.image }}")
 c.DockerSpawner.notebook_dir = '/home/{username}'
 c.DockerSpawner.read_only_volumes = {
     '/etc/shadow'    : '/etc/shadow',
@@ -72,8 +82,10 @@ c.DockerSpawner.read_only_volumes = {
 }
 
 c.DockerSpawner.volumes = {'/project': '/project'}
-c.DockerSpawner.allowed_images = ['notebook']
 
+{% if conf.allowed_images is defined %}
+c.DockerSpawner.allowed_images = {{ conf.allowed_images }}
+{% endif %}
 
 # https://github.com/jupyterhub/dockerspawner/commit/83c4770c17a8fbd1e2f8f42068552937c5ff0eee
 # This commits changes the default behaviour from run-as-root to

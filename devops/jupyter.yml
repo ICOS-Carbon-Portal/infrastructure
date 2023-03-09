@@ -99,7 +99,11 @@
 
     - role: icos.jupyter
       tags: jupyter
-      jupyter_admins: "{{ vault_jupyter_admins }}"
+      jupyter_hub_config:
+        admin_users: "{{ vault_jupyter_admins }}"
+        mem_limit: "100G"
+        cpu_limit: 40
+      jupyter_admins:
       jupyter_jusers_enable: true
       bbclient_name: jupyter
 

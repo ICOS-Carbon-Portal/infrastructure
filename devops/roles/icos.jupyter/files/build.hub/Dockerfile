@@ -8,6 +8,9 @@
 # <2022-10-24> jupyterhub:3.0.0
 FROM jupyterhub/jupyterhub:latest@sha256:15ad3278c339227d4aa20c93a91450c7d283d53640dd390eb361a819e3dfc14e
 
+# <2023-03-08> jupyterhub:3.1
+FROM jupyterhub/jupyterhub:latest@sha256:ebe69134c17ee945bb7726570317f937810ddbbb1eed64f42821508cbcf38509
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -q && apt-get install -qy iproute2 curl git tzdata

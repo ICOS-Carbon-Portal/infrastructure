@@ -9,5 +9,7 @@
 
 - name: Pull the notebook image from registry
   docker_image:
-    name: "{{ jupyter_notebook_image }}"
+    name: "{{ conf.image }}"
     source: pull
+  vars:
+    conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}"
