@@ -9,42 +9,28 @@
       - www.ggmt2022.online
       - avengers-project.eu
   roles:
-    - name: Create the wordpress VM
+    - role: icos.lxd_vm
       tags: lxd
-      role: icos.lxd_vm
-      vars:
-        lxd_vm_name: wordpress
-        lxd_vm_root_size: "500GB"
-        lxd_vm_config:
-          limits.cpu: "4"
-          limits.memory: "8GB"
-  tasks:
-    - name: Create certificate
-      tags: cert
-      include_role:
-        name: icos.certbot2
-        apply:
-          tags: cert
-      vars:
-        certbot_name: wordpress
-        certbot_domains: "{{ wordpress_domains }}"
+      lxd_vm_name: wordpress
+      lxd_vm_root_size: "500GB"
+      lxd_vm_config:
+        limits.cpu: "4"
+        limits.memory: "8GB"
 
-    - name: Install nginx configuration
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: wordpress
+      certbot_domains: "{{ wordpress_domains }}"
+
+    - role: icos.nginxsite
       tags: nginx
-      include_role:
-        name: icos.nginxsite
-        apply:
-          tags: nginx
-      vars:
-        nginxsite_name: wordpress
+      nginxsite_name: wordpress
         nginxsite_file: files/wordpress.conf
 
 
 - hosts: wordpress
-  vars:
-    lxd_guest_root_keys: "{{ vault_wordpress_root_keys }}"
-  tasks:
-    - import_role: name=icos.lxd_guest
+  roles:
+    - role: icos.lxd_guest
       tags: guest
 
     - debug:
