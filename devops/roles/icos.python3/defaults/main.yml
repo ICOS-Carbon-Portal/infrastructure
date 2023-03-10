@@ -1,9 +1,1 @@
-python3_command: "/usr/bin/python{{ python3_version }}"
-python3_pip: "pip{{ python3_version }}"
-
-python3_should_install: >-
-  {{ python3_ansible_version is version(python3_version, '!=') }}
-
-# I.e "3.8"
-python3_ansible_version: >-
-  {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}
+python3_version_list: []

@@ -15,6 +15,7 @@
 - name: Install pipx
   pip:
     name: pipx
+    virtualenv: /opt/pipx/.venv
 
 - name: Create "global" version of pipx
   copy:
@@ -22,17 +23,21 @@
     mode: +x
     content: |
       #!/usr/bin/bash
-      PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin pipx "$@"
+      PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin /opt/pipx/.venv/bin/pipx "$@"
 
-- name: Installing several versions of python3
-  include_tasks: install.yml
-  when: python3_version_list is defined
+# We'll install extra versions of python from here.
+- name: Add ppa:deadsnakes repository
+  apt_repository:
+    repo: ppa:deadsnakes/ppa
+
+# Any versions that doesn't match the built-in version
+- name: Install extra version of python
+  apt:
+    name: "python{{ _version }}-venv"
+  when: _builtin_version != _version
   loop: "{{ python3_version_list }}"
   loop_control:
-    loop_var: python3_install_version
-
-- name: Installing a single version of python3
-  include_tasks: install.yml
-  when:
-    - python3_version_list is not defined
-    - python3_version is defined
+    loop_var: _version
+  vars:
+    _builtin_version: >-
+      {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}
