@@ -58,12 +58,16 @@
   delay: 5
   until: _key.rc == 0
 
-- name: Inject ssh root key into the VM
+- name: Inject ssh root keys into the VM
   command: >-
     lxc exec {{ lxd_vm_name }} --
-    bash -c "grep -q '{{ lxd_vm_root_key }}' /root/.ssh/authorized_keys ||
-            { echo '{{ lxd_vm_root_key }}' >> /root/.ssh/authorized_keys;
-              echo added; }"
+    bash -c "[ -s '{{ file }}' ] || {
+               echo '{{ keys }}' >> {{ file }};
+               echo added;
+             }"
+  vars:
+    file: /root/.ssh/authorized_keys
+    keys: "{{ lxd_vm_root_keys }}"
   register: _r
   changed_when: '"added" in _r.stdout'
 

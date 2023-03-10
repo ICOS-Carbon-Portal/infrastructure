@@ -9,11 +9,15 @@
     name: Europe/Stockholm
   notify: restart crond
 
+# The root keys should have been set when creating the VM. If the root keys
+# change however, this task will update them.
 - name: Install public keys
   authorized_key:
     user: root
     state: present
     key: "{{ lxd_guest_root_keys }}"
+    # Make sure to remove stale root keys
+    exclusive: True
   when: lxd_guest_root_keys is truthy
 
 - name: Add default gateway as host
