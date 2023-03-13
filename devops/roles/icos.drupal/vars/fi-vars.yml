@@ -5,4 +5,9 @@ domain: www.icos-finland.fi
 trusted_host: ^www\.icos-finland\.fi$
 ssl_domains: [icos-finland.fi,www.icos-finland.fi]
 redirect_to_www: true
-drupal_modules: [linkit]
+drupal_modules: [
+  linkit,
+  pathauto,
+  redirect,
+  smtp
+]

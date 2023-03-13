@@ -79,6 +79,27 @@ server {
   server_name  {{ domain }};
   return 301   https://{{ domain }}$request_uri;
 }
+{% elif website == "otc" %}
+server {
+  listen       80;
+  server_name  otc.icos-cp.eu;
+  return 301   https://{{ domain }}$request_uri;
+}
+
+server {
+  listen       443 ssl;
+  server_name  otc.icos-cp.eu;
+
+  {{ certbot_nginx_conf | indent(2) }}
+
+  return 301   https://{{ domain }}$request_uri;
+}
+
+server {
+  listen       80;
+  server_name  {{ domain }};
+  return 301   https://{{ domain }}$request_uri;
+}
 {% elif redirect_to_www | default(false) %}
 server {
   listen       80;

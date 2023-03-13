@@ -13,6 +13,7 @@ drupal_modules: [
   google_analytics,
   honeypot,
   linkit,
+  media_alias_display,
   menu_breadcrumb,
   metatag,
   pathauto,
