@@ -33,6 +33,8 @@
     dbin_src: dive
     # https://github.com/wagoodman/dive/releases
     dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_linux_{{ dive_arch }}.tar.gz"
+  # dive isn't supported on arm
+  when: ansible_architecture == 'x86_64'
 
 - include_role:
     name: icos.github_download_bin
