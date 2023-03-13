@@ -1,4 +1,5 @@
 timer_user: root
+timer_home: /etc/systemd/system
 timer_exec: "{{ timer_dest }}"
 timer_dest: "{{ timer_home }}/{{ timer_name }}"
 timer_desc: "{{ timer_name }}"
