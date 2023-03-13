@@ -21,9 +21,9 @@
       vars:
         quince_name: quince
         quince_domains:
-          - quince.bcdc.no
-          - icoslabelling.bcdc.no
-          - quince-training.bcdc.no
+          - quince.icos-otc.org
+          - icoslabelling.icos-otc.org
+          - quince-training.icos-otc.org
 
 - hosts: quince3
   roles:
