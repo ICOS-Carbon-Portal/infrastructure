@@ -23,7 +23,7 @@
       {% if name != inventory_hostname %}
       # {{ name }}
       [Peer]
-      PublicKey = {{ conf.key | default(lookup('file', 'files/wireguard/%s' % name)) }}
+      PublicKey = {{ conf.key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, name)) }}
       AllowedIPs = {{ conf.allowed_ips | default("%s/32" % conf.addr) }}
       PersistentKeepalive = 25
       {% endif %}

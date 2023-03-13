@@ -28,9 +28,10 @@ wg_hub_addr: >-
   {{ wg_hub_config.hub.addr -}}
   {% endif %}
 
+wg_hub_key_dir: 'files/wireguard'
 wg_hub_key: >-
   {{ wg_hub_config.peers[wg_hub_peer].key |
-  default(lookup('file', 'files/wireguard/%s' % wg_hub_peer)) }}
+  default(lookup('file', '%s/%s' % (wg_hub_key_dir, wg_hub_peer))) }}
 
 wg_hub_intf: >-
   wg-{{ wg_hub_config.name }}
