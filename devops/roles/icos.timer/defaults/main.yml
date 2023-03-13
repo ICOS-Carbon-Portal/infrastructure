@@ -2,6 +2,7 @@ timer_user: root
 timer_exec: "{{ timer_dest }}"
 timer_dest: "{{ timer_home }}/{{ timer_name }}"
 timer_desc: "{{ timer_name }}"
+timer_wdir:
 
 # The paths to the systemd unit files.
 _timer_sysd_timer: "{{ timer_home }}/{{ timer_name }}.timer"

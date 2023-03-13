@@ -38,6 +38,9 @@
       {% for env in timer_envs | default([]) -%}
       Environment={{ env }}
       {% endfor -%}
+      {% if timer_wdir %}
+      WorkingDirectory={{ timer_wdir }}
+      {% endif %}
 
 - name: Link systemd files
   command:  systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}
