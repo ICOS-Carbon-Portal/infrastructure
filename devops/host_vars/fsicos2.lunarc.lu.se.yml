@@ -12,6 +12,7 @@ bbclient_remotes:
 
   
 # PROMETHEUS
+lxdmon_enable: true
 dockermon_enable: true
 dirsize_initial:
   - /disk/data/nextcloud

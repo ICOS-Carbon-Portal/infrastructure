@@ -1,0 +1,14 @@
+# https://linuxcontainers.org/lxd/docs/master/metrics/
+# https://discuss.linuxcontainers.org/t/prometheus-monitoring-for-lxd/13259
+# https://discuss.linuxcontainers.org/t/retrieve-lxd-metrics-with-telegraf-and-influxdb-2-x/12281
+
+# The official way of getting metrics from lxd involve certificates, yuck.
+
+- name: LXD metrics timer
+  include_role:
+    name: icos.timer
+  vars:
+    timer_wdir: "{{ node_exporter_textfiles }}"
+    timer_exec: bash -c 'lxc query /1.0/metrics | sponge lxd.prom'
+    timer_name: node-exporter-lxd
+    timer_conf: OnCalendar=*:*:00,30

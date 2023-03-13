@@ -12,3 +12,7 @@
 - import_tasks: docker.yml
   tags: node_exporter_docker
   when: dockermon_enable
+
+- import_tasks: lxd.yml
+  tags: node_exporter_lxd
+  when: lxdmon_enable

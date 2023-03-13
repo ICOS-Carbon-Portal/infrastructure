@@ -51,3 +51,6 @@ dirsize_initial: []
 dockermon_enable: false
 dockermon_home: "{{ node_exporter_home }}/dockermon"
 dockermon_prom: "{{ node_exporter_textfiles }}/dockermon.prom"
+
+# LXD COLLECTOR
+lxdmon_enable: false
