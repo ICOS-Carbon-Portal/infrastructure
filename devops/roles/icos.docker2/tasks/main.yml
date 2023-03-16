@@ -1,0 +1,29 @@
+# https://docs.docker.com/engine/install/debian/
+# https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04
+
+# docker.io is the built-in version in ubuntu and if it's installed, docker
+# might already be in use.
+- name: Fail if docker.io is apt-installed
+  ansible.builtin.shell: |
+    dpkg --get-selections docker.io | grep -vq '\binstall'
+  changed_when: false
+  register: r
+  failed_when: r.rc == 0
+
+- import_tasks: debian.yml
+  when: ansible_distribution == "Debian"
+
+- import_tasks: ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+
+- name: Install docker and docker-compose
+  apt:
+    name:
+      - docker-ce
+      - docker-compose
+
+- name: Install docker configuration
+  copy:
+    src: daemon.json
+    dest: /etc/docker/
+  notify: reload docker

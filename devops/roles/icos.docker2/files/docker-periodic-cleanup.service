@@ -1,0 +1,8 @@
+[Unit]
+Description=Clean old docker images
+
+[Service]
+Type=oneshot
+# Clean dangling docker images more than 15 days.
+# https://docs.docker.com/engine/reference/commandline/image_prune/
+ExecStart=/bin/sh -c 'docker image prune -f --filter "until=360h"'

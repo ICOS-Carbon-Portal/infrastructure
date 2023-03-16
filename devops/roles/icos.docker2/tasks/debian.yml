@@ -1,0 +1,21 @@
+# https://docs.docker.com/engine/install/debian/
+- name: Add docker key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/trusted.gpg.d/docker.asc
+    mode: '0644'
+    force: true
+  register: _key
+
+- name: Retrieve deb_arch fact
+  shellfact:
+    exec: dpkg --print-architecture
+    fact: deb_arch
+
+- name: Add docker apt repository
+  apt_repository:
+    filename: docker
+    repo: >-
+      deb [arch={{ deb_arch }} signed-by={{ _key.dest }}]
+      https://download.docker.com/linux/debian
+      {{ ansible_lsb.codename }} stable
