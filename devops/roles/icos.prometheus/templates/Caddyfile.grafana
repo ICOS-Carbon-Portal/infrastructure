@@ -1,0 +1,3 @@
+{{ prom_graf_host }} {
+        reverse_proxy localhost:{{ prom_graf_port }}
+}

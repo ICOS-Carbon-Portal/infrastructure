@@ -1,0 +1,5 @@
+VM_REMOTE={{ vmagent_remote }}
+{% if vmagent_auth %}
+VM_USERNAME={{ vmagent_auth.username }}
+VM_PASSWORD={{ vmagent_auth.password }}
+{% endif %}

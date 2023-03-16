@@ -5,15 +5,6 @@ bbclient_remotes:
   - fsicos2.lunarc.lu.se
   - cdb.nateko.lu.se
 
-  
-# PROMETHEUS
-lxdmon_enable: true
-dockermon_enable: true
-dirsize_initial:
-  - /disk/data/nextcloud
-  - /var/log
-
-  
 # NEXTCLOUD  
 nextcloud_volume_nextcloud: /disk/data/nextcloud
 

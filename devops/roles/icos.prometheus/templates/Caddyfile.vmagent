@@ -1,0 +1,3 @@
+{{ prom_vmagent_host }} {
+        reverse_proxy localhost:{{ prom_vmagent_port }}
+}

@@ -1,0 +1,24 @@
+vmagent_hosts:
+
+  vars:
+    vmagent_remote: "https://prom.icos-cp.eu/api/v1/write"
+    vmagent_auth: "{{ vault_vmagent_auth }}"
+    smartmon_enable: true
+    dirsize_enable: true
+
+  hosts:
+    # cdb.nateko.lu.se:
+    #   dockermon_enable: true
+
+    icos1.gis.lu.se:
+      dockermon_enable: true
+      lxdmon_enable: true
+
+    fsicos2.lunarc.lu.se:
+      dockermon_enable: true
+      dirsize_initial:
+        - /disk/data/nextcloud
+        - /var/log
+
+    fsicos3.lunarc.lu.se:
+      lxdmon_enable: true

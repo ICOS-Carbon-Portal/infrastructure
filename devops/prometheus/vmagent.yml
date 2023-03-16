@@ -1,27 +1,41 @@
-# VMAGENT
-- hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se # cdb.nateko.lu.se
+# Provision physical hosts with vmagent and node_exporter.
+#
+# upgrade to latest vmagent:
+# icos run prometheus/vmagent vmagent -evmagent_upgrade=1 -D
+
+
+- hosts: vmagent_hosts
   roles:
     - role: icos.vmagent
       tags: vmagent
 
-    - role: icos.certbot2
-      tags: cert
-      certbot_domain: "{{ inventory_hostname }}"
+    - role: icos.node_exporter
+      tags: node_exporter
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: vmagent
+      nginxsite_file: files/vmagent-nginx.conf
+      nginxsite_users: [ "{{ vault_vmagent_auth }}" ]
+      nginxsite_domains: [ "{{ inventory_hostname }}" ]
 
   tasks:
-    - name: Remove old node-exporter config
-      include_role:
-        name: icos.nginxsite
-        tasks_from: remove.yml
-      vars:
-        nginxsite_name: node-exporter
+    - name: Test that the vmagent UI is password protected
+      tags: nginx
+      uri:
+        url: "https://{{ inventory_hostname }}/vmagent/"
+      retries: 10
+      register: r
+      failed_when: r.status != 401
 
-    - name: Install vmagent nginxsite
-      include_role:
-        name: icos.nginxsite
-      vars:
-        nginxsite_name: vmagent
-        nginxsite_file: files/vmagent-nginx.conf
+    - name: Test that the vmagent UI works with password
+      tags: nginx
+      uri:
+        url: "https://{{ inventory_hostname }}/vmagent/"
+        user: "{{ vault_vmagent_auth.username }}"
+        password: "{{ vault_vmagent_auth.password }}"
+      retries: 10
+      register: r
 
     - name: Add node exporter to vmagent's file discovery
       tags: conf
@@ -30,7 +44,7 @@
         content: |
           # The node exporter on host.
           - targets:
-              - localhost:9100
+              - localhost:{{ node_exporter_listen }}
             labels:
               job: node_exporter
               instance: {{ inventory_hostname_short }}

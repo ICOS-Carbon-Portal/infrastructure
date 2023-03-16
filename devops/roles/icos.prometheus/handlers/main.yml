@@ -1,29 +1,4 @@
-# PROMETHEUS
-- name: reload prom config
-  command: docker-compose kill -s SIGHUP prometheus
-  args:
-    chdir: "{{ prometheus_home }}"
-
-
-# BLACKBOX EXPORTER
-- name: reload bbox config
-  command: docker-compose kill -s SIGHUP blackbox
-  args:
-    chdir: "{{ prometheus_home }}"
-
-
-# ALERTMANAGER
-- name: reload alrt config
-  command: docker-compose kill -s SIGHUP alertmanager
-  args:
-    chdir: "{{ prometheus_home }}"
-
-
-# GRAFANA
-# Grafana cannot reload it's configuration so just restart it.
-- name: restart grafana
-  docker_compose:
-    project_src:  "{{ prometheus_home }}"
-    services:
-      - grafana
-    restarted: yes
+- name: reload docker
+  service:
+    name: docker
+    state: reloaded

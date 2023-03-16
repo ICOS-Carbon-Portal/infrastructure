@@ -1,0 +1,14 @@
+- name: Install Caddyfiles
+  template:
+    src: "{{ item }}"
+    dest: /etc/caddy/sites/
+  loop:
+    - Caddyfile.grafana
+    - Caddyfile.vm
+    - Caddyfile.vmagent
+
+- name: Reload caddy
+  command: caddy reload
+  args:
+    chdir: /etc/caddy
+  changed_when: false

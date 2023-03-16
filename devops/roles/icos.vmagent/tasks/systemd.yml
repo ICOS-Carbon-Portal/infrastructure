@@ -1,0 +1,30 @@
+- name: Create prometheus.yml
+  copy:
+    dest: "{{ vmagent_home }}/prometheus.yml"
+    content: "{{ vmagent_conf }}"
+
+- name: Create vmagent environ file
+  template:
+    dest: "{{ vmagent_environ }}"
+    src: vmagent.environ
+    mode: "0600"
+    lstrip_blocks: yes
+
+- name: Create vmagent service file
+  template:
+    dest: "{{ vmagent_home }}/vmagent.service"
+    lstrip_blocks: yes
+    src: vmagent.service
+
+- name: Link service
+  command: "systemctl link {{ vmagent_home }}/vmagent.service"
+  args:
+    creates: /etc/systemd/system/vmagent.service
+
+- name: Start vmagent service
+  systemd:
+    name: vmagent
+    enabled: yes
+    state: restarted
+    daemon-reload: yes
+  changed_when: no

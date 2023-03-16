@@ -1,0 +1,16 @@
+[Unit]
+Description=Victoriametrics vmagent
+
+[Service]
+EnvironmentFile={{ vmagent_environ }}
+ExecStart={{ vmagent_bin }}/vmagent-prod \
+  -promscrape.config={{ vmagent_home }}/prometheus.yml \
+  -remoteWrite.url=%{VM_REMOTE}
+  {%- if vmagent_auth %} \
+  -remoteWrite.basicAuth.username=%{VM_USERNAME} \
+  -remoteWrite.basicAuth.password=%{VM_PASSWORD}
+  {% endif %}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,31 @@
+vmagent_home: /opt/vmagent
+
+vmagent_fsd: "{{ vmagent_home }}/file_sd_configs"
+vmagent_bin: "{{ vmagent_home }}/bin"
+vmagent_environ: "{{ vmagent_home }}/environ"
+
+# Prometheus configuration.
+# vmagent only support a subset, and the only subset we're currently interested
+# in is file service discovery.
+vmagent_conf: |
+  scrape_configs:
+  - job_name: file
+    file_sd_configs:
+    - files:
+      - "{{ vmagent_fsd }}/*.yaml"
+      - "{{ vmagent_fsd }}/*.json"
+
+# Set this if the remote victoriametrics remote-write requires basic auth
+vmagent_auth:
+
+# Should we upgrade to latest release?
+vmagent_upgrade: false
+
+vmagent_arch: "{{ vmagent_arch_map[ansible_architecture] }}"
+vmagent_arch_map:
+  "armv7l": "arm"
+  "armv6l": "arm"
+  "x86_64": "amd64"
+
+# ansible_hostname is usually just the first part anyway.
+fsd_host: "{{ ansible_hostname | splitext | first }}"
