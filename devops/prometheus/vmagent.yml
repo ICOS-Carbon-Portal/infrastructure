@@ -1,0 +1,36 @@
+# VMAGENT
+- hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se # cdb.nateko.lu.se
+  roles:
+    - role: icos.vmagent
+      tags: vmagent
+
+    - role: icos.certbot2
+      tags: cert
+      certbot_domain: "{{ inventory_hostname }}"
+
+  tasks:
+    - name: Remove old node-exporter config
+      include_role:
+        name: icos.nginxsite
+        tasks_from: remove.yml
+      vars:
+        nginxsite_name: node-exporter
+
+    - name: Install vmagent nginxsite
+      include_role:
+        name: icos.nginxsite
+      vars:
+        nginxsite_name: vmagent
+        nginxsite_file: files/vmagent-nginx.conf
+
+    - name: Add node exporter to vmagent's file discovery
+      tags: conf
+      copy:
+        dest: /opt/vmagent/file_sd_configs/node-exporter-host.yaml
+        content: |
+          # The node exporter on host.
+          - targets:
+              - localhost:9100
+            labels:
+              job: node_exporter
+              instance: {{ inventory_hostname_short }}
