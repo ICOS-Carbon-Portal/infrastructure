@@ -1,0 +1,12 @@
+- hosts: fsicos2.lunarc.lu.se
+  tasks:
+    - name: Add nextcloud to vmagent
+      tags: nextcloud
+      include_role:
+        apply:
+          tags: nextcloud
+        name: icos.vmagent
+        tasks_from: fsd
+      vars:
+        fsd_name: nextcloud
+        fsd_target: "localhost:9205"
