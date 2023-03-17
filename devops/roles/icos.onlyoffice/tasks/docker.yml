@@ -38,6 +38,4 @@
 - name: Build and start
   docker_compose:
     project_src: "{{ onlyoffice_home }}"
-    build: yes
-    state: present
-    restarted: yes
+
