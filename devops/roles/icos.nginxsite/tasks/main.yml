@@ -1,29 +1,46 @@
-- name: Check that all parameters are defined
-  fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - nginxsite_name
-    - nginxsite_file
+- name: Create certificates
+  tags: nginxsite_cert
+  include_role:
+    name: icos.certbot2
+    apply: {tags: nginxsite_cert}
+    public: yes
+  vars:
+    certbot_name: "{{ nginxsite_name }}"
+    certbot_domains: "{{ nginxsite_domains }}"
+  when: nginxsite_domains is defined
+
+- name: Create basic auth users
+  tags: nginxsite_users
+  include_role:
+    name: icos.nginxauth
+    apply: {tags: nginxsite_users}
+    public: yes
+  vars:
+    nginxauth_name: "{{ nginxsite_name }}"
+    nginxauth_users: "{{ nginxsite_users }}"
+  when: nginxsite_users is defined
 
 - block:
     - name: Copy config
       template:
         src: "{{ nginxsite_file }}"
-        dest: "{{ nginxsite_path_available }}"
+        dest: "{{ nginxsite_path_confd }}"
         backup: true
       register: update
+
+    - name: Remove old config file from sites-available
+      file:
+        dest: "{{ nginxsite_path_available }}"
+        state: absent
+
+    - name: Remove old symlink sites-enabled
+      file:
+        dest: "{{ nginxsite_path_enable }}"
+        state: absent
 
     - name: Check syntax
       shell: nginx -t
       changed_when: no
-
-    - name: Create symlink to sites-enabled
-      file:
-        dest: "{{ nginxsite_path_enable }}"
-        src: "{{ nginxsite_path_available }}"
-        state: "{% if nginxsite_enable %}link{% else %}absent{% endif %}"
-      when: nginxsite_enable
 
     - name: Reload nginx
       systemd:
