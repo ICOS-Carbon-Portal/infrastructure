@@ -1,17 +1,10 @@
 - import_tasks: docker.yml
   tags: onlyoffice_docker
 
-- include_role:
-    name: icos.certbot2
-    public: yes
-  tags: onlyoffice_certbot
+- name: Install nginx configuration for onlyoffice
+  include_role:
+    name: icos.nginxsite
   vars:
-    certbot_name: "{{ onlyoffice_cert_name }}"
-    certbot_domains:
-      - "{{ onlyoffice_domain }}"
-
-- include_role: name=icos.nginxsite
-  tags: onlyoffice_nginx
-  vars:
-    nginxsite_name: "{{ onlyoffice_site_name }}"
+    nginxsite_name: onlyoffice
     nginxsite_file: onlyoffice.conf
+    nginxsite_domains: ["{{ onlyoffice_domain }}"]
