@@ -39,3 +39,9 @@
   docker_compose:
     project_src: "{{ onlyoffice_home }}"
 
+- name: Check that onlyoffice responds - might take a while
+  uri:
+    url: "https://{{ onlyoffice_domain }}"
+  retries: 60
+  delay: 10
+  changed_when: no
