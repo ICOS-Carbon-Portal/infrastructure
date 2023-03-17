@@ -57,19 +57,13 @@
       certbot_domains:
         - "{{ rspamd_domain }}"
 
-    - role: icos.htpasswd
-      tags:
-        - nginx
-        - htpasswd
-      htpasswd_file: "{{ rspamd_user_file }}"
-      htpasswd_users:
-        - name: secret
-          password: "{{ rspamd_admin_password }}"
-
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: rspamd
       nginxsite_file: files/rspamd.conf
+      nginxsite_users:
+        - name: secret
+          password: "{{ rspamd_admin_password }}"
 
   tasks:
     # https://rspamd.com/doc/integration.html#configuring-postfix
