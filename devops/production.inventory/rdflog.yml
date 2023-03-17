@@ -18,7 +18,6 @@ pgrep_rdflog_server:
 # The VMs running replicas.
 pgrep_rdflog:
   vars:
-    ansible_user: root
     pgrep_name: rdflog
     pgrep_peer_user: pgrepuser
     pgrep_peer_host: fsicos2.lunarc.lu.se

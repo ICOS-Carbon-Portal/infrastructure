@@ -1,7 +1,2 @@
-# ANSIBLE
-ansible_user: root
-
-
-# SERVER
 lxd_vm_variant: ext4
 dockermon_enable: true
