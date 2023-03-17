@@ -7,7 +7,9 @@
 
 - include_role: name=icos.certbot2
   vars:
-    certbot_domain: "{{ jupyter_domain }}"
+    certbot_name: "{{ jupyter_domain }}"
+    certbot_domains:
+      - "{{ jupyter_domain }}"
 
 - include_role: name=icos.nginxsite
   vars:

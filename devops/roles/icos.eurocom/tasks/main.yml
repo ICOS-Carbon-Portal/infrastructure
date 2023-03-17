@@ -1,6 +1,8 @@
 - include_role: name=icos.certbot2
   vars:
-    certbot_domain: "{{ eurocom_domain }}"
+    certbot_name: "{{ eurocom_domain }}"
+    certbot_domains:
+      - "{{ eurocom_domain }}"
 
 - include_role: name=icos.nginxauth
   vars:

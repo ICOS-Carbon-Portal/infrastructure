@@ -9,7 +9,9 @@
 
 - include_role: name=icos.certbot2
   vars:
-    certbot_domain: "{{ filedrop_domain }}"
+    certbot_name: "{{ filedrop_domain }}"
+    certbot_domains:
+      - "{{ filedrop_domain }}"
 
 - include_role: name=icos.nginxsite
   vars:

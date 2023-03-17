@@ -13,9 +13,8 @@
 
     - role: icos.nginxsite
       tags: icos-ri
-      vars:
-        nginxsite_name: icos-ri
-        nginxsite_file: files/domains/icos-ri.conf
+      nginxsite_name: icos-ri
+      nginxsite_file: files/domains/icos-ri.conf
 
     # ICOS CITIES
     - role: icos.certbot2
@@ -35,7 +34,9 @@
 
     # NORDSPEC
     - role: icos.certbot2
-      certbot_domain: nordspec.nateko.lu.se
+      certbot_name: nordspec.nateko.lu.se
+      certbot_domains:
+        - nordspec.nateko.lu.se
 
     - role: icos.nginxsite
       tags: nordspec
