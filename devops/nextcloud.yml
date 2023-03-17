@@ -37,13 +37,3 @@
       bbclient_patterns: |
         R /disk/data/nextcloud
         R /docker/nextcloud/volumes
-
-  tasks:
-    - name: Add nextcloud to prometheus
-      tags: prom
-      include_role:
-        name: icos.prometheus
-        tasks_from: fsd
-      vars:
-        fsd_app: nextcloud
-        fsd_port: "{{ nextcloud_exporter_port }}"
