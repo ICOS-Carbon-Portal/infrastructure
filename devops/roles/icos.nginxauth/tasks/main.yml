@@ -4,7 +4,7 @@
   when: vars[item] is undefined
   loop:
     - nginxauth_users
-    - nginxauth_file
+    - nginxauth_name
 
 # This gets us htpasswd(1)
 - name: Install apache2-utils
@@ -23,6 +23,6 @@
 - name: Add basic auth users
   htpasswd:
     path: "{{ nginxauth_file }}"
-    name: "{{ item.name }}"
+    name: "{{ item.username }}"
     password: "{{ item.password }}"
   loop: "{{ nginxauth_users }}"
