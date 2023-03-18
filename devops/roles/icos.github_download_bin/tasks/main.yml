@@ -1,22 +1,7 @@
-- block:
-    - name: Create download directory
-      file:
-        path: "{{ dbin_download_dir }}"
-        state: directory
-      register: _create
-
-  # FIXME: Remove in 2024
-  rescue:
-    - name: Remove file that blocks download dir
-      when: _create.msg.endswith('already exists as a file')
-      file:
-        path: "{{ dbin_download_dir }}"
-        state: absent
-
-    - name: Create download directory
-      file:
-        path: "{{ dbin_download_dir }}"
-        state: directory
+- name: Create download directory
+  file:
+    path: "{{ dbin_download_dir }}"
+    state: directory
 
 - name: Retrieving latest tag for {{ dbin_repo }}
   run_once: true
