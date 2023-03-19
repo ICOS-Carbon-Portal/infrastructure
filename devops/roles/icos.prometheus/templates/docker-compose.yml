@@ -40,7 +40,6 @@ services:
     restart: always
 
 volumes:
-  vmagentdata: {}
   vmdata: {}
   grafanadata: {}
 
