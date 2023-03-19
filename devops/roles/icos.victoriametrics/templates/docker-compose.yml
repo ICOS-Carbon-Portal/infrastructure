@@ -14,7 +14,7 @@ services:
     command:
       - "-promscrape.config=/etc/prometheus/prometheus.yml"
       - "-storageDataPath=/storage"
-      - "-httpListenAddr=:8428"
+      - "-httpListenAddr=:{{ vm_vm_port }}"
       - "-selfScrapeInterval=10s"
     networks:
       - vm_net

@@ -71,5 +71,5 @@
             }
 
             respond @api_not_icos 401
-            reverse_proxy localhost:8428
+            reverse_proxy localhost:{{ vm_vm_port }}
           }

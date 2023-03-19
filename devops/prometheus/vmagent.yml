@@ -5,10 +5,14 @@
 
 
 - hosts: vmagent_hosts
+  vars:
+    # We serve up the Web UI for vmagent on the host's domain name (i.e
+    # fsicos2.lunarc.lu.se) under this top-level path.
+    vmagent_pathprefix: "/vmagent/"
   roles:
     - role: icos.vmagent
       tags: vmagent
-      vmagent_pathprefix: "/vmagent/"
+
     - role: icos.node_exporter
       tags: node_exporter
 
