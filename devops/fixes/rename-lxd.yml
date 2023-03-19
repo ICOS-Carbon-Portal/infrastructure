@@ -1,0 +1,59 @@
+- hosts: cdb.nateko.lu.se
+  vars:
+    old_name: pgrep-rdflog
+    new_name: pgrep2
+    ssh_port: "{{ hostvars[new_name].ansible_port }}"
+  tasks:
+    - name: stop container
+      command: lxc stop {{ old_name }}
+      register: r
+      failed_when:
+        - r.rc != 0
+        - "'not found' not in r.stderr.lower()"
+      changed_when:
+        - r.rc == 0
+
+    - name: rename container
+      command: lxc rename {{ old_name }} {{ new_name }}
+      register: r
+      failed_when:
+        - r.rc != 0
+        - "'not found' not in r.stderr.lower()"
+      changed_when:
+        - r.rc == 0
+
+    - name: Modify /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regex: '(\S*)\s+(?:{{ old_name }})\.lxd$'
+        line: '\1\t{{ new_name }}.lxd'
+        state: present
+        backrefs: yes
+      register: r
+
+    - name: Remove old iptables rule
+      iptables_raw:
+        name: "forward_ssh_to_{{ old_name }}"
+        state: absent
+        table: nat
+
+    - name: Get ip of host
+      shell: awk '/{{ new_name }}/ {print $1}' < /etc/hosts
+      changed_when: no
+      register: ip
+
+    - name: Add new forwarding rule
+      iptables_raw:
+        name: "forward_ssh_to_{{ new_name }}"
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp
+          --dport {{ ssh_port }}
+          -j DNAT --to-destination {{ ip.stdout }}:22
+
+    - name: start container
+      command: lxc start {{ new_name }}
+
+    - debug:
+        msg: |
+          If we're on zfs, maybe rename the docker storage?
