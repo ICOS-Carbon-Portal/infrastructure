@@ -5,7 +5,6 @@
   loop:
     - Caddyfile.grafana
     - Caddyfile.vm
-    - Caddyfile.vmagent
 
 - name: Reload caddy
   command: caddy reload
