@@ -18,6 +18,9 @@ vmagent_conf: |
 # Set this if the remote victoriametrics remote-write requires basic auth
 vmagent_auth:
 
+# Set this if vmagent is behind a proxy using another top-level url.
+vmagent_pathprefix:
+
 # Should we upgrade to latest release?
 vmagent_upgrade: false
 

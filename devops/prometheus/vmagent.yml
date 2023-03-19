@@ -8,7 +8,7 @@
   roles:
     - role: icos.vmagent
       tags: vmagent
-
+      vmagent_pathprefix: "/vmagent/"
     - role: icos.node_exporter
       tags: node_exporter
 
