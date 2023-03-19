@@ -1,29 +1,29 @@
-- name: Create prometheus directories
+- name: Create victoriametrics directories
   file:
-    path: "{{ prom_home }}/{{ item }}"
+    path: "{{ vm_home }}/{{ item }}"
     state: directory
   loop:
     # prometheus.yml goes here but victoriametrics only reads the scrape part
-    - prometheus/scrape
+    - victoriametric/scrape
     - grafana/provisioning
 
 - name: Copy files
   template:
     src: "{{ item.src }}"
-    dest: "{{ prom_home }}/{{ item.dest | default('') }}"
+    dest: "{{ vm_home }}/{{ item.dest | default('') }}"
   loop:
     - src: docker-compose.yml
     - src: grafana.ini
       dest: grafana
 
-- name: Create prometheus config
+- name: Create victoriametrics scrape config
   copy:
-    content: "{{ prom_conf }}"
-    dest: "{{ prom_home }}/prometheus/prometheus.yml"
+    content: "{{ vm_scrape_conf }}"
+    dest: "{{ vm_home }}/victoriametrics/prometheus.yml"
   
 - name: Build and start
   docker_compose:
-    project_src: "{{ prom_home }}"
+    project_src: "{{ vm_home }}"
     build: yes
-    pull: "{{ prom_upgrade | default(false) | bool }}"
+    pull: "{{ vm_upgrade | default(false) | bool }}"
     

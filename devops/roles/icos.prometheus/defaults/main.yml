@@ -1,15 +1,16 @@
-prom_home: /opt/prometheus
+vm_home: /opt/victoriametrics
 
-# contents of prometheus.yml
-prom_conf: ""
-prom_scrape_dir: "{{ prom_home }}/prometheus/scrape"
+vm_scrape_conf: ""
 
-prom_graf_host: grafana.local:80
-prom_graf_port: 3000
-prom_graf_url: "http://grafana.local"
+# This directory is still called prometheus because it concerns tvhe part of
+# victoriametrics that operates in prometheus compatability mode.
+vm_scrape_dir: "{{ vm_home }}/prometheus/scrape"
 
-prom_vm_host: vm.local:80
-prom_vm_port: 8428
+# The external grafana address used for the reverse proxy.
+vm_graf_host: grafana.local:80
+vm_graf_port: 3000
+vm_graf_url: "http://grafana.local"
 
-prom_vmagent_host: vmagent.local:80
-prom_vmagent_port: 8429
+# The external victoriametrics address used for the reverse proxy.
+vm_vm_host: vm.local:80
+vm_vm_port: 8428

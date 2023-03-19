@@ -7,7 +7,7 @@ services:
     container_name: victoriametrics
     image: victoriametrics/victoria-metrics
     ports:
-      - 127.0.0.1:{{ prom_vm_port }}:{{ prom_vm_port }}
+      - 127.0.0.1:{{ vm_vm_port }}:{{ vm_vm_port }}
     volumes:
       - ./prometheus:/etc/prometheus
       - vmdata:/storage
@@ -27,10 +27,10 @@ services:
     depends_on:
       - "victoriametrics"
     ports:
-      - 127.0.0.1:{{ prom_graf_port }}:{{ prom_graf_port }}
+      - 127.0.0.1:{{ vm_graf_port }}:{{ vm_graf_port }}
     environment:
       GF_SECURITY_ADMIN_USER: "admin"
-      GF_SECURITY_ADMIN_PASSWORD: "{{ prom_graf_pass }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ vm_graf_pass }}"
     volumes:
       - grafanadata:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/

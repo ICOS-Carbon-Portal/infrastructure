@@ -32,7 +32,7 @@
 
     - role: icos.prometheus
       tags: prom
-      prom_graf_domain: graf.icos-cp.eu
+      vm_graf_domain: graf.icos-cp.eu
 
   tasks:
     - name: Install proxy configuration for prometheus
