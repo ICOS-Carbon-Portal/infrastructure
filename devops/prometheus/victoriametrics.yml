@@ -30,7 +30,7 @@
           respond "Great success!"
         }
 
-    - role: icos.prometheus
+    - role: icos.victoriametrics
       tags: prom
       vm_graf_domain: graf.icos-cp.eu
 
