@@ -218,7 +218,9 @@ def push_templates(what):
 
 
 def sync_notebooks():
-    run(['rsync', '-vtr',
+    # Sync notebooks and delete extraneous files from destination
+    # directory.
+    run(['rsync', '-vtr', '--delete',
          "%s/" % JUPYDIR.joinpath("notebooks"),
          'projectcommon:'],
         check=1)
