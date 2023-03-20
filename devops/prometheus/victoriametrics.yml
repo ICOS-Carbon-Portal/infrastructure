@@ -33,9 +33,10 @@
     - role: icos.victoriametrics
       tags: prom
       vm_graf_domain: graf.icos-cp.eu
+      vm_graf_pass: "{{ vault_vm_graf_pass }}"
 
   tasks:
-    - name: Install proxy configuration for prometheus
+    - name: Install proxy configuration for victoriametrics
       tags: proxy
       import_role:
         name: icos.caddy

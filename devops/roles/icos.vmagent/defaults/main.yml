@@ -21,6 +21,9 @@ vmagent_auth:
 # Set this if vmagent is behind a proxy using another top-level url.
 vmagent_pathprefix:
 
+# The default port of the single-node vmagent is 8429.
+vmagent_listen: 127.0.0.1:8429
+
 # Should we upgrade to latest release?
 vmagent_upgrade: false
 

@@ -2,10 +2,6 @@ vm_home: /opt/victoriametrics
 
 vm_scrape_conf: ""
 
-# This directory is still called prometheus because it concerns tvhe part of
-# victoriametrics that operates in prometheus compatability mode.
-vm_scrape_dir: "{{ vm_home }}/prometheus/scrape"
-
 # The external grafana address used for the reverse proxy.
 vm_graf_host: grafana.local:80
 vm_graf_port: 3000

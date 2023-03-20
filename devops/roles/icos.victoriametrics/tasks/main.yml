@@ -4,7 +4,7 @@
     state: directory
   loop:
     # prometheus.yml goes here but victoriametrics only reads the scrape part
-    - victoriametric/scrape
+    - prometheus
     - grafana/provisioning
 
 - name: Copy files
@@ -19,7 +19,7 @@
 - name: Create victoriametrics scrape config
   copy:
     content: "{{ vm_scrape_conf }}"
-    dest: "{{ vm_home }}/victoriametrics/prometheus.yml"
+    dest: "{{ vm_home }}/prometheus/prometheus.yml"
   
 - name: Build and start
   docker_compose:
