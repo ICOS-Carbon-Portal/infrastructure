@@ -7,6 +7,13 @@
     - prometheus
     - grafana/provisioning
 
+# https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/#migrate-to-v51-or-later
+- name: Change owner of grafana directories
+  file:
+    path: "{{ vm_home }}/grafana"
+    owner: 472
+    recurse: true
+
 - name: Copy files
   template:
     src: "{{ item.src }}"
@@ -19,7 +26,7 @@
 - name: Create victoriametrics scrape config
   copy:
     content: "{{ vm_scrape_conf }}"
-    dest: "{{ vm_home }}/prometheus/prometheus.yml"
+    dest: "{{ vm_home }}/victoriametrics/prometheus/prometheus.yml"
   
 - name: Build and start
   docker_compose:

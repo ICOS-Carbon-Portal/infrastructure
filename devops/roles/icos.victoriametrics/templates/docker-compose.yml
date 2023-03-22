@@ -9,8 +9,8 @@ services:
     ports:
       - 127.0.0.1:{{ vm_vm_port }}:{{ vm_vm_port }}
     volumes:
-      - ./prometheus:/etc/prometheus
-      - vmdata:/storage
+      - ./victoriametrics/prometheus:/etc/prometheus
+      - ./victoriametrics/storage:/storage
     command:
       - "-promscrape.config=/etc/prometheus/prometheus.yml"
       - "-storageDataPath=/storage"
@@ -25,23 +25,19 @@ services:
     container_name: grafana
     image: grafana/grafana
     depends_on:
-      - "victoriametrics"
+      - victoriametrics
     ports:
       - 127.0.0.1:{{ vm_graf_port }}:{{ vm_graf_port }}
     environment:
       GF_SECURITY_ADMIN_USER: "admin"
       GF_SECURITY_ADMIN_PASSWORD: "{{ vm_graf_pass }}"
     volumes:
-      - grafanadata:/var/lib/grafana
+      - ./grafana/data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
     networks:
       - vm_net
     restart: always
-
-volumes:
-  vmdata: {}
-  grafanadata: {}
 
 networks:
   vm_net:
