@@ -32,14 +32,3 @@
         nginxsite_name: icos-cities
         nginxsite_file: files/domains/icos-cities.conf
 
-    # NORDSPEC
-    - role: icos.certbot2
-      certbot_name: nordspec.nateko.lu.se
-      certbot_domains:
-        - nordspec.nateko.lu.se
-
-    - role: icos.nginxsite
-      tags: nordspec
-      vars:
-        nginxsite_name: nordspec
-        nginxsite_file: files/domains/nordspec.conf
