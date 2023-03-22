@@ -1,0 +1,30 @@
+# https://grafana.com/docs/grafana/latest/administration/plugin-management/#install-grafana-plugins
+# https://github.com/VictoriaMetrics/grafana-datasource
+# https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#plugins-1
+
+- name: Find the latest release of grafana-datasource
+  run_once: true
+  delegate_to: localhost
+  check_mode: false
+  github_release:
+    user: VictoriaMetrics
+    repo: grafana-datasource
+    action: latest_release
+  register: release
+
+- name: Create grafana plugin directory
+  file:
+    path: "{{ vm_graf_plugins }}"
+    state: directory
+
+- name: Download grafana-datasource
+  ansible.builtin.get_url:
+    url: "https://github.com/VictoriaMetrics/grafana-datasource/releases/download/v0.1.3/victoriametrics-datasource-{{ release.tag }}.zip"
+    dest: "/tmp"
+  register: url
+
+- name: Unarchive victoriametrics-datasource.zip
+  unarchive:
+    src: "{{ url.dest }}"
+    dest: "{{ vm_graf_plugins }}"
+    remote_src: true

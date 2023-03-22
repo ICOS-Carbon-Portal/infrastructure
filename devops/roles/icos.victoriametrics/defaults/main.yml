@@ -6,7 +6,8 @@ vm_scrape_conf: ""
 vm_graf_host: grafana.local:80
 vm_graf_port: 3000
 vm_graf_url: "http://grafana.local"
-
+vm_graf_plugins: "{{ vm_home }}/grafana/data/plugins"
+  
 # The external victoriametrics address used for the reverse proxy.
 vm_vm_host: vm.local:80
 vm_vm_port: 8428

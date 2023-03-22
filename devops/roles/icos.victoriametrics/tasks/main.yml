@@ -34,3 +34,6 @@
     build: yes
     pull: "{{ vm_upgrade | default(false) | bool }}"
     
+- import_tasks: grafana_plugin.yml
+  tags: victoriametrics_grafana_plugin
+    
