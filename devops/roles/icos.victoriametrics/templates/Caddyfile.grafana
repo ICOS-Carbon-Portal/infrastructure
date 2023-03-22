@@ -1,3 +1,0 @@
-{{ vm_graf_host }} {
-        reverse_proxy localhost:{{ vm_graf_port }}
-}

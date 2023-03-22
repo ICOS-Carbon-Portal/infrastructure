@@ -1,3 +1,0 @@
-{{ vm_vm_host }} {
-        reverse_proxy localhost:{{ vm_vm_port }}
-}
