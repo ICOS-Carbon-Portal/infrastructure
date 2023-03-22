@@ -22,11 +22,6 @@
   ansible.builtin.shell: caddy version
   changed_when: no
 
-- name: Create /etc/caddy/sites directory
-  file:
-    path: /etc/caddy/sites
-    state: directory
-
 - name: Create Caddyfile
   copy:
     dest: /etc/caddy/Caddyfile

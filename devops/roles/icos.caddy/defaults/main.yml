@@ -1,2 +1,2 @@
 caddy_config: |
-  import sites/Caddyfile.*
+  import *.caddy
