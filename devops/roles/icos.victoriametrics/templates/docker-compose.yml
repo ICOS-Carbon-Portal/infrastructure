@@ -7,7 +7,7 @@ services:
     container_name: victoriametrics
     image: victoriametrics/victoria-metrics
     ports:
-      - 127.0.0.1:{{ vm_vm_port }}:{{ vm_vm_port }}
+      - 127.0.0.1:{{ vm_vm_port }}:8428
     volumes:
       - ./victoriametrics/prometheus:/etc/prometheus
       - ./victoriametrics/storage:/storage
@@ -27,7 +27,7 @@ services:
     depends_on:
       - victoriametrics
     ports:
-      - 127.0.0.1:{{ vm_graf_port }}:{{ vm_graf_port }}
+      - 127.0.0.1:{{ vm_graf_port }}:3000
     environment:
       GF_SECURITY_ADMIN_USER: "admin"
       GF_SECURITY_ADMIN_PASSWORD: "{{ vm_graf_pass }}"
@@ -39,5 +39,26 @@ services:
       - vm_net
     restart: always
 
+  promlens:
+    hostname: promlens
+    container_name: promlens
+    image: prom/promlens
+    command:
+#      - "--shared-links.sql.driver=sqlite"
+#      - "--shared-links.sql.dsn=/data/promlens-links.db"
+      - "--grafana.url=http://grafana:3000"
+      - "--grafana.api-token={{ vm_promlens_token }}"
+    volumes:
+      - ./promlens/data:/data
+    depends_on:
+      - grafana
+      - victoriametrics
+    ports:
+      - 127.0.0.1:{{ vm_promlens_port }}:8080
+    networks:
+      - vm_net
+    restart: always
+
+    
 networks:
   vm_net:

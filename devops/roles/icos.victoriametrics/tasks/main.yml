@@ -13,6 +13,7 @@
     path: "{{ vm_home }}/grafana"
     owner: 472
     recurse: true
+  changed_when: no
 
 - name: Copy files
   template:
