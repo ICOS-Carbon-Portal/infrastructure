@@ -1,9 +1,5 @@
-- import_role: name=icos.certbot2
-  vars:
-    certbot_name: "{{ quince_name }}"
-    certbot_domains: "{{ quince_domains }}"
-
 - import_role: name=icos.nginxsite
   vars:
     nginxsite_name: "{{ quince_name }}"
     nginxsite_file: quince.conf
+    nginxsite_domains: "{{ quince_domains }}"
