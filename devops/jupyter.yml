@@ -39,7 +39,7 @@
       lxd_vm_root_pool: "default"
       lxd_vm_root_size: "50GB"
       lxd_vm_config:
-        limits.memory: "300GB"
+        limits.memory: "550GB"
       lxd_vm_profiles:
         - icosdata
       lxd_vm_devices:
