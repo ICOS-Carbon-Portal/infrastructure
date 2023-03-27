@@ -84,4 +84,4 @@ icosdata_nfs_mounts:
 
   - path: /nfs/flexextract_meteo
     src: icos1.wg-icos1:/pool/flexextract/meteo
-    opts: "rw,soft,x-systemd.after=wg-quick@wg-icos1"
+    opts: "rw,soft,x-systemd.after=wg-quick@wg-icos1.service"
