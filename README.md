@@ -152,6 +152,22 @@ restoring it again. Currently the source database is in docker, but it doesn't
 have to be; currently it's on another host (requiring ssh), but it doesn't have
 to be.
 
+#### Verify that postgres replication is working
+This step is important to perform regularly until we have a status dashboard where any problems with RDF log replication would become immediately apparent. RDF log is our solution to persistence of all data/document objects' and collections' metadata, and as such, very important.
+
+`$ ssh fsicos2`
+
+`root@fsicos2:~# cd /docker/rdflog`
+
+`root@fsicos2:/docker/rdflog# ./ctl status`
+
+The output should be:
+```
+                          slot_report
+---------------------------------------------------------------
+ The following slots are currently replicating => cdb, fsicos3
+```
+After a while the report will also produce a table with the latest timestamps in each of the RDF log tables.
 
 #### Retrieve database
 `$ ssh fsicos2 'cd /docker/rdflog && docker-compose exec -T db pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz`
@@ -177,7 +193,6 @@ The docker container will:
   conflict with postgres' default port of 5432 which might be in use on
   localhost
 * have a user named `postgres` with the password `p`
-
 
 #### Restore backup into container
 `$ zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres rdflog psql -q`
