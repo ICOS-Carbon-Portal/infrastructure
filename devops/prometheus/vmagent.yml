@@ -14,7 +14,7 @@
       tags: vmagent
 
     - role: icos.node_exporter
-      tags: node_exporter
+      tags: node
 
     - role: icos.nginxsite
       tags: nginx
@@ -41,14 +41,43 @@
       retries: 10
       register: r
 
-    - name: Add node exporter to vmagent's file discovery
+    - name: Remove old node_exporter configuration
       tags: conf
+      file:
+        path: /opt/vmagent/file_sd_configs/node-exporter-host.yaml
+        state: absent
+
+    - name: Retrieve bindmounts fact
+      tags: conf
+      shellfact:
+        exec: "awk '$4 ~ /bind/ { print $2 }' /etc/fstab"
+        fact: bindmounts
+        list: True
+
+    - name: Add node exporter to vmagent's scrape config
+      tags: conf
+      notify: reload vmagent
       copy:
-        dest: /opt/vmagent/file_sd_configs/node-exporter-host.yaml
+        dest: "{{ vmagent_configs }}/node-exporter-host.yaml"
         content: |
-          # The node exporter on host.
-          - targets:
+          # The node exporter on host
+          - job_name: node_exporter
+            static_configs:
+            - targets:
               - localhost:{{ node_exporter_listen }}
-            labels:
-              job: node_exporter
-              instance: {{ inventory_hostname_short }}
+              labels:
+                instance: {{ inventory_hostname_short }}
+            metric_relabel_configs:
+              # drop irrelevant filesystems
+              - source_labels: [fstype]
+                regex:
+                  - nfs4
+                  - tmpfs
+                action: drop
+
+              # drop bindmounts
+              - source_labels: [mountpoint]
+                # victoriametrics has an enhancement to the regex field, it can
+                # be a list of strings that are then joined using '|'
+                regex: {{ bindmounts }}
+                action: drop

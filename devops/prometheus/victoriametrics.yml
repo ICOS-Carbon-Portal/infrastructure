@@ -1,7 +1,7 @@
 # Install the victoriametrics/grafana stack.
 #
 # upgrade to latest docker versions
-# icos run prom/vict prom -eprom_upgrade=true
+# icos run prom/vict prom -evm_upgrade=true
 
 - hosts: cdb.nateko.lu.se
   vars:

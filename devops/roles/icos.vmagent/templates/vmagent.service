@@ -16,6 +16,7 @@ ExecStart={{ vmagent_bin }}/vmagent-prod \
   -remoteWrite.basicAuth.password=%{VM_PASSWORD}
   {% endif %}
 Restart=always
+ExecReload=kill -HUP $MAINPID
 
 [Install]
 WantedBy=multi-user.target

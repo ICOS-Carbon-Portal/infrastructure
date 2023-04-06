@@ -2,12 +2,17 @@ vmagent_home: /opt/vmagent
 
 vmagent_fsd: "{{ vmagent_home }}/file_sd_configs"
 vmagent_bin: "{{ vmagent_home }}/bin"
+vmagent_configs: "{{ vmagent_home }}/configs"
 vmagent_environ: "{{ vmagent_home }}/environ"
 
 # Prometheus configuration.
-# vmagent only support a subset, and the only subset we're currently interested
-# in is file service discovery.
 vmagent_conf: |
+  # We'll dynamically (using ansible and scripts) create config files and then
+  # reload them by HUP:ing vmagent.
+  scrape_config_files:
+  - configs/*.yaml
+
+  # Also support File Service Discovery.
   scrape_configs:
   - job_name: file
     file_sd_configs:

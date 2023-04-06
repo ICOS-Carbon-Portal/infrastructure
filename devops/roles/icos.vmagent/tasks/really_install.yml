@@ -25,6 +25,7 @@
       mode: "0700"
     - path: "{{ vmagent_bin }}"
     - path: "{{ vmagent_fsd }}"
+    - path: "{{ vmagent_configs }}"
 
 - name: Unarchive vmagent
   unarchive:
