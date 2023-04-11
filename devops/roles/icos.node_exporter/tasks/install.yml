@@ -18,7 +18,7 @@
   include_role:
     name: icos.github_download_bin
   vars:
-    dbin_download_dir: "{{ node_exporter_download }}"
+    dbin_download_dest: "{{ node_exporter_download }}"
     dbin_user: prometheus
     dbin_repo: node_exporter
     dbin_path: node_exporter

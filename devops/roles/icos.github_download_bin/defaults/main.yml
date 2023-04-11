@@ -1,6 +1,6 @@
 # DEFAULTS - these control all downloads
 dbin_download_base: /opt/downloads
-dbin_download_dir: "{{ dbin_download_base }}/{{ _dbin_name }}"
+dbin_download_dest: "{{ dbin_download_base }}/{{ _dbin_name }}"
 dbin_bin_dir: /usr/local/sbin
 
 dbin_default_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}-{{ dbin__vers }}.{{ dbin__plat }}.tar.gz"
@@ -15,9 +15,9 @@ _dbin_name: "{{ _dbin_path | basename }}"
 
 _dbin_src: |-
   {% if dbin_src is defined -%}
-  {{ dbin_download_dir }}/{{ dbin_src -}}
+  {{ dbin_download_dest }}/{{ dbin_src -}}
   {% elif _dbin_unar -%}
-  {{ dbin_download_dir }}/{{ _unar.files[0].rstrip('/') }}/{{ _dbin_name -}}
+  {{ dbin_download_dest }}/{{ _unar.files[0].rstrip('/') }}/{{ _dbin_name -}}
   {%- else %}
   {{- dbin_download.dest }}
   {%- endif %}

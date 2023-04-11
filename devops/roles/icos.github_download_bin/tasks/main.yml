@@ -1,8 +1,3 @@
-- name: Create download directory
-  file:
-    path: "{{ dbin_download_dir }}"
-    state: directory
-
 - name: Retrieving latest tag for {{ dbin_repo }}
   run_once: true
   delegate_to: localhost
@@ -13,10 +8,15 @@
     action: latest_release
   register: _release
 
+- name: Create download directory
+  file:
+    path: "{{ dbin_download_dest }}"
+    state: directory
+
 - name: Download {{ dbin_repo }}
   get_url:
     url: "{{ _dbin_url }}"
-    dest: "{{ dbin_download_dir }}"
+    dest: "{{ dbin_download_dest }}"
   # This variable can be checked by our users to determine whether anything has
   # changed.
   register: dbin_download
@@ -25,7 +25,7 @@
   when: _dbin_unar
   unarchive:
     src: "{{ dbin_download.dest }}"
-    dest: "{{ dbin_download_dir }}"
+    dest: "{{ dbin_download_dest }}"
     remote_src: true
     list_files: true
   register: _unar
