@@ -16,6 +16,9 @@
     - role: icos.node_exporter
       tags: node
 
+    - role: icos.script_exporter
+      tags: script
+
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: vmagent
