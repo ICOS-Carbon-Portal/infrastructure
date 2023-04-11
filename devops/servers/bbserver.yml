@@ -1,0 +1,7 @@
+# borgmon script on fsicos2
+#   deploy base bbserver_monitor -lfsicos2*
+
+- hosts: bbservers
+  roles:
+    - role: icos.bbserver
+      tags: bbserver
