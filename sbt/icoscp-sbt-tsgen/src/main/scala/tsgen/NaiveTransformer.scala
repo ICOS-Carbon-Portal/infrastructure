@@ -111,7 +111,7 @@ object NaiveTransformer{
 			val inner = typeRepresentation(typeArg, enumsInfo)
 			s"Array<$inner>"
 
-		case Type.Apply(Type.Name("OptionalOneOrSeq"), typeArg :: Nil) =>
+		case Type.Apply(Type.Name(tname), typeArg :: Nil) if collsToOneOrSeq.contains(tname) =>
 			val inner = typeRepresentation(typeArg, enumsInfo)
 			s"$inner | Array<$inner>"
 
@@ -127,6 +127,7 @@ object NaiveTransformer{
 	}
 
 	private val collsToArray = Set("Seq", "Array", "IndexedSeq", "Vector")
+	private val collsToOneOrSeq = Set("OptionalOneOrSeq", "OneOrSeq")
 
 	def hasCase(mods: List[Mod]): Boolean = mods.collectFirst{
 		case m @ Mod.Case() => m
