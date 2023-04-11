@@ -1,0 +1,22 @@
+- name: Clone textfile-collector-scripts
+  git:
+    repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
+    version: master
+    dest: "{{ sexp_textfiles }}"
+
+- name: Install utils needed for the collector-scripts
+  apt:
+    name:
+      - moreutils # sponge(1)
+      - "{{ 'smartmontools' if 'smartmon' in sexp_exporters else omit }}"
+
+- import_tasks: smartmon_remove.yml
+  when: "'smartmon' in sexp_exporters"
+
+- name: Copy builtin-exporters.yml
+  template:
+    src: builtin-exporters.yml
+    dest: "{{ sexp_config_d }}/"
+    lstrip_blocks: yes
+
+- import_tasks: assemble.yml

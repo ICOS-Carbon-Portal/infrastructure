@@ -1,0 +1,11 @@
+- name: Assemble script_exporter config file
+  assemble:
+    src: "{{ sexp_config_d }}"
+    dest: "{{ sexp_config_f }}"
+  register: _assemble
+
+- name: Reload script-exporter
+  systemd:
+    name: script-exporter.service
+    state: reloaded
+  when: _assemble.changed

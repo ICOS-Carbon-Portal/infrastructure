@@ -29,13 +29,6 @@ node_exporter_arch_map:
   "x86_64": "amd64"
 
 
-# SMARTMON COLLECTOR
-smartmon_enable: false
-smartmon_home: "{{ node_exporter_home }}/smartmon"
-smartmon_py: "{{ node_exporter_scripts }}/smartmon.py"
-smartmon_prom: "{{ node_exporter_textfiles }}/smartmon.prom"
-
-
 # DIRSIZE COLLECTOR
 dirsize_enable: false
 dirsize_home: "{{ node_exporter_home }}/directory-size"

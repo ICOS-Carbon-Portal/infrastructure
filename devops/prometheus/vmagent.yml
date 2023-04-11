@@ -18,6 +18,8 @@
 
     - role: icos.script_exporter
       tags: script
+      sexp_exporters:
+        - smartmon
 
     - role: icos.nginxsite
       tags: nginx
@@ -56,6 +58,17 @@
         exec: "awk '$4 ~ /bind/ { print $2 }' /etc/fstab"
         fact: bindmounts
         list: True
+
+    - name: Add script-exporter scripts to vmagent
+      tags: conf
+      notify: reload vmagent
+      copy:
+        dest: "{{ vmagent_configs }}/script-exporter-scripts.yaml"
+        content: |
+          # These are the scripts exported by script-exporter.
+          - job_name: "exported-scripts"
+            http_sd_configs:
+            - url: http://localhost:9469/discovery
 
     - name: Add node exporter to vmagent's scrape config
       tags: conf

@@ -1,0 +1,4 @@
+- name: reload script-exporter
+  systemd:
+    name: script-exporter
+    state: reloaded

@@ -1,13 +1,23 @@
-script_exporter_user: script_exporter
-script_exporter_home: /opt/script_exporter
-script_exporter_config_d: "{{ script_exporter_home }}/config.d"
-script_exporter_config_f: "{{ script_exporter_home }}/config.yaml"
-script_exporter_listen: localhost:9469
+sexp_home: /opt/script_exporter
+sexp_config_d: "{{ sexp_home }}/config.d"
+sexp_config_f: "{{ sexp_home }}/config.yaml"
+sexp_listen: localhost:9469
 
-script_exporter_arch: >-
-  {{ script_exporter_arch_map[ansible_architecture] |
+sexp_arch: >-
+  {{ sexp_arch_map[ansible_architecture] |
      default(ansible_architecture) }}
 
-script_exporter_arch_map:
+sexp_arch_map:
   "armv7l": "armv7"
   "x86_64": "amd64"
+
+
+sexp_textfiles: "{{ sexp_home }}/node-exporter-textfile-collector-scripts"
+sexp_exporters: []
+
+
+# SMARTMON
+smartmon_enable: false
+smartmon_home: "{{ node_exporter_home }}/smartmon"
+smartmon_py: "{{ node_exporter_scripts }}/smartmon.py"
+smartmon_prom: "{{ node_exporter_textfiles }}/smartmon.prom"

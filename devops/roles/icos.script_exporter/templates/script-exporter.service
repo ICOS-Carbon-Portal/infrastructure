@@ -3,10 +3,17 @@
 Description=Script Exporter
 
 [Service]
-User={{ script_exporter_user }}
-ExecStart=script_exporter -web.listen-address {{ script_exporter_listen }}
+# We need to run as root for some exporters to work properly.
+# User={{ sexp_user }}
+ExecStart=script_exporter -web.listen-address {{ sexp_listen }}
 Restart=always
-WorkingDirectory={{ script_exporter_home }}
+WorkingDirectory={{ sexp_home }}
+
+# The documentation doesn't mention SIGHUP, but the source says "Listen for
+# SIGHUP signal and reload the configuration."
+# https://github.com/ricoberger/script_exporter/blob/main/pkg/exporter/exporter.go
+ExecReload=/bin/kill -s HUP $MAINPID
+
 
 [Install]
 WantedBy=multi-user.target

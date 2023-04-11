@@ -1,0 +1,5 @@
+# https://github.com/ricoberger/script_exporter/blob/main/examples/config.yaml
+{% if 'smartmon' in sexp_exporters %}
+- name: smartmon
+  command: {{ sexp_textfiles }}/smartmon.py
+{% endif %}

@@ -1,3 +1,6 @@
+# FIXME: Remove in 2024.
+
+# Remove previous-previous version
 - name: Check whether /opt/smartmon exists
   stat:
     path: /opt/smartmon
@@ -19,3 +22,17 @@
       file:
         path: /opt/smartmon
         state: absent
+
+# Remove previous version        
+- name: Create timer for node-exporter-smartmon
+  include_role:
+    name: icos.timer
+    tasks_from: remove.yml
+  vars:
+    timer_home: "{{ smartmon_home }}"
+    timer_name: node-exporter-smartmon
+
+- name: Remove smartmon.prom
+  file:
+    name: /opt/node_exporter/textfiles/smartmon.prom
+    state: absent    
