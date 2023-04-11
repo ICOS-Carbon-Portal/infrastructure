@@ -1,0 +1,50 @@
+- name: Install script_exporter
+  include_role:
+    name: icos.github_download_bin
+  vars:
+    dbin_user: ricoberger
+    dbin_repo: script_exporter
+    # https://github.com/ricoberger/script_exporter/releases/download/v2.12.0/script_exporter-linux-amd64
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/script_exporter-linux-{{ script_exporter_arch }}"
+    dbin_download_dest: "{{ dbin_download_base }}/script-exporter-{{ dbin__vers }}"
+    dbin_unar: false
+
+# The 'user' task would have created the home directory, but we want the home
+# directory to have root permissions. Also create the directory used for
+# configuration fragments.
+- name: Create script_exporter home directory
+  file:
+    path: "{{ script_exporter_config_d }}"
+    state: directory
+
+# We'll assemble script-exporter's config.yaml out of framgents; this is the
+# first fragment.
+- name: Create script_exporter prefix config fragment
+  copy:
+    dest: "{{ script_exporter_config_d }}/1_main.yml"
+    content:
+      scripts:
+
+- name: Assemble script_exporter config file
+  assemble:
+    src: "{{ script_exporter_config_d }}"
+    dest: "{{ script_exporter_config_f }}"
+
+- name: Create script_exporter user
+  user:
+    name: "{{ script_exporter_user }}"
+    home: "{{ script_exporter_home }}"
+    shell: /usr/sbin/nologin
+
+- name: Copy script-exporter systemd files
+  template:
+    dest: /etc/systemd/system/
+    src: script-exporter.service
+  register: _sysd
+
+- name: Start/restart script-exporter.service
+  systemd:
+    daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
+    name: script-exporter.service
+    enabled: yes
+    state: "{{ 'restarted' if _sysd.changed else 'started' }}"

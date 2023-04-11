@@ -1,0 +1,12 @@
+# https://github.com/ricoberger/script_exporter
+[Unit]
+Description=Script Exporter
+
+[Service]
+User={{ script_exporter_user }}
+ExecStart=script_exporter -web.listen-address {{ script_exporter_listen }}
+Restart=always
+WorkingDirectory={{ script_exporter_home }}
+
+[Install]
+WantedBy=multi-user.target

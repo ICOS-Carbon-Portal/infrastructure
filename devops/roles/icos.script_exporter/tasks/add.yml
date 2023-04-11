@@ -1,0 +1,31 @@
+# We'll assemble script-exporter's config.yaml out of framgents; this is the
+# first fragment.
+- name: Create script_exporter prefix config fragment
+  copy:
+    dest: "{{ script_exporter_config_d }}/{{ script_name }}1_main.yml"
+    content:
+      scripts:
+
+- name: Assemble script_exporter config file
+  assemble:
+    src: "{{ script_exporter_config_d }}"
+    dest: "{{ script_exporter_config_f }}"
+
+- name: Create script_exporter user
+  user:
+    name: "{{ script_exporter_user }}"
+    home: "{{ script_exporter_home }}"
+    shell: /usr/sbin/nologin
+
+- name: Copy script-exporter systemd files
+  template:
+    dest: /etc/systemd/system/
+    src: script-exporter.service
+  register: _sysd
+
+- name: Start/restart script-exporter.service
+  systemd:
+    daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
+    name: script-exporter.service
+    enabled: yes
+    state: "{{ 'restarted' if _sysd.changed else 'started' }}"

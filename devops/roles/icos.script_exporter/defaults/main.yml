@@ -1,0 +1,13 @@
+script_exporter_user: script_exporter
+script_exporter_home: /opt/script_exporter
+script_exporter_config_d: "{{ script_exporter_home }}/config.d"
+script_exporter_config_f: "{{ script_exporter_home }}/config.yaml"
+script_exporter_listen: localhost:9469
+
+script_exporter_arch: >-
+  {{ script_exporter_arch_map[ansible_architecture] |
+     default(ansible_architecture) }}
+
+script_exporter_arch_map:
+  "armv7l": "armv7"
+  "x86_64": "amd64"
