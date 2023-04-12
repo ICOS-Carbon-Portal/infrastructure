@@ -4,7 +4,6 @@ mysql_docker_port: 3334
 trusted_host: ^www\.icos-cp\.eu$
 domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
-redirect_to_www: true
 drupal_modules: [
   color_field,
   conflict,

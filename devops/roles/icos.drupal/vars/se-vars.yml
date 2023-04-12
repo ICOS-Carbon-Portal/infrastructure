@@ -4,7 +4,6 @@ mysql_docker_port: 3341
 domain: www.icos-sweden.se
 trusted_host: ^www\.icos-sweden\.se$
 ssl_domains: [sweden.icos-cp.eu,icos-sweden.se,www.icos-sweden.se]
-redirect_to_www: true
 drupal_modules: [
   editor_file,
   honeypot,

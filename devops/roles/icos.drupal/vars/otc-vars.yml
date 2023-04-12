@@ -3,5 +3,5 @@ drupal_docker_port: 8109
 mysql_docker_port: 3336
 domain: www.icos-otc.org
 trusted_host: ^www\.icos-otc\.org$
-ssl_domains: [otc.icos-cp.eu, www.icos-otc.org]
+ssl_domains: [otc.icos-cp.eu, icos-otc.org, www.icos-otc.org]
 drupal_modules: [redirect]

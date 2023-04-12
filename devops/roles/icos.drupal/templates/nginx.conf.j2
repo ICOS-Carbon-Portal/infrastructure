@@ -44,72 +44,16 @@ server {
   }
 }
 
-{% if website == "ac" %}
+{% if ssl_domains is defined %}
 server {
   listen       80;
-  server_name  {{ domain | replace("www.","") }} {{ domain }};
-  return 301   https://{{ domain }}$request_uri;
-}
-server {
-  listen       443 ssl;
-  server_name  {{ domain | replace("www.","") }};
-
-  {{ certbot_nginx_conf | indent(2) }}
-
-  return 301   https://{{ domain }}$request_uri;
-}
-{% elif website == "ch" %}
-server {
-  listen       80;
-  server_name  switzerland.icos-cp.eu;
+  server_name  {{ ssl_domains | join(" ") }};
   return 301   https://{{ domain }}$request_uri;
 }
 
 server {
   listen       443 ssl;
-  server_name  switzerland.icos-cp.eu;
-
-  {{ certbot_nginx_conf | indent(2) }}
-
-  return 301   https://{{ domain }}$request_uri;
-}
-
-server {
-  listen       80;
-  server_name  {{ domain }};
-  return 301   https://{{ domain }}$request_uri;
-}
-{% elif website == "otc" %}
-server {
-  listen       80;
-  server_name  otc.icos-cp.eu;
-  return 301   https://{{ domain }}$request_uri;
-}
-
-server {
-  listen       443 ssl;
-  server_name  otc.icos-cp.eu;
-
-  {{ certbot_nginx_conf | indent(2) }}
-
-  return 301   https://{{ domain }}$request_uri;
-}
-
-server {
-  listen       80;
-  server_name  {{ domain }};
-  return 301   https://{{ domain }}$request_uri;
-}
-{% elif redirect_to_www | default(false) %}
-server {
-  listen       80;
-  server_name  {{ domain | replace("www.","") }} {{ domain }};
-  return 301   https://{{ domain }}$request_uri;
-}
-
-server {
-  listen       443 ssl;
-  server_name  {{ domain | replace("www.","") }};
+  server_name  {{ ssl_domains | reject('equalto', domain) | join(" ") }};
 
   {{ certbot_nginx_conf | indent(2) }}
 
