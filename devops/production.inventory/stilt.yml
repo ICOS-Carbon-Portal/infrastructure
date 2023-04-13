@@ -12,8 +12,8 @@ stiltcluster_hosts:
       stilt_input_dir: /data/stilt/Input
       stilt_input_mount: True
 
-    fsicos3.lunarc.lu.se:
-      stiltrun_user: stiltcluster
-      stiltcluster_docker: false
-      stiltcluster_maxcores: 40
-      stilt_input_dir: /data/stilt_legacy/Input
+    # fsicos3.lunarc.lu.se:
+    #   stiltrun_user: stiltcluster
+    #   stiltcluster_docker: false
+    #   stiltcluster_maxcores: 40
+    #   stilt_input_dir: /data/stilt_legacy/Input
