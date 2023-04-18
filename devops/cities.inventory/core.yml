@@ -1,0 +1,56 @@
+all:
+  vars:
+    cpmeta_icos_domain: icos1.gis.lu.se
+    # # the domains are needed both for the host (to find the buildInfo url) and
+    # # for the server (to set up proxy)
+    cpmeta_domains:
+      - icos1.gis.lu.se
+
+    cpdata_domains:
+      - icos1.gis.lu.se
+
+    # cpauth_domains:
+    #   - cpauthstaging.icos-cp.eu
+    #   - authstaging.fieldsites.se
+
+  children:
+    core_host:
+      hosts:
+        icos1.gis.lu.se:
+
+      vars:
+        coreapp_bind_addr: 0.0.0.0
+
+        # cpmeta - application
+        cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
+        cpmeta_backup_enable: false
+        cpmeta_config_files:
+          - application_production.conf
+          # - application_production_sensitive.conf
+          - application_cities_amendment.conf
+
+        # cpdata - application
+        # when running in an lxd VM, bind all interfaces so that we're reachable
+        # from the host.
+        cpdata_filestorage_target: "/data/dataAppStorage"
+        cpdata_config_files:
+          - application_production.conf
+          - application_cities_amendment.conf
+
+    core_server:
+      hosts:
+        icos1.gis.lu.se:
+          ansible_port: 60022
+
+      vars:
+        coreapp_httpproxy_host: icos1.gis.lu.se
+        coreapp_host_ip: 130.235.74.215
+
+        # cpmeta - proxy
+        cpmeta_nginxsite_name: cpmeta-staging
+        cpmeta_certbot_name: cpmeta-staging
+
+        # cpdata - proxy
+        cpdata_certbot_name: cpdata-staging
+        cpdata_nginxsite_name: cpdata-staging
+
