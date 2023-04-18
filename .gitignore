@@ -51,3 +51,5 @@ exploredata/build.notebook/pylib_examples
 
 /devops/files/prometheus/dynamic/node_exporter.yml
 /devops/files/wireguard
+
+__pycache__/
