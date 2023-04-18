@@ -44,7 +44,7 @@ server {
   }
 }
 
-{% if ssl_domains is defined %}
+{% if ssl_domains is defined and ssl_domains|length > 1 %}
 server {
   listen       80;
   server_name  {{ ssl_domains | join(" ") }};
