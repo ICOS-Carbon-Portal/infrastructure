@@ -9,11 +9,3 @@
 
     - role: icos.docker
       tags: docker
-
-  tasks:
-    - name: Install public keys
-      tags: keys
-      authorized_key:
-        user: root
-        state: present
-        key: "{{ vault_core_host_keys }}"
