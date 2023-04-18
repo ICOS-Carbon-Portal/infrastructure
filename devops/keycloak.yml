@@ -1,0 +1,4 @@
+- hosts: fsicos2.lunarc.lu.se
+  roles:
+    - role: icos.keycloak
+      kc_hostname: "keycloak.icos-cp.eu"
