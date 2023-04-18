@@ -3,6 +3,7 @@
     name:
       - nginx
 
+# FIXME: Check in 2024
 - name: Add mitigation for systemd/nginx race-condition
   block:
     - name: Create systemd override directory for nginx

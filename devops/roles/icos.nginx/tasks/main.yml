@@ -3,3 +3,6 @@
 
 - import_tasks: certbot.yml
   tags: nginx_certbot
+
+- import_tasks: testing.yml
+  tags: nginx_testing
