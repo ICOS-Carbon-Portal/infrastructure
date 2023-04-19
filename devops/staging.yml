@@ -1,4 +1,13 @@
 - hosts: staging_server
+  pre_tasks:
+    - name: Create  directory
+      tags: vm
+      file:
+        path: "/disk/data/staging"
+        state: directory
+        owner: 1000000
+        group: 1000000
+
   roles:
     - role: icos.lxd_vm
       tags: vm
@@ -11,6 +20,11 @@
           source: /disk/data/dataAppStorage/
           type: disk
           readonly: "true"
+        staging:
+          path: /data/staging
+          source: /disk/data/staging
+          type: disk
+
 
 - hosts: staging
   roles:
