@@ -45,14 +45,17 @@ the "icos" command.
 
 ## Installing ansible
 
-If you haven't installed ansible, do that as well:
+If you've already installed ansible using plain pip, uninstall it first:
 
-    pipx install ansible
+    pip uninstall ansible
 
-Our ansible playbooks are developed using the latest version of ansible. Once
-you've installed ansible using pipx, upgrading ansible is as easy as:
+Then install ansible using pipx:
 
-    pipx upgrade ansible
+    pipx install ansible -f --include-deps
+
+Finally inject extra modules needed for various ansible modules:
+
+    pipx inject ansible passlib github3.py toml stormssh
 
 
 ## Naming things
