@@ -9,9 +9,12 @@ all:
     cpdata_domains:
       - icos1.gis.lu.se
 
-    # cpauth_domains:
-    #   - cpauthstaging.icos-cp.eu
-    #   - authstaging.fieldsites.se
+    cpauth_domains:
+      - icos1.gis.lu.se
+    
+    doi_domains:
+      - icos1.gis.lu.se
+
 
   children:
     core_host:
@@ -47,10 +50,18 @@ all:
         coreapp_host_ip: 130.235.74.215
 
         # cpmeta - proxy
-        cpmeta_nginxsite_name: cpmeta-staging
-        cpmeta_certbot_name: cpmeta-staging
+        cpmeta_nginxsite_name: cpmeta-cities
+        cpmeta_certbot_name: cpmeta-cities
 
         # cpdata - proxy
-        cpdata_certbot_name: cpdata-staging
-        cpdata_nginxsite_name: cpdata-staging
+        cpdata_certbot_name: cpdata-cities
+        cpdata_nginxsite_name: cpdata-cities
+
+        # cpauth - proxy
+        cpauth_certbot_name: cpauth-cities
+        cpauth_nginxsite_name: cpauth-cities
+
+        # doi - proxy
+        doi_certbot_name: doi-cities
+        doi_nginxsite_name: doi-cities
 
