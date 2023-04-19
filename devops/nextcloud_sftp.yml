@@ -57,7 +57,7 @@
       failed_when: "not r.stat.exists"
       loop: "{{ sftp_dirs }}"
 
-    - name: Retrive passwd data for www-data user
+    - name: Retrieve passwd data for www-data user
       getent:
         database: passwd
         key: www-data

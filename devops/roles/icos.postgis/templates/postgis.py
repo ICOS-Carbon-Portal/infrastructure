@@ -45,7 +45,7 @@ def restore(destdir):
         ctx = contextlib.nullcontext(destdir)
     with ctx as tmp:
         os.chdir(tmp)
-        # We first retrive the backup to disk. This way we hold the borgbackup
+        # We first retrieve the backup to disk. This way we hold the borgbackup
         # lock as shortly as possible.
         print(f'Retrieving backup "{last}" and storing as stdout.gz')
         subprocess.run(f"{BBCLIENT} extract --stdout ::{last} "

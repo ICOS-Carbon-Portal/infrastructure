@@ -24,7 +24,7 @@
 # Note that the "lxd_static_ip_info" module is written to return an empty list
 # of devices for non-existing containers.
 
-- name: Retrive static IP devices
+- name: Retrieve static IP devices
   lxd_static_ip_info:
     name: "{{ lxd_vm_name }}"
   register: _static_ip_info

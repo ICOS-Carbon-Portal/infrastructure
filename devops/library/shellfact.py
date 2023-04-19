@@ -25,7 +25,7 @@ EXAMPLES = '''
       ssh-keyscan localhost | sed "s/^localhost/$IP/"
     fact: hostkeys
 
-- name: Retrive postgresql cluster info
+- name: Retrieve postgresql cluster info
   shellfact:
     exec: pg_lsclusters -j
     fact: pg

@@ -2,7 +2,7 @@
 set -eu
 
 if [ $# -ne 2 ]; then
-  echo "usage: certbot-retrive-cert fromhost domain"
+  echo "usage: certbot-retrieve-cert fromhost domain"
   exit 1
 fi
 
