@@ -9,19 +9,14 @@ all:
     cpdata_domains:
       - citydata1.icos-cp.eu
 
-    cpauth_domains:
-      - cityauth1.icos-cp.eu
-
-    doi_domains:
-      - citydoi1.icos-cp.eu
-
   children:
     core_host:
       hosts:
         icos1.gis.lu.se:
 
       vars:
-        coreapp_bind_addr: 0.0.0.0
+        # when running in an lxd VM, bind to 0.0.0.0 so that services are reachable from the host
+        coreapp_bind_addr: 127.0.0.1
 
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
@@ -31,9 +26,7 @@ all:
           - application_cities_amendment.conf
 
         # cpdata - application
-        # when running in an lxd VM, bind all interfaces so that we're reachable
-        # from the host.
-        cpdata_filestorage_target: "{{ cpdata_home }}/data/dataAppStorage"
+        cpdata_filestorage_target: /disk/data/dataAppStorage/cities
         cpdata_config_files:
           - application_production.conf
           - application_cities_amendment.conf
@@ -54,12 +47,3 @@ all:
         # cpdata - proxy
         cpdata_certbot_name: cpdata-cities
         cpdata_nginxsite_name: cpdata-cities
-
-        # cpauth - proxy
-        cpauth_certbot_name: cpauth-cities
-        cpauth_nginxsite_name: cpauth-cities
-
-        # doi - proxy
-        doi_certbot_name: doi-cities
-        doi_nginxsite_name: doi-cities
-
