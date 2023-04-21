@@ -17,6 +17,6 @@
   template:
     src: builtin-exporters.yml
     dest: "{{ sexp_config_d }}/"
-    lstrip_blocks: yes
+    lstrip_blocks: true
 
 - import_tasks: assemble.yml

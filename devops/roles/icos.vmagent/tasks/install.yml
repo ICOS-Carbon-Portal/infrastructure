@@ -2,8 +2,8 @@
   shellfact:
     exec: systemctl is-active --quiet vmagent && echo yes
     fact: vmagent_is_running
-    bool: True
-  failed_when: no
+    bool: true
+  failed_when: false
   when: not vmagent_upgrade
 
 - name: Really install vmagent

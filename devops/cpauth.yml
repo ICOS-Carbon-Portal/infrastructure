@@ -1,16 +1,16 @@
 # Stepwise deployment of cpauth:
 #
 # Generate certbot certificates
-#   $ deploy cpauth cert
+#   $ icos run cpauth cert
 #
 # Create user and install nginx config
-#   $ deploy cpauth cpauth_setup
+#   $ icos run cpauth cpauth_setup
 #
 # Full redeploy
-#   $ deploy cpauth cpauth -ecpauth_jar_file=/tmp/cpauth.jar
+#   $ icos run cpauth cpauth -ecpauth_jar_file=/tmp/cpauth.jar
 #
 # Deploy bbclient and cpauth's backup script
-#   $ deploy cpauth bbclient cpauth_backup
+#   $ icos run cpauth bbclient cpauth_backup
 
 - hosts: fsicos2.lunarc.lu.se
   roles:

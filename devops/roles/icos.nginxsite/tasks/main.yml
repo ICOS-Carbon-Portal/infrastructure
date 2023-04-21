@@ -3,7 +3,7 @@
   include_role:
     name: icos.certbot2
     apply: {tags: nginxsite_cert}
-    public: yes
+    public: true
   vars:
     certbot_name: "{{ nginxsite_name }}"
     certbot_domains: "{{ nginxsite_domains }}"
@@ -14,7 +14,7 @@
   include_role:
     name: icos.nginxauth
     apply: {tags: nginxsite_users}
-    public: yes
+    public: true
   vars:
     nginxauth_name: "{{ nginxsite_name }}"
     nginxauth_users: "{{ nginxsite_users }}"
@@ -39,19 +39,20 @@
         state: absent
 
     - name: Check syntax
+      # noqa: command-instead-of-shell
       shell: nginx -t
-      changed_when: no
+      changed_when: false
 
     - name: Reload nginx
       systemd:
         name: nginx
         state: reloaded
-      changed_when: no
+      changed_when: false
 
   rescue:
     - name: Restore old config
       copy:
-        remote_src: yes
+        remote_src: true
         dest: "{{ update.dest }}"
         src: "{{ update.backup_file }}"
       when: update.backup_file is defined
@@ -67,5 +68,5 @@
       file:
         path: "{{ update.backup_file }}"
         state: absent
-      changed_when: no
+      changed_when: false
       when: update.backup_file is defined

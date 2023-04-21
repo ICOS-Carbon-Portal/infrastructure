@@ -5,6 +5,7 @@
     {{ vmagent_bin }}/vmagent-prod -dryRun
     -promscrape.config={{ vmagent_home }}/prometheus.yml
   notify: really reload vmagent
+  changed_when: false
 
 - name: really reload vmagent
   systemd:

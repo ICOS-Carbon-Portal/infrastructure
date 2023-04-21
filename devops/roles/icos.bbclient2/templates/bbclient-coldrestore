@@ -1,5 +1,5 @@
 #!/bin/bash
-# Retrive backup. Shut down service. Switch volumes dir. Start service.
+# Retrieve backup. Shut down service. Switch volumes dir. Start service.
 
 set -Eeo pipefail
 

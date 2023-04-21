@@ -1,8 +1,8 @@
 # Create users for the cplog database:
-#   deploy postgis cplog
+#   icos run postgis cplog
 #
 # Redeploy backup script and bbclient
-#   deploy postgis backup
+#   icos run postgis backup
 
 - hosts: postgis_server
   roles:

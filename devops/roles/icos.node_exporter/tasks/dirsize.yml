@@ -10,7 +10,7 @@
 - name: Make sure that the dirnames file exists.
   copy:
     dest: "{{ dirsize_dirnames }}"
-    force: no
+    force: false
     content: ""
 
 - name: Ensure that initial directories are in dirnames.txt
@@ -21,7 +21,8 @@
   loop: "{{ dirsize_initial }}"
 
 - name: Create timer for node-exporter-dirsize
-  include_role: name=icos.timer
+  include_role:
+    name: icos.timer
   vars:
     timer_home: "{{ dirsize_home }}"
     timer_name: node-exporter-dirsize

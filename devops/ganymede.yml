@@ -1,9 +1,9 @@
 # Deploy everything except the jbuild.py and edctl.py scripts, useful when
 # developing.
-#   icos ganymede jbuild -ejbuild_force=false
+#   icos run ganymede jbuild -ejbuild_force=false
 #
 # Deploy new users, keys, edctl and rsync.
-#   icos ganymede users jbuild_users jbuild_rsync
+#   icos run ganymede users jbuild_users jbuild_rsync
 
 - hosts: fsicos3.lunarc.lu.se
   vars:

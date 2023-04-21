@@ -19,4 +19,4 @@
   systemd:
     name: nginx
     state: reloaded
-  changed_when: no
+  changed_when: false

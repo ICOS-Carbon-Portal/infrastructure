@@ -1,5 +1,5 @@
 #!/bin/bash
-# Attempt to retrive the original of a file installed using a package manager.
+# Attempt to retrieve the original of a file installed using a package manager.
 # Useful when you've edited a file (usually a config file) and want to see what
 # the original looked like. Will work on directories as well. Tested on Centos
 # and Ubuntu.

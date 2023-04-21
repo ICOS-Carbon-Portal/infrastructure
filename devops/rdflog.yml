@@ -1,5 +1,5 @@
 # Deploy the postgres replication containers
-#   deploy rdflog pgrep
+#   icos run rdflog pgrep
 
 # RDFLOG
 - hosts: rdflog_server

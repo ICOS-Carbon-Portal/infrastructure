@@ -1,8 +1,8 @@
 # Deploy the jusers script:
-#   deploy jupyter jupyter_jusers_deploy
+#   icos run jupyter jupyter_jusers_deploy
 #
 # Redeploy/restart the hub:
-#   deploy jupyter jupyter
+#   icos run jupyter jupyter
 
 
 - hosts: fsicos3.lunarc.lu.se

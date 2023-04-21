@@ -1,5 +1,5 @@
-# deploy cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
-# deploy cpdata cpdata_config
+# icos run cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
+# icos run cpdata cpdata_config
 #
 # Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 

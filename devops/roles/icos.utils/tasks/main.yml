@@ -111,7 +111,6 @@
 
 
 # BTOP
-
 - name: Install btop
   tags: btop
   include_role:

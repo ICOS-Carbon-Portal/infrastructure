@@ -18,7 +18,7 @@ node_exporter_listen: 9100
 node_exporter_bindto: lo
 
 # If true, open the node_exporter port in the firewall
-node_exporter_allow: False
+node_exporter_allow: false
 
 # Help download_github_bin choose architecture.
 node_exporter_arch: >-
