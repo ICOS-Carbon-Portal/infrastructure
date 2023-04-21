@@ -10,7 +10,7 @@
 - name: Make sure that the dirnames file exists.
   copy:
     dest: "{{ dirsize_dirnames }}"
-    force: no
+    force: false
     content: ""
 
 - name: Ensure that initial directories are in dirnames.txt

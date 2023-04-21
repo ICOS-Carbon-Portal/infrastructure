@@ -20,11 +20,11 @@
   systemd:
     name: node-exporter.service
     state: stopped
-  changed_when: no
+  changed_when: false
 
 - name: Start/restart node-exporter.socket
   systemd:
     daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
     name: node-exporter.socket
-    enabled: yes
+    enabled: true
     state: "{{ 'restarted' if _sysd.changed else 'started' }}"

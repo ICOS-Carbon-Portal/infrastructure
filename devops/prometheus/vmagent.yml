@@ -57,7 +57,7 @@
       shellfact:
         exec: "awk '$4 ~ /bind/ { print $2 }' /etc/fstab"
         fact: bindmounts
-        list: True
+        list: true
 
     - name: Add script-exporter scripts to vmagent
       tags: conf

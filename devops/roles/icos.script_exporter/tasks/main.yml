@@ -46,7 +46,7 @@
   systemd:
     daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
     name: script-exporter.service
-    enabled: yes
+    enabled: true
     state: "{{ 'restarted' if _sysd.changed or _conf.changed else 'started' }}"
 
 - import_tasks: exporters.yml
