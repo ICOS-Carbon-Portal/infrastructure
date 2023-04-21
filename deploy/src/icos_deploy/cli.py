@@ -134,10 +134,10 @@ def vars(inventory, glob, diff):
 @OPTION_INVENTORY
 @click.argument("playbook")
 def run(ctx, inventory, playbook):
-    """Run a playbook. 
+    """Run a playbook.
 
     Unknown options are passed along to ansible.
-    
+
     \b
     Run the icosprod.yml playbook:
       icos run foo
@@ -165,5 +165,18 @@ def run(ctx, inventory, playbook):
     opts = [arg for arg in ctx.args if arg.startswith("-")]
     args = ["ansible-playbook", "-i", inventory, playbook] + tags + opts
 
+    print(*args)
+    os.execvp(args[0], args)
+
+
+@cli.command(**PASS_ARGS)
+@click.pass_context
+@OPTION_INVENTORY
+@click.argument("playbook")
+def lint(ctx, inventory, playbook):
+    """Run ansible-lint.
+    """
+    playbook = find_playbook(playbook)
+    args = ["ansible-lint", "--offline", "-p", "-i", inventory, playbook]
     print(*args)
     os.execvp(args[0], args)
