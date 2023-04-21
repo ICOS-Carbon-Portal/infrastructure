@@ -1,11 +1,11 @@
 # Deploy nextcloud (copy files and compile images, but no restart!):
-#   deploy nextcloud nextcloud
+#   icos run nextcloud nextcloud
 #
 # Install coldbackup script:
-#   deploy nextcloud bbclient_coldbackup
+#   icos run nextcloud bbclient_coldbackup
 #
 # Deploy new version of onlyoffic
-#   deploy nextcloud onlyoffice
+#   icos run nextcloud onlyoffice
 
 - hosts: fsicos2.lunarc.lu.se
   roles:

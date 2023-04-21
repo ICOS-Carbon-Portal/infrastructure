@@ -1,5 +1,5 @@
 # Fetch keys
-#   deploy user_cleanup fetch
+#   icos run user_cleanup fetch
 #
 # Show unique ssh keys:
 #  find /tmp/ssh-pub-keys -iname authorized_keys -print0 | sort -u --files0-from=-
@@ -10,7 +10,7 @@
 # Pick keys to remove and list them as the `remove_keys` variable.
 #
 # Remove keys
-#  deploy user_cleanup remove
+#  icos run user_cleanup remove
 
 - hosts: physical_servers fsicos2_vms fsicos3_vms
   vars:

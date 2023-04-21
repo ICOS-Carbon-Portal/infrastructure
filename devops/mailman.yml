@@ -1,14 +1,14 @@
 # Build mailman images
-#   deploy run mailman mailman_build
+#   icos run mailman mailman_build
 #
 # Copy build files but do not build nor start containers.
-#   deploy run mailman mailman_build -edocker_do_build=False
+#   icos run mailman mailman_build -edocker_do_build=False
 #
 # Redeploy backup scripts
-#   deploy run mailman bbclient
+#   icos run mailman bbclient
 #
 # Redeploy proxy configuration
-#   deploy run mailman proxy
+#   icos run mailman proxy
 
 - hosts: fsicos2.lunarc.lu.se
   vars:

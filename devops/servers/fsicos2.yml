@@ -1,5 +1,5 @@
 # Upgrade certbot
-# deploy fsicos2 nginx_certbot -ecertbot_state=latest
+#   icos run fsicos2 nginx_certbot -ecertbot_state=latest
 
 - hosts: fsicos2.lunarc.lu.se
   roles:

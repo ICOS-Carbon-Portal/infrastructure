@@ -1,4 +1,4 @@
-# deploy restheart restheart_backup
+# icos run restheart restheart_backup
 
 - hosts: core_server
   tags: server

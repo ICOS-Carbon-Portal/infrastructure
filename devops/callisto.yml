@@ -1,11 +1,11 @@
 # Deploy eurocom website
-#   deploy callisto eurocom
+#  icos run callisto eurocom
 #
 # Deploy a new filedrop jar file
-#  deploy callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
+#  icos run callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
 #
 # Deploy filedrop website
-#  deploy callisto filedrop -lfsicos3.lunarc.lu.se
+#  icos run callisto filedrop -lfsicos3.lunarc.lu.se
 
 - hosts: fsicos3.lunarc.lu.se
   vars:

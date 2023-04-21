@@ -1,17 +1,17 @@
 # Update nginx config (need lxd_host_create to get lxd_host_ip)
-# $ deploy eddyetc -lfsicos2.lunarc.lu.se lxd_host_create nginx
+#   icos run eddyetc -lfsicos2.lunarc.lu.se lxd_host_create nginx
 #
 # Build the docker image and deploy the wrapper script:
-#   deploy eddyetc -leddyetc eddyetc
+#   icos run eddyetc -leddyetc eddyetc
 #
 # Create user and copy build files, but don't build and test:
-#   deploy eddyetc eddyetc_setup
+#   icos run eddyetc eddyetc_setup
 #
 # Change the mounting of input data by recreating the profile:
-#   deploy eddyetc profile
+#   icos run eddyetc profile
 #
 # Create certificate, auth file and nginx config
-#   deploy eddyetc cert auth nginx
+#   icos run eddyetc cert auth nginx
 
 
 - hosts: fsicos2.lunarc.lu.se
