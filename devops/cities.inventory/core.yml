@@ -6,6 +6,9 @@ all:
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
 
+    restheart_domains:
+      - cityrestheart1.icos-cp.eu
+
     cpdata_domains:
       - citydata1.icos-cp.eu
 
@@ -23,6 +26,7 @@ all:
         cpmeta_backup_enable: false
         cpmeta_config_files:
           - application_production.conf
+          - application_production_sensitive.conf
           - application_cities_amendment.conf
 
         # cpdata - application
@@ -37,7 +41,7 @@ all:
           ansible_port: 60022
 
       vars:
-        coreapp_httpproxy_host: icos1.gis.lu.se
+        coreapp_httpproxy_host: 127.0.0.1
         coreapp_host_ip: 130.235.74.215
 
         # cpmeta - proxy
@@ -47,3 +51,7 @@ all:
         # cpdata - proxy
         cpdata_certbot_name: cpdata-cities
         cpdata_nginxsite_name: cpdata-cities
+
+        # restheart - proxy
+        restheart_nginxsite_name: restheart-cities
+        restheart_certbot_name: restheart-cities

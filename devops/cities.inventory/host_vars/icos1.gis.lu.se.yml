@@ -1,2 +1,3 @@
 cpmeta_jar_file: /home/klara/Documents/ICOS-Carbon-Portal/meta/target/scala-3.2.0/meta-assembly-0.7.0.jar
 cpdata_jar_file: /home/klara/Documents/ICOS-Carbon-Portal/data/target/scala-3.2.0/data-assembly-0.5.0.jar
+inventory_hostname: icos1.gis.lu.se
