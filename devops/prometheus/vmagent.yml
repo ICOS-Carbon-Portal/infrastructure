@@ -4,7 +4,8 @@
 # icos run prometheus/vmagent vmagent -evmagent_upgrade=1 -D
 
 
-- hosts: vmagent_hosts
+- name: Provision physical host with vmagent, node_exporter and proxy
+  hosts: vmagent_hosts
   vars:
     # We serve up the Web UI for vmagent on the host's domain name (i.e
     # fsicos2.lunarc.lu.se) under this top-level path.
@@ -25,8 +26,8 @@
       tags: nginx
       nginxsite_name: vmagent
       nginxsite_file: files/vmagent-nginx.conf
-      nginxsite_users: [ "{{ vault_vmagent_auth }}" ]
-      nginxsite_domains: [ "{{ inventory_hostname }}" ]
+      nginxsite_users: ["{{ vault_vmagent_auth }}"]
+      nginxsite_domains: ["{{ inventory_hostname }}"]
 
   tasks:
     - name: Test that the vmagent UI is password protected

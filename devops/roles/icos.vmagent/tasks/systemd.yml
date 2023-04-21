@@ -17,6 +17,7 @@
     src: vmagent.service
 
 - name: Link service
+  # noqa: command-instead-of-module
   command: "systemctl link {{ vmagent_home }}/vmagent.service"
   args:
     creates: /etc/systemd/system/vmagent.service
