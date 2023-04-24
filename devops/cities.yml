@@ -1,0 +1,51 @@
+# RDFLOG
+- hosts: icos1.gis.lu.se
+  tags: rdflog
+  roles:
+    - role: icos.rdflog
+
+- hosts: icos1.gis.lu.se
+  tasks:
+    - name: Setup cpmeta proxy
+      tags:
+        - proxy
+        - cpmeta_proxy
+      import_role:
+        name: icos.cpmeta
+        tasks_from: proxy.yml
+
+    - name: Setup restheart proxy
+      tags: proxy
+      import_role:
+        name: icos.restheart
+        tasks_from: proxy.yml
+
+    - set_fact:
+        skip_tags:
+          - backup
+          - slow
+    - name: Setup postgis proxy
+      tags: proxy
+      import_role:
+        name: icos.postgis
+      vars:
+      # Lock the version in case the role gets upgraded.
+        postgresql_version: 12
+        # tasks_from: proxy.yml
+      when: "'backup' not in skip_tags and 'slow' not in skip_tags"
+
+    - name: Setup cpdata proxy
+      tags:
+        - proxy
+        - cpdata_proxy
+      import_role:
+        name: icos.cpdata
+        tasks_from: proxy.yml
+
+- hosts: icos1.gis.lu.se
+  roles:
+    - role: icos.cpmeta
+    - role: icos.restheart
+    - role: icos.cpdata
+      
+
