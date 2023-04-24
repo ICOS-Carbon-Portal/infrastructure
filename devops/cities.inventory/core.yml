@@ -6,9 +6,6 @@ all:
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
 
-    restheart_domains:
-      - cityrestheart1.icos-cp.eu
-
     cpdata_domains:
       - citydata1.icos-cp.eu
 
@@ -55,3 +52,5 @@ all:
         # restheart - proxy
         restheart_nginxsite_name: restheart-cities
         restheart_certbot_name: restheart-cities
+        restheart_domains:
+          - cityrestheart1.icos-cp.eu
