@@ -12,6 +12,8 @@ cpmeta_db_user: rdflog
 cpmeta_db_port: 2345
 cpmeta_db_pass: "{{ rdflog_db_pass }}"
 
+doi_password_icos: "{{ vault_doi_password }}"
+
 cpmeta_backup_enable: true
 
 cpmeta_bind_addr: "{{ coreapp_bind_addr }}"

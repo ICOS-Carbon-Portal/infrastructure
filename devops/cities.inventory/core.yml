@@ -1,13 +1,14 @@
 all:
   vars:
     cpmeta_icos_domain: citymeta1.icos-cp.eu
+    cpdata_icos_domain: citydata1.icos-cp.eu
     # # the domains are needed both for the host (to find the buildInfo url) and
     # # for the server (to set up proxy)
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
 
     cpdata_domains:
-      - citydata1.icos-cp.eu
+      - "{{ cpdata_icos_domain }}"
 
   children:
     core_host:
@@ -23,8 +24,8 @@ all:
         cpmeta_backup_enable: false
         cpmeta_config_files:
           - application_production.conf
-          - application_production_sensitive.conf
           - application_cities_amendment.conf
+          - application_cities_sensitive.conf
 
         # cpdata - application
         cpdata_filestorage_target: /disk/data/dataAppStorage/cities
