@@ -5,13 +5,15 @@
   loop:
     - "{{ restheart_home }}/volumes/mongo.db"
 
-- name: Copy files
-  template:
-    src: "{{ item }}"
+- name: Copy restheart.yml
+  copy:
+    src: restheart.yml
     dest: "{{ restheart_home }}"
-  loop:
-    - docker-compose.yml
-    - restheart.yml
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ restheart_home }}"
 
 - name: Build and start the images
   docker_compose:
