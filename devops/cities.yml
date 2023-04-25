@@ -1,8 +1,69 @@
-# RDFLOG
-- hosts: icos1.gis.lu.se
-  tags: rdflog
-  roles:
-    - role: icos.rdflog
+---
+- name: Provision a PostgreSQL Docker container
+  hosts: icos1.gis.lu.se
+  become: yes
+  gather_facts: no
+  vars:
+    pg_username: rdflog
+    pg_password: "{{ rdflog_db_pass }}"
+    pg_database: rdflog
+    db_port: 2345
+
+  tasks:
+    - name: Ensure Docker is installed
+      ansible.builtin.package:
+        name: docker
+        state: present
+
+    - name: Ensure the PostgreSQL container is present
+      community.general.docker_container:
+        name: postgres_container
+        image: postgres:12
+        state: started
+        recreate: no
+        env:
+          POSTGRES_USER: "{{ pg_username }}"
+          POSTGRES_PASSWORD: "{{ pg_password }}"
+          POSTGRES_DB: "{{ pg_database }}"
+        published_ports:
+          - "{{ db_port }}:5432"
+        volumes:
+          - "/docker/rdflog/volumes/data"
+          # - "/var/lib/postgresql/data:/var/lib/postgresql/data"
+        restart_policy: always
+
+    # - name: Wait for PostgreSQL to become available
+    #   wait_for:
+    #     host: icos1.gis.lu.se
+    #     port: "{{ db_port }}"
+    #     delay: 5
+    #     timeout: 60
+
+    - name: Create a PostgreSQL database user with write permissions
+      become: yes
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: "{{ pg_database }}"
+
+    - name: Create a PostgreSQL user
+      become: yes
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: "{{ pg_username }}"
+        password: "{{ pg_password }}"
+        state: present
+
+    - name: Grant permissions to user
+      become: yes
+      become_user: postgres
+      community.postgresql.postgresql_privs:
+        db: "{{ pg_database }}"
+        priv: ALL
+        roles: "{{ pg_username }}"
+        objs: ALL_IN_SCHEMA
+      retries: 5
+      delay: 10
+
 
 - hosts: icos1.gis.lu.se
   tasks:
@@ -14,38 +75,38 @@
         name: icos.cpmeta
         tasks_from: proxy.yml
 
-    - name: Setup restheart proxy
-      tags: proxy
-      import_role:
-        name: icos.restheart
-        tasks_from: proxy.yml
+    # - name: Setup restheart proxy
+    #   tags: proxy
+    #   import_role:
+    #     name: icos.restheart
+    #     tasks_from: proxy.yml
 
-    - set_fact:
-        skip_tags:
-          - backup
-          - slow
-    - name: Setup postgis proxy
-      tags: proxy
-      import_role:
-        name: icos.postgis
-      vars:
-      # Lock the version in case the role gets upgraded.
-        postgresql_version: 12
-        # tasks_from: proxy.yml
-      when: "'backup' not in skip_tags and 'slow' not in skip_tags"
+    # - set_fact:
+    #     skip_tags:
+    #       - restheart_backup
+    #       - postgis_backup
+    #       - cpmeta_backup
+    # - name: Setup postgis proxy
+    #   tags: proxy
+    #   import_role:
+    #     name: icos.postgis
+    #   vars:
+    #   # Lock the version in case the role gets upgraded.
+    #     postgresql_version: 12
+    #     # tasks_from: proxy.yml
 
-    - name: Setup cpdata proxy
-      tags:
-        - proxy
-        - cpdata_proxy
-      import_role:
-        name: icos.cpdata
-        tasks_from: proxy.yml
+    # - name: Setup cpdata proxy
+    #   tags:
+    #     - proxy
+    #     - cpdata_proxy
+    #   import_role:
+    #     name: icos.cpdata
+    #     tasks_from: proxy.yml
 
 - hosts: icos1.gis.lu.se
   roles:
     - role: icos.cpmeta
-    - role: icos.restheart
-    - role: icos.cpdata
+    # - role: icos.restheart
+    # - role: icos.cpdata
       
 
