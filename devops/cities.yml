@@ -1,68 +1,64 @@
----
-- name: Provision a PostgreSQL Docker container
-  hosts: icos1.gis.lu.se
+- hosts: icos1.gis.lu.se
   become: yes
   gather_facts: no
-  vars:
-    pg_username: rdflog
-    pg_password: "{{ rdflog_db_pass }}"
-    pg_database: rdflog
-    db_port: 2345
-
   tasks:
+
+    - name: Import variables from icos.rdflog role
+      include_vars:
+        file: roles/icos.rdflog/defaults/main.yml
+
     - name: Ensure Docker is installed
-      ansible.builtin.package:
+      package:
         name: docker
         state: present
 
-    - name: Ensure the PostgreSQL container is present
+    - name: Ensure the rdflog PostgreSQL container is present
       community.general.docker_container:
-        name: postgres_container
-        image: postgres:12
+        name: rdflog
+        image: postgres:{{ rdflog_postgres_version }}
         state: started
         recreate: no
         env:
-          POSTGRES_USER: "{{ pg_username }}"
-          POSTGRES_PASSWORD: "{{ pg_password }}"
-          POSTGRES_DB: "{{ pg_database }}"
+          POSTGRES_USER: "{{ rdflog_db_user }}"
+          POSTGRES_PASSWORD: "{{ rdflog_db_pass }}"
+          POSTGRES_DB: "{{ rdflog_db_name }}"
         published_ports:
-          - "{{ db_port }}:5432"
+          - 127.0.0.1:{{ rdflog_db_port }}:5432
         volumes:
-          - "/docker/rdflog/volumes/data"
-          # - "/var/lib/postgresql/data:/var/lib/postgresql/data"
+          - "/docker/rdflog/volumes/data:/var/lib/postgresql/data"
         restart_policy: always
 
-    # - name: Wait for PostgreSQL to become available
-    #   wait_for:
-    #     host: icos1.gis.lu.se
-    #     port: "{{ db_port }}"
-    #     delay: 5
-    #     timeout: 60
+    - name: Wait for rdflog PostgreSQL to become available
+      wait_for:
+        host: 127.0.0.1
+        port: "{{ rdflog_db_port }}"
+        delay: 5
+        timeout: 60
 
-    - name: Create a PostgreSQL database user with write permissions
-      become: yes
-      become_user: postgres
-      community.postgresql.postgresql_db:
-        name: "{{ pg_database }}"
+    # - name: Create a PostgreSQL database user with write permissions
+    #   become: yes
+    #   become_user: postgres
+    #   community.postgresql.postgresql_db:
+    #     name: "{{ rdflog_db_name }}"
 
-    - name: Create a PostgreSQL user
-      become: yes
-      become_user: postgres
-      community.postgresql.postgresql_user:
-        name: "{{ pg_username }}"
-        password: "{{ pg_password }}"
-        state: present
+    # - name: Create a PostgreSQL user
+    #   become: yes
+    #   become_user: postgres
+    #   community.postgresql.postgresql_user:
+    #     name: "{{ rdflog_db_user }}"
+    #     password: "{{ rdflog_db_pass }}"
+    #     state: present
 
-    - name: Grant permissions to user
-      become: yes
-      become_user: postgres
-      community.postgresql.postgresql_privs:
-        db: "{{ pg_database }}"
-        priv: ALL
-        roles: "{{ pg_username }}"
-        objs: ALL_IN_SCHEMA
-      retries: 5
-      delay: 10
+    # - name: Grant permissions to user
+    #   become: yes
+    #   become_user: postgres
+    #   community.postgresql.postgresql_privs:
+    #     db: "{{ rdflog_db_name }}"
+    #     priv: ALL
+    #     roles: "{{ rdflog_db_user }}"
+    #     objs: ALL_IN_SCHEMA
+    #   retries: 5
+    #   delay: 10
 
 
 - hosts: icos1.gis.lu.se
@@ -108,5 +104,3 @@
     - role: icos.cpmeta
     # - role: icos.restheart
     # - role: icos.cpdata
-      
-
