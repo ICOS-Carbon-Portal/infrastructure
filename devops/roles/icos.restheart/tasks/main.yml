@@ -7,7 +7,7 @@
 
 - name: Copy restheart.yml
   copy:
-    src: restheart.yml
+    src: ../templates/restheart.yml
     dest: "{{ restheart_home }}"
 
 - name: Copy docker-compose.yml
