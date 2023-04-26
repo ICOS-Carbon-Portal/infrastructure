@@ -73,6 +73,10 @@
         name: icos.restheart
         tasks_from: proxy.yml
 
+    - name: Setup restheart
+      import_role:
+        name: icos.restheart
+        tasks_from: setup.yml
     # - name: Setup postgis proxy
     #   tags: proxy
     #   import_role:
@@ -92,6 +96,5 @@
 
 - hosts: icos1.gis.lu.se
   roles:
-    - role: icos.restheart
     - role: icos.cpmeta
     # - role: icos.cpdata

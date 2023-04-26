@@ -1,31 +1,5 @@
-- name: Create volume directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  loop:
-    - "{{ restheart_home }}/volumes/mongo.db"
-
-- name: Copy restheart.yml
-  copy:
-    src: ../templates/restheart.yml
-    dest: "{{ restheart_home }}"
-
-- name: Copy docker-compose.yml
-  template:
-    src: docker-compose.yml
-    dest: "{{ restheart_home }}"
-
-- name: Build and start the images
-  docker_compose:
-    project_src: "{{ restheart_home }}"
-    build: yes
-
-- name: Test Restheart
-  uri:
-    url: "http://{{ restheart_host }}:{{ restheart_port }}/"
-  register: r
-  failed_when:
-    - r.status != 200
+- import_tasks: setup.yml
+  tags: restheart_setup
 
 - import_tasks: backup.yml
   tags: restheart_backup
