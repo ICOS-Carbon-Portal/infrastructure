@@ -1,0 +1,71 @@
+- name: Ensure Docker is installed
+  package:
+    name: docker
+    state: present
+
+- name: Ensure the postgis PostgreSQL container is present
+  community.general.docker_container:
+    name: "{{ postgis_db_name }}"
+    image: postgres:{{ postgis_postgres_version }}
+    state: started
+    recreate: no
+    env:
+      POSTGRES_USER: "{{ postgis_db_user }}"
+      POSTGRES_PASSWORD: "{{ postgis_db_pass }}"
+      POSTGRES_DB: "{{ postgis_db_name }}"
+    published_ports:
+      - 127.0.0.1:{{ postgis_db_port }}:5432
+    volumes:
+      - "{{ postgis_db_name }}:/var/lib/postgresql/data"
+    restart_policy: always
+
+- name: Wait for postgis PostgreSQL to become available
+  wait_for:
+    host: 127.0.0.1
+    port: "{{ postgis_db_port }}"
+    delay: 5
+    timeout: 60
+
+    # Switch to postgres so we use socket authentication.
+- become: true
+  become_user: postgres
+  tags: cplog
+  block:
+
+    - name: Create two databases
+      become: true
+      postgresql_db:
+        name: "{{ item }}"
+        login_user: "{{ postgis_db_user }}"
+        login_password: "{{ postgis_db_pass }}"
+        login_host: 127.0.0.1
+        login_port: "{{ postgis_db_port }}"
+      loop:
+        - cplog
+        - siteslog
+
+    - name: Create postgres cplog users
+      postgresql_user:
+        db: cplog
+        name: "{{ item.username }}"
+        password: "{{ item.password }}"
+        login_user: "{{ postgis_db_user }}"
+        login_password: "{{ postgis_db_pass }}"
+        login_host: 127.0.0.1
+        login_port: "{{ postgis_db_port }}"
+      loop: "{{ vault_postgis_cplog_users }}"
+
+    # - name: Allow users to connect from same subnet
+    #   postgresql_pg_hba:
+    #     dest: "{{ postgresql_hba_file }}"
+    #     users: "{{ item.username }}"
+    #     source: samenet
+    #     method: md5
+    #     contype: hostssl
+    #   loop: "{{ vault_postgis_cplog_users }}"
+
+    # - name: Add the pg_stat_statements extension
+    #   community.postgresql.postgresql_ext:
+    #     name: pg_stat_statements
+    #     db: cplog
+    #     schema: public

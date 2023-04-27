@@ -77,14 +77,11 @@
       import_role:
         name: icos.restheart
         tasks_from: setup.yml
-    # - name: Setup postgis proxy
-    #   tags: proxy
-    #   import_role:
-    #     name: icos.postgis
-    #   vars:
-    #   # Lock the version in case the role gets upgraded.
-    #     postgresql_version: 12
-    #     # tasks_from: proxy.yml
+
+    - name: Setup postgis in Docker
+      import_role:
+        name: icos.postgis
+        tasks_from: docker.yml
 
     # - name: Setup cpdata proxy
     #   tags:

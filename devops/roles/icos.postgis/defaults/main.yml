@@ -6,3 +6,9 @@ bbclient_user: postgres
 bbclient_home: "{{ postgresql_home }}/.bbclient"
 
 postgresql_postgis_enable: true
+
+postgis_db_name: postgis
+postgis_db_user: postgres
+postgis_db_pass: "{{ vault_postgis_postgres_password }}"
+postgis_db_port: 5438
+postgis_postgres_version: 12.3
