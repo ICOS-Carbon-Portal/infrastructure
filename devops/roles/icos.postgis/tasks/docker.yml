@@ -5,7 +5,7 @@
 
 - name: Ensure the postgis PostgreSQL container is present
   community.general.docker_container:
-    name: "{{ postgis_db_name }}"
+    name: "{{ postgis_container_name }}"
     image: postgres:{{ postgis_postgres_version }}
     state: started
     recreate: no
@@ -28,7 +28,7 @@
 
 - name: Install postgis using apt-get
   community.docker.docker_container_exec:
-    container: postgis
+    container: "{{ postgis_container_name }}"
     command: /bin/bash -c "apt-get update && apt-get -y install postgresql-12-postgis-3"
     chdir: /root
 

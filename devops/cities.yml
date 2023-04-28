@@ -94,4 +94,4 @@
 - hosts: icos1.gis.lu.se
   roles:
     - role: icos.cpmeta
-    # - role: icos.cpdata
+    - role: icos.cpdata
