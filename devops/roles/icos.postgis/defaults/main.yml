@@ -17,4 +17,4 @@ postgis_postgres_version: 12.3
 postgis_dbs:
   - cplog
   - siteslog
-  - citieslog
+  - paullog

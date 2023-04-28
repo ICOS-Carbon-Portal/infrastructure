@@ -27,7 +27,7 @@ all:
     postgis_dbs:
       - cplog
       - siteslog
-      - citieslog
+      - paullog
 
   children:
     core_host:
