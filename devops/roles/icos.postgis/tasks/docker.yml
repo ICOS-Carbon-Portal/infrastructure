@@ -35,43 +35,19 @@
     # Switch to postgres so we use socket authentication.
 - become: true
   become_user: postgres
-  tags: cplog
+  tags: databases
   block:
 
-    - name: Create two databases
-      become: true
+    - name: Create databases
       postgresql_db:
         name: "{{ item }}"
         login_user: "{{ postgis_db_user }}"
         login_password: "{{ postgis_db_pass }}"
         login_host: 127.0.0.1
         login_port: "{{ postgis_db_port }}"
-      loop:
-        - cplog
-        - siteslog
+      loop: "{{ postgis_dbs }}"
 
-    - name: Create postgres cplog users
-      postgresql_user:
-        db: cplog
-        name: "{{ item.username }}"
-        password: "{{ item.password }}"
-        login_user: "{{ postgis_db_user }}"
-        login_password: "{{ postgis_db_pass }}"
-        login_host: 127.0.0.1
-        login_port: "{{ postgis_db_port }}"
-      loop: "{{ vault_postgis_cplog_users }}"
-
-    # - name: Allow users to connect from same subnet
-    #   postgresql_pg_hba:
-    #     dest: "{{ postgresql_hba_file }}"
-    #     users: "{{ item.username }}"
-    #     source: samenet
-    #     method: md5
-    #     contype: hostssl
-    #   loop: "{{ vault_postgis_cplog_users }}"
-
-    # - name: Add the pg_stat_statements extension
-    #   community.postgresql.postgresql_ext:
-    #     name: pg_stat_statements
-    #     db: cplog
-    #     schema: public
+    - include_tasks: users.yml
+      loop: "{{ postgis_dbs }}"
+      loop_control:
+        loop_var: db_item
