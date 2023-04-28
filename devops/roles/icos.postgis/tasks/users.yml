@@ -1,6 +1,5 @@
-# create db
 # create users for each db
-- name: Create postgres cplog users
+- name: Create postgres db users
   become: true
   postgresql_user:
     db: "{{ db_item }}"
