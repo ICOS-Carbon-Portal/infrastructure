@@ -26,6 +26,12 @@
     delay: 5
     timeout: 60
 
+- name: Install postgis using apt-get
+  community.docker.docker_container_exec:
+    container: postgis
+    command: /bin/bash -c "apt-get update && apt-get -y install postgresql-12-postgis-3"
+    chdir: /root
+
     # Switch to postgres so we use socket authentication.
 - become: true
   become_user: postgres
