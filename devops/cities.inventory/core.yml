@@ -11,6 +11,9 @@ all:
 
     cpdata_domains:
       - "{{ cpdata_icos_domain }}"
+    
+    postgis_dbs:
+      - citieslog
 
   children:
     core_host:

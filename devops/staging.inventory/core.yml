@@ -23,6 +23,11 @@ all:
 
     doi_domains:
       - doistaging.icos-cp.eu
+    
+    postgis_dbs:
+      - cplog
+      - siteslog
+      - citieslog
 
   children:
     core_host:
