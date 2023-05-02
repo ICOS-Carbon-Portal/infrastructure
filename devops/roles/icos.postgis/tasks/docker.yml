@@ -29,7 +29,7 @@
 - name: Install postgis using apt-get
   community.docker.docker_container_exec:
     container: "{{ postgis_container_name }}"
-    command: /bin/bash -c "apt-get update && apt-get -y install postgresql-12-postgis-3"
+    command: /bin/bash -c "apt-get update && apt-get -y install {{ postgis_package }}"
     chdir: /root
 
     # Switch to postgres so we use socket authentication.
