@@ -1,7 +1,6 @@
 - hosts: icos1.gis.lu.se
   become: yes
-  gather_facts: no
-  tasks:
+  pre_tasks:
     - name: Import variables from icos.rdflog role
       include_vars:
         file: roles/icos.rdflog/defaults/main.yml
@@ -90,8 +89,14 @@
     #   import_role:
     #     name: icos.cpdata
     #     tasks_from: proxy.yml
-
-- hosts: icos1.gis.lu.se
   roles:
     - role: icos.cpmeta
     - role: icos.cpdata
+
+- hosts: staging
+  tasks:
+    - name: Setup postgis on staging
+      tags: postgis_docker
+      import_role:
+        name: icos.postgis
+        tasks_from: docker.yml
