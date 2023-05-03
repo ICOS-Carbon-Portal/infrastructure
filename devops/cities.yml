@@ -1,63 +1,5 @@
-- hosts: icos1.gis.lu.se
-  become: yes
-  pre_tasks:
-    - name: Import variables from icos.rdflog role
-      include_vars:
-        file: roles/icos.rdflog/defaults/main.yml
-
-    - name: Ensure Docker is installed
-      package:
-        name: docker
-        state: present
-
-    - name: Ensure the rdflog PostgreSQL container is present
-      community.general.docker_container:
-        name: rdflog
-        image: postgres:{{ rdflog_postgres_cities_version }}
-        state: started
-        recreate: no
-        env:
-          POSTGRES_USER: "{{ rdflog_db_user }}"
-          POSTGRES_PASSWORD: "{{ rdflog_db_pass }}"
-          POSTGRES_DB: "{{ rdflog_db_name }}"
-        published_ports:
-          - 127.0.0.1:{{ rdflog_db_port }}:5432
-        volumes:
-          - "/docker/rdflog/volumes/data:/var/lib/postgresql/data"
-        restart_policy: always
-
-    - name: Wait for rdflog PostgreSQL to become available
-      wait_for:
-        host: 127.0.0.1
-        port: "{{ rdflog_db_port }}"
-        delay: 5
-        timeout: 60
-
-    # - name: Create a PostgreSQL database user with write permissions
-    #   become: yes
-    #   become_user: postgres
-    #   community.postgresql.postgresql_db:
-    #     name: "{{ rdflog_db_name }}"
-
-    # - name: Create a PostgreSQL user
-    #   become: yes
-    #   become_user: postgres
-    #   community.postgresql.postgresql_user:
-    #     name: "{{ rdflog_db_user }}"
-    #     password: "{{ rdflog_db_pass }}"
-    #     state: present
-
-    # - name: Grant permissions to user
-    #   become: yes
-    #   become_user: postgres
-    #   community.postgresql.postgresql_privs:
-    #     db: "{{ rdflog_db_name }}"
-    #     priv: ALL
-    #     roles: "{{ rdflog_db_user }}"
-    #     objs: ALL_IN_SCHEMA
-    #   retries: 5
-    #   delay: 10
-
+- hosts: core_server
+  tasks:
     - name: Setup cpmeta proxy
       tags:
         - proxy
@@ -66,37 +8,43 @@
         name: icos.cpmeta
         tasks_from: proxy.yml
 
+    - name: Setup cpdata proxy
+      tags:
+        - proxy
+        - cpdata_proxy
+      import_role:
+        name: icos.cpdata
+        tasks_from: proxy.yml
+
     - name: Setup restheart proxy
-      tags: proxy
+      tags:
+        - proxy
+        - restheart_proxy
       import_role:
         name: icos.restheart
         tasks_from: proxy.yml
 
+
+- hosts: core_host
+  pre_tasks:
+    - name: Setup rdflog
+      tags: rdflog
+      import_role:
+        name: icos.rdflog
+        tasks_from: barebones.yml
+
     - name: Setup restheart
+      tags: restheart
       import_role:
         name: icos.restheart
         tasks_from: setup.yml
 
-    - name: Setup postgis in Docker
+    - name: Setup postgis
+      tags: postgis
       import_role:
         name: icos.postgis
         tasks_from: docker.yml
 
-    # - name: Setup cpdata proxy
-    #   tags:
-    #     - proxy
-    #     - cpdata_proxy
-    #   import_role:
-    #     name: icos.cpdata
-    #     tasks_from: proxy.yml
   roles:
     - role: icos.cpmeta
     - role: icos.cpdata
-
-- hosts: staging
-  tasks:
-    - name: Setup postgis on staging
-      tags: postgis_docker
-      import_role:
-        name: icos.postgis
-        tasks_from: docker.yml

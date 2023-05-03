@@ -1,0 +1,6 @@
+
+cpdata_pgreslog_admin_pass: "{{ vault_cpdata_pgreslog_admin_pass }}"
+cpdata_pgreslog_writer_pass: "{{ vault_cpdata_pgreslog_writer_pass }}"
+cpdata_pgreslog_reader_pass: "{{ vault_cpdata_pgreslog_reader_pass }}"
+
+rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
