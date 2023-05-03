@@ -1,6 +1,6 @@
---- /home/andre/.local/pipx/venvs/ansible/lib/python3.10/site-packages/ansible/../ansible_collections/community/general/plugins/modules/lxd_container.py	2022-11-09 06:39:00.096258530 +0100
-+++ ../../library/lxd_container.py	2022-11-22 07:42:30.303333877 +0100
-@@ -132,6 +132,15 @@
+--- /home/andre/.local/pipx/venvs/ansible/lib/python3.11/site-packages/ansible/../ansible_collections/community/general/plugins/modules/lxd_container.py	2023-04-26 12:01:46.385614672 +0200
++++ ../../library/lxd_container.py	2023-05-03 15:22:51.355963847 +0200
+@@ -141,6 +141,15 @@
          required: false
          default: false
          type: bool
@@ -16,7 +16,7 @@
      wait_for_container:
          description:
              - If set to C(true), the tasks will wait till the task reports a
-@@ -447,6 +456,7 @@
+@@ -461,6 +470,7 @@
  
          self.timeout = self.module.params['timeout']
          self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
@@ -24,22 +24,22 @@
          self.force_stop = self.module.params['force_stop']
          self.addresses = None
          self.target = self.module.params['target']
-@@ -570,6 +580,8 @@
-         resp_json = self._get_instance_state_json()
-         network = resp_json['metadata']['network'] or {}
-         network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
+@@ -588,6 +598,8 @@
+         ignore_devices = ['lo'] if ignore_devices is None else ignore_devices
+         data = (self._get_instance_state_json() or {}).get('metadata', None) or {}
+         network = dict((k, v) for k, v in (data.get('network', None) or {}).items() if k not in ignore_devices)
 +        if self.wait_for_ipv4_interfaces:
 +            network = dict((k, v) for k, v in network.items() if k in self.wait_for_ipv4_interfaces)
-         addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
+         addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items())
          return addresses
  
-@@ -808,6 +820,9 @@
+@@ -829,6 +841,9 @@
                  type='bool',
-                 default=False
+                 default=False,
              ),
 +            wait_for_ipv4_interfaces=dict(
 +                type='list',
 +            ),
              force_stop=dict(
                  type='bool',
-                 default=False
+                 default=False,
