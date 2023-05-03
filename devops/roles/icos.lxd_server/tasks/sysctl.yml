@@ -1,9 +1,28 @@
-# https://lxd.readthedocs.io/en/latest/production-setup/
+# https://linuxcontainers.org/lxd/docs/master/production-setup/
 - name: Set sysctl value
   sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
   loop:
+    # "Maximum number of concurrent asynchronous I/O operations (you might need
+    # to increase this limit further if you have a lot of workloads that use
+    # the AIO subsystem, for example, MySQL)"
+    - name: fs.aio-max-nr
+      value: 524288
+
+    # "This specifies an upper limit on the number of events, instances and
+    # watches that can be created per real user ID."
+    - name: fs.inotify.max_queued_events
+      value: 1048576
+    - name: fs.inotify.max_user_instances
+      value: 1048576
+    - name: fs.inotify.max_user_watches
+      value: 1048576
+
+    # Turns out that maxkeys isn't enough, one need to bump maxbytes as well.
+    - name: kernel.keys.maxbytes
+      value: 100000
+
     # "This is the maximum number of keys a non-root user can use, should be
     # higher than the number of containers"
     #
@@ -16,9 +35,11 @@
     - name: kernel.keys.maxkeys
       value: 4000
 
-    # Turns out that maxkeys isn't enough, one need to bump maxbytes as well.
-    - name: kernel.keys.maxbytes
-      value: 100000
+    # "Limit on the size of eBPF JIT allocations (on kernels < 5.15 that are
+    # compiled with CONFIG_BPF_JIT_ALWAYS_ON=y, this value might limit the
+    # amount of instances that can be created)"
+    - name: net.core.bpf_jit_limit
+      value: 3000000000
 
     # "This is the maximum number of entries in ARP table. You should increase
     # this if you create over 1024 containers"
@@ -27,26 +48,17 @@
     - name: net.ipv6.neigh.default.gc_thresh3
       value: 8192
 
-    # "This denies container access to the messages in the kernel ring
-    # buffer. Please note that this also will deny access to non-root users on
-    # the host system."
-    - name: kernel.dmesg_restrict
-      value: 1
-
     # "This file contains the maximum number of memory map areas a process may
     # have. Memory map areas are used as a side-effect of calling malloc,
     # directly by mmap and mprotect, and also when loading shared libraries."
     - name: vm.max_map_count
       value: 262144
 
-    # "This specifies an upper limit on the number of events, instances and
-    # watches that can be created per real user ID."
-    - name: fs.inotify.max_queued_events
-      value: 1048576
-    - name: fs.inotify.max_user_instances
-      value: 1048576
-    - name: fs.inotify.max_user_watches
-      value: 1048576
+    # "This denies container access to the messages in the kernel ring
+    # buffer. Please note that this also will deny access to non-root users on
+    # the host system."
+    - name: kernel.dmesg_restrict
+      value: 1
 
     # https://wiki.mikejung.biz/Sysctl_tweaks#net.core.netdev_max_backlog
     - name: net.core.netdev_max_backlog
