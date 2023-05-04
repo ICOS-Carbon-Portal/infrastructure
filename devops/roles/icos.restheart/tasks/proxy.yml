@@ -7,3 +7,4 @@
   vars:
     nginxsite_name: "{{ restheart_nginxsite_name }}"
     nginxsite_file: restheart-nginx.conf
+    nginxsite_users: ["{{ restheart_basic_auth }}"]

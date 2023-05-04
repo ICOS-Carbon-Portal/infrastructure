@@ -13,7 +13,7 @@ all:
 
     cpdata_domains:
       - "{{ cpdata_cities_domain }}"
-    
+
     postgis_dbs:
       - paullog
 
@@ -62,3 +62,4 @@ all:
         restheart_certbot_name: restheart-cities
         restheart_domains:
           - cityrestheart1.icos-cp.eu
+        restheart_dbs: ["pauldb"]

@@ -80,6 +80,7 @@ all:
         restheart_certbot_name: restheart.icos-cp.eu
         restheart_domains:
           - restheart.icos-cp.eu
+        restheart_dbs: ["db", "sitesdb"]
 
         # doi - proxy
         doi_certbot_name: doi.icos-cp.eu

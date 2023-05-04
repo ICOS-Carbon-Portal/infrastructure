@@ -6,7 +6,7 @@
     - "{{ restheart_home }}/volumes/mongo.db"
 
 - name: Copy restheart.yml
-  copy:
+  template:
     src: ../templates/restheart.yml
     dest: "{{ restheart_home }}"
 
