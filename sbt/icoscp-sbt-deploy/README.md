@@ -6,7 +6,7 @@ It depends on (and thereby adds to a build project) other two plugins: sbt-assem
 
 ## Usage
 
-The plugin is recommended for use with sbt 0.13.15+
+The plugin is recommended for use with sbt 1.0+
 
 Your project that you want to use the plugin in must be in a folder next to the `infrastructure` project that contains Ansible configs.
 
@@ -16,7 +16,7 @@ Make sure you configured sbt to use CP's Nexus repo at `https://repo.icos-cp.eu/
 
 Add the following line to `plugins.sbt` in your build's `project/` folder:
 
-`addSbtPlugin("se.lu.nateko.cp" % "icoscp-sbt-deploy" % "0.1-SNAPSHOT")`
+`addSbtPlugin("se.lu.nateko.cp" % "icoscp-sbt-deploy" % "0.3.3")`
 
 The plugin is not triggered automatically, and must be enabled for every build project explicitly. Your build project must have values set for settings `cpDeployTarget` and `cpDeployBuildInfoPackage`. For example:
 
