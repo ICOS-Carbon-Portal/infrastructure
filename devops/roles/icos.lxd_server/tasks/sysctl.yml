@@ -35,11 +35,10 @@
     - name: kernel.keys.maxkeys
       value: 4000
 
-    # "Limit on the size of eBPF JIT allocations (on kernels < 5.15 that are
     # compiled with CONFIG_BPF_JIT_ALWAYS_ON=y, this value might limit the
     # amount of instances that can be created)"
-    - name: net.core.bpf_jit_limit
-      value: 3000000000
+    # - name: net.core.bpf_jit_limit
+    #   value: 3000000000
 
     # "This is the maximum number of entries in ARP table. You should increase
     # this if you create over 1024 containers"
