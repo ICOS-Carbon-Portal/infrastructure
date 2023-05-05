@@ -4,15 +4,23 @@
 - import_tasks: utils.yml
   tags: lxd_utils
 
+- name: Retrieve lxd_is_snap fact
+  shellfact:
+    exec: "which lxc | grep -q '/snap/bin' && echo yes"
+    fact: lxd_is_snap
+    bool: True
+
+# "For users of the snap, those limits are automatically raised."
 - name: Modify /etc/security/limits.conf
+  when: not lxd_is_snap
   tags: lxd_limits
   copy:
     dest: /etc/security/limits.conf
     backup: yes
     content: |
-      *         soft    nofile  1048576         unset   # maximum number of open files
-      *         hard    nofile  1048576         unset   # maximum number of open files
-      root      soft    nofile  1048576         unset   # maximum number of open files
-      root      hard    nofile  1048576         unset   # maximum number of open files
-      *         soft    memlock unlimited       unset   # maximum locked-in-memory address space (KB)
-      *         hard    memlock unlimited       unset   # maximum locked-in-memory address space (KB)
+      *    soft  nofile  1048576   unset   # max number of open files
+      *    hard  nofile  1048576   unset   # max number of open files
+      root soft  nofile  1048576   unset   # max number of open files
+      root hard  nofile  1048576   unset   # max number of open files
+      *    soft  memlock unlimited unset   # max locked-in-memory address space KB
+      *    hard  memlock unlimited unset   # max locked-in-memory address space KB
