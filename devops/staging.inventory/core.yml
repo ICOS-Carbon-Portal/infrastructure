@@ -1,7 +1,9 @@
 all:
   vars:
-    cpmeta_icos_domain: metastaging.icos-cp.eu
+    fsicos2_ip: 194.47.223.139
+    staging_lxd_ip: 10.189.225.88
 
+    cpmeta_icos_domain: metastaging.icos-cp.eu
     cpauth_icos_domain: cpauthstaging.icos-cp.eu
     cpauth_sites_domain: authstaging.fieldsites.se
     cpauth_cities_domain: cityauthstaging.icos-cp.eu

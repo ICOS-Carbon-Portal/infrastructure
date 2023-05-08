@@ -1,0 +1,1 @@
+city_restheart_basic_auth: {{ vault_city_restheart_basic_auth }}

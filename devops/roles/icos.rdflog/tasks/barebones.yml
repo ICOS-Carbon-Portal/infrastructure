@@ -1,7 +1,3 @@
-- name: Ensure Docker is installed
-  package:
-    name: docker
-    state: present
 
 - name: (Re-)install rdflog postgres container
   community.general.docker_container:

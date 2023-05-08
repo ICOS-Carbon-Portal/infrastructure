@@ -10,12 +10,18 @@ postgresql_postgis_enable: true
 postgis_db_name: postgis
 postgis_container_name: postgis
 postgis_db_user: postgres
-postgis_db_pass: "{{ vault_postgis_postgres_password }}"
+postgis_db_pass: "{{ postgis_admin_pass }}"
 postgis_db_port: 5438
 postgis_postgres_version: 15
 postgis_package: postgresql-15-postgis-3
 
+postgis_db_users:
+  - username: reader
+    password: "{{ postgis_reader_pass }}"
+  - username: writer
+    password: "{{ postgis_writer_pass }}"
+
+
 postgis_dbs:
   - cplog
   - siteslog
-  - paullog

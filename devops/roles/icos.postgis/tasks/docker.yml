@@ -1,8 +1,3 @@
-- name: Ensure Docker is installed
-  package:
-    name: docker
-    state: present
-
 - name: Ensure the postgis PostgreSQL container is present
   community.general.docker_container:
     name: "{{ postgis_container_name }}"

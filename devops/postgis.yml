@@ -29,7 +29,7 @@
       tags: postgresql
       vars:
         postgresql_postgis_enable: true
-        postgresql_postgres_password: "{{ vault_postgis_postgres_password }}"
+        postgresql_postgres_password: "{{ postgis_admin_pass }}"
         postgresql_listen_addresses: "'*'"
         postgresql_pg_stat_enable: true
 
