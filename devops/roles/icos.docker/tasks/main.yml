@@ -48,11 +48,6 @@
     state: started
     enabled: yes
 
-- name: Create /docker directory
-  file:
-    path: /docker
-    state: directory
-
 - import_tasks: cleanup.yml
   tags: docker_cleanup
   when: docker_periodic_cleanup
