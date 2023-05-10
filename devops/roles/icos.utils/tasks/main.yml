@@ -30,7 +30,6 @@
       - htop           # a better top(1)
       - jq             # like sed for json
       - make           # party like it's 1976
-      - ncdu           # graphical disk usage
       - netcat-openbsd # nc(1)
       - git            # useful
       - tree           # directory overview
@@ -39,6 +38,15 @@
       - mutt           # for reading said reports
       - unzip          # required by ansible's unarchive
       - ripgrep        # fast searching
+
+
+# NCDU
+- name: Install ncdu
+  tags: ncdu
+  unarchive:
+    remote_src: true
+    src: "{{ ncdu_url }}"
+    dest: /usr/local/bin/
 
 
 # FD
