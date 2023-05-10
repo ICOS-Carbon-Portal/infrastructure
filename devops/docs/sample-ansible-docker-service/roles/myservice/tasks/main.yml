@@ -1,0 +1,22 @@
+- name: Create home directory
+  file:
+    path: "{{ myservice_home }}"
+    state: directory
+
+- include_role:
+    name: icos.nginxsite
+  vars:
+    nginxsite_name: myservice
+    nginxsite_file: myservice-nginx.conf
+    nginxsite_domains:
+      - myservice.icos-cp.eu
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ myservice_home }}"
+
+- name: Run myservice docker compose
+  docker_compose:
+    project_src: "{{ myservice_home }}"
+    state: present
