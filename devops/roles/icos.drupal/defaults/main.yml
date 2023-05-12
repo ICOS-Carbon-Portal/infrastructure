@@ -1,4 +1,4 @@
-drupal_version: 9.5.8
+drupal_version: 9.5
 drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "otctest", "se", "sites"]
 drupal_home: /disk/data/drupal
 drupal_modules: []

@@ -10,7 +10,7 @@ for testing.
 
 The drupal playbook requires a `website` parameter with the short name of the website. It can be used with the deploy script:
 
-`deploy drupal -ewebsite=ac -tdrupal`
+`icos run drupal -ewebsite=ac -tdrupal`
 
 which is equivalent to
 
