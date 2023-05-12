@@ -31,6 +31,13 @@ all:
       - siteslog
       - paullog
 
+    restheart_dbs:
+      - "{{ restheart_icos_db_name }}"
+      - "{{ restheart_sites_db_name }}"
+      - "{{ restheart_cities_db_name }}"
+
+    cpauth_restheart_ips_to_ignore: []
+
   children:
     core_host:
       hosts:

@@ -61,5 +61,6 @@ all:
         restheart_nginxsite_name: restheart-cities
         restheart_certbot_name: restheart-cities
         restheart_domains:
-          - cityrestheart1.icos-cp.eu
-        restheart_dbs: ["pauldb"]
+          - "{{ restheart_cities_domain }}"
+        restheart_dbs:
+          - "{{ restheart_cities_db_name }}"
