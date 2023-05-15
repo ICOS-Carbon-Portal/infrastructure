@@ -36,7 +36,7 @@ all:
       - "{{ restheart_sites_db_name }}"
       - "{{ restheart_cities_db_name }}"
 
-    cpauth_restheart_ips_to_ignore: []
+    activity_log_ignore_ips: []
 
   children:
     core_host:

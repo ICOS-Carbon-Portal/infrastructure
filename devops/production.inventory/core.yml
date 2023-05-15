@@ -49,11 +49,32 @@ all:
         cpauth_config_files:
           - application_production.conf
 
+        postgis_db_port: 5432
+        postgis_hostname: postgis.lxd
         # stiltweb - application
         # This is where stiltweb keeps it's archive of of stilt files
         stiltweb_statedir: /disk/data/stiltweb
         # The root of the classic stilt data directory (Footprints, RData, etc)
         stiltweb_stiltdir: /disk/data/stilt
+
+        cpauth_envries:
+          - name: ICOS
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_icos_db_name}}"
+          - name: SITES
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name}}"
+          - name: ICOSCities
+            #ICOSCities has RestHeart but no own cpauth, and prod cpauth must be able to access it
+            restheart_url: "https://{{ restheart_cities_domain }}/{{ restheart_cities_db_name }}"
+            restheart_username: "{{ city_restheart_basic_auth.username }}"
+            restheart_password: "{{ city_restheart_basic_auth.password }}"
+
+        data_envries:
+          - name: ICOS
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_icos_db_name}}"
+            postgis_db_name: "{{ postgis_icos_db_name }}"
+          - name: SITES
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name}}"
+            postgis_db_name: "{{ postgis_sites_db_name }}"
 
     core_server:
       hosts:

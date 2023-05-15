@@ -3,7 +3,8 @@ all:
     cpmeta_cities_domain: citymeta1.icos-cp.eu
     cpdata_cities_domain: citydata1.icos-cp.eu
     cpauth_cities_domain: cityauth.icos-cp.eu
-    postgis_db_port: 5438
+    cities_lxd_ip: 10.100.72.96
+
     rdflog_postgres_version: 15
 
     # # the domains are needed both for the host (to find the buildInfo url) and
@@ -20,11 +21,12 @@ all:
   children:
     core_host:
       hosts:
-        icos1.gis.lu.se:
+        cities:
+          # ansible_port: 60520
 
       vars:
         # when running in an lxd VM, bind to 0.0.0.0 so that services are reachable from the host
-        coreapp_bind_addr: 127.0.0.1
+        coreapp_bind_addr: 0.0.0.0
 
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
@@ -40,14 +42,17 @@ all:
           - application_production.conf
           - application_cities_amendment.conf
 
+        postgis_db_port: 5438
+        postgis_hostname: 127.0.0.1
+
     core_server:
       hosts:
         icos1.gis.lu.se:
           ansible_port: 60022
 
       vars:
-        coreapp_httpproxy_host: 127.0.0.1
-        coreapp_host_ip: 130.235.74.215
+        coreapp_httpproxy_host: cities.lxd
+        coreapp_host_ip: "{{ cities_lxd_ip }}"
 
         # cpmeta - proxy
         cpmeta_nginxsite_name: cpmeta-cities
@@ -58,6 +63,7 @@ all:
         cpdata_nginxsite_name: cpdata-cities
 
         # restheart - proxy
+        restheart_host: cities.lxd
         restheart_nginxsite_name: restheart-cities
         restheart_certbot_name: restheart-cities
         restheart_domains:

@@ -1,1 +1,5 @@
+
+cpmeta_jar_file: /home/klara/Documents/ICOS-Carbon-Portal/meta/target/scala-3.2.2/meta-assembly-0.8.0.jar
+cpdata_jar_file: /home/klara/Documents/ICOS-Carbon-Portal/data/target/scala-3.2.2/data-assembly-0.6.0.jar
+
 iptables_ssh_port: 60022
