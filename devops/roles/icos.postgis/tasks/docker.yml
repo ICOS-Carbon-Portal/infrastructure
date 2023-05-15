@@ -27,22 +27,21 @@
     command: /bin/bash -c "apt-get update && apt-get -y install {{ postgis_package }}"
     chdir: /root
 
-    # Switch to postgres so we use socket authentication.
-- become: true
-  become_user: postgres
-  tags: databases
-  block:
+- name: Install psycopg2 for Ansible to be able to create postgresql dbs and users
+  pip: name=psycopg2-binary
+  become: yes
 
-    - name: Create databases
-      postgresql_db:
-        name: "{{ item }}"
-        login_user: "{{ postgis_db_user }}"
-        login_password: "{{ postgis_db_pass }}"
-        login_host: 127.0.0.1
-        login_port: "{{ postgis_db_port }}"
-      loop: "{{ postgis_dbs }}"
+- name: Create postgis databases
+  postgresql_db:
+    name: "{{ item }}"
+    login_user: "{{ postgis_db_user }}"
+    login_password: "{{ postgis_db_pass }}"
+    login_host: 127.0.0.1
+    login_port: "{{ postgis_db_port }}"
+  loop: "{{ postgis_dbs }}"
 
-    - include_tasks: users.yml
-      loop: "{{ postgis_dbs }}"
-      loop_control:
-        loop_var: db_item
+- name: Create users in each postgis database
+  include_tasks: users.yml
+  loop: "{{ postgis_dbs }}"
+  loop_control:
+    loop_var: db_name

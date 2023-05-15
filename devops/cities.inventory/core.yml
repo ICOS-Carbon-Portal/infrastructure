@@ -21,12 +21,13 @@ all:
   children:
     core_host:
       hosts:
-        cities:
-          # ansible_port: 60520
+        icos1_cities:
+          ansible_port: 60500
 
       vars:
         # when running in an lxd VM, bind to 0.0.0.0 so that services are reachable from the host
         coreapp_bind_addr: 0.0.0.0
+        restheart_bind_host: 0.0.0.0
 
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"

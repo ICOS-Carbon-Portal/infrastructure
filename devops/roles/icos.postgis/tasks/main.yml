@@ -42,7 +42,7 @@
         db: cplog
         name: "{{ item.username }}"
         password: "{{ item.password }}"
-      loop: "{{ vault_postgis_cplog_users }}"
+      loop: "{{ postgis_cplog_users }}"
 
     - name: Allow users to connect from same subnet
       postgresql_pg_hba:
@@ -51,7 +51,7 @@
         source: samenet
         method: md5
         contype: hostssl
-      loop: "{{ vault_postgis_cplog_users }}"
+      loop: "{{ postgis_cplog_users }}"
 
     - name: Add the pg_stat_statements extension
       community.postgresql.postgresql_ext:
