@@ -70,7 +70,7 @@ all:
         restheart_host: cities.lxd
         restheart_nginxsite_name: restheart-cities
         restheart_certbot_name: restheart-cities
-        nginxauth_name: "cities"
+        restheart_basic_auth: "{{ city_restheart_basic_auth }}"
 
         restheart_domains:
           - "{{ restheart_cities_domain }}"

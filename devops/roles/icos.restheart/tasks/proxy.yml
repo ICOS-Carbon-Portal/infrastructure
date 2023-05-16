@@ -7,7 +7,7 @@
   vars:
     nginxauth_conf: |
       auth_basic "Login required";
-      auth_basic_user_file "/etc/nginx/auth/{{ nginxauth_name }}";
+      auth_basic_user_file "/etc/nginx/auth/{{ restheart_nginxsite_name }}";
     nginxsite_name: "{{ restheart_nginxsite_name }}"
     nginxsite_file: restheart-nginx.conf
     nginxsite_users: ["{{ restheart_basic_auth }}"]
