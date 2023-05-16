@@ -41,13 +41,25 @@ all:
           - application_cities_sensitive.conf
 
         # cpdata - application
-        cpdata_filestorage_target: /disk/data/dataAppStorage/cities
+        cpdata_filestorage_target: /data/dataAppStorage/
         cpdata_config_files:
           - application_production.conf
           - application_cities_amendment.conf
 
         postgis_db_port: 5438
         postgis_hostname: 127.0.0.1
+
+        cpauth_envries:
+          - name: ICOSCities
+            #ICOSCities has RestHeart but no own cpauth, and prod cpauth must be able to access it
+            restheart_url: "https://{{ restheart_cities_domain }}/{{ restheart_cities_db_name }}"
+            restheart_username: "{{ city_restheart_basic_auth.username }}"
+            restheart_password: "{{ city_restheart_basic_auth.password }}"
+
+        data_envries:
+          - name: ICOSCities
+            restheart_url: "https://{{ restheart_cities_domain }}/{{ restheart_cities_db_name }}"
+            postgis_db_name: "{{ postgis_cities_db_name }}"
 
     core_server:
       hosts:
