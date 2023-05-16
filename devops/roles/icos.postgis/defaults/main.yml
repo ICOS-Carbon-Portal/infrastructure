@@ -22,5 +22,5 @@ postgis_db_users:
 
 
 postgis_dbs:
-  - cplog
-  - siteslog
+  - "{{ postgis_icos_db_name }}"
+  - "{{ postgis_sites_db_name }}"

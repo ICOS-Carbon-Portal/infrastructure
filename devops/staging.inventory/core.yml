@@ -27,9 +27,9 @@ all:
       - doistaging.icos-cp.eu
     
     postgis_dbs:
-      - cplog
-      - siteslog
-      - paullog
+      - "{{ postgis_icos_db_name }}"
+      - "{{ postgis_sites_db_name }}"
+      - "{{ postgis_cities_db_name }}"
 
     restheart_dbs:
       - "{{ restheart_icos_db_name }}"

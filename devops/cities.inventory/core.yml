@@ -16,7 +16,10 @@ all:
       - "{{ cpdata_cities_domain }}"
 
     postgis_dbs:
-      - paullog
+      - "{{ postgis_cities_db_name }}"
+
+    restheart_dbs:
+      - "{{ restheart_cities_db_name }}"
 
   children:
     core_host:
@@ -67,7 +70,7 @@ all:
         restheart_host: cities.lxd
         restheart_nginxsite_name: restheart-cities
         restheart_certbot_name: restheart-cities
+        nginxauth_name: "cities"
+
         restheart_domains:
           - "{{ restheart_cities_domain }}"
-        restheart_dbs:
-          - "{{ restheart_cities_db_name }}"
