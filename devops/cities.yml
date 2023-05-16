@@ -16,6 +16,15 @@
         name: icos.cpdata
         tasks_from: proxy.yml
 
+    - name: Setup cpauth proxy
+      tags:
+        - proxy
+        - cpauth_proxy
+      import_role:
+        name: icos.cpauth
+        tasks_from: proxy.yml
+      when: cpauth_envries is defined
+
     - name: Setup restheart proxy
       tags:
         - proxy
@@ -48,3 +57,5 @@
   roles:
     - role: icos.cpmeta
     - role: icos.cpdata
+    - role: icos.cpauth
+      when: cpauth_envries is defined
