@@ -1,4 +1,4 @@
-#!/opt/jusers/venv/bin/python3
+#!{{ jusers_venv }}/bin/python3
 import grp
 import os
 import pwd
