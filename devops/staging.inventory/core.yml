@@ -73,10 +73,7 @@ all:
           - name: SITES
             restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name}}"
           - name: ICOSCities
-            #ICOSCities has RestHeart but no own cpauth, and prod cpauth must be able to access it
             restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_cities_db_name }}"
-            restheart_username: "{{ city_restheart_basic_auth.username }}"
-            restheart_password: "{{ city_restheart_basic_auth.password }}"
 
         data_envries:
           - name: ICOS
