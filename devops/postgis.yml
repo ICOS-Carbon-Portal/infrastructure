@@ -10,7 +10,7 @@
       tags: vm
       role: icos.lxd_vm
       lxd_vm_name: postgis
-      lxd_vm_root_size: "20GB"
+      lxd_vm_root_size: "50GB"
       lxd_vm_config:
         security.nesting: "true"
         limits.cpu: "4"
