@@ -11,3 +11,5 @@ jupyter_hub_config_defaults:
   # allowed_images: {'python3': 'registry.icos-cp.eu/icosbase'}
 
 jupyter_hub_config: {}
+jusers_home: /opt/jusers
+jusers_venv: "{{ jusers_home }}/venv"

@@ -1,6 +1,14 @@
+# After a do-release-upgrade, the python version will have changed and broken
+# the virtual environments.
+- name: Remove virtual env
+  file:
+    path: "{{ jusers_venv }}"
+    state: absent
+  when: virtualenv_recreate | default(False) | bool
+
 - name: Create virtual env
   pip:
-    virtualenv: /opt/jusers/venv
+    virtualenv: "{{ jusers_venv }}"
     name:
       - ruamel.yaml
       - click

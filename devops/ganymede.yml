@@ -4,6 +4,10 @@
 #
 # Deploy new users, keys, edctl and rsync.
 #   icos run ganymede users jbuild_users jbuild_rsync
+#
+# Recreate virtual environments, i.e after do-release-upgrade:
+#   icos run ganymede jbuild -evirtualenv_recreate=True
+
 
 - hosts: fsicos3.lunarc.lu.se
   vars:

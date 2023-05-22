@@ -1,3 +1,11 @@
+# After a do-release-upgrade, the python version will have changed and broken
+# the virtual environments.
+- name: Remove virtual env
+  file:
+    path: /opt/jbuild/venv
+    state: absent
+  when: virtualenv_recreate | default(False) | bool
+
 - name: Create virtual env
   pip:
     virtualenv: /opt/jbuild/venv
@@ -20,3 +28,7 @@
     dest: "/usr/local/sbin/jbuild"
     src: /opt/jbuild/jbuild.py
     state: link
+
+- name: Check that jbuild executes
+  shell: /usr/local/sbin/jbuild
+  changed_when: no

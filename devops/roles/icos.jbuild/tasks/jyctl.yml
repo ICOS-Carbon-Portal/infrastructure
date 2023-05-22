@@ -29,9 +29,16 @@
     username: "{{ jbuild_registry.username }}"
     password: "{{ jbuild_registry.password }}"
 
+# After a do-release-upgrade, the python version will have changed and broken
+# the virtual environments.
+- name: Remove virtual env
+  file:
+    path: /opt/jyctl/venv
+    state: absent
+  when: virtualenv_recreate | default(False) | bool
+
 - name: Create virtual env
   pip:
-    virtualenv_python: python3.8
     virtualenv: /opt/jyctl/venv
     name:
       - click
