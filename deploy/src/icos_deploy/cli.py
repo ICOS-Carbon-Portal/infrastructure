@@ -80,6 +80,18 @@ def cli():
 @click.pass_context
 @OPTION_INVENTORY
 @click.argument("host")
+def adhoc(ctx, inventory, host):
+    """Run adhoc command, extra args passed to ansible(1).
+    """
+    cmd = ["ansible", f"-i{inventory}.inventory", host, *ctx.args]
+    print(*cmd, *ctx.args)
+    os.execvp(cmd[0], cmd + ctx.args)
+
+
+@cli.command(**PASS_ARGS)
+@click.pass_context
+@OPTION_INVENTORY
+@click.argument("host")
 def facts(ctx, inventory, host):
     """Dump all gathered facts for host by running the setup module.
     """
