@@ -4,7 +4,7 @@ all:
 
     cpauth_icos_domain: cpauth.icos-cp.eu
     cpauth_sites_domain: auth.fieldsites.se
-    cpauth_cities_domain: cityauth.icos-cp.eu
+    cpauth_cities_domain: cpauth.icos-cp.eu
 
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"

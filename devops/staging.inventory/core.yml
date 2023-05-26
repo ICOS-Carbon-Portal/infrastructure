@@ -6,7 +6,7 @@ all:
     cpmeta_icos_domain: metastaging.icos-cp.eu
     cpauth_icos_domain: cpauthstaging.icos-cp.eu
     cpauth_sites_domain: authstaging.fieldsites.se
-    cpauth_cities_domain: cityauthstaging.icos-cp.eu
+    cpauth_cities_domain: cpauthstaging.icos-cp.eu
 
     # the domains are needed both for the host (to find the buildInfo url) and
     # for the server (to set up proxy)
@@ -73,8 +73,9 @@ all:
           - name: SITES
             restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name}}"
           - name: ICOSCities
-            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_cities_db_name }}"
-
+            restheart_url: "https://{{ restheart_cities_domain }}/{{ restheart_cities_db_name }}"
+            restheart_username: "{{ city_restheart_basic_auth.username }}"
+            restheart_password: "{{ city_restheart_basic_auth.password }}"
         data_envries:
           - name: ICOS
             restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_icos_db_name}}"
