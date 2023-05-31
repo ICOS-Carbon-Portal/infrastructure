@@ -8,6 +8,7 @@
       - ggmt2022.online
       - www.ggmt2022.online
       - avengers-project.eu
+      - george-project.eu
   roles:
     - role: icos.lxd_vm
       tags: lxd
@@ -25,7 +26,7 @@
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: wordpress
-        nginxsite_file: files/wordpress.conf
+      nginxsite_file: files/wordpress.conf
 
 
 - hosts: wordpress
@@ -33,7 +34,9 @@
     - role: icos.lxd_guest
       tags: guest
 
-    - debug:
+  tasks:
+    - name: Print wp-config warning
+      debug:
         msg: |
           # Don't forget to add the following in your wp-config.php, after the
           # WP_DEBUG line. Otherwise you'll get redirect loops.
