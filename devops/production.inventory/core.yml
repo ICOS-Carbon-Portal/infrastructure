@@ -4,15 +4,18 @@ all:
 
     cpauth_icos_domain: cpauth.icos-cp.eu
     cpauth_sites_domain: auth.fieldsites.se
-    cpauth_cities_domain: cpauth.icos-cp.eu
+    cpauth_cities_domain: cityauth.icos-cp.eu
+    cpdata_icos_domain: data.icos-cp.eu
+    cpdata_sites_domain: data.fieldsites.se
+    cpdata_cities_domain: citydata1.icos-cp.eu
 
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
       - meta.fieldsites.se
 
     cpdata_domains:
-      - data.icos-cp.eu
-      - data.fieldsites.se
+      - "{{ cpdata_icos_domain }}"
+      - "{{ cpdata_sites_domain }}"
 
     cpauth_domains:
       - "{{ cpauth_icos_domain }}"
