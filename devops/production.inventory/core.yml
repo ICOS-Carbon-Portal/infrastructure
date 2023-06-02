@@ -7,7 +7,6 @@ all:
     cpauth_cities_domain: cityauth.icos-cp.eu
     cpdata_icos_domain: data.icos-cp.eu
     cpdata_sites_domain: data.fieldsites.se
-    cpdata_cities_domain: citydata1.icos-cp.eu
 
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
