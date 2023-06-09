@@ -1,0 +1,6 @@
+127.0.0.1
+localhost
+
+{% for domain in opendkim_domains %}
+.{{ domain }}
+{% endfor %}
