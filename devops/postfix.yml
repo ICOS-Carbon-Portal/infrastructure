@@ -16,6 +16,16 @@
       dovecot_domains:
         - otc-nrt.icos-cp.eu
 
+    - role: icos.opendkim
+      tags: opendkim
+      opendkim_domains:
+        - lists.icos-ri.eu
+        # - lists.eric-forum.eu
+        # - lists.icos-cities.eu
+        # - lists.kadi-project.eu
+      opendkim_domains_testkeys:
+        - lists.icos-ri.eu
+
   tasks:
     # The ships sends data to quince using attachments. These are sometimes
     # larger than the postfix default of 10Mb.
