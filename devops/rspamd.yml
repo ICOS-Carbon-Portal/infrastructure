@@ -73,6 +73,7 @@
         param: smtpd_milters
         value: "inet:rspamd.lxd:11332"
         reload: yes
+        append: yes
 
 
 - hosts: rspamd
