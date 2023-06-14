@@ -54,8 +54,11 @@
 # opendkim_testkeys. For domains in opendkim_testkeys we do not output
 # instructions about DNS records but instead run opendkim_testkeys(1).
 - name: Create domain keys
+  become: yes
+  become_user: "{{ opendkim_user }}"
   command: >-
-    opendkim-genkey -b 2048 -d {{ item }} -s default -v
+    opendkim-genkey -b 2048 -d {{ item }} -s default -v &&
+    chmod 600 default.private
   args:
     chdir: "{{ opendkim_keys }}/{{ item }}"
     creates: default.private
