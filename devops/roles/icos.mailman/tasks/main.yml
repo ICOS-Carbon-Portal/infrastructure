@@ -26,8 +26,6 @@
       src: settings_local.py
     - dest: "{{ mailman_home }}/build/mailman-web/Dockerfile"
       src: Dockerfile.web
-    - dest: "{{ mailman_home }}/build/mailman-web/"
-      src: 580.diff
     - dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
       src: Dockerfile.core
   register: _files

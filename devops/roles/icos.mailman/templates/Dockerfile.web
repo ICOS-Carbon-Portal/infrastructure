@@ -1,9 +1,1 @@
 FROM maxking/mailman-web:{{ mailman_version }}
-
-# https://github.com/maxking/docker-mailman/pull/580/commits/0b111ba0998cc5bb77f61105a124991e360ef3a1
-ADD 580.diff /tmp/
-
-RUN apk add patch
-
-# Current working dir is /opt/mailman-web, where urls.py lives.
-RUN cat /tmp/580.diff | patch -p3 -d .
