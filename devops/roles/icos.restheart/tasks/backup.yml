@@ -15,7 +15,7 @@
   vars:
     bbclient_user: root
     bbclient_home: "{{ restheart_home }}/bbclient"
-    bbclient_name: restheart
+    bbclient_name: "{{ restheart_bbclient_name }}"
     bbclient_timer_conf: "OnCalendar=00/6:36"
     bbclient_timer_content: |
       #!/bin/bash

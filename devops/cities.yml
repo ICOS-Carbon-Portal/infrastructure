@@ -42,12 +42,6 @@
         name: icos.rdflog
         tasks_from: barebones.yml
 
-    - name: Setup restheart
-      tags: restheart
-      import_role:
-        name: icos.restheart
-        tasks_from: setup.yml
-
     - name: Setup postgis
       tags: postgis
       import_role:
@@ -55,6 +49,7 @@
         tasks_from: docker.yml
 
   roles:
+    - role: icos.restheart
     - role: icos.cpmeta
     - role: icos.cpdata
     - role: icos.cpauth

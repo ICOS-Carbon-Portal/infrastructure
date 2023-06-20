@@ -3,3 +3,4 @@
 
 - import_tasks: backup.yml
   tags: restheart_backup
+  when: restheart_backup_enable

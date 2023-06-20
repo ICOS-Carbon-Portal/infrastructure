@@ -14,7 +14,7 @@
     name: icos.bbclient2
     public: yes
   vars:
-    bbclient_name: cpmeta
+    bbclient_name: "{{ cpmeta_bbclient_name }}"
     bbclient_home: "{{ cpmeta_home }}/.bbclient"
     bbclient_timer_conf: |
       OnCalendar=hourly
