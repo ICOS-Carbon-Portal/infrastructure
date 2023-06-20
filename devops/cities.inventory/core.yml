@@ -20,6 +20,15 @@ all:
 
     restheart_dbs:
       - "{{ restheart_cities_db_name }}"
+    
+    # restheart - backup
+    cpmeta_bbclient_name: citymeta
+    restheart_bbclient_name: cityrestheart
+    bbclient_ssh_key: cityrestheart
+    bbclient_remotes:
+      - fsicos2.lunarc.lu.se
+      - cdb.nateko.lu.se
+
 
   children:
     core_host:
