@@ -22,6 +22,7 @@ metastorage[(Local storage:<br>RDF4J NativeStore<br>Labeling app files<br>Magic 
 handle[(Handle.net:<br>external PID<br>registry)]
 doi[(DataCite:<br>external DOI<br>registry)]
 subgraph cpauth[cpauth]
+    usagelogproxy[CP usage<br>log proxy]
     profileproxy[User-profile<br>authentication proxy]
 end
 geoip[(geoip:<br>CP's own<br>caching proxy)]
@@ -33,10 +34,11 @@ cpdata --forwards uploaded data streams--> b2safe
 cpdata --init usage DB--> restheart
 cpdata --sends upload completion  metadata<br>asks for data item metadata--> cpmeta
 cpdata --initializes DB schema,<br>updates downloaded item metadata,<br>logs downloads, enriching with geo info--> postgis
+cpdata --logs csv and zip downloads,<br>enriching with geo info--> restheart
 cpdata --asks for IP geo info--> geoip
-cpdata --logs usage of CP services,<br>enriching with geo info--> restheart
 user --gets Web apps, data--> cpdata
 user --gets Web apps, metadata, SPARQL results--> cpmeta
+user --logs usage of CP services--> usagelogproxy
 user --accesses user profile--> profileproxy
 user --gets service usage stats--> restheart
 cpmeta --logs RDF updates---> rdflog
@@ -46,6 +48,8 @@ cpmeta --registers PID---> handle
 cpmeta --registers DOI---> doi
 cpmeta --asks for<br>preview stats--> restheart
 restheart --is a proxy for--> mongo
+usagelogproxy --asks for IP geo info--> geoip
+usagelogproxy --logs usage of CP services,<br>enriching with geo info--> restheart
 profileproxy --accesses user profiles--> restheart
 geoip --HTTP API call--> ipstack
 ```
