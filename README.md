@@ -29,29 +29,28 @@ geoip[(geoip:<br>CP's own<br>caching proxy)]
 ipstack[(ipstack.com<br>API)]
 restheart[(RestHeart API)]
 mongo[(MongoDB:<br>User profiles<br>CP usage logs)]
+
+cpdata --logs and retrieves dobj downloads,<br>enriching with geo info--> postgis
+cpdata --inits db, colls, aggregations<br>logs csv, zip, cpb downloads,<br>enriching with geo info--> restheart
 cpdata --saves to filesystem--> datastorage
 cpdata --forwards uploaded data streams--> b2safe
-cpdata --init usage DB--> restheart
-cpdata --sends upload completion  metadata<br>asks for data item metadata--> cpmeta
-cpdata --initializes DB schema,<br>updates downloaded item metadata,<br>logs downloads, enriching with geo info--> postgis
-cpdata --logs csv and zip downloads,<br>enriching with geo info--> restheart
+cpdata --sends upload completion  metadata<br>asks for data item metadata<br>provides download stats--> cpmeta
 cpdata --asks for IP geo info--> geoip
+geoip --HTTP API call--> ipstack
 user --gets Web apps, data--> cpdata
-user --gets Web apps, metadata, SPARQL results--> cpmeta
+user --gets Web apps, metadata<br>SPARQL results--> cpmeta
 user --logs usage of CP services--> usagelogproxy
 user --accesses user profile--> profileproxy
-user --gets service usage stats--> restheart
-cpmeta --logs RDF updates---> rdflog
-cpmeta --saves to filesystem---> metastorage
-postgis --provides download stats--> cpmeta
-cpmeta --registers PID---> handle
-cpmeta --registers DOI---> doi
-cpmeta --asks for<br>preview stats--> restheart
-restheart --is a proxy for--> mongo
+cpmeta --logs RDF updates--> rdflog
+cpmeta --saves to filesystem--> metastorage
+cpmeta --registers PID--> handle
+cpmeta --registers DOI--> doi
+cpmeta --asks for preview stats--> restheart
 usagelogproxy --asks for IP geo info--> geoip
-usagelogproxy --logs usage of CP services,<br>enriching with geo info--> restheart
-profileproxy --accesses user profiles--> restheart
-geoip --HTTP API call--> ipstack
+usagelogproxy --logs usage of CP services, enriching with geo info--> restheart
+profileproxy --inits db, colls, accesses user profiles----> restheart
+user --gets service usage stats--> restheart
+restheart --is a proxy for--> mongo
 ```
 
 # Getting started
