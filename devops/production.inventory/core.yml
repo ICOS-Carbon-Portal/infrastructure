@@ -29,6 +29,9 @@ all:
     stiltweb_domains:
       - stilt.icos-cp.eu
 
+    cpmeta_bbclient_name: cpmeta
+    restheart_bbclient_name: restheart
+
   children:
     core_host:
       hosts:
