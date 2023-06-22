@@ -24,16 +24,12 @@ all:
     # Borg backup
     cpmeta_bbclient_name: citymeta
     restheart_bbclient_name: cityrestheart
-    bbclient_remotes:
-#      - fsicos2.lunarc.lu.se
-      - cdb.nateko.lu.se
 
 
   children:
     core_host:
       hosts:
         icos1_cities:
-          ansible_port: 60500
 
       vars:
         # when running in an lxd VM, bind to 0.0.0.0 so that services are reachable from the host
@@ -65,7 +61,6 @@ all:
     core_server:
       hosts:
         icos1.gis.lu.se:
-          ansible_port: 60022
 
       vars:
         coreapp_httpproxy_host: cities.lxd

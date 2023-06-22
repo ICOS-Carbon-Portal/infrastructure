@@ -1,0 +1,3 @@
+inventory_hostname: icos1.gis.lu.se
+ansible_port: 60022
+iptables_ssh_port: 60022
