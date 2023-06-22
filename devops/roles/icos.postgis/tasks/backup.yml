@@ -1,19 +1,39 @@
-- name: Copy backup script
-  template:
-    src: postgis-dumpall-bbclient
-    dest: "{{ postgresql_bin_dir }}"
-    mode: +x
-    owner: postgres
-    group: postgres
-  when: postgis_backup_enable
+# - name: Copy backup script
+#   template:
+#     src: postgis-dumpall-bbclient
+#     dest: "{{ postgresql_bin_dir }}"
+#     mode: +x
+#     owner: postgres
+#     group: postgres
+#   when: postgis_backup_enable
 
-- name: Add postgres backup to crontab
-  tags: cron
-  cron:
-    user: postgres
-    job: "{{ postgresql_bin_dir }}/postgis-dumpall-bbclient"
-    hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
-    minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
-    state: present
-    name: "postgis_backup"
-  when: postgis_backup_enable
+# - name: Add postgres backup to crontab
+#   tags: cron
+#   cron:
+#     user: postgres
+#     job: "{{ postgresql_bin_dir }}/postgis-dumpall-bbclient"
+#     hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
+#     minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
+#     state: present
+#     name: "postgis_backup"
+#   when: postgis_backup_enable
+
+- include_role:
+    name: icos.bbclient2
+  vars:
+    bbclient_user: root
+    bbclient_name: "{{ postgresql_bbclient_name }}"
+    bbclient_timer_conf: "OnCalendar=00/6:36" # ???
+    bbclient_timer_content: |
+      #!/bin/bash
+      set -Eueo pipefail
+
+      cd "{{ postgresql_bin_dir }}"
+      mkdir -p backup
+
+      docker-compose exec -T postgis pgdumpall > backup/server.archive
+
+      {{ bbclient_all }} create -xvs '::{now}' backup
+      {{ bbclient_all }} prune -vs --keep-within=7d --keep-daily=30 --keep-weekly=150
+
+      rm -rf -- ./backup

@@ -24,6 +24,10 @@ all:
     # Borg backup
     cpmeta_bbclient_name: citymeta
     restheart_bbclient_name: cityrestheart
+    postgresql_bbclient_name: citypostgis
+    bbclient_remotes:
+#      - fsicos2.lunarc.lu.se
+      - cdb.nateko.lu.se
 
 
   children:
