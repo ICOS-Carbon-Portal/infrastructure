@@ -31,6 +31,7 @@ all:
 
     cpmeta_bbclient_name: cpmeta
     restheart_bbclient_name: restheart
+    postgis_bbclient_name: postgis
 
   children:
     core_host:
@@ -58,6 +59,7 @@ all:
 
         postgis_db_port: 5432
         postgis_hostname: postgis.lxd
+        postgis_backup_enable: true
         # stiltweb - application
         # This is where stiltweb keeps it's archive of of stilt files
         stiltweb_statedir: /disk/data/stiltweb

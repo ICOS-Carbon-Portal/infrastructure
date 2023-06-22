@@ -24,11 +24,7 @@ all:
     # Borg backup
     cpmeta_bbclient_name: citymeta
     restheart_bbclient_name: cityrestheart
-    postgresql_bbclient_name: citypostgis
-    bbclient_remotes:
-#      - fsicos2.lunarc.lu.se
-      - cdb.nateko.lu.se
-
+    postgis_bbclient_name: citypostgis
 
   children:
     core_host:
@@ -40,6 +36,7 @@ all:
         coreapp_bind_addr: 0.0.0.0
         restheart_bind_host: 0.0.0.0
 
+        restheart_backup_enable: true
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
         cpmeta_backup_enable: true
@@ -56,6 +53,7 @@ all:
 
         postgis_db_port: 5438
         postgis_hostname: 127.0.0.1
+        postgis_backup_enable: true
 
         data_envries:
           - name: ICOSCities

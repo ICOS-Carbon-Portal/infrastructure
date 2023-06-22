@@ -40,7 +40,7 @@
         tasks_from: backup
       vars:
         postgresql_backup_script: backup-dumpall-bbclient
-        postgresql_bbclient_name: postgis
+        postgis_bbclient_name: postgis
 
     - name: Allow postgres user to connect from same subnet
       tags: hba

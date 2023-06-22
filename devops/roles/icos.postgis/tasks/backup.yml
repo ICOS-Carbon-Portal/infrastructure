@@ -12,23 +12,25 @@
 #   cron:
 #     user: postgres
 #     job: "{{ postgresql_bin_dir }}/postgis-dumpall-bbclient"
-#     hour: "{{ 4 | random(seed=postgresql_bbclient_name) }}"
-#     minute: "{{ 60 | random(seed=postgresql_bbclient_name) }}"
+#     hour: "{{ 4 | random(seed=postgis_bbclient_name) }}"
+#     minute: "{{ 60 | random(seed=postgis_bbclient_name) }}"
 #     state: present
 #     name: "postgis_backup"
 #   when: postgis_backup_enable
 
 - include_role:
     name: icos.bbclient2
+    public: yes
   vars:
     bbclient_user: root
-    bbclient_name: "{{ postgresql_bbclient_name }}"
-    bbclient_timer_conf: "OnCalendar=00/6:36" # ???
+    bbclient_name: "{{ postgis_bbclient_name }}"
+    bbclient_home: "{{ postgis_home }}/bbclient"
+    bbclient_timer_conf: "OnCalendar=00/6:11"
     bbclient_timer_content: |
       #!/bin/bash
       set -Eueo pipefail
 
-      cd "{{ postgresql_bin_dir }}"
+      cd "{{ postgis_home }}"
       mkdir -p backup
 
       docker-compose exec -T postgis pgdumpall > backup/server.archive

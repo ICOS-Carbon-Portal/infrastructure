@@ -1,9 +1,6 @@
-postgis_bbclient_name: postgis
-postgis_backup_enable: true
+postgis_backup_enable: false
 
-bbclient_name: "{{ postgis_bbclient_name }}"
-bbclient_user: postgres
-bbclient_home: "{{ postgresql_home }}/.bbclient"
+postgis_home: "/docker/postgis"
 
 postgresql_postgis_enable: true
 

@@ -1,14 +1,5 @@
-- name: Install postgresql and postgis
-  tags: postgresql
-  import_role:
-    name: icos.postgresql
-
-# We install bbclient even when backup is disabled, in order to retrieve backup
-# data which is useful when istalling in staging.
-- name: Install bbclient
-  tags: postgis_bbclient
-  import_role:
-    name: icos.bbclient2
+- import_tasks: docker.yml
+  tags: postgis_setup
 
 - name: Install control script
   tags: postgis_script
@@ -19,42 +10,56 @@
 
 - import_tasks: backup.yml
   tags: postgis_backup
+  when: postgis_backup_enable
 
-- name: Stop here
-  meta: end_play
 
-# - name: Allow postgres user to connect from same subnet
-#   tags: hba
-#   postgresql_pg_hba:
-#     dest: "{{ postgresql_hba_file }}"
-#     users: postgres
-#     source: samenet
-#     method: md5
-#     contype: hostssl
+# - name: Install postgresql and postgis
+#   tags: postgresql
+#   import_role:
+#     name: icos.postgresql
 
-# Switch to postgres so we use socket authentication.
-- become: true
-  become_user: postgres
-  tags: cplog
-  block:
-    - name: Create postgres cplog users
-      postgresql_user:
-        db: cplog
-        name: "{{ item.username }}"
-        password: "{{ item.password }}"
-      loop: "{{ postgis_cplog_users }}"
+# # We install bbclient even when backup is disabled, in order to retrieve backup
+# # data which is useful when istalling in staging.
+# - name: Install bbclient
+#   tags: postgis_bbclient
+#   import_role:
+#     name: icos.bbclient2
 
-    - name: Allow users to connect from same subnet
-      postgresql_pg_hba:
-        dest: "{{ postgresql_hba_file }}"
-        users: "{{ item.username }}"
-        source: samenet
-        method: md5
-        contype: hostssl
-      loop: "{{ postgis_cplog_users }}"
+# # - name: Allow postgres user to connect from same subnet
+# #   tags: hba
+# #   postgresql_pg_hba:
+# #     dest: "{{ postgresql_hba_file }}"
+# #     users: postgres
+# #     source: samenet
+# #     method: md5
+# #     contype: hostssl
 
-    - name: Add the pg_stat_statements extension
-      community.postgresql.postgresql_ext:
-        name: pg_stat_statements
-        db: cplog
-        schema: public
+# - name: Stop here
+#   meta: end_play
+
+# # Switch to postgres so we use socket authentication.
+# - become: true
+#   become_user: postgres
+#   tags: cplog
+#   block:
+#     - name: Create postgres cplog users
+#       postgresql_user:
+#         db: cplog
+#         name: "{{ item.username }}"
+#         password: "{{ item.password }}"
+#       loop: "{{ postgis_cplog_users }}"
+
+#     - name: Allow users to connect from same subnet
+#       postgresql_pg_hba:
+#         dest: "{{ postgresql_hba_file }}"
+#         users: "{{ item.username }}"
+#         source: samenet
+#         method: md5
+#         contype: hostssl
+#       loop: "{{ postgis_cplog_users }}"
+
+#     - name: Add the pg_stat_statements extension
+#       community.postgresql.postgresql_ext:
+#         name: pg_stat_statements
+#         db: cplog
+#         schema: public

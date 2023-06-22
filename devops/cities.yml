@@ -42,19 +42,8 @@
         name: icos.rdflog
         tasks_from: barebones.yml
 
-    # - name: Setup postgis
-    #   tags: postgis
-    #   import_role:
-    #     name: icos.postgis
-    #     tasks_from: docker.yml
-    
-    - name: Test pg backup
-      tags: postgis
-      import_role:
-        name: icos.postgis
-        tasks_from: backup.yml
-
   roles:
+    - role: icos.postgis
     - role: icos.restheart
     - role: icos.cpmeta
     - role: icos.cpdata

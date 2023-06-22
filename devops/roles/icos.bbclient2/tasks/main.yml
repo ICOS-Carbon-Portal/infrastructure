@@ -27,6 +27,10 @@
   tags: bbclient_coldbackup
   when: bbclient_coldbackup is defined
 
+# - name: Print bbclient_timer_content variable to ensure it's defined
+#   ansible.builtin.debug:
+#     msg: bbclient_timer_content is {{ bbclient_timer_content }}
+
 - name: Install bbclient backup script
   include_role: name=icos.timer
   vars:
