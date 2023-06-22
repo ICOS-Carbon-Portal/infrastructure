@@ -1,3 +1,7 @@
 inventory_hostname: icos1.gis.lu.se
 ansible_port: 60022
 iptables_ssh_port: 60022
+
+#bbclient_remotes:
+#  - cdb.nateko.lu.se
+##  - fsicos2.lunarc.lu.se

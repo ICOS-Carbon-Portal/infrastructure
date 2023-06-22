@@ -38,7 +38,7 @@ all:
 
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
-        cpmeta_backup_enable: false
+        cpmeta_backup_enable: true
         cpmeta_config_files:
           - application_production.conf
           - application_cities_amendment.conf
