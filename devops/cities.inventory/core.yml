@@ -47,9 +47,9 @@ all:
 
         # cpdata - application
         cpdata_filestorage_target: /data/dataAppStorage/
+        cpdata_b2safe_dry_run: true
         cpdata_config_files:
           - application_production.conf
-          - application_cities_amendment.conf
 
         postgis_db_port: 5438
         postgis_hostname: 127.0.0.1
