@@ -9,6 +9,7 @@
       - www.ggmt2022.online
       - avengers-project.eu
       - george-project.eu
+      - kadi-project.eu
   roles:
     - role: icos.lxd_vm
       tags: lxd
