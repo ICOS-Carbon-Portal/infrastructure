@@ -14,6 +14,10 @@
       - "{{ postgis_db_name }}:/var/lib/postgresql/data"
     restart_policy: always
 
+# - name: Debug postgis password
+#   ansible.builtin.debug:
+#     msg: Password for user "{{ postgis_db_user }}" was "{{ postgis_db_pass }}", main db was "{{ postgis_db_name }}"
+
 - name: Wait for postgis PostgreSQL to become available
   wait_for:
     host: 127.0.0.1

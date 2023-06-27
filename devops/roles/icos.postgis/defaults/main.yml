@@ -4,7 +4,7 @@ postgis_home: "/docker/postgis"
 
 postgresql_postgis_enable: true
 
-postgis_db_name: postgis
+postgis_db_name: postgres
 postgis_container_name: postgis
 postgis_db_user: postgres
 postgis_db_pass: "{{ postgis_admin_pass }}"
