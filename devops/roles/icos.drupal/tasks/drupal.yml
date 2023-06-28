@@ -69,8 +69,6 @@
     project_src: "{{ project_dir }}/docker"
     state: present
     pull: yes
-    restarted: yes
-  when: docker_compose_yml.changed or composer_json.changed
 
 - name: Check private directory owner
   command: docker exec ac_drupal_1 stat -c '%U' /var/www/private/
@@ -82,7 +80,7 @@
   when: private_directory_owner.stdout != "www-data"
 
 - name: Check files directory owner
-  command: docker exec ac_drupal_1 stat -c '%U' /var/www/private/
+  command: docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/
   register: files_directory_owner
   changed_when: false
 
@@ -95,3 +93,7 @@
   when: update_modules or composer_json.changed
   register: result
   changed_when: '"Package operations" in result.stderr'
+
+- name: Update database
+  command: docker exec {{website}}_drupal_1 drush updb
+  when: update_db

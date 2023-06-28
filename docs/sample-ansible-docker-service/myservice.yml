@@ -1,0 +1,4 @@
+- hosts: myhost
+  roles:
+    - role: icos.myservice
+      tags: myservice

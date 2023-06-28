@@ -1,6 +1,7 @@
 inventory_hostname: icos1.gis.lu.se
 ansible_port: 60022
 iptables_ssh_port: 60022
+lxd_vm_variant: zfs
 
 #bbclient_remotes:
 #  - cdb.nateko.lu.se

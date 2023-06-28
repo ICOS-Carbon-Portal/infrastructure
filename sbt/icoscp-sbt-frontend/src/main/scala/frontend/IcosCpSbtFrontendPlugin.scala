@@ -15,7 +15,8 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 	object autoImport{
 		val cpFrontendCommonApp = settingKey[String]("Name of the common-code front end project ('common' by default)")
 		val cpFrontendApps = settingKey[Seq[String]]("The list of front-end apps (except the 'common' one)")
-		val cpFrontendBuildScript = settingKey[String]("Path to the build script, relative to front end projects' folders")
+		val cpFrontendBuildCommand = settingKey[String]("Build command, to be executed by Bash in the front-end project folders")
+		val cpFrontendPublishCommand = settingKey[String]("Publish command, to be executed by Bash in the front-end project folders")
 		val cpFrontendJarImports = settingKey[Seq[JarResourceImport]]("Resources to be copied from the backend jars to front end apps")
 		val cpFrontendDoJarImports = taskKey[Unit]("Copies files from jars to front end apps. Configured by cpFrontendJarImports setting.")
 		val cpFrontendPublish = taskKey[Unit]("Builds the front end apps from scratch")
@@ -30,7 +31,7 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 
 		commands += cpFrontend(
 			mainSrc = (Compile / sourceDirectory).value,
-			buildScript = cpFrontendBuildScript.value,
+			buildScript = cpFrontendBuildCommand.value,
 			jsApps = cpFrontendApps.value :+ cpFrontendCommonApp.value
 		),
 
@@ -56,13 +57,14 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 			stopFrontendBuildProc(state.value)
 
 			log.info("Starting front-end publish for common")
-			Process("npm install", projectDir(mainSrc, cpFrontendCommonApp.value)).!
+			Process("npm ci", projectDir(mainSrc, cpFrontendCommonApp.value)).!
 			val allApps = cpFrontendApps.value
+			val frontPubCommand = cpFrontendPublishCommand.value
 
 			val errors: List[String] = allApps.map(projectDir(mainSrc, _)).par.map{pwd =>
 				val projName = pwd.getName
 				log.info("Starting front-end publish for " + projName)
-				val exitCode = (Process("npm install", pwd) #&& Process("npm run publish", pwd)).!
+				val exitCode = (Process("npm ci", pwd) #&& Process(Seq("bash", "-c", frontPubCommand), pwd)).!
 
 				if(exitCode == 0) {
 					log.info("Finished front-end build for " + projName)
@@ -117,12 +119,12 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 		args.toList match {
 			case "install" :: app :: Nil if jsApps.contains(app) =>
 				log.info(s"Install $app")
-				val exitCode = Process("npm install", projectDir(mainSrc, app)).!
+				val exitCode = Process("npm ci", projectDir(mainSrc, app)).!
 				if (exitCode == 0) {
-					log.info("Finished npm install for " + app)
+					log.info("Finished npm ci for " + app)
 					state
 				} else {
-					log.error(s"npm install for $app failed")
+					log.error(s"npm ci for $app failed")
 					state.fail
 				}
 

@@ -14,7 +14,7 @@ def find_ip_for_container(module, name):
         if ':' in d['address']:    # skip ipv6
             continue
         return d['type'] == 'static', d['address']
-    module.fail_json(msg=f'Could not find container named {name}')
+    module.fail_json(msg=f'Could not find any ipv4s for container {name}')
 
 
 def find_interface_name(module, name, ip):

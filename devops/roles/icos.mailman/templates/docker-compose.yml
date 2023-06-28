@@ -1,3 +1,4 @@
+# https://github.com/maxking/docker-mailman/blob/main/docker-compose.yaml
 version: '2'
 
 services:
@@ -15,7 +16,7 @@ services:
     - database
     environment:
     - MTA=postfix
-    - DATABASE_URL=postgres://mailman:{{ mailman_postgres_password }}@database/mailmandb
+    - DATABASE_URL=postgresql://mailman:{{ mailman_postgres_password }}@database/mailmandb
     - DATABASE_TYPE=postgres
     - DATABASE_CLASS=mailman.database.postgresql.PostgreSQLDatabase
     - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}

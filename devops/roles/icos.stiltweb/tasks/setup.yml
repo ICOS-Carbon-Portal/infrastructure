@@ -17,6 +17,11 @@
     - "{{ stiltweb_statedir }}"
     - "{{ stiltweb_bindir }}"
 
+- name: Install netcdf C library
+  ansible.builtin.package:
+    name: "netcdf-bin"
+    state: present
+
 - name: Install jre
   apt:
     name: "{{ stiltweb_jre_package }}"

@@ -1,5 +1,6 @@
 utils_ripgrep_url: https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
-utils_fd_url: https://github.com/sharkdp/fd/releases/download/v8.4.0/fd_8.4.0_amd64.deb
+
+utils_fd_url: https://github.com/sharkdp/fd/releases/download/v8.7.0/fd_8.7.0_amd64.deb
 
 watchexec_arch: >-
   {{ watchexec_arch_map[ansible_architecture] | default(ansible_architecture) }}
@@ -11,3 +12,8 @@ btop_arch_map:
   "armv7l": "btop-arm-linux-musleabi.tbz"
   "armv6l": "btop-arm-linux-musleabi.tbz"
   "x86_64": "btop-x86_64-linux-musl.tbz"
+
+ncdu_url: "https://dev.yorhel.nl/download/ncdu-2.2.1-linux-{{ ncdu_arch_map[ansible_architecture] }}.tar.gz"
+ncdu_arch_map:
+  "armv7l": "arm"
+  "x86_64": "x86_64"

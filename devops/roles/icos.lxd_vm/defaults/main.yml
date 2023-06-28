@@ -1,5 +1,11 @@
 lxd_vm_ip: "{{ _lxd_static_ip.ip }}"
-lxd_vm_port: "{{ hostvars[lxd_vm_name].ansible_port }}"
+lxd_vm_port: "{{ hostvars[lxd_vm_inventory_hostname].ansible_port }}"
+
+# We use the value of this variable to lookup things about the VM in the
+# ansible inventory. It defaults to the same as lxd_vm_name.  This means that
+# if we create a VM named "wordpress", then by default we expect to be able to
+# lookup hostvars['wordpress'] and find things like ansible_port.
+lxd_vm_inventory_hostname: "{{ lxd_vm_name }}"
 
 # By default, we enable ssh port forward from a host on the host to the VM. The
 # exception is when the VM uses the macvlan profile.
@@ -11,6 +17,7 @@ lxd_vm_root_keys:
 
 # When a separate btrfs pool is used, this is the default size.
 lxd_vm_root_size: 50GB
+
 # The name of the btrfs pool.
 lxd_vm_root_pool: "{{ lxd_vm_name }}"
 

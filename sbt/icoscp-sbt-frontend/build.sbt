@@ -1,8 +1,8 @@
 
-scalaVersion in ThisBuild := "2.12.15"
+ThisBuild / scalaVersion := "2.12.17"
 name := "icoscp-sbt-frontend"
 organization := "se.lu.nateko.cp"
-version := "0.1.1"
+version := "0.1.2"
 
 sbtPlugin := true
 

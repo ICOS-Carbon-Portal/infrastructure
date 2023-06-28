@@ -6,7 +6,7 @@
       lxd_vm_name: skuggfaxe
       lxd_vm_ubuntu_version: "22.04"
       lxd_vm_docker: true
-      lxd_vm_root_size: "100GB"
+      lxd_vm_root_size: "600GB"
       lxd_vm_config:
         limits.cpu: "16"
         limits.memory: "64GB"

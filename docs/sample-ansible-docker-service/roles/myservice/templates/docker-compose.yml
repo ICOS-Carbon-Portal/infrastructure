@@ -1,0 +1,13 @@
+services:
+  myservice:
+    image: 'ghcr.io/myservice/myservice:latest'
+    container_name: myservice
+    ports:
+      # The 127.0.0.1 is very important.
+      - "127.0.0.1:{{ myservice_port }}:80"
+    volumes:
+      # Use relative paths for volumes if they reside in myservice_home
+      - "./config:/etc/config"
+      - "./data:/var/lib/myservice/"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: unless-stopped

@@ -9,3 +9,6 @@
 
     - role: icos.docker
       tags: docker
+
+    - role: icos.lxd_server
+      tags: lxd_server

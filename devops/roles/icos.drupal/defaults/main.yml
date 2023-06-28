@@ -1,5 +1,6 @@
-drupal_version: 9.5.7
+drupal_version: 9.5
 drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "otctest", "se", "sites"]
 drupal_home: /disk/data/drupal
 drupal_modules: []
 update_modules: false
+update_db: false

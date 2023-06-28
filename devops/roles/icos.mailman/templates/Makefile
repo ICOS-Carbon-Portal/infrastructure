@@ -6,7 +6,7 @@ weblog:
 	bash -c 'tail -f volumes/web/logs/{mailmanweb,uwsgi}.log /var/log/nginx/{mailman,error}.log'
 
 maillog:
-	bash -c 'tail -f /var/log/mail.log volumes/core/var/logs/*'
+	bash -c 'tail -f /var/log/mail.log volumes/core/var/logs/*.log'
 
 fail2ban:
 	fail2ban-client status; fail2ban-client status postfix-auth

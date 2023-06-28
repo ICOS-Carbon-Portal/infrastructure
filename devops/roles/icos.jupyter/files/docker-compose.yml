@@ -42,7 +42,7 @@ services:
       - "/etc/shadow:/etc/shadow:ro"
       - "/etc/group:/etc/group:ro"
       - "/etc/gshadow:/etc/gshadow:ro"
-    command: >
+    command: >-
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
     networks:
       - jupyter

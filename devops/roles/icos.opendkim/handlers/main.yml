@@ -1,0 +1,12 @@
+# Handlers are run in the order they are defined.
+# Since opendkim is a dependency of postfix, list it first.
+
+- name: Restart opendkim
+  systemd:
+    name: opendkim
+    state: restarted
+
+- name: Restart postfix
+  systemd:
+    name: postfix
+    state: restarted

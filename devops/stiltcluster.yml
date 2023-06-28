@@ -19,10 +19,7 @@
           /disk/data/stilt/Input            *.wg-fsicos2(ro,no_root_squash)
       notify: reload nfs server
 
-- hosts:
-    - icos1.gis.lu.se
-    - fsicos2.lunarc.lu.se
-    - fsicos3.lunarc.lu.se
+- hosts: stiltcluster_hosts
   pre_tasks:
     # Some hosts already have the stilt input data present
     - when: stilt_input_mount | default(False)

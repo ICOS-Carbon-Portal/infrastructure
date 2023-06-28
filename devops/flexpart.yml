@@ -34,6 +34,7 @@
         profiles:
           - default
           - ssh_root
+          - icosdata
         source:
           type: image
           mode: pull

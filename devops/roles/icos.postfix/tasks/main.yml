@@ -25,3 +25,4 @@
       -A INPUT -p tcp --dport 25 -j ACCEPT -m comment --comment 'smtp'
 
 - import_tasks: postfix_fail2ban.yml
+  tags: postfix_fail2ban

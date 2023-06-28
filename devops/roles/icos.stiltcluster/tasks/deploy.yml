@@ -35,7 +35,7 @@
 - name: Copy jarfile
   copy:
     src: "{{ stiltcluster_jar_file }}"
-    dest: "{{ stiltcluster_home }}"
+    dest: "{{ stiltcluster_home }}/stiltcluster.jar"
     backup: true
   register: _jarfile
 

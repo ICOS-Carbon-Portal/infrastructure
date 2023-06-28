@@ -3,6 +3,9 @@
 #
 # Redeploy/restart the hub:
 #   icos run jupyter jupyter
+#
+# Redeploy jusers:
+#   icos run jupyter jupyter_jusers -evirtualenv_recreate=True
 
 
 - hosts: fsicos3.lunarc.lu.se
