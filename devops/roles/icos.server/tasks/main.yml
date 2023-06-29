@@ -1,3 +1,12 @@
+- name: Install public keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ root_keys }}"
+    # Make sure to remove stale root keys
+    exclusive: True
+  when: root_keys is truthy
+
 - name: Set timezone to Europe/Stockholm
   timezone:
     name: Europe/Stockholm
