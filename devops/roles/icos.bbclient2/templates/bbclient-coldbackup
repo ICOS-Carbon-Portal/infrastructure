@@ -40,7 +40,7 @@ def bbclient(what, arg, check=True):
 
 def prune():
     bbclient('prune', 'prune --verbose --stats '
-             '--keep-within 7d --keep-daily=30 --keep-weekly=150')
+             '--keep-daily=14 --keep-weekly=50 --keep-monthly=36')
     # borg(1) doesn't let us remove all archives with a given prefix, so we
     # keep the last dirty one.
     bbclient('prune dirty',
