@@ -57,8 +57,8 @@ all:
         cpauth_config_files:
           - application_production.conf
 
-        postgis_db_port: 5438
-        postgis_hostname: 127.0.0.1
+        postgis_db_port: 5432
+        postgis_hostname: postgis.lxd
         postgis_backup_enable: true
         # stiltweb - application
         # This is where stiltweb keeps it's archive of of stilt files
