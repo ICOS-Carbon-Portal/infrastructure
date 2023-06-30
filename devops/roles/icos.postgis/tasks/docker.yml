@@ -11,12 +11,12 @@
     published_ports:
       - 127.0.0.1:{{ postgis_db_port }}:5432
     volumes:
-      - "{{ postgis_db_name }}:/var/lib/postgresql/data"
+      - "{{ postgis_container_name }}:/var/lib/postgresql/data"
     restart_policy: always
 
 # - name: Debug postgis password
 #   ansible.builtin.debug:
-#     msg: Password for user "{{ postgis_db_user }}" was "{{ postgis_db_pass }}", main db was "{{ postgis_db_name }}"
+#     msg: Password for user "{{ postgis_db_user }}" was "{{ postgis_db_pass }}", main db was "{{ postgis_db_name }}, port "{{ postgis_db_port}}"
 
 - name: Wait for postgis PostgreSQL to become available
   wait_for:
@@ -42,6 +42,7 @@
     login_password: "{{ postgis_db_pass }}"
     login_host: 127.0.0.1
     login_port: "{{ postgis_db_port }}"
+    maintenance_db: "{{ postgis_db_name }}"
   loop: "{{ postgis_dbs }}"
 
 - name: Create users in each postgis database
