@@ -17,14 +17,23 @@ nats_cert_dir: /var/lib/nats
 # --cert-name).mark
 nats_cert_name: "{{ ansible_fqdn }}"
 
-
 # https://github.com/nats-io/nats-server/releases
-nats_server_ver: 2.9.11
+nats_server_ver: 2.9.19
 # https://github.com/nats-io/natscli/releases/
 nats_cli_ver: 0.0.35
 # https://github.com/nats-io/nats-top/releases/
-nats_top_ver: 0.5.3
+nats_top_ver: 0.6.1
+
 
 nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_server_ver }}/nats-server-v{{ nats_server_ver }}-{{ nats_arch }}.deb"
 nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/v{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
-nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v{{ nats_top_ver }}/nats-top-v{{ nats_top_ver }}-{{ nats_arch }}.deb"
+
+# NATS TOP
+nats_top_arch: >-
+  {{ nats_top_arch_map[ansible_architecture] | default(ansible_architecture) }}
+nats_top_arch_map:
+  "armv6l": "armv6"
+  "armv7l": "armv7"
+  "x86_64": "x86_64"
+
+nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v{{ nats_top_ver }}/nats-top-v{{ nats_top_ver }}-linux-{{ nats_top_arch }}.deb"
