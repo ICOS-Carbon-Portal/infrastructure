@@ -1,0 +1,73 @@
+# Create the ICOS Cities VM.
+
+- hosts: fsicos2.lunarc.lu.se
+  vars:
+    pool_name: cities
+    # storage_pools is the same name as LXD uses
+    pool_path: /disk/data/lxd/storage_pools/cities
+    # we want this storage pool to live on the spinning disk
+    data_path: /disk/data/cities
+  pre_tasks:
+    # We typically use one pool per VM on ext4, because reasons.
+    - name: Create cities storage_pool directory
+      file:
+        path: "{{ pool_path }}"
+        state: directory
+
+    # This is for data that we want easily accessible from outside the VM. Can
+    # also be used as mount points for nfs.
+    - name: Create cities /data directory
+      file:
+        path: "{{ data_path }}"
+        state: directory
+        # Set uid/gid to match the VM root user.
+        owner: 1000000
+        group: 1000000
+
+    # There's no lxd_storage module so we do it by hand. We'll use a directory
+    # storage - which is slow for "lxd operations" (i.e launch, clone,
+    # snapshot - stuff we don't use) while fast for plain disk access. On ext4
+    # that is.
+    - name: Create cities storage pool
+      shell: >
+        /snap/bin/lxc storage show {{ pool_name }} > /dev/null 2>&1 || \
+        /snap/bin/lxc storage create {{ pool_name }} dir source="{{ pool_path}}"
+      register: _r
+      changed_when:
+        - '("Storage pool %s created" % pool_name) in _r.stdout'
+
+  roles:
+    - name: Create the cities VM
+      role: icos.lxd_vm
+      vars:
+        lxd_vm_name: cities
+        # We'll be using 20.04 since that's the same as the current production
+        # environment for our core services.
+        lxd_vm_ubuntu_version: '20.04'
+        lxd_vm_root_pool: "cities"
+        # We're not using the lxd_vm_docker setting, since the lxd_vm role is not
+        # yet tested with the directory storage driver.
+        lxd_vm_config:
+          security.nesting: "true"
+          limits.cpu: "16"
+          limits.memory: "64GB"
+        lxd_vm_devices:
+          data:
+            path: /data
+            source: "{{ data_path }}"
+            type: disk
+
+
+- hosts: cities
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker2
+      tags: docker
+
+  tasks:
+    - name: Check /data for write access
+      shell: |
+        rm -- $(mktemp -p /data)
+      changed_when: false
