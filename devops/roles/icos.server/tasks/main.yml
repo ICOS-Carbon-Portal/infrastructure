@@ -20,6 +20,9 @@
     name: icos.utils
   tags: utils
 
+- import_role: name=icos.sysstat
+  tags: sysstat
+
 - import_role: name=icos.iptables
   tags: iptables
 
