@@ -6,3 +6,5 @@ postgis_reader_pass: "{{ vault_postgis_reader_pass }}"
 rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
 
 stiltweb_atmoaccess_user_password: "{{ vault_stiltweb_atmoaccess_user_password }}"
+
+doi_admins: "{{ vault_doi_admins }}"

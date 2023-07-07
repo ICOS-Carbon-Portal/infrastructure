@@ -4,3 +4,5 @@ postgis_writer_pass: "{{ vault_postgis_writer_pass }}"
 postgis_reader_pass: "{{ vault_postgis_reader_pass }}"
 
 rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
+
+doi_admins: "{{ vault_doi_admins }}"
