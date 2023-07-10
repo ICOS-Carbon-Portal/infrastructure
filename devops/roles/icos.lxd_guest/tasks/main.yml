@@ -1,3 +1,6 @@
+- import_tasks: setup.yml
+  tags: lxd_guest_setup
+
 - name: Install latest python3
   tags: python3
   import_role:
@@ -7,9 +10,6 @@
   tags: utils
   import_role:
     name: icos.utils
-
-- import_tasks: setup.yml
-  tags: lxd_guest_setup
 
 - name: Add users
   tags: users
