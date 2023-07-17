@@ -1,0 +1,12 @@
+- name: Get filename of latest borg backup
+  ansible.builtin.shell:
+    cmd: borg list --short {{ corebackup_host }}:{{ postgis_backup_location }} | tail -1
+  register: postgis_last_backup
+
+- debug: var=postgis_last_backup.stdout
+
+# separate task for docker exec?
+- name: Extract backup
+  ansible.builtin.shell:
+    cmd: borg extract --stdout {{ corebackup_host }}:{{ postgis_backup_location }}::{{ postgis_last_backup.stdout }} | docker exec -i {{ postgis_container_name }} psql -U postgres > test_output.txt
+  # delegate_to: localhost

@@ -4,6 +4,7 @@
     image: postgres:{{ postgis_postgres_version }}
     state: started
     recreate: no
+    shm_size: 500M
     env:
       POSTGRES_USER: "{{ postgis_db_user }}"
       POSTGRES_PASSWORD: "{{ postgis_db_pass }}"

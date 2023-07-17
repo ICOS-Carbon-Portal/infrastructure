@@ -1,0 +1,10 @@
+all:
+  children:
+    core_host:
+      hosts:
+        localhost:
+
+      vars:
+        postgis_container_name: postgis
+        corebackup_host: fsicos2
+        postgis_backup_location: /disk/data/bbserver/repos/postgis.repo
