@@ -1,0 +1,20 @@
+- hosts: core_host
+  connection: local
+  tasks:
+    - name: Make sure borg is installed
+      tags:
+        - setup
+      import_role:
+        name: icos.borg
+
+    - name: Restore postgis backup
+      tags:
+        - postgis
+      import_role:
+        name: icos.postgis
+        tasks_from: restore.yml
+
+    # - name: Restore rdflog backup
+    #   tags:
+    #     - rdflog
+    #     import_role:

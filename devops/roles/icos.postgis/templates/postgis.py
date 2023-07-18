@@ -25,7 +25,7 @@ def cli(bbclient):
 @click.option('--destdir', type=click.Path(dir_okay=True, exists=True,
                                            file_okay=False, writable=True))
 def restore(destdir):
-    """Restore rdflog production backups.
+    """Restore postgis production backups.
 
     This can take 5-10 minutes.
     """

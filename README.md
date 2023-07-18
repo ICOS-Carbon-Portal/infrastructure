@@ -360,6 +360,23 @@ that we have running in a docker container (which we started in the previous ste
 ## postgis
 Used by `data` service to log object downloads and query for download stats.
 
+### Automatic setup and backup recovery with Ansible:
+You can use the development inventory together with `core.yml` and `core_restore.yml` playbooks to setup postgis with Ansible.
+
+1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
+
+2. Create the postgis container:
+
+    `cd infrastructure/devops`
+
+    `ansible-playbook -i dev.inventory -t postgis_setup core.yml`
+
+3. Recover postgis' backup from BorgBackup on fsicos2:
+
+    `ansible-playbook -i dev.inventory -t postgis core_restore.yml`
+
+### Manual setup
+
 Creating Docker container and installing PostGIS in it:<br>
 `docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:12.3`
 
@@ -385,7 +402,6 @@ The backup is expected to be an SQL cluster dump of Postgres in a file named `st
 
 Restoring from the cluster dump made with `pg_dumpall`:<br>
 `egrep -v '^(CREATE|DROP) ROLE postgres;' ./stdin | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres`
-
 
 ## meta
 Deploy rdflog on your development machine. Clone the repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>

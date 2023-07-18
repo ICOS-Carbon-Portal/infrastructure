@@ -1,0 +1,18 @@
+all:
+  children:
+    core_host:
+      hosts:
+        localhost:
+
+      vars:
+        postgis_container_name: postgis
+        corebackup_host: fsicos2
+        postgis_backup_location: /disk/data/bbserver/repos/postgis.repo
+        borg_bin: ~/.local/bin/borg
+        postgis_db_port: 5438
+
+    core_server:
+      hosts:
+        localhost:
+      
+      vars:
