@@ -1,5 +1,5 @@
 - hosts: core_host
-  connection: local # move to inventory?
+  connection: local
   tasks:
     - name: Make sure borg is installed
       tags:
