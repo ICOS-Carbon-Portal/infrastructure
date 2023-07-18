@@ -36,3 +36,6 @@ exploredata/build.notebook/pylib_examples
 /devops/files/wireguard
 
 __pycache__/
+
+devops/dev.inventory/group_vars/core_host/passwords.yml
+devops/roles/icos.postgis/postgis_restore_log.txt
