@@ -12,8 +12,7 @@ all:
         postgis_db_port: 5438
 
     core_server:
-      connection: local
       hosts:
-        local:
+        localhost:
       
       vars:
