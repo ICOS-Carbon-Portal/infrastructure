@@ -7,6 +7,8 @@
     pool_path: /disk/data/lxd/storage_pools/cities
     # we want this storage pool to live on the spinning disk
     data_path: /disk/data/cities
+    # we want /var/lib/docker inside the VM to be on the fast M.2 drive
+    docker_path: /disk/cities_docker
   pre_tasks:
     # We typically use one pool per VM on ext4, because reasons.
     - name: Create cities storage_pool directory
@@ -19,6 +21,14 @@
     - name: Create cities /data directory
       file:
         path: "{{ data_path }}"
+        state: directory
+        # Set uid/gid to match the VM root user.
+        owner: 1000000
+        group: 1000000
+
+    - name: Create cities /var/lib/docker directory
+      file:
+        path: "{{ docker_path }}"
         state: directory
         # Set uid/gid to match the VM root user.
         owner: 1000000
@@ -55,6 +65,10 @@
           data:
             path: /data
             source: "{{ data_path }}"
+            type: disk
+          docker:
+            path: /var/lib/docker
+            source: "{{ docker_path }}"
             type: disk
 
 
