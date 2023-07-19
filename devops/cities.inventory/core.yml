@@ -1,7 +1,7 @@
 all:
   vars:
     cpmeta_cities_domain: citymeta.icos-cp.eu
-    cpauth_cities_domain: cityauthstaging.icos-cp.eu
+    cpauth_cities_domain: cityauth.icos-cp.eu
     cpdata_cities_domain: citydata.icos-cp.eu
     cities_lxd_ip: 10.189.225.41
 
@@ -32,7 +32,7 @@ all:
   children:
     core_host:
       hosts:
-        fsicos2_cities:
+        cities:
 
       vars:
         # when running in an lxd VM, bind to 0.0.0.0 so that services are reachable from the host

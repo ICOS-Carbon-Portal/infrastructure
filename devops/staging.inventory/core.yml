@@ -20,7 +20,6 @@ all:
     cpauth_domains:
       - "{{ cpauth_icos_domain }}"
       - "{{ cpauth_sites_domain }}"
-      - "{{ cpauth_cities_domain }}"
 
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"

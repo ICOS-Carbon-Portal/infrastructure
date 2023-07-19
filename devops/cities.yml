@@ -21,23 +21,17 @@
 
     # This is for data that we want easily accessible from outside the VM. Can
     # also be used as mount points for nfs.
-    - name: Create cities /data directory
+    - name: Create cities directories
       file:
-        path: "{{ data_path }}"
+        path: "{{ item }}"
         state: directory
         # Set uid/gid to match the VM root user.
         owner: 1000000
         group: 1000000
-
-    - name: Create cities /var/lib/docker directory
-      file:
-        path: "{{ docker_path }}"
-        state: directory
-        # Set uid/gid to match the VM root user.
-        owner: 1000000
-        group: 1000000
-
-    # TODO create the {{ data_fast_path }} folder just like data_path and docker_path
+      loop:
+        - "{{ data_path }}"
+        - "{{ docker_path }}"
+        - "{{ data_fast_path }}"
 
     # There's no lxd_storage module so we do it by hand. We'll use a directory
     # storage - which is slow for "lxd operations" (i.e launch, clone,

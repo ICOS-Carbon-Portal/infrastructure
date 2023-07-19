@@ -22,3 +22,11 @@
     owner: "{{ cpmeta_user }}"
     group: "{{ cpmeta_user }}"
     recurse: yes
+
+- name: Create rdfStorage directory (if not present), take ownership
+  file:
+    path: "{{ cpmeta_rdfstorage_path }}"
+    state: directory
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
+    recurse: yes
