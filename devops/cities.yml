@@ -8,7 +8,10 @@
     # we want this storage pool to live on the spinning disk
     data_path: /disk/data/cities
     # we want /var/lib/docker inside the VM to be on the fast M.2 drive
+    # this also works around the bug with 'docker pull postgres' not working
     docker_path: /disk/cities_docker
+    # we want a place for fast data storage (e.g. for RDF4J in cpmeta's rdfStorage folder)
+    data_fast_path: /disk/cities_data_fast
   pre_tasks:
     # We typically use one pool per VM on ext4, because reasons.
     - name: Create cities storage_pool directory
@@ -33,6 +36,8 @@
         # Set uid/gid to match the VM root user.
         owner: 1000000
         group: 1000000
+
+    # TODO create the {{ data_fast_path }} folder just like data_path and docker_path
 
     # There's no lxd_storage module so we do it by hand. We'll use a directory
     # storage - which is slow for "lxd operations" (i.e launch, clone,
@@ -65,6 +70,10 @@
           data:
             path: /data
             source: "{{ data_path }}"
+            type: disk
+          data_fast:
+            path: "{{ cities_datafast_path }}"
+            source: "{{ data_fast_path }}"
             type: disk
           docker:
             path: /var/lib/docker

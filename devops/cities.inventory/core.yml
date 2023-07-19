@@ -26,6 +26,9 @@ all:
     restheart_bbclient_name: cityrestheart
     postgis_bbclient_name: citypostgis
 
+    #Fast data storage (including RDF db)
+    cities_datafast_path: /data_fast
+    cpmeta_rdfstorage_path: "{{ cities_datafast_path }}/rdfStorage"
   children:
     core_host:
       hosts:
