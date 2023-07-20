@@ -1,8 +1,3 @@
-- name: Add systemd service
-  template:
-    src: cpmeta.service
-    dest: /etc/systemd/system/cpmeta.service
-  register: _service
 
 - name: Create application.conf
   copy:

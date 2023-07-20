@@ -3,3 +3,4 @@
 
 - import_tasks: deploy.yml
   tags: doi_deploy
+  when: doi_jar_file is defined

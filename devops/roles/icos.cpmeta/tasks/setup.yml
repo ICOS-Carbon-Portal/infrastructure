@@ -30,3 +30,9 @@
     owner: "{{ cpmeta_user }}"
     group: "{{ cpmeta_user }}"
     recurse: yes
+
+- name: Add systemd service
+  template:
+    src: cpmeta.service
+    dest: /etc/systemd/system/cpmeta.service
+  register: _service

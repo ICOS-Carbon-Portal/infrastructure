@@ -3,6 +3,7 @@
 
 - import_tasks: deploy.yml
   tags: cpauth_deploy
+  when: cpauth_jar_file is defined
 
 - import_tasks: backup.yml
   tags: cpauth_backup

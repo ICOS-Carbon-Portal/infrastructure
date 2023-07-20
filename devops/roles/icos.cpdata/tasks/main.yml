@@ -3,3 +3,4 @@
 
 - import_tasks: deploy.yml
   tags: cpdata_deploy
+  when: cpdata_jar_file is defined

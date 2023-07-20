@@ -53,28 +53,11 @@
   roles:
     - role: icos.postgis
     - role: icos.restheart
-
-  tasks:    
-    - name: Setup cpmeta
-      import_role:
-        name: icos.cpmeta
-        tasks_from: setup.yml
-
-    - name: Setup cpdata
-      import_role:
-        name: icos.cpdata
-        tasks_from: setup.yml
-
-    - name: Setup cpauth
-      import_role:
-        name: icos.cpauth
-        tasks_from: setup.yml
+    - role: icos.cpmeta
+    - role: icos.cpdata
+    - role: icos.cpauth
       when: cpauth_envries is defined
-
-    - name: Setup doi
-      import_role:
-        name: icos.doi
-        tasks_from: setup.yml
+    - role : icos.doi
       when: doi_certbot_name is defined
 
-# After this playbook has ran, deploy the jar-files of cpmeta and cpdata using sbt
+# After this playbook has ran, deploy the jar-files of cpmeta, cpdata and (if needed) cpauth and doi using sbt
