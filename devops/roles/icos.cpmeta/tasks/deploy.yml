@@ -38,7 +38,6 @@
   systemd:
     name: cpmeta.service
     enabled: yes
-    daemon-reload: "{{ 'yes' if _jarfile.changed or _config.changed else 'no' }}"
     state: >-
       {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
 
