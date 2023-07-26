@@ -8,14 +8,8 @@
 - debug: var=backup_host
 - debug: var=backup_location
 
-- name: Extract rdflog backup
+- name: Extract {{ container_name }} backup
   ansible.builtin.shell:
-    cmd: borg extract --stdout {{ backup_host }}:{{ backup_location }}::{{ last_backup.stdout }} | docker exec -i {{ container_name }} psql -U {{ rdflog_user }} > roles/icos.postgresql/{{ container_name }}_restore_log.txt
-  when: container_name == "rdflog"
-
-- name: Extract postgis backup
-  ansible.builtin.shell:
-    cmd: borg extract --stdout {{ backup_host }}:{{ backup_location }}::{{ last_backup.stdout }}  | egrep -v '^(CREATE|ALTER) ROLE' | docker exec -i {{ container_name }} psql -U {{ postgresql_user }} > roles/icos.postgresql/{{ container_name }}_restore_log.txt
-  when: container_name == "postgis"
+    cmd: borg extract --stdout {{ backup_host }}:{{ backup_location }}::{{ last_backup.stdout }}  | {{ postgres_restore_extrapipe | default('') }} docker exec -i {{ container_name }} psql -U {{ postgresql_user }} > roles/icos.postgresql/{{ container_name }}_restore_log.txt
 
 - debug: msg="Backup restore done. Log can be found in roles/icos.postgresql/{{ container_name }}_restore_log.txt"

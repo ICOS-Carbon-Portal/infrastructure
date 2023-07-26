@@ -50,7 +50,7 @@
         name: icos.rdflog
         tasks_from: barebones.yml
 
-    - name: Backup rdflog
+    - name: Setup rdflog backup
       tags: rdflog_backup
       import_role:
         name: icos.rdflog

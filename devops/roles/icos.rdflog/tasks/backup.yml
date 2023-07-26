@@ -16,3 +16,4 @@
           docker exec rdflog pg_dump -U rdflog -Cc --if-exists -d rdflog | {{ bbclient_wrapper }} create '::{now}' -;
           {{ bbclient_wrapper }} prune --keep-within=7d --keep-daily=30 --keep-weekly=150
       done < "{{ bbclient_repo_file }}"
+  when: rdflog_backup_enable | default(False)

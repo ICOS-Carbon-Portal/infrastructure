@@ -10,7 +10,6 @@
     - name: Restore rdflog backup
       tags:
         - rdflog
-      ignore_errors: yes
       import_role:
         name: icos.postgresql
         tasks_from: restore.yml
@@ -31,3 +30,4 @@
         backup_location: "{{ postgis_backup_location }}"
         container_name: "{{ postgis_container_name }}"
         postgresql_user: "{{ postgis_user }}"
+        postgres_restore_extrapipe: "egrep -v '^(CREATE|ALTER) ROLE' |"

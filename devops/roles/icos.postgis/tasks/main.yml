@@ -10,7 +10,7 @@
 
 - import_tasks: backup.yml
   tags: postgis_backup
-  when: postgis_backup_enable
+  when: postgis_backup_enable | default(False)
 
 
 # - name: Install postgresql and postgis
