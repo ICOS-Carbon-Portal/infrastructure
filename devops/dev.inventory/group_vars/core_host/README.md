@@ -9,6 +9,7 @@ Example of passwords.yml:
 	postgis_admin_pass: "admin_pass"
 	postgis_reader_pass: "reader_pass"
 	postgis_writer_pass: "writer_pass"
+	rdflog_db_pass: "rdflog_db_pass"
 
 	ansible_become_pass: !vault |
 			$ANSIBLE_VAULT;1.1;AES256

@@ -147,13 +147,15 @@ You can use the development inventory together with `core.yml` and `core_restore
 
 1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
 
-2. Create the rdflog container:
+2. Add your chosen `rdflog_db_pass` password to the `passwords.yml` file in your development inventory, as described in [README](devops/dev.inventory/group_vars/core_host/README.md)
+
+3. Create the rdflog container:
 
     `cd infrastructure/devops`
 
     `ansible-playbook -i dev.inventory -t rdflog core.yml`
 
-3. Recover rdflog backup from BorgBackup on fsicos2:
+4. Recover rdflog backup from BorgBackup on fsicos2:
 
     `ansible-playbook -i dev.inventory -t rdflog core_restore.yml`
 
@@ -382,13 +384,16 @@ You can use the development inventory together with `core.yml` and `core_restore
 
 1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
 
-2. Create the postgis container:
+2. Add your chosen `postgis_admin_pass`, `postgis_reader_pass`, and `postgis_writer_pass` passwords to your `passwords.yml` file in your development inventory, as described in [README](devops/dev.inventory/group_vars/core_host/README.md)
+
+
+3. Create the postgis container:
 
     `cd infrastructure/devops`
 
     `ansible-playbook -i dev.inventory -t postgis_setup core.yml`
 
-3. Recover postgis' backup from BorgBackup on fsicos2:
+4. Recover postgis' backup from BorgBackup on fsicos2:
 
     `ansible-playbook -i dev.inventory -t postgis core_restore.yml`
 
