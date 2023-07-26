@@ -50,6 +50,12 @@
         name: icos.rdflog
         tasks_from: barebones.yml
 
+    - name: Backup rdflog
+      tags: rdflog_backup
+      import_role:
+        name: icos.rdflog
+        tasks_from: backup.yml
+
   roles:
     - role: icos.postgis
     - role: icos.restheart

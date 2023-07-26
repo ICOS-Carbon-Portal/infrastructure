@@ -7,14 +7,27 @@
       import_role:
         name: icos.borg
 
+    - name: Restore rdflog backup
+      tags:
+        - rdflog
+      ignore_errors: yes
+      import_role:
+        name: icos.postgresql
+        tasks_from: restore.yml
+      vars:
+        backup_host: "{{ corebackup_host }}"
+        backup_location: "{{ rdflog_backup_location }}"
+        container_name: "{{ rdflog_container_name }}"
+        postgresql_user: "{{ rdflog_user }}"
+
     - name: Restore postgis backup
       tags:
         - postgis
       import_role:
-        name: icos.postgis
+        name: icos.postgresql
         tasks_from: restore.yml
-
-    # - name: Restore rdflog backup
-    #   tags:
-    #     - rdflog
-    #     import_role:
+      vars:
+        backup_host: "{{ corebackup_host }}"
+        backup_location: "{{ postgis_backup_location }}"
+        container_name: "{{ postgis_container_name }}"
+        postgresql_user: "{{ postgis_user }}"

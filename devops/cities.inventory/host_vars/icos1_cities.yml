@@ -1,5 +1,0 @@
-ansible_port: 60500
-
-bbclient_remotes:
-  - cdb.nateko.lu.se
-#  - fsicos2.lunarc.lu.se

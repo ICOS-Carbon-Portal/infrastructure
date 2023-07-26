@@ -1,10 +1,11 @@
-- include_role:
+- name: Backup rdflog db
+  include_role:
     name: icos.bbclient2
     public: yes
   vars:
     bbclient_user: root
-    bbclient_name: "{{ postgis_bbclient_name }}"
-    bbclient_home: "{{ postgis_home }}/bbclient"
+    bbclient_name: "{{ rdflog_bbclient_name }}"
+    bbclient_home: "{{ rdflog_home }}/bbclient"
     bbclient_timer_conf: "OnCalendar=00/6:11"
     bbclient_timer_content: |
       #!/bin/bash
@@ -12,6 +13,6 @@
 
       while read repo; do
           export BORG_REPO="$repo"
-          docker exec {{ postgis_container_name }} pg_dumpall --clean --if-exists -U postgres | {{ bbclient_wrapper }} create '::{now}' -;
+          docker exec rdflog pg_dump -U rdflog -Cc --if-exists -d rdflog | {{ bbclient_wrapper }} create '::{now}' -;
           {{ bbclient_wrapper }} prune --keep-within=7d --keep-daily=30 --keep-weekly=150
       done < "{{ bbclient_repo_file }}"

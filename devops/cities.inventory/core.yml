@@ -25,6 +25,7 @@ all:
     cpmeta_bbclient_name: citymeta
     restheart_bbclient_name: cityrestheart
     postgis_bbclient_name: citypostgis
+    rdflog_bbclient_name: cityrdflog
 
     #Fast data storage (including RDF db)
     cities_datafast_path: /data_fast
@@ -40,6 +41,8 @@ all:
         restheart_bind_host: 0.0.0.0
 
         restheart_backup_enable: true
+        rdflog_backup_enable: true
+
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
         cpmeta_backup_enable: true

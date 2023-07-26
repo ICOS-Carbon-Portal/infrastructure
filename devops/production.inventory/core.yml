@@ -32,6 +32,7 @@ all:
     cpmeta_bbclient_name: cpmeta
     restheart_bbclient_name: restheart
     postgis_bbclient_name: postgis
+    rdflog_bbclient_name: rdflog
 
   children:
     core_host:
@@ -47,6 +48,8 @@ all:
         cpmeta_config_files:
           - application_production.conf
           - application_production_sensitive.conf
+        
+        rdflog_backup_enable: true
 
         # cpdata - application
         cpdata_filestorage_target: /disk/data/dataAppStorage

@@ -142,6 +142,23 @@ a docker container. In order to retrieve a copy of the production database
 you'll need root access to the fsicos2 server, the following instructions
 depends on it.
 
+### Automatic setup and backup recovery with Ansible:
+You can use the development inventory together with `core.yml` and `core_restore.yml` playbooks to setup rdflog with Ansible.
+
+1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
+
+2. Create the rdflog container:
+
+    `cd infrastructure/devops`
+
+    `ansible-playbook -i dev.inventory -t rdflog core.yml`
+
+3. Recover rdflog backup from BorgBackup on fsicos2:
+
+    `ansible-playbook -i dev.inventory -t rdflog core_restore.yml`
+
+### Manual setup
+
 Please note that the following commands - even though fairly detailed - are
 meant more as a guide than a precise step-by-step manual. The important thing
 to understand is that we're dumping a postgresql database and then we're
@@ -178,7 +195,7 @@ compressed sql file which is stored as /tmp/rdflog_dump.gz on the local host.
 
 
 #### Start postgres container for rdflog
-`$ docker run -d --name rdflog -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:10`
+`$ docker run -d --name rdflog -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:15`
 
 This will create a docker container or localhost. It requires that you've setup
 docker on your machine and that you have enough privileges to run docker.

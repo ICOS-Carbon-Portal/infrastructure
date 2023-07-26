@@ -5,9 +5,11 @@ all:
         localhost:
 
       vars:
-        postgis_container_name: postgis
-        corebackup_host: fsicos2
-        postgis_backup_location: /disk/data/bbserver/repos/postgis.repo
+        corebackup_host: cdb.nateko.lu.se
+        postgis_backup_location: ~bbserver/repos/postgis.repo
+        postgis_user: postgres  
+        rdflog_backup_location: ~bbserver/repos/rdflog.repo
+        rdflog_user: rdflog
         borg_bin: ~/.local/bin/borg
         postgis_db_port: 5438
 
