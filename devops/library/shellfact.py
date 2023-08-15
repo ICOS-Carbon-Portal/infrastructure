@@ -44,7 +44,10 @@ def main():
                        'rstrip': dict(required=False, type='bool', default=True)})
 
     rc, stdout, stderr = module.run_command(
-        module.params['exec'], check_rc=True, use_unsafe_shell=True)
+        module.params['exec'],
+        check_rc=True,
+        use_unsafe_shell=True,
+        executable='/bin/bash')
 
     excl = ['list', 'json', 'bool']
     if sum(1 for n in excl if module.params[n]) > 1:
