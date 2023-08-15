@@ -15,17 +15,12 @@
 
 - name: Install caddy
   apt:
-    update_cache: yes
     name: caddy
 
 - name: Check that caddy was properly installed
   ansible.builtin.shell: caddy version
   changed_when: no
 
-- name: Create Caddyfile
-  copy:
-    dest: /etc/caddy/Caddyfile
-    content: "{{ caddy_config }}"
-
 - import_tasks: site.yml
   when: caddy_name is defined
+  tags: caddy_site

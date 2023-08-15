@@ -1,15 +1,22 @@
-- name: Remove old Caddyfile
+- name: Remove old Caddyfiles
   file:
-    dest: "/etc/caddy/sites/Caddyfile.{{ caddy_name }}"
+    dest: "{{ item }}"
     state: absent
+  loop:
+    - "/etc/caddy/sites/Caddyfile.{{ caddy_name }}"
+    - "/etc/caddy/{{ caddy_name }}.caddy"
 
-- name: Install Caddyfile
-  copy:
-    dest: "/etc/caddy/{{ caddy_name }}.caddy"
-    content: "{{ caddy_conf }}"
+- name: Add site config to Caddyfile
+  blockinfile:
+    marker: "# {mark} {{ caddy_name }}"
+    state: "{{ caddy_site_state }}"
+    create: yes
+    insertafter: EOF
+    path: /etc/caddy/Caddyfile
+    block: "{{ caddy_conf }}"
+    validate: caddy validate --config %s --adapter caddyfile
+  register: r
 
-- name: caddy reload
-  command: caddy reload
-  args:
-    chdir: /etc/caddy
+- name: Reload caddy configuration
+  command: caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
   changed_when: false
