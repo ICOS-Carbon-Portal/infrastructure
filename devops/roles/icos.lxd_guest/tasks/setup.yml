@@ -1,5 +1,6 @@
 - name: Install packages
   apt:
+    update_cache: true
     name:
       - iptables-persistent
       - "{{ 'fail2ban' if lxd_guest_fail2ban else 'iptables-persistent' }}"
