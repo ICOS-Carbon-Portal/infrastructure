@@ -15,6 +15,7 @@
 - import_tasks: ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
+# docker-compose version 1 is deprecated, "docker compose" is the way.
 - name: Uninstall docker-compose version 1
   apt:
     name: docker-compose
@@ -38,6 +39,22 @@
     dest: /etc/docker/
   notify: reload docker
 
+# We've just uninstalled docker-compose version 1, now we'll install it again,
+# since we need the python libraries for ansible's sake.
+- name: pip install docker
+  pip:
+    name:
+      - docker
+      - docker-compose
+    state: present
+
+# While we want the docker-compose _libraries_ installed for ansible's sake,
+# we don't want the script itself. There doesn't seem to be a knob for that in
+# pip, so just remove the executable. https://github.com/pypa/pip/issues/3980
+- name: Remove /usr/local/bin/docker-compose
+  file:
+    name: /usr/local/bin/docker-compose
+    state: absent
 # A simple test that still manages to check a number of things including
 # daemons, sockets, network access etc.
 - name: Test that docker can pull and execute images
