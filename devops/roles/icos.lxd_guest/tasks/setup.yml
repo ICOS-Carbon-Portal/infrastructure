@@ -3,7 +3,6 @@
     update_cache: true
     name:
       - iptables-persistent
-      - "{{ 'fail2ban' if lxd_guest_fail2ban else 'iptables-persistent' }}"
 
 - name: Set timezone to Europe/Stockholm
   timezone:
@@ -27,3 +26,5 @@
     line: "{{ ansible_default_ipv4.gateway }} gateway.lxd"
     regex: "gateway.lxd$"
     state: present
+
+- import_role: name=icos.fail2ban
