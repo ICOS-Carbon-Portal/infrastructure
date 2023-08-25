@@ -29,7 +29,6 @@
     {{ certbot_bin }} certonly
     --authenticator nginx
     --non-interactive
-    --webroot-path /usr/share/nginx/html/
     {% for domain in certbot_domains %}
     --domain {{ domain }}
     {% endfor %}
