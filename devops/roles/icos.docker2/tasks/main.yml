@@ -55,6 +55,10 @@
   file:
     name: /usr/local/bin/docker-compose
     state: absent
+
+- import_role: name=icos.docker_utils
+  tags: docker_utils
+
 # A simple test that still manages to check a number of things including
 # daemons, sockets, network access etc.
 - name: Test that docker can pull and execute images
