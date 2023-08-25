@@ -6,5 +6,4 @@
   import_role:
     name: icos.zfsdocker
   vars:
-    zfsdocker_name: "{{ lxd_vm_name }}"
     zfsdocker_size: "{{ lxd_vm_docker_size }}"
