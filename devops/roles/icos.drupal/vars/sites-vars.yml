@@ -16,6 +16,7 @@ drupal_modules: [
   menu_breadcrumb,
   metatag,
   pathauto,
+  plausible,
   redirect,
   smtp,
   token,
