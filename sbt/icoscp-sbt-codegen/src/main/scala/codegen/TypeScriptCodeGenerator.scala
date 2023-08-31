@@ -1,6 +1,6 @@
-package se.lu.nateko.cp.sbtcodegen
+package eu.icoscp.sbtcodegen
 
-class TypeScriptCodeGenerator extends CodeGenerator{
+object TypeScriptCodeGenerator extends CodeGenerator{
 
 	val unitType = "void"
 	val initStatements = ""
@@ -37,4 +37,6 @@ class TypeScriptCodeGenerator extends CodeGenerator{
 	def getOptionalName(name: String): String = name.stripSuffix("?") + "?"
 
 	def getTuple(types: List[String]): String = types.mkString("[", ", ", "]")
+
+	val parser = ""
 }

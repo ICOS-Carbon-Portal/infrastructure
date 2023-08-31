@@ -1,4 +1,4 @@
-package se.lu.nateko.cp.sbtcodegen
+package eu.icoscp.sbtcodegen
 import org.scalatest.FunSuite
 import java.io.StringWriter
 import java.io.FileWriter
@@ -88,10 +88,9 @@ class TsTransformerTests extends FunSuite{
 	ignore("workbench for manual testing"){
 		val writer = new FileWriter("/home/klara/tstest.ts")
 		// val writer = new FileWriter("/home/klara/pytest.py")
-		val codeGen = new TypeScriptCodeGenerator
-		// val codeGen = new PythonCodeGenerator
+		// val transf = new NaiveTransformer(writer, PythonCodeGenerator)
+		val transf = new NaiveTransformer(writer, TsCodeGenerator)
 
-		val transf = new NaiveTransformer(writer, codeGen)
 		try{
 			transf.fromSource(example)
 		}

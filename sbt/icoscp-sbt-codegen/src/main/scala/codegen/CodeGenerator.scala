@@ -1,4 +1,4 @@
-package se.lu.nateko.cp.sbtcodegen
+package eu.icoscp.sbtcodegen
 
 trait CodeGenerator {
 	val unitType: String
@@ -16,4 +16,5 @@ trait CodeGenerator {
 	def getOptionalTypeRepr(tname: String, typeRepr: String): String
 	def getOptionalName(name: String): String
 	def getTuple(types: List[String]): String
+	val parser: String
 }

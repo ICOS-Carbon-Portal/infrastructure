@@ -1,6 +1,6 @@
-package se.lu.nateko.cp.sbtcodegen
+package eu.icoscp.sbtcodegen
 
-class PythonCodeGenerator extends CodeGenerator{
+object PythonCodeGenerator extends CodeGenerator{
 
   val unitType = "None"
   val initStatements: String = 
@@ -8,7 +8,9 @@ class PythonCodeGenerator extends CodeGenerator{
     "from dataclasses import dataclass\n" + 
     "from typing import Optional\n" + 
     "from typing import TypeAlias\n" +
-    "from typing import Literal\n" + "\n"
+    "from typing import Literal\n" +
+    "from dacite import Config, from_dict\n" +
+    "import json\n" + "\n"
 
   def getTypeAlias(from: String, to: String): String = s"$from: TypeAlias = $to\n"
 
@@ -39,4 +41,17 @@ class PythonCodeGenerator extends CodeGenerator{
 	def getOptionalName(name: String): String = name // no change in python
 
 	def getTuple(types: List[String]): String = types.mkString("tuple[", ", ", "]")
+
+  val parser = """def parse_data_object(input_text, res_type) -> DataObject:
+    def tuple_hook(d):
+        for k in d.keys():
+            if isinstance(d[k], list):
+                d[k] = tuple(d[k])
+
+        return d
+
+    input_dict=json.JSONDecoder(object_hook=tuple_hook).decode(input_text)
+
+    return from_dict(data_class=res_type, data=input_dict, config=Config(cast=[list]))
+  """
 }

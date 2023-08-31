@@ -1,4 +1,4 @@
-package se.lu.nateko.cp.sbtcodegen
+package eu.icoscp.sbtcodegen
 
 import sbt._
 import sbt.io.IO
@@ -11,10 +11,10 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 	private val OutFileName = "metacore.d."
 
 	object autoImport{
-		val cpCodeGenSources = settingKey[Seq[File]]("List of files with Scala sources to produce Typescript declarations for")
+		val cpCodeGenSources = settingKey[Seq[File]]("List of files with Scala sources to produce Typescript and Python declarations for")
 		val cpTsGenTypeMap = settingKey[Map[String, String]]("A set of custom Scala-Typescript type name mappings")
 		val cpPyGenTypeMap = settingKey[Map[String, String]]("A set of custom Scala-Python type name mappings")
-		val cpCodeGenRun = taskKey[Seq[File]]("(Over)write the Typescript output file(s)") // for both
+		val cpCodeGenRun = taskKey[Seq[File]]("(Over)write the Typescript and Python output files")
 	}
 
 	import autoImport._
@@ -27,9 +27,9 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 			val log = streams.value.log
 			val sources = cpCodeGenSources.value
 
-			log.info("Generating Typescript code to be packaged in Scala library jar")
+			log.info("Generating Typescript and Python code to be packaged in Scala library jar")
 			if(sources.isEmpty) log.warn(
-				"List of Scala sources for Typescript generation was empty. Set cpCodeGenSources setting."
+				"List of Scala sources for Typescript and Python generation was empty. Set cpCodeGenSources setting."
 			)
 
 			val outDir = resourceManaged.value
@@ -45,13 +45,11 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 				try{
 					val transf = ext match {
 						case "ts" =>
-							val tsCodeGen = new TypeScriptCodeGenerator()
-							val tsTransf = new NaiveTransformer(writer, tsCodeGen)
+							val tsTransf = new NaiveTransformer(writer, TypeScriptCodeGenerator)
 							tsTransf.declareMappings(cpTsGenTypeMap.value)
 							tsTransf
 						case "py" =>
-							val pyCodeGen = new PythonCodeGenerator()
-							val pyTransf = new NaiveTransformer(writer, pyCodeGen)
+							val pyTransf = new NaiveTransformer(writer, PythonCodeGenerator)
 							pyTransf.declareMappings(cpPyGenTypeMap.value)
 							pyTransf
 					}
@@ -60,6 +58,9 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 						val src = IO.read(srcFile)
 						transf.fromSource(src)
 					}
+
+					if (ext == "py") writer.append(PythonCodeGenerator.parser)
+
 					outFiles :+ outFile
 				}
 				finally{

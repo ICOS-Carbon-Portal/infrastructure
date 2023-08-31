@@ -1,4 +1,4 @@
-package se.lu.nateko.cp.sbtcodegen
+package eu.icoscp.sbtcodegen
 import scala.meta._
 import java.io.Writer
 import scala.collection.mutable
