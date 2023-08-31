@@ -85,7 +85,7 @@ class TsTransformerTests extends FunSuite{
 	|	citationString: Option[String]
 	|)""".stripMargin
 
-	test("workbench for manual testing"){
+	ignore("workbench for manual testing"){
 		val writer = new FileWriter("/home/klara/tstest.ts")
 		// val writer = new FileWriter("/home/klara/pytest.py")
 		val codeGen = new TypeScriptCodeGenerator
