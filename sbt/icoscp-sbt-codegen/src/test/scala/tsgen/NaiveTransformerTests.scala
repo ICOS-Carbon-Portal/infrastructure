@@ -1,9 +1,9 @@
-package se.lu.nateko.cp.sbttsgen
+package se.lu.nateko.cp.sbtcodegen
 import org.scalatest.FunSuite
 import java.io.StringWriter
 import java.io.FileWriter
 
-class NaiveTransformerTests extends FunSuite{
+class TsTransformerTests extends FunSuite{
 
 	private val example = """|
 	|	case class UriResource(uri: URI, label: Option[String])
@@ -30,6 +30,7 @@ class NaiveTransformerTests extends FunSuite{
 	|		start: Option[LocalDate],
 	|		stop: Option[LocalDate],
 	|	)
+	|	type LatLon = (Double, Double)
 
 	|	object FunderIdType extends Enumeration{
 	|		val Crossref = Value("Crossref Funder ID")
@@ -84,13 +85,15 @@ class NaiveTransformerTests extends FunSuite{
 	|	citationString: Option[String]
 	|)""".stripMargin
 
-	ignore("workbench for manual testing"){
-		val writer = new FileWriter("/home/oleg/tstests.ts")
-		val transf = new NaiveTransformer(writer)
+	test("workbench for manual testing"){
+		val writer = new FileWriter("/home/klara/tstest.ts")
+		// val writer = new FileWriter("/home/klara/pytest.py")
+		val codeGen = new TypeScriptCodeGenerator
+		// val codeGen = new PythonCodeGenerator
+
+		val transf = new NaiveTransformer(writer, codeGen)
 		try{
 			transf.fromSource(example)
-			writer.close()
-			//println(writer.toString)
 		}
 		finally{
 			writer.close()

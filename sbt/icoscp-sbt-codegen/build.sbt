@@ -1,8 +1,8 @@
 
 scalaVersion in ThisBuild := "2.12.15"
-name := "icoscp-sbt-tsgen"
+name := "icoscp-sbt-codegen"
 organization := "se.lu.nateko.cp"
-version := "0.2.4"
+version := "0.1.0-SNAPSHOT"
 
 sbtPlugin := true
 
