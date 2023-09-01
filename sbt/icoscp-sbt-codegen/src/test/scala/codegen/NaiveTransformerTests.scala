@@ -89,7 +89,7 @@ class TsTransformerTests extends FunSuite{
 		val writer = new FileWriter("/home/klara/tstest.ts")
 		// val writer = new FileWriter("/home/klara/pytest.py")
 		// val transf = new NaiveTransformer(writer, PythonCodeGenerator)
-		val transf = new NaiveTransformer(writer, TsCodeGenerator)
+		val transf = new NaiveTransformer(writer, TypeScriptCodeGenerator)
 
 		try{
 			transf.fromSource(example)

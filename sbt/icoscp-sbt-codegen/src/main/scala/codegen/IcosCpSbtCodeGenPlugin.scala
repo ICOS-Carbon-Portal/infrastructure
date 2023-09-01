@@ -9,7 +9,6 @@ import java.io.FileWriter
 trait CodeGenProfile{
 	def outFileName: String
 	def codeGenerator: CodeGenerator
-	def genericTypeMap: SettingKey[Map[String, String]]
 }
 
 
@@ -27,12 +26,10 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 	private object TsCodeGenProfile extends CodeGenProfile{
 		val outFileName = "metacore.d.ts"
 		val codeGenerator = TypeScriptCodeGenerator
-		val genericTypeMap = cpTsGenTypeMap
 	}
 	private object PythonCodeGenProfile extends CodeGenProfile{
 		val outFileName = "metacore.py"
 		val codeGenerator = PythonCodeGenerator
-		val genericTypeMap = cpPyGenTypeMap
 	}
 
 	override lazy val projectSettings = Seq(
@@ -57,8 +54,14 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 	
 				try{
 					val transf = new NaiveTransformer(writer, profile.codeGenerator)
-					transf.declareMappings(profile.genericTypeMap.value)
-	
+
+					profile match {
+						case TsCodeGenProfile =>
+							transf.declareMappings(cpTsGenTypeMap.value)
+						case PythonCodeGenProfile =>
+							transf.declareMappings(cpPyGenTypeMap.value)
+					}
+
 					cpCodeGenSources.value.foreach{srcFile =>
 						val src = IO.read(srcFile)
 						transf.fromSource(src)
