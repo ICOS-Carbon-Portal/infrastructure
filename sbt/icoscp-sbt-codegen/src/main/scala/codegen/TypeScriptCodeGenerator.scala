@@ -3,7 +3,8 @@ package eu.icoscp.sbtcodegen
 object TypeScriptCodeGenerator extends CodeGenerator{
 
 	val unitType = "void"
-	val initStatements = ""
+	val prologue = ""
+	val epilogue = ""
 
 	def getTypeAlias(from: String, to: String): String = s"type $from = $to\n"
 

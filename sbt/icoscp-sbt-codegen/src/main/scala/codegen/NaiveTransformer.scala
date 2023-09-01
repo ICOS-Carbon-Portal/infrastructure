@@ -8,7 +8,7 @@ class NaiveTransformer(writer: Writer, codeGen: CodeGenerator) {
 
 	import NaiveTransformer._
 
-	val init = writer.append(codeGen.initStatements)
+	writer.append(codeGen.prologue)
 
 	def declareMappings(customTypeMappings: Iterable[(String, String)]): Unit = {
 		for((from, to) <- customTypeMappings){

@@ -1,8 +1,9 @@
 package eu.icoscp.sbtcodegen
 
 trait CodeGenerator {
-	val unitType: String
-	val initStatements: String
+	def prologue: String
+	def epilogue: String
+	def unitType: String
 	def getTypeAlias(from: String, to: String): String
 	def getTypeNameConversion(scala: String): String
 	def getArray(inner: String): String
@@ -16,5 +17,4 @@ trait CodeGenerator {
 	def getOptionalTypeRepr(tname: String, typeRepr: String): String
 	def getOptionalName(name: String): String
 	def getTuple(types: List[String]): String
-	val parser: String
 }

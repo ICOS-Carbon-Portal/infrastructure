@@ -6,9 +6,14 @@ import sbt.Keys._
 import java.io.File
 import java.io.FileWriter
 
-object IcosCpSbtCodeGenPlugin extends AutoPlugin{
+trait CodeGenProfile{
+	def outFileName: String
+	def codeGenerator: CodeGenerator
+	def genericTypeMap: SettingKey[Map[String, String]]
+}
 
-	private val OutFileName = "metacore.d."
+
+object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 
 	object autoImport{
 		val cpCodeGenSources = settingKey[Seq[File]]("List of files with Scala sources to produce Typescript and Python declarations for")
@@ -18,6 +23,17 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 	}
 
 	import autoImport._
+
+	private object TsCodeGenProfile extends CodeGenProfile{
+		val outFileName = "metacore.d.ts"
+		val codeGenerator = TypeScriptCodeGenerator
+		val genericTypeMap = cpTsGenTypeMap
+	}
+	private object PythonCodeGenProfile extends CodeGenProfile{
+		val outFileName = "metacore.py"
+		val codeGenerator = PythonCodeGenerator
+		val genericTypeMap = cpPyGenTypeMap
+	}
 
 	override lazy val projectSettings = Seq(
 		cpCodeGenSources := Nil,
@@ -35,39 +51,27 @@ object IcosCpSbtCodeGenPlugin extends AutoPlugin{
 			val outDir = resourceManaged.value
 			IO.createDirectory(outDir)
 
-			val exts = Seq("ts", "py")
-			var outFiles = Seq[File]()
-
-			for (ext <- exts) {
-				val outFile = outDir / OutFileName + ext
+			Seq(TsCodeGenProfile, PythonCodeGenProfile).map{profile =>
+				val outFile = outDir / profile.outFileName
 				val writer = new FileWriter(outFile)
 	
 				try{
-					val transf = ext match {
-						case "ts" =>
-							val tsTransf = new NaiveTransformer(writer, TypeScriptCodeGenerator)
-							tsTransf.declareMappings(cpTsGenTypeMap.value)
-							tsTransf
-						case "py" =>
-							val pyTransf = new NaiveTransformer(writer, PythonCodeGenerator)
-							pyTransf.declareMappings(cpPyGenTypeMap.value)
-							pyTransf
-					}
+					val transf = new NaiveTransformer(writer, profile.codeGenerator)
+					transf.declareMappings(profile.genericTypeMap.value)
 	
 					cpCodeGenSources.value.foreach{srcFile =>
 						val src = IO.read(srcFile)
 						transf.fromSource(src)
 					}
 
-					if (ext == "py") writer.append(PythonCodeGenerator.parser)
+					writer.append(profile.codeGenerator.epilogue)
 
-					outFiles :+ outFile
+					outFile
 				}
 				finally{
 					writer.close()
 				}
 			}
-			outFiles
 		},
 		Compile / resourceGenerators += cpCodeGenRun
 	)
