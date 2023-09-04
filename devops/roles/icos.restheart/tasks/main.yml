@@ -1,4 +1,6 @@
 - import_tasks: setup.yml
+  become: yes
+  become_user: root
   tags: restheart_setup
 
 - import_tasks: backup.yml

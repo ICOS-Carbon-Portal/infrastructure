@@ -2,7 +2,7 @@
   ansible.builtin.shell:
     cmd: borg list --short {{ backup_host }}:{{ backup_location }} | tail -1
   environment:
-    BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: "yes"
+    BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: y
   register: last_backup
 
 - debug: var=last_backup.stdout

@@ -1,0 +1,16 @@
+- name: Get filename of latest borg backup
+  ansible.builtin.shell:
+    cmd: borg list --short {{ restheart_backup_host }}:{{ restheart_backup_location }} | tail -1
+  environment:
+    BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: y
+  register: latest_backup
+
+- debug: var=latest_backup.stdout
+- debug: var=restheart_backup_host
+- debug: var=restheart_backup_location
+
+- name: Extract RestHeart backup
+  ansible.builtin.shell:
+    cmd: borg extract --stdout {{ restheart_backup_host }}:{{ restheart_backup_location }}::{{ latest_backup.stdout }} | docker exec -i {{ restheart_mongo_container_name }} mongorestore --archive --drop > roles/icos.restheart/restheart_restore_log.txt
+
+- debug: msg="Backup restore done. Log can be found in roles/icos.restheart/restheart_restore_log.txt"

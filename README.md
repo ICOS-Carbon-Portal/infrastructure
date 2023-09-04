@@ -264,6 +264,24 @@ When the container is not needed any more:
 in java. It's needed by our `data` and `cpauth` services. Restheart uses
 [MongoDB](https://www.mongodb.com/) for storage.
 
+
+### Automatic setup and backup recovery with Ansible:
+You can use the development inventory together with `core.yml` and `core_restore.yml` playbooks to setup restheart and mongodb with Ansible.
+
+1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
+
+2. Create the restheart and mongodb containers:
+
+    `cd infrastructure/devops`
+
+    `ansible-playbook -i dev.inventory -t restheart_setup core.yml`
+
+3. Recover restheart backup from BorgBackup on fsicos2:
+
+    `ansible-playbook -i dev.inventory -t restheart core_restore.yml`
+
+### Manual setup
+
 We run restheart and mongodb in docker (using a docker-compose.yml file). Once
 it's up and running we'll populate mongodb by restoring a database from backup.
 

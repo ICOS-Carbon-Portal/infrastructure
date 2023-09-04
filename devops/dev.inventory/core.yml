@@ -5,16 +5,27 @@ all:
         localhost:
 
       vars:
-        corebackup_host: cdb.nateko.lu.se
+        corebackup_host: cdb
+
+        borg_bin: ~/.local/bin/borg
+
+        postgis_container_name: postgis
         postgis_backup_location: ~bbserver/repos/postgis.repo
-        postgis_user: postgres  
+        postgis_user: postgres
+        postgis_db_port: 5438
+
         rdflog_backup_location: ~bbserver/repos/rdflog.repo
         rdflog_user: rdflog
-        borg_bin: ~/.local/bin/borg
-        postgis_db_port: 5438
+
+        restheart_mongo_backup_location: ~bbserver/repos/restheart.repo
+        restheart_mongo_container_name: restheart_mongodb_1
+        restheart_dbs:
+          - "{{ restheart_icos_db_name }}"
+          - "{{ restheart_sites_db_name }}"
+          - "{{ restheart_cities_db_name }}"
 
     core_server:
       hosts:
         localhost:
-      
+
       vars:
