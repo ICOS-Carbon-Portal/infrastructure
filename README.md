@@ -400,13 +400,13 @@ You can use the development inventory together with `core.yml` and `core_restore
 ### Manual setup
 
 Creating Docker container and installing PostGIS in it:<br>
-`docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:12.3`
+`docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:15.3`
 
 Specify the password in `data` application.conf `cpdata.downloads.admin.password`
 
 `docker exec -ti postgis /bin/bash`
 
-`apt-get update && apt-get install postgresql-12-postgis-3`
+`apt-get update && apt-get install postgresql-15-postgis-3`
 
 Either create a new database or restore a backup
 

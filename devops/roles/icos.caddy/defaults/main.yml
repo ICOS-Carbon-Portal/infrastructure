@@ -1,2 +1,3 @@
+caddy_site_state: present
 caddy_config: |
   import *.caddy

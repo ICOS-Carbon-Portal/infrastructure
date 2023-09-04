@@ -23,7 +23,7 @@
       {% if name != inventory_hostname %}
       # {{ name }}
       [Peer]
-      PublicKey = {{ conf.key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, name)) }}
+      PublicKey = {{ conf.key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, name))) }}
       AllowedIPs = {{ conf.allowed_ips | default("%s/32" % conf.addr) }}
       PersistentKeepalive = 25
       {% endif %}
@@ -92,3 +92,8 @@
     name: "wg-quick@{{ wg_hub_intf }}.service"
     state: "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed or _reresolve.changed else 'started' }}"
     enabled: yes
+
+- name: Ping hub
+  command: ping -c 1 -w 10 "{{ wg_hub_config.hub.peer }}.{{ wg_hub_intf }}"
+  tags: wg_hub_ping
+  changed_when: no

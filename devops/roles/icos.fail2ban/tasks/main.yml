@@ -1,0 +1,19 @@
+- name: Install fail2ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Enable fail2ban
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
+
+- name: Create fail2ban config files
+  copy:
+    dest: "{{ item.dest }}"
+    content: "{{ item.content }}"
+  loop: "{{ fail2ban_config_files }}"
+  loop_control:
+    label: "{{ item.dest }}"
+  notify: fail2ban reload

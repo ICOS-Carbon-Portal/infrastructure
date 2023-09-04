@@ -44,3 +44,6 @@ lxd_source:
   server: https://cloud-images.ubuntu.com/releases
   protocol: simplestreams
   alias: "{{ lxd_vm_ubuntu_version }}"
+
+
+zfsdocker_name: "{{ lxd_vm_name }}"

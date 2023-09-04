@@ -4,9 +4,6 @@
     name: icos.certbot2
     apply: {tags: nginxsite_cert}
     public: true
-  vars:
-    certbot_name: "{{ nginxsite_name }}"
-    certbot_domains: "{{ nginxsite_domains }}"
   when: nginxsite_domains is defined
 
 - name: Create basic auth users

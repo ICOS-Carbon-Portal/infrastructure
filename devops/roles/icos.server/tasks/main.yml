@@ -27,4 +27,6 @@
   tags: iptables
 
 - import_role: name=icos.mosh
-- import_tasks: fail2ban.yml
+
+- import_role: name=icos.fail2ban
+  tags: fail2ban

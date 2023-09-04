@@ -36,3 +36,10 @@
     src: cpmeta.service
     dest: /etc/systemd/system/cpmeta.service
   register: _service
+
+- name: Restart systemd service daemon
+  systemd:
+    name: cpmeta.service
+    enabled: yes
+    daemon-reload: yes
+  when: _service.changed

@@ -30,3 +30,6 @@
   docker_compose:
     project_src: "{{ matomo_home }}"
     state: present
+
+- include_tasks: backup.yml
+  when: matomo_backup_enable

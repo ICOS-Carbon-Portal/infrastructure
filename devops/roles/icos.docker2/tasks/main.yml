@@ -1,4 +1,3 @@
-# https://docs.docker.com/engine/install/debian/
 # https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04
 
 # docker.io is the built-in version in ubuntu and if it's installed, docker
@@ -16,17 +15,49 @@
 - import_tasks: ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
+# docker-compose version 1 is deprecated, "docker compose" is the way.
+- name: Uninstall docker-compose version 1
+  apt:
+    name: docker-compose
+    state: absent
+
+# https://docs.docker.com/engine/install/debian/
 - name: Install docker and docker-compose
   apt:
     name:
       - docker-ce
-      - docker-compose
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      # Installing "docker-compose" gives us Version 1 which is EOL
+      # 2023-07. Installing docker-compose-plugin gives us V2.
+      - docker-compose-plugin
 
 - name: Install docker configuration
   copy:
     src: daemon.json
     dest: /etc/docker/
   notify: reload docker
+
+# We've just uninstalled docker-compose version 1, now we'll install it again,
+# since we need the python libraries for ansible's sake.
+- name: pip install docker
+  pip:
+    name:
+      - docker
+      - docker-compose
+    state: present
+
+# While we want the docker-compose _libraries_ installed for ansible's sake,
+# we don't want the script itself. There doesn't seem to be a knob for that in
+# pip, so just remove the executable. https://github.com/pypa/pip/issues/3980
+- name: Remove /usr/local/bin/docker-compose
+  file:
+    name: /usr/local/bin/docker-compose
+    state: absent
+
+- import_role: name=icos.docker_utils
+  tags: docker_utils
 
 # A simple test that still manages to check a number of things including
 # daemons, sockets, network access etc.

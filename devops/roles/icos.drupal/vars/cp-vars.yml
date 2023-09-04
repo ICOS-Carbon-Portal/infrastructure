@@ -9,7 +9,6 @@ drupal_modules: [
   conflict,
   editor_advanced_link,
   field_group,
-  google_analytics,
   honeypot,
   html_title,
   linkit,

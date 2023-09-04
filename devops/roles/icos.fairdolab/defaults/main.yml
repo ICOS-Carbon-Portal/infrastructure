@@ -1,0 +1,4 @@
+fairdolab_home: /opt/fairdolab
+
+# Set to "127.0.0.1:" if running on host, or "" if running in LXD.
+fairdolab_docker_listen: "127.0.0.1:"

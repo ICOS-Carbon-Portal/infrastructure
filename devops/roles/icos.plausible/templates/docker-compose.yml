@@ -4,14 +4,14 @@ services:
   plausible_db:
     image: postgres:14-alpine
     container_name: plausible_db
-    restart: unless-stopped
+    restart: always
     volumes:
       - ./db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD={{ plausible_postgres_password }}
 
   plausible_events_db:
-    image: clickhouse/clickhouse-server:22.6-alpine
+    image: clickhouse/clickhouse-server:23.3.7.5-alpine
     container_name: plausible_events_db
     restart: always
     volumes:
@@ -24,7 +24,7 @@ services:
         hard: 262144
 
   plausible:
-    image: plausible/analytics:v2.0.0-rc.1
+    image: plausible/analytics:v2.0
     container_name: plausible
     restart: always
     command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
@@ -40,6 +40,4 @@ volumes:
   db-data:
     driver: local
   event-data:
-    driver: local
-  geoip:
     driver: local

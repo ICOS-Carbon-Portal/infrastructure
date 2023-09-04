@@ -35,3 +35,6 @@
   docker_compose:
     project_src: "{{ plausible_home }}"
     state: present
+
+- include_tasks: backup.yml
+  when: plausible_backup_enabled
