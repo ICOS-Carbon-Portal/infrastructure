@@ -5,7 +5,7 @@ all:
         localhost:
 
       vars:
-        corebackup_host: cdb
+        corebackup_host: fsicos2
 
         borg_bin: ~/.local/bin/borg
 
@@ -17,7 +17,7 @@ all:
         rdflog_backup_location: ~bbserver/repos/rdflog.repo
         rdflog_user: rdflog
 
-        restheart_mongo_backup_location: ~bbserver/repos/restheart.repo
+        restheart_backup_location: ~bbserver/repos/restheart.repo
         restheart_mongo_container_name: restheart_mongodb_1
         restheart_dbs:
           - "{{ restheart_icos_db_name }}"
