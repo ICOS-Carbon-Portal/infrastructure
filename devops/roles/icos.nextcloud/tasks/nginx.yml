@@ -7,9 +7,6 @@
     - src: nextcloud-nextcloud.inc
       dest: /etc/nginx/conf.d
 
-    - src: nextcloud-maintenance.inc
-      dest: /etc/nginx/conf.d
-
     - src: nextcloud-nginx.conf
       dest: /etc/nginx/sites-available/nextcloud.conf
   notify: reload nginx config

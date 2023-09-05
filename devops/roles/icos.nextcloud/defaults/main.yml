@@ -21,8 +21,6 @@ nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
 nextcloud_db_host: db
 
-nextcloud_maintenance_ips:
-
 # Config file for prometheus exporter
 # (https://github.com/xperimental/nextcloud-exporter).
 nextcloud_exporter_conf_host: "{{ nextcloud_home }}/nextcloud-exporter.conf"
