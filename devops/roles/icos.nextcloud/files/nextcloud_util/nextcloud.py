@@ -1,4 +1,3 @@
-#!/usr/bin/python{{ python3_version }}
 # Perform various sysadmin task for nextcloud.
 # Used on the host which is running nextcloud in a docker container.
 
@@ -10,7 +9,7 @@ import types
 import yaml
 
 
-NC_DOCKER_HOME = "{{ nextcloud_home }}"
+NC_DOCKER_HOME = "/docker/nextcloud"
 NC_OCC_CMD = "./occ"
 
 

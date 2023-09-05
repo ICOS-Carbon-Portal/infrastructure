@@ -1,6 +1,15 @@
-- name: Copy nextcloud cli
-  template:
-    src: nextcloud.py
-    dest: /usr/local/sbin/nextcloud
-    lstrip_blocks: yes
-    mode: +x
+- name: Copy nextcloud_util
+  copy:
+    src: "nextcloud_util"
+    dest: /opt/
+  register: _util
+
+# pipx keeps reporting "changed", which might have to do with the use of
+# "editable"
+- name: Install nextcloud_util
+  community.general.pipx:
+    executable: pipx-global
+    python: python3.11
+    editable: true
+    name: "{{ _util.dest }}/nextcloud_util"
+  when: _util.changed
