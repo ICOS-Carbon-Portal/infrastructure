@@ -11,6 +11,6 @@
 
 - name: Extract RestHeart backup
   ansible.builtin.shell:
-    cmd: borg extract --stdout {{ restheart_backup_host }}:{{ restheart_backup_location }}::{{ latest_backup.stdout }} | docker exec -i {{ restheart_mongo_container_name }} mongorestore --archive --drop > roles/icos.restheart/restheart_restore_log.txt
+    cmd: borg extract --stdout {{ restheart_backup_host }}:{{ restheart_backup_location }}::{{ latest_backup.stdout }} | docker exec -i {{ restheart_container_name }} mongorestore --archive --drop > roles/icos.restheart/restheart_restore_log.txt
 
 - debug: msg="Backup restore done. Log can be found in roles/icos.restheart/restheart_restore_log.txt"

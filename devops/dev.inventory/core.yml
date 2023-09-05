@@ -18,7 +18,7 @@ all:
         rdflog_user: rdflog
 
         restheart_backup_location: ~bbserver/repos/restheart.repo
-        restheart_mongo_container_name: restheart_mongodb_1
+        restheart_container_name: restheart_mongodb_1
         restheart_dbs:
           - "{{ restheart_icos_db_name }}"
           - "{{ restheart_sites_db_name }}"
