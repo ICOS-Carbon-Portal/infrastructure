@@ -23,7 +23,6 @@
       import_role:
         name: icos.cpauth
         tasks_from: proxy.yml
-      when: cpauth_envries is defined
 
     - name: Setup restheart proxy
       tags:
