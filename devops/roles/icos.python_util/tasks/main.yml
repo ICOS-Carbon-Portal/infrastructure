@@ -1,16 +1,18 @@
-- name: Copying python util
+- name: Copying python utility
   copy:
-    src: "{{ nextcloud_util_src }}"
+    src: "{{ python_util_src }}"
     dest: "{{ python_util_install_prefix }}"
   register: _util
 
-# pipx keeps reporting "changed", which might have to do with the use of
-# "editable"
-- name: Installing python util
+
+- name: Installing python utility
   community.general.pipx:
     executable: pipx-global
-    python: "{{ python_util_version }}"
+    python: "{{ python_util_python_executable }}"
     editable: true
-    force: true
     name: "{{ python_util_name }}"
-  when: _util.changed
+  register: _pipx
+  # pipx seems to always report changed when installing editable from file
+  changed_when:
+    - _pipx.changed
+    - _pipx.stdout.find('already seems to be installed') == -1

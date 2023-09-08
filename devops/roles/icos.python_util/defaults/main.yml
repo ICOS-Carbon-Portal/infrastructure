@@ -3,7 +3,7 @@ python_util_bin_dir: "/usr/local/bin"
 
 # We don't want the default system python (the one ansible uses), but
 # something more modern.
-python_util_python_version: 3.11
+python_util_python_executable: "python3.11"
 
 # This is where we'll copy the script directory, pipx-global will then create
 # the venv under /opt/pipx/venvs/.
