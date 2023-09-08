@@ -1,0 +1,16 @@
+- name: Copying python util
+  copy:
+    src: "{{ nextcloud_util_src }}"
+    dest: "{{ python_util_install_prefix }}"
+  register: _util
+
+# pipx keeps reporting "changed", which might have to do with the use of
+# "editable"
+- name: Installing python util
+  community.general.pipx:
+    executable: pipx-global
+    python: "{{ python_util_version }}"
+    editable: true
+    force: true
+    name: "{{ python_util_name }}"
+  when: _util.changed
