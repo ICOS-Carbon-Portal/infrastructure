@@ -13,3 +13,5 @@ dependencies = [
 
 [project.scripts]
 nextcloud = 'nextcloud:cli'
+# make this utility easier to find using tab-completion in shell
+icos-nextcloud = 'nextcloud:cli'
