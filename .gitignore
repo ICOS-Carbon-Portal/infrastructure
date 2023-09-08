@@ -38,5 +38,5 @@ exploredata/build.notebook/pylib_examples
 __pycache__/
 
 devops/dev.inventory/group_vars/core_host/passwords.yml
-devops/roles/icos.postgis/postgis_restore_log.txt
+devops/roles/icos.postgresql/postgis_restore_log.txt
 devops/roles/icos.postgresql/rdflog_restore_log.txt

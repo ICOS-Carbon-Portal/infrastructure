@@ -1,17 +1,4 @@
-- name: Get filename of latest borg backup
-  ansible.builtin.shell:
-    cmd: borg list --short {{ backup_host }}:{{ backup_location }} | tail -1
-  environment:
-    BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: "yes"
-  register: last_backup
-
-- debug: var=last_backup.stdout
-
-- debug: var=backup_host
-- debug: var=backup_location
-
-- name: Extract {{ container_name }} backup
-  ansible.builtin.shell:
-    cmd: borg extract --stdout {{ backup_host }}:{{ backup_location }}::{{ last_backup.stdout }}  | {{ postgres_restore_extrapipe | default('') }} docker exec -i {{ container_name }} psql -U {{ postgresql_user }} > roles/icos.postgresql/{{ container_name }}_restore_log.txt
-
-- debug: msg="Backup restore done. Log can be found in roles/icos.postgresql/{{ container_name }}_restore_log.txt"
+- name: Extract "{{ postgresql_container_name }}" backup
+  ansible.builtin.script:
+    cmd: ../templates/restore.py --host={{ postgresql_backup_host }} --location={{ postgresql_backup_location }} --db={{ postgresql_container_name }}
+    executable: /usr/bin/python3
