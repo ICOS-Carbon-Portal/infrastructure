@@ -11,5 +11,6 @@
     executable: pipx-global
     python: python3.11
     editable: true
+    force: true
     name: "{{ _util.dest }}/nextcloud_util"
   when: _util.changed
