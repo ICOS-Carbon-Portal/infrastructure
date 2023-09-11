@@ -20,6 +20,13 @@
     project_src: "{{ restheart_home }}"
     build: yes
 
+- name: Install restore script
+  tags: restheart_script
+  template:
+    src: restore.py
+    dest: /usr/local/bin
+    mode: +x
+
 # - name: Test Restheart
 #   uri:
 #     url: "http://{{ restheart_host }}:{{ restheart_port }}/db"
