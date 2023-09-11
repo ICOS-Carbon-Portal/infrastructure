@@ -2,7 +2,7 @@
 scalaVersion in ThisBuild := "2.12.15"
 name := "icoscp-sbt-codegen"
 organization := "eu.icoscp"
-version := "0.3.0"
+version := "0.3.1"
 
 sbtPlugin := true
 
