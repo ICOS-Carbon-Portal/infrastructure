@@ -18,7 +18,7 @@ nats_cert_dir: /var/lib/nats
 nats_cert_name: "{{ ansible_fqdn }}"
 
 # https://github.com/nats-io/nats-server/releases
-nats_server_ver: 2.9.19
+nats_server_ver: 2.9.22
 # https://github.com/nats-io/natscli/releases/
 nats_cli_ver: 0.0.35
 # https://github.com/nats-io/nats-top/releases/
