@@ -15,4 +15,5 @@
   # pipx seems to always report changed when installing editable from file
   changed_when:
     - _pipx.changed
+    - _pipx.stdout
     - _pipx.stdout.find('already seems to be installed') == -1
