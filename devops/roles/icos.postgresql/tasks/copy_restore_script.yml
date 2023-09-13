@@ -1,0 +1,5 @@
+- name: Install postgresql restore script
+  template:
+    dest: /usr/local/bin
+    src: restore_postgresql.py
+    mode: +x
