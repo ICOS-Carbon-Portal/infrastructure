@@ -1,4 +1,5 @@
 - name: Extract "{{ postgresql_container_name }}" backup
-  ansible.builtin.script:
-    cmd: ../templates/restore.py --host={{ postgresql_backup_host }} --location={{ postgresql_backup_location }} --db={{ postgresql_container_name }}
-    executable: /usr/bin/python3
+  ansible.builtin.shell:
+    cmd: /usr/local/bin/restore_{{ postgresql_container_name }}_db.py --host={{ postgresql_backup_host }} --location={{ postgresql_backup_location }}
+    # executable: /usr/bin/python3
+    
