@@ -1,7 +1,0 @@
-- hosts: fsicos2.lunarc.lu.se
-  vars:
-    doi_jar_file: /home/andre/tmp/doi.jar
-  roles:
-    - role: icos.doi
-      tags: doi
-      
