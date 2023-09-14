@@ -1,7 +1,7 @@
 # Provision physical hosts with vmagent and node_exporter.
 #
 # upgrade to latest vmagent:
-# icos run prometheus/vmagent vmagent -evmagent_upgrade=1 -D
+# icos run vmagent vmagent -evmagent_upgrade=1 -D
 
 
 - name: Provision physical host with vmagent, node_exporter and proxy
