@@ -1,5 +1,3 @@
-- import_playbook: setup.yml
-
 - hosts: fsicos2.lunarc.lu.se
   roles:
     - role: icos.sitesaquanetform
