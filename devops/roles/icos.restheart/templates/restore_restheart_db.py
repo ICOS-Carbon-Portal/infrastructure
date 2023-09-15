@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import click
 import os
 import subprocess
@@ -27,7 +27,7 @@ def restore_latest_backup(host, location, latest_backup_date):
 @click.command('restore', help=f'Restore latest RestHeart backup')
 @click.option('--host', type=click.STRING)
 @click.option('--location', type=click.STRING)
-def restore(host, location):
+def restore_restheart_db(host, location):
 
     print("Running restore backup task for RestHeart")
 
@@ -35,7 +35,7 @@ def restore(host, location):
 
     print("Found latest backup to be from: ", latest_backup_date)
 
-    log_file = "/var/log/restheart_restore_log.txt" # variable instead?
+    log_file = "restheart_restore_log.txt"
 
     restore_output = restore_latest_backup(host, location, latest_backup_date)
 
@@ -46,4 +46,4 @@ def restore(host, location):
 
 
 if __name__ == '__main__':
-    restore()
+    restore_restheart_db()

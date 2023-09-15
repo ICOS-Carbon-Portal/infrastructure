@@ -21,9 +21,9 @@
     build: yes
 
 - name: Install restore script
-  tags: restheart_script
+  tags: restheart_restore_script
   template:
-    src: restore.py
+    src: restore_restheart_db.py
     dest: /usr/local/bin
     mode: +x
 

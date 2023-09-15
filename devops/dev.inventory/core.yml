@@ -5,7 +5,7 @@ all:
         localhost:
 
       vars:
-        corebackup_host: fsicos2
+        corebackup_host: cdb.nateko.lu.se
 
         borg_bin: ~/.local/bin/borg
 
@@ -23,6 +23,8 @@ all:
           - "{{ restheart_icos_db_name }}"
           - "{{ restheart_sites_db_name }}"
           - "{{ restheart_cities_db_name }}"
+        bbclient_home: /home/klara/.local/bin/borg
+        rdflog_postgres_version: 15
 
     core_server:
       hosts:
