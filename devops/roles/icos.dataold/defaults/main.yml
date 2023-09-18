@@ -1,6 +1,4 @@
-dataold_pid_file: /run/dataold.pid
-dataold_conf_file: /etc/nginx/dataold.conf
-dataold_log_file: /var/log/dataold.log
+dataold_home: /opt/dataold
 dataold_ext_port: 60443
 
 certbot_name: dataold
