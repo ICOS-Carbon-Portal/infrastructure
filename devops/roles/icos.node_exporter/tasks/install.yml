@@ -9,6 +9,7 @@
     repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
     version: master
     dest: "{{ node_exporter_scripts }}"
+  diff: false
 
 - name: Install utils needed for the collector-scripts
   apt:

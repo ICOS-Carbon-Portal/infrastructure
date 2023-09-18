@@ -15,6 +15,7 @@
     version: master
     dest: /root/wireguard-linux-compat
     update: "{{ wireguard_update }}"
+  diff: false
 
 - name: Clone wireguard-tools
   git:
@@ -22,6 +23,7 @@
     version: master
     dest: /root/wireguard-tools
     update: "{{ wireguard_update }}"
+  diff: false
     
 - name: Compile and install wireguard-linux-compat
   command: make all install

@@ -8,6 +8,7 @@
     repo: https://github.com/kit-data-manager/FAIR-DO-Lab
     dest: "{{ fairdolab_home }}"
     update: no
+  diff: false
 
 - name: Create docker-compose.yml
   template:
