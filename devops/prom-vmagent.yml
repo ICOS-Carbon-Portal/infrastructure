@@ -4,12 +4,8 @@
 # icos run vmagent vmagent -evmagent_upgrade=1 -D
 
 
-- name: Provision physical host with vmagent, node_exporter and proxy
+- name: Provision physical host with vmagent, node_exporter
   hosts: vmagent_hosts
-  vars:
-    # We serve up the Web UI for vmagent on the host's domain name (i.e
-    # fsicos2.lunarc.lu.se) under this top-level path.
-    vmagent_pathprefix: "/vmagent/"
   roles:
     - role: icos.vmagent
       tags: vmagent
@@ -21,13 +17,6 @@
       tags: script
       sexp_exporters:
         - smartmon
-
-    - role: icos.nginxsite
-      tags: nginx
-      nginxsite_name: vmagent
-      nginxsite_file: files/vmagent-nginx.conf
-      nginxsite_users: ["{{ vault_vmagent_auth }}"]
-      nginxsite_domains: ["{{ inventory_hostname }}"]
 
   tasks:
     - name: Test that the vmagent UI is password protected

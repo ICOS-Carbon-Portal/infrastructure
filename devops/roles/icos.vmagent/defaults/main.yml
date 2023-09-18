@@ -40,3 +40,13 @@ vmagent_arch_map:
 
 # ansible_hostname is usually just the first part anyway.
 fsd_host: "{{ ansible_hostname | splitext | first }}"
+
+
+# PROXY
+nginxsite_name: vmagent
+nginxsite_file: vmagent-nginx.conf
+nginxsite_users: ["{{ vault_vmagent_auth }}"]
+nginxsite_domains: ["{{ inventory_hostname }}"]
+
+caddy_name: vmagent
+caddy_conf: "{{ lookup('template', 'vmagent-caddy.conf') }}"

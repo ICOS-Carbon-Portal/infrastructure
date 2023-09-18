@@ -1,0 +1,13 @@
+- name: Retrieve https_proxy_server fact
+  check_mode: false
+  shellfact:
+    exec: ss -Htlp 'sport 443' | sed -re 's/.*(nginx|caddy).*/\1/'
+    fact: https_proxy_server
+
+- import_role:
+    name: icos.nginxsite
+  when: https_proxy_server == 'nginx'
+
+- import_role:
+    name: icos.caddy
+    tasks_from: site.yml

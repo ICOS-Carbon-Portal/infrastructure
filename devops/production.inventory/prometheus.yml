@@ -1,6 +1,8 @@
 vmagent_hosts:
-
   vars:
+    # We serve up the Web UI for vmagent on the host's domain name (i.e
+    # fsicos2.lunarc.lu.se) under this top-level path.
+    vmagent_pathprefix: "/vmagent/"
     vmagent_remote: "https://prom.icos-cp.eu/api/v1/write"
     vmagent_auth: "{{ vault_vmagent_auth }}"
     smartmon_enable: true

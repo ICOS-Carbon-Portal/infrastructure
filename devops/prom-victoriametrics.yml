@@ -51,7 +51,6 @@
               remote_ip 130.235.99.237  # cdb
           }
 
-
           # PROMLENS
           lens.icos-cp.eu {
             {{ caddy_basic_auth | indent(2) }}
