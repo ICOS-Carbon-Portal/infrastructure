@@ -23,7 +23,7 @@ all:
           - "{{ restheart_icos_db_name }}"
           - "{{ restheart_sites_db_name }}"
           - "{{ restheart_cities_db_name }}"
-        bbclient_home: /home/klara/.local/bin/borg
+        bbclient_home: ~/.local/bin/borg
         rdflog_postgres_version: 15
 
     core_server:

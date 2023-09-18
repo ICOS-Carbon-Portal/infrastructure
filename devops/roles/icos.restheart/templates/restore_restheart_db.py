@@ -15,8 +15,8 @@ def get_latest_backup_date(host, location):
     return check_output(["tail", "-1"], input=all_backups).strip().decode("utf-8")
 
 
-def restore_latest_backup(host, location, latest_backup_date):
-    extract_backup = f"borg extract --stdout {host}:{location}::{latest_backup_date}".split()
+def restore_backup(host, location, backup_date):
+    extract_backup = f"borg extract --stdout {host}:{location}::{backup_date}".split()
     exec_container = f"docker exec -i restheart_mongodb_1 mongorestore --archive --drop".split()
 
     extracted_backup = check_output(extract_backup)
@@ -37,7 +37,7 @@ def restore_restheart_db(host, location):
 
     log_file = "restheart_restore_log.txt"
 
-    restore_output = restore_latest_backup(host, location, latest_backup_date)
+    restore_output = restore_backup(host, location, latest_backup_date)
 
     with open(log_file, 'w') as f:
         f.write(restore_output.decode("utf-8"))
