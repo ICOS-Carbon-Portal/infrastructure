@@ -1,0 +1,56 @@
+- name: Install mtail
+  apt:
+    name: mtail
+
+- name: Configure mtail
+  lineinfile:
+    path: /etc/default/mtail
+    regexp: "^#?{{ item.key }}="
+    line: "{{ item.key }}={{ item.val }}"
+    state: present
+    create: no
+  loop:
+    - key: LOGS
+      val: "{{ mtail_logs | join(',') }}"
+    - key: PORT
+      val: "{{ mtail_port }}"
+    - key: HOST
+      val: "{{ mtail_host }}"
+  notify: reload mtail
+
+- name: Install configure icos programs
+  copy:
+    src: "{{ item }}"
+    dest: /etc/mtail
+    # It's a bit silly but mtail actually starts its http server even in
+    # compily_only mode, which makes it fail because its standard port is
+    # already taken (by the mtail daemon). Thus we tell it to just pick any
+    # port.
+    validate: mtail --compile_only -port 0 --progs %s
+  notify: reload mtail
+  loop: "{{ mtail_programs }}"
+
+- name: Find unconfigured icos programs
+  find:
+    paths: /etc/mtail
+    patterns: "icos-*.mtail"
+    excludes: "{{ mtail_programs }}"
+  register: _find
+
+- name: Remove unconfigured icos programs
+  file:
+    name: "{{ item }}"
+    state: absent
+  notify: reload mtail
+  loop: "{{ _find.files | map(attribute='path') }}"
+
+- name: Start mtail service
+  systemd:
+    name: mtail
+    enabled: yes
+    state: started
+
+- name: Check that the mtail http server is responding
+  uri:
+    url: "http://{{ mtail_host }}:{{ mtail_port }}"
+  retries: 10

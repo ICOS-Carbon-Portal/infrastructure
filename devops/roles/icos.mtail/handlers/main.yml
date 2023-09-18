@@ -1,0 +1,4 @@
+- name: reload mtail
+  service:
+    name: mtail
+    state: restarted
