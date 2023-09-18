@@ -1,5 +1,9 @@
 nginxsite_path_available: "/etc/nginx/sites-available/{{ nginxsite_name }}.conf"
 nginxsite_path_enable: "/etc/nginx/sites-enabled/{{ nginxsite_name }}.conf"
 nginxsite_path_confd: "/etc/nginx/conf.d/{{ nginxsite_name }}.conf"
+
 certbot_name: "{{ nginxsite_name }}"
 certbot_domains: "{{ nginxsite_domains }}"
+
+nginxauth_name: "{{ nginxsite_name }}"
+nginxauth_users: "{{ nginxsite_users }}"
