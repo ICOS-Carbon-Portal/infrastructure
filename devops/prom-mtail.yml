@@ -1,0 +1,8 @@
+- hosts: fsicos2.lunarc.lu.se
+  roles:
+    - role: icos.mtail
+      tags: mtail
+      mtail_logs:
+        - /var/log/mail.log
+      mtail_programs:
+        - icos-postfix.mtail
