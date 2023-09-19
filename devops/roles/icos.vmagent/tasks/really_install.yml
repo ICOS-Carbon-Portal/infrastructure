@@ -32,4 +32,5 @@
     src: "{{ url.dest }}"
     dest: "{{ vmagent_bin }}"
     remote_src: true
+  diff: false
   register: unar

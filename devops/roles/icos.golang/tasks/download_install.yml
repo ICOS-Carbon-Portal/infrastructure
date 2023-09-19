@@ -29,7 +29,8 @@
     src: "{{ _download.dest }}"
     dest: "{{ golang_opt_dir }}"
     remote_src: true
-
+  diff: false
+  
 - name: Create symlinks for go binaries
   file:
     dest: "/usr/local/bin/{{ item }}"

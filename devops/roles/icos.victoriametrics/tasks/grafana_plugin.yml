@@ -28,3 +28,4 @@
     src: "{{ url.dest }}"
     dest: "{{ vm_graf_plugins }}"
     remote_src: true
+  diff: false

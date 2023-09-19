@@ -47,7 +47,7 @@
     remote_src: true
     src: "{{ ncdu_url }}"
     dest: /usr/local/bin/
-
+  diff: false
 
 # FD
 - name: Install fd

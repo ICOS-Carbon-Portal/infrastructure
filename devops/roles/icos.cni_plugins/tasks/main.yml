@@ -27,6 +27,7 @@
     src: /opt/cni/download/plugins.tgz
     dest: /opt/cni/bin
     remote_src: true
+  diff: false
 
 # https://www.redhat.com/sysadmin/container-networking-podman
 # https://raw.githubusercontent.com/containers/podman/main/cni/87-podman-bridge.conflist

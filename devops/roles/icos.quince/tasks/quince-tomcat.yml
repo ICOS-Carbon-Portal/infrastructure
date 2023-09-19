@@ -10,6 +10,7 @@
     remote_src: yes
     owner: "{{ quince_user }}"
     group: "{{ quince_user }}"
+  diff: false
 
 - name: Find the unpackad tomcat directory
   find:
