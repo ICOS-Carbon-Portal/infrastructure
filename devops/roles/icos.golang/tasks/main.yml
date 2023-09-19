@@ -7,7 +7,6 @@
   # it might not be installed
   failed_when: no
 
-
 - name: Is the installed version of golang sufficent?
   debug:
     msg: "{{ golang_local_version }} is sufficient."
