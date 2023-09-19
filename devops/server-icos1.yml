@@ -12,3 +12,6 @@
 
     - role: icos.lxd_server
       tags: lxd_server
+
+    - role: icos.caddy
+      tags: caddy
