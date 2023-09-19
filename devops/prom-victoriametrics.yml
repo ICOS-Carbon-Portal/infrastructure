@@ -4,15 +4,6 @@
 # icos run vict prom -evm_upgrade=true -D
 
 - hosts: cdb.nateko.lu.se
-  vars:
-    # https://caddyserver.com/docs/caddyfile/directives/basicauth
-    _auth: "{{ vault_prometheus_basic_auth }}"
-    caddy_basic_auth: |
-      basicauth bcrypt prometheus {
-        {{ _auth.username }} {{ _auth.password |
-                                password_hash('bcrypt', vault_bcrypt_salt) }}
-      }
-    
   roles:
     - role: icos.docker2
       tags: docker
@@ -43,14 +34,25 @@
           # SNIPPET
           (icosip) {
               remote_ip 130.235.74.215  # icos1
+              remote_ip 130.235.74.216  # icos1
+              remote_ip 130.235.74.217  # icos1
+              remote_ip 130.235.74.218  # icos1
               remote_ip 194.47.223.139  # fsicos2
               remote_ip 194.47.223.137  # fsicos3
               remote_ip 130.235.99.237  # cdb
           }
 
+          (prometheus_auth) {
+            basicauth bcrypt prometheus {
+              {{ vault_vmagent_auth.username }} "{{
+                vault_vmagent_auth.password |
+                password_hash('bcrypt', vault_bcrypt_salt) }}"
+            }
+          }
+
           # PROMLENS
           lens.icos-cp.eu {
-            {{ caddy_basic_auth | indent(2) }}
+            import prometheus_auth
             reverse_proxy localhost:{{ vm_promlens_port }}
           }
           
@@ -62,7 +64,7 @@
 
           # PROMETHEUS
           prom.icos-cp.eu {
-            {{ caddy_basic_auth | indent(2) }}
+            import prometheus_auth
 
             @api_not_icos {
               path /api/*
