@@ -11,3 +11,12 @@
 - import_role:
     name: icos.caddy
     tasks_from: site.yml
+  when: https_proxy_server == 'caddy'
+
+- name: Make sure we understand which proxy server is used
+  fail:
+    msg: |
+      Unknown proxy server "{{ https_proxy_server }}".
+  when:
+    - https_proxy_server != 'nginx'
+    - https_proxy_server != 'caddy'
