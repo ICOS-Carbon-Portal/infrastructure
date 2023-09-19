@@ -1,3 +1,5 @@
+# vmagent is a drop-in replacement for prometheus, thus uses its config file
+# name.
 - name: Create prometheus.yml
   copy:
     dest: "{{ vmagent_home }}/prometheus.yml"
