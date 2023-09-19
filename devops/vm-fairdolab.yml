@@ -13,7 +13,7 @@
 
     - name: icos.caddy
       tags: caddy
-      caddy_name: netdata
+      caddy_name: fairdolab
       caddy_conf: |
         # https://github.com/kit-data-manager/FAIR-DO-Lab#readme
 
