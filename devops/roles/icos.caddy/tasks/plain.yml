@@ -1,0 +1,30 @@
+# https://caddyserver.com/docs/install#debian-ubuntu-raspbian
+
+- name: Add caddy signing key
+  ansible.builtin.get_url:
+    url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+    dest: /etc/apt/trusted.gpg.d/caddy.asc
+    mode: '0644'
+    force: true
+
+- name: Add caddy apt repository
+  apt_repository:
+    filename: caddy
+    repo: >-
+      deb [signed-by=/etc/apt/trusted.gpg.d/caddy.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+
+- name: Install caddy
+  apt:
+    name: caddy
+
+- name: Remove caddy dropin directory
+  file:
+    name: "{{ caddy_dropin_path | dirname }}"
+    state: absent
+  notify: restart caddy
+
+# See xcaddy.yml for details.
+- name: Make /usr/bin/caddy executable
+  file:
+    path: "/usr/bin/caddy"
+    mode: +x

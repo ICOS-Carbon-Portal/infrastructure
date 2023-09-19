@@ -1,0 +1,14 @@
+- import_role: name=icos.golang
+
+- name: Install xcaddy
+  command: go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+  args:
+    creates: /opt/xcaddy
+  environment:
+    GOPATH: /opt/xcaddy
+
+- name: Create /usr/local/bin/xcaddy symlink
+  file:
+    dest: "/usr/local/bin/xcaddy"
+    src: /opt/xcaddy/bin/xcaddy
+    state: link
