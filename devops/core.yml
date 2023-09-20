@@ -1,5 +1,4 @@
 - hosts: core_server
-  become: yes
   tasks:
     - name: Setup cpmeta proxy
       tags:
@@ -43,7 +42,6 @@
       when: doi_certbot_name is defined
 
 - hosts: core_host
-  become: yes
   pre_tasks:
     - name: Provision postgresql generic backup restore script
       tags:
