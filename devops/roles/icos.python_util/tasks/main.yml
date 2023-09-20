@@ -10,7 +10,8 @@
     executable: pipx-global
     python: "{{ python_util_python_executable }}"
     editable: true
-    name: "{{ python_util_name }}"
+    # name can be a pypi name or - in this case - a filesystem path
+    name: "{{ python_util_install_dir }}"
   register: _pipx
   # pipx seems to always report changed when installing editable from file
   changed_when:
