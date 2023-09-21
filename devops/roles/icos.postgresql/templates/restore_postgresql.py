@@ -9,6 +9,8 @@ def get_latest_backup_date(host, location):
     os.environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = "y"
     os.environ['BORG_RELOCATED_REPO_ACCESS_IS_OK'] = "y"
 
+    # FIXME: bbclient has a hardcoded/templatized default for host/location,
+    # so passing these is kind of strange.
     return check_output(f"{BBCLIENT} list --short --last 1 {host}:{location}",
                         shell=1, text=1).strip()
 
