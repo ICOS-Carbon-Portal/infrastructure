@@ -15,7 +15,7 @@ def get_last_archive(host, location):
                         shell=1, text=1).strip()
 
 
-def restore_latest_backup(host, location, db, user,
+def restore_latest_backup(host, location, container, user,
                           ignore_role_stmts, archive_name):
     cmd = f"{BBCLIENT} extract --stdout {host}:{location}::{archive_name}"
 
@@ -23,25 +23,22 @@ def restore_latest_backup(host, location, db, user,
     if ignore_role_stmts:
         cmd += " | egrep -v '^(CREATE|ALTER) ROLE'"
 
-    cmd += " | docker exec -i {db} psql -U {user}"
+    cmd += " | docker exec -i {container} psql -U {user}"
     return check_output(cmd, shell=1)
 
 
 
-def restore_postgresql(host, location, db, user, ignore_role_stmts):
-
+def restore_postgresql(host, location, container, user, ignore_role_stmts):
     print("Running restore task")
 
     last_archive = get_last_archive(host, location)
-
     print("Found last backup to be: ", last_archive)
     
-    log_file = f"{db}_restore_log.txt"
-
-    restoration_output = restore_latest_backup(host, location, db, user, ignore_role_stmts, last_archive)
+    log_file = f"{container}_restore_log.txt"
+    restoration_output = restore_latest_backup(host, location, container, user,
+                                               ignore_role_stmts, last_archive)
 
     print("Extracted and transferred latest backup in docker container")
-
     with open(log_file, 'w') as f:
         f.write(restoration_output.decode("utf-8"))
 
