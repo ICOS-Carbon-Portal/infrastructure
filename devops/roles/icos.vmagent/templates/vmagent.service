@@ -5,7 +5,8 @@ Description=Victoriametrics vmagent
 EnvironmentFile={{ vmagent_environ }}
 ExecStart={{ vmagent_bin }}/vmagent-prod \
   -promscrape.config={{ vmagent_home }}/prometheus.yml \
-  -remoteWrite.url=%{VM_REMOTE}
+  -remoteWrite.url=%{VM_REMOTE} \
+  -httpListenAddr={{ vmagent_listen }}
 
   {%- if vmagent_pathprefix %} \
   -http.pathPrefix={{ vmagent_pathprefix }}

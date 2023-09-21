@@ -11,3 +11,9 @@
   systemd:
     name: vmagent
     state: reloaded
+
+- name: restart vmagent
+  systemd:
+    name: vmagent
+    state: restarted
+    daemon_reload: yes
