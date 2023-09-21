@@ -1,46 +1,59 @@
-#!/usr/bin/python3
 import os
-from subprocess import check_output
+from subprocess import check_output, check_call
+
+import click
 
 
-BBCLIENT = '{{ bbclient_home }}' #/bin/bbclient'
-
-def get_last_archive(host, location):
+# UTILS
+def bbclient_get_latest(bb):
     os.environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = "y"
     os.environ['BORG_RELOCATED_REPO_ACCESS_IS_OK'] = "y"
-
-    # FIXME: bbclient has a hardcoded/templatized default for host/location,
-    # so passing these is kind of strange.
-    return check_output(f"{BBCLIENT} list --short --last 1 {host}:{location}",
-                        shell=1, text=1).strip()
+    return check_output(f"{bb} list --short --last 1", shell=1, text=1).strip()
 
 
-def restore_latest_backup(host, location, container, user,
-                          ignore_role_stmts, archive_name):
-    cmd = f"{BBCLIENT} extract --stdout {host}:{location}::{archive_name}"
 
-    # FIXME - surely there's an option to psql for this?
-    if ignore_role_stmts:
+# CLI
+
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.option('--bb', required=True, help="Path to bbclient executable",
+              type=click.Path(executable=True))
+@click.option("--norole", is_flag=True,
+              help='Filter out ROLE statements during restore')
+@click.option("--user", required=True, help="Postgres user")
+@click.option("--container", required=False,
+              help="Pipe sql commands from backup into this container")
+@click.option("--stdout", is_flag=True, help="Dump to stdout. For testing.")
+@click.option('--overwrite', 'overwrite', is_flag=True,
+              help="Actually run commands which OVERWRITES database")
+def restore(bb, norole, user, container, stdout, overwrite):
+    """Restore a postgresql backup from bbclient into a docker container.
+
+    By default it just displays the command to run, use --overwrite to execute.
+    """
+    if stdout == bool(container):
+        raise click.UsageError("Use use either --stdout or --container")
+
+    archive = bbclient_get_latest(bb)
+
+    # Build a command, start by extracting the database to stdout.
+    cmd = f"{bb} extract --stdout ::{archive}"
+
+    # If the user wants to strip ROLE ddl's, add a hack for that.
+    if norole:
+        # FIXME: This is fragile. There's most probably an option for psql
+        # that does this better.
         cmd += " | egrep -v '^(CREATE|ALTER) ROLE'"
 
-    cmd += " | docker exec -i {container} psql -U {user}"
-    return check_output(cmd, shell=1)
+    if container:
+        # Finally, pipe commands to a docker container.
+        cmd += f" | docker exec -i {container} psql -U {user}"
 
-
-
-def restore_postgresql(host, location, container, user, ignore_role_stmts):
-    print("Running restore task")
-
-    last_archive = get_last_archive(host, location)
-    print("Found last backup to be: ", last_archive)
-    
-    log_file = f"{container}_restore_log.txt"
-    restoration_output = restore_latest_backup(host, location, container, user,
-                                               ignore_role_stmts, last_archive)
-
-    print("Extracted and transferred latest backup in docker container")
-    with open(log_file, 'w') as f:
-        f.write(restoration_output.decode("utf-8"))
-
-    print(f"Backup restore done. Log can be found in {log_file}")
-
+    if overwrite:
+        check_call(cmd, shell=1)
+    else:
+        print(f"Would have executed '{cmd}'")
