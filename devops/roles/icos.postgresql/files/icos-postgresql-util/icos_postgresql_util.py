@@ -6,29 +6,28 @@ import click
 
 # UTILS
 def borg_get_latest(borg):
-    os.environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = "y"
-    os.environ['BORG_RELOCATED_REPO_ACCESS_IS_OK'] = "y"
-    return check_output(f"{borg} list --short --last 1", shell=1, text=1).strip()
+    os.environ["BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK"] = "y"
+    os.environ["BORG_RELOCATED_REPO_ACCESS_IS_OK"] = "y"
+    return check_output(f"{borg} list --short --last 1",
+                        shell=1, text=1).strip()
 
 
 # CLI
-
 @click.group()
 def cli():
     pass
 
-
 @cli.command()
-@click.option('--bb', help="Path to bbclient executable",
+@click.option("--bb", help="Path to bbclient executable",
               type=click.Path(executable=True))
-@click.option('--repo', help="The bbserver repo from which to retrieve backups")
+@click.option("--repo", help="The bbserver repo from which to retrieve backups")
 @click.option("--norole", is_flag=True,
-              help='Filter out ROLE statements during restore')
+              help="Filter out ROLE statements during restore")
 @click.option("--user", required=True, help="Postgres user")
 @click.option("--container", required=False,
               help="Pipe sql commands from backup into this container")
 @click.option("--stdout", is_flag=True, help="Dump to stdout. For testing.")
-@click.option('--overwrite', 'overwrite', is_flag=True,
+@click.option("--overwrite", "overwrite", is_flag=True,
               help="Actually run commands which OVERWRITES database")
 def restore(bb, repo, norole, user, container, stdout, overwrite):
     """Restore a postgresql database from a borg backup.
@@ -39,7 +38,7 @@ def restore(bb, repo, norole, user, container, stdout, overwrite):
       * massage the sql statements
       * destination of the restore
       * debugging or overwrite
-    
+
     \b
     # Choosing borg backup source
     The database can be retrieved using the path to a bbclient. This uses the
@@ -67,10 +66,12 @@ def restore(bb, repo, norole, user, container, stdout, overwrite):
     overwriting the target database)
     """
     if bool(bb) == bool(repo):
-        raise click.UsageError("Use either --bb or --repo")
-    
+        msg = "Use either --bb or --repo"
+        raise click.UsageError(msg)
+
     if bool(stdout) == bool(container):
-        raise click.UsageError("Use either --stdout or --container")
+        msg = "Use either --stdout or --container"
+        raise click.UsageError(msg)
 
     if repo:
         borg = f"BORG_REPO={repo} borg"
