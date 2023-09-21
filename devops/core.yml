@@ -43,14 +43,6 @@
 
 - hosts: core_host
   pre_tasks:
-    - name: Provision postgresql generic backup restore script
-      tags:
-        - rdflog
-        - postgis
-      import_role:
-        name: icos.postgresql
-        tasks_from: copy_restore_script.yml
-
     - name: Setup rdflog
       tags: rdflog
       import_role:
