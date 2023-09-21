@@ -9,28 +9,23 @@ def get_latest_backup_date(host, location):
     os.environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = "y"
     os.environ['BORG_RELOCATED_REPO_ACCESS_IS_OK'] = "y"
 
-    list_all_backups = f"{BBCLIENT} list --short {host}:{location}".split()
-    all_backups = check_output(list_all_backups)
+    all_backups = check_output(f"{BBCLIENT} list --short {host}:{location}", shell=1)
     
-    return check_output(["tail",  "-1"], input=all_backups).strip().decode("utf-8")
+    return check_output(["tail",  "-1"], input=all_backups, shell=1).strip().decode("utf-8")
 
 
 def restore_latest_backup(host, location, db, user, ignore_role_stmts, latest_backup_date):
-    extract = f"{BBCLIENT} extract --stdout {host}:{location}::{latest_backup_date}".split()
-    exec_container = f"docker exec -i {db} psql -U {user}".split()
+    exec_container = f"docker exec -i {db} psql -U {user}"
 
-    extracted_backup = check_output(extract)
+    extracted_backup = check_output(f"{BBCLIENT} extract --stdout {host}:{location}::{latest_backup_date}", shell=1)
 
     if ignore_role_stmts:
-        remove_role_stmts = check_output([
-            'egrep',
-            '-v',
-            '^(CREATE|ALTER) ROLE'
-        ], input=extracted_backup)
+        remove_role_stmts = check_output("egrep -v '^(CREATE|ALTER) ROLE'", shell=1,
+                                         input=extracted_backup)
 
-        return check_output(exec_container, input=remove_role_stmts)
+        return check_output(exec_container, input=remove_role_stmts, shell=1)
     else:
-        return check_output(exec_container, input=extracted_backup)
+        return check_output(exec_container, input=extracted_backup, shell=1)
 
 
 def restore_postgresql(host, location, db, user, ignore_role_stmts):
