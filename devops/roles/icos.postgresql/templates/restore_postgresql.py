@@ -9,9 +9,8 @@ def get_latest_backup_date(host, location):
     os.environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = "y"
     os.environ['BORG_RELOCATED_REPO_ACCESS_IS_OK'] = "y"
 
-    all_backups = check_output(f"{BBCLIENT} list --short {host}:{location}", shell=1)
-    
-    return check_output(["tail",  "-1"], input=all_backups, shell=1).strip().decode("utf-8")
+    return check_output(f"{BBCLIENT} list --short --last 1 {host}:{location}",
+                        shell=1, text=1).strip()
 
 
 def restore_latest_backup(host, location, db, user, ignore_role_stmts, latest_backup_date):
