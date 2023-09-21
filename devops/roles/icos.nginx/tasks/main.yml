@@ -6,3 +6,7 @@
 
 - import_tasks: testing.yml
   tags: nginx_testing
+
+- import_tasks: metrics.yml
+  tags: nginx_metrics
+  when: nginx_metrics_enable

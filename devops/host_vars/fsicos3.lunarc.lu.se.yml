@@ -3,6 +3,10 @@ iptables_ssh_port: 60022
 lxd_vm_variant: zfs
 
 
+# PROMETHEUS
+nginx_metrics_enable: True
+
+
 # ICOSDATA
 icosdata_mkdirs:
   - /nfs

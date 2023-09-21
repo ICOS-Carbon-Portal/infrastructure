@@ -5,4 +5,11 @@ nginx_certbot_bin: /snap/bin/certbot
 # This bug is fixed as of Ubuntu 19.10, the first LTS to carry the fix is 20.04
 nginx_enable_1581864: "{{ ansible_distribution_major_version | int < 20 }}"
 
-nginx_vhost_content: ""
+# Should we install and run the nginx metrics exporter?
+nginx_metrics_enable: False
+
+# The prometheus exporters address.
+nginx_metrics_addr: "127.0.0.1:9113"
+
+# The address to nginx's metrics page
+nginx_metrics_url: "http://127.0.0.1/metrics"
