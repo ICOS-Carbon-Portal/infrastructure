@@ -17,17 +17,15 @@ def get_last_archive(host, location):
 
 def restore_latest_backup(host, location, db, user,
                           ignore_role_stmts, archive_name):
-    exec_container = f"docker exec -i {db} psql -U {user}"
+    cmd = f"{BBCLIENT} extract --stdout {host}:{location}::{archive_name}"
 
-    extracted_backup = check_output(f"{BBCLIENT} extract --stdout {host}:{location}::{archive_name}", shell=1)
-
+    # FIXME - surely there's an option to psql for this?
     if ignore_role_stmts:
-        remove_role_stmts = check_output("egrep -v '^(CREATE|ALTER) ROLE'", shell=1,
-                                         input=extracted_backup)
+        cmd += " | egrep -v '^(CREATE|ALTER) ROLE'"
 
-        return check_output(exec_container, input=remove_role_stmts, shell=1)
-    else:
-        return check_output(exec_container, input=extracted_backup, shell=1)
+    cmd += " | docker exec -i {db} psql -U {user}"
+    return check_output(cmd, shell=1)
+
 
 
 def restore_postgresql(host, location, db, user, ignore_role_stmts):
