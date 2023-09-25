@@ -1,5 +1,3 @@
-- import_role: name=icos.golang
-
 - name: Install xcaddy
   command: go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
   args:
