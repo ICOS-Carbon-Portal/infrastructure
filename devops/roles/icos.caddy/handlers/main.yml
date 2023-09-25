@@ -1,0 +1,10 @@
+- name: restart caddy
+  systemd:
+    name: caddy
+    state: restarted
+    daemon_reload: true
+
+- name: reload caddy
+  command: >-
+    {{ caddy_bin }} reload --config /etc/caddy/Caddyfile --adapter caddyfile
+  changed_when: false

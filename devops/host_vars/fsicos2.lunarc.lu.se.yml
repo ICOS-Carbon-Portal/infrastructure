@@ -5,6 +5,10 @@ bbclient_remotes:
   - fsicos2.lunarc.lu.se
   - cdb.nateko.lu.se
 
+# PROMETHEUS
+nginx_metrics_enable: True
+
+
 # NEXTCLOUD  
 nextcloud_volume_nextcloud: /disk/data/nextcloud
 

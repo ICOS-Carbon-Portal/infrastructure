@@ -1,0 +1,38 @@
+# First install the xcaddy tool.
+import_role: name=icos.xcaddy
+
+- name: Compile caddy using xcaddy
+  command: >-
+    xcaddy build --output {{ caddy_via_xcaddy }}
+    {% for module in caddy_modules %}
+    --with {{ module }}
+    {% endfor %}
+  args:
+    chdir: /tmp
+    creates: "{{ caddy_via_xcaddy }}"
+
+- name: Create caddy systemd drop-in directory
+  file:
+    path: "{{ caddy_dropin_path | dirname }}"
+    state: directory
+  register: _dropin
+
+- name: Create caddy systemd drop-in file
+  copy:
+    dest: "{{ caddy_dropin_path }}"
+    # These were copied from the standard caddy service
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart={{ caddy_via_xcaddy }} run --environ --config /etc/caddy/Caddyfile
+      ExecReload=
+      ExecReload={{ caddy_via_xcaddy }} reload --config /etc/caddy/Caddyfile --force
+  notify: restart caddy
+
+# Since we're compiling and installing a new version of caddy which supports
+# new modules (and new syntax!) - accidentally using the old caddy binary will
+# cause confusion.
+- name: Make /usr/bin/caddy non-executable to avoid confusion
+  file:
+    path: "/usr/bin/caddy"
+    mode: -x

@@ -1,0 +1,9 @@
+services:
+  nginx:
+    image: nginx
+    network_mode: host
+    volumes:
+      - ./openssl.cnf:/etc/ssl/openssl.cnf:ro
+      - ./dataold.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt/live/dataold:/etc/letsencrypt/live/dataold:ro
+      - /etc/letsencrypt/archive/dataold:/etc/letsencrypt/archive/dataold:ro

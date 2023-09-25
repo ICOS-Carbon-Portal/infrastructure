@@ -19,7 +19,7 @@
 
 - name: Download grafana-datasource
   ansible.builtin.get_url:
-    url: "https://github.com/VictoriaMetrics/grafana-datasource/releases/download/v0.1.3/victoriametrics-datasource-{{ release.tag }}.zip"
+    url: "https://github.com/VictoriaMetrics/grafana-datasource/releases/download/{{ release.tag }}/victoriametrics-datasource-{{ release.tag }}.zip"
     dest: "/tmp"
   register: url
 
@@ -28,3 +28,4 @@
     src: "{{ url.dest }}"
     dest: "{{ vm_graf_plugins }}"
     remote_src: true
+  diff: false

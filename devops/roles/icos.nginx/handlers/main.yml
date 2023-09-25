@@ -12,3 +12,9 @@
 - name: reload systemd config
   systemd:
     daemon_reload: yes
+
+- name: restart nginx-prometheus-exporter
+  systemd:
+    daemon-reload: yes
+    name: nginx-prometheus-exporter
+    state: restarted

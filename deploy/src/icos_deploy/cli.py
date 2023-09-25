@@ -46,7 +46,7 @@ def find_playbook(expr):
         dname, pname = expr.split('/', 1)
         matches = glob.glob(f'{dname}*/{pname}*.yml')
     else:
-        matches = glob.glob(f'{expr}*.yml')
+        matches = glob.glob(f'*{expr}*.yml')
 
     if len(matches) == 0:
         die(f'No playbooks match "{expr}"')

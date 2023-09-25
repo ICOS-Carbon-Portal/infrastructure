@@ -12,9 +12,6 @@
     name: icos.nginxauth
     apply: {tags: nginxsite_users}
     public: true
-  vars:
-    nginxauth_name: "{{ nginxsite_name }}"
-    nginxauth_users: "{{ nginxsite_users }}"
   when: nginxsite_users is defined
 
 - block:

@@ -1,8 +1,8 @@
 # https://hub.docker.com/_/nextcloud/
-nextcloud_nextcloud_version: 25.0.2
+nextcloud_nextcloud_version: 26.0.5
 
 # https://hub.docker.com/_/postgres/
-nextcloud_postgres_version: 13.9
+nextcloud_postgres_version: 13.12
 
 nextcloud_port: 9000
 
@@ -20,8 +20,6 @@ nextcloud_volume_postgres: "{{ nextcloud_home }}/volumes/postgres"
 nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
 nextcloud_db_host: db
-
-nextcloud_maintenance_ips:
 
 # Config file for prometheus exporter
 # (https://github.com/xperimental/nextcloud-exporter).

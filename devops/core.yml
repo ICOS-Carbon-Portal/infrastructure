@@ -23,7 +23,6 @@
       import_role:
         name: icos.cpauth
         tasks_from: proxy.yml
-      when: cpauth_envries is defined
 
     - name: Setup restheart proxy
       tags:
@@ -48,7 +47,7 @@
       tags: rdflog
       import_role:
         name: icos.rdflog
-        tasks_from: barebones.yml
+        tasks_from: setup.yml
 
     - name: Setup rdflog backup
       tags: rdflog_backup

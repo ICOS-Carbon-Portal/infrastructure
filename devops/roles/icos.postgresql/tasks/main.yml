@@ -7,3 +7,6 @@
 - import_tasks: pg_stat.yml
   tags: postgresql_pg_stat
   when: postgresql_pg_stat_enable
+
+- import_tasks: util.yml
+  tags: postgresql_util

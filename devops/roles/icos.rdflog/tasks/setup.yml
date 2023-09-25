@@ -1,0 +1,8 @@
+- name: Install rdflog restore scripts
+  template:
+    dest: /usr/local/bin
+    src: restore_rdflog_db.py
+    mode: +x
+
+- import_tasks: barebones.yml
+  tags: rdflog_setup

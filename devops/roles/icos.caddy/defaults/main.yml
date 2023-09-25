@@ -1,3 +1,21 @@
+# Configuration that affects modules etc.
+caddy_global_conf: ""
+
+# This variable goes together with caddy_conf and caddy_name, usually you want
+# the site to be present.
 caddy_site_state: present
-caddy_config: |
-  import *.caddy
+
+# If set, will cause this role to install xcaddy and then use xcaddy to
+# compile a version of caddy with the desired modules
+caddy_modules: []
+
+# If we decide to use xcaddy, we'll create a systemd override file that points
+# to the new binary.
+caddy_dropin_path: "/etc/systemd/system/caddy.service.d/usr_local_bin.conf"
+
+# The caddy version created by xcaddy
+caddy_via_xcaddy: /usr/local/bin/caddy
+
+# When we run caddy to validate config files it's important we use the correct
+# one (i.e one that has support for syntax we've added)
+caddy_bin: "{{ caddy_via_xcaddy if caddy_modules else '/usr/bin/caddy' }}"

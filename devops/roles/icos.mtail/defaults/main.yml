@@ -1,0 +1,8 @@
+mtail_logs: []
+
+mtail_port: 3903
+
+# the installed default is '::'
+mtail_host: localhost
+
+mtail_programs: []

@@ -48,6 +48,7 @@
     repo: https://github.com/containers/podman
     version: "v{{ podman_version }}"
     dest: "{{ podman_src_dir }}"
+  diff: false
 
 - name: Build podman
   make:

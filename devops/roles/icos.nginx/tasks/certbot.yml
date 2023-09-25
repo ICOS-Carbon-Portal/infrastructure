@@ -24,11 +24,9 @@
       #!/bin/bash
       service nginx reload
 
-- name: Create the {{ item }} script
-  template:
-    dest: "/usr/local/sbin/{{ item | splitext | first }}"
-    mode: +x
-    src: "{{ item }}"
-  loop:
-    - certbot-retrieve-cert.sh
-    - certbot-find-unused.py
+- name: Install the icos-certbot util
+  tags: certbot_utils
+  import_role:
+    name: icos.python_util
+  vars:
+    python_util_src: certbot_util

@@ -1,0 +1,65 @@
+# https://github.com/kit-data-manager/FAIR-DO-Lab#readme
+
+- hosts: icos1.gis.lu.se
+  vars:
+    fairdolab_host: fairdolab.lxd
+    fairdolab_user: "{{ vault_fairdolab_user }}"
+    fairdolab_pass: "{{ vault_fairdolab_pass }}"
+  roles:
+    - name: Create the fairdolab VM
+      role: icos.lxd_vm
+      lxd_vm_name: fairdolab
+      lxd_vm_docker: true
+
+    - name: icos.caddy
+      tags: caddy
+      caddy_name: fairdolab
+      caddy_conf: |
+        # https://github.com/kit-data-manager/FAIR-DO-Lab#readme
+
+        (fairdolab_auth) {
+          basicauth bcrypt fairdolab {
+            {{ fairdolab_user }} {{ fairdolab_pass |
+            password_hash('bcrypt', vault_bcrypt_salt) }}
+          }
+        }
+
+        fdl-pitservice.icos-cp.eu {
+           import fairdolab_auth
+           redir / /swagger-ui.html
+           reverse_proxy {{ fairdolab_host }}:8090
+        }
+
+        fdl-fairdoscope.icos-cp.eu {
+          import fairdolab_auth
+          reverse_proxy {{ fairdolab_host }}:8081
+        }
+
+        fdl-message-broker.icos-cp.eu {
+          import fairdolab_auth
+          reverse_proxy {{ fairdolab_host }}:15672
+        }
+
+        fdl-kibana.icos-cp.eu {
+          import fairdolab_auth
+          redir / /app/kibana/
+          reverse_proxy {{ fairdolab_host }}:5601
+        }
+
+        fdl-collection-api.icos-cp.eu {
+          import fairdolab_auth
+          reverse_proxy {{ fairdolab_host }}:8091
+        }
+
+
+- hosts: fairdolab
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.fairdolab
+      tags: fairdolab
+      fairdolab_docker_listen: ""

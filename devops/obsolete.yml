@@ -1,7 +1,0 @@
-- hosts: fsicos2.lunarc.lu.se
-  roles:
-    - role: icos.mattermost
-      tags: mattermost
-
-    - role: icos.kanboard
-      tags: kanboard

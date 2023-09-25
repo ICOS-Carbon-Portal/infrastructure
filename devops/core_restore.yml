@@ -16,8 +16,9 @@
       vars:
         postgresql_backup_host: "{{ corebackup_host }}"
         postgresql_backup_location: "{{ rdflog_backup_location }}"
-        postgresql_container_name: "{{ rdflog_container_name }}"
+        container_name: "{{ rdflog_container_name }}"
         postgresql_user: "{{ rdflog_user }}"
+        postgresql_container_name: "rdflog"
 
 
     - name: Restore postgis backup
@@ -29,9 +30,9 @@
       vars:
         postgresql_backup_host: "{{ corebackup_host }}"
         postgresql_backup_location: "{{ postgis_backup_location }}"
-        postgresql_container_name: "{{ postgis_container_name }}"
+        container_name: "{{ postgis_container_name }}"
         postgresql_user: "{{ postgis_user }}"
-        postgres_restore_extrapipe: "egrep -v '^(CREATE|ALTER) ROLE' |"
+        postgresql_container_name: "postgis"
 
     - name: Restore restheart backup
       tags:
@@ -41,4 +42,3 @@
         tasks_from: restore.yml
       vars:
         restheart_backup_host: "{{ corebackup_host }}"
-

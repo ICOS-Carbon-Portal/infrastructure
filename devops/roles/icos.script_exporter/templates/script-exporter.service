@@ -4,7 +4,6 @@ Description=Script Exporter
 
 [Service]
 # We need to run as root for some exporters to work properly.
-# User={{ sexp_user }}
 ExecStart=script_exporter -web.listen-address {{ sexp_listen }}
 Restart=always
 WorkingDirectory={{ sexp_home }}

@@ -1,74 +1,30 @@
 - import_role:
     name: icos.certbot2
 
-- name: Install rsyslog config for dataold
-  copy:
-    dest: /etc/rsyslog.d/20-dataold.conf
-    content: |
-      # The tag ends with ":" once it's in rsyslogd.
-      if $syslogtag == "dataold:" then {
-         action(type="omfile" file="{{ dataold_log_file }}")
-         stop
-      }
-  register: _rsyslog
+- name: Create dataold home directory
+  file:
+    path: "{{ dataold_home }}"
+    state: directory
 
-- name: Restart {{ item }}
-  when: _rsyslog.changed
-  systemd:
-    name: "{{ item }}"
-    state: restarted
+- name: Copy templates
+  template:
+    src: "{{ item }}"
+    dest: "{{ dataold_home }}"
+    lstrip_blocks: yes
   loop:
-    - rsyslog
-    # 2022-02-10 This shouldn't (and wasn't) needed. But now there's some kind
-    # of strange interaction between systemd-journald, syslog.socket and
-    # rsyslog.service.
-    - syslog.socket
+    - docker-compose.yml
+    - dataold.conf
 
-- name: Create logrotate config for dataold
+- name: Copy files
   copy:
-    dest: /etc/logrotate.d/dataold
-    content: |
-      {{ dataold_log_file }}
-      {
-              rotate 6
-              monthly
-              missingok
-              notifempty
-              compress
-              postrotate
-                      /usr/lib/rsyslog/rsyslog-rotate
-              endscript
-      }
-
-- name: Copy dataold.conf
-  template:
-    src: dataold.conf
-    dest: /etc/nginx/
-    lstrip_blocks: yes
-    validate: nginx -t -c %s
-  register: _cf
-
-- name: Copy dataold.service
-  template:
-    src: dataold.service
-    dest: /etc/systemd/system/
-    lstrip_blocks: yes
-  register: _sr
-
-- name: Start dataold service
-  systemd:
-    daemon-reload: yes
-    enabled: yes
-    state: "{{ 'restarted' if _cf.changed or _sr.changed else 'started' }}"
-    name: dataold.service
-
-- name: Add a certbot renewal hook
-  copy:
-    dest: /etc/letsencrypt/renewal-hooks/deploy/dataold.sh
-    mode: +x
-    content: |
-      #!/bin/bash
-      systemctl reload dataold
+    src: "{{ item }}"
+    dest: "{{ dataold_home }}"
+  loop:
+    - openssl.cnf
+    
+- name: Start dataold
+  docker_compose:
+    project_src:  "{{ dataold_home }}"
 
 - name: Open firewall for port {{ dataold_ext_port }}
   iptables_raw:
@@ -77,14 +33,3 @@
       -A INPUT -p tcp --dport {{ dataold_ext_port }}
       -j ACCEPT -m comment --comment 'dataold'
 
-- name: Test access to dataold from localhost
-  delegate_to: localhost
-  uri:
-    url: "https://{{ certbot_domains | first }}:{{ dataold_ext_port }}"
-  register: _r
-  failed_when:
-    # The purpose of dataold is no re-enable TLS1.0 - an old and insecure
-    # version of TLS, hence we _want_ this url to fail with a particular error.
-    - '"TLSV1_ALERT_PROTOCOL_VERSION" not in _r.msg'
-  retries: 10
-  delay: 3

@@ -1,0 +1,74 @@
+# https://github.com/nginxinc/nginx-prometheus-exporter
+# https://nginx.org/en/docs/http/ngx_http_stub_status_module.html#stub_status
+
+- name: Enable stub_status for nginx
+  copy:
+    dest: /etc/nginx/conf.d/stub_status.conf
+    content: |
+      server {
+        listen localhost:80;
+        server_name localhost;
+
+        location /metrics {
+            stub_status on;
+        }
+      }
+
+- name: reload nginx config
+  shell: nginx -t && systemctl reload nginx
+  changed_when: no
+
+- name: Check that nginx /metrics respond
+  uri:
+    url: "{{ nginx_metrics_url }}"
+  retries: 10
+
+# Tried to run this exporter as a docker container but ran into problems.
+- name: Download nginx-prometheus-exporter
+  include_role:
+    name: icos.github_download_bin
+  vars:
+    dbin_user: nginxinc
+    dbin_repo: nginx-prometheus-exporter
+    # https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v0.11.0/nginx-prometheus-exporter_0.11.0_linux_amd64.tar.gz
+    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/nginx-prometheus-exporter_{{ dbin__vers.lstrip('v') }}_linux_amd64.tar.gz"
+    dbin_src: "nginx-prometheus-exporter"
+
+- name: Create nginx-prometheus-exporter service
+  copy:
+    dest: /etc/systemd/system/nginx-prometheus-exporter.service
+    content: |
+      [Unit]
+      Description=nginx-prometheus-exporter
+
+      [Service]
+      ExecStart={{ dbin_symlink.dest }} \
+      -nginx.scrape-uri={{ nginx_metrics_url }} \
+      -web.listen-address={{ nginx_metrics_addr }}
+      # unix:/var/run/nginx-prometheus-exporter.sock
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Start nginx-prometheus-exporter
+  systemd:
+    daemon-reload: yes
+    name: nginx-prometheus-exporter
+    enabled: yes
+    state: started
+
+- name: Check that nginx-prometheus-exporter respond
+  uri:
+    url: "http://{{ nginx_metrics_addr }}/metrics"
+  retries: 10
+
+- name: Add nginx-prometheus-exporter to vmagent's file discovery
+  copy:
+    dest: /opt/vmagent/file_sd_configs/nginx-exporter-host.yaml
+    content: |
+      - targets:
+          - {{ nginx_metrics_addr }}
+        labels:
+          job: nginx
+          instance: {{ inventory_hostname_short }}

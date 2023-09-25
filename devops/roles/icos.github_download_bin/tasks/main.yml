@@ -28,6 +28,7 @@
     dest: "{{ dbin_download_dest }}"
     remote_src: true
     list_files: true
+  diff: false
   register: _unar
 
 - name: Create symlink for {{ _dbin_name }}

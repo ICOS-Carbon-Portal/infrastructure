@@ -1,4 +1,5 @@
-- name: Remove old Caddyfiles
+# FIXME: Remove in 2024
+- name: Remove old caddy config files
   file:
     dest: "{{ item }}"
     state: absent
@@ -6,17 +7,9 @@
     - "/etc/caddy/sites/Caddyfile.{{ caddy_name }}"
     - "/etc/caddy/{{ caddy_name }}.caddy"
 
-- name: Add site config to Caddyfile
-  blockinfile:
-    marker: "# {mark} {{ caddy_name }}"
-    state: "{{ caddy_site_state }}"
-    create: yes
-    insertafter: EOF
-    path: /etc/caddy/Caddyfile
+- import_tasks: config.yml
+  vars:
     block: "{{ caddy_conf }}"
-    validate: caddy validate --config %s --adapter caddyfile
-  register: r
-
-- name: Reload caddy configuration
-  command: caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
-  changed_when: false
+    marker: "{{ caddy_name }}"
+    state: "{{ caddy_site_state }}"
+    where: "EOF"

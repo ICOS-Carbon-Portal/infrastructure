@@ -1,0 +1,20 @@
+# Monitor mail.log for lines such as:
+# Sep 12 15:23:19 fsicos2 postfix/postfix-script[3632707]: refreshing the Postfix mail system
+counter postfix_refresh_count
+
+# This regex was taken from the example mtail programs - and fixed.
+/^(?P<date>(?P<legacy_date>\w+\s+\d+\s+\d+:\d+:\d+)|(?P<rfc3339_date>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+[+-]\d{2}:\d{2}))/ +
+/\s+(?:\w+@)?(?P<hostname>[\w\.-]+)\s+postfix\/(?P<application>[-\w\.\/]+)(?:\[(?P<pid>\d+)\])?:\s+(?P<message>.*)/ {
+
+  len($legacy_date) > 0 {
+    strptime($2, "Jan _2 15:04:05")
+  }
+
+  len($rfc3339_date) > 0 {
+    strptime($rfc3339_date, "2006-01-02T03:04:05-0700")
+  }
+
+  /refreshing the Postfix mail system/ {
+    postfix_refresh_count++
+  }
+}

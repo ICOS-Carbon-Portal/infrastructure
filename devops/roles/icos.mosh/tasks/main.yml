@@ -9,3 +9,4 @@
     rules: >-
       -A INPUT -p udp -m multiport --dports 60000:61000 -j ACCEPT
       -m comment --comment 'mosh'
+  when: mosh_add_firewall

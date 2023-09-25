@@ -1,25 +1,18 @@
-# https://caddyserver.com/docs/install#debian-ubuntu-raspbian
+# First install standard version of caddy
+- import_tasks: plain.yml
+  when: not caddy_modules
 
-- name: Add caddy signing key
-  ansible.builtin.get_url:
-    url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
-    dest: /etc/apt/trusted.gpg.d/caddy.asc
-    mode: '0644'
-    force: true
-
-- name: Add caddy apt repository
-  apt_repository:
-    filename: caddy
-    repo: >-
-      deb [signed-by=/etc/apt/trusted.gpg.d/caddy.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
-
-- name: Install caddy
-  apt:
-    name: caddy
+# If any modules are needed we need xcaddy instead
+- import_tasks: xcaddy.yml
+  tags: caddy_xcaddy
+  when: caddy_modules
 
 - name: Check that caddy was properly installed
-  ansible.builtin.shell: caddy version
+  ansible.builtin.shell: "{{ caddy_bin }} version"
   changed_when: no
+
+- import_tasks: global.yml
+  when: caddy_global_conf
 
 - import_tasks: site.yml
   when: caddy_name is defined

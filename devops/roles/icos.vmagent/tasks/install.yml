@@ -1,14 +1,8 @@
-- name: Retrieve vmagent_is_running fact
-  shellfact:
-    exec: systemctl is-active --quiet vmagent && echo yes
-    fact: vmagent_is_running
-    bool: true
-  failed_when: false
-  when: not vmagent_upgrade
+- name: Check whether vmagent is installed
+  stat:
+    path: "{{ vmagent_bin }}/vmagent-prod"
+  register: _vmagent
 
 - name: Really install vmagent
   import_tasks: really_install.yml
-  when: >-
-    not vmagent_is_running | default(False)
-    or
-    vmagent_upgrade | default(False) | bool
+  when: not _vmagent.stat.exists or (vmagent_upgrade | default(False) | bool)
