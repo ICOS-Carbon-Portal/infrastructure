@@ -1,5 +1,5 @@
 # First install the xcaddy tool.
-import_role: name=icos.xcaddy
+- import_role: name=icos.xcaddy
 
 - name: Compile caddy using xcaddy
   command: >-
