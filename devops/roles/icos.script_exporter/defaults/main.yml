@@ -1,6 +1,5 @@
 sexp_home: /opt/script_exporter
-sexp_config_d: "{{ sexp_home }}/config.d"
-sexp_config_f: "{{ sexp_home }}/config.yaml"
+sexp_config_file: "{{ sexp_home }}/config.yaml"
 sexp_listen: localhost:9469
 
 sexp_arch: >-
@@ -11,13 +10,6 @@ sexp_arch_map:
   "armv7l": "armv7"
   "x86_64": "amd64"
 
-
-sexp_textfiles: "{{ sexp_home }}/node-exporter-textfile-collector-scripts"
-sexp_exporters: []
-
-
-# SMARTMON
-smartmon_enable: false
-smartmon_home: "{{ node_exporter_home }}/smartmon"
-smartmon_py: "{{ node_exporter_scripts }}/smartmon.py"
-smartmon_prom: "{{ node_exporter_textfiles }}/smartmon.prom"
+sexp_scripts_venv: "{{ sexp_home }}/scripts-venv"
+sexp_scripts_repo: "{{ sexp_home }}/node-exporter-textfile-collector-scripts"
+sexp_scripts_enable: []

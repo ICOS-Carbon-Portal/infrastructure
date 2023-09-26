@@ -1,0 +1,11 @@
+# https://github.com/ricoberger/script_exporter/
+
+- name: Add config to script-exporters config.yaml
+  blockinfile:
+    path: "{{ sexp_config }}"
+    create: no
+    marker: "# {mark} {{ sexp_marker }}"
+    state: "{{ sexp_state | default('present') }}"
+    insertafter: EOF
+    block: "{{ sexp_block }}"
+  notify: reload script-exporter

@@ -1,5 +1,0 @@
-- name: Assemble script_exporter config file
-  assemble:
-    src: "{{ sexp_config_d }}"
-    dest: "{{ sexp_config_f }}"
-  notify: reload script-exporter

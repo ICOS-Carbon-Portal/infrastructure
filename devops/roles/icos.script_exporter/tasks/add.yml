@@ -1,9 +1,0 @@
-# https://github.com/ricoberger/script_exporter/
-
-- name: Create script_exporter prefix config fragment
-  copy:
-    dest: "{{ script_exporter_config_d }}/{{ script_name }}.yml"
-    content: |
-      {{ script | to_nice_yaml(indent=2) }}
-
-- import_tasks: assemble.yml

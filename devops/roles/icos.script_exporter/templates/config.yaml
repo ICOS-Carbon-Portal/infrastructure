@@ -1,0 +1,14 @@
+# https://github.com/ricoberger/script_exporter/blob/main/examples/config.yaml
+# This needs to be here for HTTP discovery to be enabled.
+discovery:
+
+# The base config adds this key, individual script might add their own list
+# entry below this.
+scripts:
+
+{% if 'smartmon' in sexp_exporters %}
+- name: smartmon
+  command: {{ sexp_scripts_venv }}/bin/python
+  args:
+    - {{ sexp_scripts_repo }}/smartmon.py
+{% endif %}

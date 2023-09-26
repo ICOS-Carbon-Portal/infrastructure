@@ -1,0 +1,23 @@
+# This repo contains scripts that used to be part of the node-exporter.
+# We instead choose to include them in script-exporter
+- name: Clone textfile-collector-scripts
+  git:
+    repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
+    version: master
+    dest: "{{ sexp_scripts_repo }}"
+  diff: false
+
+- name: Create virtual env for scripts
+  pip:
+    virtualenv: "{{ sexp_scripts_venv }}"
+    name:
+      # Some of the node-node-exporter-textfile-collector-scripts are in
+      # python and requires this package.
+      - prometheus_client
+      - "{{ 'docker' if 'smartmon' in sexp_exporters else omit }}"
+
+- name: Install utils needed for the collector-scripts
+  apt:
+    name:
+      - moreutils # sponge(1)
+      - "{{ 'smartmontools' if 'smartmon' in sexp_exporters else omit }}"

@@ -11,30 +11,22 @@
 
 - name: Create script_exporter home directory
   file:
-    path: "{{ sexp_config_d }}"
+    path: "{{ sexp_home }}"
     state: directory
 
-# We'll assemble script-exporter's config.yaml out of fragments; this is the
-# first fragment.
-- name: Create script_exporter prefix config fragment
-  copy:
-    dest: "{{ sexp_config_d }}/1_main.yml"
-    content: |
-      # This file is constructed by ansible out of fragments found in
-      # {{ sexp_config_d }}
+# We add the base config as a block so that we don't overwrite config added by
+# various external scripts.
+- name: Add base config for script-exporter
+  blockinfile:
+    marker: "# {mark} base config"
+    create: yes
+    insertafter: BOF
+    path: "{{ sexp_config_file }}"
+    block: "{{ lookup('template', 'config.yaml') }}"
+  notify: reload script-exporter
 
-      # This needs to be here for HTTP discovery to be enabled.
-      discovery:
-
-      # Add just the top-level 'scripts' label. It will then be populated by
-      # individual fragments.
-      scripts:
-
-- name: Assemble script_exporter config file
-  assemble:
-    src: "{{ sexp_config_d }}"
-    dest: "{{ sexp_config_f }}"
-  register: _conf
+# Enable one or more of the builtin scripts.
+- import_tasks: scripts.yml
 
 - name: Copy script-exporter systemd files
   template:
@@ -47,7 +39,19 @@
     daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
     name: script-exporter.service
     enabled: true
-    state: "{{ 'restarted' if _sysd.changed or _conf.changed else 'started' }}"
+    state: started
 
-- import_tasks: exporters.yml
-  tags: script_exporter_exporters
+- name: Add ourselves to the local vmagent installation
+  include_role:
+    name: icos.vmagent
+    tasks_from: add_config
+  vars:
+    vmagent_config_dest: "script-exporter-scripts.yaml"
+    vmagent_config_content: |
+      # These are the scripts exported by script-exporter.
+      - job_name: script-exporter
+        http_sd_configs:
+          - url: http://localhost:9469/discovery
+        relabel_configs:
+          - target_label: instance
+            replacement: {{ inventory_hostname_short }}
