@@ -9,8 +9,8 @@ vmagent_hosts:
     dirsize_enable: true
 
   hosts:
-    # cdb.nateko.lu.se:
-    #   dockermon_enable: true
+    cdb.nateko.lu.se:
+      #dockermon_enable: true
 
     icos1.gis.lu.se:
       dockermon_enable: true
