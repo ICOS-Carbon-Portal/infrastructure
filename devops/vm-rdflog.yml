@@ -29,16 +29,3 @@
 
     - role: icos.pgrep
       tags: pgrep
-
-  tasks:
-    - name: Add vms to prometheus
-      tags: prom
-      include_role:
-        name: icos.prometheus
-        tasks_from: fsd
-        apply:
-          tags: prom
-      vars:
-        fsd_name: "postgres-exporter@{{ inventory_hostname }}"
-        fsd_app: "rdflog"
-        fsd_url: "/lxd/{{ inventory_hostname }}/{{ pgrep_metric_port }}"

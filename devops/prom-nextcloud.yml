@@ -6,7 +6,7 @@
         apply:
           tags: nextcloud
         name: icos.vmagent
-        tasks_from: fsd
+        tasks_from: add_fsd
       vars:
         fsd_name: nextcloud
         fsd_target: "localhost:9205"
