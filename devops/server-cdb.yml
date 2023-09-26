@@ -9,8 +9,8 @@
     - role: icos.bbserver
       tags: bbserver
 
-    - role: icos.nginx
-      tags: nginx
+    - role: icos.caddy
+      tags: caddy
 
   tasks:
     - name: Allow ssh and mosh
