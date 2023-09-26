@@ -4,8 +4,7 @@
 # icos run vmagent vmagent -evmagent_upgrade=1 -D
 
 
-- name: Provision physical host with vmagent, node_exporter
-  hosts: vmagent_hosts
+- hosts: vmagent_hosts
   roles:
     - role: icos.vmagent
       tags: vmagent
@@ -17,73 +16,3 @@
       tags: script
       sexp_exporters:
         - smartmon
-
-  tasks:
-    - name: Test that the vmagent UI is password protected
-      tags: nginx
-      uri:
-        url: "https://{{ inventory_hostname }}/vmagent/"
-      retries: 10
-      register: r
-      failed_when: r.status != 401
-
-    - name: Test that the vmagent UI works with password
-      tags: nginx
-      uri:
-        url: "https://{{ inventory_hostname }}/vmagent/"
-        user: "{{ vault_vmagent_auth.username }}"
-        password: "{{ vault_vmagent_auth.password }}"
-      retries: 10
-      register: r
-
-    - name: Remove old node_exporter configuration
-      tags: conf
-      file:
-        path: /opt/vmagent/file_sd_configs/node-exporter-host.yaml
-        state: absent
-
-    - name: Retrieve bindmounts fact
-      tags: conf
-      shellfact:
-        exec: "awk '$4 ~ /bind/ { print $2 }' /etc/fstab"
-        fact: bindmounts
-        list: true
-
-    - name: Add script-exporter scripts to vmagent
-      tags: conf
-      notify: reload vmagent
-      copy:
-        dest: "{{ vmagent_configs }}/script-exporter-scripts.yaml"
-        content: |
-          # These are the scripts exported by script-exporter.
-          - job_name: "exported-scripts"
-            http_sd_configs:
-            - url: http://localhost:9469/discovery
-
-    - name: Add node exporter to vmagent's scrape config
-      tags: conf
-      notify: reload vmagent
-      copy:
-        dest: "{{ vmagent_configs }}/node-exporter-host.yaml"
-        content: |
-          # The node exporter on host
-          - job_name: node_exporter
-            static_configs:
-            - targets:
-              - localhost:{{ node_exporter_listen }}
-              labels:
-                instance: {{ inventory_hostname_short }}
-            metric_relabel_configs:
-              # drop irrelevant filesystems
-              - source_labels: [fstype]
-                regex:
-                  - nfs4
-                  - tmpfs
-                action: drop
-
-              # drop bindmounts
-              - source_labels: [mountpoint]
-                # victoriametrics has an enhancement to the regex field, it can
-                # be a list of strings that are then joined using '|'
-                regex: {{ bindmounts }}
-                action: drop
