@@ -15,18 +15,6 @@
     dest: /tmp
   register: url
 
-- name: Create vmagent directories
-  file:
-    path: "{{ item.path }}"
-    mode: "{{ item.mode | default(omit) }}"
-    state: directory
-  loop:
-    - path: "{{ vmagent_home }}"
-      mode: "0700"
-    - path: "{{ vmagent_bin }}"
-    - path: "{{ vmagent_fsd }}"
-    - path: "{{ vmagent_configs }}"
-
 - name: Unarchive vmagent
   unarchive:
     src: "{{ url.dest }}"

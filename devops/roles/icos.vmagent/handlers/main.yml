@@ -1,16 +1,11 @@
 - name: reload vmagent
   # First syntax check the config. This gives us direct feedback when running
   # ansible instead of just having 'systemctl reload' (sometimes!) failing.
-  command: >-
+  shell: >-
     {{ vmagent_bin }}/vmagent-prod -dryRun
-    -promscrape.config={{ vmagent_home }}/prometheus.yml
-  notify: really reload vmagent
+    -promscrape.config={{ vmagent_home }}/prometheus.yml &&
+    systemctl reload vmagent
   changed_when: false
-
-- name: really reload vmagent
-  systemd:
-    name: vmagent
-    state: reloaded
 
 - name: restart vmagent
   systemd:

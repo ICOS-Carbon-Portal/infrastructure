@@ -20,3 +20,20 @@
   when:
     - https_proxy_server != 'nginx'
     - https_proxy_server != 'caddy'
+
+- name: Test that the vmagent UI is password protected
+  tags: nginx
+  uri:
+    url: "https://{{ inventory_hostname }}/vmagent/"
+  retries: 10
+  register: r
+  failed_when: r.status != 401
+
+- name: Test that the vmagent UI works with password
+  tags: nginx
+  uri:
+    url: "https://{{ inventory_hostname }}/vmagent/"
+    user: "{{ vault_vmagent_auth.username }}"
+    password: "{{ vault_vmagent_auth.password }}"
+  retries: 10
+  register: r
