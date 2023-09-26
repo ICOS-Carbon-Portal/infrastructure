@@ -1,14 +1,16 @@
 - import_tasks: install.yml
-  tags: node_exporter_install
 
-- import_tasks: dirsize.yml
-  tags: node_exporter_dirsize
-  when: dirsize_enable
+- import_tasks: vmagent.yml
+  when: node_exporter_vmagent
 
-- import_tasks: docker.yml
-  tags: node_exporter_docker
-  when: dockermon_enable
+# - import_tasks: dirsize.yml
+#   tags: node_exporter_dirsize
+#   when: dirsize_enable
 
-- import_tasks: lxd.yml
-  tags: node_exporter_lxd
-  when: lxdmon_enable
+# - import_tasks: docker.yml
+#   tags: node_exporter_docker
+#   when: dockermon_enable
+
+# - import_tasks: lxd.yml
+#   tags: node_exporter_lxd
+#   when: lxdmon_enable

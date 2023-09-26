@@ -4,17 +4,6 @@
     home: "{{ node_exporter_home }}"
     shell: /usr/sbin/nologin
 
-- name: Clone textfile-collector-scripts
-  git:
-    repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
-    version: master
-    dest: "{{ node_exporter_scripts }}"
-  diff: false
-
-- name: Install utils needed for the collector-scripts
-  apt:
-    name: moreutils  # sponge(1)
-
 - name: Download node_exporter
   include_role:
     name: icos.github_download_bin
@@ -33,12 +22,32 @@
     mode: '1777'
     state: directory
 
-- import_tasks: systemd.yml
-  tags: node_exporter_systemd
+- name: Copy node-exporter systemd files
+  template:
+    dest: /etc/systemd/system/
+    src: "{{ item }}"
+  loop:
+    - node-exporter.service
+    - node-exporter.socket
+  notify: restart node-exporter
+
+- name: Create the EnvironmentFile used by the systemd service
+  copy:
+    dest: "{{ node_exporter_environ }}"
+    content: |
+      OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
+
+# node-exporter is socket activated, so enable and start the socket
+- name: Enable and start node-exporter.socket
+  systemd:
+    daemon-reload: yes
+    name: node-exporter.socket
+    enabled: true
+    state: started
 
 - name: Allow node_exporter through firewall
-  when: node_exporter_allow
   iptables_raw:
     name: allow_node_exporter
+    state: "{{ 'present' if node_exporter_allow else 'absent' }}"
     rules: >-
       -A INPUT -p tcp --dport {{ node_exporter_listen }} -j ACCEPT

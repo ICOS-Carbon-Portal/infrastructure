@@ -1,0 +1,5 @@
+# node-exporter is socket activated, so restart the socket
+- name: restart node-exporter
+  systemd:
+    name: node-exporter.socket
+    state: restarted
