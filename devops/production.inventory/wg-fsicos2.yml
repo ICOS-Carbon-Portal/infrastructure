@@ -7,12 +7,14 @@ wg_fsicos2_hosts:
     pgrep1:
     pgrep2:
     icos1.gis.lu.se:
+    fsicos4:
   vars:
     wg_fsicos2_config:
       name: fsicos2
       allowed_ips: 172.30.2.0/24
       allow_all: True
       hub:
+        peer: fsicos2
         addr: fsicos2.lunarc.lu.se
         port: 60801
       peers:
@@ -34,3 +36,6 @@ wg_fsicos2_hosts:
         icos1.gis.lu.se:
           name: icos1
           addr: 172.30.2.6
+        fsicos4:
+          name: fsicos4
+          addr: 172.30.2.7
