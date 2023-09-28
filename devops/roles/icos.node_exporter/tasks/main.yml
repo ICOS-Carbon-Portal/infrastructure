@@ -1,7 +1,6 @@
 - import_tasks: install.yml
 
 - import_tasks: vmagent.yml
-  when: node_exporter_vmagent
 
 # - import_tasks: dirsize.yml
 #   tags: node_exporter_dirsize

@@ -25,11 +25,13 @@
             regex:
               - nfs4
               - tmpfs
+              - fuse
             action: drop
 
           # drop bindmounts
           - source_labels: [mountpoint]
             # victoriametrics has an enhancement to the regex field, it can
             # be a list of strings that are then joined using '|'
-            regex: {{ bindmounts }}
+            regex:
+              - {{ bindmounts }}
             action: drop
