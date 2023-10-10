@@ -57,14 +57,14 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 			stopFrontendBuildProc(state.value)
 
 			log.info("Starting front-end publish for common")
-			Process("npm ci", projectDir(mainSrc, cpFrontendCommonApp.value)).!
+			Process("npm ci --no-audit", projectDir(mainSrc, cpFrontendCommonApp.value)).!
 			val allApps = cpFrontendApps.value
 			val frontPubCommand = cpFrontendPublishCommand.value
 
 			val errors: List[String] = allApps.map(projectDir(mainSrc, _)).par.map{pwd =>
 				val projName = pwd.getName
 				log.info("Starting front-end publish for " + projName)
-				val exitCode = (Process("npm ci", pwd) #&& Process(Seq("bash", "-c", frontPubCommand), pwd)).!
+				val exitCode = (Process("npm ci --no-audit", pwd) #&& Process(Seq("bash", "-c", frontPubCommand), pwd)).!
 
 				if(exitCode == 0) {
 					log.info("Finished front-end build for " + projName)
