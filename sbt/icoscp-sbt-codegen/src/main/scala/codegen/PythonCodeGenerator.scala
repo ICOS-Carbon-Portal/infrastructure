@@ -44,7 +44,7 @@ def parse_cp_json(input_text: str, data_class: Type[CPJson]) -> CPJson:
 	def getStartOfTypeDef(name: String) = s"$name: TypeAlias = "
 	def getEndOfTypeDef(typeUnion: String) = s"$typeUnion\n\n"
 
-	def getStartOfClassDef(name: String): String = s"@dataclass\n" + s"class $name:\n"
+	def getStartOfClassDef(name: String): String = s"@dataclass(frozen=True)\n" + s"class $name:\n"
 	val endOfClassDef: String = "\n\n"
 
 	def getEnum(tname: String, membs: List[String]): String =
