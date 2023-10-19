@@ -258,6 +258,9 @@ is not the default one)
 When the container is not needed any more:
 `$ docker rm -f rdflog`
 
+#### Restore rdflog backup on staging
+Instructions on how to restore the rdflog database into the staging environment are available in a separate [wiki page](https://github.com/ICOS-Carbon-Portal/infrastructure/wiki/Backup-Recovery)
+
 
 ## restheart
 [Restheart](https://restheart.org/) is an open source "Web API" server written
