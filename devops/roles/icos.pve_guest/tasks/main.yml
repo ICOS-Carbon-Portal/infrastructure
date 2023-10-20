@@ -1,0 +1,32 @@
+# - import_tasks: serial_root.yml
+#   tags: pve_guest_serial_root
+
+- name: Install qemu-guest-agent
+  apt:
+    update_cache: true
+    name:
+      # This one enables interaction with the proxmox host.
+      - qemu-guest-agent
+  notify: reboot
+
+- name: Set timezone to Europe/Stockholm
+  timezone:
+    name: Europe/Stockholm
+  notify: restart crond
+
+- name: Generate locale
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - en_US.UTF-8
+    - sv_SE.UTF-8
+
+- name: Upgrade everything
+  apt:
+    update_cache: true
+    upgrade: true
+    autoclean: true
+    autoremove: true
+  when: upgrade_everything
+  notify: reboot

@@ -1,0 +1,11 @@
+- name: restart crond
+  service:
+    name: crond
+    state: restarted
+  # The reason it might fail is because it's not installed, if it's not
+  # installed then it's no problem if it can't be restarted.
+  failed_when: no
+
+- name: reboot
+  reboot:
+    reboot_timeout: 120
