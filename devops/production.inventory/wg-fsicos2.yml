@@ -8,6 +8,7 @@ wg_fsicos2_hosts:
     pgrep2:
     icos1.gis.lu.se:
     fsicos4:
+    fsicos4-stiltcluster:
   vars:
     wg_fsicos2_config:
       name: fsicos2
@@ -39,3 +40,6 @@ wg_fsicos2_hosts:
         fsicos4:
           name: fsicos4
           addr: 172.30.2.7
+        fsicos4-stiltcluster:
+          name: fsicos4-stiltcluster
+          addr: 172.30.2.8

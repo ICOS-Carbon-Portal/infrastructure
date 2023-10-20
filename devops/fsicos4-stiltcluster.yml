@@ -1,0 +1,31 @@
+- hosts: fsicos2.lunarc.lu.se
+  tags: stiltjar
+  tasks:
+    - name: Retrive stiltcluster.jar
+      fetch:
+        src: /home/stiltcluster/stiltcluster.jar
+        # the destination is relative to the playbook
+        dest: tmp/stiltcluster.jar
+        # don't append hostname/path/to/file
+        flat: yes
+
+
+- hosts: fsicos4-stiltcluster
+  vars:
+    stiltcluster_jar_file: tmp/stiltcluster.jar
+    stiltcluster_hostname: fsicos4-stiltcluster.wg-fsicos2
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.stiltrun
+      tags: stiltrun
+
+    - role: icos.stiltcluster
+      tags: stiltcluster

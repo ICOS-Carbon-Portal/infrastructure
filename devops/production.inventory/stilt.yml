@@ -5,6 +5,9 @@ stiltcluster_hosts:
     stiltcluster_stiltweb_hostname: fsicos2.wg-fsicos2
 
   hosts:
+    fsicos4-stiltcluster:
+      stilt_input_dir: /data/stilt/Input
+
     fsicos2.lunarc.lu.se:
       stilt_input_dir: /disk/data/stilt/Input
       stiltcluster_maxcores: 24
