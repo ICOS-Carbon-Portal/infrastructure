@@ -1,0 +1,45 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - dnsmasq_interface
+    - dnsmasq_config
+
+- name: Install dnsmasq
+  apt:
+    name:
+      - dnsmasq
+
+- name: Create /etc/default/dnsmasq.$NAME
+  copy:
+    dest: "{{ dnsmasq_default }}"
+    content: |
+      # We set this here so that'll be respected by "/etc/init.d/dnsmasq
+      # checkconfig"
+      CONFIG_DIR={{ dnsmasq_etc_dir }},.dpkg-dist,.dpkg-old,.dpkg-new
+
+      # If the resolvconf package is installed, dnsmasq will tell resolvconf
+      # to use dnsmasq under 127.0.0.1 as the system's default resolver.
+      # Uncommenting this line inhibits this behaviour.
+      DNSMASQ_EXCEPT="lo"
+
+      DNSMASQ_INTERFACE="{{ dnsmasq_interface }}"
+
+- name: Create /etc/dnsmasq.NAME.d directory
+  file:
+    path: "{{ dnsmasq_etc_dir }}"
+    state: directory
+
+- name: Create dnsmasq configuration
+  copy:
+    validate: /etc/init.d/dnsmasq checkconfig %s
+    dest: "{{ dnsmasq_config_file }}"
+    content: "{{ dnsmasq_config }}"
+  notify: dnsmasq restart
+
+- name: Start dnsmasq service
+  systemd:
+    name: "{{ dnsmasq_service_name }}"
+    enabled: yes
+    state: started
