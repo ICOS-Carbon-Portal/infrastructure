@@ -1,0 +1,36 @@
+- hosts: fsicos4
+  roles:
+    - role: icos.mosh
+      tags: mosh
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.fail2ban
+      tags: fail2ban
+      fail2ban_config_files:
+        - dest: /etc/fail2ban/jail.d/sshd-allports.local
+          content: |
+            [sshd]
+            # fail2ban won't start out of the box on proxmox8/debian12(?)
+            # since it's configured to use /var/log/auth.log (which doesn't exist).
+            # https://forum.proxmox.com/threads/missing-auth-log-in-proxmox-ve-8-0-fail2ban-sshd.130271/
+            backend = systemd
+            # Since we're running ssh on different ports that fail2ban is used
+            # to, block all ports.
+            banaction = iptables-allports
+
+    - role: icos.dnsmasq
+      tags: dnsmasq
+      dnsmasq_interface: vmbr0
+      dnsmasq_config: |
+        # bind only to the interface given on the command line
+        bind-interfaces
+
+        # the range of addresses available for lease
+        dhcp-range=10.10.10.50,10.10.10.250,12h
+
+        # set default route
+        dhcp-option={{ dnsmasq_interface }},3,10.10.10.1
+
+        dhcp-leasefile=/var/lib/misc/dnsmasq.{{ dnsmasq_interface }}.leases
