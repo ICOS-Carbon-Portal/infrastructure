@@ -606,7 +606,7 @@ def cmd_help(cmds):
         print("usage: stilt [OPTS] CMD\n\n"
               "OPTS include\n",
               "\t--keep-rundir\t- Never remove the generated run directory\n"
-              "\t--debug\t\t\t- Debug logging\n",
+              "\t--debug\t\t- Debug logging\n",
               "\t--rundir=DIR\t- Re-use an existing run directory\n"
               "\t--setup=FILE\t- Run FILE with container ID before starting\n"
               "\t--image=IMAGE\t- Specify another docker image (%s)\n" % (
