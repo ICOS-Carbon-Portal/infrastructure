@@ -1,10 +1,12 @@
-- name: restart crond
+- name: restart cron
   service:
-    name: crond
+    name: cron
     state: restarted
-  # The reason it might fail is because it's not installed, if it's not
-  # installed then it's no problem if it can't be restarted.
-  failed_when: no
+   register: _r
+   # cron might not be installed
+   failed_when:
+     - _r.failed
+     - _r.msg.find('Could not find the requested service cron') < 0
 
 - name: reboot
   reboot:

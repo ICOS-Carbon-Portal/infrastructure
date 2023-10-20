@@ -7,7 +7,7 @@
 - name: Set timezone to Europe/Stockholm
   timezone:
     name: Europe/Stockholm
-  notify: restart crond
+  notify: restart cron
 
 # The root keys should have been set when creating the VM. If the root keys
 # change however, this task will update them.

@@ -12,7 +12,7 @@
 - name: Set timezone to Europe/Stockholm
   timezone:
     name: Europe/Stockholm
-  notify: restart crond
+  notify: restart cron
 
 - name: Generate locale
   locale_gen:
