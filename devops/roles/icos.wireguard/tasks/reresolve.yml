@@ -18,9 +18,9 @@
     dest: /etc/systemd/system/wg-reresolve@.timer
     content: |
       [Unit]
-      Description=Run wireguard reresolve every 30 seconds
+      Description=Run wireguard reresolve every 30 minutes
       PartOf=wg-quick@%i.service
 
       [Timer]
-      OnCalendar=*-*-* *:*:00,30
+      OnCalendar=*-*-* *:0/30
   notify: systemd daemon-reload
