@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User={{ stiltcluster_username }}
-ExecStart={{ stiltcluster_java }} -jar stiltcluster.jar
+ExecStart=/usr/bin/java -jar stiltcluster.jar
 Restart=always
 RestartSec=30
 WorkingDirectory={{ stiltcluster_home }}

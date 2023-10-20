@@ -21,8 +21,5 @@ stiltcluster_port: 2561
 # 0 == all of them
 stiltcluster_maxcores: 0
 
-stiltcluster_jre_package: openjdk-11-jre-headless
-stiltcluster_java: /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-
 # By default we use docker, but podman is also supported.
 stiltcluster_docker: True
