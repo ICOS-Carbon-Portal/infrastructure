@@ -2,13 +2,14 @@
 # sake of later ansible modules.
 - name: Install pip and venv
   apt:
-    # This role is included by lxd_guest, and as such is often the first
+    # This role is included by icos.*_guest, and as such is often the first to
+    # run on a system.
     update_cache: true
     name:
       - python3-pip
       - python3-virtualenv
-      # On some targets, this is required for the ansible 'pip' module.
-      - virtualenv
+      # # On some targets, this is required for the ansible 'pip' module.
+      # - virtualenv
 
 # Install pipx using ansible's python. This will allow us to use the ansible
 # pipx module to install utils written in python.
@@ -29,6 +30,7 @@
 - name: Add ppa:deadsnakes repository
   apt_repository:
     repo: ppa:deadsnakes/ppa
+  when: ansible_distribution == "Ubuntu"
 
 # Any versions that doesn't match the built-in version
 - name: Install extra version of python
