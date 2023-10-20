@@ -42,3 +42,8 @@
   file:
     path: "{{ _dbin_src }}"
     mode: +x
+
+- name: State what we downloaded
+  debug:
+    msg: |
+      Downloaded version {{ dbin__vers }} of {{ dbin_repo }}

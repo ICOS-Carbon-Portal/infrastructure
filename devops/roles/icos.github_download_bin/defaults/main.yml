@@ -1,7 +1,7 @@
 # DEFAULTS - these control all downloads
 dbin_download_base: /opt/downloads
 dbin_download_dest: "{{ dbin_download_base }}/{{ _dbin_name }}"
-dbin_bin_dir: /usr/local/sbin
+dbin_bin_dir: /usr/local/bin
 
 dbin_default_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}-{{ dbin__vers }}.{{ dbin__plat }}.tar.gz"
 dbin_arch: amd64
