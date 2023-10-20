@@ -15,6 +15,12 @@
 - import_tasks: ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
+- name: Fail if we're not on a supported distribution
+  fail:
+    msg: This role currently only support Debian and Ubuntu
+  when: ansible_distribution not in ('Debian', 'Ubuntu')
+
+
 # docker-compose version 1 is deprecated, "docker compose" is the way.
 - name: Uninstall docker-compose version 1
   apt:
@@ -38,23 +44,6 @@
     src: daemon.json
     dest: /etc/docker/
   notify: reload docker
-
-# We've just uninstalled docker-compose version 1, now we'll install it again,
-# since we need the python libraries for ansible's sake.
-- name: pip install docker
-  pip:
-    name:
-      - docker
-      - docker-compose
-    state: present
-
-# While we want the docker-compose _libraries_ installed for ansible's sake,
-# we don't want the script itself. There doesn't seem to be a knob for that in
-# pip, so just remove the executable. https://github.com/pypa/pip/issues/3980
-- name: Remove /usr/local/bin/docker-compose
-  file:
-    name: /usr/local/bin/docker-compose
-    state: absent
 
 - import_role: name=icos.docker_utils
   tags: docker_utils
