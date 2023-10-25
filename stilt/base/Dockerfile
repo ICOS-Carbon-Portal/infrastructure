@@ -15,15 +15,9 @@ RUN apt-get install -y \
 # Check this page if links to packages change:
 #   https://cran.r-project.org/web/packages/available_packages_by_name.html
 WORKDIR /opt/build
-
-RUN wget https://packagemanager.rstudio.com/cran/latest/src/contrib/dotCall64_1.0-2.tar.gz
-RUN R CMD INSTALL dotCall64_1.0-2.tar.gz
-
-RUN wget https://packagemanager.rstudio.com/cran/latest/src/contrib/spam_2.9-1.tar.gz
-RUN R CMD INSTALL spam_2.9-1.tar.gz
-
-RUN wget https://packagemanager.rstudio.com/cran/latest/src/contrib/fields_15.2.tar.gz
-RUN R CMD INSTALL fields_15.2.tar.gz
+RUN R -e "install.packages('dotCall64',dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('spam',dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('fields',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
 # Install NetCDF
 RUN apt-get install -y libnetcdf-dev libnetcdff-dev
