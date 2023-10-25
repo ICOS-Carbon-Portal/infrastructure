@@ -48,24 +48,13 @@ CONTAINS
    !***********************************************************************
 
    SUBROUTINE nc_handle_err (stat)
-      USE date_sub, ONLY: get_now
       INTEGER, INTENT(IN) :: stat
-      CHARACTER(20)  :: now_iso
       IF (stat /= nf90_noerr) THEN
-         call get_now(now_iso)
-         PRINT *,' '
-         PRINT '(4a)', now_iso,'ERROR netCDF error: ', NF90_STRERROR(stat)
-         STOP 'ERROR Stop.'
+         PRINT '(2a)', 'netCDF error: ', NF90_STRERROR(stat)
+         STOP 'Stop.'
       ENDIF
    END SUBROUTINE nc_handle_err
 
-!   SUBROUTINE get_now(ccc)
-!      character(len=20), intent(out)  :: ccc
-!      integer :: now(8)
-!      call date_and_time(values=now)
-!      write(ccc,'(I4,A1,I2.2,A1,I2.2,A1,I2.2,A1,I2.2,A1,I2.2,1X)') &
-!         now(1),'-',now(2),'-',now(3),'T',now(5),':',now(6),':',now(7)
-!   END SUBROUTINE get_now
 
 END MODULE common_data
 
@@ -77,18 +66,14 @@ END MODULE common_data
 
 SUBROUTINE fname2fi (fname, fi)
    USE common_data
-   USE date_sub, ONLY: get_now
    IMPLICIT NONE
 
    CHARACTER(*), INTENT(IN)  :: fname                     ! filename
    INTEGER     , INTENT(OUT) :: fi                          ! file index
 
    INTEGER :: k,lon_dim,lat_dim,time_dim
-   character(20)  :: now_iso
-!----------------------------------------------------------------------------------------------------
 
-   call get_now(now_iso)
-
+!---------------------------------------------------------------------------------------------------
    DO k=1,maxfiles
       IF (fname == fnames(k)) EXIT
    END DO
@@ -101,12 +86,12 @@ SUBROUTINE fname2fi (fname, fi)
          IF (fnames(k) == ' ') EXIT
       END DO
       IF (k > maxfiles) THEN
-         STOP 'ERROR Subroutine fname2fi: all file entries allocated. Stop.'
+         STOP 'Subroutine fname2fi: all file entries allocated. Stop.'
       ELSE
          fi = k
          fnames(fi) = fname
          CALL IER_Open (fi,lon_dim,lat_dim,time_dim)
-!          WRITE (*,*) now_iso,'DEBUG: after call IER_open lon_dim,lat_dim,time_dim fi',lon_dim,lat_dim,time_dim,fi
+!          WRITE (*,*) 'DEBUG: after call IER_open lon_dim,lat_dim,time_dim fi',lon_dim,lat_dim,time_dim,fi
          lon_dim_array(fi)=lon_dim
          lat_dim_array(fi)=lat_dim
          time_dim_array(fi)=time_dim
@@ -120,7 +105,6 @@ END SUBROUTINE fname2fi
 
 SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    USE common_data
-   USE date_sub, ONLY: iday, izlr, get_now
    IMPLICIT NONE
 
    INTEGER, INTENT(IN) :: fi                                ! file index, file name is fnames(fi)
@@ -135,18 +119,15 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    real    :: lon(2),lat(2), tmp
    character(80) :: var_name(4)
    character(80) :: lat_name,lon_name,time_name
-   character(20)  :: now_iso 
-!---------------------------------------------------------------------------------------------------
-
-   CALL get_now(now_iso)
    
+!---------------------------------------------------------------------------------------------------
    IF (fi < 1 .OR. fi > maxfiles) THEN
-      PRINT '(a,2(a,i0))', now_iso,'ERROR Subroutine IER_Open: argument fi must be >= 1 and <= ', maxfiles, &
+      PRINT '(2(a,i0))', 'Subroutine IER_Open: argument fi must be >= 1 and <= ', maxfiles, &
          ' but is ', fi
-      STOP 'ERROR Stop.'
+      STOP 'Stop.'
    END IF
 
-   WRITE (*,'(4a)', ADVANCE='NO') now_iso,'DEBUG Opening file ', TRIM(fnames(fi)), '... '
+   WRITE (*,'(3a)', ADVANCE='NO') 'Opening file ', TRIM(fnames(fi)), '... '
    ncstat = NF90_OPEN(TRIM(fnames(fi)), nf90_nowrite, ncid(fi))
 
    CALL nc_handle_err (ncstat)
@@ -161,7 +142,7 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    do i=1,nDims
           ncstat = NF90_INQUIRE_DIMENSION(ncid(fi), i, len=var_len(i)) ! get the length of each dimension
          CALL nc_handle_err (ncstat)
-         ! WRITE (*,*) now_iso,"DEBUG 3b var_len(i):",var_len(i)
+         ! WRITE (*,*) "DEBUG 3b var_len(i):",var_len(i)
     enddo
 
 
@@ -219,7 +200,7 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    !get time dimension
    if (nVars .ge. 4) then
      ! time_name='fakeDim0' ! not use more
-    ! WRITE (*,'(4a)') now_iso,'DEBUG: Now test for time_name',time_name
+    ! WRITE (*,'(3a)') 'DEBUG: Now test for time_name',time_name
       ncstat = NF90_INQ_DIMID(ncid(fi),  trim(adjustl(time_name)), dimid_time)
       CALL nc_handle_err (ncstat)
       ncstat = NF90_INQUIRE_DIMENSION(ncid(fi), dimid_time, len=time_dim)
@@ -230,9 +211,9 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
       time_dependent(fi) = k > 1
       IF (time_dependent(fi)) THEN
         PRINT *
-      ELSE
+     ELSE
         PRINT '(a)', ' (time-independent emission field)'
-      END IF
+     END IF
    else
      time_dependent(fi) = 1 > 1
    endif
@@ -255,6 +236,7 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    center_check =   tmp.eq.0.5
    if(center_check) then 
       lon_ll_array(fi) = lon(1)-0.5*lon_res_array(fi) !transform to lower left
+      PRINT '(a)', ' (grid reference is centered, converted to lower left)'
    else 
       lon_ll_array(fi) = lon(1)
    end if
@@ -275,6 +257,8 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    end if
 END SUBROUTINE IER_Open
 
+
+
 SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_x,numpix_y,f)
 
 !-------------------------------------------------------------------------------
@@ -286,7 +270,7 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
 !
 !-------------------------------------------------------------------------------
    USE common_data
-   USE date_sub, ONLY: iday, izlr, get_now
+   USE date_sub, ONLY: iday, izlr
    USE m_mrgrnk, ONLY: mrgrnk
    IMPLICIT NONE
    !DEC$ ATTRIBUTES reference:: fname
@@ -296,8 +280,9 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
                                   i(n), j(n), &             ! indices of cells on aggregated grid
                                   ires(n), jres(n)          ! cell aggregation parameters
    REAL          , INTENT(OUT) :: f(n)                      ! averaged flux values
-   INTEGER       , INTENT(IN)  :: lon_ll,lat_ll ! lower left corner for lon at lat
+   DOUBLE PRECISION , INTENT(IN)  :: lon_ll,lat_ll ! lower left corner for lon at lat
    INTEGER       , INTENT(IN)  :: numpix_x,numpix_y ! length of lat, lon area 
+
    !--- local variables
 
    INTEGER  imax, jmax                 ! horiz. field dimensions in file
@@ -315,7 +300,10 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
    INTEGER            :: i1_ti, i2_ti, j1_ti, j2_ti         ! envelope for all areas at current time
    real, allocatable, dimension (:,:) :: a  ! a is then   a(imax, jmax)
    integer :: alloc_status,full_day_slice,lon_offset,lat_offset
+
 !---------------------------------------------------------------------------------------------------
+
+
  CALL fname2fi (fname, fi)
 
   ! allocate matrix a
@@ -323,11 +311,11 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
   jmax=lat_dim_array(fi)
   allocate(a(imax,jmax),stat=alloc_status)
   if (alloc_status/=0) then
-      write (*,*) "ERROR cannot allocate a with imax,jmax.:",imax,jmax
+      write (*,*) "ERROR : cannot allocate a with imax,jmax.:",imax,jmax
       stop
       endif
 
- !  WRITE (*,*) 'DEBUG imax,jmax,lon_ll,lat_ll,fi:',imax,jmax,lon_ll,lat_ll,fi
+ ! WRITE (*,*) 'DEBUG: imax,jmax,lon_ll,lat_ll,fi:',imax,jmax,lon_ll,lat_ll,fi
 
   lon_offset = (lon_ll - lon_ll_array(fi))/lon_res_array(fi) !offset in pixels
   lat_offset = (lat_ll - lat_ll_array(fi))/lat_res_array(fi)
@@ -338,7 +326,7 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
 
   if(.not.global.and.(numpix_x.gt.imax+lon_offset.or.numpix_y.gt.jmax+lat_offset)) then
       write (*,*) "ERROR : exceeding boundaries with imax,jmax.:",imax+lon_offset,jmax+lat_offset
-      write (*,*) "requested domain boundaries with imax,jmax.:",numpix_x,numpix_x
+      write (*,*) "requested domain boundaries with imax,jmax.:",numpix_x,numpix_y
       stop
    endif
 
@@ -374,10 +362,10 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
 !      j2(k) = MIN(j(k)*jres(k),jmax)
 
       IF (i1(k) < 1 .OR. i1(k) > imax .OR. j1(k) < 1 .OR. j1(k) > jmax) THEN
-         PRINT '(a,i0)'      , 'ERROR Subroutine getEmisetCDF: Field index exceedance at input item ', k
-         PRINT '(a,5(1x,i0))', 'ERROR i, j, ires, jres, lono, lato : ', i(k), j(k), ires(k), jres(k), lon_offset, lat_offset
-         PRINT '(a,4(1x,i0))', 'ERROR i1, i2, j1, j2, imax, jmax   : ', i1(k), i2(k), j1(k), j2(k), imax, jmax
-         STOP 'ERROR Stop.'
+         PRINT '(a,i0)'      , 'Subroutine getEmisetCDF: Field index exceedance at input item ', k
+         PRINT '(a,5(1x,i0))', 'i, j, ires, jres, lono, lato : ', i(k), j(k), ires(k), jres(k), lon_offset, lat_offset
+         PRINT '(a,4(1x,i0))', 'i1, i2, j1, j2, imax, jmax   : ', i1(k), i2(k), j1(k), j2(k), imax, jmax
+         STOP 'Stop.'
       END IF
 
 
@@ -432,10 +420,10 @@ SUBROUTINE getEmisnetCDF (fname, n, date, i, j, ires, jres,lon_ll,lat_ll,numpix_
          j2_ti = MAXVAL(j2, MASK=mask_ti)
 
       ! test ( first i1_ti must be the ll.lon; first j1_ti must be the ll.lat (+ 1 because of stagging grid cell)
-       !WRITE (*,*) "DEBUG : now get values from netcdf file"
-       ! write (*,*) "DEBUG: lon_ll,lat_ll:",lon_ll,lat_ll
-       ! write (*,*) "DEBUG: i1_ti, j1_ti, ti_file(l)",i1_ti, j1_ti, ti_file(l)
-       ! write (*,*) "DEBUG: i2_ti, j2_ti, ti_file(l)",i2_ti, j2_ti, ti_file(l)
+      ! WRITE (*,*) "DEBUG : now get values from netcdf file"
+      !  write (*,*) "DEBUG: lon_ll,lat_ll:",lon_ll,lat_ll
+      !  write (*,*) "DEBUG: i1_ti, j1_ti, ti_file(l)",i1_ti, j1_ti, ti_file(l)
+      !  write (*,*) "DEBUG: i2_ti, j2_ti, ti_file(l)",i2_ti, j2_ti, ti_file(l)
          ncstat = NF90_GET_VAR (ncid(fi), varid(fi), start=(/i1_ti, j1_ti, ti_file(l)/), &
                                 values=a(i1_ti:i2_ti,j1_ti:j2_ti))
          CALL nc_handle_err (ncstat)

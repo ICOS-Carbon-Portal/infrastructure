@@ -174,14 +174,17 @@ if ("co2"%in%tracers)  {
       stop("Trajecvprm: parameter bios incorrectly specified. Redefine as GSB or VPRM or quote-unquote.")
    if (bios == "GSB" | bios == "VPRM"){
       out.type <- c("infl", "gee", "resp")
-      cat(format(Sys.time(), "%FT%T"),"DEBUG Biosphere model ",bios, "\n")
+      cat(bios, "\n")
       if (bios == "GSB") {
          output.veg <- c("frst", "shrb", "crop", "wetl")
       }
       if (bios != "GSB"&(landcov == "GLCC"|landcov == "SYNMAP"|landcov == "SYNMAP.VPRM8")){
-        output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
-#        output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "peat") #"peat" is replaced by "others" in Jena VPRM preproc.
-#        if(substring(evilswipath,1,21)=="/Net/Groups/BSY/data/")output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
+        if(cpTF){
+          output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
+        } else {
+          output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "peat") #"peat" is replaced by "others" in Jena VPRM preproc.
+          if(substring(evilswipath,1,21)=="/Net/Groups/BSY/data/"|substring(evilswipath,1,13)=="/work/mj0143/")output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
+        }
       }
       if (bios != "GSB"&(landcov == "DVN"))
          output.veg <- c("evergreenA", "evergreenB", "evergreenC", "evergreenD", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "peat")
@@ -196,15 +199,15 @@ names.output <- c(names.output, tracers, paste("sd", tracers, sep=""))
 
 # Check if object exists
 if (existsr(ident,pathname)) {
-   cat(format(Sys.time(), "%FT%T"),"INFO Trajecvprm(): starting with ident=", ident, "\n")   #found object
+   cat("Trajecvprm(): starting with ident=", ident, "\n")   #found object
    part <- getr(ident,pathname)                             #get it
 } else {
    if (paste(pathname,".RData",ident,".gz",sep="") %in%
       dir(pathname,pattern=paste(".RData",ident,sep=""),all.files=TRUE)) {
-      cat(format(Sys.time(), "%FT%T"),"INFO Trajecvprm(): starting with .gz ident=",ident, "\n") #found .gz object
+      cat("Trajecvprm(): starting with .gz ident=",ident, "\n") #found .gz object
       part <- getr(ident,pathname,gz=TRUE)                  #get it
    } else {
-    cat(format(Sys.time(), "%FT%T"),"INFO object ", pathname,".RData", ident, " NOT FOUND\n", sep="")
+    cat("object ", pathname,".RData", ident, " NOT FOUND\n", sep="")
     lastresult <- rep(NA,length(names.output)-1)
     lastresult <- c(ident,lastresult)
     names(lastresult) <- names.output
@@ -212,8 +215,9 @@ if (existsr(ident,pathname)) {
    }
 } #if exists or not
 
+
 # get time and position information from name (ident)
-pos <- id2pos(ident)
+pos <- id2pos(ident)[c('time','lat','lon','alt')]
 time <- month.day.year(floor(pos[1]))
 yr4 <- time$year                                            # 4 digit year
 yr <- yr4%%100                                              # 2 digit year (or 1 digit...)
@@ -232,7 +236,7 @@ if (dmassTF)
         rqdnames <- c(rqdnames, "dmass")
 for (nm in rqdnames) {
    if (!(nm%in%dimnames(part)[[2]])) {
-      cat(format(Sys.time(), "%FT%T"),"DEBUG need column '", nm, "' for this run\n", sep="")
+      cat("need column '", nm, "' for this run\n", sep="")
       lastresult <- rep(NA, length(names.output)-1)
       lastresult <- c(ident, lastresult)
       names(lastresult) <- names.output
@@ -253,7 +257,7 @@ part<-part[order(part[, "btime"], part[, "index"]),] #order by btime, then by in
 #(fix for missing feature in Trajec.multi vs. Trajec which took into account higher spatial resolution of flux grids vs.met files )
 if(doubletimeTF){
   nparleft <- rle(part[, "btime"])$length # number of times the same btime is repeated
-  n.dbtime<-min(30,sum(nparleft==nparstilt)) #set the number of timesteps for which a higher time resolution is desired
+  n.dbtime<-min(60,sum(nparleft==nparstilt)) #set the number of timesteps for which a higher time resolution is desired
   sel30<-1:(n.dbtime*nparstilt)
   part2<-part[sel30,]
   if(min(part[,"btime"])>0){#get starting location
@@ -271,6 +275,29 @@ if(doubletimeTF){
   part[sel30,"foot"]<-part[sel30,"foot"]/2
   part<-rbind(parti,part)
   part<-part[order(part[, "btime"], part[, "index"]),] #order by btime, then by index
+
+  if(lat.res==1/60){ #again double resolution for these high res emissions
+    print("Trajecvprm: doubling near field resolution 2nd time")
+    nparleft <- rle(part[, "btime"])$length # number of times the same btime is repeated
+    n.dbtime<-min(60,sum(nparleft==nparstilt)) #set the number of timesteps for which a higher time resolution is desired
+    sel30<-1:(n.dbtime*nparstilt)
+    part2<-part[sel30,]
+    if(min(part[,"btime"])>0){#get starting location
+      part0<-part2[1:nparstilt,]
+      part0[,"lat"]<-id2pos(ident)["lat"]
+      part0[,"lon"]<-id2pos(ident)["lon"]
+      part0[,"agl"]<-id2pos(ident)["alt"]
+      part0[,"btime"]<-0
+    }
+    sel30e<-sel30[sel30>(n.dbtime-1)*nparstilt]
+    part3<-rbind(part0,part2[-sel30e,])
+    parti<-(part3+part2)/2 #intermediate time steps
+    #reduce foot to half the value so that reduced time step is taken into account
+    parti[sel30,"foot"]<-part[sel30,"foot"]/2
+    part[sel30,"foot"]<-part[sel30,"foot"]/2
+    part<-rbind(parti,part)
+    part<-part[order(part[, "btime"], part[, "index"]),] #order by btime, then by index
+  }
 }
 
 # get grid indices
@@ -332,6 +359,16 @@ sumx <- unlist(sumx)[ordern]
 part <- part[!is.na(sumx), ]
 dimnames(part) <- list(NULL, dimnames(part)[[2]])
 
+# if all particles leave the domain to the background area, skip this trajectory
+#this happens in cases where the starting position is very close to the boundary
+if (nrow(part) == 0) {	
+	print("All particles are in the background area: Skipping trajectory")
+	output <- vector("numeric",length = length(names.output))
+	names(output) <- names.output
+	output[c("ident","latstart","lonstart","aglstart")] <-pos[c("time", "lat", "lon", "alt")]
+        return(output)
+}
+
 # only keep points, when information is changed:
 # 1. position and times at boundary of desired domain
 # 2. position and times when surface influences particles
@@ -360,14 +397,15 @@ selfirst <- delbte<0
 if ("co"%in%tracers) {
    #################### CO + OH losses########################################
    # first get OH at particle position, calculate COrel. loss and CH4 source
-   # OH from SAS, parameterized as oh=oh0+oh1*p+oh2*p**2, with parameters ohi for each month and for 30 and 60 lat
+   # OH from global model output, parameterized as oh=oh0+oh1*p+oh2*p**2+oh3*p**3+oh4*p**4+oh5*p**5, with parameters ohi for each month and for 16 latitude bands
    pmb <- 1013*exp(-part[, "agl"]/8000) # 8 km scale height
    ohm <- oh[oh[, "month"] == mon, ]
-   oh60 <- ohm[ohm[, "lat"] == 60, "oh0"]+ohm[ohm[, "lat"] == 60, "oh1"]*pmb+ohm[ohm[, "lat"] == 60, "oh2"]*pmb**2 # OH at 60 north, same altitude
-   oh30 <- ohm[ohm[, "lat"] == 30, "oh0"]+ohm[ohm[, "lat"] == 30, "oh1"]*pmb+ohm[ohm[, "lat"] == 30, "oh2"]*pmb**2 # OH at 30 north, same altitude
-   oh60[oh60<0] <- 0; oh30[oh30<0] <- 0
-   # local OH, interpolated
-   ohl <- (oh60*(part[, "lat"]-30)+oh30*(60-part[, "lat"]))/(60-30)
+   idlat<-findInterval(part[, "lat"],c(ohm[1,"latS"],ohm[,"latN"]),rightmost.closed = TRUE)
+   # local OH parameters
+   ohl<-ohm[idlat,]
+   # local OH
+   ohl <- ohl[, "oh0"]+ohl[, "oh1"]*pmb+ohl[, "oh2"]*pmb**2+
+     ohl[, "oh3"]*pmb**3+ohl[, "oh4"]*pmb**4+ohl[, "oh5"]*pmb**5
    ohl[ohl<0] <- 0
    tair.k <- part[, "temp0"]-part[, "agl"]*6.5/1000 # average lapse rate
    # get CO loss
@@ -404,6 +442,12 @@ if ("co"%in%tracers) {
 # keep only particles where they matter: create flag for first, last, or when surface influence
 # apply selection here (only first, last, or when surface influence)
 part <- part[(selinf+selend+selfirst)>0, ]
+
+#for particles at the boundary (selend) remove surface influence 
+#(when using smaller domain than particle trajectories cover, need to avoid "infuence" from outside the domain)
+in.domain <- floor(part[, "gitx"])<=numpix.x&floor(part[, "gitx"])>=1&floor(part[, "gity"])<=numpix.y&floor(part[, "gity"])>=1
+part[!in.domain,"foot"]<-0
+
 # print("3"); print(dim(part)); print(sum(in.domain)); print(sum(part[, "foot"]>0))
 # move x and y position of final position to initialization area (gitx=1, gity= 1 to numpix.y), at least make sure they are not outside desired domain
 part[part[, "gitx"]>numpix.x, "gitx"] <- numpix.x
@@ -468,6 +512,10 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
               # in ppm/(micro-mol/m^2/s)
       # need time in YY MM DD hh mm, not local, but GMT!
       gmtime <- weekdayhr(yr4, mon, day, hr, -result[, "btime"]*60, diffGMT=rep(0, dim(result)[1])) # last column is weekday, sunday=0, monday=1 etc.
+      if(basename(emissfile[tolower(speci)])=="corr_NEE_hr_fine_2016_2018.nc"){ #avoid leap year problem for climatological flux
+        gmtime[gmtime[, "yr"]==2016&gmtime[, "mon"]==12&gmtime[, "day"]==31,"day"]<-30
+        print("Trajecvprm: avoided leap year")
+      }
       fdate <- as.vector(rbind(gmtime[, "yr"], gmtime[, "mon"], gmtime[, "day"], gmtime[, "hr"], rep(0, dim(result)[1])))
       if (sum(is.na(fdate))>0) stop("NA in fdate!")
       # print(fdate)
@@ -483,30 +531,49 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
       # print(date())
 #      if(speci!="cofire")emiss <- get.fossEU.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci)
 #      if(speci=="cofire")emiss <- get.fireBARCA.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci)
-#      dfile<-emissfile[tolower(speci)]
-      # set year for emission file (changes by uk)
-      if(grepl("XXXX", emissfile[tolower(speci)]   )){
-        yys<-unique(gmtime[, "yr"])
-          cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): working on years ",yys,"\n")
-        # as long as only a single year can be used in the run, make sure that number of days per year is set to current year in case the previous year was a leap year, therefore reset year in fdate to current year 
-	fdate[fdate==(yys[1]-1)] <- yys[1]
-        dfile<-paste(gsub("XXXX",yys[1],emissfile[tolower(speci)]))
-          cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): dfile ",dfile,"\n")
-        emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y,dfile=dfile)
-      }else{
+      
+      yys<-unique(gmtime[, "yr"])
+      if(length(yys)>1){ #have two years
+        sely<-gmtime[, "yr"]==yys[1];selfd<-as.vector(rbind(sely,sely,sely,sely,sely))#selectors for later year
+        emiss1 <- get.Emis.netcdf(fdate[selfd], i=x[sely], j=y[sely], ires=shrink.x[sely], jres=shrink.y[sely], spec=speci,numpix_x=numpix.x,numpix_y=numpix.y)
+        emiss2 <- get.Emis.netcdf(fdate[!selfd], i=x[!sely], j=y[!sely], ires=shrink.x[!sely], jres=shrink.y[!sely], spec=speci,numpix_x=numpix.x,numpix_y=numpix.y)
+        emiss <- c(emiss1,emiss2)
+      } else { #only single year
         emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y)
-      }
+      } #multiple or single year
+
       #adjust units to get ppm (foot variable expects fluxes in micro-moles/m2/s)
       if(grepl("data/EDGAR4.2/v42_",  emissfile[tolower(speci)]   )){ #in units of "kg m-2 s-1"
-        if(tolower(speci)=="co2")emiss<-emiss*10E9/44
-        if(tolower(speci)=="co") emiss<-emiss*10E9/28
-        if(tolower(speci)=="ch4")emiss<-emiss*10E9/16
-        if(tolower(speci)=="n2o")emiss<-emiss*10E9/44
+        if(tolower(speci)=="co2")emiss<-emiss*1E9/44
+        if(tolower(speci)=="co") emiss<-emiss*1E9/28
+        if(tolower(speci)=="ch4")emiss<-emiss*1E9/16
+        if(tolower(speci)=="n2o")emiss<-emiss*1E9/44
       }
-      if (speci=="rn"|speci=="rn_era"|speci=="rn_noah"){
-        EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
+
+      if(cpTF){
+        ch4nat <- list("ch4wet","ch4soil","ch4uptake","ch4peat","ch4geo","ch4fire","ch4ocean","ch4lakes")
+        if(tolower(speci)%in%ch4nat){
+          emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
+        }
+        ch4edg <- list("ch4edg5","ch4edg6","ch4edg7")
+        if(tolower(speci)%in%ch4edg){
+            emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
+        }
+        #if(tolower(speci)=="ch4edg5")emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
+        if(tolower(speci)=="ch4total")emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
+        rnlist <- list("rn","rn_era","rn_noah","rn_const","rn_e5","rn_n2","rn_e5m","rn_n2m")
+        #if (speci=="rn"|speci=="rn_era"|speci=="rn_noah"|speci=="rn_const"|speci=="rn_e5"|speci=="rn_n2"|speci=="rn_e5m"|speci=="rn_n2m"){
+        if(tolower(speci)%in%rnlist){
+          EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
+        } else {
+          EMCO <- emiss*part[, "foot"]
+        }
       } else {
-        EMCO <- emiss*part[, "foot"]
+        if (speci=="rn"){
+          EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
+        } else {
+          EMCO <- emiss*part[, "foot"]
+        }
       }
       if(emisscatTF){
         if(BPtf&firstTF){#get annual emission scaling, only once
@@ -547,9 +614,8 @@ if ((bios=="VPRM"|bios=="GSB")&"co2"%in%tracers) { # VPRM with fortran call to d
         # get EVI parameters, vegetation specific
         #do seperate for different years
         yys<-unique(gmtime[, "yr"])
-        if(length(yys)>1){ #have two years (for trajactories extending back into the previous year) 
+        if(length(yys)>1){ #have two years
           sely<-gmtime[, "yr"]==yys[1];selfd<-as.vector(rbind(sely,sely,sely,sely,sely))#selectors for later year
-          evilswipath<-paste(substring(evilswipath,1,nchar(evilswipath)-5),yys[1],"/",sep="")
           vprmset1  <- get.modis.netcdf(fdate[selfd], i=x[sely], j=y[sely], ires=shrink.x[sely], jres=shrink.y[sely], dpath=evilswipath)#later year
           evilswipath2<-paste(substring(evilswipath,1,nchar(evilswipath)-5),yys[2],"/",sep="")
           vprmset2  <- get.modis.netcdf(fdate[!selfd], i=x[!sely], j=y[!sely], ires=shrink.x[!sely], jres=shrink.y[!sely], dpath=evilswipath2)#earlier year
@@ -561,7 +627,6 @@ if ((bios=="VPRM"|bios=="GSB")&"co2"%in%tracers) { # VPRM with fortran call to d
           lswiMinVec <- rbind(vprmset1$LSWI_amin,vprmset2$LSWI_amin)
           veg.fra<-rbind(vprmset1$VEG_FRA,vprmset2$VEG_FRA)
         } else { #only single year
-          evilswipath<-paste(substring(evilswipath,1,nchar(evilswipath)-5),yys[1],"/",sep="")
           vprmset  <- get.modis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, dpath=evilswipath)
           eviset <- vprmset$EVI
           lswiset <- vprmset$LSWI
@@ -624,8 +689,8 @@ if (landcov == "SYNMAP.VPRM8"&bios == "GSB") {
    reclss <- c(1,1,1,2,2,3,2,5)
 }
 if (landcov == "SYNMAP.VPRM8"&bios == "VPRM") {
-   nReclss <- 9
-   reclss <- 1:9
+  nReclss <- 9
+  reclss <- 1:9
 }
 # Devan vegetation classes, updated
 #                 VPRM Class    STILT-VPRM class
@@ -794,15 +859,16 @@ if ("co2"%in%tracers&bios!="") {
          pScalar <- (1+lswi)/2
          if ((landcov == "DVN"&is.element(k,1:4))|(landcov != "DVN"&k == 1)) { # if evergreen
                  phenologyselect <- 1:length(evi)
+                 pScalar[phenologyselect] <- 1
          }
          if ((landcov == "DVN"&is.element(k, c(5,6,7,9,12)))|(landcov != "DVN"&is.element(k, c(2,3,4,6,8)))) { # if decid, mixed, shrub, crop, or other
                  threshmark <- 0.55
                  evithresh <- eviMin+(threshmark*(eviMax-eviMin))
                  phenologyselect <- which(evi>evithresh)
+                 pScalar[phenologyselect] <- 1
          }
          # by default, grasslands and savannas and peatlands never have pScale=1
 
-         pScalar[phenologyselect] <- 1
 
          # Error Check evi, lswi, tempScalar
          evi[which(is.na(evi))] <- 0   #checked for Jena implementation: na check not really required
@@ -813,7 +879,6 @@ if ("co2"%in%tracers&bios!="") {
          # NOTE UNITS--VPRM outputs GPP and Respiration in umol/m2/s (conveniently, what is needed here); when multiplied by
          #                influence (ppm/(umol/m2/s)) get ppm
          xiaoGPP <- lambdaGPP*tempScalar*wScalar*pScalar*evi*radScalar*v.tot*-1
-
          # want vegetative uptake to be negative with respect to the atmosphere, so multiply by negative one
          # for symmetry
          xiaoGPP[which(is.na(xiaoGPP))] <- 0
@@ -887,8 +952,8 @@ tracers.clim<-tracers[inikind[tracers]=="climat"]
 if(length(tracers.clim)>0){ #are there climatological boundary files to be used
         # get 1st boundary field to set things up
    if (!existsr(paste(tracers.clim[1], ".ini", sep=""), pathname)){
-           cat(format(Sys.time(), "%FT%T"),"ERROR need to use read.bg() to get boundary condition\n")
-           stop(cat(format(Sys.time(), "%FT%T"),"ERROR need ", tracers.clim[1], " boundary condition\n"))
+           print("need to use read.bg() to get boundary condition")
+           stop(paste("need ", tracers.clim[1], " boundary condition", sep=""))
    }
    ini <- getr(paste(tracers.clim[1], ".ini", sep=""), pathname)
 
@@ -898,9 +963,9 @@ if(length(tracers.clim)>0){ #are there climatological boundary files to be used
    pointer <- cbind(aglg+1, latg+1, round(sasdate/delday)+1) # array indices must start with 1
            # use constant ini field when no initial data available
    if (any(pointer[,3]>dim(ini)[3]))
-           cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need later times\n", sep="")
+           cat("Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need later times\n", sep="")
    if (any(pointer[,3]<1))
-           cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need earlier times\n", sep="")
+           cat("Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need earlier times\n", sep="")
    pointer[pointer[,3]>dim(ini)[3],3] <- dim(ini)[3]
    pointer[pointer[,3]<1,3] <- 1
 
@@ -926,22 +991,22 @@ if(length(tracers.clim)>0){ #are there climatological boundary files to be used
 result <- cbind(result, cini, vegresult)
 
 if ("co2"%in%tracers & inikind["co2"] == "CT") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using CarbonTracker initial values.\n")
+   cat("Trajecvprm: using CarbonTracker initial values.\n")
    result <- get.CarbonTracker.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                               result=result, result.sel=selend)
 } else if ("co2"%in%tracers & inikind["co2"] == "TM3") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values.\n")
+   cat("Trajecvprm: using TM3 initial values.\n")
    ftype<-substring(inifile["co2"],nchar(inifile["co2"])-1,nchar(inifile["co2"]))
    if(ftype==".b")result <- get.TM3.bin(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                     result=result, result.sel=selend)
    if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["co2"],
                     result=result, result.sel=selend, tracer=c("co2"))
 } else if ("co2"%in%tracers & inikind["co2"] == "LMDZ") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using LMDZ initial values.\n")
+   cat("Trajecvprm: using LMDZ initial values.\n")
    result <- get.LMDZ.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                     result=result, result.sel=selend)
 } else if ("co2"%in%tracers & inikind["co2"] == "MACCfc") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using MACC/CAMS forecast as initial values.\n")
+   cat("Trajecvprm: using MACC/CAMS forecast as initial values.\n")
    result <- get.MACC_CO2.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                     result=result, result.sel=selend)
 }
@@ -952,56 +1017,104 @@ if ("co"%in%tracers & inikind["co"] != "GEMS" & inikind["co"] != "MACC") {      
    result[selend, "coini"] <- result[selend, "CO.fact"]*coinio[selend]+result[selend, "CO.frCH4"] #add chemistry (linearized)
    result <- cbind(result, coinio)
 } else if ("co"%in%tracers & inikind["co"] == "GEMS") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using GEMS CO initial values.\n")
+   cat("Trajecvprm: using GEMS CO initial values.\n")
    result <- get.GEMS_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co"],
                     result=result, result.sel=selend,spec="coini")
    coinio <- result[, "coini"]                              # no chemistry yet
    result[selend, "coini"] <- result[selend, "CO.fact"]*coinio[selend]+result[selend, "CO.frCH4"] #add chemistry (linearized)
    result <- cbind(result, coinio)
 } else if ("co"%in%tracers & inikind["co"] == "MACC") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using MACC CO initial values.\n")
+   cat("Trajecvprm: using MACC CO initial values.\n")
    result <- get.MACC_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co"],
-                    result=result, result.sel=selend,spec="coini")
+                    result=result, result.sel=selend,tracer="co")
    coinio <- result[, "coini"]                              # no chemistry yet
    result[selend, "coini"] <- result[selend, "CO.fact"]*coinio[selend]+result[selend, "CO.frCH4"] #add chemistry (linearized)
    result <- cbind(result, coinio)
 }
 if ("cofire"%in%tracers & inikind["cofire"] == "GEMS") {                                      # CO: need also advected boundary value with no chemistry
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using GEMS CO initial values for cofire.\n")
+   cat("Trajecvprm: using GEMS CO initial values for cofire.\n")
    result <- get.GEMS_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["cofire"],
                     result=result, result.sel=selend,spec="cofireini")
 }
 
 
 if ("ch4"%in%tracers & inikind["ch4"] == "TM3") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for CH4.\n")
+   cat("Trajecvprm: using TM3 initial values for CH4.\n")
    ftype<-substring(inifile["ch4"],nchar(inifile["ch4"])-1,nchar(inifile["ch4"]))
      if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["ch4"],
                     result=result, result.sel=selend, tracer=c("ch4"))
+} else if ("ch4"%in%tracers & inikind["ch4"] == "SRON") {
+  cat("Trajecvprm: using SRON initial values for CH4.\n")
+  ftype<-substring(inifile["ch4"],nchar(inifile["ch4"])-1,nchar(inifile["ch4"]))
+  if(ftype=="nc")result <- get.SRON.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["ch4"],
+                                           result=result, result.sel=selend, tracer=c("ch4"))
+#} else if ("ch4total"%in%tracers & inikind["ch4total"] == "SRON") {
+#  cat("Trajecvprm: using SRON initial values for CH4. tracer: ch4total\n")
+#  ftype<-substring(inifile["ch4total"],nchar(inifile["ch4total"])-1,nchar(inifile["ch4total"]))
+#  if(ftype=="nc")result <- get.SRON.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["ch4total"],
+#                                           result=result, result.sel=selend, tracer=c("ch4"))
+} else if ("ch4"%in%tracers & inikind["ch4"] == "MACC") {
+  cat("Trajecvprm: using MACC initial values for CH4.\n")
+  ftype<-substring(inifile["ch4"],nchar(inifile["ch4"])-1,nchar(inifile["ch4"]))
+  if(ftype=="nc")result <- get.MACC_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["ch4"],
+                                           result=result, result.sel=selend, tracer="ch4")
 }
 
+
 if ("rn"%in%tracers & inikind["rn"] == "TM3") { 
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
+   cat("Trajecvprm: using TM3 initial values for Rn.\n")
    ftype<-substring(inifile["rn"],nchar(inifile["rn"])-1,nchar(inifile["rn"]))
    if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn"],
                   result=result, result.sel=selend, tracer=c("rn"))
    if(ftype=="nc")result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
-} 
-if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
-   ftype<-substring(inifile["rn_era"],nchar(inifile["rn_era"])-1,nchar(inifile["rn_era"]))
-   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_era"],
-                  result=result, result.sel=selend, tracer=c("rn_era"))
-   if(ftype=="nc")result[selend,"rnini_era"] <- result[selend,"rnini_era"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
 }
-if ("rn_noah"%in%tracers & inikind["rn_noah"] == "TM3") {
-   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
-   ftype<-substring(inifile["rn_noah"],nchar(inifile["rn_noah"])-1,nchar(inifile["rn_noah"]))
-   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_noah"],
-                  result=result, result.sel=selend, tracer=c("rn_noah"))
-   if(ftype=="nc")result[selend,"rnini_noah"] <- result[selend,"rnini_noah"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
-}
-
+ if(cpTF){
+   if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_eraini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_noah"%in%tracers & inikind["rn_noah"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_noahini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_const"%in%tracers & inikind["rn_const"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn const.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_constini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_e5"%in%tracers & inikind["rn_e5"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_e5ini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_n2"%in%tracers & inikind["rn_n2"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_n2ini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_e5m"%in%tracers & inikind["rn_e5m"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_e5mini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_n2m"%in%tracers & inikind["rn_n2m"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_n2mini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_e5mpo"%in%tracers & inikind["rn_e5mpo"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_e5mpoini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+   if ("rn_n2mpo"%in%tracers & inikind["rn_n2mpo"] == "TM3") {
+     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
+     # Ute: use same boundary as for "rn"
+     result[selend,"rn_n2mpoini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   }
+  }
 dimnames(result) <- list(NULL, dimnames(result)[[2]])
 
 ####################################################################################################
@@ -1084,9 +1197,13 @@ if (detailsTF) {
   selnam <- substring(dimnames(resulthr)[[2]],1,1) == "v"
   dimnames(resulthr)[[2]][selnam] <- names.output[(length(names.output)-sum(selnam)+1):length(names.output)]
   assignr(paste(ident,"resulthr", sep=""), resulthr,pathname, printTF=TRUE)
-
+  
+  selnam <- substring(dimnames(resulto)[[2]],1,1) == "v"
+  dimnames(resulto)[[2]][selnam] <- names.output[(length(names.output)-sum(selnam)-1):(length(names.output)-2)]
+  assignr(paste(ident,"resulto", sep=""), resulto,pathname, printTF=TRUE)
+  
   selnam <- substring(dimnames(result)[[2]],1,2) == "sv"
-  dimnames(result)[[2]][selnam] <- names.output[(length(names.output)-sum(selnam)+1):length(names.output)]
+  dimnames(result)[[2]][selnam] <- names.output[(length(names.output)-sum(selnam)-1):(length(names.output)-2)]
   if(ncdfTF["co2"]&bios=="VPRM"){
     vprmstuff<-cbind(eviset,eviMaxVec,eviMinVec)
     dimnames(vprmstuff)[[2]]<-c(paste(output.veg,".evi",sep=""),paste(output.veg,".evimax",sep=""),paste(output.veg,".evimin",sep=""))

@@ -16,8 +16,8 @@ if (! exists("sourcepath")) {
       quit(status=1)
    }
 }
+cat("stilt.r: using sourcepath", sourcepath, "\n")
 
-  cat(format(Sys.time(), "%FT%T"),"DEBUG stilt.r: using sourcepath", sourcepath, "\n")
 if (! file.exists(paste(sourcepath, "sourceall.r", sep=""))) stop('stilt.r: "sourcepath" is not a valid source path')
 source(paste(sourcepath,"sourceall.r",sep=""))
 
@@ -35,36 +35,25 @@ if (any(is.na(partinfo))) {
    totpartarg <- as.integer(partinfo[[2]])
    nodeoffset <- as.integer(partinfo[[3]]) # new (tk 2011/05/17)
 }
+stiltparam<-Sys.getenv(c("STILT_PARAM"), unset = NA)	# get name of setStiltparam.r file to be used
+if(!is.na(stiltparam))print(paste("using",stiltparam))
 #Call Trajecmod function, store run info
-run.info <- Trajecmod(partarg=partarg, totpartarg=totpartarg, nodeoffset=nodeoffset)
+run.info <- Trajecmod(partarg=partarg, totpartarg=totpartarg, nodeoffset=nodeoffset,stiltparamfile=stiltparam)
 
-##save run.info to object with date and time in name
-##example: ./Runs.done/setStiltparam.Mar..9.17:40:49.2004.r
-#runs.done.dir <- NULL
-#if (file.exists('./Runs.done')) runs.done.dir <- './Runs.done/'
-#if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
-#  runs.done.dir <- paste(sourcepath,'/Runs.done/',sep='')
-#if (!is.null(runs.done.dir)) {
-#  savename <- gsub(" ",".",date())
-#  savename <- substring(savename,4)
-#  assignr(paste("run.info",savename,sep=""),run.info,runs.done.dir,printTF=T)
-#} else {
-#  cat("stilt.r: Runs.done not found in ./ or sourcepath, not saving run.info\n")
-#}
-
-### ICOS-CP specific ###
-run_id <- Sys.getenv(c("RUN_ID"), unset = NA)	# get run id
 #save run.info to object with date and time in name
 #example: ./Runs.done/setStiltparam.Mar..9.17:40:49.2004.r
 runs.done.dir <- NULL
-if (file.exists(paste('./',run_id,'/Runs.done',sep=''))) runs.done.dir <- paste('./',run_id,'/Runs.done/',sep='')
-#if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
-#  runs.done.dir <- paste(sourcepath,'/Runs.done/',sep='')
+if(cpTF){
+  if (file.exists(paste('./',run_id,'/Runs.done',sep=''))) runs.done.dir <- paste('./',run_id,'/Runs.done/',sep='')
+} else {
+  if (file.exists('./Runs.done')) runs.done.dir <- './Runs.done/'
+  if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
+    runs.done.dir <- paste(sourcepath,'/Runs.done/',sep='')
+}
 if (!is.null(runs.done.dir)) {
   savename <- gsub(" ",".",date())
   savename <- substring(savename,4)
   assignr(paste("run.info",savename,sep=""),run.info,runs.done.dir,printTF=T)
 } else {
-    cat(format(Sys.time(), "%FT%T"),"DEBUG stilt.r: Runs.done not found in ./ or sourcepath, not saving run.info\n")
+  cat("stilt.r: Runs.done not found in ./ or sourcepath, not saving run.info\n")
 }
-

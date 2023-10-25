@@ -6,5 +6,6 @@ services:
       args:
         - JENASVNUSER=username
         - JENASVNPASSWORD=password
+	- JENASVNREVISION=revision
     image: local/stiltbase
 

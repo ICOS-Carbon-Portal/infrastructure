@@ -1,4 +1,4 @@
-get.Emis.netcdf<-function(fdate,i,j,ires,jres,spec="co2",numpix_x,numpix_y,dfile=""){
+get.Emis.netcdf<-function(fdate,i,j,ires,jres,spec="co2",numpix_x,numpix_y){
 
 #print(lon.ll)
 #print(lat.ll )
@@ -10,7 +10,6 @@ get.Emis.netcdf<-function(fdate,i,j,ires,jres,spec="co2",numpix_x,numpix_y,dfile
 #ires, jres:  resolution at which to extract surface flux averages.
 #spec: "CO2fire" or "COfire" or "CH4fire"
 #dpath: path to the netcdf file
-#dfile: netcdf file
 #loadpath: path to the fortran shared object (.so file)
 
 if(!any(names(getLoadedDLLs())=="getEmisnetCDF"))dyn.load(paste(shlibpath,"getEmisnetCDF.so",sep=""))
@@ -31,10 +30,9 @@ tmp<-"                                                                          
 tmp<-paste(tmp,"                                                                                          ")
 tmp<-paste(tmp,"                                                                                          ")
 #fname <- paste(dpath,"netCDF/CO2.2000a.nc",tmp,sep="")
-#fname <- paste(emissfile[tolower(spec)],tmp,sep="")
+fname <- paste(emissfile[tolower(spec)],tmp,sep="")
+if(grepl("YYYY",fname))fname<-gsub("YYYY",as.character(fdate[1]),fname)
 #fname <- ifelse(emissfile=="",paste(emisspath,spec,".2000.nc",tmp,sep="") , paste(emisspath,emissfile,tmp,sep=""))
-fname <- ifelse(dfile=="",paste(emissfile[tolower(spec)],tmp,sep=""),paste(dfile,tmp,sep=""))
-
 fname <- substring(fname,1,255)
 #print(fname)
 
@@ -66,7 +64,7 @@ f     <- single(length=n)
 #---------new version tk ----------
 res <- .Fortran('getEmisnetCDF',
                 as.character(fname), n, as.integer(fdate),
-                as.integer(i), as.integer(j), as.integer(ires), as.integer(jres),as.integer(lon.ll),as.integer(lat.ll),
+                as.integer(i), as.integer(j), as.integer(ires), as.integer(jres),lon.ll,lat.ll,
                 as.integer(numpix_x),as.integer(numpix_y),f)[[12]]
 
 return(res[1:n])
