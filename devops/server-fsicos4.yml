@@ -3,6 +3,9 @@
     - role: icos.mosh
       tags: mosh
 
+    - role: icos.caddy
+      tags: caddy
+
     - role: icos.utils
       tags: utils
 
