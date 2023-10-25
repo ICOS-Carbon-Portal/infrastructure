@@ -1,6 +1,8 @@
 # First install the xcaddy tool.
 - import_role: name=icos.xcaddy
 
+# Running "caddy list-modules" should list any non-standard modules compiled
+# into caddy.
 - name: Compile caddy using xcaddy
   command: >-
     xcaddy build --output {{ caddy_via_xcaddy }}
@@ -15,7 +17,6 @@
   file:
     path: "{{ caddy_dropin_path | dirname }}"
     state: directory
-  register: _dropin
 
 - name: Create caddy systemd drop-in file
   copy:

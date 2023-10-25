@@ -1,8 +1,12 @@
-# First install standard version of caddy
+# First install standard version of caddy, this will create the caddy user and
+# setup systemd service files.
+- import_tasks: install.yml
+
+# If we're not using any extra modules, then we're mostly done.
 - import_tasks: plain.yml
   when: not caddy_modules
 
-# If any modules are needed we need xcaddy instead
+# If any modules are needed we need xcaddy instead.
 - import_tasks: xcaddy.yml
   tags: caddy_xcaddy
   when: caddy_modules
