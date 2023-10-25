@@ -9,7 +9,6 @@
         # don't append hostname/path/to/file
         flat: yes
 
-
 - hosts: fsicos4-stiltcluster
   vars:
     stiltcluster_jar_file: tmp/stiltcluster.jar
