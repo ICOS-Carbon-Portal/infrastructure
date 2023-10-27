@@ -559,10 +559,9 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
         if(tolower(speci)%in%ch4edg){
             emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
         }
-        #if(tolower(speci)=="ch4edg5")emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
         if(tolower(speci)=="ch4total")emiss<-emiss*1E9/16  #in units of "kg m-2 s-1"
-        rnlist <- list("rn","rn_era","rn_noah","rn_const","rn_e5","rn_n2","rn_e5m","rn_n2m")
-        #if (speci=="rn"|speci=="rn_era"|speci=="rn_noah"|speci=="rn_const"|speci=="rn_e5"|speci=="rn_n2"|speci=="rn_e5m"|speci=="rn_n2m"){
+
+        rnlist <- list("rn","rn_era","rn_noah","rn_const","rn_era5d","rn_noah2d","rn_era5m","rn_noah2m")
         if(tolower(speci)%in%rnlist){
           EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
         } else {
@@ -1048,11 +1047,6 @@ if ("ch4"%in%tracers & inikind["ch4"] == "TM3") {
   ftype<-substring(inifile["ch4"],nchar(inifile["ch4"])-1,nchar(inifile["ch4"]))
   if(ftype=="nc")result <- get.SRON.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["ch4"],
                                            result=result, result.sel=selend, tracer=c("ch4"))
-#} else if ("ch4total"%in%tracers & inikind["ch4total"] == "SRON") {
-#  cat("Trajecvprm: using SRON initial values for CH4. tracer: ch4total\n")
-#  ftype<-substring(inifile["ch4total"],nchar(inifile["ch4total"])-1,nchar(inifile["ch4total"]))
-#  if(ftype=="nc")result <- get.SRON.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["ch4total"],
-#                                           result=result, result.sel=selend, tracer=c("ch4"))
 } else if ("ch4"%in%tracers & inikind["ch4"] == "MACC") {
   cat("Trajecvprm: using MACC initial values for CH4.\n")
   ftype<-substring(inifile["ch4"],nchar(inifile["ch4"])-1,nchar(inifile["ch4"]))
@@ -1068,53 +1062,7 @@ if ("rn"%in%tracers & inikind["rn"] == "TM3") {
                   result=result, result.sel=selend, tracer=c("rn"))
    if(ftype=="nc")result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
 }
- if(cpTF){
-   if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_eraini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_noah"%in%tracers & inikind["rn_noah"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_noahini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_const"%in%tracers & inikind["rn_const"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn const.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_constini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_e5"%in%tracers & inikind["rn_e5"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_e5ini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_n2"%in%tracers & inikind["rn_n2"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_n2ini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_e5m"%in%tracers & inikind["rn_e5m"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_e5mini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_n2m"%in%tracers & inikind["rn_n2m"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_n2mini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_e5mpo"%in%tracers & inikind["rn_e5mpo"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn ERA.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_e5mpoini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-   if ("rn_n2mpo"%in%tracers & inikind["rn_n2mpo"] == "TM3") {
-     cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn Noah.\n")
-     # Ute: use same boundary as for "rn"
-     result[selend,"rn_n2mpoini"] <- result[selend,"rnini"] # use same bounday as for "rn", no need to again apply Rn decay to lateral boundary condition, conv. to Bq/m3
-   }
-  }
+
 dimnames(result) <- list(NULL, dimnames(result)[[2]])
 
 ####################################################################################################

@@ -78,16 +78,16 @@ nms<-dimnames(dat)
 dat<-matrix(as.numeric(dat),ncol=length(dimnames(dat)[[2]]),dimnames=nms)
 
 tracer<-"rn"
-rn.stilt<-dat[,"rn"]
+rn<-dat[,"rn"]
 #rn.stilt<-dat[,"rnini"]+dat[,"rn"]
-rn<-rn.stilt
+#rn<-rn.stilt
 rn.noah<-dat[,"rn_noah"]
 rn.era<-dat[,"rn_era"]
-rn.const<-dat[,"rn_const"]
-rn.noah2<-dat[,"rn_n2"]
-rn.era5<-dat[,"rn_e5"]
-rn.noah2_m<-dat[,"rn_n2m"]
-rn.era5_m<-dat[,"rn_e5m"]
+#rn.const<-dat[,"rn_const"]
+#rn.noah2<-dat[,"rn_noah2d"]
+#rn.era5<-dat[,"rn_era5d"]
+rn.noah2_m<-dat[,"rn_noah2m"]
+rn.era5_m<-dat[,"rn_era5m"]
 #rn.noah<-dat[,"rnini"]+dat[,"rn_noah"]
 #rn.era<-dat[,"rnini"]+dat[,"rn_era"]
 #rn.const<-dat[,"rnini"]+dat[,"rn_const"]
@@ -175,9 +175,9 @@ co2.background<-dat[,"co2ini"]
 
 co2.ini<-dat[,"co2ini"]
 
-co2.nee.offline<-dat[,"n_offline"]
-co2.gee.offline<-dat[,"g_offline"]
-co2.resp.offline<-dat[,"r_offline"]
+#co2.nee.offline<-dat[,"n_offline"]
+#co2.gee.offline<-dat[,"g_offline"]
+#co2.resp.offline<-dat[,"r_offline"]
 
 tracer<-"co"
 
@@ -303,14 +303,14 @@ ch4.geo<-dat[,"ch4geo"]
 ch4.fire<-dat[,"ch4fire"]
 ch4.ocean<-dat[,"ch4ocean"]
 ch4.lakes<-dat[,"ch4lakes"]
-ch4.check<-dat[,"ch4total"]
+#ch4.check<-dat[,"ch4total"]
 ch4.nat<-ch4.wetland+ch4.soil+ch4.uptake+ch4.peatland+ch4.geo+ch4.fire+ch4.ocean+ch4.lakes
 
 #ch4.edgar6<-dat[,"ch4edg6"]
-ch4.edgar7<-dat[,"ch4edg7"]
+#ch4.edgar7<-dat[,"ch4edg7"]
 
 #dat<-cbind(dat,ch4.cat.fuel.all,ch4.cat.fuel.bio,ch4.cat.fuel.gas,ch4.cat.fuel.coal,ch4.cat.fuel.oil,ch4.cat.fuel.waste,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential)
-dat<-cbind(dat,ch4.cat.fuel.all,ch4.cat.fuel.bio,ch4.cat.fuel.gas,ch4.cat.fuel.coal,ch4.cat.fuel.oil,ch4.cat.fuel.waste,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes,ch4.check,ch4.edgar7)
+dat<-cbind(dat,ch4.cat.fuel.all,ch4.cat.fuel.bio,ch4.cat.fuel.gas,ch4.cat.fuel.coal,ch4.cat.fuel.oil,ch4.cat.fuel.waste,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes)
 test.all<-c("ch4.cat.fuel.bio","ch4.cat.fuel.gas","ch4.cat.fuel.coal","ch4.cat.fuel.oil")
 test.plot<-rowSums (dat[,test.all,drop=F], na.rm = FALSE)
 dat<-cbind(dat,test.plot)
@@ -331,7 +331,7 @@ ch4.background<-dat[,"ch4ini"]
 
 ch4.ini<-dat[,"ch4ini"]
 
-dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.fuel.waste,co2.energy,co2.transport,co2.industry,co2.others,co2.residential,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.fuel.waste,co.energy,co.transport,co.industry,co.others,co.residential,co.background,ch4.stilt,ch4.fuel,ch4.fuel.oil,ch4.fuel.coal,ch4.fuel.gas,ch4.fuel.bio,ch4.fuel.waste,ch4.fuel.others,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.background,rn,rn.noah,rn.era,rn.const,rn.noah2,rn.era5,rn.noah2_m,rn.era5_m,rn.background,co2.nee.offline,co2.gee.offline,co2.resp.offline,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes,ch4.check,ch4.edgar7)
+dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.fuel.waste,co2.energy,co2.transport,co2.industry,co2.others,co2.residential,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.fuel.waste,co.energy,co.transport,co.industry,co.others,co.residential,co.background,ch4.stilt,ch4.fuel,ch4.fuel.oil,ch4.fuel.coal,ch4.fuel.gas,ch4.fuel.bio,ch4.fuel.waste,ch4.fuel.others,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.background,rn,rn.noah,rn.era,rn.noah2_m,rn.era5_m,rn.background,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes)
 
 # write results incl. wind information - if exists
 if ("ubar" %in% colnames(dat)) {
