@@ -24,17 +24,24 @@ RUN ["/bin/bash", "-c", "ln -s /usr/lib/x86_64-linux-gnu/libnetcd{f,ff}.so /usr/
 # Check out the STILT project and compile it.
 ARG JENASVNUSER
 ARG JENASVNPASSWORD
-ARG JENASVNREVISION
+
+# <2023-10-26> As of today, revision 749 is the best revision.
+ARG JENASVNREVISION=749
 
 WORKDIR /opt/STILT_svn
-RUN svn --username $JENASVNUSER --password $JENASVNPASSWORD --non-interactive checkout --revision $JENASVNREVISION https://projects.bgc-jena.mpg.de/STILT/svn/trunk
+RUN svn \
+    --username ${JENASVNUSER} \
+    --password ${JENASVNPASSWORD} \
+    --non-interactive checkout \
+    --revision ${JENASVNREVISION} \
+    https://projects.bgc-jena.mpg.de/STILT/svn/trunk
 
 WORKDIR /opt/STILT_modelling/
 RUN cp -R /opt/STILT_svn/trunk/stiltR .
 COPY setup.sh .
 RUN chmod +x setup.sh && ./setup.sh && rm setup.sh
 
-RUN echo $JENASVNREVISION && touch ./version_$JENASVNREVISION
+RUN echo ${JENASVNREVISION} && touch ./version_$JENASVNREVISION
 
 WORKDIR /opt/STILT_svn/trunk/merged_stilt_hysplit
 COPY Makefile .
