@@ -1,15 +1,14 @@
+# The geospatial package includes HDF-5
 FROM rocker/geospatial
 
-# The geospatial package includes HDF-5
-
-RUN apt-get update -y && apt-get upgrade -y
-
-# Install extra packages
-RUN apt-get install -y \
-  # required to check out stilt source code
-  subversion \
-  # required by some of the stilt shell scripts
-  csh
+# https://docs.docker.com/develop/develop-images/guidelines/
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install -y \
+    subversion \
+    csh \
+    libnetcdf-dev \
+    libnetcdff-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install R packages
 # Check this page if links to packages change:
@@ -19,8 +18,6 @@ RUN R -e "install.packages('dotCall64',dependencies=TRUE, repos='http://cran.rst
 RUN R -e "install.packages('spam',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('fields',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
-# Install NetCDF
-RUN apt-get install -y libnetcdf-dev libnetcdff-dev
 # Use bash in order to get brace expansion
 RUN ["/bin/bash", "-c", "ln -s /usr/lib/x86_64-linux-gnu/libnetcd{f,ff}.so /usr/lib/"]
 
