@@ -9,15 +9,14 @@
 
 - name: Check whether sftp parent directory exists
   stat:
-    path: "{{ sftp_user_dir | dirname }}"
+    path: "{{ _sftp_parent_dir }}"
+  check_mode: false
   register: _parent
 
-# The sftp parent directory cannot be owned by the sftp user (internal-sftp
-# will complain). But we must also take into account that the parent directory
-# may already exist and be owned by another user.
-- name: Create sftp directory parent
+# All the parent directories must exist and must be owned by root.
+- name: Create sftp parent directory
   file:
-    path: "{{ sftp_user_dir | dirname }}"
+    path: "{{ _sftp_parent_dir }}"
     state: directory
     owner: root
     group: root
@@ -26,24 +25,30 @@
 - name: Create sftp user
   user:
     name: "{{ sftp_user_login }}"
-    password: "{{ sftp_user_password | password_hash('sha512', vault_pw_salt) }}"
-    home: "{{ sftp_user_dir | dirname }}"
-    create_home: no
+    password: >-
+      {{ sftp_user_password | password_hash('sha512', vault_pw_salt)
+         if sftp_user_password else omit }}
+    # We only need the home directory as a place for storing keys.
+    create_home: "{{ sftp_user_pubkey is truthy }}"
     shell: /usr/sbin/nologin
   register: _user
 
+- name: Install public key
+  authorized_key:
+    user: "{{ sftp_user_login }}"
+    key: "{{ sftp_user_pubkey }}"
+  when: sftp_user_pubkey
+
 - name: Stat parent directory again
   stat:
-    path: "{{ sftp_user_dir | dirname }}"
+    path: "{{ _sftp_parent_dir }}"
+  check_mode: false
   register: _parent
 
-- name: Fail if parent directory is owned by sftp user
+- name: Fail if parent directory isn't owned by root
   fail:
-    msg: >-
-      "{{ sftp_user_dir | dirname }} must not be owned by {{ sftp_user_login }}"
-  when: >-
-    _parent.stat.uid == _user.uid or
-    _parent.stat.gid == _user.group
+    msg: "{{ _sftp_parent_dir }} must be owned by root"
+  when: _parent.stat.uid != 0 or _parent.stat.gid != 0
 
 # This is the actual directory user for uploading/downloading. Depending on
 # "sftp_user_owner", the directory might be read-only or read-write for the
@@ -66,7 +71,7 @@
     path: /etc/ssh/sshd_config
     block: |
       Match User {{ sftp_user_login }}
-        ChrootDirectory  %h
+        ChrootDirectory {{ _sftp_parent_dir }}
         ForceCommand internal-sftp -d {{ sftp_user_dir | basename }}
         DisableForwarding yes
         PasswordAuthentication yes
@@ -80,4 +85,6 @@
         HostName {{ ansible_host }}
         Port {{ ansible_port }}
         User {{ sftp_user_login }}
+        {% if sftp_user_password %}
         PreferredAuthentications password
+        {%- endif %}

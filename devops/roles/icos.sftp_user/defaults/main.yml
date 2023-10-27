@@ -3,6 +3,13 @@
 # change sftp_user_owner to another user.
 sftp_user_owner: "{{ sftp_user_login }}"
 sftp_user_group: "{{ sftp_user_owner }}"
+sftp_user_password:
+sftp_user_pubkey:
 
 # Descriptive string used for the ssh client config.
 sftp_user_hostdesc: "{{ inventory_hostname }}"
+
+_sftp_parent_dir: "{{ sftp_user_dir | dirname }}"
+
+# We only need the home directory as a place for storing keys.
+_sftp_create_home: "{{ sftp_authorized_keys | bool }}"
