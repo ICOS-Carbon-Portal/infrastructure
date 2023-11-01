@@ -1060,7 +1060,13 @@ if ("rn"%in%tracers & inikind["rn"] == "TM3") {
    ftype<-substring(inifile["rn"],nchar(inifile["rn"])-1,nchar(inifile["rn"]))
    if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn"],
                   result=result, result.sel=selend, tracer=c("rn"))
-   if(ftype=="nc")result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
+   if(ftype=="nc"){
+	if(max(result[selend,"rnini"]) > 1.E-08){# Ute: boundary data provided by Max already in Bq/m3
+           result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24)) #apply Rn decay to lateral boundary condition, do not conv. to Bq/m3
+       }else{
+           result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
+       }
+   }
 }
 
 dimnames(result) <- list(NULL, dimnames(result)[[2]])

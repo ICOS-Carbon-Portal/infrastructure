@@ -94,12 +94,12 @@ for (year in year_start:year_end) {
 ## define directory names and make directories
   path<-paste(path_id,"RData/",sep="")         # path of directories with RData files for each station 
   path<-paste(path,station,"/",sep="")
-  path<-paste(path,as.character(year),"/",sep="")
+  #path<-paste(path,as.character(year),"/",sep="")
   system(paste("mkdir -p ",path,sep=""))
   cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for partical location files ",path,"\n")
   pathFP<-paste(path_id,"Footprints/",sep="")  # path to save footprints in nc-files
   pathFP<-paste(pathFP,station,"/",sep="")
-  pathFP<-paste(pathFP,as.character(year),"/",sep="")
+  #pathFP<-paste(pathFP,as.character(year),"/",sep="")
   system(paste("mkdir -p ",pathFP,sep=""))
   cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for footprint files ",pathFP,"\n")
   
