@@ -259,7 +259,7 @@ c(   rep("",l.traddco2),
      rep("",l.traddch4),
                       "SRON",   
      rep("",l.traddn2o),
-                                 "",       "",       "",     "TM3", "TM3",    "TM3",    "TM3",      "TM3",    "TM3",  "TM3",    "TM3",   "",           "",        "",         "",        "",       "",      "",         "",       "",       "",       "",       "",       ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
+                                 "",       "",       "",     "TM3", "",    "",    "",      "",     "",    "",      "",    "",           "",        "",         "",        "",       "",      "",         "",       "",       "",       "",       "",       ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
                                                                                                        #"CT" (CarbonTracker), "TM3", "LMDZ", "" (zero boundary)
 c(rep("",l.traddco2),   #not modify		  	              #full names for initial & boundary cond. files; select "" for climatological LBC ("climat")
 #       "/User/homes/croeden/public_html/download-CO2-3D/INVERSION/OUTPUT/s96_v3.6_mix_2013.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year
@@ -274,14 +274,8 @@ c(rep("",l.traddco2),   #not modify		  	              #full names for initial & 
                                "",                   							#full name for initial & boundary cond. file (N2O) 
                                          "",                                                          	#full name for initial & boundary cond. file (H2)
                                                    "",							#full name for initial & boundary cond. file (COfire)
-                                                             "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-                                                             "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-                                                             "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-                                                             "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
-                                                             "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
+                                                             "./Input/INI_BDY/TM3/Rn/Max/PRI_mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
+							     "", "", "", "", "", "", "",# initial & boundary cond. file (Rn)
                                                              "","","", # VPRM offline
                                                              "","","","","","","","","","")) 				#full name for initial & boundary cond. file (ch4)
 
