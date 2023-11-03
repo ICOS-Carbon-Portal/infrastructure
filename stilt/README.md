@@ -1,68 +1,101 @@
 # STILT modeling software
 
-Standard Docker image build file and docker-compose config file for STILT
-langrangian transport model software.  Build process requires username and
-password for access to MPI-BCG's SVN repository (in Jena). Edit the
-docker-compose config accordingly.
+In this directory are script and Dockerfiles to build the STILT software as a
+docker image. 
+
+The docker image is then used by our [STILT web service](https://stilt.icos-cp.eu/)
+
+# Understanding the flow of STILT jobs
+```mermaid
+flowchart TD
+    User -->|Enter job description| Stiltweb(Stiltweb<br>Splits job into time-slots)
+    Stiltweb -->|Sends slot #1| Stiltcluster1(Stiltcluster Node 1)
+    Stiltweb -->|Sends slot #2| Stiltcluster2(Stiltcluster Node 2)
+    Stiltcluster1 -->|Executes| Stiltpy(stilt.py)
+    Stiltpy -->|Runs docker image| Stiltcustom
+    Stiltcustom -->|Outputs result| Filesystem
+    Stiltcluster1 -->|Collects files| Filesystem
+    Stiltcluster1 -->|Sends result|Stiltweb
+    Stiltweb  <-->|Collect results|FilesystemDatabase
+```
+
++ [Stiltweb](https://github.com/ICOS-Carbon-Portal/stiltweb)
++ [Stiltcluster](https://github.com/ICOS-Carbon-Portal/stiltweb/tree/master/stiltcluster/src/main)
++ [stilt.py](https://github.com/ICOS-Carbon-Portal/infrastructure/blob/master/devops/roles/icos.stiltrun/templates/stilt.py)
++ [Stiltcustom](https://github.com/ICOS-Carbon-Portal/infrastructure/blob/master/stilt/base/Dockerfile)
 
 
-## Saving a pre-build Docker image
-`docker save <image> | gzip > <file>`
+# Building a new STILT docker image for use by [stilt.py](../devops/roles/icos.stiltrun/templates/stilt.py)
+
+To build the docker image you'll need docker installed. Then run:
+
+    $ ./build.sh
+    
+If everything goes well, the script ends by echoing the commands needed to
+export the new docker image to file
+
+    $ docker save stiltcustom | gzip -c > stiltcustom-CHECKSUM.tgz
 
 
+## Setting the SVN PASSWORD
 
-## Loading the pre-build base STILT Docker image
-Run as a member of `docker` group or as root:
-`wget -O- https://static.icos-cp.eu/share/docker/stilt/baseimage.tgz | gunzip -c | docker load`
+As part of building the docker images, the source code for stilt is checked
+out from a SVN repository. If you have access to the ansible vault then the
+user and password should be set automatically (see build.sh for details).
+
+Otherwise you'll have to set the JENSVNUSER and JENASVNPASSWORD variables.
+
+    $ export JENASVNUSER=myuser export JENASVNPASSWORD=secret
+    
+
+# Uploading a newly built image to a stiltcluster node
+
+Now we'll upload the newly built image and set the docker tags.
+
+If you haven't already, run the commands echoed by build.sh to save the docker
+image.
+
+    $ docker save stiltcustom | gzip -c > stiltcustom-CHECKSUM.tgz
+    
+Then upload the image to the stiltcluster node on which you aim to test it.
+
+    $ scp stiltcustom-CHECKSUM.tgz fsicos4-stiltcluster:
+    
+Now ssh to the stiltlcluster node.
+
+    $ ssh fsico4-stiltcluster
+    
+    
+The stiltcluster software uses an image named `stiltcustom` by default. Tag
+the current image to make it easy to switch between images.
+
+    $ docker tag stiltcustom stiltcustom-current
+    
+Now load the newly scp:ed image into docker.
+
+    $ zcat stiltcustom-490dfc22049a.tgz | docker load
+    The image stiltcustom:latest already exists, renaming the old one with ID sha256:148fa72c67d756cd6dcd43ec890f2813ef6c868f2b81c2c7dc84156c68a27bb5 to empty string
+    Loaded image: stiltcustom:latest
+    
+You can see how docker has loaded the new stiltcustom image and also
+overwritten the `stiltcustom` tag. This means that right now, if any
+stiltcluster job comes in, it'll use the new and untested stiltcustom
+image. Let's fix that.
+
+    $ docker tag stiltcustom stiltcustom-new
+    $ docker tag stiltcustom-current stiltcustom
+    
+We've saved the newly imported image's tag as stiltcustom-new and restored the
+old stiltcustom tag.
 
 
-## Useful commands for running on Mac machine
+# Testing a stiltcustom image
 
-### Preparing access to icos server
+If you've ssh:ed to a stiltcluster node (i.e a host that's been provisioned by
+the icos.stiltrun ansible role), you'll have access to the `stilt`
+command. By default, the `stilt` command uses the docker image tagged
+`stiltcustom` (as do the stiltcluster software) but another image can be
+selected using `--image`:
 
-`mkdir -p Output/RData`
-
-`mkdir -p Output/Results`
-
-`mkdir -p Output/Footprints`
-
-(readonly)
-
-`sshfs  -o ro ute@icos-cp.eu:/disk/data/STILT/RData Output/RData`
-
-(read+write)
-
-`sshfs ute@icos-cp.eu:/disk/data/STILT/Results Output/Results`
-
-`sshfs ute@icos-cp.eu:/disk/data/STILT/Footprints Output/Footprints`
-
-`mkdir Input`
-
-(readonly)
-
-`sshfs  -o ro ute@icos-cp.eu:/disk/data/STILT Input`
-
-### Building Docker image and starting a container
-
-`docker build -t webstilt_nc_production .`
-
-`docker run -d --name webstilt_nc_production -v $PWD/Input:/opt/STILT_modelling/Input/ -v $PWD/Output:/opt/STILT_modelling/Output/ -p 8080:9011 -t webstilt_nc_production`
-
-`docker cp stiltweb-assembly-0.1.0.jar webstilt_nc_production:/opt`
-
-### Starting a shell inside the container
-
-`docker exec -it webstilt_nc_production /bin/bash`
-
-Type this inside the container:
-
-`java -jar /opt/stiltweb-assembly-0.1.0.jar`
-
-Now open a web browser and go to this address:
-
-`http://192.168.99.100:8080/`
-
-On a mac this needs to be the address of the VM. Find this with: 
-
-`docker-machine ip default`
+    $ stilt --image=stiltcustom-new HTM 56.10 13.42 150 2012061500 2012061500
 
