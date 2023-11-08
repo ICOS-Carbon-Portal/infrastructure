@@ -1,0 +1,14 @@
+instance:
+    clientUrl: https://{{ fdp_domain }}
+#     persistentUrl: https://purl.org/fairdatapoint/example
+
+# security:
+#     jwt:
+#         token:
+#             secret-key: <random 128 characters string>
+
+# # repository settings (can be changed to different repository)
+# repository:
+#     type: 5
+#     blazegraph:
+#         url: http://blazegraph:8080/blazegraph

@@ -1,0 +1,13 @@
+# Directory on host where we'll store docker-compose.yml etc.
+fdp_home: /opt/fairdatapoint
+
+# The publicly reachable https domain we'll reverse proxy to docker.
+fdp_domain: fdp.icos-cp.eu
+
+# The port on localhost that docker will forward to the fdp container.
+fdp_port: 8002
+
+
+nginxsite_name: fairdatapoint
+nginxsite_file: fairdatapoint-nginx.conf
+nginxsite_domains: [ "{{ fdp_domain }}" ]

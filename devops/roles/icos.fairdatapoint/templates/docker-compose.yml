@@ -1,0 +1,26 @@
+services:
+  fdp:
+    image: fairdata/fairdatapoint:1.16
+    volumes:
+      - ./volumes/application.yml:/fdp/application.yml:ro
+
+  fdp-client:
+    image: fairdata/fairdatapoint-client:1.16
+    ports:
+      - "127.0.0.1:{{ fdp_port }}:80"
+    environment:
+      - FDP_HOST=fdp
+
+  mongo:
+    image: mongo:4.0.12
+    # ports:
+    #   - "127.0.0.1:27017:27017"
+    volumes:
+      - ./volumes/mongo:/data/db
+
+  # https://en.wikipedia.org/wiki/Blazegraph
+  # "an open source triplestore and graph database"
+  blazegraph:
+    image: metaphacts/blazegraph-basic:2.2.0-20160908.003514-6
+    volumes:
+      - ./volumes/blazegraph:/blazegraph-data

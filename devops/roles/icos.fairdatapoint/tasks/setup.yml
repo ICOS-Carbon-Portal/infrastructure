@@ -1,0 +1,28 @@
+# https://fairdatapoint.readthedocs.io
+
+- name: Create fairdatapoint directory
+  file:
+    path: "{{ fdp_home }}/volumes/"
+    state: directory
+
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ fdp_home }}"
+    lstrip_blocks: yes
+  register: _compose
+
+
+- name: Copy application.yml
+  template:
+    src: application.yml
+    dest: "{{ fdp_home }}/volumes/"
+    lstrip_blocks: yes
+  register: _config
+
+
+- name: Start fairdatapoint
+  icos_docker_compose:
+    chdir: "{{ fdp_home }}"
+    force_recreate: "{{ _config.changed or _compose.changed }}"
