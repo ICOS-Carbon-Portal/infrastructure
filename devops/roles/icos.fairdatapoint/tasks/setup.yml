@@ -14,6 +14,19 @@
   register: _compose
 
 
+- name: Generate JWT secret
+  include_role:
+    name: icos.password_env_file
+  vars:
+      file: "{{ item.file }}"
+      set_fact: "{{ item.set_fact }}"
+      file_var: "{{ item.file_var }}"
+  loop:
+    - file: "{{ fdp_home }}/jwt-secret"
+      set_fact: fdp_jwt_secret
+      file_var: FDP_JWT_SECRET
+
+
 - name: Copy application.yml
   template:
     src: application.yml
