@@ -1,0 +1,24 @@
+- name: Find the latest release of watchexec
+  run_once: true
+  delegate_to: localhost
+  check_mode: false
+  github_release:
+    user: watchexec
+    repo: watchexec
+    action: latest_release
+  register: gr
+
+- name: Install watchexec
+  apt:
+    deb: "{{ watchexec_url_map[ansible_architecture] }}"
+
+- name: Test watchexec
+  tags: watchexec
+  command: watchexec --version
+  changed_when: false
+  register: _r
+
+- name: Which version of watchexec did we install
+  debug:
+    msg: |
+      Installed {{ _r.stdout_lines[0] }}

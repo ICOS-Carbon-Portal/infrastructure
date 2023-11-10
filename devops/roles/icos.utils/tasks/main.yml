@@ -93,22 +93,10 @@
   changed_when: false
 
 
-# WATCHEXEC
-- name: Install watchexec
-  tags: watchexec
-  include_role:
-    name: icos.github_download_bin
-    apply: {tags: watchexec}
-  vars:
-    dbin_user: watchexec
-    dbin_repo: watchexec
-    # https://github.com/watchexec/watchexec/releases/download/v1.20.6/watchexec-1.20.6-x86_64-unknown-linux-musl.tar.xz
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/watchexec-{{ dbin__vers.lstrip('v') }}-{{ watchexec_arch }}-unknown-linux-musl.tar.xz"
 
-- name: Test watchexec
+# WATCHEXEC
+- import_tasks: watchexec.yml
   tags: watchexec
-  command: "{{ dbin_symlink.dest }} --version"
-  changed_when: false
 
 
 # BTOP
