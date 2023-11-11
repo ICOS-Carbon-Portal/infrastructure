@@ -1,6 +1,19 @@
 import os
+import subprocess
 from ansible.module_utils.basic import AnsibleModule
-from subprocess import run
+
+def run(cmd, **kwargs):
+    default = {"check": False, "text": True, 'capture_output': True}
+    if isinstance(cmd, str):
+        default["shell"] = True
+    default.update(kwargs)
+    # docker-compose print status changes on stderr, usually nothing on stdout
+    r = subprocess.run(cmd, **default)
+    d = {'stdout': r.stdout, 'stdout_lines': r.stdout.splitlines(),
+         'stderr': r.stderr, 'stderr_lines': r.stderr.splitlines(),
+         'cmd': cmd}
+    return r, d
+
 
 def find_docker_compose(module):
     """Find the command used to execute docker-compose.
@@ -10,7 +23,7 @@ def find_docker_compose(module):
     """
     for cmd in ("docker compose", "docker-compose"):
         try:
-            r = run([cmd, 'version'], check=0, capture_output=1)
+            r, _ = run(f'{cmd} version')
         except FileNotFoundError:
             continue
         if r.returncode == 0:
@@ -23,7 +36,9 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             chdir=dict(required=True, type='str'),
-            force_recreate=dict(required=False, type='bool', default=False)
+            force_recreate=dict(required=False, type='bool', default=False),
+            pull=dict(required=False, type='bool', default=False),
+            build=dict(required=False, type='bool', default=False)
         ),
         supports_check_mode=False)
 
@@ -34,22 +49,33 @@ def main():
         module.fail_json(f"Could not chdir() to '{chdir}'")
 
     dc = find_docker_compose(module)
-    force = '--force-recreate' if module.params['force_recreate'] else ''
+    up = f'{dc} up -d'
 
-    r = run(f'{dc} up -d {force}', capture_output=1, text=1, shell=1, check=0)
+    if module.params['pull']:
+        # version 1 does not have 'up --pull', so we'll have to pull
+        # separately.
+        if dc == 'docker-compose':
+            r, d = run(f'{dc} pull --quiet', capture_output=1, shell=1, check=0)
+            if r.returncode != 0:
+                module.fail_json("Fail", **d)
+        else:
+            up += ' --pull always --quiet-pull'
 
-    # docker-compose print status changes on stderr, usually nothing on stdout
-    result = {'stdout': r.stdout, 'stdout_lines': r.stdout.splitlines(),
-              'stderr': r.stderr, 'stderr_lines': r.stderr.splitlines(),
-              }
+    if module.params['force_recreate']:
+        up += ' --force-recreate'
 
+    if module.params['build']:
+        up += ' --build'
+
+    r, result = run(up)
     if r.returncode != 0:
         module.fail_json("Fail", **result)
 
     result['changed'] = any(line
                             for line in result['stderr_lines']
-                            if not 'up-to-date' in line)
-    result['changed'] |= bool(force)
+                            if not ('up-to-date' in line
+                                    or 'Running' in line))
+    result['changed'] |= module.params['force_recreate']
 
     module.exit_json(**result)
 
