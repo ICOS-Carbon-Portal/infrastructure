@@ -19,6 +19,7 @@
 - name: Install xcaddy
   apt:
     name: xcaddy
+    state: "{{ 'latest' if xcaddy_upgrade else 'present' }}"
 
 - name: Test that xcaddy works
   shell: xcaddy version
