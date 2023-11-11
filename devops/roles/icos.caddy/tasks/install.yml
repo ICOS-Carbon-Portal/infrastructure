@@ -16,3 +16,5 @@
 - name: Install caddy
   apt:
     name: caddy
+    state: "{{ 'latest' if caddy_upgrade else 'present' }}"
+  notify: restart caddy

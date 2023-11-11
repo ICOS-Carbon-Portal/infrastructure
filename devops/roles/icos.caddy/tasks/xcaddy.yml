@@ -12,6 +12,7 @@
   args:
     chdir: /tmp
     creates: "{{ caddy_via_xcaddy }}"
+  notify: restart caddy
 
 - name: Create caddy systemd drop-in directory
   file:

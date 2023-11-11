@@ -19,3 +19,6 @@ caddy_via_xcaddy: /usr/local/bin/caddy
 # When we run caddy to validate config files it's important we use the correct
 # one (i.e one that has support for syntax we've added)
 caddy_bin: "{{ caddy_via_xcaddy if caddy_modules else '/usr/bin/caddy' }}"
+
+caddy_upgrade: "{{ upgrade_everything | bool | default(False) }}"
+xcaddy_upgrade: "{{ caddy_upgrade }}"
