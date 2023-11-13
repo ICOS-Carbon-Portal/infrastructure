@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/onlyoffice/documentserver-ee/
-onlyoffice_version: 7.3.3
+onlyoffice_version: 7.5.1
 onlyoffice_port: 8201
 
 onlyoffice_home: /docker/onlyoffice
