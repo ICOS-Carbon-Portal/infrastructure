@@ -5,15 +5,16 @@ trusted_host: ^www\.icos-cp\.eu$
 domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 drupal_modules: [
+  bartik,
   color_field,
   conflict,
   editor_advanced_link,
-  field_group,
   honeypot,
   html_title,
   linkit,
   matomo,
   media_alias_display,
+  media_bulk_upload,
   menu_breadcrumb,
   metatag,
   pathauto,

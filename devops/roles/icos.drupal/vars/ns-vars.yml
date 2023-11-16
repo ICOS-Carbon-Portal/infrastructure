@@ -6,3 +6,6 @@ trusted_host: ^nordspec\.nateko\.lu\.se$
 database_prefix: drupal_
 database_name: nordspecdb
 database_user: nordspecdb
+drupal_modules: [
+  bartik
+]

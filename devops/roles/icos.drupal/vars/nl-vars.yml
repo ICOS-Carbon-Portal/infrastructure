@@ -4,3 +4,6 @@ mysql_docker_port: 3343
 domain: www.icos-netherlands.nl
 trusted_host: ^www\.icos-netherlands\.nl$
 ssl_domains: [icos-netherlands.nl,www.icos-netherlands.nl]
+drupal_modules: [
+  bartik
+]

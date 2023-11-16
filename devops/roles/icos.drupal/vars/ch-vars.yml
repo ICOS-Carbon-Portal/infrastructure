@@ -5,6 +5,7 @@ domain: www.icos-switzerland.ch
 trusted_host: ^www\.icos-switzerland\.ch$
 ssl_domains: [switzerland.icos-cp.eu,www.icos-switzerland.ch]
 drupal_modules: [
+  bartik,
   honeypot,
   linkit,
   pathauto,

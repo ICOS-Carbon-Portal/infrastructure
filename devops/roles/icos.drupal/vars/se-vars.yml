@@ -5,6 +5,7 @@ domain: www.icos-sweden.se
 trusted_host: ^www\.icos-sweden\.se$
 ssl_domains: [sweden.icos-cp.eu,icos-sweden.se,www.icos-sweden.se]
 drupal_modules: [
+  bartik,
   editor_file,
   honeypot,
   linkit,

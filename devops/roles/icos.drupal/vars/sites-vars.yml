@@ -9,7 +9,6 @@ ssl_domains: [demo.fieldsites.se]
 drupal_modules: [
   editor_advanced_link,
   feeds,
-  field_group,
   honeypot,
   linkit,
   media_alias_display,
@@ -20,5 +19,6 @@ drupal_modules: [
   redirect,
   smtp,
   token,
+  twig_tweak,
   webform
 ]

@@ -4,10 +4,10 @@ mysql_docker_port: 3337
 domain: demo.icos-cp.eu
 trusted_host: ^demo\.icos-cp\.eu$
 drupal_modules: [
+  bartik,
   color_field,
   conflict,
   editor_advanced_link,
-  field_group,
   honeypot,
   html_title,
   linkit,
