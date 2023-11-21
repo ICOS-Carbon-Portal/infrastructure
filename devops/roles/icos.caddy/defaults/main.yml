@@ -20,5 +20,5 @@ caddy_via_xcaddy: /usr/local/bin/caddy
 # one (i.e one that has support for syntax we've added)
 caddy_bin: "{{ caddy_via_xcaddy if caddy_modules else '/usr/bin/caddy' }}"
 
-caddy_upgrade: "{{ upgrade_everything | bool | default(False) }}"
+caddy_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 xcaddy_upgrade: "{{ caddy_upgrade }}"
