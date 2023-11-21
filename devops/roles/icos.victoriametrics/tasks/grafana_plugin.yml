@@ -2,6 +2,11 @@
 # https://github.com/VictoriaMetrics/grafana-datasource
 # https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#plugins-1
 
+- name: Create grafana plugin directory
+  file:
+    path: "{{ vm_graf_plugins }}"
+    state: directory
+
 - name: Find the latest release of grafana-datasource
   run_once: true
   delegate_to: localhost
@@ -11,11 +16,6 @@
     repo: grafana-datasource
     action: latest_release
   register: release
-
-- name: Create grafana plugin directory
-  file:
-    path: "{{ vm_graf_plugins }}"
-    state: directory
 
 - name: Download grafana-datasource
   ansible.builtin.get_url:
