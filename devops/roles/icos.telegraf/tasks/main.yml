@@ -1,0 +1,5 @@
+- import_tasks: install.yml
+  tags: telegraf_install
+
+- import_tasks: config.yml
+  tags: telegraf_config

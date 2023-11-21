@@ -1,0 +1,42 @@
+- block:
+    - name: Create telegraf config
+      copy:
+        dest: "{{ telegraf_conf_file }}"
+        content: "{{ telegraf_conf_content }}"
+        backup: true
+      register: update
+
+    - name: Run validation
+      command: telegraf --test --config {{ telegraf_conf_file }}
+      changed_when: update.changed
+      notify: reload telegraf
+
+  rescue:
+    - name: Slurp failed file and add line numbers
+      command: cat -n {{ telegraf_conf_file }}
+      changed_when: no
+      register: _slurp
+
+    - name: Dump failed configuration
+      debug:
+        msg: "{{ _slurp.stdout }}"
+
+    - name: Restore config file
+      copy:
+         remote_src: true
+         dest: "{{ telegraf_conf_file }}"
+         src: "{{ update.backup_file }}"
+
+  always:
+    - name: Remove backup file
+      file:
+        name: "{{ update.backup_file }}"
+        state: absent
+      when: "update['backup_file'] is defined"
+
+
+- name: Make sure telegraf is started
+  systemd:
+    name: telegraf
+    enabled: yes
+    state: started
