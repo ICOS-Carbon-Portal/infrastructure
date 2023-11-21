@@ -30,11 +30,6 @@
     src: settings.php.j2
     dest: "{{ project_dir }}/files/default/settings.php"
 
-- name: Copy services.yml
-  copy:
-    src: services.yml
-    dest: "{{ project_dir }}/files/default/"
-
 - name: Create {{ project_dir }}/docker/ directory
   file: path={{ project_dir }}/docker/ state=directory recurse=yes
 

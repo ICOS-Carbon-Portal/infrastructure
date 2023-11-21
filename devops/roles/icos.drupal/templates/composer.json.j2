@@ -23,7 +23,7 @@
         }
     ],
     "require": {
-        "composer/installers": "^1.9",
+        "composer/installers": "^2.2",
         {{ '"drupal/bartik": "^1.0",'                   if "bartik" in drupal_modules }}
         "drupal/core-composer-scaffold": "^{{ drupal_version }}",
         "drupal/core-recommended": "^{{ drupal_version }}",
@@ -37,17 +37,17 @@
         {{ '"drupal/feeds": "^3.0@beta",'               if "feeds" in drupal_modules }}
         {{ '"drupal/honeypot": "^2.1",'                 if "honeypot" in drupal_modules }}
         {{ '"drupal/html_title": "^1.4",'               if "html_title" in drupal_modules }}
-        {{ '"drupal/linkit": "^6.0",'                   if "linkit" in drupal_modules }}
+        {{ '"drupal/linkit": "^6.1",'                   if "linkit" in drupal_modules }}
         {{ '"drupal/matomo": "^1.21",'                  if "matomo" in drupal_modules }}
-        {{ '"drupal/media_alias_display": "^1.0",'      if "media_alias_display" in drupal_modules }}
+        {{ '"drupal/media_alias_display": "^2.0",'      if "media_alias_display" in drupal_modules }}
         {{ '"drupal/media_bulk_upload": "^3.0",'        if "media_bulk_upload" in drupal_modules }}
-        {{ '"drupal/menu_breadcrumb": "^1.16",'         if "menu_breadcrumb" in drupal_modules }}
+        {{ '"drupal/menu_breadcrumb": "^2.0@alpha",'    if "menu_breadcrumb" in drupal_modules }}
         {{ '"drupal/metatag": "^2.0",'                  if "metatag" in drupal_modules }}
         {{ '"drupal/pathauto": "^1.12",'                if "pathauto" in drupal_modules }}
         {{ '"drupal/plausible": "^2",'                  if "plausible" in drupal_modules }}
         {{ '"drupal/redirect": "^1.9",'                 if "redirect" in drupal_modules }}
         {{ '"drupal/restui": "^1.20",'                  if "restui" in drupal_modules }}
-        {{ '"drupal/scheduler": "^1.4",'                if "scheduler" in drupal_modules }}
+        {{ '"drupal/scheduler": "^2.0",'                if "scheduler" in drupal_modules }}
         {{ '"drupal/simple_sitemap": "^4.0",'           if "simple_sitemap" in drupal_modules }}
         {{ '"drupal/single_content_sync": "^1.3",'      if "single_content_sync" in drupal_modules }}
         {{ '"drupal/smtp": "^1.0",'                     if "smtp" in drupal_modules }}
@@ -55,7 +55,7 @@
         {{ '"drupal/token": "^1.10",'                   if "token" in drupal_modules }}
         {{ '"drupal/twig_tweak": "^3.2",'               if "twig_tweak" in drupal_modules }}
         {{ '"drupal/webform": "^6.2",'                  if "webform" in drupal_modules }}
-        "drush/drush": "^10.4",
+        "drush/drush": "^12.4",
         {{ '"enyo/dropzone": "^5.7",'                   if "media_bulk_upload" in drupal_modules }}
         "wikimedia/composer-merge-plugin": "^2.0"
     },
