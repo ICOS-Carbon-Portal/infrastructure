@@ -21,6 +21,9 @@
     - https_proxy_server != 'nginx'
     - https_proxy_server != 'caddy'
 
+- name: Flush handlers
+  meta: flush_handlers
+
 - name: Test that the vmagent UI is password protected
   tags: nginx
   uri:

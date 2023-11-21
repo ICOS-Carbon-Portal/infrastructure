@@ -22,3 +22,4 @@
     remote_src: true
   diff: false
   register: unar
+  notify: restart vmagent

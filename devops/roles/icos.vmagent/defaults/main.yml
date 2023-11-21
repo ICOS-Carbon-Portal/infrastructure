@@ -30,7 +30,7 @@ vmagent_pathprefix:
 vmagent_listen: 127.0.0.1:8429
 
 # Should we upgrade to latest release?
-vmagent_upgrade: false
+vmagent_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 
 vmagent_arch: "{{ vmagent_arch_map[ansible_architecture] }}"
 vmagent_arch_map:

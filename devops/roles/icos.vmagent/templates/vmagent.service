@@ -3,9 +3,13 @@ Description=Victoriametrics vmagent
 
 [Service]
 EnvironmentFile={{ vmagent_environ }}
+
+# restart?
+# -usePromCompatibleNaming is used to support telegraf
 ExecStart={{ vmagent_bin }}/vmagent-prod \
   -promscrape.config={{ vmagent_home }}/prometheus.yml \
   -remoteWrite.url=%{VM_REMOTE} \
+  -usePromCompatibleNaming \
   -httpListenAddr={{ vmagent_listen }}
 
   {%- if vmagent_pathprefix %} \
@@ -16,6 +20,7 @@ ExecStart={{ vmagent_bin }}/vmagent-prod \
   -remoteWrite.basicAuth.username=%{VM_USERNAME} \
   -remoteWrite.basicAuth.password=%{VM_PASSWORD}
   {% endif %}
+
 Restart=always
 ExecReload=kill -HUP $MAINPID
 
