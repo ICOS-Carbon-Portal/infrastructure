@@ -188,7 +188,7 @@ get.SRON.netcdf <- function(yr4=NULL, mon=NULL, day=NULL, hr=NULL, tracersinifil
       
 #      print("OUT OF THE LOOP and FINISHING")
       resultm[,paste(tracer,"ini",sep="")] <- rep(0,nrow(resultm))
-      resultm[result.selm,paste(tracer,"ini",sep="")] <- tm3boundary
+      resultm[result.selm,paste(tracer,"ini",sep="")] <- tm3boundary/1000.    # CP: convert ppb to ppm (CAMS is in ppb but all other CH4 components are converted in ppm)
 
       nc_close(tm3file)
 
