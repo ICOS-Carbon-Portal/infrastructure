@@ -662,9 +662,18 @@ if (fluxTF) {
  
    assignr(paste(stiltresultname, part, sep=""), result, path=path_stiltresult)
    print(paste(stiltresultname, part, " assigned in ", path_stiltresult, sep=""))
-   write.table(result, file=paste(path_stiltresult, stiltresultname, part, ".csv", sep=""), na="", row.names=F)
-}
 
+   if (cpTF){                  # ICOS-CP specific settings
+      # Add information on model version, fluxes and tracer metadata to csv file
+      # Convert the matrix result to a data frame
+      df_result <- data.frame(result)
+      # Add the new column with metadata link to the data frame
+      df_result$metadata <- metadata
+      write.table(df_result, file=paste(path_stiltresult, stiltresultname, part, ".csv", sep=""), na="", row.names=F)
+   }else{
+      write.table(result, file=paste(path_stiltresult, stiltresultname, part, ".csv", sep=""), na="", row.names=F)
+   }
+}
 # If evi and lswi maps from vprm calculations is saved to the global environment; it should be removed here
 
 rm(list=objects(pattern="GlobalEvi"), envir=globalenv())

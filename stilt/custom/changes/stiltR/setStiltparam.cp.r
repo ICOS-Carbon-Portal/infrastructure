@@ -10,6 +10,10 @@ cat("setStiltparam.r: starting...\n")
 cpTF<-T  # T: specific settings for ICOS-CP
          # F: default version
 
+### get link to metadata to add to results csv file
+metadata <- readLines("./metadata_link.txt")
+print(paste("Link to metadata for model version and input files:",metadata,sep=" "))
+
 ###### set directories ######
 ###### make sure they exist, at least the ones in the following first paragraph
 

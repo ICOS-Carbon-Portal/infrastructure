@@ -18,6 +18,10 @@ lat.ll  <-  33                 #lower left corner of grid
 fluxmod <- "VPRM"
 landcov <- "SYNMAP.VPRM8"
 
+### get link to metadata to add to results csv file
+metadata <- readLines("./metadata_link.txt")
+print(paste("Link to metadata for model version and input files:",metadata,sep=" "))
+
 path<-paste("./Output/",run_id,"/RData/",station,"/",sep="")
 pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",sep="")
 sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide STILT functions
@@ -341,10 +345,14 @@ if ("ubar" %in% colnames(dat)) {
   wind.w<-dat[,"wbar"]
   wind.dir<-dat[,"wind.dir"]
   dat3<-cbind(dat2,wind.u,wind.v,wind.w,wind.dir)
+  df_dat3  <- data.frame(dat3)
+  df_dat3$metadata <- metadata
   cat(format(Sys.time(), "%FT%T"),"DEBUG reform wind: colnames(dat3) ",colnames(dat3),"\n")
-  write.table(dat3, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
+  write.table(df_dat3, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
 } else {
   cat(format(Sys.time(), "%FT%T"),"DEBUG reform: colnames(dat2) ",colnames(dat2),"\n")
-  write.table(dat2, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
+  df_dat2  <- data.frame(dat2)
+  df_dat2$metadata <- metadata
+  write.table(df_dat2, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
 }
 
