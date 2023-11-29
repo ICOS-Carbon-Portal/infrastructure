@@ -81,30 +81,31 @@ for(tracer in c("co2","ch4","co","n2o")){
 #check ambiguities in filenames
 #"solid_non_bio" or "solid_nonbiowaste" -> "solid_non"
 #"solid_bio" or "solid_biomass" -> "solid_bio"
-#"liquid_bio" or "bio_liquid"
+#"liquid_bio" or "bio_liquid", "cement"
 #"gas_bio" or "bio_gas"
 #"solid_bio" or "bio_solid"
 
+# at CP display cement separately, therefore add this as fuel type here
   ftypes.long<-c("hard coal","brown coal","peat","solid waste non-bio","heavy oil","light oil",
   "venting and flaring of heavy and light oil and gas",
-  "natural gas","derived gas","solid biomass","liquid biomass","biogas","other")
+  "natural gas","derived gas","solid biomass","liquid biomass","biogas","cement","other")
   ftypes<-c("coal_hard","coal_brown","coal_peat","solid_non_bio","oil_heavy","oil_light",
   "VAF",
-  "gas_nat","gas_der","solid_bio","liquid_bio","gas_bio", "others")
+  "gas_nat","gas_der","solid_bio","liquid_bio","gas_bio", "cement", "others")
   #define alternative names also
   ftypes2<-c("coal_hard","coal_brown","coal_peat","solid_nonbiowaste","oil_heavy","oil_light",
   "OIl_lght+hvy+gas_VAF",
-  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "others")
+  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "cement", "others")
   ftypes3<-c("coal_hard","coal_brown","coal_peat","solid_waste","oil_heavy","oil_light",
   "oil_lght+hvy+gas_VAF",
   #"gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "cement") # uk: why is cement listed here?
-  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "others")
+   "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "cement", "others")
   ftypes4<-c("coal_hard","coal_brown","coal_peat","solid_wst_nonbio","oil_heavy","oil_light",
   "OIl_lght+hvy+gas_VAF",
-  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "others")
+  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "cement", "others")
   ftypes5<-c("coal_hard","coal_brown","coal_peat","SOLIDwaste","oil_heavy","oil_light",
   "OIl_lght+hvy+gas_VAF",
-  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "others")
+  "gas_nat","gas_der","bio_solid","bio_liquid","bio_gas", "cement", "others")
 
   nams<-NULL
   ftypids<-rep(NA,length(edfsn)) #this is the vector of indices pointing to fuel type; picks out a fuel type for each file
@@ -138,7 +139,7 @@ for(tracer in c("co2","ch4","co","n2o")){
   ftypids[ipcc=="1A3a+1C1"]<-which(ftypes=="oil_light") #aviation
   ftypids[ipcc=="1A3ce"]<-which(ftypes=="oil_heavy") #non-road ground transport
   ftypids[ipcc=="1A3d+1C2"]<-which(ftypes=="oil_heavy") #inland waterways and shipping
-  ftypids[ipcc=="2A"]<-which(ftypes=="others") #(process emissions of non-metallic minerals industry (cement, lime))
+  ftypids[ipcc=="2A"]<-which(ftypes=="cement") #(process emissions of non-metallic minerals industry (cement, lime)) # CP display cement separately 
   ftypids[ipcc=="2BEFG+3"]<-which(ftypes=="others") #chem. industry + solvents
   ftypids[ipcc=="2C"]<-which(ftypes=="others") #process emissions metal industry
   ftypids[ipcc=="4A"]<-which(ftypes=="others") #agricultural waste burning
