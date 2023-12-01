@@ -1,0 +1,107 @@
+# BUILD
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+# PROJECT
+[project]
+name = "icos_auto_dnat"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "click",
+]
+
+[project.scripts]
+icos-auto-dnat = 'icos_auto_dnat:cli'
+
+
+# ENVIRONMENT
+[tool.hatch.envs.default]
+dependencies = [
+
+  "coverage[toml]>=6.5",
+  "freezegun",
+  "pytest-click",
+  "ruff",
+]
+
+
+# PYTEST
+[tool.pytest.ini_option]
+testpaths = ["tests.py"]
+
+
+# COVERAGE
+[tool.coverage.run]
+disable_warnings = ['no-data-collected']
+branch = true
+parallel = true
+include = ["./*.py"]
+omit = ["tests.py"]
+
+
+# RUFF
+[tool.ruff]
+target-version = "py311"
+line-length = 80
+select = [
+  "A",   # flake8-builtins
+  "ARG", # flake8-unused-arguments
+  "B",   # flake8-bugbear
+  "C",
+  "DTZ", # flake8-datetimez
+  "E",   # pycodestyle
+  "EM",  # flake8-errmsg
+  "F",   # pyflakes
+  "FBT", # flake8-boolean-trap
+  "I",   # isort
+  "ICN", # flake8-import-conventions
+  "ISC", # flake8-implicit-str-concat
+  "N",   # pep8-naming
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",   # flake8-quotes
+  "RUF", # Ruff-specific rules
+  "S",   # flake8-bandit
+  "TID", # flake8-tidy-imports
+  "UP",  # pyupgrade
+  "W",   # pycodestyle
+  "YTT", # flake8-2020
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105", "S106", "S107",
+  # Ignore complexity
+  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  # tabs and spaces
+  # "E101",
+  # subprocess with shell=1
+  "S602",
+  # Use of assert
+  "S101",
+  "EM102",
+  # "S603",
+  "S104", # possible binding to all interfaces
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
+
+[tool.ruff.isort]
+known-first-party = ["icos_auto_dnat"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"

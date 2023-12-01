@@ -1,0 +1,5 @@
+- name: Install the icos_auto_dnat util
+  import_role:
+    name: icos.python_util
+  vars:
+    python_util_src: icos_auto_dnat

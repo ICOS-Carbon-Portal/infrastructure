@@ -1,0 +1,2 @@
+- import_tasks: auto_dnat.yml
+  tags: auto_dnat

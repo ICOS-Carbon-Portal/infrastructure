@@ -1,0 +1,7 @@
+# When we use rsync to install this util on a remote host, these are the only
+# files we want.
++ /pyproject.toml
++ /icos_auto_dnat.py
+# We want .gitignore since watchexec makes use of it
++ /.gitignore
+- *

@@ -1,0 +1,9 @@
+[Unit]
+Description=Automatic port-forwarding for proxmox VMs
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1h
+
+[Install]
+WantedBy=timers.target

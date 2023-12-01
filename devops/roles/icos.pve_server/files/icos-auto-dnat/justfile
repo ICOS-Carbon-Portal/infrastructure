@@ -1,0 +1,76 @@
+python := "python3.11"
+
+remote_path := "/opt/icos-auto-dnat"
+remote_pipx := "pipx-global"
+
+project_name := "icos-auto-dnat"
+
+
+@_default:
+    just --list --unsorted
+
+# run icos-auto-dnat using hatch
+run *args:
+    hatch run {{project_name}} {{args}}
+
+# pytest
+test *args:
+    hatch run pytest {{args}} tests.py
+
+# show results from coverage+pytest
+coverage:
+    hatch run coverage run -m pytest tests.py
+    hatch run coverage combine
+    hatch run coverage html
+    hatch run python3 -m webbrowser htmlcov/index.html
+
+# remove all artifacts
+clean:
+    fd -u __pycache__   -X rm -r
+    fd -u .pytest_cache -X rm -r
+    fd -u .mypy_cache   -X rm -r
+    fd -u .coverage     -X rm -r
+    rm -rf -- ./htmlcov ./build ./dist src/*.egg-info .ruff_cache
+
+
+# RUFF 
+# lint using ruff
+lint *args=("."):
+    hatch run ruff {{args}}
+
+# lint --fix using ruff
+fix:
+    hatch run ruff --fix .
+
+# format python code with ruff
+format *args=("."):
+    ruff format {{args}}
+
+
+
+# INSTALL
+# install on localhost using pipx
+pipx:
+    pipx install --force --editable --python={{python}} .
+
+# install on remote host using pipx-global
+push host:
+    rsync -F -rlptD . {{host}}:{{remote_path}}
+    ssh {{host}} -- \
+    {{remote_pipx}} install -f -e --python={{python}} {{remote_path}}
+
+
+
+# MUTAGEN
+# configure mutagen
+mutconf host:
+    cog -r -Dhost={{host}} -Dpath={{remote_path}} mutagen.yml
+
+# start syncing using mutagen
+mutup:
+    -mutagen project terminate
+    mutagen project start
+
+# stop mutagen
+mutdown:
+    -mutagen project terminate 

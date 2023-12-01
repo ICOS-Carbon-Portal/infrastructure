@@ -1,0 +1,15 @@
+sync:
+  defaults:
+    ignore:
+      paths:
+        - "*"
+        - "!/icos_auto_dnat.py"
+        - "!/pyproject.toml"
+        - "!/.gitignore"
+
+  util:
+    alpha: "."
+    # [[[cog cog.outl(f'beta: "root@{host}:{path}"') ]]]
+    beta: "root@fsicos4:/opt/icos-auto-dnat"
+    # [[[end]]]
+    mode: "one-way-replica"
