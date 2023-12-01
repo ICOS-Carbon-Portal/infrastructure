@@ -1,1 +1,1 @@
-xcaddy_upgrade: "{{ upgrade_everything | bool | default(False) }}"
+xcaddy_upgrade: "{{ upgrade_everything | default(False) | bool }}"
