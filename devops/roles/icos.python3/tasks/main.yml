@@ -8,8 +8,7 @@
     name:
       - python3-pip
       - python3-virtualenv
-      # # On some targets, this is required for the ansible 'pip' module.
-      # - virtualenv
+      - python3-venv
 
 # Install pipx using ansible's python. This will allow us to use the ansible
 # pipx module to install utils written in python.
