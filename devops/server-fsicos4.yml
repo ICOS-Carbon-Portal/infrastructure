@@ -9,6 +9,9 @@
     - role: icos.utils
       tags: utils
 
+    - role: icos.python3
+      tags: python
+
     - role: icos.fail2ban
       tags: fail2ban
       fail2ban_config_files:
