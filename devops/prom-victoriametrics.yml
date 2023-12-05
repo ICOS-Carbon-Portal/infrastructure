@@ -68,6 +68,7 @@
     - name: Show basic auth for prometheus
       tags: showauth
       debug:
-        msg: |
-          Basic auth for prometheus is {{ _auth.username }}/{{ _auth.password }}
+        msg: >-
+          Basic auth for prometheus is
+          {{ vault_vmagent_auth.username }}/{{ vault_vmagent_auth.password }}
 
