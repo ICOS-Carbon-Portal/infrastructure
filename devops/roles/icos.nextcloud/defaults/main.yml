@@ -1,8 +1,8 @@
 # https://hub.docker.com/_/nextcloud/
-nextcloud_nextcloud_version: 27.1.3
+nextcloud_nextcloud_version: 27.1.4
 
 # https://hub.docker.com/_/postgres/
-nextcloud_postgres_version: 13.12
+nextcloud_postgres_version: 13.13
 
 nextcloud_port: 9000
 
