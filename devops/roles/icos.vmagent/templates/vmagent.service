@@ -10,6 +10,7 @@ ExecStart={{ vmagent_bin }}/vmagent-prod \
   -promscrape.config={{ vmagent_home }}/prometheus.yml \
   -remoteWrite.url=%{VM_REMOTE} \
   -usePromCompatibleNaming \
+  -influxDBLabel=job \
   -httpListenAddr={{ vmagent_listen }}
 
   {%- if vmagent_pathprefix %} \
