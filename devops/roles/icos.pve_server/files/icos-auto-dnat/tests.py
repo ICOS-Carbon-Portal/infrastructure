@@ -125,37 +125,25 @@ def test_run(capfd):
     assert c.out.splitlines() == [f">>> cmd='{cmd}' <<<"]
 
 
-@pytest.fixture
-def assert_die(capfd, msg):
-    with pytest.raises(SystemExit):
-        yield
-    c = capfd.readouterr()
-    assert c.err == msg
-
-
 def test_auto_bridge(monkeypatch, capfd):
     monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: [{},{},{},{},{}])
-    with assert_die("No bridges detected"):
+    with pytest.raises(SystemExit):
         icos_auto_dnat.auto_bridge()
+    c = capfd.readouterr()
+    assert c.err.strip() == "No bridges detected"
 
-    # monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: [{},{},{},{},{}])
-    # with pytest.raises(SystemExit):
-    #     icos_auto_dnat.auto_bridge()
-    # c = capfd.readouterr()
-    # assert c.err.strip() == "No bridges detected"
+    monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: [{'ifname': 'a'}])
+    assert icos_auto_dnat.auto_bridge() == "a"
 
-    # monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: [{'ifname': 'a'}])
-    # assert icos_auto_dnat.auto_bridge() == "a"
+    monkeypatch.setattr(icos_auto_dnat, "ip_json",
+                        lambda _: [{'ifname': 'a'}, {'ifname': 'b'}])
+    with pytest.raises(SystemExit):
+        icos_auto_dnat.auto_bridge()
+    c = capfd.readouterr()
+    assert c.err.startswith("More than one bridge")
 
-    # monkeypatch.setattr(icos_auto_dnat, "ip_json",
-    #                     lambda _: [{'ifname': 'a'}, {'ifname': 'b'}])
-    # with pytest.raises(SystemExit):
-    #     icos_auto_dnat.auto_bridge()
-    # c = capfd.readouterr()
-    # assert c.err.startswith("More than one bridge")
-
-    # monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: None)
-    # with pytest.raises(SystemExit):
-    #     icos_auto_dnat.auto_bridge()
-    # c = capfd.readouterr()
-    # assert c.err.startswith("Could not parse")
+    monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: None)
+    with pytest.raises(SystemExit):
+        icos_auto_dnat.auto_bridge()
+    c = capfd.readouterr()
+    assert c.err.startswith("Could not parse")

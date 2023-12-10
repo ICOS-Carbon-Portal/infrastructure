@@ -20,18 +20,11 @@ icos-auto-dnat = 'icos_auto_dnat:cli'
 # ENVIRONMENT
 [tool.hatch.envs.default]
 dependencies = [
-
   "coverage[toml]>=6.5",
   "freezegun",
   "pytest-click",
   "ruff",
 ]
-
-
-# PYTEST
-[tool.pytest.ini_option]
-testpaths = ["tests.py"]
-
 
 # COVERAGE
 [tool.coverage.run]
