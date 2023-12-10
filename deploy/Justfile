@@ -1,0 +1,33 @@
+python := "python3.11"
+project_name := "icos-deploy"
+
+@_default:
+    just --list --unsorted
+
+# run project using hatch
+run *args:
+    hatch run {{project_name}} {{args}}
+
+# remove all artifacts
+clean:
+    fd -u __pycache__   -X rm -r
+    fd -u .pytest_cache -X rm -r
+    fd -u .mypy_cache   -X rm -r
+    fd -u .coverage     -X rm -r
+    rm -rf -- ./htmlcov ./build ./dist src/*.egg-info .ruff_cache
+
+# lint using ruff
+lint *args=("."):
+    hatch run ruff {{args}}
+
+# lint --fix using ruff
+fix:
+    hatch run ruff --fix .
+
+# format python code with ruff
+format *args=("."):
+    ruff format {{args}}
+
+# install on localhost using pipx
+pipx:
+    pipx install --force --editable --python={{python}} .
