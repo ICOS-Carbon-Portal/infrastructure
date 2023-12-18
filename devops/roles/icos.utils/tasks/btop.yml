@@ -1,0 +1,40 @@
+- when: btop_version is not defined
+  run_once: true
+  check_mode: false
+  delegate_to: localhost
+  delegate_facts: true
+  block:
+
+  - name: Find the latest release of btop
+    github_release:
+      user: aristocratos
+      repo: btop
+      action: latest_release
+    register: gh
+
+  - name: Set btop_version fact
+    set_fact:
+      btop_version: "{{ gh.tag.lstrip('v') }}"
+      cacheable: true
+
+- name: Unarchive btop
+  unarchive:
+    remote_src: true
+    src: "{{ btop_url_map[ansible_architecture] }}"
+    dest: /opt
+  register: unarchive
+
+- name: Create /usr/local/bin/btop symlink
+  file:
+    dest: "/usr/local/bin/btop"
+    src: "{{ unarchive.dest }}/btop/bin/btop"
+    state: link
+
+- name: Check that btop is executable
+  shell: btop --version
+  changed_when: no
+  register: _r
+
+- name: Which version of btop was installed
+  debug:
+    msg: "Installed {{ _r.stdout }}"

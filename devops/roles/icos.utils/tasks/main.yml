@@ -34,80 +34,27 @@
       - git            # useful
       - tree           # directory overview
       - tcpdump        # network troubleshooting
-      - mailutils      # so cron can deliver failure reports
       - mutt           # for reading said reports
       - unzip          # required by ansible's unarchive
-      - ripgrep        # fast searching
 
 
-# NCDU
-- name: Install ncdu
+- import_tasks: ripgrep.yml
+  tags: ripgrep
+
+- import_tasks: ncdu.yml
   tags: ncdu
-  unarchive:
-    remote_src: true
-    src: "{{ ncdu_url }}"
-    dest: /usr/local/bin/
-  diff: false
 
-# FD
-- name: Install fd
+- import_tasks: fd.yml
   tags: fd
-  apt:
-    deb: "{{ utils_fd_url }}"
 
-- name: Test fd
-  tags: fd
-  command: fd --version
-  changed_when: false
-
-
-# BROOT
-- name: Download broot binary
-  tags: broot
-  get_url:
-    url: https://dystroy.org/broot/download/x86_64-unknown-linux-musl/broot
-    dest: /usr/local/bin/broot
-    mode: +x
-  register: _broot
-
-- name: Install broot shell helper
-  tags: broot
-  command: "{{ _broot.dest }} --install"
-  changed_when: false
-
-
-# JC
-- name: Install jc
-  tags: jc
-  include_role:
-    name: icos.github_download_bin
-    apply: {tags: jc}
-  vars:
-    dbin_user: kellyjonbrazil
-    dbin_repo: jc
-    dbin_src: jc
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/jc-{{ dbin__vers }}-linux-{{ ansible_machine }}.tar.gz"
-
-- name: Test jc
-  command: "{{ dbin_symlink.dest }} --version"
-  changed_when: false
-
-
-
-# WATCHEXEC
 - import_tasks: watchexec.yml
   tags: watchexec
 
-
-# BTOP
-- name: Install btop
+- import_tasks: btop.yml
   tags: btop
-  include_role:
-    name: icos.github_download_bin
-    apply: {tags: btop}
-  vars:
-    dbin_user: aristocratos
-    dbin_repo: btop
-    # https://github.com/aristocratos/btop/releases/download/v1.2.13/btop-arm-linux-musleabi.tbz
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ btop_arch_url }}"
-    dbin_src: btop/bin/btop
+
+- import_tasks: just.yml
+  tags: just
+
+- import_tasks: trippy.yml
+  tags: trippy

@@ -1,25 +1,52 @@
-utils_ripgrep_url: https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
-utils_fd_url: https://github.com/sharkdp/fd/releases/download/v8.7.0/fd_8.7.0_amd64.deb
-
-# WATCHEXEC
-watchexec_url_map:
-  # https://github.com/watchexec/watchexec/releases/download/v1.23.0/watchexec-1.23.0-armv7-unknown-linux-gnueabihf.deb
-  "armv7l": "https://github.com/watchexec/watchexec/releases/download/{{ gr.tag }}/watchexec-{{ gr.tag.lstrip('v') }}-armv7-unknown-linux-gnueabihf.deb"
-
-  # https://github.com/watchexec/watchexec/releases/download/v1.23.0/watchexec-1.23.0-x86_64-unknown-linux-gnu.deb
-  "x86_64": "https://github.com/watchexec/watchexec/releases/download/{{ gr.tag }}/watchexec-{{ gr.tag.lstrip('v') }}-x86_64-unknown-linux-gnu.deb"
-
-
-# BTOP
-btop_arch_url: "{{ btop_arch_map[ansible_architecture] }}"
-btop_arch_map:
-  "armv7l": "btop-arm-linux-musleabi.tbz"
-  "armv6l": "btop-arm-linux-musleabi.tbz"
-  "x86_64": "btop-x86_64-linux-musl.tbz"
+# RIPGREP
+ripgrep_version: "{{ hostvars.localhost.ripgrep_version }}"
+ripgrep_url_map:
+  "x86_64": "https://github.com/BurntSushi/ripgrep/releases/download/{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}-1_amd64.deb"
 
 
 # NCDU
-ncdu_url: "https://dev.yorhel.nl/download/ncdu-2.2.1-linux-{{ ncdu_arch_map[ansible_architecture] }}.tar.gz"
+# ncdu is not on github, just hardcode a version
+ncdu_version: 2.3
 ncdu_arch_map:
   "armv7l": "arm"
   "x86_64": "x86_64"
+ncdu_url: "https://dev.yorhel.nl/download/ncdu-{{ ncdu_version }}-linux-{{ ncdu_arch_map[ansible_architecture] }}.tar.gz"
+
+
+# FD
+fd_version: "{{ hostvars.localhost.fd_version }}"
+fd_url_map:
+  "armv6l": "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/fd-v{{ fd_version }}-arm-unknown-linux-gnueabihf.tar.gz"
+  "armv7l": "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/fd-v{{ fd_version }}-arm-unknown-linux-gnueabihf.tar.gz"
+  "x86_64": "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/fd-musl_{{ fd_version }}_amd64.deb"
+
+
+# WATCHEXEC
+watchexec_version: "{{ hostvars.localhost.watchexec_version }}"
+watchexec_url_map:
+  "armv7l": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-armv7-unknown-linux-gnueabihf.deb"
+  "x86_64": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-x86_64-unknown-linux-gnu.deb"
+
+
+# BTOP
+btop_version: "{{ hostvars.localhost.btop_version }}"
+btop_home: /opt
+btop_url_map:
+  "armv6l": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-armv5l-linux-musleabi.tbz"
+  "armv7l": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-armv7l-linux-musleabihf.tbz"
+  "x86_64": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-x86_64-linux-musl.tbz"
+
+
+# JUST
+just_version: "{{ hostvars.localhost.just_version }}"
+just_url_map:
+  "armv6l": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-arm-unknown-linux-musleabihf.tar.gz"
+  "armv7l": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-armv7-unknown-linux-musleabihf.tar.gz"
+  "x86_64": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-x86_64-unknown-linux-musl.tar.gz"
+
+
+# TRIPPY
+trippy_version: "{{ hostvars.localhost.trippy_version }}"
+trippy_url_map:
+  "armv7l": "https://github.com/fujiapple852/trippy/releases/download/{{ trippy_version }}/trippy-{{ trippy_version }}-armv7-unknown-linux-musleabi.tar.gz"
+  "x86_64": "https://github.com/fujiapple852/trippy/releases/download/{{ trippy_version }}/trippy-{{ trippy_version }}-x86_64-unknown-linux-gnu.tar.gz"
