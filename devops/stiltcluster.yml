@@ -16,7 +16,7 @@
         create: yes
         path: /etc/exports
         block: |
-          /disk/data/stilt/Input            *.wg-fsicos2(ro,no_root_squash)
+          /disk/data/stilt            *.wg-fsicos2(ro,no_root_squash)
       notify: reload nfs server
 
 - hosts: stiltcluster_hosts
