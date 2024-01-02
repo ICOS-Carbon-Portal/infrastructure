@@ -1,17 +1,13 @@
-dive_arch: >-
-  {{ dive_arch_map[ansible_machine] | default(ansible_machine) }}
-dive_arch_map:
-  "x86_64": "amd64"
+# DIVE
+dive_version: "{{ hostvars.localhost.dive_version }}"
+dive_url_map:
+  "x86_64": "https://github.com/wagoodman/dive/releases/download/v{{ dive_version }}/dive_{{ dive_version }}_linux_amd64.deb"
 
-lazydocker_arch: >-
-  {{ lazydocker_arch_map[ansible_machine] | default(ansible_machine) }}
-lazydocker_arch_map:
-  "armv7l": "armv7"
-  "armv6l": "armv6"
-  "amd64": "x86_64"
 
-ctop_arch: >-
-  {{ ctop_arch_map[ansible_machine] | default(ansible_machine) }}
-ctop_arch_map:
-  "armv7l": "arm"
-  "x86_64": "amd64"
+# LAZYDOCKER
+lazydocker_version: "{{ hostvars.localhost.lazydocker_version }}"
+lazydocker_url_map:
+  "armv6l": "https://github.com/jesseduffield/lazydocker/releases/download/v{{ lazydocker_version }}/lazydocker_{{ lazydocker_version }}_Linux_armv6.tar.gz"
+  "armv7l": "https://github.com/jesseduffield/lazydocker/releases/download/v{{ lazydocker_version }}/lazydocker_{{ lazydocker_version }}_Linux_armv7.tar.gz"
+  "aarch64": "https://github.com/jesseduffield/lazydocker/releases/download/v{{ lazydocker_version }}/lazydocker_{{ lazydocker_version }}_Linux_arm64.tar.gz"
+  "x86_64": "https://github.com/jesseduffield/lazydocker/releases/download/v{{ lazydocker_version }}/lazydocker_{{ lazydocker_version }}_Linux_x86_64.tar.gz  "

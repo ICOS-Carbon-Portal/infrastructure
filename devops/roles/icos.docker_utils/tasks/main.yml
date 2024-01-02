@@ -12,37 +12,12 @@
     - docker-builds
     - docker-enter
 
-- include_role:
-    name: icos.github_download_bin
-    apply:
-      tags: docker_utils
-  vars:
-    dbin_user: bcicen
-    dbin_repo: ctop
-    dbin_unar: false
-    # https://github.com/bcicen/ctop/releases/
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/ctop-{{ dbin__vers }}-linux-{{ ctop_arch }}"
 
-- include_role:
-    name: icos.github_download_bin
-    apply:
-      tags: docker_utils
-  vars:
-    dbin_user: wagoodman
-    dbin_repo: dive
-    dbin_src: dive
-    # https://github.com/wagoodman/dive/releases
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_linux_{{ dive_arch }}.tar.gz"
-  # dive isn't supported on arm
-  when: ansible_architecture == 'x86_64'
+- import_tasks: dive.yml
+  tags: dive
 
-- include_role:
-    name: icos.github_download_bin
-    apply:
-      tags: docker_utils
-  vars:
-    dbin_user: jesseduffield
-    dbin_repo: lazydocker
-    dbin_src: lazydocker
-    # https://github.com/jesseduffield/lazydocker/releases
-    dbin_url: "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_Linux_{{ lazydocker_arch }}.tar.gz"
+- import_tasks: ctop.yml
+  tags: ctop
+
+- import_tasks: lazydocker.yml
+  tags: lazydocker

@@ -25,6 +25,7 @@ fd_url_map:
 watchexec_version: "{{ hostvars.localhost.watchexec_version }}"
 watchexec_url_map:
   "armv7l": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-armv7-unknown-linux-gnueabihf.deb"
+  "aarch64": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-aarch64-unknown-linux-gnu.deb"
   "x86_64": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-x86_64-unknown-linux-gnu.deb"
 
 
@@ -42,6 +43,7 @@ just_version: "{{ hostvars.localhost.just_version }}"
 just_url_map:
   "armv6l": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-arm-unknown-linux-musleabihf.tar.gz"
   "armv7l": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-armv7-unknown-linux-musleabihf.tar.gz"
+  "aarch64": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-aarch64-unknown-linux-musl.tar.gz"
   "x86_64": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-x86_64-unknown-linux-musl.tar.gz"
 
 
