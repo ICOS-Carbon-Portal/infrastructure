@@ -39,13 +39,12 @@ services:
       - vm_net
     restart: always
 
+{% if vm_promlens_token is defined %}
   promlens:
     hostname: promlens
     container_name: promlens
     image: prom/promlens
     command:
-#      - "--shared-links.sql.driver=sqlite"
-#      - "--shared-links.sql.dsn=/data/promlens-links.db"
       - "--grafana.url=http://grafana:3000"
       - "--grafana.api-token={{ vm_promlens_token }}"
     volumes:
@@ -58,7 +57,7 @@ services:
     networks:
       - vm_net
     restart: always
-
+{% endif %}
     
 networks:
   vm_net:

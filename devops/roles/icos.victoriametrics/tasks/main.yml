@@ -4,7 +4,7 @@
     state: directory
   loop:
     # prometheus.yml goes here but victoriametrics only reads the scrape part
-    - prometheus
+    - victoriametrics/prometheus
     - grafana/provisioning
 
 # https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/#migrate-to-v51-or-later
@@ -32,8 +32,33 @@
 - name: Build and start
   icos_docker_compose:
     chdir: "{{ vm_home }}"
-    pull: "{{ vm_upgrade | default(false) | bool }}"
+    pull: "{{ vm_upgrade }}"
     
-- import_tasks: grafana_plugin.yml
-  tags: victoriametrics_grafana_plugin
+- import_tasks: grafana_datasource.yml
+  tags: grafana_datasource
     
+- name: Check that services responds on local ports
+  uri:
+    url: "http://localhost:{{ item.port }}"
+  retries: 10
+  loop_control:
+    label: "{{ item.name }}"
+  loop:
+    - name: victoriametrics
+      port: "{{ vm_vm_port }}"
+    - name: grafana
+      port: "{{ vm_graf_port }}"
+
+- name: Check that services responds on local ports
+  uri:
+    url: "http://localhost:{{ item.port }}"
+  retries: 10
+  loop_control:
+    label: "{{ item.name }}"
+  loop:
+    - name: victoriametrics
+      port: "{{ vm_vm_port }}"
+    - name: grafana
+      port: "{{ vm_graf_port }}"
+      
+  
