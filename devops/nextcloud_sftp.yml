@@ -2,14 +2,6 @@
 #   run nextcloud_sftp.yml howto
 
 - hosts: fsicos2.lunarc.lu.se
-  tags: setup
-  roles:
-    - role: icos.podman_manual
-      tags: podman
-
-- hosts: fsicos2.lunarc.lu.se
-  tags: sftp
-
   vars:
     groupfolder_name: PAUL
     groupfolder_id: 27
@@ -19,7 +11,7 @@
     host_user: www-data
     sftp_image: docker.io/atmoz/sftp:debian
     sftp_user: nc_paul_upload
-    sftp_exec: "/usr/libexec/podman-sftp-only-{{ sftp_user }}"
+    sftp_exec: "/usr/libexec/sftp-only-{{ sftp_user }}"
     sftp_dirs:
       - src: "{{ groupfolder_dir}}/WP1/Data"
         dst: WP1_Data
@@ -78,13 +70,17 @@
         non_unique: yes
         create_home: yes
 
-    - name: Retrieve podman image
+    - name: Create passwd file
       become: yes
       become_user: "{{ sftp_user }}"
-      containers.podman.podman_image:
-        name: "{{ sftp_image }}"
+      args:
+        chdir: "/home/{{sftp_user}}"
+        creates: "/home/{{sftp_user}}/passwd"
+      shell: >-
+        grep {{sftp_user}} /etc/passwd > passwd
 
     - name: Create sftp command script
+      tags: script
       copy:
         dest: "{{ sftp_exec }}"
         mode: +x
@@ -97,8 +93,20 @@
           # exec > >(tee -ai /tmp/sftp.log)
           # exec 2>&1
 
-          # note, don't add '-t', it will break when running from sshd
-          exec podman run -i --rm {% for d in sftp_dirs %}{{ "-v%s:/upload/%s:rw" % (d.src, d.dst) }} {% endfor %} --entrypoint=/usr/lib/sftp-server {{ sftp_image }} -d /upload
+          exec bwrap \
+            --proc /proc \
+            --dev /dev \
+            --ro-bind /usr/lib /usr/lib \
+            --symlink /usr/lib /lib \
+            --ro-bind /usr/lib64 /usr/lib64 \
+            --symlink /usr/lib64 /lib64 \
+            --ro-bind /usr/lib/openssh/sftp-server /usr/lib/openssh/sftp-server \
+            --ro-bind ./passwd /etc/passwd \
+            {% for d in sftp_dirs %}
+            {{- "--bind %s /upload/%s" % (d.src, d.dst) }} \
+            {% endfor -%}
+            --chdir /upload \
+            /usr/lib/openssh/sftp-server
 
     - name: Add user-specific config to sshd
       blockinfile:
@@ -115,7 +123,7 @@
           Match All
       notify: reload sshd
 
-    - name: Create nextcloud re-scan script
+    - name: Create nextcloud rescan script
       copy:
         dest: /usr/libexec/nextcloud-paul-upload-scan.sh
         mode: +x
@@ -137,7 +145,7 @@
           ExecStart={{ _script.dest }}
 
           [Unit]
-          Description=Rescannextcloud groupfolder {{ groupfolder_id }}
+          Description=Rescan nextcloud groupfolder {{ groupfolder_id }}
           # Shut down when the user logs out.
           PartOf=user@{{ host_uid }}.service
 
