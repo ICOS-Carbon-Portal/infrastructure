@@ -53,7 +53,8 @@
 - import_tasks: btop.yml
   tags: btop
 
-- import_tasks: just.yml
+- import_role:
+    name: icos.just
   tags: just
 
 - import_tasks: trippy.yml
