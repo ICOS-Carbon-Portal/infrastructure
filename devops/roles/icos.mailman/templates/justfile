@@ -1,0 +1,93 @@
+#!/usr/bin/env -S just --working-directory ((mailman_home)) --justfile
+
+set shell := ['bash', '-cu']
+
+manage := "exec docker-compose exec -u mailman mailman-web python3 manage.py"
+core_addr := "172.19.199.2:8001"
+dbcont := "mailman-database"
+dump := "dump.gz"
+
+
+# META
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# MAILMAN
+# exec the mailman cli in the mailman-core container
+mailman *args:
+    docker-compose exec -u mailman mailman-core mailman {{args}}
+
+# exec django's manage.py in the mailman-web container
+manage *args:
+    {{manage}} {{args}}
+
+# show mailman-web settings
+settings:
+    {{manage}} print_settings
+
+
+# LOGS
+# tail the logs of mailman-web
+weblog:
+    tail -f volumes/web/logs/{mailmanweb,uwsgi}.log /var/log/nginx/{mailman,error}.log
+
+# tail the logs of the mailman-core (and postfix)
+maillog:
+    tail -f /var/log/mail.log volumes/core/var/logs/*.log
+
+
+# DATABASE
+# execute psql in the database container
+psql *args:
+    docker-compose exec database psql -U mailman mailmandb {{args}}
+
+upgrade:
+    echo "is won't work automatically" && exit 1
+    docker-compose down
+    docker-compose up -d database
+    just dumpall
+    docker-compose down
+    mv volumes/database volumes/database.old
+    # now change version of postgres container
+    mg docker-compose.yml
+    # start new version of postgres
+    docker-compose up -d database
+    # gunzip -c  dump.gz | docker-compose exec database psql
+    # zcat dump.gz | docker exec -i mailman-database psql
+
+# dump the mailman database
+dump:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    [ -f "{{dump}}" ] && { echo "refusing to overwrite {{dump}}"; exit 1; }
+    time docker exec {{dbcont}} pg_dump -vU mailman mailmandb | gzip > "{{dump}}"
+
+# overwrite database by restoring a database dump
+[confirm("overwrite the database?")]
+restore:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    if [ -f {{dump}} ]; then
+      echo "no such file: {{dump}}"
+      exit 1
+    fi
+
+    if [ -n "$(du -st 100M volumes/database)" ]; then
+      echo "volumes/database is greater than 100M, refusing to overwrite"
+      exit 1
+    fi
+
+    echo "overwriting!"
+    # zcat {{dump}} | docker exec -i {{dbcont}} psql -U mailman mailmandb
+
+
+# MISC
+# show the url to the mailman API
+restapi:
+    @echo https://mailman.readthedocs.io/en/latest/src/mailman/rest/docs/rest.html
+    @echo "http://{{core_addr}}/rest/3.1/system/versions"
+
+# show fail2ban status for postfix
+fail2ban:
+    fail2ban-client status; fail2ban-client status postfix-auth

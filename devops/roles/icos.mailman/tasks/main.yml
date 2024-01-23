@@ -8,18 +8,15 @@
 
 - name: Copy mailman files
   template:
-    dest: "{{ item.dest }}"
+    dest: "{{ item.dest | default(mailman_home) }}"
     src: "{{ item.src }}"
     mode: "{{ item.mode | default(omit) }}"
   loop:
-    - dest: "{{ mailman_home }}/"
-      src: docker-compose.yml
-      mode: "0600"
-    - dest: "{{ mailman_home }}"
-      src: logrotate.conf
-    - dest: "{{ mailman_home }}"
-      src: bbclient-down-hook
+    - src: logrotate.conf
+    - src: bbclient-down-hook
       mode: +x
+    - src: docker-compose.yml
+      mode: "0600"
     - dest: "{{ mailman_volume_core }}"
       src: mailman-extra.cfg
     - dest: "{{ mailman_volume_web }}"
@@ -29,23 +26,6 @@
     - dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
       src: Dockerfile.core
   register: _files
-
-- name: Install cli wrappers
-  template:
-    dest: /usr/local/sbin
-    src: "{{ item }}"
-    mode: +x
-  loop:
-    - mailman
-    - mailman-web
-    - mailman-psql
-
-- name: Install Makefile
-  blockinfile:
-    create: yes
-    marker: "# {mark} ansible / icos.mailman"
-    path: "{{ mailman_home }}/Makefile"
-    block: "{{ lookup('template', 'Makefile') }}"
 
 - name: Start containers
   docker_compose:
@@ -72,3 +52,7 @@
     value: "{{ item.value }}"
     append: "{{ item.append | default(omit) }}"
   loop: "{{ mailman_postfix_config }}"
+
+
+- import_tasks: just.yml
+  tags: mailman_just

@@ -1,2 +1,0 @@
-#!/bin/bash
-exec docker-compose -f {{ mailman_home }}/docker-compose.yml exec database psql -U mailman mailmandb "$@"
