@@ -1,6 +1,9 @@
 - import_tasks: install.yml
   tags: rspamd_install
 
+- import_tasks: just.yml
+  tags: rspamd_just
+
 - import_tasks: redis.yml
   tags: rspamd_redis
 

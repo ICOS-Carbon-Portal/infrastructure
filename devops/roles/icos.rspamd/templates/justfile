@@ -1,0 +1,4 @@
+#!/usr/bin/env -S just --working-directory /root --justfile
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
