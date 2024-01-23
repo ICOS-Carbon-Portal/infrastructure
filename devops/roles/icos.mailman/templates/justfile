@@ -36,6 +36,10 @@ weblog:
 maillog:
     tail -f /var/log/mail.log volumes/core/var/logs/*.log
 
+# show size of logfiles (i.e make sure that logrotate works)
+logsize:
+    du -hscx volumes/core/var/logs/*.log volumes/web/logs/*.log
+
 
 # DATABASE
 # execute psql in the database container
