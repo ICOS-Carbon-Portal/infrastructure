@@ -1,11 +1,10 @@
 # https://github.com/maxking/docker-mailman/blob/main/docker-compose.yaml
-version: '2'
-
 services:
   mailman-core:
     build: ./build/mailman-core
     container_name: mailman-core
     hostname: mailman-core
+    restart: unless-stopped
     volumes:
     - {{ mailman_volume_core }}:/opt/mailman/
     - /etc/localtime:/etc/localtime:ro
@@ -20,7 +19,6 @@ services:
     - DATABASE_TYPE=postgres
     - DATABASE_CLASS=mailman.database.postgresql.PostgreSQLDatabase
     - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}
-    restart: always
     networks:
       mailman:
         ipv4_address: {{ mailman_core_ipv4 }}
@@ -29,6 +27,7 @@ services:
     build: ./build/mailman-web
     container_name: mailman-web
     hostname: mailman-web
+    restart: unless-stopped
     depends_on:
     - database
     links:
@@ -45,13 +44,12 @@ services:
     - MAILMAN_ADMIN_USER=admin
     - MAILMAN_ADMIN_EMAIL={{ mailman_admin_email }}
     - SECRET_KEY={{ mailman_web_secret_key }}
-    restart: always
     networks:
       mailman:
         ipv4_address: {{ mailman_web_ipv4 }}
 
   database:
-    image: postgres:10
+    image: postgres:11
     container_name: mailman-database
     environment:
       POSTGRES_DB: mailmandb
