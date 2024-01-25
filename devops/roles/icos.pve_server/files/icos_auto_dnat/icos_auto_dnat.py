@@ -154,11 +154,11 @@ def parse_icos_dnat():
     try:
         icos = nat[ICOS_CHAIN]
     except KeyError:
+        check_call([CMD_IPTABLES, "-t", "nat", "-N", ICOS_CHAIN])  # noqa: S603
         check_call([CMD_IPTABLES,  # noqa: S603 fmt: skip
                     "-t", "nat",
                     "-I", "PREROUTING", "1",
                     "-j", ICOS_CHAIN])  # fmt: skip
-        check_call([CMD_IPTABLES, "-t", "nat", "-N", ICOS_CHAIN])  # noqa: S603
         icos = []
     for rule in icos:
         yield parse_dnat_rule(rule)
