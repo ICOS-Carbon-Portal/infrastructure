@@ -110,9 +110,10 @@ def parse_iptables():
     """Parse iptables-save(1) into (table, {chain: [rules] ...})"""
     table = None
     rules = {}
+
     # iptables-save will dump rules in a easy-to-parse format.
     output = check_output([CMD_IPTABLES_SAVE], text=1)  # noqa: S603
-
+    
     for line in output.splitlines():
         if line.startswith("#"):
             continue
@@ -123,13 +124,14 @@ def parse_iptables():
         elif line.startswith("*"):
             table = line[1:]
         elif line.startswith(":"):
-            continue
+            name = line.split()[0].lstrip(':')
+            rules[name] = []
         elif line.startswith("-A"):
             [_, name, rest] = line.split(None, 2)
+            assert name in rules
             rules.setdefault(name, []).append(rest)
         else:
             raise ValueError(line)
-
 
 def parse_dnat_rule(rule):
     """Parse an iptables-save(1) line into a DNAT object."""
@@ -151,6 +153,7 @@ def parse_icos_dnat():
     """Return a DNAT object for each rule in the ICOS-DNAT chain."""
     tables = dict(parse_iptables())
     nat = tables["nat"]
+
     try:
         icos = nat[ICOS_CHAIN]
     except KeyError:
@@ -246,7 +249,7 @@ def qm_list():
     for vmid, vmname in _qm_list():
         config = qm_vmid_to_config(vmid)
         # skip templates when listing VMs
-        if bool(config.get("template", "0")):
+        if config.get("template", "0") == "1":
             continue
         port = qm_vmid_to_port(vmid)
         yield QM(vmid, vmname, port)
@@ -276,7 +279,7 @@ def cli(ctx, dry_run, interface, bridge):
         raise click.UsageError(f"{lease_file} doesn't exist")
 
     ctx.obj = SimpleNamespace(lease_file=lease_file,
-                              intferface=interface,
+                              interface=interface,
                               bridge=bridge)
 
 
