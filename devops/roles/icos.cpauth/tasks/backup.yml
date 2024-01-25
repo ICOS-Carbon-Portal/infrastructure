@@ -1,15 +1,3 @@
-# FIXME: Remove in 2024
-- name: Remove backup from crontab
-  cron:
-    state: absent
-    name: "cpauth_backup"
-
-# FIXME: Remove in 2024
-- name: Remove old backup script
-  file:
-    path: "{{ cpauth_home }}/backup.sh"
-    state: absent
-
 - include_role:
     name: icos.bbclient2
   vars:
