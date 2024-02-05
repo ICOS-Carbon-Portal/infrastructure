@@ -1,0 +1,27 @@
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# show status of the stiltweb service
+status:
+    systemctl status stiltweb
+
+# tail debug logs of stiltweb and stiltcuster
+watch:
+    bin/tail-latest.sh
+
+sync-csv-files *args:
+    bin/stilt-sync-csv-files {{args}}
+
+sync-stiltweb-to-stilt *args:
+    bin/stilt-sync-stiltweb-to-stilt {{args}}
+
+sync-stilt-to-stiltweb *args:
+    bin/stilt-sync-stilt-to-stiltweb {{args}}
+
+find-missing-csv-files *args:
+    bin/find-missing-csv-files {{args}}
+    
+sync-station-names *args:
+    bin/stilt-sync-station-names.sh {{args}}
+
+

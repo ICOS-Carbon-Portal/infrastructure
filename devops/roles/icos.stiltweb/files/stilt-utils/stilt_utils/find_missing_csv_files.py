@@ -11,8 +11,8 @@
 # run removes the troublesome directories.
 
 
-import concurrent.futures
 import collections
+import concurrent.futures
 import os
 
 STATIONS_ROOT = "{{ stiltweb_statedir }}/slots"
@@ -56,43 +56,44 @@ def do_station_year(station, year):
                   npresent, nmissing)
 
 
-with concurrent.futures.ProcessPoolExecutor() as executor:
-    todos = []
-    for station in os.scandir(STATIONS_ROOT):
-        if not station.is_dir():
-            continue
-        for year in os.scandir(station.path):
-            if not year.is_dir():
+def cli():
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        todos = []
+        for station in os.scandir(STATIONS_ROOT):
+            if not station.is_dir():
                 continue
-            future = executor.submit(do_station_year, station.name, year.name)
-            todos.append(future)
-    station_results = {}
-    empty_stations = {}
-    for future in concurrent.futures.as_completed(todos):
-        result = future.result()
-        if result.name is None:
-            continue
-        # By default, all station_results are considered "empty", i.e they
-        # have no complete slots
-        if result.station not in empty_stations:
-            empty_stations[result.station] = result.name
-        years = station_results.setdefault(result.name, {})
-        assert result.year not in years
-        years[result.year] = result
-    troublesome_slots = []
-    for station, years in sorted(station_results.items()):
-        for n, (year, result) in enumerate(sorted(years.items())):
-            if n > 0:
-                station = ''
-            print("%-6s %s\tpresent = %-4d. missing = %-4d" % (
-                station, year, result.npresent, result.nmissing))
-            # As long as a station has any complete slots, we'll keep it.
-            if result.npresent > 0 and result.station in empty_stations:
-                del empty_stations[result.station]
-            if result.nmissing > 0:
-                troublesome_slots.append(result.year_path)
-    for c in troublesome_slots:
-        print('rm -rf -- "%s"' % c)
-    for station, name in empty_stations.items():
-        print('rm -rf -- "{{ stiltweb_statedir }}/slots/%s"' % station)
-        print('rm -rf -- "{{ stiltweb_statedir }}/stations/%s"' % name)
+            for year in os.scandir(station.path):
+                if not year.is_dir():
+                    continue
+                future = executor.submit(do_station_year, station.name, year.name)
+                todos.append(future)
+        station_results = {}
+        empty_stations = {}
+        for future in concurrent.futures.as_completed(todos):
+            result = future.result()
+            if result.name is None:
+                continue
+            # By default, all station_results are considered "empty", i.e they
+            # have no complete slots
+            if result.station not in empty_stations:
+                empty_stations[result.station] = result.name
+            years = station_results.setdefault(result.name, {})
+            assert result.year not in years
+            years[result.year] = result
+        troublesome_slots = []
+        for station, years in sorted(station_results.items()):
+            for n, (year, result) in enumerate(sorted(years.items())):
+                if n > 0:
+                    station = ''
+                print("%-6s %s\tpresent = %-4d. missing = %-4d" % (
+                    station, year, result.npresent, result.nmissing))
+                # As long as a station has any complete slots, we'll keep it.
+                if result.npresent > 0 and result.station in empty_stations:
+                    del empty_stations[result.station]
+                if result.nmissing > 0:
+                    troublesome_slots.append(result.year_path)
+        for c in troublesome_slots:
+            print('rm -rf -- "%s"' % c)
+        for station, name in empty_stations.items():
+            print('rm -rf -- "{{ stiltweb_statedir }}/slots/%s"' % station)
+            print('rm -rf -- "{{ stiltweb_statedir }}/stations/%s"' % name)

@@ -17,7 +17,6 @@
 #   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/csv
 #
 
-from concurrent import futures
 import collections
 import contextlib
 import csv
@@ -26,7 +25,7 @@ import doctest
 import os
 import re
 import sys
-
+from concurrent import futures
 
 NEW_ROOT = "/disk/data/stiltweb/slots"
 OLD_ROOT = "/disk/data/stilt"
@@ -350,7 +349,7 @@ def sync_all_stations(stations):
                 print(item, "failed with", e)
 
 
-if __name__ == '__main__':
+def cli():
     assert 0, "This script serves as a starting point for one-off-hacks"
     doctest.testmod()
     if not same_fs(NEW_ROOT, OLD_ROOT):

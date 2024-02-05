@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # Sync csv from stilt to stiltweb.
 #
 # Split the large csv files output by stilt into small ones for use by
@@ -18,57 +17,35 @@
 # updated the stiltweb cache file for that station/year needs to be
 # removed as well for the new csv files take effect.
 
-from concurrent import futures
 import collections
 import csv
 import glob
 import os
+import pathlib
 import re
 import sys
-import datetime
+from concurrent import futures
 
+import click
+
+from .common import parse_date_id
+
+CLICK_EXISTING_DIR = click.Path(
+    path_type=pathlib.Path, exists=True, file_okay=False, dir_okay=True
+)
 
 # Write files here.
-STILTWEB_STATIONS = '{{ stiltweb_statedir }}/stations'
-
-# The date id column used by stilt start at this date.
-ORIGIN = datetime.date(1960, 1, 1)
-STILT_DATE_ID_SLOTS = {"0": "00", "125": "03", "25": "06", "375": "09",
-                       "5": "12", "625": "15", "75": "18", "875": "21"}
+STILTWEB_STATIONS = "/data/stiltweb/stations"
 
 # Make sure that we read the correct csv files, the following regexp:
 #   matches 'stiltresult2007x62.91Nx027.66Ex00176_2.csv'
 #   but not 'stiltresult2007x62.91Nx027.66Ex00176.csv'
-MATCHING_CSV = re.compile(r'stiltresult(\d{4})x[^_]+_\d+.csv')
+MATCHING_CSV = re.compile(r"stiltresult(\d{4})x[^_]+_\d+.csv")
 
 # This object serves as something to return to the process executor.
 SyncResult = collections.namedtuple(
-    'SyncResult', ['csvdir', 'nwritten', 'nnoexist', 'nskipped'])
-
-
-def parse_date_id(s):
-    """Parse stilt date/slot string into python objects
-
-    Each slot is a decimal value which gives us the three-hour window
-    since stilt's ORIGIN.
-
-    >>> parse_date_id('17167.5')
-    (datetime.date(2007, 1, 1), '12')
-    >>> parse_date_id('20820.125')
-    (datetime.date(2017, 1, 1), '03')
-    """
-    # '17167' => '17167.0'
-    if '.' not in s:
-        s += '.0'
-    ndays, nslot = s.split('.')
-    date = ORIGIN + datetime.timedelta(days=int(ndays))
-    try:
-        slot = STILT_DATE_ID_SLOTS[nslot]
-    except KeyError:
-        # This happens - presumably - if stilt has been run for another
-        # resolution that three-hourly. nslot might look like '4583333333'.
-        slot = None
-    return date, slot
+    "SyncResult", ["csvdir", "nwritten", "nnoexist", "nskipped"]
+)
 
 
 def remove_csv_cache_file(station, year):
@@ -80,8 +57,9 @@ def remove_csv_cache_file(station, year):
     file. Stiltweb will automatically rebuild the cache file. This
     also has the benefit of making our update atomic.
     """
-    cache_files = glob.glob(os.path.join(
-        STILTWEB_STATIONS, station, year, "cache*.txt"))
+    cache_files = glob.glob(
+        os.path.join(STILTWEB_STATIONS, station, year, "cache*.txt")
+    )
     # Check our assumptions about cache files before removing any.
     assert len(cache_files) in (0, 1), cache_files
     if len(cache_files) > 0:
@@ -93,7 +71,7 @@ def open_stilt_csv(path):
     #  "ident" "latstart" "lonstart" "aglstart"
     # data looks like
     #  17349.25 69.28 16.01 5
-    reader = csv.reader(open(path), delimiter=' ')
+    reader = csv.reader(open(path), delimiter=" ")
     header = next(reader, None)
     return (header, reader)
 
@@ -105,17 +83,15 @@ def calculate_slotdir_path(station, row):
     use it to index into stiltweb's directory tree.
 
     >>> calculate_slotdir_path('HEI', ['17349.25', '69.28', '16.01', '5'])
-    '/disk/data/stiltweb/stations/HEI/2007/07/2007x07x02x06'
+    '/data/stiltweb/stations/HEI/2007/07/2007x07x02x06'
     """
     date, slot = parse_date_id(row[0])
     if slot is None:
         return None
     slotname = "%sx%02dx%02dx%s" % (date.year, date.month, date.day, slot)
-    return os.path.join(STILTWEB_STATIONS,
-                        station,
-                        "%s" % date.year,
-                        "%02d" % int(date.month),
-                        slotname)
+    return os.path.join(
+        STILTWEB_STATIONS, station, "%s" % date.year, "%02d" % int(date.month), slotname
+    )
 
 
 def extract_csv_for_station(csvdir, station):
@@ -140,9 +116,9 @@ def extract_csv_for_station(csvdir, station):
             if not os.path.exists(slotdir):
                 nnoexist += 1
                 continue
-            destcsv = os.path.join(slotdir, 'csv')
-            with open(destcsv, 'w') as f:
-                writer = csv.writer(f, delimiter=' ')
+            destcsv = os.path.join(slotdir, "csv")
+            with open(destcsv, "w") as f:
+                writer = csv.writer(f, delimiter=" ")
                 writer.writerow(header)
                 writer.writerow(row)
                 nwritten += 1
@@ -151,10 +127,10 @@ def extract_csv_for_station(csvdir, station):
     return SyncResult(csvdir, nwritten, nnoexist, nskipped)
 
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("usage: sync-csv-files CSVROOT")
-        sys.exit(0)
+@click.command()
+@click.argument("cvsroot", type=CLICK_EXISTING_DIR)
+@click.argument("stationroot", type=CLICK_EXISTING_DIR)
+def cli(cvsroot, stationroot):
     stations = []
     for csvdir in os.scandir(sys.argv[1]):
         if not csvdir.is_dir():
@@ -164,8 +140,7 @@ if __name__ == '__main__':
     with futures.ProcessPoolExecutor() as executor:
         todos = {}
         for csvdir in stations:
-            future = executor.submit(extract_csv_for_station,
-                                     csvdir.path, csvdir.name)
+            future = executor.submit(extract_csv_for_station, csvdir.path, csvdir.name)
             todos[future] = csvdir.name
         for future in futures.as_completed(todos):
             result = future.result()

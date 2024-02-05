@@ -1,5 +1,4 @@
 stiltweb_username: stiltweb
-stiltweb_servicename: stiltweb
 
 # delegate to the result of ansible's user creation
 stiltweb_home: "/home/{{ stiltweb_username }}"

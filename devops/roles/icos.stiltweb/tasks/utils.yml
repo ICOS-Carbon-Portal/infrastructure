@@ -1,17 +1,42 @@
-- name: Install files
-  template:
-    src: "{{ item.name }}"
-    dest: "{{ item.dest }}/{{ item.name }}"
-    owner: "{{ stiltweb_username }}"
-    group: "{{ stiltweb_username }}"
-  with_items:
-    - {name: Makefile, dest: "{{ stiltweb_home }}" }
+# PYTHON UTILS
+- name: Synchronize stilt-utils source
+  ansible.posix.synchronize:
+    src: "stilt-utils"
+    dest: "{{ stiltweb_home }}/"
+    # preserver owner and group, default is yes
+    delete: true
+    owner: no
+    group: no
+    rsync_opts:
+      # read the .rsync-filter file
+      - '-F'
+      - '--delete-excluded'
+  register: _rsync
+
+- name: Install stilt-utils
+  become: true
+  become_user: "{{ stiltweb_username }}"
+  community.general.pipx:
+    executable: pipx
+    python: python3.12
+    editable: true
+    force: "{{ _rsync.changed }}"
+    name: "{{ stiltweb_home }}/stilt-utils"
+  register: _pipx
+  # pipx seems to always report changed when installing editable from file
+  changed_when:
+    - _pipx.changed
+    - _pipx.stdout
+    - _pipx.stdout.find('already seems to be installed') == -1
+  environment:
+    PIPX_BIN_DIR: "{{ stiltweb_bindir }}"
 
 
+# OTHER UTILS    
 - name: Install scripts
   template:
     src:   "{{ item }}"
-    dest:  "{{ stiltweb_bindir }}/{{ item }}"
+    dest:  "{{ stiltweb_bindir }}/"
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
     mode:  0755
@@ -19,6 +44,25 @@
     - tail-latest.sh
     - sync-station-names.sh
     - sync-fsicos1-to-fsicos2.sh
-    - sync-stilt-to-stiltweb.py
-    - sync-csv-files.py
-    - find-missing-csv-files.py
+
+    
+# JUSTFILE    
+- name: Copy justfile
+  template:
+    src: justfile
+    dest: "{{ stiltweb_home }}"
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+    variable_start_string: "(("
+    variable_end_string: "))"
+    lstrip_blocks: yes
+  register: _justfile
+
+- name: Check justfile
+  shell: just
+  args:
+    chdir: "{{ stiltweb_home }}"
+  changed_when: no
+
+
+    

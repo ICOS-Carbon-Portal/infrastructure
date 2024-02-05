@@ -16,12 +16,11 @@
 
 
 import argparse
-from concurrent import futures
 import collections
 import os
 import re
 import sys
-
+from concurrent import futures
 
 NEW_ROOT = "{{ stiltweb_statedir }}"
 OLD_ROOT = "{{ stiltweb_stiltdir }}"
@@ -179,7 +178,7 @@ def sync_all_stations(stations, dryrun=True, verbose=True):
 
 # MAIN
 
-if __name__ == '__main__':
+def cli():
     assert(os.path.isdir(NEW_ROOT))
     assert(os.path.isdir(OLD_ROOT))
 

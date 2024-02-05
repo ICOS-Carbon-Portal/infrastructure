@@ -1,0 +1,18 @@
+sync:
+  defaults:
+    permissions:
+      defaultFileMode: 0644
+      defaultDirectoryMode: 0755
+      defaultOwner: "id:1002"
+      defaultGroup: "id:1002"
+#      defaultOwner: "stiltweb"
+#      defaultGroup: "stiltweb"
+    ignore:
+      paths:
+        - __pycache__
+
+  src:
+    mode: "one-way-replica"
+    alpha: "stilt_utils"
+    # [[[cog cog.outl(f'beta: "root@{host}:{home}/stilt-utils"') ]]]
+     # [[[end]]]
