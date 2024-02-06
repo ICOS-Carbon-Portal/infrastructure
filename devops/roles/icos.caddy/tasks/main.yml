@@ -2,6 +2,9 @@
 # setup systemd service files.
 - import_tasks: install.yml
 
+- import_tasks: just.yml
+  tags: caddy_just
+
 # If we're not using any extra modules, then we're mostly done.
 - import_tasks: plain.yml
   when: not caddy_modules
