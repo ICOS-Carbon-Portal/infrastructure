@@ -1,5 +1,5 @@
-# - import_tasks: serial_root.yml
-#   tags: pve_guest_serial_root
+- import_tasks: terminal.yml
+  tags: pve_guest_terminal
 
 - name: Install qemu-guest-agent
   apt:
