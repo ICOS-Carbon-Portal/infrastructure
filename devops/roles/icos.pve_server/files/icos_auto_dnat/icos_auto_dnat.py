@@ -40,6 +40,7 @@ from types import SimpleNamespace
 import click
 
 # GLOBALS
+CMD_QM = "/usr/sbin/qm"
 CMD_IPTABLES = "/usr/sbin/iptables"
 CMD_IPTABLES_SAVE = "/usr/sbin/iptables-save"
 ICOS_CHAIN = "ICOS-DNAT"
@@ -113,7 +114,7 @@ def parse_iptables():
 
     # iptables-save will dump rules in a easy-to-parse format.
     output = check_output([CMD_IPTABLES_SAVE], text=1)  # noqa: S603
-    
+
     for line in output.splitlines():
         if line.startswith("#"):
             continue
@@ -124,7 +125,7 @@ def parse_iptables():
         elif line.startswith("*"):
             table = line[1:]
         elif line.startswith(":"):
-            name = line.split()[0].lstrip(':')
+            name = line.split()[0].lstrip(":")
             rules[name] = []
         elif line.startswith("-A"):
             [_, name, rest] = line.split(None, 2)
@@ -205,7 +206,7 @@ def parse_dnsmasq_leases(path):
 # QM
 @cache
 def _qm_list():
-    output = check_output(["/usr/sbin/qm", "list"], text=1)  # noqa: S603
+    output = check_output([CMD_QM, "list"], text=1)  # noqa: S603
     for n, line in enumerate(output.splitlines()):
         # skip header
         if n == 0:
@@ -231,7 +232,7 @@ def qm_vmid_to_port(vmid):
 
 @cache
 def qm_vmid_to_config(vmid):
-    output = check_output(["/usr/sbin/qm", "config", vmid], text=1)  # noqa: S603
+    output = check_output([CMD_QM, "config", vmid], text=1)  # noqa: S603
     return dict(
         (s.strip() for s in line.split(":", 1)) for line in output.splitlines()
     )
@@ -283,12 +284,38 @@ def cli(ctx, dry_run, interface, bridge):
                               bridge=bridge)
 
 
+@cli.command("show")
+@click.pass_context
+def cli_show(ctx):
+    """Show running VMs and their ip and ports"""
+    leases = list(parse_dnsmasq_leases(ctx.obj.lease_file))
+    name2ip = {name: ip for ip, name in leases}
+    ip2port = {r.ip: r.hport for r in parse_icos_dnat()}
+    
+    for qm in qm_list():
+        fwip = name2ip.get(qm.name)
+        fwport = ip2port.get(fwip)
+        print(f"{qm.name:<15} - configured port {qm.port} - firewall port {fwport}")
+
+
+@cli.command("assign")
+@click.pass_context
+@click.argument('name')
+@click.argument('port', type=int)
+def cli_assign(ctx, name, port):
+    """Assign a port to a VM"""
+    vmid = qm_name_to_vmid(name)
+    currport = qm_vmid_to_port(vmid)
+    print(f"{name} currently has port {currport} configured")
+    print(f"assigning port {port} to {name}")
+    check_call([CMD_QM, 'set', vmid, '--description', f"port {port}"])
+
 
 
 @cli.command("run")
 @click.pass_context
 def cli_run(ctx):
-    """Parse leases, adjust firewall rules. Used by the systemd service."""
+    """Check and add iptables rules."""
     leases = list(parse_dnsmasq_leases(ctx.obj.lease_file))
 
     ip2name = {ip: name for ip, name in leases}  # noqa: C416

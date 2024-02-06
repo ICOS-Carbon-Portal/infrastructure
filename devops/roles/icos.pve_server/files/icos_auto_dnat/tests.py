@@ -132,11 +132,11 @@ def test_auto_bridge(monkeypatch, capfd):
     c = capfd.readouterr()
     assert c.err.strip() == "No bridges detected"
 
-    monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: [{'ifname': 'a'}])
+    monkeypatch.setattr(icos_auto_dnat, "ip_json", lambda _: [{"ifname": "a"}])
     assert icos_auto_dnat.auto_bridge() == "a"
 
     monkeypatch.setattr(icos_auto_dnat, "ip_json",
-                        lambda _: [{'ifname': 'a'}, {'ifname': 'b'}])
+                        lambda _: [{"ifname": "a"}, {"ifname": "b"}])
     with pytest.raises(SystemExit):
         icos_auto_dnat.auto_bridge()
     c = capfd.readouterr()
