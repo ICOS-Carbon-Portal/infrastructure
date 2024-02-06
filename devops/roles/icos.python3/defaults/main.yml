@@ -1,1 +1,2 @@
 python3_version_list: ["3.11", "3.12"]
+pipx_upgrade: "{{ upgrade_everything | default(False) | bool }}"

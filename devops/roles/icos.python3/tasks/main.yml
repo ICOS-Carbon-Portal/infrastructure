@@ -16,8 +16,17 @@
   pip:
     name: pipx
     virtualenv: /opt/pipx/.venv
+    state: "{{ 'latest' if pipx_upgrade else 'present' }}"
 
-- name: Create "global" version of pipx
+- name: Create pipx cli wrapper
+  copy:
+    dest: /usr/local/bin/pipx
+    mode: +x
+    content: |
+      #!/usr/bin/bash
+      /opt/pipx/.venv/bin/pipx "$@"
+
+- name: Create "global" version of pipx cli wrapper
   copy:
     dest: /usr/local/sbin/pipx-global
     mode: +x
