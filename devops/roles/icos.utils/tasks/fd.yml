@@ -5,7 +5,7 @@
   delegate_facts: true
   block:
 
-  - name: Find the latest release of btop
+  - name: Find the latest release of fd
     github_release:
       user: sharkdp
       repo: fd
