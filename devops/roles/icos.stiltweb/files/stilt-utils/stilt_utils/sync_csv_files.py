@@ -21,7 +21,7 @@ import collections
 import csv
 import glob
 import os
-import pathlib
+from pathlib import Path
 import re
 import sys
 from concurrent import futures
@@ -31,11 +31,11 @@ import click
 from .common import parse_date_id
 
 CLICK_EXISTING_DIR = click.Path(
-    path_type=pathlib.Path, exists=True, file_okay=False, dir_okay=True
+    path_type=Path, exists=True, file_okay=False, dir_okay=True
 )
 
 # Write files here.
-STILTWEB_STATIONS = "/data/stiltweb/stations"
+STILTWEB_STATIONS = Path("/data/stiltweb/stations")
 
 # Make sure that we read the correct csv files, the following regexp:
 #   matches 'stiltresult2007x62.91Nx027.66Ex00176_2.csv'
@@ -83,22 +83,25 @@ def calculate_slotdir_path(station, row):
     use it to index into stiltweb's directory tree.
 
     >>> calculate_slotdir_path('HEI', ['17349.25', '69.28', '16.01', '5'])
-    '/data/stiltweb/stations/HEI/2007/07/2007x07x02x06'
+    PosixPath('/data/stiltweb/stations/HEI/2007/07/2007x07x02x06')
     """
     date, slot = parse_date_id(row[0])
     if slot is None:
         return None
     slotname = "%sx%02dx%02dx%s" % (date.year, date.month, date.day, slot)
-    return os.path.join(
-        STILTWEB_STATIONS, station, "%s" % date.year, "%02d" % int(date.month), slotname
+    return STILTWEB_STATIONS.joinpath(
+        station, str(date.year), f"{date.month:02}", slotname
     )
 
 
-def extract_csv_for_station(csvdir, station):
+def extract_csv_for_station(csvdir, station, newname):
     """Parse the large csv files for a station and write the small csv files.
 
     This is the main worker function for each spawned process.
+
+    newname looks like "csv_XX3nZE3l0ODO9QA-T9gqI0GU" and contains the PID.
     """
+    assert newname is None or newname.startswith("csv_")
     nnoexist = 0
     nwritten = 0
     nskipped = 0
@@ -113,15 +116,21 @@ def extract_csv_for_station(csvdir, station):
             if slotdir is None:
                 nskipped += 1
                 continue
-            if not os.path.exists(slotdir):
+            if not slotdir.exists():
                 nnoexist += 1
                 continue
-            destcsv = os.path.join(slotdir, "csv")
+            destcsv = slotdir / "csv"
+            if destcsv.exists():
+                if newname is not None:
+
+                    destcsv.rename(destcsv.with_name(newname))
+
+
             with open(destcsv, "w") as f:
                 writer = csv.writer(f, delimiter=" ")
                 writer.writerow(header)
                 writer.writerow(row)
-                nwritten += 1
+
         if nwritten > nwritten_save:
             remove_csv_cache_file(station, m.group(1))
     return SyncResult(csvdir, nwritten, nnoexist, nskipped)
@@ -130,7 +139,39 @@ def extract_csv_for_station(csvdir, station):
 @click.command()
 @click.argument("cvsroot", type=CLICK_EXISTING_DIR)
 @click.argument("stationroot", type=CLICK_EXISTING_DIR)
-def cli(cvsroot, stationroot):
+@click.option("--rename", help="Rename existing csv files to this")
+@click.option("--overwrite", is_flag=True, help="Remove existing csv files")
+def cli(cvsroot, stationroot, rename, overwrite):
+    """Syncs new csv files into the stiltweb/stations directory tree.
+
+    CVSROOT is the directory where new (large) csv files are found.
+
+    STATIONROOT is the stiltweb/stations directory into which csv files should
+    be written
+
+    \b
+    Example
+      sync-csv-files --overwrite /tmp/stiltresults /data/stiltweb/stations
+
+    This will find all csv files in /tmp/stiltresults, break them into parts
+    and move them into the directory tree at /data/stiltweb/stations. Existing
+    csv files in /data/stiltweb/stations will be overwritten
+
+    \b
+    Example
+      sync-csv-files --rename csv_XX3nZE3l0ODO9QA-T9gqI0GU ...
+
+    Same as the previous example but instead of overwriting existing csv
+    files, they will be renamed to csv_XX3nZE3l0ODO9QA-T9gqI0GU
+    """
+    if rename is None and overwrite is False:
+        raise click.UsageError("Must specify one of --rename or --overwrite")
+
+    if rename is not None and overwrite is True:
+        raise click.UsageError("Use either --rename or --overwrite")
+
+    print(rename, overwrite)
+    return
     stations = []
     for csvdir in os.scandir(sys.argv[1]):
         if not csvdir.is_dir():
