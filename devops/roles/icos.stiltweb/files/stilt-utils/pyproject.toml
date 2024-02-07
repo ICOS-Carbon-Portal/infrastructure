@@ -28,3 +28,10 @@ dependencies = [
 [tool.pytest.ini_options]
 addopts = ["--doctest-modules"]
 testpaths = ["tests.py", "stilt_utils"]
+
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle, pyflakes, pyupgrade, flake8-bugbear, flake8-simplify, isort
+    "E", "F", "UP", "B", "SIM", "I",
+]
