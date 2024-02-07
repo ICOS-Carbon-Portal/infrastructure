@@ -24,11 +24,12 @@ from concurrent import futures
 
 NEW_ROOT = "{{ stiltweb_statedir }}"
 OLD_ROOT = "{{ stiltweb_stiltdir }}"
-STATION_DIR = os.path.join(NEW_ROOT, 'stations')
+STATION_DIR = os.path.join(NEW_ROOT, "stations")
 DEBUG = True
 
 
 # UTILS
+
 
 def die(msg):
     print(msg, file=sys.stderr)
@@ -44,15 +45,16 @@ def same_fs(path1, path2):
             return path
         return get_mount(os.path.dirname(path))
 
-    return (os.path.exists(path1) and
-            os.path.exists(path2) and
-            get_mount(path1) == get_mount(path2))
+    return (
+        os.path.exists(path1)
+        and os.path.exists(path2)
+        and get_mount(path1) == get_mount(path2)
+    )
 
 
 # CREATE STATION OBJECTS
 
-Station = collections.namedtuple(
-    'Station', ['name', 'path', 'pos'])
+Station = collections.namedtuple("Station", ["name", "path", "pos"])
 
 
 def station_from_name(name, sdir=STATION_DIR):
@@ -83,15 +85,16 @@ def list_stations(sdir=STATION_DIR):
 
 # LIST SLOTS
 
+
 def list_slots(station):
     for year in os.scandir(station.path):
-        if not (year.is_dir() and re.match('[0-9]+', year.name)):
+        if not (year.is_dir() and re.match("[0-9]+", year.name)):
             continue
         for month in os.scandir(year.path):
-            if not (month.is_dir() and re.match('[0-9]+', month.name)):
+            if not (month.is_dir() and re.match("[0-9]+", month.name)):
                 continue
             for slot in os.scandir(month.path):
-                if not (slot.is_dir() and re.match('[0-9x]+', slot.name)):
+                if not (slot.is_dir() and re.match("[0-9x]+", slot.name)):
                     continue
                 yield (month.path, slot)
 
@@ -99,12 +102,13 @@ def list_slots(station):
 # SYNC A STATION
 
 SyncResult = collections.namedtuple(
-    'SyncResult', ['station', 'nslots', 'nsyncd', 'slotnames'])
+    "SyncResult", ["station", "nslots", "nsyncd", "slotnames"]
+)
 
 
 def sync_station(station, dryrun=True, old_root=OLD_ROOT):
-    fp_dir = os.path.join(old_root, 'Footprints', station.name)
-    rd_dir = os.path.join(old_root, 'RData', station.name)
+    fp_dir = os.path.join(old_root, "Footprints", station.name)
+    rd_dir = os.path.join(old_root, "RData", station.name)
 
     if os.path.exists(fp_dir):
         fp_files = {e.path for e in os.scandir(fp_dir)}
@@ -124,21 +128,23 @@ def sync_station(station, dryrun=True, old_root=OLD_ROOT):
     nsyncd = 0
     slotnames = []
 
-    new2old = (('foot%s_aggreg.nc', fp_dir, fp_files, 'foot'),
-               ('.RDatafoot%s', fp_dir, fp_files, 'rdatafoot'),
-               ('.RData%s', rd_dir, rd_files, 'rdata'))
+    new2old = (
+        ("foot%s_aggreg.nc", fp_dir, fp_files, "foot"),
+        (".RDatafoot%s", fp_dir, fp_files, "rdatafoot"),
+        (".RData%s", rd_dir, rd_files, "rdata"),
+    )
 
-    for (month, slot) in list_slots(station):
+    for month, slot in list_slots(station):
         nslots += 1
         # e.g '2007x12x29x12x69.28Nx016.01Ex00005'
-        datepos = '%sx%s' % (slot.name, station.pos)
+        datepos = "%sx%s" % (slot.name, station.pos)
         didsync = False
         for old_name, old_dir, old_files, new_name in new2old:
             old_path = os.path.join(old_dir, old_name % datepos)
             if old_path in old_files:
                 continue
             new_path = os.path.join(month, slot, new_name)
-            assert(old_path.startswith(old_root))
+            assert old_path.startswith(old_root)
             if not dryrun:
                 os.link(new_path, old_path)
             didsync = True
@@ -162,11 +168,15 @@ def sync_all_stations(stations, dryrun=True, verbose=True):
                 r = future.result()
                 if r.nsyncd > 0:
                     if dryrun:
-                        print("%6s - %-5d slots of which %5d needs linking" % (
-                            r.station.name, r.nslots, r.nsyncd))
+                        print(
+                            "%6s - %-5d slots of which %5d needs linking"
+                            % (r.station.name, r.nslots, r.nsyncd)
+                        )
                     else:
-                        print("%6s - %-5d slots of which %5d were linked" % (
-                            r.station.name, r.nslots, r.nsyncd))
+                        print(
+                            "%6s - %-5d slots of which %5d were linked"
+                            % (r.station.name, r.nslots, r.nsyncd)
+                        )
                     if verbose:
                         for slot in r.slotnames:
                             print(slot)
@@ -178,25 +188,39 @@ def sync_all_stations(stations, dryrun=True, verbose=True):
 
 # MAIN
 
+
 def cli():
-    assert(os.path.isdir(NEW_ROOT))
-    assert(os.path.isdir(OLD_ROOT))
+    assert os.path.isdir(NEW_ROOT)
+    assert os.path.isdir(OLD_ROOT)
 
     if not same_fs(NEW_ROOT, OLD_ROOT):
-        die("%s and %s needs to be on the same filesystem" % (
-            NEW_ROOT, OLD_ROOT))
+        die("%s and %s needs to be on the same filesystem" % (NEW_ROOT, OLD_ROOT))
 
     if os.getuid() == 0:
         die("Refusing to run as root, please run as the stiltweb user")
 
     p = argparse.ArgumentParser(
-        description='Sync slots from %s to %s.' % (NEW_ROOT, OLD_ROOT))
-    p.add_argument('stations', metavar='STATIONS', type=str, nargs='*',
-                   help='Which stations to sync. Default is all stations')
-    p.add_argument('--sync', dest='dryrun', action='store_false',
-                   help='Really sync. Default is a dry run.')
-    p.add_argument('--verbose', dest='verbose', action='store_true',
-                   help='Output every single slot that needs syncing.')
+        description="Sync slots from %s to %s." % (NEW_ROOT, OLD_ROOT)
+    )
+    p.add_argument(
+        "stations",
+        metavar="STATIONS",
+        type=str,
+        nargs="*",
+        help="Which stations to sync. Default is all stations",
+    )
+    p.add_argument(
+        "--sync",
+        dest="dryrun",
+        action="store_false",
+        help="Really sync. Default is a dry run.",
+    )
+    p.add_argument(
+        "--verbose",
+        dest="verbose",
+        action="store_true",
+        help="Output every single slot that needs syncing.",
+    )
 
     args = p.parse_args()
     if args.stations:

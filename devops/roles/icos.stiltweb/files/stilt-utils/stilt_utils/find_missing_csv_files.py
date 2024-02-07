@@ -16,11 +16,12 @@ import concurrent.futures
 import os
 
 STATIONS_ROOT = "{{ stiltweb_statedir }}/slots"
-CORRECT_PARTS = set(('csv', 'rdata', 'rdatafoot', 'foot'))
+CORRECT_PARTS = set(("csv", "rdata", "rdatafoot", "foot"))
 STATION_NAMES = {}
 
 Result = collections.namedtuple(
-    'Result', ['station', 'name', 'year', 'year_path', 'npresent', 'nmissing'])
+    "Result", ["station", "name", "year", "year_path", "npresent", "nmissing"]
+)
 
 
 def station_name(coordinates):
@@ -47,13 +48,12 @@ def do_station_year(station, year):
             lacks = CORRECT_PARTS - parts
             if len(lacks) == 0:
                 npresent += 1
-            elif lacks == {'csv'}:
+            elif lacks == {"csv"}:
                 nmissing += 1
                 missing.append(slot.path)
             else:
                 raise AssertionError(lacks, parts)
-    return Result(station, station_name(station), year, year_path,
-                  npresent, nmissing)
+    return Result(station, station_name(station), year, year_path, npresent, nmissing)
 
 
 def cli():
@@ -84,9 +84,11 @@ def cli():
         for station, years in sorted(station_results.items()):
             for n, (year, result) in enumerate(sorted(years.items())):
                 if n > 0:
-                    station = ''
-                print("%-6s %s\tpresent = %-4d. missing = %-4d" % (
-                    station, year, result.npresent, result.nmissing))
+                    station = ""
+                print(
+                    "%-6s %s\tpresent = %-4d. missing = %-4d"
+                    % (station, year, result.npresent, result.nmissing)
+                )
                 # As long as a station has any complete slots, we'll keep it.
                 if result.npresent > 0 and result.station in empty_stations:
                     del empty_stations[result.station]

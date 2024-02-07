@@ -3,9 +3,16 @@ import datetime
 # The date id column used by stilt start at this date.
 ORIGIN = datetime.date(1960, 1, 1)
 
-STILT_DATE_ID_SLOTS = {"0": "00", "125": "03", "25": "06", "375": "09",
-                       "5": "12", "625": "15", "75": "18", "875": "21"}
-
+STILT_DATE_ID_SLOTS = {
+    "0": "00",
+    "125": "03",
+    "25": "06",
+    "375": "09",
+    "5": "12",
+    "625": "15",
+    "75": "18",
+    "875": "21",
+}
 
 
 def parse_date_id(s):
@@ -20,9 +27,9 @@ def parse_date_id(s):
     (datetime.date(2017, 1, 1), '03')
     """
     # '17167' => '17167.0'
-    if '.' not in s:
-        s += '.0'
-    ndays, nslot = s.split('.')
+    if "." not in s:
+        s += ".0"
+    ndays, nslot = s.split(".")
     date = ORIGIN + datetime.timedelta(days=int(ndays))
     try:
         slot = STILT_DATE_ID_SLOTS[nslot]
