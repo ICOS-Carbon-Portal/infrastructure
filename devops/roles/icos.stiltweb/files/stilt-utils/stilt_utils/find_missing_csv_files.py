@@ -32,7 +32,7 @@ def station_name(coordinates):
                 target = os.readlink(elt)
                 # 62.91Nx027.66Ex00176 => PUI
                 STATION_NAMES[os.path.basename(target)] = elt.name
-    return STATION_NAMES.get(coordinates, None)
+    return STATION_NAMES.get(coordinates)
 
 
 def do_station_year(station, year):
