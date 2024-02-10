@@ -1,0 +1,33 @@
+- hosts: fsicos2.lunarc.lu.se
+
+  roles:
+    - role: icos.telegraf
+      tags: telegraf
+      telegraf_conf: |
+        [agent]
+        debug = false
+
+        # Metrics about telegraf itself
+        [[inputs.internal]]
+
+
+        [[outputs.influxdb]]
+        # Write to local vmagent
+        # vmagent/write/write?db=telegraf
+        urls = ["http://localhost:8429/vmagent"]
+        exclude_database_tag = true
+
+        # Read metrics about disk usage by mount point
+        [[inputs.disk]]
+
+        # Set mount_points to restrict stats to only the specified
+        # mount points.
+        mount_points = ["/", "/disk/data"]
+
+        [[inputs.systemd_units]]
+        timeout = "5s"
+
+        # this key is new for version 1.30 (march 2024)
+        #subcommand = "list-units"
+        unittype = "service"
+        pattern = "bbclient-*"
