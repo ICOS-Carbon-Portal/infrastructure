@@ -1,0 +1,78 @@
+# https://github.com/slackhq/nebula/blob/master/examples/config.yml
+# https://nebula.defined.net/docs/config/
+
+pki:
+  ca: /etc/nebula/ca.crt
+  key: /etc/nebula/host.key
+  cert: /etc/nebula/host.crt
+
+lighthouse:
+  am_lighthouse: {{ nebula_is_lighthouse }}
+  # How often will nebula hosts report to the lighthouse.
+  interval: 60
+  {% if not nebula_is_lighthouse %}
+  # The list of lighthouse hosts
+  hosts: {{ nebula_lighthouse_hosts | to_nice_json }}
+  {% endif %}
+  # filter which local IP addresses we advertise to the lighthouses
+  local_allow_list:
+    interfaces:
+      # nebula over wireguard brings sorrow
+      "wg-*": false
+      
+
+static_host_map: {{ nebula_static_host_map | to_nice_json }}
+
+{% if nebula_preferred_ranges is defined %}
+# The local ip-ranges of this host.
+preferred_ranges: {{ nebula_preferred_ranges }}
+{% endif %}
+
+listen:
+  host: 0.0.0.0
+  port: "{{ nebula_port }}"
+
+# chachapoly is better for a mixed environment.  
+cipher: chachapoly
+
+punchy:
+  # Continues to punch inbound/outbound at a regular interval to avoid
+  # expiration of firewall nat mappings
+  punch: true
+  use_relays: true
+
+tun:
+  dev: {{ nebula_interface }}
+
+# The firewall is default deny. There is no way to write a deny rule.
+firewall:
+  outbound:
+    - port: any
+      proto: any
+      host: any
+
+  inbound:
+    - port: any
+      proto: any
+      host: any
+
+logging:
+  # info is the default, debug is next
+  level: info
+  disable_timestamp: true
+
+
+# https://nebula.defined.net/docs/config/sshd/
+sshd:
+  enabled: {{ nebula_ssh_enable }}
+  listen: 127.0.0.1:{{ nebula_ssh_port }}
+  host_key: /etc/ssh/ssh_host_ed25519_key
+  authorized_users:
+  - user: admin
+    keys:
+      - '{{ nebula_ssh_public }}'
+
+      
+{% if nebula_config_extra is defined %}
+{{ nebula_config_extra | to_nice_yaml(indent=2) }}
+{% endif %}

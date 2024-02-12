@@ -1,0 +1,23 @@
+- name: Install iptables
+  when: nebula_is_lighthouse
+  apt:
+    name:
+      - iptables
+      - iptables-persistent
+
+- name: Allow nebula through firewall
+  iptables:
+    state: "{{ 'present' if nebula_is_lighthouse else 'absent' }}"
+    chain: INPUT
+    protocol: udp
+    destination_port: "{{ nebula_port }}"
+    jump: ACCEPT
+  notify: save iptables
+
+- name: Allow everything on nebula interface
+  iptables:
+    state: absent
+    chain: INPUT
+    in_interface: "{{ nebula_interface }}"
+    jump: ACCEPT
+  notify: save iptables

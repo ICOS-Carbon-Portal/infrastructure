@@ -1,0 +1,13 @@
+- name: Copy nebula.service
+  template:
+    src: nebula.service
+    dest: /etc/systemd/system
+    lstrip_blocks: yes
+  notify: restart nebula
+
+- name: Start nebula service
+  systemd:
+    name: nebula
+    enabled: yes
+    state: started
+    daemon-reload: yes

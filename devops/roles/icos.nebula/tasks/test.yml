@@ -1,0 +1,9 @@
+# restart nebula etc
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Check that nebula is working
+  tags: nebula_ping
+  command: ping -w 10 -c 1 {{ nebula_ping_host }}
+  changed_when: no
+  ignore_errors: true

@@ -1,0 +1,43 @@
+# PARAMS
+nebula_is_lighthouse: False
+nebula_interface: nebula1
+nebula_cert_files: "files/nebula/"
+
+
+# CONFIG
+nebula_etc_dir: /etc/nebula
+nebula_bin_dir: /usr/local/bin
+
+nebula_user: nebula
+nebula_port: 4242
+
+# populate /etc/hosts
+nebula_hosts_enable: true
+
+nebula_hostname: "{{ inventory_hostname }}"
+# install new releases of nebula if available
+nebula_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
+
+
+# SSH DEBUG INTERFACE
+# https://nebula.defined.net/docs/config/sshd/
+nebula_ssh_enable: false
+nebula_ssh_key: "{{ nebula_etc_dir }}/admin"
+nebula_ssh_port: 2345
+
+
+# DOWNLOAD AND INSTALL
+nebula_version: "{{ hostvars.localhost.nebula_version }}"
+nebula_url_map:
+  # raspberry pi zero
+  "armv6l": "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-arm-6.tar.gz"
+
+  # raspberry pi 3b+
+  "armv7l": "https://github.com/slackhq/nebula/releases/download/v{{  nebula_version }}/nebula-linux-arm-7.tar.gz"
+
+  # regular server
+  "x86_64": "https://github.com/slackhq/nebula/releases/download/v{{  nebula_version }}/nebula-linux-amd64.tar.gz"
+
+  # cm4 64-bit
+  "aarch64": "https://github.com/slackhq/nebula/releases/download/v{{  nebula_version }}/nebula-linux-arm64.tar.gz"

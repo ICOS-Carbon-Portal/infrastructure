@@ -1,0 +1,14 @@
+- import_tasks: setup.yml
+  tags: nebula_setup
+
+- import_tasks: config.yml
+  tags: nebula_config
+
+- import_tasks: service.yml
+  tags: nebula_service
+
+- import_tasks: hosts.yml
+  tags: nebula_hosts
+
+- import_tasks: test.yml
+  tags: nebula_test

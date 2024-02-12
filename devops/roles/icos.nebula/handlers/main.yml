@@ -1,0 +1,7 @@
+- name: restart nebula
+  service:
+    name: nebula
+    state: restarted
+
+- name: save iptables
+  command: netfilter-persistent save

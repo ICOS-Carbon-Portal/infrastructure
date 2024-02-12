@@ -1,0 +1,68 @@
+- name: Create nebula user
+  user:
+    name: "{{ nebula_user }}"
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: no
+
+- name: Create etc directory
+  file:
+    path: "{{ nebula_etc_dir }}"
+    owner: "{{ nebula_user }}"
+    group: "{{ nebula_user }}"
+    state: directory
+    mode: 0700
+
+- name: Check whether nebula is already installed
+  stat:
+    path: "{{ nebula_bin_dir }}/nebula"
+  register: _r
+
+- name: Download and unpack nebula
+  include_tasks: download.yml
+  when: not _r.stat.exists or nebula_upgrade
+  
+- name: Check that nebula runs
+  shell: |
+    {{ nebula_bin_dir }}/{{ item }} -version
+  changed_when: no
+  register: version
+  loop:
+    - nebula
+    - nebula-cert
+
+- name: Inform about installed version
+  run_once: true
+  debug:
+    msg: |
+      We've installed nebula {{ version.results[0].stdout_lines[0] }}
+
+- name: Create key and certificate
+  tags: test
+  delegate_to: localhost
+  throttle: 1
+  command: >-
+    ab-nebula-util generate {{ item }} {{ nebula_hostname }}
+  args:
+    creates: "{{ nebula_ca_path | dirname }}/{{ nebula_hostname }}.crt"
+  register: r
+  # Using fileglob is a hack to make ansible find nebula_ca_path using its
+  # normal search_path lookup. "{{ item }}" will be the resolved path.
+  with_fileglob:
+    - "{{ nebula_ca_path }}"
+
+- name: Generate admin ssh key
+  command: >-
+    ssh-keygen -q -t ed25519
+      -f {{ nebula_ssh_key }}
+      -C "nebula admin on {{ inventory_hostname }}" -N ""
+  args:
+    creates: "{{ nebula_etc_dir }}/admin"
+
+- import_tasks: iptables.yml
+  tags: nebula_iptables
+
+- import_tasks: just.yml
+  tags: nebula_just
+
+    

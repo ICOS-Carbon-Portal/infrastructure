@@ -1,0 +1,50 @@
+# This variable is needed for the config file.
+- when:
+    - nebula_ssh_enable
+    - nebula_ssh_public is not defined
+  block:
+  - name: Slurp nebula_ssh_public
+    slurp:
+      src: "{{ nebula_ssh_key }}.pub"
+    register: _slurp
+
+  - name: Decode nebula_ssh_public
+    set_fact:
+      nebula_ssh_public: "{{ _slurp.content | b64decode }}"
+
+- block:
+    - name: Copy nebula_config.yml
+      template:
+        src: "{{ nebula_config_file }}"
+        dest: "{{ nebula_etc_dir }}/config.yml"
+        lstrip_blocks: yes
+        backup: true
+      register: update
+      notify: restart nebula
+
+    - name: Run validation
+      command: "nebula -test -config {{ update.dest }}"
+      changed_when: no
+
+  rescue:
+    - name: Slurp failed file and add line numbers
+      command: cat -n "{{ nebula_etc_dir }}/config.yml"
+      register: _slurp
+
+    - name: Dump failed configuration
+      debug:
+        msg: "{{ _slurp.stdout }}"
+
+    - name: Restore config file
+      copy:
+         remote_src: true
+         dest: "{{ nebula_etc_dir }}/config.yml"
+         src: "{{ update.backup_file }}"
+      when: "update['backup_file'] is defined"
+
+  always:
+    - name: Remove backup file
+      file:
+        name: "{{ update.backup_file }}"
+        state: absent
+      when: "update['backup_file'] is defined"
