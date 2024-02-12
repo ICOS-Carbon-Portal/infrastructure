@@ -1,0 +1,62 @@
+editor := env_var_or_default("EDITOR", "emacsclient --no-wait")
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# build a new stiltcustom image locally
+build *args:
+	./build.sh {{args}}
+
+
+# Useful when the new stiltcustom image has been developed on a remote
+# machine.
+#
+# retrieve a stiltcustom image from a remote machine
+pull host name:
+    #!/usr/bin/bash
+    set -euo pipefail
+    ids=( $(ssh {{host}} docker images |
+            awk 'NR > 1 0 && /{{name}}/ { print$3 }') )
+    if [[ ${#ids[@]} = 0 ]]; then
+      echo "no image match '{{name}}'"
+      exit 1
+    fi
+    if [[ ${#ids[@]} > 1 ]]; then
+      echo "more than one image matched '{{name}}'"
+      exit 1
+    fi
+    cmd="ssh {{host}} 'docker save $ids | gzip' > stiltcustom-${ids}.tgz"
+    echo $cmd
+    eval $cmd
+
+
+# Once a new stiltcustom image has been created, tested and saved; it needs
+# to be uploaded to our webserver, from which it will be downloaded by the
+# icos.stiltrun 
+#
+# upload a docker-save:d tarball to nginx
+upload file host="fsicos2":
+    #!/usr/bin/bash
+    if [[ ! {{file}} =~ ^stiltcustom-.*.tgz ]]; then
+      echo "argument needs to be named stiltcustom-SHA1.tgz"
+      exit 1
+    fi
+    set -x
+    scp {{file}} {{host}}:/usr/share/nginx/static/share/docker/stilt
+
+
+# Once a new stiltcustom image has been built, the icos.stiltrun needs to be
+# updated with its checksum.
+#
+# open stiltrun defaults and update checksum of stiltimage
+stiltrun-edit:
+    {{editor}} ../devops/roles/icos.stiltrun/defaults/main.yml
+
+
+# Run the stiltcluster playbook to deploy the stiltcustom image.
+#
+# deploy stiltrun along with the stiltcustom image
+stiltrun-deploy:
+    icos run stiltcluster stiltrun -D
