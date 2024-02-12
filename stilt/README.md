@@ -1,10 +1,15 @@
 # STILT modeling software
 
-Standard Docker image build file and docker-compose config file for STILT langrangian transport model software.
-Build process requires username and password for access to MPI-BCG's SVN repository (in Jena). Edit the docker-compose config accordingly.
+Standard Docker image build file and docker-compose config file for STILT
+langrangian transport model software.  Build process requires username and
+password for access to MPI-BCG's SVN repository (in Jena). Edit the
+docker-compose config accordingly.
+
 
 ## Saving a pre-build Docker image
 `docker save <image> | gzip > <file>`
+
+
 
 ## Loading the pre-build base STILT Docker image
 Run as a member of `docker` group or as root:
@@ -45,7 +50,7 @@ Run as a member of `docker` group or as root:
 
 `docker cp stiltweb-assembly-0.1.0.jar webstilt_nc_production:/opt`
 
-###Starting a shell inside the container
+### Starting a shell inside the container
 
 `docker exec -it webstilt_nc_production /bin/bash`
 
