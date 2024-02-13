@@ -1,5 +1,5 @@
-- name: List docker images
-  command: docker images -qa
+- name: List docker images matching the stiltrun image
+  command: docker images -qa {{stiltrun_image_name}}
   register: docker_images
   changed_when: False
 
@@ -15,11 +15,17 @@
         dest: /tmp
       register: _get_url
 
-    - name: Load stil image into docker
+    - name: Load stilt image into docker
       command: docker load -i "{{ _get_url.dest }}"
+      changed_when: no
 
     - name: Check that stiltrun_image was properly loaded
       shell: docker images -q | grep {{ stiltrun_image_id }} -q
+      changed_when: no
+
+    - name: Tag the stiltrun image
+      shell: docker tag {{stiltrun_image_id}} {{stiltrun_image_name}}
+      changed_when: no
 
 - name: Install the stilt python wrapper
   template:
