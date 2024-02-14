@@ -667,6 +667,9 @@ if (fluxTF) {
       # Add information on model version, fluxes and tracer metadata to csv file
       # Convert the matrix result to a data frame
       df_result <- data.frame(result)
+      #add colum names separately to prevent some automatic changes of '+' into '.'
+      col_names_df <- dimnames(result)[[2]]
+      colnames(df_result) <- col_names_df
       # Add the new column with metadata link to the data frame
       df_result$metadata <- metadata
       write.table(df_result, file=paste(path_stiltresult, stiltresultname, part, ".csv", sep=""), na="", row.names=F)
