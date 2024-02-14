@@ -121,6 +121,8 @@ selco2gas<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="gas" & substring(p
 selco2coal<-pars[(pars[,1]==tracer & substring(pars[,3],1,4)=="coal" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2oil<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="oil" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2waste<-pars[(pars[,1]==tracer & substring(pars[,3],1,11)=="solid_waste" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selco2fuelothers<-pars[(pars[,1]==tracer & substring(pars[,3],1,6)=="others" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selco2cement<-pars[(pars[,1]==tracer & substring(pars[,3],1,6)=="cement" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 
 co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep="."),drop=F], na.rm = FALSE)
 co2.cat.fuel.bio<-rowSums (dat[,paste(selco2bio[,1],selco2bio[,2],selco2bio[,3],sep="."),drop=F], na.rm = FALSE)
@@ -128,6 +130,8 @@ co2.cat.fuel.gas<-rowSums (dat[,paste(selco2gas[,1],selco2gas[,2],selco2gas[,3],
 co2.cat.fuel.coal<-rowSums (dat[,paste(selco2coal[,1],selco2coal[,2],selco2coal[,3],sep="."),drop=F], na.rm = FALSE)
 co2.cat.fuel.oil<-rowSums (dat[,paste(selco2oil[,1],selco2oil[,2],selco2oil[,3],sep="."),drop=F], na.rm = FALSE)
 co2.cat.fuel.waste<-rowSums (dat[,paste(selco2waste[,1],selco2waste[,2],selco2waste[,3],sep="."),drop=F], na.rm = FALSE)
+co2.cat.fuel.others<-rowSums (dat[,paste(selco2fuelothers[,1],selco2fuelothers[,2],selco2fuelothers[,3],sep="."),drop=F], na.rm = FALSE)
+co2.cat.cement<-rowSums (dat[,paste(selco2cement[,1],selco2cement[,2],selco2cement[,3],sep="."),drop=F], na.rm = FALSE)
 
 selco2energy<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a1a","1a1bcr")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2transport<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a3b","1a3ce","1a3a+1c1","1a3d+1c2")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
@@ -141,7 +145,7 @@ co2.transport<-rowSums (dat[,paste(selco2transport[,1],selco2transport[,2],selco
 co2.others<-rowSums (dat[,paste(selco2others[,1],selco2others[,2],selco2others[,3],sep="."),drop=F], na.rm = FALSE)
 co2.residential<-rowSums (dat[,paste(selco2resident[,1],selco2resident[,2],selco2resident[,3],sep="."),drop=F], na.rm = FALSE)
 
-dat<-cbind(dat,co2.cat.fuel.all,co2.cat.fuel.bio,co2.cat.fuel.gas,co2.cat.fuel.coal,co2.cat.fuel.oil,co2.cat.fuel.waste,co2.energy,co2.transport,co2.industry,co2.others,co2.residential)
+dat<-cbind(dat,co2.cat.fuel.all,co2.cat.fuel.bio,co2.cat.fuel.gas,co2.cat.fuel.coal,co2.cat.fuel.oil,co2.cat.fuel.waste,co2.cat.fuel.others,co2.cat.cement,co2.energy,co2.transport,co2.industry,co2.others,co2.residential)
 test.all<-c("co2.cat.fuel.bio","co2.cat.fuel.gas","co2.cat.fuel.coal","co2.cat.fuel.oil")
 test.plot<-rowSums (dat[,test.all,drop=F], na.rm = FALSE)
 dat<-cbind(dat,test.plot)
@@ -175,6 +179,8 @@ co2.fuel.gas<-co2.cat.fuel.gas
 co2.fuel.oil<-co2.cat.fuel.oil
 co2.fuel.bio<-co2.cat.fuel.bio
 co2.fuel.waste<-co2.cat.fuel.waste
+co2.fuel.others<-co2.cat.fuel.others
+co2.cement<-co2.cat.cement
 co2.background<-dat[,"co2ini"]
 
 co2.ini<-dat[,"co2ini"]
@@ -204,6 +210,8 @@ selcogas<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="gas" & substring(pa
 selcocoal<-pars[(pars[,1]==tracer & substring(pars[,3],1,4)=="coal" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selcooil<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="oil" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selcowaste<-pars[(pars[,1]==tracer & substring(pars[,3],1,11)=="solid_waste" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcofuelothers<-pars[(pars[,1]==tracer & substring(pars[,3],1,6)=="others" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcocement<-pars[(pars[,1]==tracer & substring(pars[,3],1,6)=="cement" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 
 co.cat.fuel.all<-rowSums (dat[,paste(selco[,1],selco[,2],selco[,3],sep="."),drop=F], na.rm = FALSE)
 co.cat.fuel.bio<-rowSums (dat[,paste(selcobio[,1],selcobio[,2],selcobio[,3],sep="."),drop=F], na.rm = FALSE)
@@ -211,6 +219,8 @@ co.cat.fuel.gas<-rowSums (dat[,paste(selcogas[,1],selcogas[,2],selcogas[,3],sep=
 co.cat.fuel.coal<-rowSums (dat[,paste(selcocoal[,1],selcocoal[,2],selcocoal[,3],sep="."),drop=F], na.rm = FALSE)
 co.cat.fuel.oil<-rowSums (dat[,paste(selcooil[,1],selcooil[,2],selcooil[,3],sep="."),drop=F], na.rm = FALSE)
 co.cat.fuel.waste<-rowSums (dat[,paste(selcowaste[,1],selcowaste[,2],selcowaste[,3],sep="."),drop=F], na.rm = FALSE)
+co.cat.fuel.others<-rowSums (dat[,paste(selcofuelothers[,1],selcofuelothers[,2],selcofuelothers[,3],sep="."),drop=F], na.rm = FALSE)
+co.cat.cement<-rowSums (dat[,paste(selcocement[,1],selcocement[,2],selcocement[,3],sep="."),drop=F], na.rm = FALSE)
 
 selcoenergy<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a1a","1a1bcr")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selcotransport<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a3b","1a3ce","1a3a+1c1","1a3d+1c2")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
@@ -239,6 +249,7 @@ co.fuel.gas<-co.cat.fuel.gas
 co.fuel.oil<-co.cat.fuel.oil
 co.fuel.bio<-co.cat.fuel.bio
 co.fuel.waste<-co.cat.fuel.waste
+co.fuel.others<-co.cat.fuel.others
 co.background<-dat[,"coini"]
 
 co.ini<-dat[,"coini"]
@@ -265,6 +276,7 @@ selch4coal<-pars[(pars[,1]==tracer & substring(pars[,3],1,4)=="coal" & substring
 selch4oil<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="oil" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selch4waste<-pars[(pars[,1]==tracer & substring(pars[,3],1,11)=="solid_waste" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selch4others<-pars[(pars[,1]==tracer & substring(pars[,3],1,6)=="others" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selch4cement<-pars[(pars[,1]==tracer & substring(pars[,3],1,6)=="cement" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 
 ch4.cat.fuel.all<-rowSums (dat[,paste(selch4[,1],selch4[,2],selch4[,3],sep="."),drop=F], na.rm = FALSE)
 ch4.cat.fuel.bio<-rowSums (dat[,paste(selch4bio[,1],selch4bio[,2],selch4bio[,3],sep="."),drop=F], na.rm = FALSE)
@@ -273,6 +285,7 @@ ch4.cat.fuel.coal<-rowSums (dat[,paste(selch4coal[,1],selch4coal[,2],selch4coal[
 ch4.cat.fuel.oil<-rowSums (dat[,paste(selch4oil[,1],selch4oil[,2],selch4oil[,3],sep="."),drop=F], na.rm = FALSE)
 ch4.cat.fuel.waste<-rowSums (dat[,paste(selch4waste[,1],selch4waste[,2],selch4waste[,3],sep="."),drop=F], na.rm = FALSE)
 ch4.cat.fuel.others<-rowSums (dat[,paste(selch4others[,1],selch4others[,2],selch4others[,3],sep="."),drop=F], na.rm = FALSE)
+ch4.cat.cement<-rowSums (dat[,paste(selch4cement[,1],selch4cement[,2],selch4cement[,3],sep="."),drop=F], na.rm = FALSE)
 
 #selch4energy<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a1a")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 #selch4transport<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a3b","1a3ce","1a3a+1c1","1a3d+1c2")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
@@ -335,7 +348,7 @@ ch4.background<-dat[,"ch4ini"]
 
 ch4.ini<-dat[,"ch4ini"]
 
-dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.fuel.waste,co2.energy,co2.transport,co2.industry,co2.others,co2.residential,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.fuel.waste,co.energy,co.transport,co.industry,co.others,co.residential,co.background,ch4.stilt,ch4.fuel,ch4.fuel.oil,ch4.fuel.coal,ch4.fuel.gas,ch4.fuel.bio,ch4.fuel.waste,ch4.fuel.others,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.background,rn,rn.noah,rn.era,rn.noah2_m,rn.era5_m,rn.background,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes)
+dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.fuel.waste,co2.fuel.others,co2.cement,co2.energy,co2.transport,co2.industry,co2.others,co2.residential,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.fuel.waste,co.fuel.others,co.energy,co.transport,co.industry,co.others,co.residential,co.background,ch4.stilt,ch4.fuel,ch4.fuel.oil,ch4.fuel.coal,ch4.fuel.gas,ch4.fuel.bio,ch4.fuel.waste,ch4.fuel.others,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.background,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes,rn,rn.noah,rn.era,rn.noah2_m,rn.era5_m,rn.background)
 
 # write results incl. wind information - if exists
 if ("ubar" %in% colnames(dat)) {
