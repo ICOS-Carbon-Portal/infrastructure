@@ -1,3 +1,7 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+slots := canonicalize("((stiltweb_statedir))/slots")
+
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
@@ -5,23 +9,26 @@
 status:
     systemctl status stiltweb
 
-# tail debug logs of stiltweb and stiltcuster
-watch:
-    bin/tail-latest.sh
-
-sync-csv-files *args:
-    bin/stilt-sync-csv-files {{args}}
-
-sync-stiltweb-to-stilt *args:
-    bin/stilt-sync-stiltweb-to-stilt {{args}}
-
-sync-stilt-to-stiltweb *args:
-    bin/stilt-sync-stilt-to-stiltweb {{args}}
-
-find-missing-csv-files *args:
-    bin/find-missing-csv-files {{args}}
-    
-sync-station-names *args:
-    bin/stilt-sync-station-names.sh {{args}}
+# # tail debug logs of stiltweb and stiltcuster
+# watch:
+#     bin/tail-latest.sh
 
 
+# takes about 60 seconds
+# remove all the yearly cache files
+[confirm("really remove all cache files?")]
+remove-cache-files:
+    time find {{slots}} -type f -name 'cache*_*.txt' -exec rm '{}' '+'
+
+
+# takes about 40 seconds
+# list all the yearly cache files
+show-cache-files:
+    time find {{slots}} -type f -name 'cache*_*.txt'
+
+
+# takes about 2 hours
+# count number of csv files
+[confirm("this will take about 2 hours, proceed?")]
+count-csv-files:
+    time find {{slots}} -name csv | wc

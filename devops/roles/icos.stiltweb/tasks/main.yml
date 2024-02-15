@@ -9,3 +9,6 @@
 
 - import_tasks: sync.yml
   tags: stiltweb_sync
+
+- import_tasks: just.yml
+  tags: stiltweb_just
