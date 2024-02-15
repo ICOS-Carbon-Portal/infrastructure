@@ -3,16 +3,6 @@
     path: "{{ stiltcluster_bindir }}"
     state: directory
 
-- name: Install scripts
-  template:
-    src:   "{{ item }}.j2"
-    dest:  "{{ stiltcluster_bindir }}/{{ item }}"
-    owner: "{{ stiltcluster_username }}"
-    group: "{{ stiltcluster_username }}"
-    mode:  0755
-  with_items:
-    - remove-old-stiltruns.sh
-
 
 - name: Install remove-old-stiltruns timer
   tags: stiltcluster_timer
