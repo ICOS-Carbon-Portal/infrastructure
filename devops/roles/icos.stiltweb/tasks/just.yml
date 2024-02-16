@@ -1,0 +1,18 @@
+- name: Remove old stiltweb justfile
+  file:
+    name: "{{ stiltweb_home }}/justfile"
+    state: absent
+
+- name: Copy justfile
+  template:
+    src: justfile
+    mode: +x
+    dest: "/usr/local/bin/icos-stiltweb"
+    variable_start_string: "(("
+    variable_end_string: "))"
+    lstrip_blocks: yes
+  register: _justfile
+
+- name: Check justfile
+  shell: icos-stiltweb
+  changed_when: no
