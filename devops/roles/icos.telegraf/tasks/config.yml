@@ -1,19 +1,25 @@
 - block:
-    - name: Create telegraf config
+    - name: Create telegraf config file
       copy:
-        dest: "{{ telegraf_conf_file }}"
-        content: "{{ telegraf_conf_content }}"
+        dest: "{{ telegraf_conf_root }}/{{ telegraf_conf_file }}"
+        content: "{{ telegraf_conf }}"
         backup: true
       register: update
 
     - name: Run validation
-      command: telegraf --test --config {{ telegraf_conf_file }}
+      command: telegraf --test --config {{ update.dest }}
+      register: test
       changed_when: update.changed
+      failed_when:
+        - test.failed
+        # If we run test on a config file containing agent-only config, it'll
+        # fail because it has no inputs!
+        - test.stderr.find('no inputs found') < 0
       notify: reload telegraf
 
   rescue:
     - name: Slurp failed file and add line numbers
-      command: cat -n {{ telegraf_conf_file }}
+      command: cat -n {{ update.dest }}
       changed_when: no
       register: _slurp
 
@@ -24,7 +30,7 @@
     - name: Restore config file
       copy:
          remote_src: true
-         dest: "{{ telegraf_conf_file }}"
+         dest: "{{ update.dest }}"
          src: "{{ update.backup_file }}"
 
   always:
@@ -33,7 +39,6 @@
         name: "{{ update.backup_file }}"
         state: absent
       when: "update['backup_file'] is defined"
-
 
 - name: Make sure telegraf is started
   systemd:

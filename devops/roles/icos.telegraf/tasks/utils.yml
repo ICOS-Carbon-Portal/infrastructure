@@ -1,0 +1,13 @@
+- name: Copy justfile
+  template:
+    src: justfile
+    dest: /usr/local/bin/icos-telegraf
+    mode: +x
+    variable_start_string: "(("
+    variable_end_string: "))"
+    lstrip_blocks: yes
+  register: _justfile
+
+- name: Check that the mailman justfile is executable
+  shell: "{{ _justfile.dest }}"
+  changed_when: no

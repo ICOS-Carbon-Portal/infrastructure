@@ -4,7 +4,6 @@
   ansible.builtin.get_url:
     url: https://repos.influxdata.com/influxdata-archive_compat.key
     dest: /etc/apt/trusted.gpg.d/influxdata.asc
-    # dest: /usr/share/keyrings/syncthing-archive-keyring.gpg
     mode: '0644'
     force: true
   register: _key
@@ -12,8 +11,6 @@
 - name: Add influxdata apt repository
   apt_repository:
     filename: influxdata
-    # dpkg --print-architecture == amd64
-    # lsb_release -cs == ansible_lsb.codename == jammy
     repo: >-
       deb [signed-by={{ _key.dest }}]
       https://repos.influxdata.com/debian stable main
@@ -22,4 +19,5 @@
   apt:
     name:
       - telegraf
+    state: "{{ 'latest' if telegraf_upgrade else 'present' }}"
 

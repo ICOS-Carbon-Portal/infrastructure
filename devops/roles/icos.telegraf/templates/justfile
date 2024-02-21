@@ -1,0 +1,12 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# testrun current config
+test:
+    telegraf --test --config ((telegraf_conf_root))/telegraf.conf
+
+# dump default config
+default:
+    telegraf config create
