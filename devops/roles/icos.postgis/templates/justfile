@@ -1,10 +1,16 @@
 #!/usr/bin/env -S just --working-directory (( postgis_home )) --justfile
 
-
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
-
-# run the backup script manually
+# run the timer backup script manually
 backup-run:
     bbclient/timer/bbclient-postgis
+
+# show last backup for each repo
+backup-last:
+    #!/usr/bin/bash
+    while read repo; do
+        echo -n "$repo -- "
+        BORG_REPO="$repo" bbclient/bin/borg list --last 1
+    done < bbclient/repos
