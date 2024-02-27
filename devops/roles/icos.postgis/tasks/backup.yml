@@ -19,6 +19,9 @@
       # verbose output
       set -x
 
+      # If the repos get moved to another disk - maybe because of storage
+      # running out - we don't want the backup to fail.
+      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
       while read repo; do
           export BORG_REPO="$repo"
