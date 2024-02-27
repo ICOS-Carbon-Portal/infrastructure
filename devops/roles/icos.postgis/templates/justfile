@@ -1,0 +1,10 @@
+#!/usr/bin/env -S just --working-directory (( postgis_home )) --justfile
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# run the backup script manually
+backup-run:
+    bbclient/timer/bbclient-postgis

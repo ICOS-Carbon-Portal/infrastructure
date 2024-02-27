@@ -20,6 +20,11 @@
   when: postgis_backup_enable
 
 
+- import_tasks: just.yml
+  tags: postgis_just
+
+
+
 # - name: Install postgresql and postgis
 #   tags: postgresql
 #   import_role:
