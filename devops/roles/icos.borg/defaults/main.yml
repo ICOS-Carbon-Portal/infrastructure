@@ -1,2 +1,7 @@
+borg_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+borg_version: "{{ hostvars.localhost.borg_version }}"
+borg_url_map:
+  "x86_64": "https://github.com/borgbackup/borg/releases/download/{{ borg_version}}/borg-linux64"
+
+
 borg_bin: "/usr/local/bin/borg"
-borg_url: "https://github.com/borgbackup/borg/releases/download/1.2.4/borg-linux64"
