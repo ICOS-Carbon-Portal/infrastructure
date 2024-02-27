@@ -29,6 +29,7 @@
 
       [Install]
       WantedBy=timers.target
+  notify: restart icos timer
 
 - name: Create systemd service
   copy:
