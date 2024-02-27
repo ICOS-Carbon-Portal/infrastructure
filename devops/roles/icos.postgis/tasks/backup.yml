@@ -12,7 +12,10 @@
       RandomizedDelaySec=10m
     bbclient_timer_content: |
       #!/bin/bash
-      set -eu
+
+      # strict mode
+      set -Eueo pipefail
+
 
       while read repo; do
           export BORG_REPO="$repo"
