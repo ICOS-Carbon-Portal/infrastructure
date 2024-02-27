@@ -1,3 +1,5 @@
+just_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+
 just_version: "{{ hostvars.localhost.just_version }}"
 just_url_map:
   "armv6l": "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-arm-unknown-linux-musleabihf.tar.gz"
