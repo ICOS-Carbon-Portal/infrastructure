@@ -16,6 +16,9 @@
       # strict mode
       set -Eueo pipefail
 
+      # verbose output
+      set -x
+
 
       while read repo; do
           export BORG_REPO="$repo"
