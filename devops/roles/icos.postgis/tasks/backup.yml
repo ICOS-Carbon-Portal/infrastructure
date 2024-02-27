@@ -25,6 +25,7 @@
 
       while read repo; do
           export BORG_REPO="$repo"
-          docker exec {{ postgis_container_name }} pg_dumpall --clean --if-exists -U postgres | {{ bbclient_wrapper }} create '::{now}' -;
-          {{ bbclient_wrapper }} prune --keep-within=7d --keep-daily=30 --keep-weekly=150
+          docker exec {{ postgis_container_name }} pg_dumpall --clean --if-exists -U postgres | {{ bbclient_wrapper }} create --verbose --stats '::{now}' -
+
+          {{ bbclient_wrapper }} prune --verbose --stats --keep-within=7d --keep-daily=30 --keep-weekly=150
       done < "{{ bbclient_repo_file }}"
