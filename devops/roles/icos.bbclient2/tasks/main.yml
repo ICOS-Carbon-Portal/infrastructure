@@ -1,8 +1,3 @@
-- name: Install borg
-  tags: borg
-  import_role:
-    name: icos.borg
-
 - name: Setup local ssh directory
   import_tasks: ssh.yml
   become: yes
