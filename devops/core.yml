@@ -57,6 +57,8 @@
 
   roles:
     - role: icos.postgis
+      tags: postgis
+
     - role: icos.restheart
     - role: icos.cpmeta
     - role: icos.cpdata
