@@ -1,41 +1,9 @@
-- when: borg_version is not defined
-  run_once: true
-  check_mode: false
-  delegate_to: localhost
-  delegate_facts: true
-  block:
-
-  - name: Find the latest release of borg
-    github_release:
-      user: borgbackup
-      repo: borg
-      action: latest_release
-    register: gh
-
-  - name: Set borg_version fact
-    set_fact:
-      borg_version: "{{ gh.tag.lstrip('v') }}"
-      cacheable: true
-
-
-- name: Architecture is not supported
-  fail:
-    msg: "borg is not supported on {{ ansible_architecture }}"
-  when: ansible_architecture in ("armv6l", "armv7l", "aarch64")
-
-- name: Download borg
-  get_url:
-    url: "{{ borg_url_map[ansible_architecture] }}"
-    dest: "{{ borg_bin }}"
-    force: "{{ borg_upgrade }}"
-    mode: +x
-
-- name: Check that borg is executable and the correct version
-  shell: "{{ borg_bin }} --version"
-  changed_when: no
+- name: Check whether borg is installed
+  stat:
+    path: "{{ borg_bin }}"
   register: _r
-  failed_when: "not _r.stdout.endswith(borg_version)"
 
-- name: Which version of borg is installed
-  debug:
-    msg: "Installed {{ borg_version }}"
+- name: Install/upgrade borg
+  include_tasks:
+    file: install.yml
+  when: not _r.stat.exists or borg_upgrade
