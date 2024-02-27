@@ -6,11 +6,15 @@
   tags: caddy_just
 
 # If we're not using any extra modules, then we're mostly done.
-- import_tasks: plain.yml
+- name: Install plain caddy
+  include_tasks: plain.yml
   when: not caddy_modules
 
 # If any modules are needed we need xcaddy instead.
-- import_tasks: xcaddy.yml
+- include_tasks:
+    file: xcaddy.yml
+    apply:
+      tags: caddy_modules
   tags: caddy_xcaddy
   when: caddy_modules
 
@@ -18,9 +22,14 @@
   ansible.builtin.shell: "{{ caddy_bin }} version"
   changed_when: no
 
-- import_tasks: global.yml
+- name: Set caddy global configuration
+  include_tasks: global.yml
   when: caddy_global_conf
 
-- import_tasks: site.yml
-  when: caddy_name is defined
+- name: Configure caddy site
+  include_tasks:
+    file: site.yml
+    apply:
+      tags: caddy_site
   tags: caddy_site
+  when: caddy_name is defined
