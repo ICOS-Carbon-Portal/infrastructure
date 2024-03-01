@@ -24,7 +24,6 @@
 
 - name: Set caddy global configuration
   include_tasks: global.yml
-  when: caddy_global_conf
 
 - name: Configure caddy site
   include_tasks:

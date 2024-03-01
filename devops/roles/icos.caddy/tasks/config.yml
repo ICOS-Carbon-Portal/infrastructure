@@ -18,7 +18,9 @@
 
     - name: Run validation
       command: >-
-        {{ caddy_bin }} validate --config /etc/caddy/Caddyfile --adapter caddyfile
+        {{ caddy_bin }} validate
+      args:
+        chdir: /etc/caddy
       changed_when: no
 
   rescue:

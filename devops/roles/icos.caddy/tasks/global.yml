@@ -2,5 +2,4 @@
   vars:
     block: "{{ caddy_global_conf }}"
     marker: "caddy_global_conf"
-    state: "{{ 'present' if caddy_global_conf else 'absent' }}"
     where: "BOF"

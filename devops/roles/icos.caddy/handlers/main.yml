@@ -5,6 +5,6 @@
     daemon_reload: true
 
 - name: reload caddy
-  command: >-
+  shell: >-
     {{ caddy_bin }} reload --config /etc/caddy/Caddyfile --adapter caddyfile
   changed_when: false
