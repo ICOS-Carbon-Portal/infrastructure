@@ -14,7 +14,10 @@ nebula_port: 4242
 # populate /etc/hosts
 nebula_hosts_enable: true
 
-nebula_hostname: "{{ inventory_hostname }}"
+# enable manipulation of firewall, disable for e.g proxmox
+nebula_fw_enable: true
+
+nebula_hostname: "{{ inventory_hostname_short }}"
 # install new releases of nebula if available
 nebula_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"

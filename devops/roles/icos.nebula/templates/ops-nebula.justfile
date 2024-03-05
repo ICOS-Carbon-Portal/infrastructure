@@ -1,7 +1,7 @@
 #!/usr/bin/env -S just --working-directory . --justfile
 
 # the host suffix for hosts in this nebula network
-suffix := "nebula"
+suffix := "((nebula_interface))"
 
 # META
 @_default:

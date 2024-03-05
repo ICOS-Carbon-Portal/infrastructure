@@ -1,23 +1,33 @@
-- name: Install iptables
-  when: nebula_is_lighthouse
-  apt:
-    name:
-      - iptables
-      - iptables-persistent
+- when: nebula_fw_enable
+  block:
+  - name: Install iptables
+    apt:
+      name:
+        - iptables
+        - iptables-persistent
 
-- name: Allow nebula through firewall
-  iptables:
-    state: "{{ 'present' if nebula_is_lighthouse else 'absent' }}"
-    chain: INPUT
-    protocol: udp
-    destination_port: "{{ nebula_port }}"
-    jump: ACCEPT
-  notify: save iptables
+  - name: Allow nebula through firewall
+    iptables:
+      state: "{{ 'present' if nebula_is_lighthouse else 'absent' }}"
+      chain: INPUT
+      protocol: udp
+      destination_port: "{{ nebula_port }}"
+      jump: ACCEPT
+    notify: save iptables
 
-- name: Allow everything on nebula interface
-  iptables:
-    state: absent
-    chain: INPUT
-    in_interface: "{{ nebula_interface }}"
-    jump: ACCEPT
-  notify: save iptables
+  - name: Allow all traffic on nebula interface
+    iptables:
+      chain: INPUT
+      in_interface: "{{ nebula_interface }}"
+      jump: ACCEPT
+    notify: save iptables
+
+
+# i.e proxmox
+- when: not nebula_fw_enable
+  debug:
+    msg: |
+      Please manually add the following firewall rules:
+
+        1. Incoming UDP on port {{nebula_port}}
+        2. All traffic on interface {{nebula_interface}}

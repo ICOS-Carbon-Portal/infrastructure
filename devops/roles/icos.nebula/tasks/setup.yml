@@ -37,20 +37,6 @@
     msg: |
       We've installed nebula {{ version.results[0].stdout_lines[0] }}
 
-- name: Create key and certificate
-  tags: test
-  delegate_to: localhost
-  throttle: 1
-  command: >-
-    ab-nebula-util generate {{ item }} {{ nebula_hostname }}
-  args:
-    creates: "{{ nebula_ca_path | dirname }}/{{ nebula_hostname }}.crt"
-  register: r
-  # Using fileglob is a hack to make ansible find nebula_ca_path using its
-  # normal search_path lookup. "{{ item }}" will be the resolved path.
-  with_fileglob:
-    - "{{ nebula_ca_path }}"
-
 - name: Generate admin ssh key
   command: >-
     ssh-keygen -q -t ed25519
@@ -59,6 +45,18 @@
   args:
     creates: "{{ nebula_etc_dir }}/admin"
 
+- name: Copy certificates and keys
+  copy:
+    src: "{{ nebula_files }}/{{ item.src }}"
+    dest: "{{ nebula_etc_dir }}/{{ item.dest }}"
+  loop:
+    - src: ca.crt
+      dest: ca.crt
+    - src: "{{ nebula_hostname }}.crt"
+      dest: host.crt
+    - src: "{{ nebula_hostname }}.key"
+      dest: host.key
+    
 - import_tasks: iptables.yml
   tags: nebula_iptables
 
