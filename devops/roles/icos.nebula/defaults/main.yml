@@ -1,6 +1,6 @@
 # PARAMS
 nebula_is_lighthouse: False
-nebula_interface: nebula1
+nebula_interface: nebula
 nebula_cert_files: "files/nebula/"
 
 
