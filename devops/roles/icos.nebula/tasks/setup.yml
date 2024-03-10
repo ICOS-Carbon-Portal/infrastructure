@@ -47,7 +47,7 @@
 
 - name: Copy certificates and keys
   copy:
-    src: "{{ nebula_files }}/{{ item.src }}"
+    src: "{{ nebula_cert_files }}/{{ item.src }}"
     dest: "{{ nebula_etc_dir }}/{{ item.dest }}"
   loop:
     - src: ca.crt
