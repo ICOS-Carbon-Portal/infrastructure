@@ -1,9 +1,23 @@
-- import_tasks: setup.yml
-  tags: nats-setup
+- name: Check whether nats is installed
+  stat:
+    path: "{{ nats_server }}"
+  register: _r
 
-- import_tasks: certs.yml
-  tags: nats-certs
+- name: Install/upgrade nats-server
+  include_tasks:
+    file: install.yml
+  when: not _r.stat.exists or nats_upgrade
+
+- name: Setup certificates
+  include_tasks:
+    file: certs.yml
+    apply:
+      tags: nats_certs
+  tags: nats_certs
   when: nats_enable_tls
 
+- import_tasks: utils.yml
+  tags: nats_utils
+
 - import_tasks: config.yml
-  tags: nats-config
+  tags: nats_config

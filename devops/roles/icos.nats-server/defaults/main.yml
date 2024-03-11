@@ -1,14 +1,15 @@
-nats_arch: amd64
-
 nats_user: nats
-nats_name: nats
+nats_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+
 nats_config_file: "/etc/nats-server.conf"
-nats_server_path: /usr/bin/nats-server
+nats_server: /usr/bin/nats-server
 nats_cli: /usr/local/bin/nats
 
+nats_config: ""
+
+# TLS
 nats_enable_tls: false
 nats_certbot_hooks: "/etc/letsencrypt/renewal-hooks/deploy/"
-nats_server_config: ""
 
 # The directory, accessible by the nats user, where we'll copy certificates.
 nats_cert_dir: /var/lib/nats
@@ -17,23 +18,34 @@ nats_cert_dir: /var/lib/nats
 # --cert-name).mark
 nats_cert_name: "{{ ansible_fqdn }}"
 
-# https://github.com/nats-io/nats-server/releases
-nats_server_ver: 2.9.22
-# https://github.com/nats-io/natscli/releases/
-nats_cli_ver: 0.0.35
-# https://github.com/nats-io/nats-top/releases/
-nats_top_ver: 0.6.1
+
+# NATS SERVER
+nats_architecture: "{{ ansible_architecture }}"
+nats_version: "{{ hostvars.localhost.nats_version }}"
+nats_url_map:
+  "armv6l": "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/nats-server-v{{ nats_version }}-arm6.deb"
+  "armv7l": "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/nats-server-v{{ nats_version }}-arm7.deb"
+  "aarch64": "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/nats-server-v{{ nats_version }}-arm64.deb"
+  "x86_64": "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/nats-server-v{{ nats_version }}-amd64.deb"
 
 
-nats_server_deb: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_server_ver }}/nats-server-v{{ nats_server_ver }}-{{ nats_arch }}.deb"
-nats_cli_deb: "https://github.com/nats-io/natscli/releases/download/v{{ nats_cli_ver }}/nats-{{ nats_cli_ver }}-{{ nats_arch }}.deb"
+# NATSCLI
+natscli_upgrade: "{{ nats_upgrade }}"
+natscli_architecture: "{{ nats_architecture }}"
+natscli_version: "{{ hostvars.localhost.natscli_version }}"
+natscli_url_map:
+  "armv6l": "https://github.com/nats-io/natscli/releases/download/v{{natscli_version}}/nats-{{natscli_version}}-arm6.deb"
+  "armv7l": "https://github.com/nats-io/natscli/releases/download/v{{natscli_version}}/nats-{{natscli_version}}-arm7.deb"
+  "aarch64": "https://github.com/nats-io/natscli/releases/download/v{{natscli_version}}/nats-{{natscli_version}}-arm64.deb"
+  "x86_64": "https://github.com/nats-io/natscli/releases/download/v{{natscli_version}}/nats-{{natscli_version}}-amd64.deb"
 
-# NATS TOP
-nats_top_arch: >-
-  {{ nats_top_arch_map[ansible_architecture] | default(ansible_architecture) }}
-nats_top_arch_map:
-  "armv6l": "armv6"
-  "armv7l": "armv7"
-  "x86_64": "x86_64"
 
-nats_top_deb: "https://github.com/nats-io/nats-top/releases/download/v{{ nats_top_ver }}/nats-top-v{{ nats_top_ver }}-linux-{{ nats_top_arch }}.deb"
+# NATSTOP
+natstop_upgrade: "{{ nats_upgrade }}"
+natstop_architecture: "{{ nats_architecture }}"
+natstop_version: "{{ hostvars.localhost.natstop_version }}"
+natstop_url_map:
+  "armv6l": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-armv6.deb"
+  "armv7l": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-armv7.deb"
+  "aarch64": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-arm64.deb"
+  "x86_64": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-x86_64.deb"
