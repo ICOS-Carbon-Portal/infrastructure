@@ -1,0 +1,22 @@
+# NATS CLI
+- name: Check whether natscli is installed
+  stat:
+    path: /usr/local/bin/nats
+  register: _r
+
+- name: Install/upgrade natscli
+  include_tasks:
+    file: nats_cli.yml
+  when: not _r.stat.exists or natscli_upgrade
+
+
+# NATS TOP
+- name: Check whether natstop is installed
+  stat:
+    path: /usr/local/bin/nats-top
+  register: _r
+
+- name: Install/upgrade natstop
+  include_tasks:
+    file: nats_top.yml
+  when: not _r.stat.exists or natstop_upgrade
