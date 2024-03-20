@@ -69,8 +69,14 @@ def die(msg):
 
 
 def ip_json(arg):
-    s = check_output(["/usr/sbin/ip", "-json", "-details",  # noqa: S603
-                      *shlex.split(arg)])
+    s = check_output(
+        [
+            "/usr/sbin/ip",
+            "-json",
+            "-details",  # noqa: S603
+            *shlex.split(arg),
+        ]
+    )
     j = json.loads(s)
     return j
 
@@ -79,11 +85,15 @@ def auto_bridge():
     """Return the name of the first and only bridge."""
     match ip_json("link show type bridge"):
         # Surprisingly, if no bridges are present, this is the output.
-        case [{},{},{},{},{}]: die("No bridges detected")
+        case [{}, {}, {}, {}, {}]:
+            die("No bridges detected")
         # A single bridge
-        case [{"ifname": ifname}]: return ifname
-        case [_, _, *_] as bs: die(f"More than one bridge - {bs}")
-        case bs: die(f"Could not parse bridges {bs}.")
+        case [{"ifname": ifname}]:
+            return ifname
+        case [_, _, *_] as bs:
+            die(f"More than one bridge - {bs}")
+        case bs:
+            die(f"Could not parse bridges {bs}.")
 
 
 def auto_interface():
@@ -99,11 +109,12 @@ def auto_interface():
                     if ip.is_global:
                         result.append(ifname)
     match len(result):
-        case 0: die("Could not automatically find any interfaces.")
-        case 1: return result[0]
-        case _: die(f"Too many automatic interfaces {result}")
-
-
+        case 0:
+            die("Could not automatically find any interfaces.")
+        case 1:
+            return result[0]
+        case _:
+            die(f"Too many automatic interfaces {result}")
 
 
 # CMD_IPTABLES
@@ -133,6 +144,7 @@ def parse_iptables():
             rules.setdefault(name, []).append(rest)
         else:
             raise ValueError(line)
+
 
 def parse_dnat_rule(rule):
     """Parse an iptables-save(1) line into a DNAT object."""
@@ -279,9 +291,9 @@ def cli(ctx, dry_run, interface, bridge):
     if not lease_file.exists():
         raise click.UsageError(f"{lease_file} doesn't exist")
 
-    ctx.obj = SimpleNamespace(lease_file=lease_file,
-                              interface=interface,
-                              bridge=bridge)
+    ctx.obj = SimpleNamespace(
+        lease_file=lease_file, interface=interface, bridge=bridge
+    )
 
 
 @cli.command("show")
@@ -291,25 +303,26 @@ def cli_show(ctx):
     leases = list(parse_dnsmasq_leases(ctx.obj.lease_file))
     name2ip = {name: ip for ip, name in leases}
     ip2port = {r.ip: r.hport for r in parse_icos_dnat()}
-    
+
     for qm in qm_list():
         fwip = name2ip.get(qm.name)
         fwport = ip2port.get(fwip)
-        print(f"{qm.name:<15} - configured port {qm.port} - firewall port {fwport}")
+        print(
+            f"{qm.name:<15} - configured port {qm.port}"
+            f"- firewall port {fwport}"
+        )
 
 
 @cli.command("assign")
-@click.pass_context
-@click.argument('name')
-@click.argument('port', type=int)
-def cli_assign(ctx, name, port):
+@click.argument("name")
+@click.argument("port", type=int)
+def cli_assign(name, port):
     """Assign a port to a VM"""
     vmid = qm_name_to_vmid(name)
     currport = qm_vmid_to_port(vmid)
     print(f"{name} currently has port {currport} configured")
     print(f"assigning port {port} to {name}")
-    check_call([CMD_QM, 'set', vmid, '--description', f"port {port}"])
-
+    check_call([CMD_QM, "set", vmid, "--description", f"port {port}"])  # noqa:S603
 
 
 @cli.command("run")
