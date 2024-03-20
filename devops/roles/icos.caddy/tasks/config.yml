@@ -14,14 +14,14 @@
         insertafter: "{{ 'EOF' if where == 'EOF' else omit }}"
         insertbefore: "{{ 'BOF' if where == 'BOF' else omit }}"
       register: _r
-      notify: reload caddy
 
     - name: Run validation
       command: >-
         {{ caddy_bin }} validate
       args:
         chdir: /etc/caddy
-      changed_when: no
+      changed_when: _r.changed
+      notify: reload caddy
 
   rescue:
     - name: Slurp failed file and add line numbers
