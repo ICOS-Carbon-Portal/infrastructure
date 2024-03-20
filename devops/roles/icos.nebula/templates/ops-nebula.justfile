@@ -44,3 +44,31 @@ iperf-listen myhostname=`hostname`:
 # start iperf3 client
 iperf-connect shortname:
     iperf3 -c {{shortname}}.{{suffix}}
+
+
+# DEBUG LOGGING
+# set loglevel and maybe restart
+loglevel new:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+
+    cd ((nebula_etc_dir))
+    h1=$(sha1sum config.yml)
+
+    sed -i -r 's/^(\s+level:\s+)\w+$/\1{{new}}/' config.yml
+    h2=$(sha1sum config.yml)
+
+    if [[ h1 == h2 ]]; then
+      echo "loglevel already at {{new}}"
+    else
+      echo "loglevel changed, restarting nebula"
+      systemctl restart nebula
+    fi
+
+# enable debugging
+debug-on:
+    just --justfile {{justfile()}} loglevel debug
+
+# disable debugging
+debug-off:
+    just --justfile {{justfile()}} loglevel info
