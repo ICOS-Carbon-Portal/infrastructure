@@ -44,18 +44,19 @@ active:
 
 # exec psql in db container
 psql *args:
-    docker-compose exec db psql --user nextcloud {{args}}
+    {{dc}} exec db psql --user nextcloud {{args}}
 
 # start shell in app container
 shell *args:
-    docker-compose exec app bash {{args}}
+    {{dc}} exec app bash {{args}}
 
 
 
 # GROUP FOLDERS
-# show name for given groupfolder id
+# show groupfolder with given id
 folder-id id:
-    :
+    just occ groupfolders:list --output json \
+    | jq -r '.[] | select(.id == {{id}})'
 
 # DATA DIRECTORY
 # du -hscx for data directory
