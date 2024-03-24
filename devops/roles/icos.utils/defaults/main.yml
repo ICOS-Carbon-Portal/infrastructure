@@ -24,6 +24,7 @@ fd_url_map:
 
 
 # WATCHEXEC
+watchexec_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 watchexec_version: "{{ hostvars.localhost.watchexec_version }}"
 watchexec_url_map:
   "armv7l": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-armv7-unknown-linux-gnueabihf.deb"

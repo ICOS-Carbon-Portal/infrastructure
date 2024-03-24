@@ -19,7 +19,7 @@
 
 - name: Install watchexec
   apt:
-    deb: "{{ watchexec_url_map[ansible_architecture] }}"
+    deb: "{{ watchexec_url_map[watchexec_architecture] }}"
 
 - name: Check that watchexec is executable and the correct version
   shell: watchexec --version | awk 'NR == 1 { print $2 }'
