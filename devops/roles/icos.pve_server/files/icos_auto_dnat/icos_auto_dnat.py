@@ -91,7 +91,7 @@ def auto_bridge():
         case [{"ifname": ifname}]:
             return ifname
         case [_, _, *_] as bs:
-            die(f"More than one bridge - {bs}")
+            die(f"More than one bridge - {','.join(b['ifname'] for b in bs)}")
         case bs:
             die(f"Could not parse bridges {bs}.")
 
@@ -218,13 +218,15 @@ def parse_dnsmasq_leases(path):
 # QM
 @cache
 def _qm_list():
+    result = []
     output = check_output([CMD_QM, "list"], text=1)  # noqa: S603
     for n, line in enumerate(output.splitlines()):
         # skip header
         if n == 0:
             continue
         vmid, vmname, *rest = line.split()
-        yield (vmid, vmname)
+        result.append((vmid, vmname))
+    return result
 
 
 @cache
@@ -259,13 +261,15 @@ def qm_name_to_port(name):
 
 @cache
 def qm_list():
+    result = []
     for vmid, vmname in _qm_list():
         config = qm_vmid_to_config(vmid)
         # skip templates when listing VMs
         if config.get("template", "0") == "1":
             continue
         port = qm_vmid_to_port(vmid)
-        yield QM(vmid, vmname, port)
+        result.append(QM(vmid, vmname, port))
+    return result
 
 
 # CLI
@@ -308,8 +312,8 @@ def cli_show(ctx):
         fwip = name2ip.get(qm.name)
         fwport = ip2port.get(fwip)
         print(
-            f"{qm.name:<15} - configured port {qm.port}"
-            f"- firewall port {fwport}"
+            f"{qm.name:<15} - configured port {str(qm.port):<5}"
+            f" - firewall port {fwport}"
         )
 
 
@@ -324,6 +328,15 @@ def cli_assign(name, port):
     print(f"assigning port {port} to {name}")
     check_call([CMD_QM, "set", vmid, "--description", f"port {port}"])  # noqa:S603
 
+    
+@cli.command("leases")
+@click.pass_context
+def cli_leases(ctx):
+    """Show result of parsing lease file."""
+    print(f"{ctx.obj.lease_file}")
+    for ip, name in parse_dnsmasq_leases(ctx.obj.lease_file):
+        print(f"{ip:<15} {name}")
+
 
 @cli.command("run")
 @click.pass_context
@@ -334,7 +347,7 @@ def cli_run(ctx):
     ip2name = {ip: name for ip, name in leases}  # noqa: C416
     name2ip = {name: ip for ip, name in leases}
     ip2port = {}
-
+    
     print("parsing firewall rules, looking at vms")
     for r in parse_icos_dnat():
         name = ip2name.get(r.ip)
@@ -345,30 +358,37 @@ def cli_run(ctx):
         ip2port[r.ip] = r.hport
         qmport = qm_name_to_port(name)
         if not qmport:
-            print(f"  {name}: no port configured but a rule for {r.hport}")
+            print(f"  {name:<20} no port configured but a rule for {r.hport}"
+                  ", removing rule")
+            iptables_del_dnat(r)
         elif qmport == r.hport:
-            print(f"  {name}: port {r.hport} ok")
+            print(f"  {name:<20} port {r.hport} ok")
         else:
-            print(f"  {name}: port {r.hport} but configured to {qmport}")
+            print(f"  {name:<20} port {r.hport} but configured to {qmport}")
 
+    print("")
     print("parsing vms, looking at firewall rules")
     for qm in qm_list():
         if qm.port is None:
-            print(f" {qm.name}: no port configured")
+            print(f"  {qm.name:<20} no port configured")
         else:
             ip = name2ip.get(qm.name)
             if ip is None:
-                print(f"  {qm.name}: has no assigned ip!")
+                print(f"  {qm.name:<20} has no assigned ip!")
                 continue
             port = ip2port.get(ip)
             if port is None:
-                print(f"  {qm.name}: no port rule, adding rule for {qm.port}")
+                print(f"  {qm.name:<20} no port rule, adding rule for {qm.port}")
                 iptables_add_dnat(ctx.obj.interface, ip, qm.port, qm.name)
-    print("done")
+                continue
+            print(f"  {qm.name:<20} port {qm.port} configured, {port} assigned")
 
 
 @cli.command("test", hidden=True)
 @click.pass_context
 def cli_test(_ctx):
-    print(auto_bridge())
-    print(auto_interface())
+    for qm in qm_list():
+        print(qm)
+
+    # print(auto_bridge())
+    # print(auto_interface())
