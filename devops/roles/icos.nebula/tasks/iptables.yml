@@ -18,6 +18,8 @@
   - name: Allow all traffic on nebula interface
     iptables:
       chain: INPUT
+      # make sure it appears early
+      action: insert
       in_interface: "{{ nebula_interface }}"
       jump: ACCEPT
     notify: save iptables

@@ -41,7 +41,7 @@
   command: >-
     ssh-keygen -q -t ed25519
       -f {{ nebula_ssh_key }}
-      -C "nebula admin on {{ inventory_hostname }}" -N ""
+      -C "nebula admin on {{ nebula_hostname }}" -N ""
   args:
     creates: "{{ nebula_etc_dir }}/admin"
 
