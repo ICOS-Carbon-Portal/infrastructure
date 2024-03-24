@@ -1,8 +1,3 @@
-- import_role:
-    name: icos.certbot2
-  when: nextcloud_certbot_enable | bool | default(False)
-  tags: nextcloud_nginx
-
 - import_tasks: setup.yml
   tags: nextcloud_setup
 

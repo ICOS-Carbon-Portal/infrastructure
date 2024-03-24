@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e
-
-cd "{{ nextcloud_home }}"
-
-docker exec -i --user www-data nextcloud_app_1 php occ "$@"
-

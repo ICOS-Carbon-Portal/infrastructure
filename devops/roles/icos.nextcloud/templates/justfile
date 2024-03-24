@@ -1,0 +1,106 @@
+#!/usr/bin/env -S just --working-directory ((nextcloud_home)) --justfile
+
+occ := "docker exec -i --user www-data nextcloud_app_1 php occ"
+backup := "bbclient-nextcloud-coldbackup"
+dc := "docker-compose"
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+
+# MISC
+# run docker-compose
+dc *args:
+    {{dc}} {{args}}
+
+# docker-compose ps
+ps *args:
+    {{dc}} ps {{args}}
+
+# bring nextcloud up (in the background)
+up:
+    {{dc}} up -d
+
+# bring nextcloud down
+down:
+    {{dc}} down
+
+# tail the logs
+tail:
+    {{dc}} logs -f
+
+# start lazydocker
+lazy:
+    lazydocker
+
+# exec occ in container
+occ *args:
+    {{occ}} {{args}}
+
+# list active (seen last 3 hours) users
+active:
+     {{occ}} user:list --info
+
+# exec psql in db container
+psql *args:
+    docker-compose exec db psql --user nextcloud {{args}}
+
+# start shell in app container
+shell *args:
+    docker-compose exec app bash {{args}}
+
+
+
+# GROUP FOLDERS
+# show name for given groupfolder id
+folder-id id:
+    :
+
+# DATA DIRECTORY
+# du -hscx for data directory
+data-size:
+    du -hscx ((nextcloud_volume_nextcloud))
+
+# ncdu for data directory
+data-ncdu:
+    ncdu --confirm-quit -xe ((nextcloud_volume_nextcloud))
+
+
+
+# BACKUPS
+# show status for backup timer
+backup-when:
+    systemctl list-timers {{backup}}
+
+# show logs for last backup
+backup-logs:
+    #!/usr/bin/bash
+    service="{{backup}}.service"
+    start=$(journalctl -u $service -n 200 -oshort-full \
+            | awk '/systemd\[[0-9]+\]: Starting/ { print $1, $2, $3 }' \
+            | tail -1)
+    systemctl status $service -n0
+    journalctl -u $service -S "$start" --no-hostname
+
+# execute bbclient-coldbackup --down
+[confirm("bring down nextcloud?")]
+backup-down:
+    ./bbclient/bin/bbclient-coldbackup --down
+
+# create copy of current directory
+[confirm("remove old copy and create new one?")]
+backup-copy:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    set -x
+    cd ((nextcloud_home))
+    cd ..
+    # we don't want to remove nextcloud.bak if it's "too recent"
+    if [[ -n $(find . -maxdepth 1 -name nextcloud.bak -mtime +3) ]]; then
+      rm -rf ./nextcloud.bak
+    else
+      echo "nextcloud.bak is not old enough"
+      exit 1
+    fi
+    cp -r nextcloud nextcloud.bak

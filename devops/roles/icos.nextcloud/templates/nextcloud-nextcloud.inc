@@ -2,6 +2,7 @@
 # https://docs.nextcloud.com/server/13/admin_manual/installation/nginx.html
 # https://docs.nextcloud.com/server/23/admin_manual/installation/nginx.html
 # https://docs.nextcloud.com/server/26/admin_manual/installation/nginx.html
+# https://docs.nextcloud.com/server/28/admin_manual/installation/nginx.html
 
 # Path to the root of your installation
 root {{ nextcloud_volume_nextcloud }}/;

@@ -20,28 +20,21 @@
 
 - name: Copy files
   template:
-    src: "{{ item.name }}"
+    src: "{{ item }}"
     dest: "{{ nextcloud_home }}"
-    mode: "{{ item.mode | default(omit) }}"
   loop:
-    - name: occ
-      mode: +x
-    - name: nextcloud.env
-      mode: o-r
-    - name: postgres.env
-      mode: o-r
-    - name: tweak.conf
-    - name: init.sql
-    - name: docker-compose.yml
-
-- name: Create /usr/local/sbin/occ symlink
-  file:
-    dest: "/usr/local/sbin/occ"
-    src: "{{ nextcloud_home }}/occ"
-    state: link
+    - nextcloud.env
+    - postgres.env
+    - tweak.conf
+    - init.sql
+    - docker-compose.yml
 
 - name: Check docker-compose config
   command: docker-compose config
   args:
     chdir: "{{ nextcloud_home }}"
   changed_when: no
+
+# Note that we do not start nextcloud automatically. Since we only have a
+# single installation, and since it's a behemoth, it doesn't make
+# sense. Bringing nextcloud up and down is done manually.

@@ -1,18 +1,41 @@
-- name: Copy nextcloud nginx config files
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    lstrip_blocks: yes
-  loop:
-    - src: nextcloud-nextcloud.inc
-      dest: /etc/nginx/conf.d
+- import_role:
+    name: icos.certbot2
+  when: nextcloud_certbot_enable
 
-    - src: nextcloud-nginx.conf
-      dest: /etc/nginx/sites-available/nextcloud.conf
-  notify: reload nginx config
+- block:
+    - name: Copy nextcloud-nginx.conf
+      template:
+        src: nextcloud-nginx.conf
+        dest: /etc/nginx/conf.d/nextcloud.conf
+        lstrip_blocks: yes
+      register: update
 
-- name: Create /etc/nginx/sites-enabled/nextcloud.conf symlink
-  file:
-    dest: /etc/nginx/sites-enabled/nextcloud.conf
-    src: /etc/nginx/sites-available/nextcloud.conf
-    state: link
+    - name: Run validation
+      command: nginx -t
+      changed_when: update.changed
+      notify: reload nginx config
+
+  rescue:
+    - name: Slurp failed file and add line numbers
+      command: cat -n /etc/nginx/conf.d/nextcloud.conf
+      register: _slurp
+
+    - name: Dump failed configuration
+      debug:
+        msg: "{{ _slurp.stdout }}"
+
+    - name: Restore config file
+      copy:
+         remote_src: true
+         dest: /etc/nginx/conf.d/nextcloud.conf
+         src: "{{ update.backup_file }}"
+
+  always:
+    - name: Remove backup file
+      file:
+        name: "{{ _r.backup_file }}"
+        state: absent
+      when: "_r['backup_file'] is defined"
+
+    - name: Flush handlers
+      meta: flush_handlers
