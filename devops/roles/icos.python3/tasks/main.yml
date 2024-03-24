@@ -34,11 +34,11 @@
       #!/usr/bin/bash
       PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin /opt/pipx/.venv/bin/pipx "$@"
 
-# We'll install extra versions of python from here.
-- name: Add ppa:deadsnakes repository
+# On Ubuntu we'll install extra versions of python from here.
+- when: ansible_distribution == "Ubuntu"
+  name: Add ppa:deadsnakes repository
   apt_repository:
     repo: ppa:deadsnakes/ppa
-  when: ansible_distribution == "Ubuntu"
 
 # Any versions that doesn't match the built-in version
 - name: Install extra version of python
