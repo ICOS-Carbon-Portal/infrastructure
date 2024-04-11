@@ -1,5 +1,8 @@
 - import_tasks: setup.yml
   tags: stiltcluster_setup
 
+- import_tasks: config.yml
+  tags: stiltcluster_config
+
 - import_tasks: deploy.yml
   tags: stiltcluster_deploy

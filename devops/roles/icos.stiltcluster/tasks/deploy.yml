@@ -47,20 +47,13 @@
   template:
     src: stiltcluster.service
     dest: /etc/systemd/system/stiltcluster.service
-  register: _service
-
-- name: Create configuration file
-  template:
-    dest: "{{ stiltcluster_home }}"
-    src: local.conf
-  register: _config
 
 - name: Copy jarfile
   copy:
     src: "{{ stiltcluster_jar_file }}"
     dest: "{{ stiltcluster_home }}/stiltcluster.jar"
     backup: true
-  register: _jarfile
+  notify: restart stiltcluster
 
 - name: Remove all but the five newest of jar file backups
   ansible.builtin.shell: |
@@ -70,10 +63,9 @@
   register: _r
   changed_when: _r.stdout.startswith("removed")
 
-- name: Start/restart service
+- name: Make sure stiltcluster is started
   systemd:
     name: stiltcluster.service
     enabled: yes
-    daemon-reload: "{{ 'yes' if _service.changed else 'no' }}"
-    state: >-
-      {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
+    daemon-reload: yes
+    state: started
