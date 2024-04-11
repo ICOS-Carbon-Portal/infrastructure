@@ -1,11 +1,16 @@
 #!/usr/bin/env -S just --working-directory . --justfile
 
-
 api := "localhost:2019"
 jq := "jq -C  | less -R"
 
 @_default:
     just --list --unsorted --justfile {{justfile()}}
+
+# tail logs showing only the messages
+tail:
+    journalctl _EXE=/usr/bin/caddy -fu caddy -o json \
+    | jq -r '.MESSAGE' --unbuffered \
+    | jq -r '.msg'
 
 # show status for the systemd service
 status:

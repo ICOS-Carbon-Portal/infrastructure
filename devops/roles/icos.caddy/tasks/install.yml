@@ -22,7 +22,7 @@
 - name: Remove default config file
   shell: |
     head -1 Caddyfile | grep -q -F '# The Caddyfile is an easy way' \
-      && mv Caddyfile Caddyfile.dist
+      && mv Caddyfile Caddyfile.dist || :
   args:
     creates: /etc/caddy/Caddyfile.dist
-  notify: restart caddy
+  changed_when: no

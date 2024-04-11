@@ -1,7 +1,13 @@
+# FIXME: Remove 202406
+- name: Remove /usr/local/bin/icos-caddy
+  file:
+    name: /usr/local/bin/icos-caddy
+    state: absent
+
 - name: Copy justfile
   template:
     src: justfile
-    dest: /usr/local/bin/icos-caddy
+    dest: /usr/local/bin/ops-caddy
     mode: +x
     variable_start_string: "(("
     variable_end_string: "))"
