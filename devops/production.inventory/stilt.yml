@@ -10,7 +10,7 @@ stiltcluster_hosts:
 
     fsicos2.lunarc.lu.se:
       stilt_input_dir: /disk/data/stilt/Input
-      stiltcluster_maxcores: 24
+      stiltcluster_maxcores: 12
 
     icos1.gis.lu.se:
       stilt_input_dir: /data/stilt/Input
