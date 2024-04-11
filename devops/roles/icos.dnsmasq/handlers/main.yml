@@ -1,3 +1,6 @@
 - name: dnsmasq restart
-  command: /etc/init.d/dnsmasq restart
-  changed_when: no
+  systemd:
+    name: "{{ dnsmasq_service_name }}"
+    state: restarted
+  # command: /etc/init.d/dnsmasq restart
+  # changed_when: no

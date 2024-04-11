@@ -1,0 +1,22 @@
+- name: Install dnsmasq
+  apt:
+    name:
+      - dnsmasq
+
+- name: Create /etc/default/dnsmasq.INSTANCE
+  copy:
+    dest: /etc/default/dnsmasq.{{ dnsmasq_instance }}
+    content: |
+      # We set this here so that'll be picked up by the etc/init.d/dnsmasq
+      # script (which is used by the systemd service)
+      CONFIG_DIR={{ dnsmasq_config_dir }}
+
+      # If the resolvconf package is installed, dnsmasq will tell resolvconf
+      # to use dnsmasq under 127.0.0.1 as the system's default resolver.
+      # Uncommenting this line inhibits this behaviour.
+      DNSMASQ_EXCEPT="lo"
+
+- name: Create /etc/dnsmasq.INSTANCE.d directory
+  file:
+    path: "{{ dnsmasq_config_dir }}"
+    state: directory

@@ -1,4 +1,3 @@
-dnsmasq_default: "/etc/default/dnsmasq.{{ dnsmasq_interface }}"
-dnsmasq_etc_dir: "/etc/dnsmasq.{{ dnsmasq_interface }}.d"
-dnsmasq_config_file: "{{ dnsmasq_etc_dir }}/config"
-dnsmasq_service_name: "dnsmasq@{{ dnsmasq_interface }}.service"
+dnsmasq_config_dir: "/etc/dnsmasq.{{ dnsmasq_instance }}.d"
+dnsmasq_config_file: "{{ dnsmasq_config_dir }}/config"
+dnsmasq_service_name: "dnsmasq@{{ dnsmasq_instance }}.service"
