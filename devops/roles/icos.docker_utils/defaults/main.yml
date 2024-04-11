@@ -1,6 +1,7 @@
 # DIVE
 dive_version: "{{ hostvars.localhost.dive_version }}"
 dive_url_map:
+  "aarch64": "https://github.com/wagoodman/dive/releases/download/v{{ dive_version }}/dive_{{ dive_version }}_linux_arm64.deb"
   "x86_64": "https://github.com/wagoodman/dive/releases/download/v{{ dive_version }}/dive_{{ dive_version }}_linux_amd64.deb"
 
 
