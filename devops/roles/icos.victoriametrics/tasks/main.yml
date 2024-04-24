@@ -62,3 +62,5 @@
       port: "{{ vm_graf_port }}"
       
   
+- import_tasks: just.yml
+  tags: victoriametrics_just

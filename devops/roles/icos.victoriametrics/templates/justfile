@@ -1,0 +1,21 @@
+#!/usr/bin/env -S just --working-directory ((vm_home)) --justfile
+
+set shell := ['/bin/bash', '-cu']
+dc := "docker compose"
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# run docker-compose
+dc *args:
+    {{dc}} {{args}}
+
+# docker-compose status
+status:
+    {{dc}} ps
+
+# lazydocker
+lazy:
+    lazydocker

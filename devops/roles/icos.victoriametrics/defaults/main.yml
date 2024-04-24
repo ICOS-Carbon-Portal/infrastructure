@@ -1,21 +1,16 @@
 # VICTORIAMETRICS
 vm_home: /opt/victoriametrics
 vm_scrape_conf: ""
-
-# The external victoriametrics address used for the reverse proxy.
-vm_vm_host: vm.local:80
 vm_vm_port: 8428
-
 vm_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 
 
 # GRAFANA
 # The external grafana address used for the reverse proxy.
-vm_graf_host: grafana.local:80
 vm_graf_port: 3000
 vm_graf_url: "http://grafana.local"
 vm_graf_plugins: "{{ vm_home }}/grafana/data/plugins"
-  
+# vm_graf_domain: XXX   
 
 # PROMLENS
 vm_promlens_port: 3001
