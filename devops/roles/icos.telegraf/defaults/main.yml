@@ -5,4 +5,3 @@ telegraf_conf_file: telegraf.conf
 telegraf_conf: ""
 
 telegraf_upgrade: "{{ upgrade_everything | default(False) | bool }}"
-telegraf_conf_d: {}
