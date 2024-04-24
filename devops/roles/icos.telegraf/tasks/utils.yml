@@ -1,7 +1,13 @@
+# FIXME: Remove in 2025
+- name: Remove /usr/local/bin/icos/telegraf
+  file:
+    name: /usr/local/bin/icos/telegraf
+    state: absent
+
 - name: Copy justfile
   template:
-    src: justfile
-    dest: /usr/local/bin/icos-telegraf
+    src: ops-telegraf
+    dest: /usr/local/bin
     mode: +x
     variable_start_string: "(("
     variable_end_string: "))"
