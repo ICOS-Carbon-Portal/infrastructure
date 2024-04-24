@@ -7,3 +7,10 @@
   include_tasks:
     file: install.yml
   when: not _r.stat.exists or just_upgrade
+
+- name: Add bash completions for just
+  ansible.builtin.shell: |
+    just --completions bash > /etc/bash_completion.d/just
+  args:
+    creates: /etc/bash_completion.d/just
+    executable: /bin/bash
