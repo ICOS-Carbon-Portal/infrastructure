@@ -27,7 +27,7 @@ nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
 # https://nebula.defined.net/docs/config/sshd/
 nebula_ssh_enable: false
 nebula_ssh_key: "{{ nebula_etc_dir }}/admin"
-nebula_ssh_port: 2345
+nebula_ssh_port: 2346
 
 
 # DOWNLOAD AND INSTALL
