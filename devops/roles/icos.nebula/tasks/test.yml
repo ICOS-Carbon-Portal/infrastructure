@@ -2,6 +2,24 @@
 - name: Flush handlers
   meta: flush_handlers
 
+- when: nebula_resolve_servers
+  name: Check that dns servers are used for nebula link
+  shell: resolvectl status nebula | grep -qs {{ nebula_resolve_servers[0] }}
+  changed_when: no
+
+- when:
+    - nebula_resolve_servers
+    - nebula_resolve_test
+  block:
+    - name: Install bind9-dnsutils
+      apt:
+        name:
+          - bind9-dnsutils
+
+    - name: Check that nebula dns resolution works
+      shell: dig {{ nebula_resolve_test }}
+      changed_when: no
+
 - name: Check that nebula is working
   tags: nebula_ping
   command: ping -w 10 -c 1 {{ nebula_ping_host }}

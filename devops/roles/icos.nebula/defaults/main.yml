@@ -2,6 +2,7 @@
 nebula_is_lighthouse: False
 nebula_interface: nebula
 nebula_cert_files: "files/nebula/"
+nebula_domain: nebula
 
 
 # CONFIG
@@ -21,6 +22,16 @@ nebula_hostname: "{{ inventory_hostname_short }}"
 # install new releases of nebula if available
 nebula_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
+
+
+# DNS - resolve
+nebula_resolve_servers: []
+nebula_resolve_test: []
+
+# DNS - server
+# When we activate nebula dns, it'll respond on this port.
+nebula_dns_port: 53
+nebula_dns_host:
 
 
 # SSH DEBUG INTERFACE

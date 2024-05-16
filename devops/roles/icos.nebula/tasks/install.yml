@@ -1,3 +1,9 @@
+- name: Install packages
+  apt:
+    name:
+      # needed by the justfile
+      - jq
+
 - name: Create nebula user
   user:
     name: "{{ nebula_user }}"
@@ -21,7 +27,7 @@
 - name: Download and unpack nebula
   include_tasks: download.yml
   when: not _r.stat.exists or nebula_upgrade
-  
+
 - name: Check that nebula runs
   shell: |
     {{ nebula_bin_dir }}/{{ item }} -version
@@ -36,31 +42,3 @@
   debug:
     msg: |
       We've installed nebula {{ version.results[0].stdout_lines[0] }}
-
-- name: Generate admin ssh key
-  command: >-
-    ssh-keygen -q -t ed25519
-      -f {{ nebula_ssh_key }}
-      -C "nebula admin on {{ nebula_hostname }}" -N ""
-  args:
-    creates: "{{ nebula_etc_dir }}/admin"
-
-- name: Copy certificates and keys
-  copy:
-    src: "{{ nebula_cert_files }}/{{ item.src }}"
-    dest: "{{ nebula_etc_dir }}/{{ item.dest }}"
-  loop:
-    - src: ca.crt
-      dest: ca.crt
-    - src: "{{ nebula_hostname }}.crt"
-      dest: host.crt
-    - src: "{{ nebula_hostname }}.key"
-      dest: host.key
-    
-- import_tasks: iptables.yml
-  tags: nebula_iptables
-
-- import_tasks: just.yml
-  tags: nebula_just
-
-    

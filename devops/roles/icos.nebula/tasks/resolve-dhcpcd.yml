@@ -1,0 +1,33 @@
+# openresolv / dhcpcd / dnsmasq are all integrated, even though it's tricky to
+# figure out exactly how.
+#
+# https://wiki.archlinux.org/title/Dhcpcd
+# "If resolvconf is available, DNS information will be sent to it"
+#
+# https://wiki.archlinux.org/title/dnsmasq#openresolv
+# https://wiki.archlinux.org/title/Openresolv
+
+- name: Install openresolv
+  apt:
+    name:
+      - openresolv
+      # installing dnsmasq is enough to trigger openresolve (or something!) to
+      # rewrite /etc/resolv.conf
+      - dnsmasq
+
+- name: DNS is now configured
+  set_fact:
+    _nebula_dns_configured: 1
+
+- name: Add nebula nameserver to dnsmasq
+  copy:
+    dest: /etc/dnsmasq.d/nebula.conf
+    content: |
+      server=/nebula/100.100.0.1
+  register: conf
+
+- name: Restart dnsmasq
+  systemd:
+    name: dnsmasq
+    state: restarted
+  when: conf.changed

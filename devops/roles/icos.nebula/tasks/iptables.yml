@@ -24,9 +24,9 @@
       jump: ACCEPT
     notify: save iptables
 
-
 # i.e proxmox
 - when: not nebula_fw_enable
+  name: Display note about manual firewall rules
   debug:
     msg: |
       Please manually add the following firewall rules:

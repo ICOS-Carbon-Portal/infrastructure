@@ -1,0 +1,75 @@
+# SYSTEMD-RESOLVED
+# systemd-resolved will provide the resolvconf binary
+- name: Purge resolvconf
+  apt:
+    state: absent
+    purge: yes
+    name:
+      - resolvconf
+
+- name: Install systemd-resolved
+  apt:
+    name:
+      - systemd-resolved
+  register: _r
+  failed_when:
+    - _r.failed
+    # In Ubuntu 22.04 systemd-resolved is part of the systemd package.
+    # In Debian 12 however, it needs to be installed separately.
+    - _r.msg != "No package matching 'systemd-resolved' is available"
+
+# Make sure that systemd-resolved is in charge of system name resolution.
+- name: Create /etc/resolv.conf symlink
+  file:
+    dest: /etc/resolv.conf
+    src: /run/systemd/resolve/stub-resolv.conf
+    state: link
+
+- name: Add nebula dns server
+  copy:
+    dest: /etc/systemd/network/{{ nebula_interface }}.network
+    content: |
+      # This file is read by both systemd-networkd and systemd-resolved. The
+      # trick is to configure systemd-resolved to add a specific dns server
+      # for the nebula link while keeping systemd-networkd from messing things
+      # up.
+
+      [Match]
+      Name={{ nebula_interface }}
+
+      [Network]
+      {% for host in nebula_resolve_servers %}
+      DNS={{ host }}%{{ nebula_interface }}
+      {% endfor %}
+      Domains=~{{ nebula_domain }}
+
+      # Keeps systemd-networkd from clobbering the ip set by nebula
+      KeepConfiguration=static
+  notify: restart systemd-networkd
+
+
+
+# NETWORK MANAGER
+- name: query systemd for NetworkManager
+  systemd:
+    name: NetworkManager
+  register: _nm
+  
+# If NetworkManager is used, then we need to tell it to use systemd-resolved
+# for dns resolution (otherwise it'll write it's own /etc/resolv.conf)
+# However, if systemd-networkd is used directly then we don't need this step.
+# https://wiki.archlinux.org/title/NetworkManager#systemd-resolved
+- when: _nm.status.ActiveState == "active"
+  name: Configure NetworkManager to use systemd-resolved
+  copy:
+    dest: /etc/NetworkManager/conf.d/dns.conf
+    content: |
+      [main]
+      dns=systemd-resolved
+  notify: restart NetworkManager
+
+- name: DNS is now configured
+  set_fact:
+    _nebula_dns_configured: 1
+
+  

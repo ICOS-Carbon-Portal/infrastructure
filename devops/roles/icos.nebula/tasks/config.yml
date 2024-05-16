@@ -1,17 +1,3 @@
-# This variable is needed for the config file.
-- when:
-    - nebula_ssh_enable
-    - nebula_ssh_public is not defined
-  block:
-  - name: Slurp nebula_ssh_public
-    slurp:
-      src: "{{ nebula_ssh_key }}.pub"
-    register: _slurp
-
-  - name: Decode nebula_ssh_public
-    set_fact:
-      nebula_ssh_public: "{{ _slurp.content | b64decode }}"
-
 - block:
     - name: Copy nebula_config.yml
       template:

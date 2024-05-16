@@ -1,0 +1,54 @@
+- name: Check status of certificate
+  command: ops-nebula cert-check
+  changed_when: no
+  register: status
+
+
+- name: Cert status
+  debug:
+    msg: |
+      {{status.stdout_lines[0]}}
+
+
+- when: status.stdout_lines[-1] == "need to sign"
+  block:
+    - name: Retrieve public key
+      slurp:
+        src: /etc/nebula/new.pub
+      register: newpub
+
+    - delegate_to: localhost
+      name: Sign pubkey to create certificate
+      shell: >-
+        nebula-cert sign
+        -in-pub <(echo "{{ newpub.content | b64decode }}")
+        -ip {{ nebula_ip }}
+        -name {{ nebula_hostname }}
+        -out-crt crt.sign
+        && cat crt.sign
+        && rm crt.sign
+      register: signedcert
+      args:
+        # we need bash for <()
+        executable: /bin/bash
+        # use fileglob to search for the nebula certificate directory, then
+        # use it as chdir in order to automatically pick up ca.crt
+        chdir: >-
+          {{ lookup('fileglob', nebula_cert_files + '/ca.key') | dirname }}
+
+    - name: Write signed certificate
+      copy:
+        dest: /etc/nebula/new.crt
+        content: "{{ signedcert.stdout }}"
+
+    - name: Pick up new status
+      command: ops-nebula cert-check
+      register: status
+      changed_when: status.stdout_lines[-1] == "need to restart"
+      notify: restart nebula
+
+
+- name: Copy CA
+  copy:
+    src: "{{ nebula_cert_files }}/ca.crt"
+    dest: "{{ nebula_etc_dir }}/"

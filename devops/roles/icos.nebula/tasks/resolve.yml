@@ -1,0 +1,28 @@
+- name: Setup DNS for Raspbian < 12
+  include_tasks:
+    file: resolve-dhcpcd.yml
+  when:
+    - ansible_lsb.id == "Raspbian"
+    - ansible_lsb.codename == "bullseye"
+
+- name: Setup DNS for Debian 12
+  include_tasks:
+    file: resolve-systemd.yml
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version is version('12', '>=')
+
+- name: Setup DNS for Ubuntu 22
+  include_tasks:
+    file: resolve-systemd.yml
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version is version('22', '>=')
+
+- name: Fail is dns resolution was not configured
+  fail:
+    msg: |
+      Couldn't configure dns resolution for nebula
+      {{ansible_distribution}}
+      {{ansible_distribution_major_version}}
+  when: not _nebula_dns_configured | default(False)

@@ -1,0 +1,16 @@
+- name: Generate admin ssh key
+  command: >-
+    ssh-keygen -q -t ed25519
+      -f {{ nebula_ssh_key }}
+      -C "nebula admin on {{ nebula_hostname }}" -N ""
+  args:
+    creates: "{{ nebula_etc_dir }}/admin"
+
+- name: Slurp nebula_ssh_public
+  slurp:
+    src: "{{ nebula_ssh_key }}.pub"
+  register: _slurp
+
+- name: Decode nebula_ssh_public
+  set_fact:
+    nebula_ssh_public: "{{ _slurp.content | b64decode }}"

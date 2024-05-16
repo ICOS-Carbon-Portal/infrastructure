@@ -2,6 +2,29 @@
   service:
     name: nebula
     state: restarted
+  # When nebula is restarted, the nebula interface disappears and reappears,
+  # which causes systemd-resolved to loose track of the extra dns servers
+  # we've configured for nebula. Restarting systemd-networkd fixes it.
+  notify: restart systemd-networkd
+
+- name: restart systemd-networkd
+  service:
+    name: systemd-networkd
+    state: restarted
+
+- name: restart NetworkManager
+  service:
+    name: NetworkManager
+    state: restarted
+  notify: restart systemd-resolved
+
+# When NetworkManager/systemd-resolved is initially installed, "resolvectl
+# status" will timeout and fail with "Failed to activate service
+# 'org.freedesktop.resolve1'". Restarting systemd-resolved usually helps.
+- name: restart systemd-resolved
+  service:
+    name: systemd-resolved
+    state: restarted
 
 - name: save iptables
   command: netfilter-persistent save

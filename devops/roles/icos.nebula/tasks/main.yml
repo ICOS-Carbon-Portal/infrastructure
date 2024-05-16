@@ -1,5 +1,20 @@
-- import_tasks: setup.yml
-  tags: nebula_setup
+- import_tasks: install.yml
+  tags: nebula_install
+
+- when:
+  - nebula_ssh_enable
+  - nebula_ssh_public is not defined
+  import_tasks: ssh.yml
+  tags: nebula_ssh
+
+- import_tasks: just.yml
+  tags: nebula_just
+
+- import_tasks: certificate.yml
+  tags: nebula_certificate
+
+- import_tasks: iptables.yml
+  tags: nebula_iptables
 
 - import_tasks: config.yml
   tags: nebula_config
@@ -9,6 +24,10 @@
 
 - import_tasks: hosts.yml
   tags: nebula_hosts
+
+- when: nebula_resolve_servers
+  import_tasks: resolve.yml
+  tags: nebula_resolve
 
 - import_tasks: test.yml
   tags: nebula_test
