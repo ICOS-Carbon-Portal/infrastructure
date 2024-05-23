@@ -30,9 +30,9 @@
     dest: "{{ vm_home }}/victoriametrics/prometheus/prometheus.yml"
 
 - name: Build and start
-  icos_docker_compose:
-    chdir: "{{ vm_home }}"
-    pull: "{{ vm_upgrade }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ vm_home }}"
+    pull: "{{ 'always' if vm_upgrade else omit }}"
     
 - import_tasks: grafana_datasource.yml
   tags: grafana_datasource
