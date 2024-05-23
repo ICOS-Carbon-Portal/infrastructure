@@ -8,6 +8,12 @@
     file: install.yml
   when: not _r.stat.exists or just_upgrade
 
+# needed out-of-the-box for debian 12
+- name: Create bash_completion.d directory
+  file:
+    path: /etc/bash_completion.d
+    state: directory
+
 - name: Add bash completions for just
   ansible.builtin.shell: |
     just --completions bash > /etc/bash_completion.d/just
