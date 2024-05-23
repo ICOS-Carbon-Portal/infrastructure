@@ -49,7 +49,7 @@ iperf-connect shortname:
 # DEBUG LOGGING
 # set loglevel and maybe restart
 loglevel new:
-    #!/usr/bin/bash
+    #!/bin/bash
     set -Eueo pipefail
 
     cd {{{nebula_etc_dir}}}
@@ -78,7 +78,7 @@ debug-off:
 # USED BY ANSIBLE
 # show status of certificate
 cert-check maxdays="90":
-    #!/usr/bin/bash
+    #!/bin/bash
     set -Eueo pipefail
     cd {{{nebula_etc_dir}}}
 

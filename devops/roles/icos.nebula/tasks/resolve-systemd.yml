@@ -70,6 +70,6 @@
 
 - name: DNS is now configured
   set_fact:
-    _nebula_dns_configured: 1
+    _nebula_resolve_configured: systemd
 
   

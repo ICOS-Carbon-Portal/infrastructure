@@ -25,7 +25,7 @@
 - import_tasks: hosts.yml
   tags: nebula_hosts
 
-- when: nebula_resolve_servers
+- when: nebula_resolve_enable
   import_tasks: resolve.yml
   tags: nebula_resolve
 

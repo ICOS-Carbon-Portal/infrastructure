@@ -12,7 +12,8 @@ nebula_bin_dir: /usr/local/bin
 nebula_user: nebula
 nebula_port: 4242
 
-# populate /etc/hosts
+# Use to populate /etc/hosts
+nebula_hosts_block:
 nebula_hosts_enable: true
 
 # enable manipulation of firewall, disable for e.g proxmox
@@ -24,15 +25,10 @@ nebula_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
 
 
-# DNS - resolve
-nebula_resolve_servers: []
-nebula_resolve_test: []
-
-# DNS - server
-# When we activate nebula dns, it'll respond on this port.
-nebula_dns_port: 53
-nebula_dns_host:
-
+# DNS RESOLVER
+nebula_resolve_enable: false
+nebula_resolve_servers:
+nebula_resolve_test:
 
 # SSH DEBUG INTERFACE
 # https://nebula.defined.net/docs/config/sshd/
