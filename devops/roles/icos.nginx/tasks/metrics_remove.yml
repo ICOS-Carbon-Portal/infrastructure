@@ -1,0 +1,25 @@
+- name: Remove /opt/vmagent/file_sd_configs/nginx-exporter-host.yaml
+  file:
+    name: /opt/vmagent/file_sd_configs/nginx-exporter-host.yaml
+    state: absent
+
+- name: Stop nginx-prometheus-exporter
+  systemd:
+    name: nginx-prometheus-exporter
+    enabled: no
+    state: stopped
+
+- name: Remove /etc/systemd/system/nginx-prometheus-exporter.service
+  file:
+    name: /etc/systemd/system/nginx-prometheus-exporter.service
+    state: absent
+
+- name: Remove /usr/local/sbin/nginx-prometheus-exporter
+  file:
+    name: /usr/local/sbin/nginx-prometheus-exporter
+    state: absent
+
+- name: Remove /opt/downloads/nginx-prometheus-exporter/
+  file:
+    name: /opt/downloads/nginx-prometheus-exporter/
+    state: absent
