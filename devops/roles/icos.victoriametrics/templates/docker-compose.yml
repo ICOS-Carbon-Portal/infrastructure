@@ -1,6 +1,5 @@
 # https://github.com/VictoriaMetrics/VictoriaMetrics/blob/master/deployment/docker/docker-compose.yml
 
-version: "3.5"
 services:
   victoriametrics:
     hostname: victoriametrics
@@ -23,7 +22,7 @@ services:
   grafana:
     hostname: grafana
     container_name: grafana
-    image: grafana/grafana
+    image: {{ vm_graf_image }}
     depends_on:
       - victoriametrics
     ports:
