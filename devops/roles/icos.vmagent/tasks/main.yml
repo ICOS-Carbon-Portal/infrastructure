@@ -6,3 +6,6 @@
 
 - import_tasks: proxy.yml
   tags: vmagent_proxy
+
+- import_tasks: just.yml
+  tags: vmagent_just

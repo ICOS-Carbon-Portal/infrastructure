@@ -1,0 +1,16 @@
+#!/usr/bin/env -S just --working-directory ((vmagent_home)) --justfile
+
+set shell := ['/bin/bash', '-cu']
+
+vmagent := "bin/vmagent-prod"
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# status of the systemd service
+status:
+    systemctl status vmagent
+
+# installed version of vmagent
+version:
+    {{vmagent}} -version

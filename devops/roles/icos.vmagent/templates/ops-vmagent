@@ -1,0 +1,2 @@
+#!/usr/bin/env -S just --working-directory ((vmagent_home)) --justfile
+import ((vmagent_home))/justfile
