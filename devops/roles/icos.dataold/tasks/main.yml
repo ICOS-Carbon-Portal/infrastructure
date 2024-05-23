@@ -23,8 +23,8 @@
     - openssl.cnf
     
 - name: Start dataold
-  docker_compose:
-    project_src:  "{{ dataold_home }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ dataold_home }}"
 
 - name: Open firewall for port {{ dataold_ext_port }}
   iptables_raw:
