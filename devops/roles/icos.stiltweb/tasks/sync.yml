@@ -46,10 +46,11 @@
 - name: Enable sync service
   systemd:
     name: sync-stiltweb-to-stilt.service
+    state: started
     enabled: true
 
 - name: Enable sync service timer
   systemd:
     name: sync-stiltweb-to-stilt.timer
-    enabled: true
     state: started
+    enabled: true
