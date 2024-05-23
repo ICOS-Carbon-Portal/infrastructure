@@ -1,7 +1,7 @@
 - name: Retrieve https_proxy_server fact
   check_mode: false
   shellfact:
-    exec: ss -Htlp 'sport 443' | sed -re 's/.*(nginx|caddy).*/\1/'
+    exec: ss -Htlp 'sport 443' | sed -re 's/.*(nginx|caddy).*/\1/' | uniq
     fact: https_proxy_server
 
 - import_role:
