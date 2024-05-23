@@ -30,4 +30,5 @@
 - name: Start vmagent service
   systemd:
     name: vmagent
+    state: started
     enabled: true
