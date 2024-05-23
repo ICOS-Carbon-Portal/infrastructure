@@ -10,3 +10,7 @@ test:
 # dump default config
 default:
     telegraf config create
+
+# show version
+version:
+    telegraf --version
