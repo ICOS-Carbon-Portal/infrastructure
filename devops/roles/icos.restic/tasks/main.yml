@@ -1,0 +1,10 @@
+- name: Check whether restic is installed
+  stat:
+    path: /usr/local/bin/restic
+  register: _r
+
+- when: not _r.stat.exists or restic_upgrade
+  tags: restic_install
+  name: Install/upgrade restic
+  include_tasks:
+    file: install.yml
