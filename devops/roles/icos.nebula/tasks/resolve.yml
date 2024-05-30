@@ -3,7 +3,7 @@
     file: resolve-dnsmasq.yml
   when:
     - ansible_lsb.id == "Raspbian"
-    - ansible_distribution_major_version is version('12', '< ')
+    - ansible_distribution_major_version is version('12', '<')
     - not _nebula_resolve_configured | default(False)
 
 - name: Setup DNS for Raspbian >= 12

@@ -2,11 +2,12 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- when: nebula_resolve_servers
+- when:
+    - nebula_resolve_enable
+    - _nebula_resolve_configured | default("") == "systemd"
   name: Check that dns servers are used for nebula link
   shell: resolvectl status nebula | grep -qs {{ nebula_resolve_servers[0] }}
   changed_when: no
-  when: _nebula_resolve_configured | default("") == "systemd"
 
 - when:
     - nebula_resolve_servers
