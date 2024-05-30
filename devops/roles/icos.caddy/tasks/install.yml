@@ -24,5 +24,6 @@
     head -1 Caddyfile | grep -q -F '# The Caddyfile is an easy way' \
       && mv Caddyfile Caddyfile.dist || :
   args:
+    chdir: /etc/caddy
     creates: /etc/caddy/Caddyfile.dist
   changed_when: no

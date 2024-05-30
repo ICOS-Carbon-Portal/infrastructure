@@ -1,5 +1,5 @@
 # If caddy config validation fails, it's useful to see the full (failed)
-# config file with linenumbers. But since the blockinfile module remove the
+# config file with line numbers. But since the blockinfile module remove the
 # temporary file immediately if using the 'validate' key, we have to resort to
 # this elaborate dance.
 - block:

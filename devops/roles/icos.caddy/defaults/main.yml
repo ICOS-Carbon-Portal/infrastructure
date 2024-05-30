@@ -2,7 +2,7 @@
 # Caddy will error out on a empty Caddyfile, so use this.
 caddy_global_conf: |
   :80 {
-    respond 404
+    respond "Not found." 404
   }
 
 # This variable goes together with caddy_conf and caddy_name, usually you want

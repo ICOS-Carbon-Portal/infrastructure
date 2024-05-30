@@ -29,5 +29,5 @@ modules:
 # edit config, syntax check, reload, show logs
 edit:
     mg /etc/caddy/Caddyfile
-    systemctl reload caddy
+    -systemctl reload caddy
     journalctl -fu caddy
