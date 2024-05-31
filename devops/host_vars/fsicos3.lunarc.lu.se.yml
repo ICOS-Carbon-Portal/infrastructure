@@ -32,6 +32,11 @@ icosdata_nfs_mounts:
     src: fsicos2.lunarc.lu.se:/disk/data/flexextract
     opts: "ro,soft,x-systemd.after=zfs-mount.service"
 
+  # Cities
+  - path: /data/cities/dataAppStorage
+    src: fsicos2.lunarc.lu.se:/disk/data/cities/dataAppStorage
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
   # PAUL
   - path: /pool/jupyter/project/icos_cities/fileshare/WP1_Data
     src: fsicos2.lunarc.lu.se:/disk/data/nextcloud/data/__groupfolders/27/WP1/Data
