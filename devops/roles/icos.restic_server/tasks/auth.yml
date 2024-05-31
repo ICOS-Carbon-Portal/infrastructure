@@ -1,0 +1,9 @@
+- name: Add restic users
+  htpasswd:
+    path: "{{ restic_server_htpasswd }}"
+    # restic-server don't like the default scheme
+    crypt_scheme: bcrypt
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    state: "{{ item.state | default(omit) }}"
+  loop: "{{ restic_server_users }}"

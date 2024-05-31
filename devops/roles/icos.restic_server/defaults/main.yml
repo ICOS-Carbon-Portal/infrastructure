@@ -1,0 +1,17 @@
+restic_server_data:
+restic_server_listen: 8900
+
+restic_server_users: []
+restic_server_htpasswd: "{{ restic_server_data }}/.htpasswd"
+restic_server_home: /opt/restic-server
+restic_server_exec: "{{ restic_server_home }}/bin/rest-server"
+restic_server_user: restic-server
+
+restic_server_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+restic_server_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
+restic_server_version: "{{ hostvars.localhost.restic_server_version }}"
+restic_server_url_map:
+  "armv6l": "https://github.com/restic/rest-server/releases/download/v{{ restic_server_version }}/rest-server_{{ restic_server_version }}_linux_armv6.tar.gz"
+  "armv7l": "https://github.com/restic/rest-server/releases/download/v{{ restic_server_version }}/rest-server_{{ restic_server_version }}_linux_armv7.tar.gz"
+  "aarch64": "https://github.com/restic/rest-server/releases/download/v{{ restic_server_version }}/rest-server_{{ restic_server_version }}_linux_arm64.tar.gz"
+  "x86_64": "https://github.com/restic/rest-server/releases/download/v{{ restic_server_version }}/rest-server_{{ restic_server_version }}_linux_amd64.tar.gz"

@@ -1,0 +1,7 @@
+# We're here because the systemd files have changed. Do daemon-reload, then
+# restart the socket (because the ListenStream might have changed).
+- name: restart restic
+  systemd:
+    daemon_reload: yes
+    name: restic-server.socket
+    state: restarted

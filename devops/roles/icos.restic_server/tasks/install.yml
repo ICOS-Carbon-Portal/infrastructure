@@ -1,0 +1,54 @@
+- when: restic_server_version is not defined
+  run_once: true
+  check_mode: false
+  delegate_to: localhost
+  delegate_facts: true
+  block:
+  - name: Find the latest release of restic_server
+    github_release:
+      user: restic
+      repo: rest-server
+      action: latest_release
+    register: gh
+
+  - name: Set restic_server_version fact
+    set_fact:
+      restic_server_version: "{{ gh.tag.lstrip('v') }}"
+      cacheable: true
+
+
+# The tar file looks like:
+#   rest-server_0.12.1_linux_amd64/CHANGELOG.md
+#   rest-server_0.12.1_linux_amd64/LICENSE
+#   rest-server_0.12.1_linux_amd64/README.md
+#   rest-server_0.12.1_linux_amd64/rest-server
+# But we're just interested in "rest-server"
+- name: Install restic_server
+  unarchive:
+    # # if unarchive keeps reporting "changed" then try setting owner and group
+    # owner: root
+    # group: root
+    remote_src: true
+    src: "{{ restic_server_url_map[restic_server_architecture] }}"
+    dest: "{{ restic_server_home }}/bin/"
+    mode: +x
+    include:
+      # extract only this
+      - "*/rest-server"
+    extra_opts:
+      - --no-same-owner
+      # strip outer directory
+      - "--strip-components=1"
+      # needed for globbing in "include:"
+      - "--wildcards"
+
+
+- name: Check that restic_server is executable and the correct version
+  shell: "{{ restic_server_exec }} --version"
+  changed_when: no
+  register: _r
+  failed_when: "restic_server_version not in _r.stdout"
+
+- name: Which version of restic_server was installed
+  debug:
+    msg: "Installed {{ restic_server_version }}"

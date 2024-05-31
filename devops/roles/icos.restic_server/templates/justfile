@@ -1,0 +1,38 @@
+#!/usr/bin/env -S just --working-directory ((restic_server_home)) --justfile
+
+set shell := ['/bin/bash', '-cu']
+
+service  := "restic-server"
+data     := "((restic_server_data))"
+htpasswd := "((restic_server_htpasswd))"
+override := "/etc/systemd/system/" + service + ".service.d"
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# show status of systemd service
+status suffix="service":
+    systemctl status {{service}}.{{suffix}}
+
+# stop both services
+stop:
+    systemctl stop {{service}}.{socket,service}
+
+# show users
+users:
+    cat {{htpasswd}}
+
+# follow the logs of both units
+follow:
+    journalctl -u {{service}}.service -u {{service}}.socket -f
+
+# edit service (to enable debugging)
+edit:
+    EDITOR=mg systemctl edit --full {{service}}.service
+
+# show how to run htpasswd(1)
+htpasswd:
+    # show help for htpasswd
+    @-htpasswd
+    # echo sample
+    @echo htpasswd -B {{htpasswd}}
