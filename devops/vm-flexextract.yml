@@ -6,7 +6,7 @@
       lxd_vm_name: flexextract
       lxd_vm_docker: true
       lxd_vm_config:
-        limits.cpu: "10"
+        limits.cpu: "14"
         limits.memory: "55GB"
       lxd_vm_devices:
         flexextract:
