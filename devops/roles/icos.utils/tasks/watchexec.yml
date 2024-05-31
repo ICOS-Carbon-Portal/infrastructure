@@ -1,3 +1,10 @@
+# Used to be a symlink to /opt/download/watchexec.
+# FIXME: Remove in 2025
+- name: Remove /usr/local/sbin/watchexec
+  file:
+    name: /usr/local/sbin/watchexec
+    state: absent
+
 - when: watchexec_version is not defined
   run_once: true
   check_mode: false
