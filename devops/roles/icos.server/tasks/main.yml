@@ -12,6 +12,14 @@
     name: Europe/Stockholm
   notify: restart cron
 
+- name: Generate locale
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - en_US.UTF-8
+    - sv_SE.UTF-8
+
 - import_role:
     name: icos.python3
   tags: python3
