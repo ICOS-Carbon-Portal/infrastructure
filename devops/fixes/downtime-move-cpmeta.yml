@@ -76,7 +76,7 @@
 
 
 ### ICOS1 ###
-- hosts: icos1.gis.lu.se
+- hosts: icos1
   vars_files: vars/downtime.yml
   vars:
     # Meta should listen to 127.0.0.1, nginx will then reverse-proxy there.

@@ -1,4 +1,4 @@
-- hosts: icos1.gis.lu.se
+- hosts: icos1
   roles:
     - role: icos.server
       tags: server
@@ -7,7 +7,7 @@
       tags: nfs
       nfs4_interface: wg-icos1
 
-    - role: icos.docker
+    - role: icos.docker2
       tags: docker
 
     - role: icos.lxd_server

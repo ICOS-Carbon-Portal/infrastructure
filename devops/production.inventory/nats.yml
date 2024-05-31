@@ -1,6 +1,6 @@
 nats_core_servers:
   hosts:
-    # icos1.gis.lu.se:
+    # icos1:
     #   nats_cluster_ip: "{{ fsicos1_ip }}"
     fsicos2.lunarc.lu.se:
       nats_cluster_ip: "{{ fsicos2_ip }}"

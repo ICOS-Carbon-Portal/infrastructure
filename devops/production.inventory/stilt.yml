@@ -13,7 +13,7 @@ stiltcluster_hosts:
       stilt_input_dir: /disk/data/stilt/Input
       stiltcluster_maxcores: 12
 
-    icos1.gis.lu.se:
+    icos1:
       stilt_input_dir: /data/stilt/Input
       stilt_input_mount: True
 

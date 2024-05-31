@@ -5,7 +5,7 @@ caddy_global_conf: |
         order replace after encode
     }
 
-inventory_hostname: icos1.gis.lu.se
+ansible_hostname: icos1.gis.lu.se
 ansible_port: 60022
 iptables_ssh_port: 60022
 lxd_vm_variant: zfs
