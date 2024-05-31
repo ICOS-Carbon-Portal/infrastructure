@@ -14,10 +14,21 @@
     apply:
       tags: nats_certs
   tags: nats_certs
-  when: nats_enable_tls
+  when: nats_cert_enable
 
 - import_tasks: utils.yml
   tags: nats_utils
 
+- import_tasks: sysuser.yml
+  tags: nats_server_sysuser
+
 - import_tasks: config.yml
   tags: nats_config
+
+- import_tasks: just.yml
+  tags: nats_server_just
+
+- name: Make sure we can connect to local nats server
+  shell: nats server info
+  changed_when: no
+  when: nats_sys_enable

@@ -1,5 +1,5 @@
 - block:
-    - name: Copy natsd.conf
+    - name: Copy nats-server.conf
       copy:
         content: "{{ nats_config }}"
         dest: "{{ nats_config_file }}"
@@ -38,21 +38,3 @@
 
     - name: Flush handlers
       meta: flush_handlers
-
-# A nats context is simply a saved configuration. We save a configuration
-# called "sys" which contains the username/password that allows us to connect
-# to our local nats server with system privileges. We also make this context
-# the default (by using --select). This way we can simply run "nats server
-# ..."  as root and have full access.
-- name: Create nats "sys" context and set as default
-  command: >-
-    {{ nats_cli }} context save sys
-                   --select
-                   --user sys
-                   --password "{{ nats_sys_password }}"
-  changed_when: false
-  when: nats_sys_password is defined
-
-- name: Make sure we can connect to local nats server
-  shell: nats server info
-  changed_when: no

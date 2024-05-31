@@ -41,9 +41,9 @@
     msg: "Installed {{ nats_version }}"
 
 - name: Install NATS systemd unit
-  copy:
+  template:
     src: nats.service
-    dest: "/etc/systemd/system/nats.service"
+    dest: /etc/systemd/system
   notify: restart nats
 
 - name: Start NATS service

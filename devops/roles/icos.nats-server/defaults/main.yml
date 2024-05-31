@@ -7,20 +7,25 @@ nats_cli: /usr/local/bin/nats
 
 nats_config: ""
 
+
+# $SYS user
+nats_sys_enable: true
+nats_sys_password:
+
+
 # TLS
-nats_enable_tls: false
-nats_certbot_hooks: "/etc/letsencrypt/renewal-hooks/deploy/"
+nats_cert_enable: false
 
 # The directory, accessible by the nats user, where we'll copy certificates.
 nats_cert_dir: /var/lib/nats
 
 # The name of the ansible certificate (i.e what you'd pass to certbot
-# --cert-name).mark
+# --cert-name).
 nats_cert_name: "{{ ansible_fqdn }}"
 
 
 # NATS SERVER
-nats_architecture: "{{ ansible_architecture }}"
+nats_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 nats_version: "{{ hostvars.localhost.nats_version }}"
 nats_url_map:
   "armv6l": "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/nats-server-v{{ nats_version }}-arm6.deb"
@@ -31,7 +36,7 @@ nats_url_map:
 
 # NATSCLI
 natscli_upgrade: "{{ nats_upgrade }}"
-natscli_architecture: "{{ nats_architecture }}"
+natscli_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 natscli_version: "{{ hostvars.localhost.natscli_version }}"
 natscli_url_map:
   "armv6l": "https://github.com/nats-io/natscli/releases/download/v{{natscli_version}}/nats-{{natscli_version}}-arm6.deb"
@@ -42,7 +47,7 @@ natscli_url_map:
 
 # NATSTOP
 natstop_upgrade: "{{ nats_upgrade }}"
-natstop_architecture: "{{ nats_architecture }}"
+natstop_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 natstop_version: "{{ hostvars.localhost.natstop_version }}"
 natstop_url_map:
   "armv6l": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-armv6.deb"

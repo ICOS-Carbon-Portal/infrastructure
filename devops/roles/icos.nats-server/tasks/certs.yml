@@ -10,7 +10,7 @@
 
 - name: Add a certbot deploy-hook for nats
   template:
-    dest: "{{ nats_certbot_hooks }}"
+    dest: /etc/letsencrypt/renewal-hooks/deploy
     src: nats-copy-reload.sh
     mode: +x
   register: _script
