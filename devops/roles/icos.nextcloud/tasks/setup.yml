@@ -29,12 +29,21 @@
     - init.sql
     - docker-compose.yml
 
+# Note that we do not start nextcloud automatically. Since we only have a
+# single installation, and since it's a behemoth, it doesn't make
+# sense. Bringing nextcloud up and down is done manually.
 - name: Check docker-compose config
   command: docker-compose config
   args:
     chdir: "{{ nextcloud_home }}"
   changed_when: no
 
-# Note that we do not start nextcloud automatically. Since we only have a
-# single installation, and since it's a behemoth, it doesn't make
-# sense. Bringing nextcloud up and down is done manually.
+
+# This is the recommended way of doing scheduled jobs in large nextcloud
+# installations.
+- name: Add nextcloud cron to crontab
+  cron:
+    job: "cd {{ nextcloud_home }} && time docker-compose exec -u www-data app php -f /var/www/html/cron.php || :"
+    hour: "*"
+    minute: "*/5"
+    name: "nextcloud_cron"
