@@ -42,6 +42,7 @@ all:
 
         restheart_backup_enable: true
         rdflog_backup_enable: true
+        rdflog_postgres_version: 15
 
         # cpmeta - application
         cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"

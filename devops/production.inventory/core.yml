@@ -50,6 +50,7 @@ all:
           - application_production_sensitive.conf
         
         rdflog_backup_enable: true
+        rdflog_postgres_version: 10
 
         # cpdata - application
         cpdata_filestorage_target: /disk/data/dataAppStorage
