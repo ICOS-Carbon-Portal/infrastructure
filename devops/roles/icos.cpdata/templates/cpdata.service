@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User={{ cpdata_user }}
-ExecStart=/usr/bin/java -jar cpdata.jar
+ExecStart={{ java_path }} -jar cpdata.jar
 Restart=always
 RestartSec=30
 WorkingDirectory=/home/{{ cpdata_user }}

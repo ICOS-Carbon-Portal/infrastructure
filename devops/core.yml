@@ -23,6 +23,7 @@
       import_role:
         name: icos.cpauth
         tasks_from: proxy.yml
+      when: cpauth_domains is defined
 
     - name: Setup restheart proxy
       tags:
@@ -42,7 +43,17 @@
       when: doi_certbot_name is defined
 
 - hosts: core_host
+  vars:
+    # these are global vars, shared by all deployment targets
+    # to avoid repeating them in the inventories, they are put here
+    jre_apt_package: openjdk-21-jre-headless
+    java_path: /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+
   pre_tasks:
+    - name: Install jre
+      apt:
+        name: "{{ jre_apt_package }}"
+
     - name: Setup rdflog
       tags: rdflog
       import_role:

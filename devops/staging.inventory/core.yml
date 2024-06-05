@@ -79,6 +79,8 @@ all:
         postgis_db_port: 5438
         postgis_hostname: 127.0.0.1
 
+        rdflog_postgres_version: 10
+
         cpauth_envries:
           - name: ICOS
             restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_icos_db_name}}"

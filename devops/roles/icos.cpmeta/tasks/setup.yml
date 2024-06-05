@@ -1,7 +1,3 @@
-- name: Install jre
-  apt:
-    name: "{{ cpmeta_jre_package }}"
-
 - name: Create cpmeta user
   user:
     name: "{{ cpmeta_user }}"
