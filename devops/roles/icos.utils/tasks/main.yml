@@ -6,7 +6,7 @@
       alias sc=systemctl
       alias jc=journalctl
       alias df='df -h -x tmpfs -x overlay -x devtmpfs'
-      alias dc=docker-compose
+      alias dc='docker compose'
       alias psc='ps xawf -eo pid,user,cgroup,args'
 
 

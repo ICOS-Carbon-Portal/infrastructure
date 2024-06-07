@@ -15,6 +15,7 @@ ncdu_url: "https://dev.yorhel.nl/download/ncdu-{{ ncdu_version }}-linux-{{ ncdu_
 
 
 # FD
+fd_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 fd_version: "{{ hostvars.localhost.fd_version }}"
 fd_url_map:
   "armv6l": "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/fd-v{{ fd_version }}-arm-unknown-linux-gnueabihf.tar.gz"

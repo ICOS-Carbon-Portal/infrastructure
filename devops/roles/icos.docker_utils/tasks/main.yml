@@ -12,8 +12,13 @@
     - docker-builds
     - docker-enter
 
+- when: dive_architecture in ("armv6l", "armv7l")
+  name: Architecture is not supported
+  debug:
+    msg: "dive is not supported on {{ dive_architecture }}"
 
-- import_tasks: dive.yml
+- when: dive_architecture not in ("armv6l", "armv7l")
+  import_tasks: dive.yml
   tags: dive
 
 - import_tasks: ctop.yml

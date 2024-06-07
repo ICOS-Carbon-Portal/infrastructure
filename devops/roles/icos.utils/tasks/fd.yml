@@ -19,17 +19,17 @@
 
 # Installing using the .deb is preferable because then we get manual pages etc
 # as well. But currently .deb only exist for x86_64.
-- when: ansible_architecture == 'x86_64'
+- when: fd_architecture == 'x86_64'
   name: Install fd
   apt:
-    deb: "{{ fd_url_map[ansible_architecture] }}"
+    deb: "{{ fd_url_map[fd_architecture] }}"
 
 # For other architecture we'll just extract the fd binary.
-- when: ansible_architecture != 'x86_64'
+- when: fd_architecture != 'x86_64'
   name: Unarchive fd
   unarchive:
     remote_src: true
-    src: "{{ fd_url_map[ansible_architecture] }}"
+    src: "{{ fd_url_map[fd_architecture] }}"
     dest: /usr/local/bin
     include:
       - fd-*/fd
