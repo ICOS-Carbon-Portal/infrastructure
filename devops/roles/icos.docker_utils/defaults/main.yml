@@ -1,4 +1,5 @@
 # DIVE
+dive_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 dive_version: "{{ hostvars.localhost.dive_version }}"
 dive_url_map:
   "aarch64": "https://github.com/wagoodman/dive/releases/download/v{{ dive_version }}/dive_{{ dive_version }}_linux_arm64.deb"
@@ -6,6 +7,7 @@ dive_url_map:
 
 
 # LAZYDOCKER
+lazydocker_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 lazydocker_version: "{{ hostvars.localhost.lazydocker_version }}"
 lazydocker_url_map:
   "armv6l": "https://github.com/jesseduffield/lazydocker/releases/download/v{{ lazydocker_version }}/lazydocker_{{ lazydocker_version }}_Linux_armv6.tar.gz"

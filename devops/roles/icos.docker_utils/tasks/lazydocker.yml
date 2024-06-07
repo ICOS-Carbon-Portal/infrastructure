@@ -28,7 +28,7 @@
     owner: root
     group: root
     remote_src: true
-    src: "{{ lazydocker_url_map[ansible_architecture] }}"
+    src: "{{ lazydocker_url_map[lazydocker_architecture] }}"
     dest: /usr/local/bin
     include:
       # extract only the binary (skip the readme etc)

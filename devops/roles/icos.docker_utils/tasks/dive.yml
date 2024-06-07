@@ -25,7 +25,7 @@
 
 - name: Install dive
   apt:
-    deb: "{{ dive_url_map[ansible_architecture] }}"
+    deb: "{{ dive_url_map[dive_architecture] }}"
 
 - name: Check that dive is executable and the correct version
   shell: dive --version
