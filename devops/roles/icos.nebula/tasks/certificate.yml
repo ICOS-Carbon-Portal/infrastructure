@@ -22,7 +22,7 @@
       shell: >-
         nebula-cert sign
         -in-pub <(echo "{{ newpub.content | b64decode }}")
-        -ip {{ nebula_ip }}
+        -ip {{ nebula_ip }}{{ nebula_netmask }}
         -name {{ nebula_hostname }}
         -out-crt crt.sign
         && cat crt.sign
