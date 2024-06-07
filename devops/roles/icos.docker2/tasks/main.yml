@@ -63,3 +63,7 @@
       Successfully ran an alpine image in {{ _apk.delta }}. It should take
       1-10 seconds, depending on whether the alpine image exists locally or
       not
+
+
+- import_tasks: just.yml
+  tags: docker_just

@@ -1,0 +1,20 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# diff for ports between host and container
+ports name:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    pid=$(docker inspect -f {{ '{{.State.Pid}}' }} {{name}})
+    inside=$(mktemp)
+    outside=$(mktemp)
+    trap 'rm -f $inside $outside' EXIT
+    ss -tulpn > $outside
+    nsenter -t $pid -n ss -tulpn > $inside
+    diff $outside $inside || :
