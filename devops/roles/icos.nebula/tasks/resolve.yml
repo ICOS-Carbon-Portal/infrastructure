@@ -1,40 +1,14 @@
-- name: Setup DNS for Raspbian < 12
-  include_tasks:
-    file: resolve-dnsmasq.yml
-  when:
-    - ansible_lsb.id == "Raspbian"
-    - ansible_distribution_major_version is version('12', '<')
-    - not _nebula_resolve_configured | default(False)
+- name: Query for systemd-resolved
+  systemd:
+    name: systemd-resolved
+  register: _resolved
 
-- name: Setup DNS for Raspbian >= 12
-  include_tasks:
-    file: resolve-dnsmasq.yml
-  when:
-    - ansible_lsb.id == "Raspbian"
-    - ansible_distribution_major_version is version('12', '>=')
-    - not _nebula_resolve_configured | default(False)
-
-- name: Setup DNS for Debian >= 12
-  include_tasks:
-    file: resolve-dnsmasq.yml
-  when:
-    - ansible_distribution == "Debian"
-    - ansible_distribution_major_version is version('12', '>=')
-    - not _nebula_resolve_configured | default(False)
-
-- name: Setup DNS for Ubuntu >= 22
+- name: Setup DNS for systemd-resolved
   include_tasks:
     file: resolve-systemd.yml
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version is version('22', '>=')
-    - not _nebula_resolve_configured | default(False)
+  when: _resolved.status.ActiveState == "active"
 
-- name: Fail is dns resolution was not configured
-  fail:
-    msg: |
-      Couldn't configure dns resolution for nebula
-      {{ansible_distribution}} {{ansible_distribution_major_version}}
-  when: not _nebula_resolve_configured | default(False)
-  # continue anyway
-  failed_when: false
+- name: Setup DNS for dnsmasq
+  include_tasks:
+    file: resolve-dnsmasq.yml
+  when: _resolved.status.ActiveState != "active"

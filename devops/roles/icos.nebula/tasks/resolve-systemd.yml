@@ -48,7 +48,6 @@
   notify: restart systemd-networkd
 
 
-
 # NETWORK MANAGER
 - name: query systemd for NetworkManager
   systemd:
@@ -67,9 +66,3 @@
       [main]
       dns=systemd-resolved
   notify: restart NetworkManager
-
-- name: DNS is now configured
-  set_fact:
-    _nebula_resolve_configured: systemd
-
-  
