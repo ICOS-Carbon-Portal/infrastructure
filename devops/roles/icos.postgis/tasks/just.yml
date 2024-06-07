@@ -1,7 +1,7 @@
 - name: Copy justfile
   template:
     src: justfile
-    dest: "{{ postgis_home }}"
+    dest: "{{ postgis_home }}/"
     mode: +x
     variable_start_string: "(("
     variable_end_string: "))"
