@@ -45,4 +45,5 @@
       file:
         name: "{{ _r.backup_file }}"
         state: absent
+      changed_when: false
       when: "_r['backup_file'] is defined"
