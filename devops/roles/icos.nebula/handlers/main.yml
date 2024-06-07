@@ -13,10 +13,11 @@
     state: restarted
 
 - name: restart NetworkManager
-  service:
+  systemd:
     name: NetworkManager
     state: restarted
   notify: restart systemd-resolved
+
 
 # When NetworkManager/systemd-resolved is initially installed, "resolvectl
 # status" will timeout and fail with "Failed to activate service
@@ -25,6 +26,19 @@
   service:
     name: systemd-resolved
     state: restarted
+  register: _r
+  failed_when:
+    - _r.failed
+    # systemd-resolved might not even be installed
+    - not _r.msg.startswith('Could not find the requested service')
 
 - name: save iptables
   command: netfilter-persistent save
+
+- name: restart dnsmasq
+  systemd:
+    name: dnsmasq
+    state: restarted
+  # Something in the interaction between NetworkManager and resolvconfig
+  # sometimes needs NetworkManager to be restarted
+  notify: restart NetworkManager

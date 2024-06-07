@@ -30,6 +30,7 @@ nebula_resolve_enable: false
 nebula_resolve_servers:
 nebula_resolve_test:
 
+
 # SSH DEBUG INTERFACE
 # https://nebula.defined.net/docs/config/sshd/
 nebula_ssh_enable: false
