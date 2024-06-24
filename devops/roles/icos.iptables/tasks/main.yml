@@ -4,10 +4,10 @@
     name: iptables-persistent
 
 
-- name: Enable IP forwarding
+- name: Set IP forwarding
   sysctl:
     name: net.ipv4.ip_forward
-    value: "1"
+    value: "{{ iptables_forward | int }}"
 
 
 # These are mostly copied from the default ufw rules.
@@ -40,15 +40,18 @@
       -A FORWARD -p icmp --icmp-type parameter-problem -j ACCEPT
       -A FORWARD -p icmp --icmp-type echo-request -j ACCEPT
 
-      {% if iptables_enable_mdns -%}
+      {% if iptables_mdns -%}
       # Multicast mDNS for service discovery
       -A INPUT -p udp -d 224.0.0.251 --dport 5353 -j ACCEPT
+      {% endif %}
+      {% if iptables_upnp %}
       # Multicast UPnP for service discovery
       -A INPUT -p udp -d 239.255.255.250 --dport 1900 -j ACCEPT
       {% endif -%}
 
       # policy
       -P INPUT DROP
+      -P OUTPUT ACCEPT
       -P FORWARD DROP
 
 
