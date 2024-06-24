@@ -1,0 +1,3 @@
+# pipx needs venv etc
+dependencies:
+  - role: icos.python3
