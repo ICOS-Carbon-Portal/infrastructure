@@ -4,7 +4,8 @@
 - import_tasks: systemd.yml
   tags: vmagent_systemd
 
-- import_tasks: proxy.yml
+- when: vmagent_proxy != "disabled"
+  import_tasks: proxy.yml
   tags: vmagent_proxy
 
 - import_tasks: just.yml

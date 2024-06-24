@@ -43,6 +43,8 @@ fsd_host: "{{ ansible_hostname | splitext | first }}"
 
 
 # PROXY
+vmagent_proxy: disabled
+
 nginxsite_name: vmagent
 nginxsite_file: vmagent-nginx.conf
 nginxsite_users: ["{{ vault_vmagent_auth }}"]

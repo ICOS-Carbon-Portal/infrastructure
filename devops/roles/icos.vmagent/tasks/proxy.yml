@@ -1,42 +1,44 @@
-- name: Retrieve https_proxy_server fact
+- when: vmagent_proxy == "probe"
+  name: Probe for vmagent_proxy fact
   check_mode: false
   shellfact:
     exec: ss -Htlp 'sport 443' | sed -re 's/.*(nginx|caddy).*/\1/' | uniq
-    fact: https_proxy_server
+    fact: vmagent_proxy
 
-- import_role:
-    name: icos.nginxsite
-  when: https_proxy_server == 'nginx'
-
-- import_role:
-    name: icos.caddy
-    tasks_from: site.yml
-  when: https_proxy_server == 'caddy'
-
-- name: Make sure we understand which proxy server is used
+- when: vmagent_proxy not in ('nginx', 'caddy')
+  check_mode: false
+  name: Fail if we can't figure out which proxy server is used
   fail:
     msg: |
-      Unknown proxy server "{{ https_proxy_server }}".
-  when:
-    - https_proxy_server != 'nginx'
-    - https_proxy_server != 'caddy'
+      Unknown proxy server "{{ vmagent_proxy }}".
+
+- when: vmagent_proxy == 'nginx'
+  name: Setup nginx proxy for vmagent
+  include_role:
+    name: icos.nginxsite
+
+- when: vmagent_proxy == 'caddy'
+  name: Setup caddy proxy for vmagent
+  include_role:
+    name: icos.caddy
+    tasks_from: site.yml
 
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Test that the vmagent UI is password protected
-  tags: nginx
-  uri:
-    url: "https://{{ inventory_hostname }}/vmagent/"
-  retries: 10
-  register: r
-  failed_when: r.status != 401
+- when: vmagent_auth
+  block:
+    - name: Test that the vmagent UI is password protected
+      uri:
+        url: "https://{{ inventory_hostname }}/vmagent/"
+      retries: 10
+      register: r
+      failed_when: r.status != 401
 
-- name: Test that the vmagent UI works with password
-  tags: nginx
-  uri:
-    url: "https://{{ inventory_hostname }}/vmagent/"
-    user: "{{ vault_vmagent_auth.username }}"
-    password: "{{ vault_vmagent_auth.password }}"
-  retries: 10
-  register: r
+    - name: Test that the vmagent UI works with password
+      uri:
+        url: "https://{{ inventory_hostname }}/vmagent/"
+        user: "{{ vmagent_auth.username }}"
+        password: "{{ vmagent_auth.password }}"
+      retries: 10
+      register: r
