@@ -4,5 +4,5 @@
 - import_tasks: config.yml
   tags: telegraf_config
 
-- import_tasks: utils.yml
-  tags: telegraf_utils
+- import_tasks: just.yml
+  tags: telegraf_just
