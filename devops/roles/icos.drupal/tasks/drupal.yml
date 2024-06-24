@@ -51,7 +51,6 @@
   template:
     src: composer.json.j2
     dest: "{{ project_dir }}/composer/composer.json"
-  register: composer_json
 
 - name: Copy robots.txt
   copy:
@@ -59,14 +58,18 @@
     dest: "{{ project_dir }}/composer/robots.txt.append"
   when: robots_txt is defined
 
+- name: Enable maintenance mode
+  command: docker exec {{website}}_drupal_1 drush maint:set 1
+  when: update
+
 - name: (Re)start docker containers
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ project_dir }}/docker"
     state: present
-    pull: yes
+    pull: always
 
 - name: Check private directory owner
-  command: docker exec ac_drupal_1 stat -c '%U' /var/www/private/
+  command: docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/
   register: private_directory_owner
   changed_when: false
 
@@ -85,10 +88,18 @@
 
 - name: Composer update
   command: docker exec {{website}}_drupal_1 composer update
-  when: update_modules or composer_json.changed
+  when: update
   register: result
   changed_when: '"Package operations" in result.stderr'
 
 - name: Update database
   command: docker exec {{website}}_drupal_1 drush updb
-  when: update_db
+  when: update
+
+- name: Disable maintenance mode
+  command: docker exec {{website}}_drupal_1 drush maint:set 0
+  when: update
+
+- name: Clear caches
+  command: docker exec {{website}}_drupal_1 drush cr
+  when: update

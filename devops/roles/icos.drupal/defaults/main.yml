@@ -2,5 +2,4 @@ drupal_version: 10.2
 drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "otctest", "se", "sites"]
 drupal_home: /disk/data/drupal
 drupal_modules: []
-update_modules: false
-update_db: false
+update: false
