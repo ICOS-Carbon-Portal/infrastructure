@@ -27,6 +27,7 @@ nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
 
 # DNS RESOLVER
 nebula_resolve_enable: false
+nebula_resolve_type: probe
 nebula_resolve_servers:
 nebula_resolve_test:
 

@@ -1,0 +1,21 @@
+- name: Add nebula dns server
+  copy:
+    dest: /etc/systemd/network/{{ nebula_interface }}.network
+    content: |
+      # This file is read by both systemd-networkd and systemd-resolved. The
+      # trick is to configure systemd-resolved to add a specific dns server
+      # for the nebula link while keeping systemd-networkd from messing things
+      # up.
+
+      [Match]
+      Name={{ nebula_interface }}
+
+      [Network]
+      {% for host in nebula_resolve_servers %}
+      DNS={{ host }}%{{ nebula_interface }}
+      {% endfor %}
+      Domains=~{{ nebula_domain }}
+
+      # Keeps systemd-networkd from clobbering the ip set by nebula
+      KeepConfiguration=static
+  notify: restart systemd-networkd

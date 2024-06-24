@@ -3,27 +3,23 @@
   meta: flush_handlers
 
 - when:
-    - nebula_resolve_enable
-    - _nebula_resolve_configured | default("") == "systemd"
-  name: Check that dns servers are used for nebula link
-  shell: resolvectl status nebula | grep -qs {{ nebula_resolve_servers[0] }}
-  changed_when: no
-
-- when:
     - nebula_resolve_servers
     - nebula_resolve_test
   block:
-    - name: Install bind9-dnsutils
+    - name: Install dnsutils
       apt:
-        name:
-          - bind9-dnsutils
+        update_cache: yes
+        cache_valid_time: 86400
+        name: dnsutils
 
     - name: Check that nebula dns resolution works
       shell: dig {{ nebula_resolve_test }}
       changed_when: no
 
 - name: Check that nebula is working
-  tags: nebula_ping
   command: ping -w 10 -c 1 {{ nebula_ping_host }}
   changed_when: no
-  ignore_errors: true
+
+- name: Check that ordinary dns resolution is still working
+  command: ping -w 10 -c 1 google.com
+  changed_when: no

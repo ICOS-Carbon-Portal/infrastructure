@@ -1,14 +1,16 @@
-- name: Query for systemd-resolved
-  systemd:
-    name: systemd-resolved
-  register: _resolved
+- when: nebula_resolve_type == "probe"
+  include_tasks: resolve-probe.yml
 
-- name: Setup DNS for systemd-resolved
-  include_tasks:
-    file: resolve-systemd.yml
-  when: _resolved.status.ActiveState == "active"
+- when: nebula_resolve_type == "dnsmasq"
+  include_tasks: resolve-dnsmasq.yml
 
-- name: Setup DNS for dnsmasq
-  include_tasks:
-    file: resolve-dnsmasq.yml
-  when: _resolved.status.ActiveState != "active"
+- when: nebula_resolve_type == "NetworkManager"
+  include_tasks: resolve-networkmanager.yml
+
+- when: nebula_resolve_type == "systemd-networkd"
+  include_tasks: resolve-networkd.yml
+
+- when: nebula_resolve_type == "unknown"
+  debug:
+    msg: |
+      Don't know which network provisioner to configure.

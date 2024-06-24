@@ -2,43 +2,55 @@
   service:
     name: nebula
     state: restarted
-  # When nebula is restarted, the nebula interface disappears and reappears,
-  # which causes systemd-resolved to loose track of the extra dns servers
-  # we've configured for nebula. Restarting systemd-networkd fixes it.
-  notify: restart systemd-networkd
+  # # When nebula is restarted, the nebula interface disappears and reappears,
+  # # which causes systemd-resolved to loose track of the extra dns servers
+  # # we've configured for nebula. Restarting systemd-networkd fixes it.
+  # notify: restart systemd-networkd
 
 - name: restart systemd-networkd
+  when:
   service:
     name: systemd-networkd
     state: restarted
+  # Restarting systemd-networkd however, causes systemd-resolved to gain the
+  # nebula nameservers, but loose the once configured by NetworkManager, so
+  # we'll restart that as well.
+  notify: restart NetworkManager
 
-- name: restart NetworkManager
+# NetworkManager might not be in use.
+- when:
+    - _nm is defined
+    - _nm.status.ActiveState == "active"
+  name: restart NetworkManager
   systemd:
     name: NetworkManager
     state: restarted
-  notify: restart systemd-resolved
+#   notify: restart systemd-resolved
 
 
-# When NetworkManager/systemd-resolved is initially installed, "resolvectl
-# status" will timeout and fail with "Failed to activate service
-# 'org.freedesktop.resolve1'". Restarting systemd-resolved usually helps.
-- name: restart systemd-resolved
-  service:
-    name: systemd-resolved
-    state: restarted
-  register: _r
-  failed_when:
-    - _r.failed
-    # systemd-resolved might not even be installed
-    - not _r.msg.startswith('Could not find the requested service')
+- name: reload NetworkManager
+  systemd:
+    name: NetworkManager
+    state: reloaded
 
-- name: save iptables
-  command: netfilter-persistent save
+
+# # When NetworkManager/systemd-resolved is initially installed, "resolvectl
+# # status" will timeout and fail with "Failed to activate service
+# # 'org.freedesktop.resolve1'". Restarting systemd-resolved usually helps.
+# - name: restart systemd-resolved
+#   service:
+#     name: systemd-resolved
+#     state: restarted
+#   register: _r
+#   failed_when:
+#     - _r.failed
+#     # systemd-resolved might not even be installed
+#     - not _r.msg.startswith('Could not find the requested service')
 
 - name: restart dnsmasq
   systemd:
     name: dnsmasq
     state: restarted
-  # Something in the interaction between NetworkManager and resolvconfig
-  # sometimes needs NetworkManager to be restarted
-  notify: restart NetworkManager
+  # # Something in the interaction between NetworkManager and resolvconfig
+  # # sometimes needs NetworkManager to be restarted
+  # notify: restart NetworkManager

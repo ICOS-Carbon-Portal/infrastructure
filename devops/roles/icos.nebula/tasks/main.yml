@@ -5,7 +5,9 @@
   - nebula_ssh_enable
   - nebula_ssh_public is not defined
   import_tasks: ssh.yml
-  tags: nebula_ssh
+  tags:
+    - nebula_ssh
+    - nebula_config
 
 - import_tasks: just.yml
   tags: nebula_just
@@ -30,4 +32,7 @@
   tags: nebula_resolve
 
 - import_tasks: test.yml
-  tags: nebula_test
+  tags:
+    - nebula_test
+    # always run tests when reconfiguring resolve
+    - nebula_resolve

@@ -7,7 +7,6 @@
 # https://wiki.archlinux.org/title/dnsmasq#openresolv
 # https://wiki.archlinux.org/title/Openresolv
 
-
 - name: Install openresolv
   apt:
     name:
@@ -15,7 +14,6 @@
       # installing dnsmasq is enough to trigger openresolve (or something!) to
       # rewrite /etc/resolv.conf
       - dnsmasq
-  notify: restart NetworkManager
 
 - name: Add nebula nameserver to dnsmasq
   copy:
