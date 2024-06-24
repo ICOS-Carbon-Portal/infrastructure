@@ -442,7 +442,11 @@ class Iptables:
 
     # Checks if iptables is installed and if we have a correct version.
     def _check_compatibility(self):
-        from distutils.version import StrictVersion
+        try:
+            from distutils.version import StrictVersion as Version
+        except ModuleNotFoundError:
+            # https://github.com/pypa/packaging/issues/520#issuecomment-1067119795
+            from packaging.version import Version
         cmd = [self.bins['iptables'], '--version']
         rc, stdout, stderr = Iptables.module.run_command(cmd, check_rc=False)
         if rc == 0:
@@ -451,7 +455,7 @@ class Iptables:
                 version = result.group(1)
                 # CentOS 5 ip6tables (v1.3.x) doesn't support comments,
                 # which means it cannot be used with this module.
-                if StrictVersion(version) < StrictVersion('1.4'):
+                if Version(version) < Version('1.4'):
                     Iptables.module.fail_json(msg="This module isn't compatible with ip6tables versions older than 1.4.x")
         else:
             Iptables.module.fail_json(msg="Could not fetch iptables version! Is iptables installed?")
