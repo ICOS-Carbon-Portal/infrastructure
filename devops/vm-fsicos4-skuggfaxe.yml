@@ -1,0 +1,10 @@
+- hosts: skuggfaxe
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.docker2
+      tags: docker
