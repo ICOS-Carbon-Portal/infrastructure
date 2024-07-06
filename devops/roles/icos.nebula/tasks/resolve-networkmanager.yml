@@ -12,6 +12,7 @@
   register: _networkd
 
 - when: _networkd.status.ActiveState == "active"
+  name: Warn about NetworkManage+systemd-networkd
   fail:
     msg: |
       We're not setup for provisioning NetworkManager+systemd-networkd
@@ -20,3 +21,4 @@
 # NetworkManager run its own. Instead we just install dnsmasq and openresolv
 # and NetworkManager will interact with them.
 - import_tasks: resolve-dnsmasq.yml
+  notify: restart NetworkManager
