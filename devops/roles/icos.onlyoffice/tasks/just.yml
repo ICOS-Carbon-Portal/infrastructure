@@ -1,0 +1,20 @@
+- name: Copy justfile
+  template:
+    src: justfile
+    dest: "{{ onlyoffice_home }}"
+    mode: +x
+    variable_start_string: "(("
+    variable_end_string: "))"
+    lstrip_blocks: yes
+  register: _justfile
+
+- name: Create executable symlink to justfile
+  file:
+    dest: "/usr/local/bin/ops-onlyoffice"
+    src: "{{ _justfile.dest }}"
+    state: link
+  register: _symlink
+
+- name: Check that the justfile is executable
+  shell: "{{ _symlink.dest }}"
+  changed_when: no

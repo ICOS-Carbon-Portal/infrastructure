@@ -1,0 +1,48 @@
+#!/usr/bin/env -S just --working-directory ((onlyoffice_home)) --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+occ := "docker exec -i --user www-data nextcloud_app_1 php occ"
+backup := "bbclient-nextcloud-coldbackup"
+dc := "docker-compose"
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# run docker-compose
+[group('docker')]
+dc *args:
+    {{dc}} {{args}}
+
+# docker-compose ps
+[group('docker')]
+ps *args:
+    {{dc}} ps {{args}}
+
+# bring nextcloud up (in the background)
+[group('docker')]
+up *args:
+    {{dc}} up -d {{args}}
+
+# bring nextcloud down
+[group('docker')]
+down *args:
+    {{dc}} down {{args}}
+
+# tail the logs
+[group('docker')]
+tail *args:
+    {{dc}} logs -f {{args}}
+
+# start lazydocker
+[group('docker')]
+lazy *args:
+    lazydocker {{args}}
+
+# start shell in app container
+[group('docker')]
+shell *args:
+    {{dc}} exec app bash {{args}}

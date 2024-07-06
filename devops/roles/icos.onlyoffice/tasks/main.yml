@@ -8,3 +8,6 @@
     nginxsite_name: onlyoffice
     nginxsite_file: onlyoffice.conf
     nginxsite_domains: ["{{ onlyoffice_domain }}"]
+
+- import_tasks: just.yml
+  tags: onlyoffice_just
