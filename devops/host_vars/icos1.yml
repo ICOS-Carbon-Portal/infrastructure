@@ -13,3 +13,7 @@ lxd_vm_variant: zfs
 #bbclient_remotes:
 #  - cdb.nateko.lu.se
 ##  - fsicos2.lunarc.lu.se
+
+
+icosdata_exports: |
+  /pool/flexextract *.nebula(ro)

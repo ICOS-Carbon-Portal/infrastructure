@@ -8,12 +8,9 @@ nginx_metrics_enable: True
 
 
 # ICOSDATA
-icosdata_mkdirs:
-  - /nfs
-
 icosdata_exports: |
   # The 'no_subtree_check' is to avoid warnings about the default behaviour having changed.
-  /incoming                           fsicos2.lunarc.lu.se(rw,no_root_squash,no_subtree_check)
+  /incoming                           *.nebula(rw,no_root_squash,no_subtree_check)
   /data/project/stc                   fsicos2.lunarc.lu.se(ro,no_subtree_check)
   /data/project/interpolation         fsicos2.lunarc.lu.se(ro,no_subtree_check)
   /data/project/eurocom               fsicos2.lunarc.lu.se(ro,no_subtree_check)
@@ -21,7 +18,17 @@ icosdata_exports: |
   /data/flexpart/output               fsicos2.lunarc.lu.se(rw,no_subtree_check)
   /pool/jupyter/project/coco2/jupyter fsicos2.lunarc.lu.se(ro,no_subtree_check,no_root_squash)
 
+
+icosdata_mkdirs:
+  - /nfs
+  - /nfs/fsicos2
+
+
 icosdata_nfs_mounts:
+  - path: /nfs/fsicos2
+    src: fsicos2.nebula:/disk/data/incoming
+    opts: "rw,x-systemd.after=nebula.service"
+
   # flexextract - read-write
   - path: /nfs/flexextract
     src: fsicos2.lunarc.lu.se:/disk/data/flexextract

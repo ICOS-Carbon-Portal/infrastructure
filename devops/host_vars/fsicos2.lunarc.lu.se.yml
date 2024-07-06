@@ -40,13 +40,13 @@ icosdata_exports: |
   /disk/data/obspack                fsicos*.lunarc.lu.se(ro,no_subtree_check)
   /disk/data/stilt                  fsicos*.lunarc.lu.se(ro,no_subtree_check)
   /disk/data/common/netcdf/dataDemo fsicos*.lunarc.lu.se(rw)
-  /disk/data/incoming               *.wg-fsicos2(rw)
+  /disk/data/incoming               *.nebula(rw,no_root_squash,no_subtree_check)
 
 icosdata_mkdirs:
   - /disk/data/incoming
   - /disk/data/stilt
-  - /share/fsicos3
-  - /share/with_nextcloud/jupyter_coco2
+  - /nfs/fsicos3
+  - /nfs/with_nextcloud/jupyter_coco2
 
 icosdata_bind_mounts:
   - path: /data/stiltweb
@@ -68,12 +68,12 @@ icosdata_bind_mounts:
     opts: ",ro"
 
 icosdata_nfs_mounts:
-  - path: /share/with_nextcloud/jupyter_coco2
+  - path: /nfs/with_nextcloud/jupyter_coco2
     src: fsicos3.lunarc.lu.se:/pool/jupyter/project/coco2/jupyter
     opts: "ro,soft"
 
-  - path: /share/fsicos3
-    src: fsicos3.lunarc.lu.se:/incoming
+  - path: /nfs/fsicos3
+    src: fsicos3.nebula:/incoming
     opts: rw
 
   - path: /data/project/eurocom
