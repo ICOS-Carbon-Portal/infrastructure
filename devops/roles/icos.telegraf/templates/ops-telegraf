@@ -1,16 +1,90 @@
 #!/usr/bin/env -S just --working-directory . --justfile
 
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
-# testrun current config
-test:
-    telegraf --test --config ((telegraf_conf_root))/telegraf.conf
+# SYSTEMD
+# tail the logs
+[group('systemd')]
+tail:
+    journalctl -fu telegraf
+
+# start the service
+[group('systemd')]
+start:
+    systemctl start telegraf
+
+
+# CONFIG
+# edit configuration
+[group('config')]
+edit:
+    mg /etc/telegraf/telegraf.conf
+
+# reload configuration
+[group('systemd')]
+reload:
+    systemctl reload telegraf
 
 # dump default config
+[group('config')]
 default:
     telegraf config create
 
+# testrun current config
+[group('config')]
+test:
+    telegraf --test --config ((telegraf_conf_root))/telegraf.conf
+
+
+# MISC
 # show version
+[group('misc')]
 version:
     telegraf --version
+
+
+# DEBUG
+# enable debug logging
+[group('debug')]
+debug-on:
+    echo -e "[agent]\ndebug = true" > /etc/telegraf/telegraf.d/debug.conf
+    systemctl reload telegraf
+
+# disable debug logging
+[group('debug')]
+debug-off:
+    rm -f /etc/telegraf/telegraf.d/debug.conf
+    systemctl reload telegraf
+
+
+# METRICS
+# dump prometheus metrics to file
+[group('metrics')]
+metrics-on:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    cat <<EOF > /etc/telegraf/telegraf.d/metrics-to-file.conf
+    [[outputs.file]]
+    files = ["/tmp/metrics.out"]
+    # in case we forget to turn it off
+    rotation_max_size = "20MB"
+    rotation_max_archives = 0
+    data_format = "prometheus"
+    EOF
+    telegraf --test --config ((telegraf_conf_root))/telegraf.conf > /dev/null
+    systemctl reload telegraf
+
+# tail prometheus metrics
+[group('metrics')]
+metrics-tail:
+    tail -f /tmp/metrics.out
+
+# stop prometheus metrics
+[group('metrics')]
+metrics-off:
+    rm /etc/telegraf/telegraf.d/metrics-to-file.conf
+    systemctl reload telegraf
