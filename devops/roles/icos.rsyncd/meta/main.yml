@@ -1,0 +1,3 @@
+dependencies:
+  - role: icos.just
+    tags: just

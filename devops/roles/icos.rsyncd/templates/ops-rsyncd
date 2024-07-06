@@ -1,0 +1,35 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+secrets := "/etc/rsyncd.secrets"
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# status of the rsync service
+status *args:
+    systemctl status rsync.service {{args}}
+
+# show users
+list:
+    cat {{secrets}}
+
+# add user to /etc/rsyncd.secrets
+add user *password:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    if grep -q '^{{user}}' {{secrets}}; then
+      echo "{{user}} already present in {{secrets}}"
+      exit 0
+    fi
+
+    if [[ -z "{{password}}" ]]; then
+      password=$(openssl rand -hex 20)
+      echo "password is $password"
+    else
+      password="{{password}}"
+    fi
+
+    echo "{{user}}:$password" >> {{secrets}}
+
+# try connecting to local rsync server
+test:
+    rsync rsync://(( inventory_hostname )).nebula
