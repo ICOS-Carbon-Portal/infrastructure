@@ -33,22 +33,10 @@
   community.docker.docker_compose_v2:
     project_src: "{{ vm_home }}"
     pull: "{{ 'always' if vm_upgrade else omit }}"
-    
+
 - import_tasks: grafana_datasource.yml
   tags: grafana_datasource
     
-- name: Check that services responds on local ports
-  uri:
-    url: "http://localhost:{{ item.port }}"
-  retries: 10
-  loop_control:
-    label: "{{ item.name }}"
-  loop:
-    - name: victoriametrics
-      port: "{{ vm_vm_port }}"
-    - name: grafana
-      port: "{{ vm_graf_port }}"
-
 - name: Check that services responds on local ports
   uri:
     url: "http://localhost:{{ item.port }}"
