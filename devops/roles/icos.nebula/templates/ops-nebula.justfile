@@ -1,34 +1,51 @@
 #!/usr/bin/env -S just --working-directory . --justfile
 
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
 # the host suffix for hosts in this nebula network
 suffix := "{{{nebula_interface}}}"
+
+
 
 # META
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
 # apt install dependencies for this justfile
+[group('misc')]
 deps:
     # iperf3 for speed test and jq for ssh debugging
     apt install iperf3 jq
 
+# show certificate
+[group('misc')]
+cert:
+    nebula-cert print -path {{{nebula_etc_dir}}}/host.crt
+
+
 
 # SYSTEMD SERVICE
 # check status of systemd service
+[group('service')]
 status:
     systemctl status nebula.service
 
 # tail logs
+[group('service')]
 tail:
     journalctl -n 30 -f -u nebula.service
 
 
+
 # SSH DEBUG CONSOLE
 # connect to admin interface using ssh
+[group('debug console')]
 ssh *args:
     ssh -i {{{nebula_ssh_key}}} -p {{{nebula_ssh_port}}} admin@127.0.0.1 {{args}}
 
 # print-tunnel for HOST.nebula
+[group('debug console')]
 print host:
     #!/bin/bash
     which jq >/dev/null || just deps
@@ -36,18 +53,23 @@ print host:
     just --justfile {{justfile()}} ssh print-tunnel $ip | jq
 
 
+
 # IPERF SPEED TEST
 # start iperf3 server
+[group('speed')]
 iperf-listen myhostname=`hostname`:
     iperf3 -B {{myhostname}}.{{suffix}} -s
 
 # start iperf3 client
+[group('speed')]
 iperf-connect shortname:
     iperf3 -c {{shortname}}.{{suffix}}
 
 
+
 # DEBUG LOGGING
 # set loglevel and maybe restart
+[group('debug')]
 loglevel new:
     #!/bin/bash
     set -Eueo pipefail
@@ -66,10 +88,12 @@ loglevel new:
     fi
 
 # enable debugging
+[group('debug')]
 debug-on:
     just --justfile {{justfile()}} loglevel debug
 
 # disable debugging
+[group('debug')]
 debug-off:
     just --justfile {{justfile()}} loglevel info
 
@@ -77,6 +101,7 @@ debug-off:
 
 # USED BY ANSIBLE
 # show status of certificate
+[group('ansible')]
 cert-check maxdays="90":
     #!/bin/bash
     set -Eueo pipefail
