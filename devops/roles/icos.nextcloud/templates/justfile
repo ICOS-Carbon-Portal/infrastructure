@@ -1,12 +1,15 @@
 #!/usr/bin/env -S just --working-directory ((nextcloud_home)) --justfile
 
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
 occ := "docker exec -i --user www-data nextcloud_app_1 php occ"
 backup := "bbclient-nextcloud-coldbackup"
 dc := "docker-compose"
 
+
 @_default:
     just --list --unsorted --justfile {{justfile()}}
-
 
 
 # MISC
@@ -71,10 +74,12 @@ data-ncdu:
 
 # BACKUPS
 # show status for backup timer
+[group('backup')]
 backup-when:
     systemctl list-timers {{backup}}
 
 # show logs for last backup
+[group('backup')]
 backup-logs:
     #!/usr/bin/bash
     service="{{backup}}.service"
@@ -86,11 +91,13 @@ backup-logs:
 
 # execute bbclient-coldbackup --down
 [confirm("bring down nextcloud?")]
+[group('backup')]
 backup-down:
     ./bbclient/bin/bbclient-coldbackup --down
 
 # create copy of current directory
 [confirm("remove old copy and create new one?")]
+[group('backup')]
 backup-copy:
     #!/usr/bin/bash
     set -Eueo pipefail

@@ -8,5 +8,5 @@
   tags: nextcloud_prometheus
   when: nextcloud_exporter_pass is defined
 
-- import_tasks: utils.yml
-  tags: nextcloud_utils
+- import_tasks: just.yml
+  tags: nextcloud_just
