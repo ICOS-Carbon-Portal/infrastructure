@@ -37,22 +37,3 @@
         opts: ro
         state: mounted
       tags: netcdf
-
-
-- hosts: fsicos.lunarc.lu.se
-  tasks:
-    - name: Export netcdf to fsicos2
-      lineinfile:
-        path: /etc/exports
-        line: "/disk/data/common/netcdf/dataDemo	194.47.223.139(ro)"
-        state: present
-      register: _exports
-      tags: netcdf
-
-    - name: Reload NFS server
-      service:
-        name: nfs-server
-        state: reloaded
-        enabled: yes
-      when: _exports.changed
-      tags: netcdf
