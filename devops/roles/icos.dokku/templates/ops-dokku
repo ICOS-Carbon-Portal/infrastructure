@@ -1,0 +1,11 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# show version
+version:
+    dokku --version

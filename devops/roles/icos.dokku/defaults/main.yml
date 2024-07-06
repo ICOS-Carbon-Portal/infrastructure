@@ -1,0 +1,14 @@
+# PARAMETERS
+
+# The domain from which we're serving dokku apps.
+# dokku_hostname
+
+# CONFIG
+dokku_ssh_port: 3022
+dokku_http_port: 8008
+
+# Where the docker-compose.yml will live
+dokku_home: /opt/dokku
+
+# Where dokku data will live.
+dokku_data: /var/lib/dokku
