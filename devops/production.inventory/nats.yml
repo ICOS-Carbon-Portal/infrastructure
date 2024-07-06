@@ -21,7 +21,7 @@ nats_core_servers:
     nats_cluster_port: 60424
 
     # We'll require tls, both for cluster and leaf connections.
-    nats_enable_tls: true
+    nats_cert_enable: true
     nats_cluster_password: "{{ vault_nats_cluster_password }}"
 
     # The servers from where we'll accept leaf connections.
