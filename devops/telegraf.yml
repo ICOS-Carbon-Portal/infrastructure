@@ -1,5 +1,4 @@
 - hosts: fsicos2.lunarc.lu.se
-
   roles:
     - role: icos.telegraf
       tags: telegraf
@@ -7,9 +6,12 @@
         [agent]
         debug = false
 
+        # nginx stub_status metrics
+        [[inputs.nginx]]
+        urls = ["http://localhost/metrics"]
+
         # Metrics about telegraf itself
         [[inputs.internal]]
-
 
         [[outputs.influxdb]]
         # Write to local vmagent
@@ -28,6 +30,6 @@
         timeout = "5s"
 
         # this key is new for version 1.30 (march 2024)
-        #subcommand = "list-units"
+        # subcommand = "list-units"
         unittype = "service"
         pattern = "bbclient-*"
