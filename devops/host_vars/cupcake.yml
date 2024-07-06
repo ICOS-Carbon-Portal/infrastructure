@@ -1,0 +1,4 @@
+icosdata_nfs_mounts:
+  - src: icos1.nebula:/pool/flexextract
+    path: /data/flexextract
+    opts: "ro,hard,x-systemd.after=nebula.service"
