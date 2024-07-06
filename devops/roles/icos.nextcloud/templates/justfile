@@ -14,59 +14,74 @@ dc := "docker-compose"
 
 # MISC
 # run docker-compose
+[group('docker')]
 dc *args:
     {{dc}} {{args}}
 
 # docker-compose ps
+[group('docker')]
 ps *args:
     {{dc}} ps {{args}}
 
 # bring nextcloud up (in the background)
+[group('docker')]
 up:
     {{dc}} up -d
 
 # bring nextcloud down
+[group('docker')]
 down:
     {{dc}} down
 
 # tail the logs
+[group('docker')]
 tail:
     {{dc}} logs -f
 
 # start lazydocker
+[group('docker')]
 lazy:
     lazydocker
 
-# exec occ in container
-occ *args:
-    {{occ}} {{args}}
-
-# list active (seen last 3 hours) users
-active:
-     {{occ}} user:list --info
-
 # exec psql in db container
+[group('docker')]
 psql *args:
     {{dc}} exec db psql --user nextcloud {{args}}
 
 # start shell in app container
+[group('docker')]
 shell *args:
     {{dc}} exec app bash {{args}}
 
 
 
-# GROUP FOLDERS
+# NEXTCLOUD
+# exec occ in container
+[group('nextcloud')]
+occ *args:
+    {{occ}} {{args}}
+
 # show groupfolder with given id
+[group('nextcloud')]
 folder-id id:
     just occ groupfolders:list --output json \
     | jq -r '.[] | select(.id == {{id}})'
 
+# list active (seen last 3 hours) users
+[group('nextcloud')]
+active:
+     {{occ}} user:list --info
+
+
+
 # DATA DIRECTORY
 # du -hscx for data directory
+[group('data directory')]
 data-size:
     du -hscx ((nextcloud_volume_nextcloud))
 
 # ncdu for data directory
+[group('data directory')]
 data-ncdu:
     ncdu --confirm-quit -xe ((nextcloud_volume_nextcloud))
 
