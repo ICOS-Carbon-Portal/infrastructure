@@ -15,6 +15,7 @@
       # rewrite /etc/resolv.conf
       - dnsmasq
 
+
 - name: Add nebula nameserver to dnsmasq
   copy:
     dest: /etc/dnsmasq.d/nebula.conf
@@ -22,4 +23,10 @@
       {% for server in nebula_resolve_servers %}
       server=/nebula/{{server}}
       {% endfor %}
-  notify: restart dnsmasq
+  register: _conf
+
+
+- name: Make sure dnsmasq is (re)started
+  systemd:
+    name: dnsmasq
+    state: "{{ 'restarted' if _conf.changed else 'started' }}"

@@ -25,32 +25,8 @@
   systemd:
     name: NetworkManager
     state: restarted
-#   notify: restart systemd-resolved
-
 
 - name: reload NetworkManager
   systemd:
     name: NetworkManager
     state: reloaded
-
-
-# # When NetworkManager/systemd-resolved is initially installed, "resolvectl
-# # status" will timeout and fail with "Failed to activate service
-# # 'org.freedesktop.resolve1'". Restarting systemd-resolved usually helps.
-# - name: restart systemd-resolved
-#   service:
-#     name: systemd-resolved
-#     state: restarted
-#   register: _r
-#   failed_when:
-#     - _r.failed
-#     # systemd-resolved might not even be installed
-#     - not _r.msg.startswith('Could not find the requested service')
-
-- name: restart dnsmasq
-  systemd:
-    name: dnsmasq
-    state: restarted
-  # # Something in the interaction between NetworkManager and resolvconfig
-  # # sometimes needs NetworkManager to be restarted
-  # notify: restart NetworkManager
