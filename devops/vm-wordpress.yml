@@ -13,6 +13,8 @@
       - www.george-project.eu
       - kadi-project.eu
       - www.kadi-project.eu
+      - global-ecosystem-ri.org
+      - www.global-ecosystem-ri.org
   roles:
     - role: icos.lxd_vm
       tags: lxd
