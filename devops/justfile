@@ -1,13 +1,15 @@
-#!/usr/bin/env -S just --justfile
+#!/usr/bin/env -S just --unstable --justfile
 
 set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
 editor := env_var_or_default("EDITOR", "emacsclient --no-wait")
-export ANSIBLE_INVENTORY := "production.inventory"
+inventory := "production"
+
+export ANSIBLE_INVENTORY := inventory + ".inventory"
 
 @_default:
-    just --list --unsorted --justfile {{justfile()}}
+    just --unstable --list --unsorted --justfile {{justfile()}}
 
 
 # run a playbook
@@ -22,10 +24,6 @@ install *args:
 upgrade *args:
     ansible-playbook install.yml -eupgrade_everything=1 {{args}}
 
-# edit this justfile
-edit:
-    {{editor}} {{canonicalize(justfile())}}
-
-# edit hostfile
-hosts:
-    {{editor}} production.inventory/hosts.yml
+# show facts about a host
+facts host:
+    ansible {{host}} -m setup
