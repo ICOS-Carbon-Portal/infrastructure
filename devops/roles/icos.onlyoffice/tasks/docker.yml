@@ -36,7 +36,7 @@
       ONLYOFFICE_VERSION={{ onlyoffice_version }}
 
 - name: Build and start
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ onlyoffice_home }}"
 
 - name: Check that onlyoffice responds - might take a while
