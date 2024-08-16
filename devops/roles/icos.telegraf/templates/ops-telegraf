@@ -41,10 +41,15 @@ test:
 
 
 # MISC
-# show version
+# show version of locally installed telegraf
 [group('misc')]
 version:
     telegraf --version
+
+# show the latest available version of telegraf
+[group('misc')]
+latest:
+    curl --silent https://api.github.com/repos/influxdata/telegraf/releases/latest | jq -r '.name | gsub("^v"; "")'
 
 
 # DEBUG
