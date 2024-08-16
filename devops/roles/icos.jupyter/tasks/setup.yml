@@ -22,7 +22,6 @@
     src: "{{ item }}"
   loop:
     - build.hub
-    - Makefile
     - docker-compose.yml
 
 - name: Copy jupyterhub_config.py

@@ -1,0 +1,54 @@
+#!/usr/bin/env -S just --working-directory ((jupyter_home)) --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+dc := "docker compose"
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# CONFIG
+# show our config
+config:
+    {{dc}} run hub jupyterhub --show-config
+
+
+# DOCKER COMPOSE
+
+# start a bash shell in the hub container
+shell:
+    docker-compose exec hub bash
+
+# lazydocker
+lazy:
+    lazydocker
+
+# docker-compose
+dc *args:
+    {{dc}} "$@"
+
+# docker-compose up
+up:
+    {{dc}} up -d
+
+# docker-compose down
+down:
+    {{dc}} down
+
+# docker-compose pull
+pull:
+    {{dc}} pull
+
+# docker-compose status
+status:
+    {{dc}} ps
+
+# docker-compose restart
+restart:
+    {{dc}} restart
+
+# follow the logs
+tail:
+    {{dc}} logs -n 10 -f
