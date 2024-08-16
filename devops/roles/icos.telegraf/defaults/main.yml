@@ -6,3 +6,6 @@ telegraf_conf: ""
 telegraf_conf_d: []
 
 telegraf_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+
+# Enable support for S.M.A.R.T ?
+telegraf_smart_enable: false

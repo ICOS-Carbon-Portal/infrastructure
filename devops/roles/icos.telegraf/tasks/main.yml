@@ -4,5 +4,9 @@
 - import_tasks: config.yml
   tags: telegraf_config
 
+- import_tasks: smart.yml
+  tags: telegraf_smart
+  when: telegraf_smart_enable
+
 - import_tasks: just.yml
   tags: telegraf_just
