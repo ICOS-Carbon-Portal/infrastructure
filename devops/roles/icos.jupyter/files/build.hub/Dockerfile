@@ -1,10 +1,6 @@
 # https://hub.docker.com/r/jupyterhub/jupyterhub/tags
-# <2023-05-13> jupyterhub:4.0.0
-# "403 : Forbidden '_xsrf' argument missing from POST" ... eh?
-# FROM jupyterhub/jupyterhub:latest@sha256:b6c353d4a6cfc60def3ad42dbf5a3329aa53562e554b94285b39825ea488e4c4
-
-# <2023-03-08> jupyterhub:3.1
-FROM jupyterhub/jupyterhub:latest@sha256:ebe69134c17ee945bb7726570317f937810ddbbb1eed64f42821508cbcf38509
+# <2024-08-15 Thu> jupyterhub:5.1.0
+FROM jupyterhub/jupyterhub:latest@sha256:a2eea3d5181c4c765a289ced37c6cc7d6272e617ef646fa97102b39b6696537a
 
 ENV DEBIAN_FRONTEND=noninteractive
 
