@@ -32,19 +32,15 @@
     conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}"
   register: _config
 
-- name: Start the proxy
-  docker_compose:
+- name: Start proxy and hub
+  community.docker.docker_compose_v2:
     project_src: "{{ jupyter_home }}"
-    services:
-      - proxy
-    state: present
 
 - name: Restart the hub
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ jupyter_home }}"
     services:
       - hub
-    state: present
-    restarted: yes
-    build: yes
+    state: restarted
+    build: always
   changed_when: no
