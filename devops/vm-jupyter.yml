@@ -10,6 +10,7 @@
 
 - hosts: fsicos3.lunarc.lu.se
   vars:
+    jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
     jupyter_domains:
       - jupyter.icos-cp.eu
   pre_tasks:
@@ -36,9 +37,9 @@
     - role: icos.lxd_vm
       tags: lxd
       lxd_vm_name: jupyter
-      lxd_vm_ubuntu_version: '20.04'
+      lxd_vm_ubuntu_version: '22.04'
       lxd_vm_docker: true
-      lxd_vm_docker_size: "100G"
+      lxd_vm_docker_size: "500G"
       lxd_vm_root_pool: "default"
       lxd_vm_root_size: "50GB"
       lxd_vm_config:
@@ -90,7 +91,7 @@
     - role: icos.lxd_guest
       tags: guest
 
-    - role: icos.docker
+    - role: icos.docker2
       tags: docker
 
     - role: icos.sshlogin
