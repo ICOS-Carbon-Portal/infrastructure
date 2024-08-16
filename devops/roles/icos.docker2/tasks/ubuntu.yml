@@ -11,6 +11,7 @@
   shellfact:
     exec: dpkg --print-architecture
     fact: deb_arch
+  check_mode: false
 
 - name: Add docker apt repository
   apt_repository:
