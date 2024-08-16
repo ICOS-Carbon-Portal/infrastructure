@@ -1,11 +1,8 @@
 # https://docs.docker.com/compose/compose-file/#resources
 
-version: "3.5"
-
 networks:
   jupyter:
-    external:
-      name: jupyter
+    external: true
 
 services:
   proxy:
