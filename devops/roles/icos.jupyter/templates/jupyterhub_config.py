@@ -33,6 +33,29 @@ c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
 # We handle authentication in the reverse proxy
 c.JupyterHub.authenticate_prometheus = False
 
+
+# XSRF
+# <2024-08-16 Fri>
+# After upgrading to jupyterhub 5.1 (from version 3), we get these errors:
+# "HTTP 403: Forbidden ('_xsrf' argument missing from GET)"
+
+# The are quite a number of bug reports about this, including some about the
+# disable_check_xsrf setting not working.
+
+# This setting keeps popping up, but doesn't seem to do anything.
+# c.JupyterHub.disable_check_xsrf = True
+
+# Neither does this
+# c.Authenticator.disable_check_xsrf = True
+
+# This however, works!
+# FIXME: xsrf really shouldn't be disabled
+c.JupyterHub.tornado_settings = {
+    'xsrf_cookies': False,
+    'check_xsrf_cookie': False,
+}
+
+
 # c.JupyterHub.allow_named_servers = True
 # c.JupyterHub.named_server_limit_per_user = 5
 
@@ -58,8 +81,8 @@ c.JupyterHub.hub_connect_ip = 'hub'
 
 # USER MANAGEMENT
 c.JupyterHub.admin_access = True
+c.Authenticator.allow_all = True
 c.Authenticator.admin_users = set({{ conf.admin_users }})
-
 
 # CONFIGURATION OF THE NOTEBOOK CONTAINERS
 c.DockerSpawner.network_name = os.environ.get("NETWORK_NAME", "jupyter")
