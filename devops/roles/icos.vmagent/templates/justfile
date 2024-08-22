@@ -11,6 +11,10 @@ vmagent := "bin/vmagent-prod"
 status:
     systemctl status vmagent
 
+# reload configuration
+reload:
+    systemctl reload vmagent
+
 # installed version of vmagent
 version:
     {{vmagent}} -version
