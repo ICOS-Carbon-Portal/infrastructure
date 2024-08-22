@@ -3,6 +3,9 @@
 set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
+telegraf_conf := "((telegraf_conf_root))/telegraf.conf"
+
+
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
@@ -22,7 +25,7 @@ start:
 # edit configuration
 [group('config')]
 edit:
-    mg /etc/telegraf/telegraf.conf
+    mg {{telegraf_conf}}
 
 # reload configuration
 [group('systemd')]
@@ -37,7 +40,7 @@ default:
 # testrun current config
 [group('config')]
 test:
-    telegraf --test --config ((telegraf_conf_root))/telegraf.conf
+    telegraf --test --config {{telegraf_conf}}
 
 
 # MISC
@@ -56,13 +59,13 @@ latest:
 # enable debug logging
 [group('debug')]
 debug-on:
-    echo -e "[agent]\ndebug = true" > /etc/telegraf/telegraf.d/debug.conf
+    sed -ri '/^\[agent\]/{N;s/debug = false/debug = true/}' {{telegraf_conf}}
     systemctl reload telegraf
 
 # disable debug logging
 [group('debug')]
 debug-off:
-    rm -f /etc/telegraf/telegraf.d/debug.conf
+    sed -ri '/^\[agent\]/{N;s/debug = true/debug = false/}' {{telegraf_conf}}
     systemctl reload telegraf
 
 
@@ -80,7 +83,7 @@ metrics-on:
     rotation_max_archives = 0
     data_format = "prometheus"
     EOF
-    telegraf --test --config ((telegraf_conf_root))/telegraf.conf > /dev/null
+    telegraf --test --config {{telegraf_conf}} > /dev/null
     systemctl reload telegraf
 
 # tail prometheus metrics
