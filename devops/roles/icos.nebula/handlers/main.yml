@@ -18,10 +18,7 @@
   notify: restart NetworkManager
 
 # NetworkManager might not be in use.
-- when:
-    - _nm is defined
-    - _nm.status.ActiveState == "active"
-  name: restart NetworkManager
+- name: restart NetworkManager
   systemd:
     name: NetworkManager
     state: restarted
