@@ -1,14 +1,14 @@
 - name: Check status of certificate
-  command: ops-nebula cert-check
+  command: ops-nebula cert-check 60
   changed_when: no
   register: status
 
+  
 
 - name: Cert status
   debug:
     msg: |
       {{status.stdout_lines[0]}}
-
 
 - when: status.stdout_lines[-1] == "need to sign"
   block:
@@ -19,22 +19,23 @@
 
     - delegate_to: localhost
       name: Sign pubkey to create certificate
-      shell: >-
-        nebula-cert sign
-        -in-pub <(echo "{{ newpub.content | b64decode }}")
-        -ip {{ nebula_ip }}{{ nebula_netmask }}
-        -name {{ nebula_hostname }}
-        -out-crt crt.sign
-        && cat crt.sign
-        && rm crt.sign
-      register: signedcert
-      args:
-        # we need bash for <()
-        executable: /bin/bash
+      expect:
         # use fileglob to search for the nebula certificate directory, then
         # use it as chdir in order to automatically pick up ca.crt
         chdir: >-
           {{ lookup('fileglob', nebula_cert_files + '/ca.key') | dirname }}
+        command: >-
+          /bin/bash -c 'nebula-cert sign
+          -in-pub <(echo "{{ newpub.content | b64decode }}")
+          -ip {{ nebula_ip }}{{ nebula_netmask }}
+          -name {{ nebula_hostname }}
+          -out-crt crt.sign
+          && cat crt.sign
+          && rm crt.sign'
+        # We default to an empty passphrase; so people with c
+        responses:
+          "Enter passphrase: ": "{{ nebula_passphrase | default ('') }}"
+      register: signedcert
 
     - name: Write signed certificate
       copy:

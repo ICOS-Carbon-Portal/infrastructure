@@ -12,8 +12,8 @@
 - import_tasks: just.yml
   tags: nebula_just
 
-- import_tasks: certificate.yml
-  tags: nebula_certificate
+- import_tasks: cert.yml
+  tags: nebula_cert
 
 - import_tasks: iptables.yml
   tags: nebula_iptables
