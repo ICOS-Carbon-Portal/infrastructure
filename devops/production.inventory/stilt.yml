@@ -6,6 +6,7 @@ stiltcluster_hosts:
 
   hosts:
     fsicos4-stiltcluster:
+      stiltcluster_maxcores: 95
       stilt_input_dir: /data/stilt/Input
       stiltcluster_maxcores: 50
 
@@ -16,6 +17,8 @@ stiltcluster_hosts:
     icos1:
       stilt_input_dir: /data/stilt/Input
       stilt_input_mount: True
+      # The machine has 24
+      stiltcluster_maxcores: 20
 
     # fsicos3.lunarc.lu.se:
     #   stiltrun_user: stiltcluster
