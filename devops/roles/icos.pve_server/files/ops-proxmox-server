@@ -1,0 +1,19 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+just := "ops-proxmox-server"
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# make vm start on boot
+onboot name:
+    @qm set $(qm list | perl -anE 'say $F[0] if $F[1] eq "{{name}}"') --onboot 1
+
+# list virtual machines and whether they autostart
+onboot-list:
+    @qm list | tail +2 | perl -anE \
+    'printf "%-30s%sboot\n", $F[1],`qm config $F[0]`=~/onboot/ ? "" : "no "'
