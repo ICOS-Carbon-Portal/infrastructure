@@ -43,3 +43,24 @@
         dhcp-option={{ dnsmasq_interface }},3,10.10.10.1
 
         dhcp-leasefile=/var/lib/misc/dnsmasq.{{ dnsmasq_interface }}.leases
+
+    # rsync -x -avz --progress ./ rsync://fsicos4.nebula/data/flexpart/
+    - role: icos.rsyncd
+      tags: rsyncd
+      rsyncd_enable: true
+      rsyncd_users:
+        - name: root
+      rsyncd_conf: |
+        # only accept rsync on nebula interface
+        address = fsicos4.nebula
+
+        [data]
+        # run this module as root instead of nobody
+        uid = root
+        gid = *
+        comment = /tank/data
+        path = /tank/data
+        auth users = root:rw
+        numeric ids
+        secrets file = /etc/rsyncd.secrets
+        hosts allow = fsicos2.nebula,fsicos3.nebula,icos1.nebula
