@@ -27,3 +27,7 @@ upgrade *args:
 # show facts about a host
 facts host:
     ansible {{host}} -m setup
+
+# edit the vault
+vault:
+    EDITOR=emacsclient ansible-vault edit group_vars/all/vault.yml
