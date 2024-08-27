@@ -6,6 +6,9 @@
     - role: icos.caddy
       tags: caddy
 
+    - role: icos.pve_server
+      tags: pve_server
+
     - role: icos.utils
       tags: utils
 
