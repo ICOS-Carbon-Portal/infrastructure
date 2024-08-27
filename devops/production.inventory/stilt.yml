@@ -6,7 +6,6 @@ stiltcluster_hosts:
 
   hosts:
     fsicos4-stiltcluster:
-      stiltcluster_maxcores: 95
       stilt_input_dir: /data/stilt/Input
       stiltcluster_maxcores: 50
 
