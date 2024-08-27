@@ -6,6 +6,7 @@
     certbot_name: erddap
     certbot_domains:
       - erddap.icos-cp.eu
+      - test-erddap.icos-cp.eu
       - bluecloud.icos-cp.eu
   pre_tasks:
     - name: Create erddap storage pool
@@ -68,12 +69,6 @@
     - role: icos.lxd_guest
       tags: guest
 
-    - role: icos.superuser
-      tags: superuser
-      superuser_disable_coredump: true
-      superuser_list:
-        - name: ubuntu
-          key: "{{ vault_erddap_ssh_keys }}"
   tasks:
     - name: Print ssh config
       tags: howto
