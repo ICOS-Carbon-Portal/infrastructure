@@ -53,21 +53,8 @@
 - import_role: name=icos.docker_utils
   tags: docker_utils
 
-# A simple test that still manages to check a number of things including
-# daemons, sockets, network access etc.
-- name: Test that docker can pull and execute images
-  shell: |
-    docker run --rm alpine apk | grep -q coffee
-  register: _apk
-  changed_when: false
-
-- name: Report docker status
-  debug:
-    msg: |
-      Successfully ran an alpine image in {{ _apk.delta }}. It should take
-      1-10 seconds, depending on whether the alpine image exists locally or
-      not
-
+- import_tasks: test.yml
+  tags: docker_test
 
 - import_tasks: just.yml
   tags: docker_just
