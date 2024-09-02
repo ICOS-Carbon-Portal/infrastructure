@@ -40,6 +40,12 @@
       # 2023-07. Installing docker-compose-plugin gives us V2.
       - docker-compose-plugin
 
+- name: Make sure docker is started
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
 - name: Install docker configuration
   copy:
     src: daemon.json
