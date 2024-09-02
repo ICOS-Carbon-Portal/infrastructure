@@ -46,6 +46,10 @@
     dest: /etc/docker/
   notify: reload docker
 
+- import_tasks: cleanup.yml
+  tags: docker_cleanup
+  when: docker_periodic_cleanup
+
 - import_role: name=icos.docker_utils
   tags: docker_utils
 
