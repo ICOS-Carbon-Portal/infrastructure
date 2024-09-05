@@ -9,6 +9,14 @@
     name: Europe/Stockholm
   notify: restart cron
 
+- name: Generate locale
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - en_US.UTF-8
+    - sv_SE.UTF-8
+
 # The root keys should have been set when creating the VM. If the root keys
 # change however, this task will update them.
 - name: Install public keys
