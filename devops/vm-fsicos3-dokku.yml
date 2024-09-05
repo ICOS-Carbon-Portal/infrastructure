@@ -13,6 +13,14 @@
       # for that version.
       lxd_vm_ubuntu_version: "22.04"
 
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: dokku
+      nginxsite_file: templates/dokku-nginx.conf
+      dokku_domains:
+        - '*.fsicos3.icos-cp.eu'
+      dokku_proxy_host: dokku.lxd
+      dokku_proxy_port: 80
 
 - hosts: dokku
   roles:
@@ -24,4 +32,3 @@
 
     - role: icos.dokku
       tags: dokku
-      dokku_hostname: app.fsicos3.icos-cp.eu
