@@ -1,19 +1,8 @@
-- name: Install fail2ban
-  apt:
-    name: fail2ban
-    state: present
+- import_tasks: setup.yml
+  tags: fail2ban_setup
 
-- name: Enable fail2ban
-  service:
-    name: fail2ban
-    state: started
-    enabled: yes
+- import_tasks: just.yml
+  tags: fail2ban_just
 
-- name: Create fail2ban config files
-  copy:
-    dest: "{{ item.dest }}"
-    content: "{{ item.content }}"
-  loop: "{{ fail2ban_config_files }}"
-  loop_control:
-    label: "{{ item.dest }}"
-  notify: fail2ban reload
+- import_tasks: config.yml
+  tags: fail2ban_config

@@ -1,0 +1,97 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+#
+# https://github.com/fail2ban/fail2ban/wiki/Proper-fail2ban-configuration
+
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+editor := env_var_or_default("EDITOR", "mg")
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+
+# MISC
+# show status of fail2ban
+[group('misc')]
+status *jail="":
+    fail2ban-client status {{jail}}
+
+# reload configuration
+[group('misc')]
+reload:
+    fail2ban-client reload
+
+# tail logfile
+[group('misc')]
+tail:
+    tail -f /var/log/fail2ban.log
+
+# dump configuration
+[group('misc')]
+dump-config:
+    fail2ban-client -d
+
+
+# show local filters and jails
+[group('misc')]
+locals:
+    @ls /etc/fail2ban/filter.d/*.local 2>/dev/null || echo "No local filters."
+    @ls /etc/fail2ban/jail.d/*.local 2>/dev/null || echo "No local jails."
+
+
+
+# CUSTOM JAILS
+# create a new custom jail
+[group('jail')]
+jail-create name filtername logpath:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    file=/etc/fail2ban/jail.d/{{name}}.local
+    if [[ ! -f $file ]]; then
+      cat >> $file <<EOF
+    # remember to "ops-failban reload"
+    [{{name}}]
+    enabled = true
+    port    = smtp
+    filter  = {{filtername}}
+    logpath = {{logpath}}
+    maxretry = 1
+    bantime  = 1h
+    EOF
+    fi
+    {{editor}} $file
+
+# edit a custom jail
+[group('jail')]
+jail-edit name:
+    {{editor}} /etc/fail2ban/jail.d/{{name}}.local
+
+
+
+# CUSTOM FILTERS
+# test a regex against logfiles
+[group('filter')]
+regex-test logfile regex:
+    fail2ban-regex {{logfile}}  '{{regex}}'
+
+# save regex to a named filter file
+[group('filter')]
+regex-save regex filtername:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    cat >> /etc/fail2ban/filter.d/{{filtername}}.local <<EOF
+    [Definition]
+    failregex = {{regex}}
+    EOF
+
+# test a saved regex against logfile
+[group('filter')]
+filter-test logfile filtername:
+    fail2ban-regex {{logfile}} {{filtername}}
+
+# edit a save filter
+[group('filter')]
+filter-edit filtername:
+    {{editor}} /etc/fail2ban/filter.d/{{filtername}}.local
