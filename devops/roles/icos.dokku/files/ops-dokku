@@ -1,0 +1,28 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+
+# MISC
+# show installed version of dokku
+[group('misc')]
+version:
+    dokku --version
+    
+# show important config
+[group('misc')]
+config:
+    dokku domains:report --global
+
+
+
+# LOGS
+# tail all the logs
+[group('logs')]
+logs-all:
+    tail -f /var/log/dokku/*.log /var/log/dokku/apps/*.log /var/log/nginx/*.log

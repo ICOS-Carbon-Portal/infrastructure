@@ -1,11 +1,8 @@
 - name: Copy justfile
-  template:
+  copy:
     src: ops-dokku
-    dest: "/usr/local/bin/"
+    dest: "/usr/local/bin/ops-dokku"
     mode: +x
-    variable_start_string: "(("
-    variable_end_string: "))"
-    lstrip_blocks: yes
   register: _justfile
 
 - name: Check that the justfile is executable

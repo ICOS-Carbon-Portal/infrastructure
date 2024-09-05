@@ -15,10 +15,9 @@
     repo: >-
       deb [signed-by={{ _key.dest }}] https://packagecloud.io/dokku/dokku/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main
 
+
 - name: Install dokku
   apt:
-    # update_cache: yes
-    # install_recommends: no
     name:
       - dokku
       
