@@ -5,15 +5,14 @@
   loop:
     - nginxsite_name
 
-- name: Remove symlink to sites-enabled
+- name: Remove config file
   file:
-    dest: "{{ nginxsite_path_enable }}"
+    dest: "{{ item }}"
     state: absent
-
-- name: Remove config
-  file:
-    dest: "{{ nginxsite_path_available }}"
-    state: absent
+  loop:
+    - "{{ nginxsite_path_enable }}"
+    - "{{ nginxsite_path_available }}"
+    - "{{ nginxsite_path_confd }}"
 
 - name: Reload nginx
   systemd:

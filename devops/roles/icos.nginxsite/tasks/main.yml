@@ -1,66 +1,13 @@
-- name: Create certificates
-  tags: nginxsite_cert
-  include_role:
-    name: icos.certbot2
-    apply: {tags: nginxsite_cert}
-    public: true
-  when: nginxsite_domains is defined
+- name: make sure we understand nginxsite_state
+  assert:
+    that: nginxsite_state in ['present', 'absent']
 
-- name: Create basic auth users
-  tags: nginxsite_users
-  include_role:
-    name: icos.nginxauth
-    apply: {tags: nginxsite_users}
-    public: true
-  when: nginxsite_users is defined
+- name: add site
+  include_tasks:
+    file: present.yml
+  when: nginxsite_state == 'present'
 
-- block:
-    - name: Copy config
-      template:
-        src: "{{ nginxsite_file }}"
-        dest: "{{ nginxsite_path_confd }}"
-        backup: true
-      register: update
-
-    - name: Remove old config file from sites-available
-      file:
-        dest: "{{ nginxsite_path_available }}"
-        state: absent
-
-    - name: Remove old symlink sites-enabled
-      file:
-        dest: "{{ nginxsite_path_enable }}"
-        state: absent
-
-    - name: Check syntax
-      # noqa: command-instead-of-shell
-      shell: nginx -t
-      changed_when: false
-
-    - name: Reload nginx
-      systemd:
-        name: nginx
-        state: reloaded
-      changed_when: false
-
-  rescue:
-    - name: Restore old config
-      copy:
-        remote_src: true
-        dest: "{{ update.dest }}"
-        src: "{{ update.backup_file }}"
-      when: update.backup_file is defined
-
-    - name: Remove broken config
-      file:
-        path: "{{ update.dest }}"
-        state: absent
-      when: update.backup_file is not defined
-
-  always:
-    - name: Remove backup file
-      file:
-        path: "{{ update.backup_file }}"
-        state: absent
-      changed_when: false
-      when: update.backup_file is defined
+- name: remove site
+  include_tasks:
+    file: absent.yml
+  when: nginxsite_state == 'absent'
