@@ -35,8 +35,8 @@ down:
 
 # tail the logs
 [group('docker')]
-tail:
-    {{dc}} logs -f
+tail *args:
+    {{dc}} logs --tail=10 -f "$@"
 
 # start lazydocker
 [group('docker')]
@@ -71,6 +71,10 @@ folder-id id:
 [group('nextcloud')]
 active:
      {{occ}} user:list --info
+
+# tail the nextcloud logs
+occ-tail *args:
+    {{occ}} log:tail "$@"
 
 
 
