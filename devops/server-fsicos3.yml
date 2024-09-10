@@ -13,3 +13,6 @@
 
     - role: icos.podman
       tags: podman
+
+    - role: ops.zfs
+      tags: zfs
