@@ -53,4 +53,4 @@ natstop_url_map:
   "armv6l": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-armv6.deb"
   "armv7l": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-armv7.deb"
   "aarch64": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-arm64.deb"
-  "x86_64": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-x86_64.deb"
+  "x86_64": "https://github.com/nats-io/nats-top/releases/download/v{{natstop_version}}/nats-top-v{{natstop_version}}-linux-x86_amd64.deb"
