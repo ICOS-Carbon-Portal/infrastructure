@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-#
 # Sync (by hardlinking!) stilt data from new-style slot-based directory layout
 # - as used by stiltweb - to the classic stilt layout.
 #
@@ -14,23 +12,16 @@
 # as a systemd service, triggered by a timer - this way one can have access to
 # newly computed stilt data in the old-style layout.
 
-
-import argparse
 import collections
 import os
 import re
 import sys
 from concurrent import futures
 
-NEW_ROOT = "{{ stiltweb_statedir }}"
-OLD_ROOT = "{{ stiltweb_stiltdir }}"
-STATION_DIR = os.path.join(NEW_ROOT, "stations")
-DEBUG = True
+import click
 
 
 # UTILS
-
-
 def die(msg):
     print(msg, file=sys.stderr)
     sys.exit(1)
@@ -53,15 +44,14 @@ def same_fs(path1, path2):
 
 
 # CREATE STATION OBJECTS
-
 Station = collections.namedtuple("Station", ["name", "path", "pos"])
 
 
-def station_from_name(name, sdir=STATION_DIR):
+def station_from_name(name, newroot):
     # /disk/data/stiltweb/stations/PUI
-    path = os.path.join(sdir, name)
+    path = os.path.join(newroot, "stations", name)
     if not os.path.exists(path):
-        die("Could not find the '%s' station in %s" % (name, sdir))
+        die(f"Could not find the '{path.name}' station in {path.parent}")
     # /disk/data/stiltweb/slots/62.91Nx027.66Ex00176
     real = os.path.realpath(path)
     # 62.91Nx027.66Ex00176
@@ -69,9 +59,10 @@ def station_from_name(name, sdir=STATION_DIR):
     return Station(name, real, pos)
 
 
-def list_stations(sdir=STATION_DIR):
+def list_stations(newroot):
+    sdir = os.path.join(newroot, "stations")
     if not os.path.isdir(sdir):
-        die('Expected "%s" to be a directory with station symlinks!' % sdir)
+        die(f'Expected "{sdir}" to be a directory with station symlinks!')
     for elt in os.scandir(sdir):
         # elt.path == '/disk/data/stiltweb/stations/PUI'
         # elt.name == 'PUI'
@@ -84,8 +75,6 @@ def list_stations(sdir=STATION_DIR):
 
 
 # LIST SLOTS
-
-
 def list_slots(station):
     for year in os.scandir(station.path):
         if not (year.is_dir() and re.match("[0-9]+", year.name)):
@@ -100,15 +89,14 @@ def list_slots(station):
 
 
 # SYNC A STATION
-
 SyncResult = collections.namedtuple(
     "SyncResult", ["station", "nslots", "nsyncd", "slotnames"]
 )
 
 
-def sync_station(station, dryrun=True, old_root=OLD_ROOT):
-    fp_dir = os.path.join(old_root, "Footprints", station.name)
-    rd_dir = os.path.join(old_root, "RData", station.name)
+def sync_station(oldroot, station, dryrun):
+    fp_dir = os.path.join(oldroot, "Footprints", station.name)
+    rd_dir = os.path.join(oldroot, "RData", station.name)
 
     if os.path.exists(fp_dir):
         fp_files = {e.path for e in os.scandir(fp_dir)}
@@ -137,14 +125,14 @@ def sync_station(station, dryrun=True, old_root=OLD_ROOT):
     for month, slot in list_slots(station):
         nslots += 1
         # e.g '2007x12x29x12x69.28Nx016.01Ex00005'
-        datepos = "%sx%s" % (slot.name, station.pos)
+        datepos = f"{slot.name}x{station.pos}"
         didsync = False
         for old_name, old_dir, old_files, new_name in new2old:
             old_path = os.path.join(old_dir, old_name % datepos)
             if old_path in old_files:
                 continue
             new_path = os.path.join(month, slot, new_name)
-            assert old_path.startswith(old_root)
+            assert old_path.startswith(oldroot)
             if not dryrun:
                 os.link(new_path, old_path)
             didsync = True
@@ -154,13 +142,13 @@ def sync_station(station, dryrun=True, old_root=OLD_ROOT):
     return SyncResult(station, nslots, nsyncd, slotnames)
 
 
-def sync_all_stations(stations, dryrun=True, verbose=True):
+def sync_all_stations(newroot, oldroot, stations, dryrun, verbose):
     print("Syncing %d stations." % (len(stations)))
     nsyncd = 0
     with futures.ProcessPoolExecutor() as executor:
         todos = {}
         for station in stations:
-            future = executor.submit(sync_station, station, dryrun)
+            future = executor.submit(sync_station, oldroot, station, dryrun)
             todos[future] = station
         for future in futures.as_completed(todos):
             station = todos[future]
@@ -187,45 +175,38 @@ def sync_all_stations(stations, dryrun=True, verbose=True):
 
 
 # MAIN
+@click.command()
+@click.argument(
+    "newroot",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
+)
+@click.argument(
+    "oldroot",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
+)
+@click.argument("restrict", nargs=-1)
+@click.option("--sync", is_flag=True, help="Really sync. Default is a dry run.")
+@click.option(
+    "--verbose", is_flag=True, help="Output every single slot that needs syncing"
+)
+def cli(newroot, oldroot, restrict, sync, verbose):
+    """Sync slots from new (stiltweb) to old directory style.
 
+    \b
+    NEWROOT	Stiltweb directory
+    OLDROOT	Directory with old-style stilt files
+    RESTRICT	Only sync these stations (instead of all)
+    """
 
-def cli():
-    assert os.path.isdir(NEW_ROOT)
-    assert os.path.isdir(OLD_ROOT)
-
-    if not same_fs(NEW_ROOT, OLD_ROOT):
-        die("%s and %s needs to be on the same filesystem" % (NEW_ROOT, OLD_ROOT))
+    if not same_fs(newroot, oldroot):
+        die(f"{newroot} and {oldroot} needs to be on the same filesystem")
 
     if os.getuid() == 0:
         die("Refusing to run as root, please run as the stiltweb user")
 
-    p = argparse.ArgumentParser(
-        description="Sync slots from %s to %s." % (NEW_ROOT, OLD_ROOT)
-    )
-    p.add_argument(
-        "stations",
-        metavar="STATIONS",
-        type=str,
-        nargs="*",
-        help="Which stations to sync. Default is all stations",
-    )
-    p.add_argument(
-        "--sync",
-        dest="dryrun",
-        action="store_false",
-        help="Really sync. Default is a dry run.",
-    )
-    p.add_argument(
-        "--verbose",
-        dest="verbose",
-        action="store_true",
-        help="Output every single slot that needs syncing.",
-    )
-
-    args = p.parse_args()
-    if args.stations:
-        stations = [station_from_name(n) for n in args.stations]
+    if restrict:
+        stations = [station_from_name(n, newroot) for n in restrict]
     else:
-        stations = list(list_stations())
+        stations = list(list_stations(newroot))
 
-    sync_all_stations(stations, args.dryrun, args.verbose)
+    sync_all_stations(newroot, oldroot, stations, not sync, verbose)
