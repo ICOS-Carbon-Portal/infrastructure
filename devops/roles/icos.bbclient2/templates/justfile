@@ -1,0 +1,50 @@
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# show last time the timer ran
+last:
+    systemctl list-timers "bbclient-{{{{ bbclient_name }}}}*"
+
+# tail the systemd logs
+tail *args:
+    {% if bbclient_timer_content is defined %}
+    journalctl -fu bbclient-{{{{ bbclient_name }}}}
+    {% elif bbclient_coldbackup is defined %}
+    journalctl -fu bbclient-{{{{ bbclient_name }}}}-coldbackup
+    {% else %}
+    echo "no bbclient timer defined"
+    exit 1
+    {% endif %}
+
+# start the bbclient systemd service
+run:
+    {% if bbclient_timer_content is defined %}
+    systemctl start bbclient-{{{{ bbclient_name }}}}
+    {% elif bbclient_coldbackup is defined %}
+    systemctl start bbclient-{{{{ bbclient_name }}}}-coldbackup
+    {% else %}
+    echo "no bbclient timer defined"
+    exit 1
+    {% endif %}
+
+# status of bbclient systemd service
+status *args=("-n 100"):
+    {% if bbclient_timer_content is defined %}
+    -systemctl status bbclient-{{{{ bbclient_name }}}} "$@"
+    {% elif bbclient_coldbackup is defined %}
+    -systemctl status bbclient-{{{{ bbclient_name }}}}-coldbackup "$@"
+    {% else %}
+    echo "no bbclient timer defined"
+    {% endif %}
+
+# locate cache of a named directory
+find-cache name:
+    grep {{name}} {{{{bbclient_home}}}}/borg/.config/borg/security/*/manifest-timestamp
+
+# try to work around "cache is newer"
+reset-cache id:
+    rm  {{{{bbclient_home}}}}/borg/.config/borg/security/{{id}}/manifest-timestamp

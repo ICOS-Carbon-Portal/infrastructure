@@ -36,3 +36,6 @@
   tags: bbclient_timer
   when:
     - bbclient_timer_content is defined
+
+- import_tasks: just.yml
+  tags: bbclient_just

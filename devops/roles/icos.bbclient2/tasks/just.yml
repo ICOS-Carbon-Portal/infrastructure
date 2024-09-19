@@ -1,0 +1,7 @@
+- name: Copy justfile
+  template:
+    src: justfile
+    dest: "{{ bbclient_home }}/"
+    variable_start_string: "{{ '{{{{' }}"
+    variable_end_string: "{{ '}}}}' }}"
+    lstrip_blocks: yes
