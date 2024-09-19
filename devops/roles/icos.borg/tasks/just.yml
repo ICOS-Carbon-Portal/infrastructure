@@ -1,0 +1,10 @@
+- name: Copy ops-borg
+  copy:
+    src: ops-borg
+    dest: /usr/local/bin/ops-borg
+    mode: +x
+  register: _justfile
+
+- name: Check that the justfile is executable
+  shell: "{{ _justfile.dest }}"
+  changed_when: no
