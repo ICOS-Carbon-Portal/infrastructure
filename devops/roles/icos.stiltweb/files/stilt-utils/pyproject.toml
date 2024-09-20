@@ -11,10 +11,10 @@ dependencies = [
 ]
 
 [project.scripts]
-stilt-sync-csv-files = 'stilt_utils.sync_csv_files:cli'
-stilt-sync-stilt-to-stiltweb = 'stilt_utils.sync_stilt_to_stiltweb:cli'
-stilt-sync-stiltweb-to-stilt = 'stilt_utils.sync_stiltweb_to_stilt:cli'
-stilt-find-missing-csv-files = 'stilt_utils.find_missing_csv_files:cli'
+sync-csv-files = 'stilt_utils.sync_csv_files:cli'
+sync-stilt-to-stiltweb = 'stilt_utils.sync_stilt_to_stiltweb:cli'
+sync-stiltweb-to-stilt = 'stilt_utils.sync_stiltweb_to_stilt:cli'
+find-missing-csv-files = 'stilt_utils.find_missing_csv_files:cli'
 
 [tool.hatch.envs.default]
 dependencies = [

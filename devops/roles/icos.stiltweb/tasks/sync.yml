@@ -18,7 +18,7 @@
         User={{ stiltweb_username }}
         WorkingDirectory={{ stiltweb_home }}
 
-        ExecStart={{ stiltweb_bindir }}/sync-stiltweb-to-stilt.py --sync
+        ExecStart={{ stiltweb_bindir }}/stilt-sync-stiltweb-to-stilt --sync
         # Since this service might run often and since it spawn a lot of
         # parallel processes we use niceness to avoid disrupting other services.
         Nice=10
