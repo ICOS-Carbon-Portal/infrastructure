@@ -1,56 +1,17 @@
 # This file installs the script/service/timer needed to keep the new-style and
 # old-style stilt directory structures in sync (by hardlinking them).
 
-- name: Install stiltweb->stilt sync script
-  template:
-    src: sync-stiltweb-to-stilt.py
-    dest: "{{ stiltweb_bindir }}/sync-stiltweb-to-stilt.py"
-    mode: 0755
-    owner: "{{ stiltweb_username }}"
-    group: "{{ stiltweb_username }}"
-
-
-- name: Install stiltweb->stilt sync service
-  copy:
-    dest: /etc/systemd/system/sync-stiltweb-to-stilt.service
-    content: |
-        [Service]
-        User={{ stiltweb_username }}
-        WorkingDirectory={{ stiltweb_home }}
-
-        ExecStart={{ stiltweb_bindir }}/stilt-sync-stiltweb-to-stilt --sync
-        # Since this service might run often and since it spawn a lot of
-        # parallel processes we use niceness to avoid disrupting other services.
-        Nice=10
-
-        [Unit]
-        Description=Sync slots from stiltweb to classic stilt
-  notify: reload systemd config
-
-
-- name: Install stiltweb->stilt timer
-  copy:
-    dest: /etc/systemd/system/sync-stiltweb-to-stilt.timer
-    content: |
-        [Timer]
-        OnBootSec=15min
-        OnUnitActiveSec=15min
-
-        [Unit]
-        Description=Periodically sync stiltweb->stilt
-
-        [Install]
-        WantedBy=timers.target
-  notify: reload systemd config
-
-- name: Enable sync service
-  systemd:
-    name: sync-stiltweb-to-stilt.service
-    state: started
-    enabled: true
-
-- name: Enable sync service timer
-  systemd:
-    name: sync-stiltweb-to-stilt.timer
-    state: started
-    enabled: true
+- name: Install sitltweb->stilt sync service
+  include_role:
+    name: icos.timer
+    apply:
+      tags: stiltweb_sync
+  vars:
+    timer_exec: "{{ stiltweb_bindir }}/sync-stiltweb-to-stilt --sync"
+    timer_user: "{{ stiltweb_username }}"
+    timer_name: sync-stiltweb-to-stilt
+    timer_conf: |
+      OnBootSec=15min
+      OnUnitActiveSec=15min
+    timer_envs:
+      - PYTHONUNBUFFERED=1
