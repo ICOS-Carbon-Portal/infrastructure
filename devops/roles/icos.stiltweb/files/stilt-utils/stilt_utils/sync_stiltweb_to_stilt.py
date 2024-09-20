@@ -71,7 +71,11 @@ def list_stations(newroot):
             path = os.path.realpath(elt)
             # 62.91Nx027.66Ex00176
             pos = os.path.basename(path)
-            yield Station(elt.name, path, pos)
+            if not os.path.exists(path):
+                print(f"{elt} is a symlink to {path} - which doesn't exist!",
+                      file=sys.stderr)
+            else:
+                yield Station(elt.name, path, pos)
 
 
 # LIST SLOTS
@@ -208,5 +212,6 @@ def cli(newroot, oldroot, restrict, sync, verbose):
         stations = [station_from_name(n, newroot) for n in restrict]
     else:
         stations = list(list_stations(newroot))
+
 
     sync_all_stations(newroot, oldroot, stations, not sync, verbose)
