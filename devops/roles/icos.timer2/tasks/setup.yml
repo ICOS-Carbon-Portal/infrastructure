@@ -1,0 +1,43 @@
+- name: Don't create timer script in /etc/systemd/system
+  assert:
+    that: timer_home != "/etc/systemd/system"
+  changed_when: no
+  when: timer_content is defined
+
+- name: Create home directory
+  file:
+    path: "{{ timer_home }}"
+    state: directory
+
+- name: Create timer script
+  copy:
+    dest: "{{ timer_dest }}"
+    mode: +x
+    content: "{{ timer_content }}"
+  when: timer_content is defined
+
+- name: Create systemd timer
+  copy:
+    dest: "{{ _timer_sysd_timer }}"
+    content: "{{ timer_config }}"
+  notify: restart icos timer
+
+- name: Create systemd service
+  copy:
+    dest: "{{ _timer_sysd_service }}"
+    content: "{{ timer_service }}"
+
+- name: Link systemd files
+  when: timer_home != "/etc/systemd/system"
+  # noqa: command-instead-of-module
+  command:  systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}
+  register: _r
+  failed_when: _r.rc != 0
+  changed_when: '"Created" in _r.stdout'
+
+- name: Start timer
+  systemd:
+    name: "{{ timer_name }}.timer"
+    enabled: yes
+    state: "{{ timer_state }}"
+    daemon_reload: yes

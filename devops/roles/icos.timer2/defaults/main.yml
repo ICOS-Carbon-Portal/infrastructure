@@ -1,0 +1,14 @@
+# by default we install the timer and services here
+timer_home: /etc/systemd/system
+
+# if timer_content is defined; then it's the contents of a script that is
+# stored in this destination
+timer_dest: "{{ timer_home }}/{{ timer_name }}"
+
+# the paths to the systemd unit files.
+_timer_sysd_timer: "{{ timer_home }}/{{ timer_name }}.timer"
+_timer_sysd_service: "{{ timer_home }}/{{ timer_name }}.service"
+
+# default is to start the timer immediately; during development that might not
+# be prudent.
+timer_state: started
