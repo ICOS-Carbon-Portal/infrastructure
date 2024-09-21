@@ -4,14 +4,28 @@ set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
 editor := env_var_or_default("EDITOR", "emacsclient --no-wait")
-inventory := "production"
+export ANSIBLE_INVENTORY := "inventory.inventory"
 
-export ANSIBLE_INVENTORY := inventory + ".inventory"
 
+# META
 @_default:
     just --unstable --list --unsorted --justfile {{justfile()}}
 
+# have to use a shim in order to get working directory right
+@_install dest="~/.local/bin/icos":
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    cat > {{dest}} <<EOF
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    cd {{ justfile_directory() }}
+    just --unstable "\$@"
+    EOF
+    chmod +x {{dest}}
 
+
+
+# RECIPIES
 # run a playbook
 play playbook *args:
     ansible-playbook {{playbook}}.yml {{args}}
