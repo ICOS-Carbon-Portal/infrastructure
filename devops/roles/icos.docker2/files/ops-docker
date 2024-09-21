@@ -25,3 +25,39 @@ ports name:
     ss -tulpn > $outside
     nsenter -t $pid -n ss -tulpn > $inside
     diff $outside $inside || :
+
+
+# https://github.com/jpetazzo/nsenter/blob/master/docker-enter
+# https://github.com/jpetazzo/nsenter/commit/3d5dfca3e2cf670210ddebeb1837c4eabc0c46f8#
+# This script does the same thing as 'docker exec' but with the added benefit
+# of ignoring cgroups.
+# "docker exec" but ignores cgroups
+exec container *args:
+    #!/usr/bin/bash
+    set -Eeo pipefail
+    PID=$(docker inspect --format {{ '"{{.State.Pid}}"' }} "$1")
+    [ -z "$PID" ] && exit 1
+    shift
+
+    if [ "$(id -u)" -ne "0" ]; then
+        which sudo > /dev/null
+        if [ "$?" -eq "0" ]; then
+          LAZY_SUDO="sudo "
+        else
+          echo "Warning: Cannot find sudo; Invoking nsenter as the user $USER." >&2
+        fi
+    fi
+
+    # Get environment variables from the container's root process
+    ENV=$($LAZY_SUDO cat /proc/$PID/environ | xargs -0 | grep =)
+
+    # Prepare nsenter flags
+    OPTS="--target $PID --mount --uts --ipc --net --pid --"
+
+    # env(1) is to clear all host environment variables and set then anew
+    # No arguments, default to `su` which executes the default login shell
+    if [ $# -lt 1 ]; then
+        $LAZY_SUDO nsenter $OPTS env -i - $ENV su -m root
+    else
+        $LAZY_SUDO nsenter $OPTS env -i - $ENV "$@"
+    fi
