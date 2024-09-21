@@ -62,6 +62,7 @@ exec container *args:
         $LAZY_SUDO nsenter $OPTS env -i - $ENV "$@"
     fi
 
+
 # extract file/dir from container/image 
 extract *args:
     #!/usr/bin/bash
@@ -101,3 +102,15 @@ extract *args:
         exit 1
     fi
     
+
+# show ancestry of image
+lineage image:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    docker history -q "{{image}}" | grep -v '<missing>' | \
+    while read -r id
+    do
+        docker inspect --type=image "$id" \
+            | jq '.[0] | { RepoTag: .RepoTags[0], Parent }';
+    done
+
