@@ -7,31 +7,14 @@ set shell := ['/bin/bash', '-cu']
     just --list --unsorted --justfile {{justfile()}}
 
 
-# list CMD and entrypoint of object
-entrypoint object:
-   @docker inspect --format \
-   "{{ 'ENTRYPOINT:{{ range .Config.Entrypoint }} {{.}}{{ end }}
-CMD:{{ range .Config.Cmd }} {{.}}{{ end }}'}}" "{{object}}"
 
-
-# diff for ports between host and container
-ports name:
-    #!/usr/bin/bash
-    set -Eueo pipefail
-    pid=$(docker inspect -f {{ '{{.State.Pid}}' }} {{name}})
-    inside=$(mktemp)
-    outside=$(mktemp)
-    trap 'rm -f $inside $outside' EXIT
-    ss -tulpn > $outside
-    nsenter -t $pid -n ss -tulpn > $inside
-    diff $outside $inside || :
-
-
+# RUN
 # https://github.com/jpetazzo/nsenter/blob/master/docker-enter
 # https://github.com/jpetazzo/nsenter/commit/3d5dfca3e2cf670210ddebeb1837c4eabc0c46f8#
 # This script does the same thing as 'docker exec' but with the added benefit
 # of ignoring cgroups.
 # "docker exec" but ignores cgroups
+[group('run')]
 exec container *args:
     #!/usr/bin/bash
     set -Eeo pipefail
@@ -63,7 +46,33 @@ exec container *args:
     fi
 
 
-# extract file/dir from container/image 
+# NETWORK
+# diff for ports between host and container
+[group('network')]
+ports name:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    pid=$(docker inspect -f {{ '{{.State.Pid}}' }} {{name}})
+    inside=$(mktemp)
+    outside=$(mktemp)
+    trap 'rm -f $inside $outside' EXIT
+    ss -tulpn > $outside
+    nsenter -t $pid -n ss -tulpn > $inside
+    diff $outside $inside || :
+
+# list allcontainer IDs along with their ip addresses
+[group('network')]
+ips:
+    docker ps \
+        | awk 'NR > 1 {print $1 }' \
+        | xargs -rn 1 \
+                docker inspect -f {{ "'{{ .Name }} {{ range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'" }}
+
+
+
+# FILES
+# extract file/dir from container/image
+[group('files')]
 extract *args:
     #!/usr/bin/bash
     set -Eueo pipefail
@@ -101,9 +110,20 @@ extract *args:
         echo "'$1' is neither a container nor an image."
         exit 1
     fi
-    
+
+
+
+# IMAGE
+# list CMD and entrypoint of object
+[group('inspect')]
+entrypoint object:
+   @docker inspect --format \
+   "{{ 'ENTRYPOINT:{{ range .Config.Entrypoint }} {{.}}{{ end }}
+CMD:{{ range .Config.Cmd }} {{.}}{{ end }}'}}" "{{object}}"
+
 
 # show ancestry of image
+[group('inspect')]
 lineage image:
     #!/usr/bin/bash
     set -Eueo pipefail
