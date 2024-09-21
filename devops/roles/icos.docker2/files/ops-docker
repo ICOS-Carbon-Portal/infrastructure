@@ -134,3 +134,24 @@ lineage image:
             | jq '.[0] | { RepoTag: .RepoTags[0], Parent }';
     done
 
+
+# Sometimes one wants to inspect a third-party image. Maybe to inspect the
+# entrypoint or to generate a diff for building upon the image.
+# unpack an image to a tmp directory
+[group('inspect')]
+unpack image:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    TAG="{{image}}"
+    # replace : and \ with _
+    TAG=${TAG/:/_}
+    TAG=${TAG/\//_}
+    TMP=$(mktemp -d "/tmp/$TAG.XXXXXX")
+    cd "$TMP"
+
+    NAME="${TMP##*/}"
+    docker run --name "$NAME" --entrypoint=true "$1"
+    trap 'docker rm "$NAME"' EXIT
+
+    echo "unpacking $TAG in $TMP"
+    docker export "$NAME" | tar xf -
