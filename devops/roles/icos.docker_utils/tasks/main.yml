@@ -1,17 +1,3 @@
-- name: Copy docker helper scripts
-  copy:
-    src: "{{ item }}"
-    dest: "/usr/local/sbin/{{ item }}"
-    mode: +x
-  loop:
-    - docker-unpack-image
-    - docker-lineage
-    - docker-list-ips
-    - docker-entrypoint
-    - docker-extract
-    - docker-builds
-    - docker-enter
-
 - when: dive_architecture in ("armv6l", "armv7l")
   name: Architecture is not supported
   debug:
