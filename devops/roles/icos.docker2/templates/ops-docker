@@ -7,6 +7,13 @@ set shell := ['/bin/bash', '-cu']
     just --list --unsorted --justfile {{justfile()}}
 
 
+# list CMD and entrypoint of object
+entrypoint object:
+   @docker inspect --format \
+   "{{ 'ENTRYPOINT:{{ range .Config.Entrypoint }} {{.}}{{ end }}
+CMD:{{ range .Config.Cmd }} {{.}}{{ end }}'}}" "{{object}}"
+
+
 # diff for ports between host and container
 ports name:
     #!/usr/bin/bash
