@@ -38,6 +38,7 @@
 - name: Build and start
   community.docker.docker_compose_v2:
     project_src: "{{ onlyoffice_home }}"
+    build: always
 
 - name: Check that onlyoffice responds - might take a while
   uri:
