@@ -4,7 +4,7 @@ set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
 editor := env_var_or_default("EDITOR", "emacsclient --no-wait")
-export ANSIBLE_INVENTORY := "inventory.inventory"
+export ANSIBLE_INVENTORY := "production.inventory"
 
 
 # META
