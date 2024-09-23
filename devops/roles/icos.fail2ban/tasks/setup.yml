@@ -8,10 +8,3 @@
     name: fail2ban
     state: started
     enabled: yes
-
-- name: Copy sample files
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  loop:
-    - src:
