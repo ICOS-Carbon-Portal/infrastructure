@@ -9,16 +9,14 @@
       lxd_vm_config:
         limits.cpu: "8"
         limits.memory: "64GB"
-      # Even though 24.04 has been out a month, there is no release of dokku
-      # for that version.
-      lxd_vm_ubuntu_version: "22.04"
+      lxd_vm_ubuntu_version: "24.04"
 
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: dokku
       nginxsite_file: templates/dokku-nginx.conf
       dokku_domains:
-        - '*.fsicos3.icos-cp.eu'
+        - '*.dokku.fsicos3.icos-cp.eu'
       dokku_proxy_host: dokku.lxd
       dokku_proxy_port: 80
 
