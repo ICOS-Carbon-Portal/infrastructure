@@ -88,7 +88,7 @@ from a colleague and place it in file `~/.vault_password`.
 
 To develop/build/deploy Scala-based services, install Java with
 
-`$ sudo apt install openjdk-11-jdk`
+`$ sudo apt install openjdk-21-jdk`
 
 and SBT by following the instructions on https://www.scala-sbt.org/
 
