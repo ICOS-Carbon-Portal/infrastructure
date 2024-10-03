@@ -69,11 +69,11 @@ def die(msg):
 
 
 def ip_json(arg):
-    s = check_output(
+    s = check_output( # noqa: S603
         [
             "/usr/sbin/ip",
             "-json",
-            "-details",  # noqa: S603
+            "-details",
             *shlex.split(arg),
         ]
     )
@@ -312,7 +312,7 @@ def cli_show(ctx):
         fwip = name2ip.get(qm.name)
         fwport = ip2port.get(fwip)
         print(
-            f"{qm.name:<15} - configured port {str(qm.port):<5}"
+            f"{qm.name:<15} - configured port {qm.port!s:<5}"
             f" - firewall port {fwport}"
         )
 
@@ -328,7 +328,7 @@ def cli_assign(name, port):
     print(f"assigning port {port} to {name}")
     check_call([CMD_QM, "set", vmid, "--description", f"port {port}"])  # noqa:S603
 
-    
+
 @cli.command("leases")
 @click.pass_context
 def cli_leases(ctx):
@@ -347,7 +347,7 @@ def cli_run(ctx):
     ip2name = {ip: name for ip, name in leases}  # noqa: C416
     name2ip = {name: ip for ip, name in leases}
     ip2port = {}
-    
+
     print("parsing firewall rules, looking at vms")
     for r in parse_icos_dnat():
         name = ip2name.get(r.ip)
