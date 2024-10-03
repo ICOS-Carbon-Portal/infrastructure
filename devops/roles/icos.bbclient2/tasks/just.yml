@@ -5,3 +5,9 @@
     variable_start_string: "{{ '{{{{' }}"
     variable_end_string: "{{ '}}}}' }}"
     lstrip_blocks: yes
+
+- name: Copy systemd-wide justfile
+  copy:
+    src: ops-bbclient
+    dest: /usr/local/bin/
+    mode: +x

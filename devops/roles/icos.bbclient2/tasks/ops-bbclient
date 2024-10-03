@@ -1,0 +1,12 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+# This justfile works not on a specific bbclient installation, but rather
+# tries to give an overview of all of them.
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# status
