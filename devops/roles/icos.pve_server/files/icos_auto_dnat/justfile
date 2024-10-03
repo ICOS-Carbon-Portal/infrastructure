@@ -1,5 +1,6 @@
 python := "python3.11"
 
+remote_host := "fsicos4"
 remote_path := "/opt/icos-auto-dnat"
 remote_pipx := "pipx-global"
 
@@ -9,22 +10,25 @@ project_name := "icos-auto-dnat"
 @_default:
     just --list --unsorted
 
-# run icos-auto-dnat using hatch
+
+# PROJECT
+# run program using hatch
+[group('project')]
 run *args:
-    hatch run {{project_name}} {{args}}
+    hatch run "$@"
 
-# pytest
-test *args:
-    hatch run pytest {{args}} tests.py
+# show versions of installed dependencies
+[group('project')]
+freeze:
+    hatch run pip freeze
 
-# show results from coverage+pytest
-coverage:
-    hatch run coverage run -m pytest tests.py
-    hatch run coverage combine
-    hatch run coverage html
-    hatch run python3 -m webbrowser htmlcov/index.html
+# hatch env remove
+[group('project')]
+remove:
+    hatch env remove
 
 # remove all artifacts
+[group('project')]
 clean:
     fd -u __pycache__   -X rm -r
     fd -u .pytest_cache -X rm -r
@@ -33,27 +37,62 @@ clean:
     rm -rf -- ./htmlcov ./build ./dist src/*.egg-info .ruff_cache
 
 
-# RUFF 
-# lint using ruff
-lint *args=("."):
-    hatch run ruff {{args}}
 
-# lint --fix using ruff
-fix:
-    hatch run ruff --fix .
+# RUN TEST COVERAGE
+# -s      -- show output
+# -k expr -- run only tests matching expr
+# pytest
+[group('pytest')]
+test *args:
+    hatch run pytest {{args}}
+
+# list collected tests
+[group('pytest')]
+collect *args:
+    hatch run pytest --collect-only {{args}}
+
+# show results from coverage+pytest
+[group('pytest')]
+coverage:
+    hatch run coverage run -m pytest
+    hatch run coverage combine
+    hatch run coverage html
+    hatch run python3 -m webbrowser htmlcov/index.html
+
+
+
+# RUFF
+# ruff check
+[group('ruff'),no-cd]
+check *args=("."):
+    hatch run ruff check "$@"
+
+# ruff check --fix-only
+[group('ruff'),no-cd]
+fix *args=("."):
+    hatch run ruff check --fix-only "$@"
 
 # format python code with ruff
+[group('ruff'),no-cd]
 format *args=("."):
-    ruff format {{args}}
+    hatch run ruff format "$@"
 
 
 
-# INSTALL
+# PIPX
 # install on localhost using pipx
-pipx:
+[group('pipx')]
+install:
     pipx install --force --editable --python={{python}} .
 
+# pipx uninstall and hatch remove
+[group('pipx')]
+uninstall:
+    -pipx uninstall {{project_name}}
+    hatch env remove
+
 # install on remote host using pipx-global
+[group('pipx')]
 push host:
     rsync -F -rlptD . {{host}}:{{remote_path}}
     ssh {{host}} -- \
@@ -63,15 +102,17 @@ push host:
 
 # MUTAGEN
 # configure mutagen
-mutconf host:
-    cog -r -Dhost={{host}} -Dpath={{remote_path}} mutagen.yml
+[group('mutagen')]
+mutconf:
+    cog -r -Dhost={{remote_host}} -Dhome={{remote_path}} mutagen.yml
 
 # start syncing using mutagen
-mutup:
+[group('mutagen')]
+mutup host path=remote_path:
     -mutagen project terminate
     mutagen project start
 
-# stop mutagen
+# mutagen stop
+[group('mutagen')]
 mutdown:
-    -mutagen project terminate 
-
+    -mutagen project terminate
