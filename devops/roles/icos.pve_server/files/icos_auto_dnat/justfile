@@ -1,10 +1,5 @@
-python := "python3.11"
-
-remote_host := "fsicos4"
-remote_path := "/opt/icos-auto-dnat"
-remote_pipx := "pipx-global"
-
-project_name := "icos-auto-dnat"
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
 
 
 @_default:
@@ -79,36 +74,15 @@ format *args=("."):
 
 
 
-# PIPX
-# install on localhost using pipx
-[group('pipx')]
-install:
-    pipx install --force --editable --python={{python}} .
-
-# pipx uninstall and hatch remove
-[group('pipx')]
-uninstall:
-    -pipx uninstall {{project_name}}
-    hatch env remove
-
-# install on remote host using pipx-global
-[group('pipx')]
-push host:
-    rsync -F -rlptD . {{host}}:{{remote_path}}
-    ssh {{host}} -- \
-    {{remote_pipx}} install -f -e --python={{python}} {{remote_path}}
-
-
-
 # MUTAGEN
 # configure mutagen
 [group('mutagen')]
-mutconf:
-    cog -r -Dhost={{remote_host}} -Dhome={{remote_path}} mutagen.yml
+mutconf host path="/opt/icos-auto-dnat":
+    cog -r -Dhost={{host}} -Dpath={{path}} mutagen.yml
 
 # start syncing using mutagen
 [group('mutagen')]
-mutup host path=remote_path:
+mutup:
     -mutagen project terminate
     mutagen project start
 
