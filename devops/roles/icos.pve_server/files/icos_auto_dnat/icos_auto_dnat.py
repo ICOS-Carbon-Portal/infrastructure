@@ -47,7 +47,7 @@ CMD_IPTABLES_SAVE = "/usr/sbin/iptables-save"
 ICOS_CHAIN = "ICOS-DNAT"
 
 DNAT = namedtuple("DNAT", ["hport", "comment", "ip", "dport", "line"])
-QM = namedtuple("QM", ["id", "name", "port"])
+QM = namedtuple("QM", ["id", "name", "status", "port"])
 
 
 DEFAULTS = {
@@ -229,19 +229,17 @@ def _qm_list():
     result = []
     output = check_output([CMD_QM, "list"], text=1)  # noqa: S603
     for n, line in enumerate(output.splitlines()):
-        # skip header
-        if n == 0:
-            continue
-        vmid, vmname, *rest = line.split()
-        result.append((vmid, vmname))
+        if n > 0:
+            qid, name, status, *rest = line.split()
+            result.append((qid, name, status))
     return result
 
 
 @cache
-def qm_name_to_vmid(name):
-    for vmid, vmname in _qm_list():
-        if name == vmname:
-            return vmid
+def qm_name_to_vmid(needle):
+    for qid, name, *_ in _qm_list():
+        if name == needle:
+            return qid
     return None
 
 
@@ -270,13 +268,13 @@ def qm_name_to_port(name):
 @cache
 def qm_list():
     result = []
-    for vmid, vmname in _qm_list():
-        config = qm_vmid_to_config(vmid)
+    for qid, name, status in _qm_list():
+        config = qm_vmid_to_config(qid)
         # skip templates when listing VMs
         if config.get("template", "0") == "1":
             continue
-        port = qm_vmid_to_port(vmid)
-        result.append(QM(vmid, vmname, port))
+        port = qm_vmid_to_port(qid)
+        result.append(QM(qid, name, status, port))
     return result
 
 
@@ -405,7 +403,9 @@ def cli_run(ctx):
     print("")
     print("parsing vms, looking at firewall rules")
     for qm in qm_list():
-        if qm.port is None:
+        if qm.status == "stopped":
+            print(f"  {qm.name:<20} is stopped")
+        elif qm.port is None:
             print(f"  {qm.name:<20} no port configured")
         else:
             ip = name2ip.get(qm.name)
