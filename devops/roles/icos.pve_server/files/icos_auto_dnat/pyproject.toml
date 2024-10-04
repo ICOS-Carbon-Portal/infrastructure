@@ -39,6 +39,8 @@ omit = ["tests.py"]
 [tool.ruff]
 target-version = "py311"
 line-length = 80
+
+[tool.ruff.lint]
 select = [
   "A",   # flake8-builtins
   "ARG", # flake8-unused-arguments
@@ -89,12 +91,12 @@ unfixable = [
   "F401",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["icos_auto_dnat"]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
