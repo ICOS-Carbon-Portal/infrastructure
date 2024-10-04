@@ -30,6 +30,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tomllib
 from collections import namedtuple
 from datetime import datetime, timedelta
 from functools import cache
@@ -47,6 +48,13 @@ ICOS_CHAIN = "ICOS-DNAT"
 
 DNAT = namedtuple("DNAT", ["hport", "comment", "ip", "dport", "line"])
 QM = namedtuple("QM", ["id", "name", "port"])
+
+
+DEFAULTS = {
+    "interface": "auto",
+    "bridge": "auto",
+    "config": "/etc/icos-auto-dnat.toml",
+}
 
 
 # UTILS
@@ -69,7 +77,7 @@ def die(msg):
 
 
 def ip_json(arg):
-    s = check_output( # noqa: S603
+    s = check_output(  # noqa: S603
         [
             "/usr/sbin/ip",
             "-json",
@@ -272,13 +280,39 @@ def qm_list():
     return result
 
 
+
+# CONFIG FILE
+def load_config(ctx, _param, value):
+    try:
+        with open(value, "rb") as f:
+            t = tomllib.load(f)
+            if ctx.default_map is None:
+                ctx.default_map = t
+            else:
+                ctx.default_map.update(t)
+    except FileNotFoundError:
+        src = ctx.get_parameter_source("config")
+        # silence error if our default config file doesn't exist
+        if src != click.core.ParameterSource.DEFAULT_MAP:
+            raise
+    return value
+
+
+
 # CLI
-@click.group()
+@click.group(context_settings={"default_map": DEFAULTS})
 @click.option("--dry-run", is_flag=True)
-@click.option("-i", "--interface", default="auto")
-@click.option("-b", "--bridge", default="auto")
+@click.option(
+    "-c",
+    "--config",
+    callback=load_config,
+    is_eager=True,
+    help=f"{DEFAULTS['config']}",
+)
+@click.option("-i", "--interface")
+@click.option("-b", "--bridge")
 @click.pass_context
-def cli(ctx, dry_run, interface, bridge):
+def cli(ctx, dry_run, config, interface, bridge):
     run.dry_run = dry_run
 
     if bridge == "auto":
@@ -296,7 +330,7 @@ def cli(ctx, dry_run, interface, bridge):
         raise click.UsageError(f"{lease_file} doesn't exist")
 
     ctx.obj = SimpleNamespace(
-        lease_file=lease_file, interface=interface, bridge=bridge
+        lease_file=lease_file, interface=interface, bridge=bridge, config=config
     )
 
 
@@ -358,8 +392,10 @@ def cli_run(ctx):
         ip2port[r.ip] = r.hport
         qmport = qm_name_to_port(name)
         if not qmport:
-            print(f"  {name:<20} no port configured but a rule for {r.hport}"
-                  ", removing rule")
+            print(
+                f"  {name:<20} no port configured but a rule for {r.hport}"
+                ", removing rule"
+            )
             iptables_del_dnat(r)
         elif qmport == r.hport:
             print(f"  {name:<20} port {r.hport} ok")
@@ -378,7 +414,7 @@ def cli_run(ctx):
                 continue
             port = ip2port.get(ip)
             if port is None:
-                print(f"  {qm.name:<20} no port rule, adding rule for {qm.port}")
+                print(f"  {qm.name:<20} no port rule, adding port {qm.port}")
                 iptables_add_dnat(ctx.obj.interface, ip, qm.port, qm.name)
                 continue
             print(f"  {qm.name:<20} port {qm.port} configured, {port} assigned")
@@ -389,6 +425,3 @@ def cli_run(ctx):
 def cli_test(_ctx):
     for qm in qm_list():
         print(qm)
-
-    # print(auto_bridge())
-    # print(auto_interface())
