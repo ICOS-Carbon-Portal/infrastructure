@@ -1,12 +1,8 @@
 [Unit]
-Description=Automatic port-forwarding for proxmox VMs (%i)
-After=network.target
+Description=Automatic port-forwarding for proxmox
 
 [Service]
 Environment=PYTHONUNBUFFERED=1
 
 [Service]
-ExecStart={{ python_util_bin_dir }}/icos-auto-dnat -i %i run
-
-[Install]
-WantedBy=multi-user.target
+ExecStart=/usr/local/bin/icos-auto-dnat run

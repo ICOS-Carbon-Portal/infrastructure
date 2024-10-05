@@ -1,0 +1,8 @@
+[Path]
+PathChanged={{ pve_dnat_leases }}
+
+[Unit]
+Description=Detect when dnsmasq leases change and sync firewall rules
+
+[Install]
+WantedBy=multi-user.target

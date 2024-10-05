@@ -1,5 +1,52 @@
-- name: Install the icos_auto_dnat util
-  import_role:
-    name: icos.python_util
-  vars:
-    python_util_src: icos_auto_dnat
+- name: Synchronize icos-auto-dnat source
+  ansible.posix.synchronize:
+    src: "icos-auto-dnat/"
+    dest: "/opt/icos-auto-dnat"
+    # preserver owner and group, default is yes
+    owner: no
+    group: no
+    rsync_opts:
+      # read the .rsync-filter file
+      - '-F'
+      - '--delete-excluded'
+  register: _rsync
+
+- name: Install icos-auto-dnat
+  community.general.pipx:
+    executable: pipx-global
+    python: python3
+    editable: true
+    force: true
+    name: "/opt/icos-auto-dnat/"
+  when: _rsync.changed
+  register: _pipx
+  # pipx seems to always report changed when installing editable from file
+  changed_when:
+    - _pipx.changed
+    - _pipx.stdout
+    - _pipx.stdout.find('already seems to be installed') == -1
+
+- name: Copy auto-dnat service files
+  template:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/
+    lstrip_blocks: yes
+  loop:
+    - icos-auto-dnat.path
+    - icos-auto-dnat.timer
+    - icos-auto-dnat.service
+  register: _systemd
+
+- name: Reload systemd
+  systemd:
+    daemon-reload: yes
+  when: _systemd.changed
+
+- name: Start "{{ item }}" service
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: "{{ 'restarted' if _systemd.changed else 'started' }}"
+  loop:
+    - icos-auto-dnat.path
+    - icos-auto-dnat.timer
