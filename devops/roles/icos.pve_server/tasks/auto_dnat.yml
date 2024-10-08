@@ -42,7 +42,7 @@
     daemon-reload: yes
   when: _systemd.changed
 
-- name: Start "{{ item }}" service
+- name: Start service
   systemd:
     name: "{{ item }}"
     enabled: yes
