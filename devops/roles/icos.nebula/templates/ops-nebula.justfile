@@ -12,6 +12,11 @@ suffix := "{{{nebula_interface}}}"
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
+# show installed version of nebula
+[group('misc')]
+version:
+    nebula -version
+
 # apt install dependencies for this justfile
 [group('misc')]
 deps:
@@ -36,6 +41,10 @@ status:
 tail:
     journalctl -n 30 -f -u nebula.service
 
+# show listening ports
+[group('service')]
+ports:
+    ss -stulpn | grep nebula
 
 
 # SSH DEBUG CONSOLE
@@ -57,13 +66,13 @@ print host:
 # IPERF SPEED TEST
 # start iperf3 server
 [group('speed')]
-iperf-listen myhostname=`hostname`:
-    iperf3 -B {{myhostname}}.{{suffix}} -s
+iperf-listen name=`hostname`:
+    iperf3 -B {{name}}.{{suffix}} -s
 
 # start iperf3 client
 [group('speed')]
-iperf-connect shortname:
-    iperf3 -c {{shortname}}.{{suffix}}
+iperf-connect name:
+    iperf3 -c {{name}}.{{suffix}}
 
 
 
