@@ -25,8 +25,8 @@ RUN ["/bin/bash", "-c", "ln -s /usr/lib/x86_64-linux-gnu/libnetcd{f,ff}.so /usr/
 ARG JENASVNUSER
 ARG JENASVNPASSWORD
 
-# <2023-10-26> As of today, revision 749 is the best revision.
-ARG JENASVNREVISION=749
+# <2024-07-15> As of today, revision 751 is the best revision.
+ARG JENASVNREVISION=751
 
 WORKDIR /opt/STILT_svn
 RUN svn \

@@ -85,19 +85,13 @@ tracer<-"rn"
 rn<-dat[,"rn"]
 #rn.stilt<-dat[,"rnini"]+dat[,"rn"]
 #rn<-rn.stilt
-rn.noah<-dat[,"rn_noah"]
-rn.era<-dat[,"rn_era"]
-#rn.const<-dat[,"rn_const"]
-#rn.noah2<-dat[,"rn_noah2d"]
-#rn.era5<-dat[,"rn_era5d"]
-rn.noah2_m<-dat[,"rn_noah2m"]
-rn.era5_m<-dat[,"rn_era5m"]
-#rn.noah<-dat[,"rnini"]+dat[,"rn_noah"]
-#rn.era<-dat[,"rnini"]+dat[,"rn_era"]
-#rn.const<-dat[,"rnini"]+dat[,"rn_const"]
-#rn.noah<-dat[,"rn_noahini"]+dat[,"rn_noah"]
-#rn.era<-dat[,"rn_eraini"]+dat[,"rn_era"]
-#rn.const<-dat[,"rn_constini"]+dat[,"rn_const"]
+rn.noah<-dat[,"rn_noah"]+dat[,"rnini"]
+rn.era<-dat[,"rn_era"]+dat[,"rnini"]
+#rn.const<-dat[,"rn_const"]+dat[,"rnini"]
+#rn.noah2<-dat[,"rn_noah2d"]+dat[,"rnini"]
+#rn.era5<-dat[,"rn_era5d"]+dat[,"rnini"]
+rn.noah2_m<-dat[,"rn_noah2m"]+dat[,"rnini"]
+rn.era5_m<-dat[,"rn_era5m"]+dat[,"rnini"]
 rn.background<-dat[,"rnini"]
 
 tracer<-"co2"
@@ -348,7 +342,7 @@ ch4.background<-dat[,"ch4ini"]
 
 ch4.ini<-dat[,"ch4ini"]
 
-dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.fuel.waste,co2.fuel.others,co2.cement,co2.energy,co2.transport,co2.industry,co2.others,co2.residential,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.fuel.waste,co.fuel.others,co.energy,co.transport,co.industry,co.others,co.residential,co.background,ch4.stilt,ch4.fuel,ch4.fuel.oil,ch4.fuel.coal,ch4.fuel.gas,ch4.fuel.bio,ch4.fuel.waste,ch4.fuel.others,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.background,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes,rn,rn.noah,rn.era,rn.noah2_m,rn.era5_m,rn.background)
+dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.fuel.waste,co2.fuel.others,co2.cement,co2.energy,co2.transport,co2.industry,co2.others,co2.residential,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.fuel.waste,co.fuel.others,co.energy,co.transport,co.industry,co.others,co.residential,co.background,ch4.stilt,ch4.fuel,ch4.fuel.oil,ch4.fuel.coal,ch4.fuel.gas,ch4.fuel.bio,ch4.fuel.waste,ch4.fuel.others,ch4.energy,ch4.transport,ch4.industry,ch4.others,ch4.residential,ch4.agri,ch4.waste,ch4.background,ch4.wetland,ch4.soil,ch4.uptake,ch4.peatland,ch4.geo,ch4.fire,ch4.ocean,ch4.lakes,rn,rn.const,rn.noah,rn.era,rn.noah2,rn.era5,rn.noah2_m,rn.era5_m,rn.background)
 
 # write results incl. wind information - if exists
 if ("ubar" %in% colnames(dat)) {

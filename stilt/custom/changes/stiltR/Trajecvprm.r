@@ -563,13 +563,13 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
 
         rnlist <- list("rn","rn_era","rn_noah","rn_const","rn_era5d","rn_noah2d","rn_era5m","rn_noah2m")
         if(tolower(speci)%in%rnlist){
-          EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
+          EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/((3.8235*24)/log(2)))/0.022414/1000 #rn decay with 3.8 days half-life, convert to Bq/m3, (V_m=0.022414 at 0°C)
         } else {
           EMCO <- emiss*part[, "foot"]
         }
       } else {
         if (speci=="rn"){
-          EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
+          EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/((3.8235*24)/log(2)))/0.022414/1000 #rn decay with 3.8 days half-life, convert to Bq/m3, (V_m=0.022414 at 0°C)
         } else {
           EMCO <- emiss*part[, "foot"]
         }
@@ -1062,9 +1062,9 @@ if ("rn"%in%tracers & inikind["rn"] == "TM3") {
                   result=result, result.sel=selend, tracer=c("rn"))
    if(ftype=="nc"){
 	if(max(result[selend,"rnini"]) > 1.E-08){# Ute: boundary data provided by Max already in Bq/m3
-           result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24)) #apply Rn decay to lateral boundary condition, do not conv. to Bq/m3
+           result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/((3.8235*24)/log(2))) #apply Rn decay to lateral boundary condition (valid if Rn conc. field given in Bq/m3; to convert ppm to Bq/m3 multiply by 5.637442*1E13)
        }else{
-           result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
+           result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/((3.8235*24)/log(2)))*5.637442*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
        }
    }
 }
