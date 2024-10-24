@@ -34,7 +34,7 @@ vegpath<-"./Input/VPRM/" 	#path to get to surface fluxes and vegetation grids at
 rundir <- paste("./",run_id,"/STILT_Exe/",sep="")                               # specifies main directory where different directories are found to run hymodelc
 
 ### optional directories
-evilswipath<-paste("./Input/VPRM/VPRM_input_STILT_EU2_V006_",stilt_year,"/",sep="")    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
+evilswipath<-paste("./Input/VPRM/VPRM_input_STILT_EU2_",stilt_year,"/",sep="")    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
 vprmconstantspath="./Input/VPRM/VPRMconstants/"   # VPRM only -- input path for file with VPRM constants
 vprmconstantsname="vprmConstants.optEU2007n"                                 # VPRM only -- name of file with VPRM constants
 nldaspath="/project/p1229/Radiation/NLDAS/"                             # VPRM only -- input path for NLDAS temperature and radiation
