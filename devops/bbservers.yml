@@ -1,6 +1,3 @@
-# borgmon script on fsicos2
-#   icos run base bbserver_monitor -lfsicos2*
-
 - hosts: bbservers
   roles:
     - role: icos.bbserver
