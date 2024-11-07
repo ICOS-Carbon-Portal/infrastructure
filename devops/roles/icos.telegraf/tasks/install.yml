@@ -17,7 +17,11 @@
 
 - name: Install telegraf
   apt:
-    name:
-      - telegraf
+    name: telegraf
     state: "{{ 'latest' if telegraf_upgrade else 'present' }}"
+    # Setting this will also set update_cache. It's time consuming on slow
+    # devices so set it to an hour.
+    cache_valid_time: "{{ 3600 if telegraf_upgrade else omit}}"
+  notify: restart telegraf
 
+    
