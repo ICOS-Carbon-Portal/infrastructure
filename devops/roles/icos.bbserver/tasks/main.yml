@@ -1,21 +1,8 @@
-- name: Create bbserver user
-  user:
-    name: "{{ bbserver_user }}"
-    home: "{{ bbserver_home | default(omit) }}"
-    create_home: yes
-    shell: /usr/bin/bash
+- import_tasks: setup.yml
+  tags: bbserver_setup
 
-- name: Change access rights on bbserver_home
-  file:
-    path: "{{ bbserver_home }}"
-    mode: 0700
-
-- name: Create repo directory
-  file:
-    path: "{{ bbserver_repo_home }}"
-    state: directory
-    owner: "{{ bbserver_user }}"
-    group: "{{ bbserver_user }}"
+- import_tasks: cli.yml
+  tags: bbserver_cli
 
 - name: Check whether {{ bbserver_textfiles }} exists
   tags: bbserver_monitor
@@ -23,37 +10,7 @@
     path: "{{ bbserver_textfiles }}"
   register: _textfiles
 
-- import_tasks: cli.yml
-  tags: bbserver_cli
-
 - import_tasks: monitor.yml
   tags: bbserver_monitor
   # Only enable monitoring via node_exporter if its textfiles directory exist.
   when: _textfiles.stat.exists
-
-- name: Install borg-compact timer
-  include_role:
-    name: icos.timer
-    apply:
-      tags: bbserver_compact
-  vars:
-    timer_user: "{{ bbserver_user }}"
-    timer_home: "{{ bbserver_home }}/bbserver-compact"
-    timer_name: "bbserver-compact"
-    timer_conf: |
-      OnCalendar=weekly
-      RandomizedDelaySec=3h
-    timer_envs:
-      - BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-      - BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    timer_content: |
-      #!/bin/bash
-      # Since borg 1.2, it's not enough to prune repos, they have to be
-      # compacted as well.
-      set -eux
-
-      cd $HOME/repos
-      for repo in *.repo; do
-        time borg compact --verbose $repo
-      done
-  tags: bbserver_compact
