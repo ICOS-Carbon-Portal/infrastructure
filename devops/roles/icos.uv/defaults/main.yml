@@ -1,0 +1,10 @@
+uv_home: /opt/uv
+
+uv_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+uv_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
+uv_version: "{{ hostvars.localhost.uv_version }}"
+uv_url_map:
+  "armv6l": "https://github.com/astral-sh/uv/releases/download/{{ uv_version }}/uv-arm-unknown-linux-musleabihf.tar.gz"
+  "armv7l": "https://github.com/astral-sh/uv/releases/download/{{ uv_version }}/uv-armv7-unknown-linux-gnueabihf.tar.gz"
+  "aarch64": "https://github.com/astral-sh/uv/releases/download/{{ uv_version }}/uv-aarch64-unknown-linux-gnu.tar.gz"
+  "x86_64": "https://github.com/astral-sh/uv/releases/download/{{ uv_version }}/uv-x86_64-unknown-linux-gnu.tar.gz"
