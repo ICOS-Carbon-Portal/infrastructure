@@ -12,6 +12,9 @@
 - import_tasks: just.yml
   tags: nebula_just
 
+- import_tasks: ca.yml
+  tags: nebula_ca
+
 - import_tasks: cert.yml
   tags: nebula_cert
 

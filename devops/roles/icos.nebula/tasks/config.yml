@@ -17,16 +17,20 @@
       command: cat -n "{{ nebula_etc_dir }}/config.yml"
       register: _slurp
 
-    - name: Dump failed configuration
-      debug:
-        msg: "{{ _slurp.stdout }}"
-
     - name: Restore config file
       copy:
          remote_src: true
          dest: "{{ nebula_etc_dir }}/config.yml"
          src: "{{ update.backup_file }}"
       when: "update['backup_file'] is defined"
+
+    - name: Dump failed configuration
+      debug:
+        msg: "{{ _slurp.stdout }}"
+
+    - name: Fail
+      fail:
+        msg: "Nebula config file is broken"
 
   always:
     - name: Remove backup file

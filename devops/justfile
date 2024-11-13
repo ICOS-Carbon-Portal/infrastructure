@@ -7,11 +7,12 @@ editor := env_var_or_default("EDITOR", "emacsclient --no-wait")
 export ANSIBLE_INVENTORY := "production.inventory"
 
 
+
 # META
 @_default:
     just --unstable --list --unsorted --justfile {{justfile()}}
 
-# have to use a shim in order to get working directory right
+# create shim in order to get working directory right
 @_install dest="~/.local/bin/icos":
     #!/usr/bin/bash
     set -Eueo pipefail
@@ -45,3 +46,8 @@ facts host:
 # edit the vault
 vault:
     EDITOR=emacsclient ansible-vault edit group_vars/all/vault.yml
+
+
+
+# NEBULA
+mod nebula "files/nebula/justfile"

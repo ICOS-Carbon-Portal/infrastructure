@@ -1,3 +1,8 @@
+- name: reload nebula
+  service:
+    name: nebula
+    state: reloaded
+
 - name: restart nebula
   service:
     name: nebula

@@ -12,6 +12,9 @@ suffix := "{{{nebula_interface}}}"
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
+
+
+# MISC
 # show installed version of nebula
 [group('misc')]
 version:
@@ -27,6 +30,11 @@ deps:
 [group('misc')]
 cert:
     nebula-cert print -path {{{nebula_etc_dir}}}/host.crt
+
+# show ca
+[group('misc')]
+ca:
+    nebula-cert print -path {{{nebula_etc_dir}}}/ca.crt
 
 
 
@@ -45,6 +53,7 @@ tail:
 [group('service')]
 ports:
     ss -stulpn | grep nebula
+
 
 
 # SSH DEBUG CONSOLE
@@ -79,7 +88,7 @@ iperf-connect name:
 # DEBUG LOGGING
 # set loglevel and maybe restart
 [group('debug')]
-loglevel new:
+_loglevel new:
     #!/bin/bash
     set -Eueo pipefail
 
@@ -99,12 +108,12 @@ loglevel new:
 # enable debugging
 [group('debug')]
 debug-on:
-    just --justfile {{justfile()}} loglevel debug
+    just --justfile {{justfile()}} _loglevel debug
 
 # disable debugging
 [group('debug')]
 debug-off:
-    just --justfile {{justfile()}} loglevel info
+    just --justfile {{justfile()}} _loglevel info
 
 
 

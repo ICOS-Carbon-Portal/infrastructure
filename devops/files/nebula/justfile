@@ -1,0 +1,86 @@
+# https://nebula.defined.net/docs/guides/rotating-certificate-authority/
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+
+
+# META
+@_default:
+    just --list --unsorted
+
+
+
+# MISC
+# show certificate
+[group('misc')]
+show path="ca.crt":
+    nebula-cert print -path {{path}}
+
+
+# ex: just sign hz1.nebula 100.100.0.16/22
+# sign new.pub with ca.crt
+[group('misc')]
+sign name ip:
+    nebula-cert sign   \
+      -in-pub new.pub  \
+      -name "{{name}}" \
+      -ip "{{ip}}"     \
+      -out-crt crt.sign
+
+
+# show days left before CA expires
+[group('misc')]
+expire path="ca.crt":
+    @nebula-cert print -json -path {{path}} | \
+      jq '((.details.notAfter | strptime("%Y-%m-%dT%H:%M:%S%z") | mktime) - now) / (24*60*60) | round'
+
+
+
+# ROTATE
+# show help for rotating a CA
+[group('rotate')]
+help:
+    @echo '1. "show" the current CA to learn its details'
+    @echo '2. "retire" the current CA'
+    @echo '3. "create" a new one'
+    @echo '4. "diff" the old and new CAs (so you got it right)'
+    @echo '5. "combine" the old and new into combined.crt'
+    @echo '6. push the combined.crt to all nebula hosts'
+    @echo '7. start signing certificates with the new certificate'
+
+
+# retire current CA and make way for creating a new one
+[group('rotate')]
+retire mindays="180":
+    #!/usr/bin/bash
+    [ ! -f old.crt ] || { echo "old.crt needs to be removed first"; exit 1; }
+    [ ! -f old.key ] || { echo "old.key needs to be removed first"; exit 1; }
+    expire=`just expire`
+    if [[ $expire > {{mindays}} ]]; then
+      echo "ca.crt expires in $expire (limit set at {{mindays}}) days - refusing to rotate"
+      exit 1;
+    fi
+    set -x
+    mv ca.crt old.crt
+    mv ca.key old.key
+
+
+# create new certificate / key
+[group('rotate')]
+create name *args:
+    # nebula-cert will refuse to overwrite existing ca.key
+    nebula-cert ca -name "{{name}}" "$@"
+
+
+# diff the old and new cert
+[group('rotate')]
+diff:
+    diff -u <(nebula-cert print -path old.crt) <(nebula-cert print -path ca.crt)
+
+
+# add the two certs together
+[group('rotate')]
+combine:
+    @[ ! -f combined.crt ] || { echo "refusing to overwrite combined.crt"; exit 1; }
+    cat ca.crt old.crt >> combined.crt

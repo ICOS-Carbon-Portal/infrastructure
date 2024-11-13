@@ -1,8 +1,15 @@
 # PARAMS
 nebula_is_lighthouse: False
 nebula_interface: nebula
-nebula_cert_files: "files/nebula/"
 nebula_domain: nebula
+
+# Should be to the full path of the ca.crt used to sign certificates.
+# nebula_cert_sign
+
+# The cert installed to hosts. Typically the same as the signing
+# certificates. Except when rotating certificates, then this can be set to a
+# file combining new+old certificates.
+nebula_cert_copy: "{{ nebula_cert_sign }}"
 
 
 # CONFIG

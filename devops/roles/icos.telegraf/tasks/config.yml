@@ -23,15 +23,19 @@
       changed_when: no
       register: _slurp
 
-    - name: Dump failed configuration
-      debug:
-        msg: "{{ _slurp.stdout }}"
-
     - name: Restore config file
       copy:
          remote_src: true
          dest: "{{ update.dest }}"
          src: "{{ update.backup_file }}"
+
+    - name: Dump failed configuration
+      debug:
+        msg: "{{ _slurp.stdout }}"
+
+    - name: Fail
+      fail:
+        msg: "Nebula config file is broken"
 
   always:
     - name: Remove backup file

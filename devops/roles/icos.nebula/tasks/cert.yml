@@ -3,8 +3,6 @@
   changed_when: no
   register: status
 
-  
-
 - name: Cert status
   debug:
     msg: |
@@ -20,19 +18,22 @@
     - delegate_to: localhost
       name: Sign pubkey to create certificate
       expect:
-        # use fileglob to search for the nebula certificate directory, then
-        # use it as chdir in order to automatically pick up ca.crt
+        # Use fileglob to search for the nebula certificate directory, then
+        # switch to that directory.
         chdir: >-
-          {{ lookup('fileglob', nebula_cert_files + '/ca.key') | dirname }}
+          {{ nebula_cert_sign | fileglob | first | dirname }}
         command: >-
           /bin/bash -c 'nebula-cert sign
+          -ca-crt {{nebula_cert_sign | basename}}
+          -ca-key {{nebula_cert_sign | basename | splitext | first}}.key
           -in-pub <(echo "{{ newpub.content | b64decode }}")
           -ip {{ nebula_ip }}{{ nebula_netmask }}
           -name {{ nebula_hostname }}
           -out-crt crt.sign
           && cat crt.sign
           && rm crt.sign'
-        # We default to an empty passphrase; so people with c
+        # We default to an empty passphrase, so it'll work by default for keys
+        # with no password.
         responses:
           "Enter passphrase: ": "{{ nebula_passphrase | default ('') }}"
       register: signedcert
@@ -47,9 +48,3 @@
       register: status
       changed_when: status.stdout_lines[-1] == "need to restart"
       notify: restart nebula
-
-
-- name: Copy CA
-  copy:
-    src: "{{ nebula_cert_files }}/ca.crt"
-    dest: "{{ nebula_etc_dir }}/"
