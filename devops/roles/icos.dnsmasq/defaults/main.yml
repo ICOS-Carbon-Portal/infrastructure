@@ -1,3 +1,9 @@
+# change this to install extra config files
+dnsmasq_config_name: "config"
+
+# change this to remove extra config files
+dnsmasq_config_state: present
+
 dnsmasq_config_dir: "/etc/dnsmasq.{{ dnsmasq_instance }}.d"
-dnsmasq_config_file: "{{ dnsmasq_config_dir }}/config"
+dnsmasq_config_file: "{{ dnsmasq_config_dir }}/{{ dnsmasq_config_name }}"
 dnsmasq_service_name: "dnsmasq@{{ dnsmasq_instance }}.service"
