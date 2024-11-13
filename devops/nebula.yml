@@ -1,0 +1,4 @@
+- hosts: nebula_hosts
+  roles:
+    - role: icos.nebula
+      tags: nebula
