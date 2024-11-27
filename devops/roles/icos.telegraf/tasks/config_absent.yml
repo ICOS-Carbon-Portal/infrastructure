@@ -1,0 +1,11 @@
+- name: Fail if user is trying to remove main config file
+  fail:
+    msg: "Refusing to remove main config file."
+  when:
+    - telegraf_config_file == "telegraf.conf"
+
+- name: Remove telegraf config file
+  file:
+    name: "{{ telegraf_config_root }}/{{ telegraf_config_file }}"
+    state: absent
+  notify: reload telegraf

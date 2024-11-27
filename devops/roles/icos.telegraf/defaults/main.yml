@@ -1,9 +1,9 @@
-telegraf_conf_root: /etc/telegraf
+telegraf_config_root: /etc/telegraf
 
 # the name of the conf file. can also be set to e.g "telegraf.d/extra.conf"
-telegraf_conf_file: telegraf.conf
-telegraf_conf: ""
-telegraf_conf_d: []
+telegraf_config_file: telegraf.conf
+telegraf_config_state: present
+telegraf_config: ""
 
 telegraf_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 

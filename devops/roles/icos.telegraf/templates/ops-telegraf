@@ -3,11 +3,15 @@
 set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
-telegraf_conf := "((telegraf_conf_root))/telegraf.conf"
+telegraf_conf := "{{{telegraf_config_root}}}/telegraf.conf"
 
 
+
+# META
 @_default:
     just --list --unsorted --justfile {{justfile()}}
+
+
 
 # SYSTEMD
 # tail the logs
@@ -19,6 +23,7 @@ tail:
 [group('systemd')]
 start:
     systemctl start telegraf
+
 
 
 # CONFIG
@@ -43,6 +48,7 @@ test:
     telegraf --test --config {{telegraf_conf}}
 
 
+
 # MISC
 # show version of locally installed telegraf
 [group('misc')]
@@ -53,6 +59,7 @@ version:
 [group('misc')]
 latest:
     curl --silent https://api.github.com/repos/influxdata/telegraf/releases/latest | jq -r '.name | gsub("^v"; "")'
+
 
 
 # DEBUG
@@ -67,6 +74,7 @@ debug-on:
 debug-off:
     sed -ri '/^\[agent\]/{N;s/debug = true/debug = false/}' {{telegraf_conf}}
     systemctl reload telegraf
+
 
 
 # METRICS
@@ -94,5 +102,5 @@ metrics-tail:
 # stop prometheus metrics
 [group('metrics')]
 metrics-off:
-    rm /etc/telegraf/telegraf.d/metrics-to-file.conf
+    rm -f /etc/telegraf/telegraf.d/metrics-to-file.conf
     systemctl reload telegraf

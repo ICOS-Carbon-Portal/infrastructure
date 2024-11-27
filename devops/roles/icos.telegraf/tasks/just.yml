@@ -9,8 +9,8 @@
     src: ops-telegraf
     dest: /usr/local/bin
     mode: +x
-    variable_start_string: "(("
-    variable_end_string: "))"
+    variable_start_string: "{{ '{{{' }}"
+    variable_end_string: "{{ '}}}' }}"
     lstrip_blocks: yes
   register: _justfile
 
