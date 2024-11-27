@@ -9,15 +9,24 @@ set shell := ['/bin/bash', '-cu']
 
 
 # MISC
-# show installed version of dokku
-[group('misc')]
-version:
-    dokku --version
-    
 # show important config
 [group('misc')]
 config:
     dokku domains:report --global
+
+
+
+# UPGRADE
+# show installed version of dokku
+[group('upgrade')]
+version:
+    dokku --version
+
+# upgrade dokku to latest apt version
+[group('upgrade')]
+upgrade:
+    apt update
+    apt install dokku
 
 
 
