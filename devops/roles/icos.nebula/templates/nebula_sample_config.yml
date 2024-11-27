@@ -72,7 +72,17 @@ sshd:
     keys:
       - '{{ nebula_ssh_public }}'
 
+
+{% if nebula_stats_enable | default(False) %}
+stats:
+  type: prometheus
+  path: /metrics
+  listen: 127.0.0.1:{{ nebula_stats_port }}
+  interval: 60s
+  namespace: nebula
+{% endif %}  
       
 {% if nebula_config_extra is defined %}
 {{ nebula_config_extra | to_nice_yaml(indent=2) }}
 {% endif %}
+

@@ -36,6 +36,12 @@ cert:
 ca:
     nebula-cert print -path {{{nebula_etc_dir}}}/ca.crt
 
+{% if nebula_stats_enable %}
+# retrive prometheus stats
+[group('misc')]
+stats:
+    wget http://127.0.0.1:{{{nebula_stats_port}}}/metrics -qO -
+{% endif %}
 
 
 # SYSTEMD SERVICE

@@ -31,6 +31,9 @@ nebula_hostname: "{{ inventory_hostname_short }}"
 nebula_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
 
+nebula_stats_enable: False
+nebula_stats_port: 2735
+
 
 # DNS RESOLVER
 nebula_resolve_enable: false
