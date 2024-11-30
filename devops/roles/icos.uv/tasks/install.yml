@@ -31,7 +31,7 @@
       - "--strip-components=1"
 
 - name: Check that uv is executable and the correct version
-  shell: uv version
+  shell: /usr/local/bin/uv version
   changed_when: no
   register: _r
   failed_when: "not _r.stdout.endswith(uv_version)"
