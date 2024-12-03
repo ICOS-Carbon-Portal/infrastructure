@@ -423,7 +423,7 @@ You can use the development inventory together with `core.yml` and `core_restore
 Creating Docker container and installing PostGIS in it:<br>
 `docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:15.3`
 
-Specify the password in `data` application.conf `cpdata.downloads.admin.password`
+Specify the password in `data` application.conf `cpdata.postgis.admin.password`
 
 `docker exec -ti postgis /bin/bash`
 
@@ -436,7 +436,7 @@ Either create a new database or restore a backup
 - Login to postgres inside the container `psql -U postgres`
 - Create the two databases `CREATE DATABASE cplog; CREATE DATABASE siteslog;`
 - Create two roles `CREATE USER reader WITH PASSWORD 'blabla'; CREATE USER writer WITH PASSWORD 'blabla';`
-- Specify the passwords in `data` application.conf `cpdata.downloads.reader.password` and `cpdata.downloads.writer.password`
+- Specify the passwords in `data` application.conf `cpdata.postgis.reader.password` and `cpdata.postgis.writer.password`
 
 
 ### OR Recover postgis' backup from BorgBackup on fsicos2
