@@ -1,0 +1,5 @@
+httm_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+httm_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
+httm_version: "{{ hostvars.localhost.httm_version }}"
+httm_url_map:
+  "x86_64": "https://github.com/kimono-koans/httm/releases/download/{{ httm_version }}/httm_{{ httm_version }}-1_amd64.deb"
