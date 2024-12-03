@@ -1,0 +1,76 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+
+# MISC
+# show version of zrepl
+[group('misc')]
+version:
+    zrepl version
+
+# syntax check configuration
+[group('misc')]
+configcheck:
+    zrepl configcheck
+
+
+
+# SERVICE
+# control the zrepl daemon
+[group('service')]
+control:
+    zrepl status
+
+# status of zrepl service
+[group('service')]
+status:
+    systemctl status zrepl.service
+
+# tail the logs of zrepl
+[group('service')]
+tail:
+    journalctl -fu zrepl.service
+
+# https://zrepl.github.io/quickstart.html#watch-it-work
+# watch snapshots being created
+[group('service')]
+watch:
+    watch 'zfs list -t snapshot -o name,creation -s creation'
+
+
+
+# TLS
+# create self-signed certificate
+[group('tls')]
+cert name=`hostname`:
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    if [ "$EUID" -ne 0 ]; then
+      echo "Please run as root"
+      exit
+    fi
+    mkdir -m 700 -p /etc/zrepl
+    if compgen -G /etc/zrepl/{{name}}.crt > /dev/null; then
+      echo "/etc/zrepl/{{name}}.crt already exists"
+      exit 0
+    fi
+    cd /etc/zrepl
+    openssl req -x509 -sha256 -nodes \
+      -newkey rsa:4096 \
+      -days 365 \
+      -keyout {{name}}.key \
+      -out {{name}}.crt \
+      -addext "subjectAltName = DNS:{{name}}" -subj "/CN={{name}}"
+
+# push our certificate to server
+[group('tls')]
+push server cert=("/etc/zrepl/"+`hostname`+".crt"):
+    ssh {{server}} mkdir -m 700 -p /etc/zrepl
+    # run cat as root and ssh as user
+    sudo cat {{cert}} | ssh {{server}} -T "cat > '{{cert}}'"

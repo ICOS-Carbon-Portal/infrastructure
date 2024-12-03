@@ -1,0 +1,4 @@
+- name: restart zrepl
+  systemd:
+    name: zrepl
+    state: restarted
