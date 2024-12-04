@@ -25,7 +25,9 @@ services:
 {% endif %}
     restart: unless-stopped
   mariadb:
-    image: mariadb:10.6
+    # When bumping version, uncomment 'MARIADB_AUTO_UPGRADE: 1' bellow to run mariadb-upgrade⁠
+    image: mariadb:11.6
+    command: --transaction-isolation=READ-COMMITTED
     ports:
       - "127.0.0.1:{{ mysql_docker_port }}:3306"
     environment:
@@ -33,6 +35,7 @@ services:
       MYSQL_DATABASE: {{ database_name | default("icos") }}
       MYSQL_USER: {{ database_user | default("icos") }}
       MYSQL_PASSWORD: {{ vault_mysql_icos_password }}
+      # MARIADB_AUTO_UPGRADE: 1
     volumes:
       - ../db:/var/lib/mysql/:rw
     restart: unless-stopped
