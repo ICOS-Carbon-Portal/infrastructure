@@ -307,17 +307,9 @@ backup of the production database and use to populate mongodb.
 ### Using borgbackup to restore a copy restheart's production database
 
 Many of our services use a backup software called
-[BorgBackup](https://www.borgbackup.org/). It's an application written in
-python and as such we can install it using python. Use the same procedure as
-for ansible to find the latest version and then install it:
+[BorgBackup](https://www.borgbackup.org/). It is available as a an ubuntu package:
 
-`$ sudo apt install libssl-dev`
-
-`$ sudo apt install libacl1-dev`
-
-`$ pip3 install pkgconfig`
-
-`$ pip3 install --user borgbackup==1.2.0`
+`$ sudo apt install borgbackup`
 
 Each of our services backups to a borg `repository`. A borg repository is can
 be thought of as a database contained in a single directory. The borg client
