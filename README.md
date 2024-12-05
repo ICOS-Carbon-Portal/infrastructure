@@ -66,7 +66,7 @@ To get started, one needs:
 
 To install all of the above except ansible, run:
 
-`$ sudo apt install git docker-compose-v2 python3-pip`
+`$ sudo apt install git docker.io docker-compose-v2 python3-pip`
 
 To install the latest version of ansible, first run:
 
