@@ -60,13 +60,13 @@ To get started, one needs:
 - Ubuntu 20.04 LTS or an equivalent Linux distribution (e.g. Linux Mint 20)
 - Git
 - Docker
-- docker-compose
+- Docker compose plugin v2
 - pip
 - Ansible
 
 To install all of the above except ansible, run:
 
-`$ sudo apt install git docker.io docker-compose python3-pip`
+`$ sudo apt install git docker-compose-v2 python3-pip`
 
 To install the latest version of ansible, first run:
 
