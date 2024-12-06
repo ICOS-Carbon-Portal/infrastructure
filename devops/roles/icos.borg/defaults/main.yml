@@ -1,7 +1,15 @@
 borg_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 borg_version: "{{ hostvars.localhost.borg_version }}"
 borg_url_map:
-  "x86_64": "https://github.com/borgbackup/borg/releases/download/{{ borg_version}}/borg-linux64"
+  "x86_64": "https://github.com/borgbackup/borg/releases/download/{{ borg_version }}/borg-linux-glibc{{ borg_libc_version }}"
 
-
+# where to put the downloaded binary
 borg_bin: "/usr/local/bin/borg"
+
+# The precompiled borg binaries depend on which version of libc you're running.
+# https://github.com/borgbackup/borg/issues/8323#issuecomment-2270803532
+borg_libc_map:
+  "Ubuntu":
+    "22.04": "231"
+    "24.04": "236"
+borg_libc_version: "{{ borg_libc_map[ansible_distribution][ansible_distribution_version] }}"
