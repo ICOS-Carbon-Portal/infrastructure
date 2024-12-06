@@ -29,7 +29,20 @@ export ANSIBLE_INVENTORY := "production.inventory"
 # RECIPIES
 # run a playbook
 play playbook *args:
-    ansible-playbook {{playbook}}.yml {{args}}
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    playbook=($(compgen -G "*{{playbook}}*.yml"))
+    case "${#playbook[@]}" in
+      0) echo "Error: No file matches '*{{playbook}}*'"
+         exit 1
+         ;;
+      1) # do nothing
+         ;;
+      *) echo "Error: More than one file matches '*{{playbook}}*'"
+         exit 1
+         ;;
+    esac
+    ansible-playbook $playbook {{args}}
 
 # run the install playbook
 install *args:
