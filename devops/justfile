@@ -3,7 +3,7 @@
 set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
-editor := env_var_or_default("EDITOR", "emacsclient --no-wait")
+export EDITOR := env_var_or_default("EDITOR", "emacsclient --no-wait")
 export ANSIBLE_INVENTORY := "production.inventory"
 
 
@@ -11,6 +11,10 @@ export ANSIBLE_INVENTORY := "production.inventory"
 # META
 @_default:
     just --unstable --list --unsorted --justfile {{justfile()}}
+
+# edit this justfile
+_edit:
+    {{EDITOR}} {{canonicalize(justfile())}}
 
 # create shim in order to get working directory right
 @_install dest="~/.local/bin/icos":
@@ -42,7 +46,8 @@ play playbook *args:
          exit 1
          ;;
     esac
-    ansible-playbook $playbook {{args}}
+    shift
+    ansible-playbook $playbook "$@"
 
 # run the install playbook
 install *args:
@@ -58,7 +63,15 @@ facts host:
 
 # edit the vault
 vault:
-    EDITOR=emacsclient ansible-vault edit group_vars/all/vault.yml
+    #!/usr/bin/bash
+    set -Eueo pipefail
+    case "$EDITOR" in
+        (*emacsclient*)
+            # strip --no-wait
+            export EDITOR=emacsclient
+            ;;
+    esac
+    ansible-vault edit group_vars/all/vault.yml
 
 
 
