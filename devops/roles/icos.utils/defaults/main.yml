@@ -30,7 +30,8 @@ watchexec_version: "{{ hostvars.localhost.watchexec_version }}"
 watchexec_url_map:
   "armv7l": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-armv7-unknown-linux-gnueabihf.deb"
   "aarch64": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-aarch64-unknown-linux-gnu.deb"
-  "x86_64": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-x86_64-unknown-linux-gnu.deb"
+  # use musl version to avoid GLIBC_2.39 mismatch when installing on debian bookworm
+  "x86_64": "https://github.com/watchexec/watchexec/releases/download/v{{ watchexec_version }}/watchexec-{{ watchexec_version }}-x86_64-unknown-linux-musl.deb"
 
 
 # BTOP
