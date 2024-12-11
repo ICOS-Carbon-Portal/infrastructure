@@ -19,9 +19,8 @@
 
 # Needed for the ansible htpasswd module
 - name: Install the passlib library
-  pip:
-    name: passlib
-    state: present
+  apt:
+    name: python3-passlib
 
 # This gets us htpasswd(1)
 - name: Install apache2-utils

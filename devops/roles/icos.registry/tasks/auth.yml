@@ -4,9 +4,8 @@
     state: directory
 
 - name: Install the passlib library
-  pip:
-    name: passlib
-    state: present
+  apt:
+    name: python3-passlib
 
 - name: Add basic auth users
   htpasswd:

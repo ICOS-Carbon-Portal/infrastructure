@@ -12,8 +12,8 @@
     name: apache2-utils
 
 - name: Install the passlib library
-  pip:
-    name: passlib
+  apt:
+    name: python3-passlib
 
 - name: Create directory for auth file
   file:
