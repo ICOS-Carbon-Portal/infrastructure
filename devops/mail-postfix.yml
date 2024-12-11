@@ -4,10 +4,11 @@
       tags: postfix
       postfix_config_list:
         - param: mynetworks
+          # drupal
+          # 10.0.0.0/8
           value: >-
             127.0.0.0/8
             172.16.0.0/12
-            10.0.0.0/8
             172.19.199.2
             172.19.199.3
 
