@@ -35,7 +35,7 @@
           mode: pull
           server: https://cloud-images.ubuntu.com/releases
           protocol: simplestreams
-          alias: "20.04"
+          alias: "22.04"
         devices:
           root:
             path: /
@@ -62,7 +62,7 @@
       nginxsite_name: rspamd
       nginxsite_file: files/rspamd.conf
       nginxsite_users:
-        - name: secret
+        - username: secret
           password: "{{ rspamd_admin_password }}"
 
   tasks:
