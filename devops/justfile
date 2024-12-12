@@ -49,11 +49,11 @@ play playbook *args:
     shift
     ansible-playbook $playbook "$@"
 
-# run the install playbook
+# run install playbook
 install *args:
     ansible-playbook install.yml {{args}}
 
-# install and upgrade_everything
+# run install playbook with upgrade_everything=1
 upgrade *args:
     ansible-playbook install.yml -eupgrade_everything=1 {{args}}
 
