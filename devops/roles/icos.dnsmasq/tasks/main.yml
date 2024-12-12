@@ -3,3 +3,8 @@
 
 - import_tasks: config.yml
   tags: dnsmasq_config
+
+- name: Start and enable dnsmasq
+  systemd:
+    name: "{{ dnsmasq_service_name }}"
+    enabled: yes
