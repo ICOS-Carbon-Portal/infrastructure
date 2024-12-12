@@ -124,9 +124,9 @@ debug-off:
 
 
 # USED BY ANSIBLE
-# show status of certificate
+# maybe generate a new certificate request
 [group('ansible')]
-cert-check maxdays="90":
+cert-check mindays:
     #!/bin/bash
     set -Eueo pipefail
     cd {{{nebula_etc_dir}}}
@@ -159,7 +159,7 @@ cert-check maxdays="90":
       now=`date '+%s'`
       # days until host.crt expires
       days=$(( (later - now) / 86400 ))
-      if (( days >= {{maxdays}} )); then
+      if (( days >= {{mindays}} )); then
         echo "current cert expires in $days days, is ok"
         exit 0
       else

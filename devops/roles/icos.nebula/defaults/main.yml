@@ -7,7 +7,7 @@ nebula_domain: nebula
 # nebula_cert_sign
 
 # The cert installed to hosts. Typically the same as the signing
-# certificates. Except when rotating certificates, then this can be set to a
+# certificate. Except when rotating certificates, then this can be set to a
 # file combining new+old certificates.
 nebula_cert_copy: "{{ nebula_cert_sign }}"
 
@@ -30,6 +30,9 @@ nebula_hostname: "{{ inventory_hostname_short }}"
 # install new releases of nebula if available
 nebula_upgrade: "{{ upgrade_everything | default(False) | bool }}"
 nebula_ca_path: "{{ nebula_cert_files }}/ca.crt"
+
+# Recreate certificate when it's less than this age old.
+nebula_cert_min_days: 90
 
 nebula_stats_enable: False
 nebula_stats_port: 2735

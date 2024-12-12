@@ -1,32 +1,35 @@
 # https://nebula.defined.net/docs/guides/rotating-certificate-authority/
 
+nebula_config := "config.yml"
+nebula_inventory := "../../production.inventory/nebula.yml"
+
+export EDITOR := env_var_or_default("EDITOR", "emacsclient --no-wait")
+
 set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
-
-
-# META
 @_default:
     just --list --unsorted
 
 
 
 # MISC
+# edit nebula configuration file
+[group('misc')]
+config:
+    {{EDITOR}} {{nebula_config}}
+
+
+# edit nebula inventory file
+[group('misc')]
+hosts:
+    {{EDITOR}} {{nebula_inventory}}
+
+
 # show certificate
 [group('misc')]
 show path="ca.crt":
     nebula-cert print -path {{path}}
-
-
-# ex: just sign hz1.nebula 100.100.0.16/22
-# sign new.pub with ca.crt
-[group('misc')]
-sign name ip:
-    nebula-cert sign   \
-      -in-pub new.pub  \
-      -name "{{name}}" \
-      -ip "{{ip}}"     \
-      -out-crt crt.sign
 
 
 # show days left before CA expires
@@ -41,23 +44,25 @@ expire path="ca.crt":
 # show help for rotating a CA
 [group('rotate')]
 help:
+    @echo 'In order to rotate in a new certificate:'
     @echo '1. "show" the current CA to learn its details'
     @echo '2. "retire" the current CA'
     @echo '3. "create" a new one'
     @echo '4. "diff" the old and new CAs (so you got it right)'
     @echo '5. "combine" the old and new into combined.crt'
-    @echo '6. push the combined.crt to all nebula hosts'
-    @echo '7. start signing certificates with the new certificate'
+    @echo '6. set the ansible variable nebula_cert_copy to "files/combined.crt"'
+    @echo '7. push new certificate using "just play nebula -tnebula_ca"'
+    @echo '8. start signing certificates with the new certificate'
 
 
 # retire current CA and make way for creating a new one
 [group('rotate')]
 retire mindays="180":
     #!/usr/bin/bash
-    [ ! -f old.crt ] || { echo "old.crt needs to be removed first"; exit 1; }
-    [ ! -f old.key ] || { echo "old.key needs to be removed first"; exit 1; }
+    [ -f old.crt ] && { echo "old.crt needs to be removed first"; exit 1; }
+    [ -f old.key ] && { echo "old.key needs to be removed first"; exit 1; }
     expire=`just expire`
-    if [[ $expire > {{mindays}} ]]; then
+    if [[ $expire -gt {{mindays}} ]]; then
       echo "ca.crt expires in $expire (limit set at {{mindays}}) days - refusing to rotate"
       exit 1;
     fi
@@ -68,19 +73,22 @@ retire mindays="180":
 
 # create new certificate / key
 [group('rotate')]
-create name *args:
+create *args=("--help"):
     # nebula-cert will refuse to overwrite existing ca.key
-    nebula-cert ca -name "{{name}}" "$@"
+    nebula-cert ca "$@"
 
 
 # diff the old and new cert
 [group('rotate')]
 diff:
-    diff -u <(nebula-cert print -path old.crt) <(nebula-cert print -path ca.crt)
+    -diff -u <(nebula-cert print -path old.crt) <(nebula-cert print -path ca.crt)
 
 
 # add the two certs together
 [group('rotate')]
 combine:
-    @[ ! -f combined.crt ] || { echo "refusing to overwrite combined.crt"; exit 1; }
+    @if [ -f combined.crt ]; then \
+      echo "refusing to overwrite combined.crt";\
+      exit 1;\
+    fi
     cat ca.crt old.crt >> combined.crt

@@ -1,5 +1,5 @@
 - name: Check status of certificate
-  command: ops-nebula cert-check 60
+  command: ops-nebula cert-check {{ nebula_cert_min_days }}
   changed_when: no
   register: status
 
@@ -22,6 +22,7 @@
         # switch to that directory.
         chdir: >-
           {{ nebula_cert_sign | fileglob | first | dirname }}
+        # Create new certificate with a duration 1 second less than the CA's.
         command: >-
           /bin/bash -c 'nebula-cert sign
           -ca-crt {{nebula_cert_sign | basename}}
@@ -44,7 +45,7 @@
         content: "{{ signedcert.stdout }}"
 
     - name: Pick up new status
-      command: ops-nebula cert-check
+      command: ops-nebula cert-check {{ nebula_cert_min_days }}
       register: status
       changed_when: status.stdout_lines[-1] == "need to restart"
       notify: restart nebula

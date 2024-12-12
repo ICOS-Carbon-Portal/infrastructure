@@ -6,8 +6,9 @@ nebula_hosts:
         "wg-*": false
     nebula_host: 0.0.0.0
     nebula_ssh_enable: true
-    nebula_cert_sign: nebula/ca.crt
-    nebula_config_file: nebula-config-icos.yml
+    nebula_cert_sign: files/nebula/ca.crt
+    nebula_cert_copy: files/nebula/combined.crt
+    nebula_config_file: files/nebula/config.yml
     nebula_ping_host: "fsicos4.{{ nebula_interface }}"
     nebula_interface: nebula
     nebula_port: 60422
@@ -16,7 +17,7 @@ nebula_hosts:
       "100.100.4.1": ["fsicos4.icos-cp.eu:60422"]
       "100.100.4.2": ["fsicos3.lunarc.lu.se:60422"]
       "100.100.4.4": ["fsicos2.lunarc.lu.se:60422"]
-      "100.100.4.5": ["icos1.gis.lu.se:60422"]
+      "100.100.4.5": ["icos1.icos-cp.eu:60422"]
       "100.100.4.7": ["cdb.nateko.lu.se:60422"]
     nebula_hosts_block: |
       {% for host in query('hosts', 'nebula_hosts',
@@ -27,15 +28,9 @@ nebula_hosts:
   hosts:
     # servers
     icos1:
-      # icos1 has several public interfaces, which might (not sure!) play
-      # havoc with it's ability to link up with some of the other hosts
-      nebula_interfaces:
-        interfaces:
-          eno1: true
       ansible_python_interpreter: /usr/bin/python3
       nebula_ip: "100.100.4.5"
       nebula_is_lighthouse: true
-      nebula_host: 130.235.74.215
     fsicos2.lunarc.lu.se:
       nebula_ip: "100.100.4.4"
       nebula_is_lighthouse: true

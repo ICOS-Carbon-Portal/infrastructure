@@ -75,5 +75,7 @@ vault:
 
 
 
-# NEBULA
+# MODULES
+# nebula mesh vpn
+[group('modules')]
 mod nebula "files/nebula/justfile"
