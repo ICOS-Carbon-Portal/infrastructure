@@ -2,7 +2,9 @@
 
 set shell := ['/bin/bash', '-cu']
 vm_name := "icos-devops-vm"
-passwords_file := "/home/w/stuff/icos/dev_passwords.yml"
+private_key_file := "$HOME/.ssh/icos"
+vault_password_file := "$HOME/.vault_password"
+passwords_file := "$HOME/stuff/icos/dev_passwords.yml"
 branch := "valter/dev"
 
 
@@ -11,10 +13,17 @@ branch := "valter/dev"
     just --unstable --list --unsorted --justfile {{justfile()}}
 
 
+fresh-test: reset-vm test
+
+test:
+  lxc file push ./scripts/test_dev_inventory.sh {{vm_name}}/root/test_dev_inventory.sh
+  lxc exec {{vm_name}} -- bash test_dev_inventory.sh
+
+
 setup-vm: start-vm wait init-vm
 reset-vm: destroy-vm setup-vm
 enter-vm:
-  lxc exec {{vm_name}} -- bash
+  lxc exec {{vm_name}} -- bash -c "source py_env/bin/activate && bash"
   
 start-vm:
   lxc launch ubuntu:24.04 {{vm_name}} --vm
@@ -23,22 +32,16 @@ destroy-vm:
   lxc delete --force {{vm_name}}
 
 init-vm:
-  lxc file push $HOME/.ssh/icos {{vm_name}}/root/.ssh/id_rsa
+  lxc file push {{private_key_file}} {{vm_name}}/root/.ssh/id_rsa
   lxc exec {{vm_name}} -- git clone git@github.com:ICOS-Carbon-Portal/infrastructure.git
   lxc exec {{vm_name}} -- bash -c "cd infrastructure && git checkout {{branch}}"
   lxc file push {{passwords_file}} {{vm_name}}/root/infrastructure/devops/dev.inventory/group_vars/core_host/passwords.yml
-  lxc file push $HOME/.vault_password {{vm_name}}/root/
+  lxc file push {{vault_password_file}} {{vm_name}}/root/
   lxc file push ./scripts/setup_vm.sh {{vm_name}}/root/setup_vm.sh
   lxc exec {{vm_name}} -- bash setup_vm.sh
-
-fresh-test: reset-vm test
-
-test:
-  lxc file push ./scripts/test_dev_inventory.sh {{vm_name}}/root/test_dev_inventory.sh
-  lxc exec {{vm_name}} -- bash test_dev_inventory.sh
 
 
 
 wait:
-  # TODO: Wait for VM to be available, and have internet connection
+  # TODO: Wait for VM to be available, and have internet connection, instead of sleep...
   sleep 20
