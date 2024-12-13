@@ -135,7 +135,7 @@
       copy:
         dest: /etc/ssh/sshd_config.d/jupyter_allow_users.conf
         content: |
-          AllowUsers project {{ vault_jupyter_allow_users | join(" ") }}
+          AllowUsers project {{ vault_jupyter_ssh_users | join(" ") }}
       notify: reload sshd
 
     - name: Change adduser.conf
