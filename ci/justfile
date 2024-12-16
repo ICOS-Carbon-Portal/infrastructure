@@ -3,10 +3,11 @@ container_name := "icos-devops"
 snapshot_name := "icos-devops-updated"
 vault_password_file := "$HOME/.vault_password"
 passwords_file := "$HOME/stuff/icos/dev_passwords.yml"
+vm_user := "ubuntu"
 
 # TODO: Make variables configurable
-# repository_source := "local"
-repository_source := "remote"
+repository_source := "local"
+# repository_source := "remote"
 
 local_repository_path := "$HOME/stuff/icos/infrastructure"
 
@@ -16,15 +17,12 @@ branch := "valter/dev"
 
 
 # List available commands as default action
-@_default:
+default:
     just --list --unsorted --justfile {{justfile()}}
 
-
-fresh: reset-vm run-playbooks
-
 run-playbooks:
-  lxc file push ./scripts/run_playbooks.sh {{container_name}}/root/
-  lxc exec {{container_name}} -- bash run_playbooks.sh
+  lxc file push ./scripts/run_playbooks.sh {{container_name}}/home/{{vm_user}}/
+  lxc exec {{container_name}} --cwd /home/{{vm_user}} -- su ubuntu -c ./run_playbooks.sh
 
 reset-vm: destroy-vm create-vm
 
@@ -34,7 +32,7 @@ destroy-vm:
   lxc delete --force {{container_name}}
 
 enter-vm:
-  lxc exec {{container_name}} -- bash -c "source py_env/bin/activate && bash"
+  lxc exec {{container_name}} --cwd /home/{{vm_user}} -- su ubuntu
 
 start-vm:
   lxc start {{container_name}}
@@ -45,6 +43,7 @@ stop-vm:
 launch-vm:
   lxc launch ubuntu:24.04 {{container_name}}
   lxc config set {{container_name}} security.nesting=true
+  lxc config device add {{container_name}} postgis-port-5438 proxy listen=tcp:0.0.0.0:5438 connect=tcp:127.0.0.1:5438
   lxc file push ./scripts/setup_vm.sh {{container_name}}/root/setup_vm.sh
   lxc exec {{container_name}} -- bash setup_vm.sh
   lxc stop {{container_name}}
@@ -60,22 +59,32 @@ init-vm:
     lxc restore {{container_name}} {{snapshot_name}}
     echo "Starting container"
     lxc start {{container_name}}
-    echo "Waiting for a bit..."
+    echo "Waiting for a container startup..."
     sleep 1
     case "{{repository_source}}" in
         (local)
-            lxc config device add icos-devops-vm shared-infra-repo disk source={{local_repository_path}} path=/root/infrastructure
+            lxc exec {{container_name}} -- mkdir /home/{{vm_user}}/infrastructure
+            lxc file push -rp {{local_repository_path}}/* {{container_name}}/home/{{vm_user}}/infrastructure/
+            lxc exec {{container_name}} -- chown -R {{vm_user}} /home/{{vm_user}}/infrastructure
             ;;
+
         (remote)
-            lxc file push {{private_key_file}} {{container_name}}/root/.ssh/id_rsa
+            lxc file push {{private_key_file}} {{container_name}}/home/{{vm_user}}/.ssh/id_rsa
             lxc exec {{container_name}} -- git clone git@github.com:ICOS-Carbon-Portal/infrastructure.git
             lxc exec {{container_name}} -- bash -c "cd infrastructure && git checkout {{branch}}"
             ;;
         *) echo "Error: repository_source must be local or remote" && exit 1
     esac
 
-    lxc file push {{passwords_file}} {{container_name}}/root/infrastructure/devops/dev.inventory/group_vars/core_host/passwords.yml
-    lxc file push {{vault_password_file}} {{container_name}}/root/
+    echo "Pushing passwords file"
+    lxc file push {{passwords_file}} {{container_name}}/home/{{vm_user}}/infrastructure/devops/dev.inventory/group_vars/core_host/passwords.yml
+    echo "Pushing .vault_password"
+    lxc file push {{vault_password_file}} {{container_name}}/home/{{vm_user}}/.vault_password
+    lxc file push ./scripts/run_playbook.sh {{container_name}}/home/{{vm_user}}/
+
+restore-postgis:
+  lxc exec {{container_name}} -- 
+
 
 # TODO: Wait for VM to be available, and have internet connection, instead of sleep...
 wait:
