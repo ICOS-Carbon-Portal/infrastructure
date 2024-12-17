@@ -426,7 +426,7 @@ Either create a new database or restore a backup
 
 ### EITHER Create the database
 - Login to postgres inside the container `psql -U postgres`
-- Create the two databases `CREATE DATABASE cplog; CREATE DATABASE siteslog; CREATE DATABASE paullog;`
+- Create the databases `CREATE DATABASE cplog; CREATE DATABASE siteslog; CREATE DATABASE paullog;`
 - Create two roles `CREATE USER reader WITH PASSWORD 'blabla'; CREATE USER writer WITH PASSWORD 'blabla';`
 - Specify the passwords in `data` application.conf `cpdata.postgis.reader.password` and `cpdata.postgis.writer.password`
 
