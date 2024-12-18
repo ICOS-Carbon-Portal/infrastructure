@@ -37,17 +37,22 @@ _edit:
 play playbook *args:
     #!/usr/bin/bash
     set -Eueo pipefail
-    playbook=($(compgen -G "*{{playbook}}*.yml"))
-    case "${#playbook[@]}" in
-      0) echo "Error: No file matches '*{{playbook}}*'"
-         exit 1
-         ;;
-      1) # do nothing
-         ;;
-      *) echo "Error: More than one file matches '*{{playbook}}*'"
-         exit 1
-         ;;
-    esac
+    # first try exact match; otherwise we won't be able to run a notebook for
+    # which a glob would match several playbooks.
+    playbook="{{playbook}}.yml"
+    if [[ ! -e $playbook ]]; then
+      playbook=($(compgen -G "*{{playbook}}*.yml")) || :
+      case "${#playbook[@]}" in
+        0) echo "Error: No file matches '*{{playbook}}*'"
+           exit 1
+           ;;
+        1) # do nothing
+           ;;
+        *) echo "Error: More than one file matches '*{{playbook}}*'"
+           exit 1
+           ;;
+      esac
+    fi
     shift
     ansible-playbook $playbook "$@"
 
