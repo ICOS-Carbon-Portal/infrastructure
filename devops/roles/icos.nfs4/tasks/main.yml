@@ -23,3 +23,6 @@
     - RPCNFSDOPTS
     - RPCMOUNTDOPTS
   notify: restart nfs-kernel-server
+
+- import_tasks: just.yml
+  tags: nfs4_just
