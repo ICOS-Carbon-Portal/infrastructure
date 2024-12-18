@@ -6,6 +6,8 @@ set shell := ['/bin/bash', '-cu']
 export EDITOR := env_var_or_default("EDITOR", "emacsclient --no-wait")
 export ANSIBLE_INVENTORY := "production.inventory"
 
+vault := "./group_vars/all/vault.yml"
+
 
 
 # META
@@ -61,7 +63,11 @@ upgrade *args:
 facts host:
     ansible {{host}} -m setup
 
+
+
+# VAULT
 # edit the vault
+[group('vault')]
 vault:
     #!/usr/bin/bash
     set -Eueo pipefail
@@ -72,6 +78,21 @@ vault:
             ;;
     esac
     ansible-vault edit group_vars/all/vault.yml
+
+
+# diff vault between REBASE_HEAD and HEAD
+[group('vault')]
+vault-conflict:
+    diff -u \
+         <(git show "HEAD:{{vault}}" | ansible-vault decrypt -) \
+         <(ansible-vault decrypt "{{vault}}" --output -)\
+
+# diff vault between HEAD and working copy
+[group('vault')]
+vault-diff:
+    diff -u \
+         <(git show "HEAD:{{vault}}" | ansible-vault decrypt -) \
+         <(ansible-vault decrypt "{{vault}}" --output -)\
 
 
 
