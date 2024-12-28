@@ -13,17 +13,6 @@ nats_sys_enable: true
 nats_sys_password:
 
 
-# TLS
-nats_cert_enable: false
-
-# The directory, accessible by the nats user, where we'll copy certificates.
-nats_cert_dir: /var/lib/nats
-
-# The name of the ansible certificate (i.e what you'd pass to certbot
-# --cert-name).
-nats_cert_name: "{{ ansible_fqdn }}"
-
-
 # NATS SERVER
 nats_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
 nats_version: "{{ hostvars.localhost.nats_version }}"
