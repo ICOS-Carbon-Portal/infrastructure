@@ -4,6 +4,14 @@ stiltcluster_servicename: stiltcluster
 stiltcluster_home: /home/stiltcluster
 stiltcluster_bindir: "{{ stiltcluster_home }}/bin"
 
+# When installing new cluster nodes without having a stiltcluster development
+# environment set up, we can instead fetch stiltcluster.jar from an existing
+# cluster host.
+stiltcluster_fetch_host:
+stiltcluster_fetch_path: >-
+  {{ hostvars[stiltcluster_fetch_host].stiltcluster_home
+    | default(stiltcluster_home) }}/stiltcluster.jar"
+
 # These hostnames used by akka. They control which interface akka will bind to
 # (through the usual unix interface mechanisms). They also needs to be
 # reachable by other hosts in the cluster - i.e they need to be resolveable and
