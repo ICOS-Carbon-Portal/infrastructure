@@ -10,6 +10,7 @@
 - hosts: core_host
   tags: host
   vars:
-    stiltweb_akka_hostname: "fsicos2.wg-fsicos2"
+    stiltweb_akka_hostname: "fsicos2.nebula"
   roles:
     - role: icos.stiltweb
+      tags: stiltweb

@@ -10,9 +10,6 @@
         flat: yes
 
 - hosts: fsicos4-stiltcluster
-  vars:
-    stiltcluster_jar_file: tmp/stiltcluster.jar
-    stiltcluster_hostname: fsicos4-stiltcluster.wg-fsicos2
   roles:
     - role: icos.pve_guest
       tags: guest

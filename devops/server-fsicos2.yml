@@ -14,3 +14,6 @@
 
     - role: icos.bbserver
       tags: bbserver
+
+    - role: icos.nfs4
+      tags: nfs
