@@ -4,6 +4,7 @@
       - nfs-kernel-server
 
 - name: Allow nfs through firewall
+  when: nfs4_interface
   iptables_raw:
     name: allow_nfs4
     rules: >-
