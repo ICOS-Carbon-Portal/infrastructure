@@ -1,3 +1,6 @@
+# a block to populate /etc/hosts with
+dnsmasq_hosts:
+
 # change this to install extra config files
 dnsmasq_config_name: "config"
 
