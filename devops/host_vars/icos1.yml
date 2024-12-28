@@ -16,4 +16,4 @@ lxd_vm_variant: zfs
 
 
 icosdata_exports: |
-  /pool/flexextract *.nebula(ro)
+  /pool/flexextract *.nebula(rw)
