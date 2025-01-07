@@ -50,3 +50,14 @@ trippy_url_map:
   "armv7l": "https://github.com/fujiapple852/trippy/releases/download/{{ trippy_version }}/trippy-{{ trippy_version }}-armv7-unknown-linux-musleabi.tar.gz"
   "aarch64": "https://github.com/fujiapple852/trippy/releases/download/{{ trippy_version }}/trippy-{{ trippy_version }}-aarch64-unknown-linux-musl.tar.gz"
   "x86_64": "https://github.com/fujiapple852/trippy/releases/download/{{ trippy_version }}/trippy-{{ trippy_version }}-x86_64-unknown-linux-gnu.tar.gz"
+
+
+# LAZYGIT
+lazygit_upgrade: "{{ upgrade_everything | default(False) | bool }}"
+lazygit_architecture: "{{ fake_architecture | default(ansible_architecture) }}"
+lazygit_version: "{{ hostvars.localhost.lazygit_version }}"
+lazygit_url_map:
+  "armv6l": "https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_Linux_armv6.tar.gz"
+  "armv7l": "https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_Linux_armv6.tar.gz"
+  "aarch64": "https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_Linux_arm64.tar.gz"
+  "x86_64": "https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz"
