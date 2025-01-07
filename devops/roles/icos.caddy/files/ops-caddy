@@ -31,3 +31,12 @@ edit:
     mg /etc/caddy/Caddyfile
     -systemctl reload caddy
     journalctl -fu caddy
+
+# show current version
+version:
+    caddy --version
+
+# show latest version available on github
+latest:
+    # version
+    curl --silent https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.name | gsub("^v"; "")'
