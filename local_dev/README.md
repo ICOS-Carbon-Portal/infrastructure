@@ -19,7 +19,7 @@ You should now be able to run:
 ```
 just create-vm run-playbooks
 ```
-If this succeeds, an LXC container with the required services should now be running.
+If this succeeds, an LXC container with the required services should now be running, and you should be able to run both the `meta` and `data` services.
 
 ### Development/Testing
 
