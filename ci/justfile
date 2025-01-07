@@ -8,7 +8,7 @@ branch := "valter/dev"
 
 container_name := "icos-devops"
 snapshot_name := "icos-devops-updated"
-vault_password_file := "$HOME/stuff/work/icos/vault_password"
+vault_password_file := ".vault_password"
 passwords_file := "dev_passwords.yml"
 vm_user := "ubuntu"
 local_repository_path := "../"
@@ -18,7 +18,7 @@ default:
     just --list --unsorted --justfile {{justfile()}}
 
 run-playbooks:
-  lxc file push ./scripts/run_playbooks.sh {{container_name}}/home/{{vm_user}}/
+  lxc file push ./vm_scripts/run_playbooks.sh {{container_name}}/home/{{vm_user}}/
   lxc exec {{container_name}} --cwd /home/{{vm_user}} -- su ubuntu -c ./run_playbooks.sh
 
 reset-vm: destroy-vm create-vm
@@ -42,7 +42,7 @@ launch-vm:
   lxc config set {{container_name}} security.nesting=true
   lxc config device add {{container_name}} postgis-port proxy listen=tcp:127.0.0.1:5438 connect=tcp:127.0.0.1:5438
   lxc config device add {{container_name}} rdflig-port proxy listen=tcp:0.0.0.0:5433 connect=tcp:127.0.0.1:2345
-  lxc file push ./scripts/setup_vm.sh {{container_name}}/root/setup_vm.sh
+  lxc file push ./vm_scripts/setup.sh {{container_name}}/root/setup_vm.sh
   lxc exec {{container_name}} -- bash setup_vm.sh
   lxc stop {{container_name}}
   lxc snapshot {{container_name}} {{snapshot_name}}
