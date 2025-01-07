@@ -28,4 +28,7 @@
 - hosts: quince3
   roles:
     - role: icos.lxd_guest
-    - role: icos.quince
+    # This role was used to provision the VM, but since then the installation
+    # has been continously tweaked by manual means, running the role again
+    # might mess things up.
+    # - role: icos.quince
