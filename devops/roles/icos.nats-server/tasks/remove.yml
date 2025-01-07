@@ -1,0 +1,46 @@
+- name: Remove files
+  file:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - /usr/local/bin/ops-nats
+
+- name: Stop and disable nats
+  systemd:
+    name: nats
+    enabled: false
+    state: stopped
+
+- name: Remove nats config file
+  file:
+    name: "{{ nats_config_file }}"
+    state: absent
+
+- name: Remove nats config directory
+  file:
+    path: /root/.config/nats
+    state: absent
+
+- name: Remove natscli
+  apt:
+    name: natscli
+    purge: true
+    state: absent
+
+- name: Remove nats-top
+  apt:
+    name: nats-top
+    purge: true
+    state: absent
+
+- name: Remove nats-server
+  apt:
+    name: nats-server
+    purge: true
+    state: absent
+
+- name: Remove nats user
+  user:
+    name: "{{ nats_user }}"
+    state: absent
+    force: true
