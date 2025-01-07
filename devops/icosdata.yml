@@ -18,7 +18,6 @@
 - hosts:
     - fsicos2.lunarc.lu.se
     - fsicos3.lunarc.lu.se
-    - skuggfaxe
     - icos1
     - cupcake
 
