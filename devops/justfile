@@ -70,6 +70,21 @@ facts host:
 
 
 
+# ROOT KEYS
+# show diff in proposed root_keys change
+[group('keys and users')]
+rootdiff *args:
+    # the diffs are very verbose, only display the name of the key instead
+    -icos play all -troot_keys -DC "$@" \
+      | perl -ane 'print "$1 $2\n" if /^([+-])ssh\S+ \S+ (.*)$/; print "$_\n" if /^changed:/'
+
+# deploy new root_keys
+[group('keys and users')]
+rootkeys *args="-DC":
+    icos play all -troot_keys {{args}}
+
+
+
 # VAULT
 # edit the vault
 [group('vault')]
