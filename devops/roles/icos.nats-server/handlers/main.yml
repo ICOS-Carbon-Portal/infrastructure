@@ -1,4 +1,0 @@
-- name: restart nats
-  systemd:
-    name: nats
-    state: restarted
