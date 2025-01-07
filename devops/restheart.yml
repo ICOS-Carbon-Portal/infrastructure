@@ -1,4 +1,4 @@
-# icos run restheart restheart_backup
+# icos play restheart restheart_backup
 
 - hosts: core_server
   tags: server

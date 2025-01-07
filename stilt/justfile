@@ -59,4 +59,4 @@ stiltrun-edit:
 #
 # deploy stiltrun along with the stiltcustom image
 stiltrun-deploy:
-    icos run stiltcluster stiltrun -D
+    icos play stiltcluster stiltrun -D

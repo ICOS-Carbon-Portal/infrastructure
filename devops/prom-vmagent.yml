@@ -1,7 +1,7 @@
 # Provision physical hosts with vmagent and node_exporter.
 #
 # upgrade to latest vmagent:
-# icos run vmagent vmagent -evmagent_upgrade=1 -D
+# icos play vmagent vmagent -evmagent_upgrade=1 -D
 
 
 - hosts: vmagent_hosts

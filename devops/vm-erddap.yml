@@ -1,5 +1,5 @@
 # update domains
-#   icos run erddap cert nginx
+#   icos play erddap cert nginx
 
 - hosts: fsicos2.lunarc.lu.se
   vars:

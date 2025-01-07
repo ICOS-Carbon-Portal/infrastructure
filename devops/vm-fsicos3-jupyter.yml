@@ -1,11 +1,11 @@
 # Deploy the jusers script:
-#   icos run jupyter jupyter_jusers_deploy
+#   icos play jupyter jupyter_jusers_deploy
 #
 # Redeploy/restart the hub:
-#   icos run jupyter jupyter
+#   icos play jupyter jupyter
 #
 # Redeploy jusers:
-#   icos run jupyter jupyter_jusers -evirtualenv_recreate=True
+#   icos play jupyter jupyter_jusers -evirtualenv_recreate=True
 
 
 - hosts: fsicos3.lunarc.lu.se

@@ -1,11 +1,11 @@
 # Run everything 
-#   $ icos run geoip
+#   $ icos play geoip
 #
 # Deploy new version
-#   $ icos run geoip geoip_app
+#   $ icos play geoip geoip_app
 #
 # Show other tags
-#   $ icos run geoip --list-tags
+#   $ icos play geoip --list-tags
 #
 - hosts: fsicos2.lunarc.lu.se
   roles:

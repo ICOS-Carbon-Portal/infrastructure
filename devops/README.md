@@ -8,9 +8,9 @@ for testing.
 
 ## Deploying Drupal websites
 
-The drupal playbook requires a `website` parameter with the short name of the website. It can be used with the deploy script:
+The drupal playbook requires a `website` parameter with the short name of the website. It can be used with the justfile shim.
 
-`icos run drupal -ewebsite=ac -tdrupal`
+`icos play drupal -ewebsite=ac -tdrupal`
 
 which is equivalent to
 

@@ -1,4 +1,4 @@
-# icos run fsicos3 nginx_certbot
+# icos play fsicos3 nginx_certbot
 
 - hosts: fsicos3.lunarc.lu.se
   roles:
