@@ -52,10 +52,6 @@ nebula_hosts:
       nebula_ip: "100.100.4.3"
       nebula_port: 60703
 
-    skuggfaxe:
-      nebula_ip: "100.100.4.6"
-      nebula_port: 60704
-
     fsicos4-stiltcluster:
       nebula_ip: "100.100.4.8"
       nebula_port: 60705
