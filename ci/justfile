@@ -1,19 +1,17 @@
 set shell := ['/bin/bash', '-cu']
+
+repository_source := "local"
+# repository_source := "remote"
+
+# Branch to checkout when repository_source=remote
+branch := "valter/dev"
+
 container_name := "icos-devops"
 snapshot_name := "icos-devops-updated"
 vault_password_file := "$HOME/stuff/work/icos/vault_password"
 passwords_file := "dev_passwords.yml"
 vm_user := "ubuntu"
-
-# TODO: Make variables configurable
-# repository_source := "local"
-repository_source := "remote"
-
 local_repository_path := "../"
-
-# For remote fetching
-branch := "valter/dev"
-
 
 # List available commands as default action
 default:
@@ -79,7 +77,3 @@ init-vm:
     lxc file push {{passwords_file}} {{container_name}}/home/{{vm_user}}/infrastructure/devops/dev.inventory/group_vars/core_host/passwords.yml
     echo "Pushing .vault_password"
     lxc file push {{vault_password_file}} {{container_name}}/home/{{vm_user}}/.vault_password
-
-
-# postgis-create:
-#   lxc exec {{container_name}} -- 
