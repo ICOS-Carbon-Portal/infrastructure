@@ -123,13 +123,6 @@
         shell: /usr/bin/bash
         password: '*'
 
-    - name: Install additional ssh keys
-      tags: ssh
-      authorized_key:
-        user: root
-        state: present
-        key: "{{ vault_jupyter_ssh_keys }}"
-
     - name: Deny ssh login to most users
       tags: ssh
       copy:
