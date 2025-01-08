@@ -54,7 +54,7 @@ all:
 
         # cpdata - application
         cpdata_filestorage_target: /data/dataAppStorage/
-        cpdata_b2safe_dry_run: true
+        cpdata_b2safe_dry_run: false
         cpdata_config_files:
           - application_production.conf
 
