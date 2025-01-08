@@ -17,6 +17,7 @@
       nginxsite_file: templates/dokku-nginx.conf
       dokku_domains:
         - '*.dokku.fsicos3.icos-cp.eu'
+        - '*.app.icos-cp.eu'
       dokku_proxy_host: dokku.lxd
       dokku_proxy_port: 80
 
