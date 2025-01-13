@@ -41,7 +41,7 @@ launch-vm:
   lxc launch ubuntu:24.04 {{container_name}}
   lxc config set {{container_name}} security.nesting=true
   lxc config device add {{container_name}} postgis-port proxy listen=tcp:127.0.0.1:5438 connect=tcp:127.0.0.1:5438
-  lxc config device add {{container_name}} rdflig-port proxy listen=tcp:0.0.0.0:5433 connect=tcp:127.0.0.1:2345
+  lxc config device add {{container_name}} rdflog-port proxy listen=tcp:0.0.0.0:5433 connect=tcp:127.0.0.1:2345
   lxc file push ./vm_scripts/setup.sh {{container_name}}/root/setup_vm.sh
   lxc exec {{container_name}} -- bash setup_vm.sh
   lxc stop {{container_name}}
