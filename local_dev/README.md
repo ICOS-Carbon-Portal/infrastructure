@@ -12,7 +12,7 @@ Before you get started, install these tools.
 
 ### Manual preparation
 - Create a `.vault_password` file in this directory, with contents given to you by a colleague.
-- Minimal configs for [data](https://github.com/ICOS-Carbon-Portal/data)  and [meta](https://github.com/ICOS-Carbon-Portal/meta)  services can be found in [example_configs](./example_configs). Copy the contents of of these to `application.conf` in respective repository.
+- Minimal configs for [data](https://github.com/ICOS-Carbon-Portal/data)  and [meta](https://github.com/ICOS-Carbon-Portal/meta)  services can be found in [example_configs](./example_configs). Copy the contents of these to `application.conf` in respective repository.
 
 ### Running
 You should now be able to run:
