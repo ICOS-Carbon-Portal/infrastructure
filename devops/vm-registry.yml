@@ -78,7 +78,7 @@
     - role: icos.lxd_guest
       tags: guest
 
-    - role: icos.docker
+    - role: icos.docker2
       tags: docker
 
     - role: icos.registry
