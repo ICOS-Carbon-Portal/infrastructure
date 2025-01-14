@@ -12,6 +12,8 @@ vault_password_file := ".vault_password"
 passwords_file := "dev_passwords.yml"
 vm_user := "ubuntu"
 local_repository_path := "../"
+vm_ip := "10.173.69.100"
+wait_seconds := "15"
 
 # List available commands as default action
 default:
@@ -40,18 +42,20 @@ stop-vm:
 launch-vm:
   lxc launch --vm ubuntu:24.04 {{container_name}}
   # lxc config set {{container_name}} security.nesting=true
-  # lxc config device add {{container_name}} postgis-port proxy listen=tcp:127.0.0.1:5438 connect=tcp:127.0.0.1:5438
-  # lxc config device add {{container_name}} rdflog-port proxy listen=tcp:0.0.0.0:5433 connect=tcp:127.0.0.1:2345
-  sleep 20
+  sleep {{wait_seconds}}
   lxc file push ./vm_scripts/setup.sh {{container_name}}/root/setup_vm.sh
   lxc exec {{container_name}} -- bash setup_vm.sh
   lxc stop {{container_name}}
+  lxc network attach lxdbr0 {{container_name}} eth0 eth0 
+  lxc config device set icos-devops-vm eth0 ipv4.address {{vm_ip}}
+  lxc config device add {{container_name}} postgis-port proxy listen=tcp:127.0.0.1:5438 connect=tcp:{{vm_ip}}:5438 nat=true
+  lxc config device add {{container_name}} rdflog-port proxy listen=tcp:127.0.0.1:5433 connect=tcp:{{vm_ip}}:2345 nat=true
   lxc snapshot {{container_name}} {{snapshot_name}}
   lxc start {{container_name}}
+  sleep {{wait_seconds}}
+  echo "Waiting for a container startup..."
 
 restore-snapshot:
-    #!/usr/bin/env bash
-    set -e
     echo "Stopping container"
     lxc stop {{container_name}}
     echo "Restoring snapshot"
@@ -59,11 +63,12 @@ restore-snapshot:
     echo "Starting container"
     lxc start {{container_name}}
     echo "Waiting for a container startup..."
-    sleep 20
+    sleep {{wait_seconds}}
 
 reinit-vm: restore-snapshot init-vm
 
 init-vm:
+    #!/usr/bin/env bash
     case "{{repository_source}}" in
         (local)
             lxc exec {{container_name}} -- mkdir /home/{{vm_user}}/infrastructure
