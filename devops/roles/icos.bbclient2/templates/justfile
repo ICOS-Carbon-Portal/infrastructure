@@ -5,6 +5,14 @@ set shell := ['/bin/bash', '-cu']
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
+
+
+# MISC
+# run the ssh wrapper
+[group('misc')]
+ssh *args:
+    {{{{ bbclient_ssh_bin }}}} "$@"
+
 # show last time the timer ran
 last:
     systemctl list-timers "bbclient-{{{{ bbclient_name }}}}*"

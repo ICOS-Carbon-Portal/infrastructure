@@ -22,3 +22,10 @@
       Identityfile {{ bbclient_ssh_key }}
     state: present
     create: yes
+- name: Add ssh wrapper
+  copy:
+    mode: +x
+    dest: "{{ bbclient_ssh_bin }}"
+    content: |
+      #!/usr/bin/bash
+      exec ssh -F {{ bbclient_ssh_config }} "$@"
