@@ -3,7 +3,7 @@ iptables_ssh_port: 60022
 lxd_vm_variant: ext4
 bbclient_remotes:
   - fsicos2.lunarc.lu.se
-  - cdb.nateko.lu.se
+  - icos1
 
 # PROMETHEUS
 nginx_metrics_enable: True
