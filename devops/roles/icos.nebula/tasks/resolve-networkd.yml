@@ -19,3 +19,20 @@
       # Keeps systemd-networkd from clobbering the ip set by nebula
       KeepConfiguration=static
   notify: restart systemd-networkd
+
+- name: Create drop-in directory
+  file:
+    path: /etc/systemd/system/nebula.service.d
+    state: directory
+
+- name: Create drop-in configuration
+  copy:
+    dest: /etc/systemd/system/nebula.service.d/restart-networkd.conf
+    content: |
+      [Service]
+      # When nebula is restarted, systemd-networkd will lose the
+      # nebula-specific name servers configured in
+      # /etc/systemd/network/nebula.network. Restarting systemd-networkd
+      # will fix it. A better fix would be highly desired.
+      ExecStartPost=/bin/sh -c 'sleep 1; systemctl restart systemd-networkd'
+  notify: systemd reload
