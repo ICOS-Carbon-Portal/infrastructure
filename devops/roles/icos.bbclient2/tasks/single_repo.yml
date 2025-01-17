@@ -27,8 +27,7 @@
         state: present
         key: "{{ bbclient_key_data }}"
         key_options: >-
-          command="{{ bbclient_remote_bin }} serve --restrict-to-path {{ bbclient_remote_repo }}",restrict
-
+          command="/usr/local/bin/borg serve --restrict-to-path {{ bbclient_remote_repo }}",restrict
 
 ### LOCAL ###
 

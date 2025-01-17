@@ -32,7 +32,6 @@ bbclient_all        : "{{ bbclient_bin_dir }}/bbclient-all"
 # based on the bbclient_remote variable which is set to the inventory
 # name of the remote.
 bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user | default('bbserver') }}"
-bbclient_remote_bin  : "{{ hostvars[bbclient_remote].bbserver_bin | default('/usr/local/bin/borg') }}"
 bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home | default('repos') }}/{{ bbclient_name }}.repo"
 
 # Used to write the ssh config
