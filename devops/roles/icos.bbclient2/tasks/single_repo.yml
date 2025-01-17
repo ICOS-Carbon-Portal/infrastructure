@@ -1,4 +1,10 @@
 ### REMOTE ###
+# LOCAL
+- name: Read the public key
+  check_mode: false
+  slurpfact:
+    path: "{{ bbclient_ssh_key }}.pub"
+    fact: bbclient_key_data
 
 - name: Configure remote - bbserver - host
   delegate_to: "{{ bbclient_remote }}"
