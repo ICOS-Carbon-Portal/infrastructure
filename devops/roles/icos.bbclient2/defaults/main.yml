@@ -22,7 +22,7 @@ bbclient_ssh_config : "{{ bbclient_ssh_dir }}/config"
 bbclient_ssh_hosts  : "{{ bbclient_ssh_dir }}/known_hosts"
 bbclient_ssh_key    : "{{ bbclient_ssh_dir }}/bbclient.rsa"
 
-bbclient_repo_url   : "{{ bbclient_remote }}:{{ bbclient_remote_repo }}"
+bbclient_repo_url   : "{{ bbclient_remote }}:repos/{{ bbclient_name }}.repo"
 bbclient_repo_file  : "{{ bbclient_home }}/repos"
 bbclient_wrapper    : "{{ bbclient_bin_dir }}/borg"
 
@@ -32,12 +32,8 @@ bbclient_all        : "{{ bbclient_bin_dir }}/bbclient-all"
 # These are used when delegating to the remote host. There are all
 # based on the bbclient_remote variable which is set to the inventory
 # name of the remote.
-bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user | default('bbserver') }}"
-bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home | default('repos') }}/{{ bbclient_name }}.repo"
-
-# Used to write the ssh config
-bbclient_remote_host : "{{ bbclient_remote_ip }}"
-bbclient_remote_port : "{{ hostvars[bbclient_remote].iptables_ssh_port | default(22) }}"
+bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user }}"
+bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_home }}/repos/{{ bbclient_name }}.repo"
 
 # Default is to run coldbackup (if enabled) at a randomized but deterministic
 # time between 00:00 and 03:59.
