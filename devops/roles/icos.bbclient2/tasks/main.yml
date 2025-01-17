@@ -1,14 +1,17 @@
 - name: Setup local ssh directory
+  tags: bbclient_ssh
   import_tasks: ssh.yml
   become: yes
   become_user: "{{ bbclient_user }}"
 
 - name: Install bbclient shell-scripts
+  tags: bbclient_scripts
   import_tasks: scripts.yml
   become: yes
   become_user: "{{ bbclient_user }}"
 
 - import_tasks: repos.yml
+  tags: bbclient_repos
 
 - name: Create patterns.lst
   copy:
@@ -20,10 +23,6 @@
   become_user: "{{ bbclient_user }}"
   tags: bbclient_coldbackup
   when: bbclient_coldbackup is defined
-
-# - name: Print bbclient_timer_content variable to ensure it's defined
-#   ansible.builtin.debug:
-#     msg: bbclient_timer_content is {{ bbclient_timer_content }}
 
 - name: Install bbclient backup script
   include_role: name=icos.timer
