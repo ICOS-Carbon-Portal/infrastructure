@@ -5,6 +5,13 @@ bbclient_timer_conf: |
     OnCalendar=daily
     RandomizedDelaySec=2h
 
+# This variable is only used by bbclient-coldbackup, which is specialized for
+# our docker-compose projects, which keeps data in the "volumes" directory
+bbclient_patterns: |
+  volumes
+
+
+
 # DEFAULTS - should not be changed
 bbclient_ssh_dir    : "{{ bbclient_home }}/ssh"
 bbclient_bin_dir    : "{{ bbclient_home }}/bin"
@@ -32,8 +39,8 @@ bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home | defaul
 bbclient_remote_host : "{{ bbclient_remote_ip }}"
 bbclient_remote_port : "{{ hostvars[bbclient_remote].iptables_ssh_port | default(22) }}"
 
-# Default to run coldback - in enabled - at a randomized but deterministic time
-# between 00:00 and 03:59.
+# Default is to run coldbackup (if enabled) at a randomized but deterministic
+# time between 00:00 and 03:59.
 bbclient_coldbackup_hour: "{{ 4 | random(seed=bbclient_name) }}"
 bbclient_coldbackup_minute: "{{ 60 | random(seed=bbclient_name) }}"
 

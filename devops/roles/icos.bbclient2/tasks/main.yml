@@ -14,7 +14,6 @@
   copy:
     dest: "{{ bbclient_patterns_path }}"
     content: "{{ bbclient_patterns }}"
-  when: bbclient_patterns is defined
 
 - import_tasks: coldbackup.yml
   become: yes

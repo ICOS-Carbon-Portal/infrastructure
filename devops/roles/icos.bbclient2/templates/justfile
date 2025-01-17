@@ -20,6 +20,16 @@ tail *args:
     exit 1
     {% endif %}
 
+
+
+# BACKUP
+{% if bbclient_coldbackup is defined %}
+# make a dirty backup (without stopping service)
+[group('backup')]
+dirty:
+    cd "{{{{ bbclient_coldbackup }}}}" && {{{{ bbclient_all }}}} create -x -v --stats "::dirty-{now}" --patterns-from {{{{ bbclient_patterns_path }}}}
+{% endif %}
+
 # start the bbclient systemd service
 run:
     {% if bbclient_timer_content is defined %}
