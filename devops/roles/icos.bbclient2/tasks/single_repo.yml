@@ -3,13 +3,6 @@
 - name: Configure remote - bbserver - host
   delegate_to: "{{ bbclient_remote }}"
   block:
-    - name: Retrieve remote SSH IP
-      become: no # without this, the env disappear
-      check_mode: false
-      shellfact:
-        exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
-        fact: bbclient_remote_ip
-
     - name: Retrieve host keys
       become: no # without this, the env disappear
       check_mode: false
