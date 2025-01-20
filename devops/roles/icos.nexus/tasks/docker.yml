@@ -9,5 +9,5 @@
     dest: "{{ nexus_home }}"
 
 - name: Start containers
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ nexus_home }}"
