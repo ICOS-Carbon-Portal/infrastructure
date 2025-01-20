@@ -28,7 +28,7 @@
   register: _files
 
 - name: Start containers
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ mailman_home }}"
     build: true
     restarted: "{{ _files.changed }}"
