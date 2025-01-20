@@ -30,8 +30,7 @@
 - name: Start containers
   community.docker.docker_compose_v2:
     project_src: "{{ mailman_home }}"
-    build: true
-    restarted: "{{ _files.changed }}"
+    build: always
 
 - name: Test the REST API
   uri:
