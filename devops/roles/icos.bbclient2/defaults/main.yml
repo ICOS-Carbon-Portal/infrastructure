@@ -8,7 +8,7 @@ bbclient_timer_conf: |
 # This variable is only used by bbclient-coldbackup, which is specialized for
 # our docker-compose projects, which keeps data in the "volumes" directory
 bbclient_patterns: |
-  volumes
+  R volumes
 
 
 
