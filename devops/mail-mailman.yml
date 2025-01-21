@@ -31,6 +31,9 @@
         bbclient_user: root
         bbclient_home: "{{ mailman_home }}/bbclient"
         bbclient_coldbackup: "{{ mailman_home }}"
+        bbclient_remotes:
+          - fsicos2.lunarc.lu.se
+          - icos1
 
   tasks:
     - name: Install proxy for mailman
