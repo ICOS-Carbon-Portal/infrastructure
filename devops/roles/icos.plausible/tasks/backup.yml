@@ -18,5 +18,6 @@
 
       {{ bbclient_all }} create -xvs '::{now}' backup
       {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=150
+      {{ bbclient_all }} compact --verbose
 
       rm -rf -- ./backup
