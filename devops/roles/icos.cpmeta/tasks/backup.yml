@@ -28,3 +28,4 @@
 
       {{ bbclient_all }} create -xvs "::{now}" "{{ cpmeta_filestorage_target }}" submitters.conf
       {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=50
+      {{ bbclient_all }} compact
