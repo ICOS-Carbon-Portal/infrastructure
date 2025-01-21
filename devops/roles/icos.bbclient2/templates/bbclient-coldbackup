@@ -46,6 +46,9 @@ def prune():
     bbclient('prune dirty',
              'prune -P dirty- --verbose --stats --keep-last 1')
 
+def compact():
+    bbclient('compact', 'compact --verbose')
+
 
 def start_down_hook():
     p = None
@@ -102,6 +105,7 @@ def backup(down=False, dirty=True):
 def main(down, dirty):
     backup(down, dirty)
     prune()
+    compact()
     log('done')
 
 
