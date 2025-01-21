@@ -25,10 +25,19 @@
           - icoslabelling.icos-otc.org
           - quince-training.icos-otc.org
 
+
 - hosts: quince3
   roles:
     - role: icos.lxd_guest
-    # This role was used to provision the VM, but since then the installation
-    # has been continously tweaked by manual means, running the role again
-    # might mess things up.
+
+    # This role was used to provision the quince application but since then
+    # the installation has been continously tweaked by manual means, running
+    # the role again might mess things up.
+    #
+    # To provision changes to the backups, uncomment this role and run:
+    #   $ icos play quince -lquince3 -tquince-backup -D
+    #
     # - role: icos.quince
+    #   bbclient_remotes:
+    #     - fsicos2.lunarc.lu.se
+    #     - icos1
