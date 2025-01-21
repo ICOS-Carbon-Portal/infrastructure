@@ -102,4 +102,3 @@
 
 - name: Clear caches
   command: docker exec {{website}}_drupal_1 drush cr
-  when: update

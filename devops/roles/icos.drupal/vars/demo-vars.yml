@@ -18,7 +18,6 @@ drupal_modules: [
   redirect,
   scheduler,
   simple_sitemap,
-  single_content_sync,
   smtp,
   toc_js,
   token,
