@@ -37,7 +37,6 @@
       bbclient_patterns: |
         R /disk/data/nextcloud
         R /docker/nextcloud/volumes
-
       bbclient_remotes:
         - fsicos2.lunarc.lu.se
         - icos1
