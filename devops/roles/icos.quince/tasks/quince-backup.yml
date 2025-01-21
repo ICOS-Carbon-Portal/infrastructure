@@ -1,9 +1,6 @@
-- import_role:
+- name: bbclient
+  import_role:
     name: icos.bbclient2
-  vars:
-    bbclient_name: quince
-    bbclient_user: "{{ quince_user }}"
-    bbclient_home: "{{ quince_home }}/.bbclient"
 
 - name: Copy quince-backup.sh
   template:
