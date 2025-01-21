@@ -16,7 +16,7 @@
     dest: "{{ restheart_home }}"
 
 - name: Build and start the images
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ restheart_home }}"
     build: yes
 
