@@ -17,3 +17,5 @@ mysqldump --single-transaction --quick --user=quince --password=quince --hex-blo
 {{ bbclient_all }} create '::{now}' quince.dump icoslabelling.dump /opt/quince_filestores
 
 {{ bbclient_all }} prune --keep-within 7d --keep-daily=30 --keep-weekly=150
+
+{{ bbclient_all }} compact
