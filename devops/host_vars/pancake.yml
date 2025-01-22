@@ -1,0 +1,7 @@
+icosdata_mkdirs:
+  - /data/fit_ic
+
+icosdata_nfs_mounts:
+  - src: fsicos2.nebula:/disk/data/fit_ic
+    path: /data/fit_ic
+    opts: "ro,hard,x-systemd.after=nebula.service"

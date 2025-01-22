@@ -101,3 +101,7 @@ icosdata_nfs_mounts:
   - path: /nfs/flexextract_meteo
     src: icos1.nebula:/pool/flexextract/meteo
     opts: "rw,soft,x-systemd.after=nebula.service"
+
+  - path: /data/fit_ic
+    src: fsicos2.lunarc.lu.se:/disk/data/fit_ic
+    opts: "rw,soft,x-systemd.after=zfs-mount.service"

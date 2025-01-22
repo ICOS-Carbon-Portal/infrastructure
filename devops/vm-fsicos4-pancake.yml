@@ -1,0 +1,48 @@
+- hosts: pancake
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.python3
+      tags: python3
+
+  tasks:
+    - name: Install nfs-common
+      tags: nfs
+      apt:
+        name:
+          - nfs-common
+    
+    - name: Create mountpoint for fit_ic
+      file:
+        path: /data/fit_ic
+        state: directory
+      tags: fit_ic
+
+    - name: Mount fit_ic
+      mount:
+        src: fsicos2.lunarc.lu.se:/disk/data/fit_ic
+        path: /data/fit_ic
+        state: mounted
+        fstype: nfs
+      tags: fit_ic
+
+    # We might not need these next 2 tasks since the avengers data is
+    # already mounted onto pancake
+    - name: Create mountpoint for avengers
+      file:
+        path: /data/avengers
+        state: directory
+      tags: avengers
+
+    - name: Mount avengers
+      mount:
+        src: fsicos4.nebula:/tank/data/avengers
+        path: /data/avengers
+        state: mounted
+        fstype: nfs
+        opts: "rw,no_subtree_check,no_root_squash"
+      tags: avengers

@@ -41,6 +41,8 @@ icosdata_exports: |
   /disk/data/stilt                  fsicos*.lunarc.lu.se(ro,no_subtree_check)
   /disk/data/common/netcdf/dataDemo fsicos*.lunarc.lu.se(rw)
   /disk/data/incoming               *.nebula(rw,no_root_squash,no_subtree_check)
+  /disk/data/fit_ic                 fsicos3.lunarc.lu.se(rw, no_subtree_check)
+  /disk/data/fit_ic                 pancake.nebula(ro, no_subtree_check)
 
 icosdata_mkdirs:
   - /disk/data/incoming
