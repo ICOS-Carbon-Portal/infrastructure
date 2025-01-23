@@ -38,7 +38,7 @@
       mode: "+x"
 
 - name: Start containers
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ rdflog_home }}"
 
 - name: Test database connection (by loading ctl.sql)
