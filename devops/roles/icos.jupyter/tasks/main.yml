@@ -8,8 +8,5 @@
   tags: jupyter_jusers
   when: jupyter_jusers_enable
 
-- import_tasks: backup.yml
-  tags: jupyter_backup
-  when: jupyter_backup_enable
 - import_tasks: just.yml
   tags: jupyter_just

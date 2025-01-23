@@ -109,7 +109,27 @@
         cpu_limit: 40
       jupyter_admins:
       jupyter_jusers_enable: true
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_remotes:
+        - fsicos2.lunarc.lu.se
+        - icos1
       bbclient_name: jupyter
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -xeu
+
+        # If the repos get moved to another disk - maybe because of storage
+        # running out - we don't want the backup to fail.
+        export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+        {{ bbclient_all }} create --verbose --stats -x "::{now}" /home /project /root/jusers.yml
+        {{ bbclient_all }} prune --stats --list --keep-daily=30 --keep-weekly=150
+
+        # since borg 1.2, a separate compaction is needed
+        {{ bbclient_all }} compact --verbose
+
 
   tasks:
     - name: Create project user
