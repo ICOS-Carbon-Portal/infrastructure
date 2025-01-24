@@ -10,39 +10,26 @@
       tags: python3
 
   tasks:
-    - name: Install nfs-common
+    - name: Install NFS tools
       tags: nfs
       apt:
         name:
           - nfs-common
-    
-    - name: Create mountpoint for fit_ic
+
+    - name: Create directories for NFS mounts
+      tags: nfs
       file:
-        path: /data/fit_ic
+        path: "{{ item }}"
         state: directory
-      tags: fit_ic
+      loop: "{{ icosdata_mkdirs }}"
 
-    - name: Mount fit_ic
+    - name: Mount NFS shares
+      tags: nfs
       mount:
-        src: fsicos2.lunarc.lu.se:/disk/data/fit_ic
-        path: /data/fit_ic
-        state: mounted
+        src: "{{ item.src }}"
+        path: "{{ item.path }}"
+        opts: "{{ item.opts }}"
         fstype: nfs
-      tags: fit_ic
-
-    # We might not need these next 2 tasks since the avengers data is
-    # already mounted onto pancake
-    - name: Create mountpoint for avengers
-      file:
-        path: /data/avengers
-        state: directory
-      tags: avengers
-
-    - name: Mount avengers
-      mount:
-        src: fsicos4.nebula:/tank/data/avengers
-        path: /data/avengers
         state: mounted
-        fstype: nfs
-        opts: "rw,no_subtree_check,no_root_squash"
-      tags: avengers
+      loop: "{{ icosdata_nfs_mounts }}"
+      

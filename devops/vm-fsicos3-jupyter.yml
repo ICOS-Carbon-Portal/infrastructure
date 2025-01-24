@@ -146,7 +146,7 @@
 
     - name: Mount avengers
       mount:
-        src: fsicos4.nebula:/data/avengers
+        src: fsicos4.nebula:/tank/data/avengers
         path: /data/avengers
         state: mounted
         fstype: nfs
