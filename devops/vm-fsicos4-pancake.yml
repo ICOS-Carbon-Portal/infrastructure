@@ -15,21 +15,3 @@
       apt:
         name:
           - nfs-common
-
-    - name: Create directories for NFS mounts
-      tags: nfs
-      file:
-        path: "{{ item }}"
-        state: directory
-      loop: "{{ icosdata_mkdirs }}"
-
-    - name: Mount NFS shares
-      tags: nfs
-      mount:
-        src: "{{ item.src }}"
-        path: "{{ item.path }}"
-        opts: "{{ item.opts }}"
-        fstype: nfs
-        state: mounted
-      loop: "{{ icosdata_nfs_mounts }}"
-      
