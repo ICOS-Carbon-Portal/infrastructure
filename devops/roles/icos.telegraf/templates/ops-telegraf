@@ -47,6 +47,17 @@ default:
 test:
     telegraf --test --config {{telegraf_conf}}
 
+# testrun current config and show as prometheus metrics
+[group('config')]
+prom:
+    #!/usr/bin/bash
+    telegraf --test --config {{telegraf_conf}} | perl -anE '
+    if (/^([^#][^,]+),(.*)(?<!\\) (.*)(?<!\\) (:?.*)/) {
+      for (split(",", $3)) {
+        ($key,$val) = split("=");
+        print "$1_${key}{$2} $val\n"
+    }}'
+
 
 
 # MISC
