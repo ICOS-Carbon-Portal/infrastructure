@@ -24,6 +24,7 @@ icosdata_mkdirs:
   - /nfs
   - /nfs/fsicos2
   - /data/fit_ic
+  - /data/avengers
 
 
 icosdata_nfs_mounts:
