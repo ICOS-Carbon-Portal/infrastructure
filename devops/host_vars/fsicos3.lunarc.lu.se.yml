@@ -104,7 +104,6 @@ icosdata_nfs_mounts:
     src: icos1.nebula:/pool/flexextract/meteo
     opts: "rw,soft,x-systemd.after=nebula.service"
 
-  # fit_ic
   - path: /data/avengers
-    src: fsicos4.nebula:/tank/data/avengers
+    src: pancake.nebula:/data/avengers
     opts: "ro,soft,x-systemd.after=nebula.service"
