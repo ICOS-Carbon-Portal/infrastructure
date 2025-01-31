@@ -11,7 +11,7 @@
   vars:
     callisto_ip: "{{ _lxd.addresses.eth0 | first }}"
   pre_tasks:
-    - name: Create storage for docker
+    - name: Cre ate storage for docker
       tags:
         - lxd
       include_role:
@@ -133,16 +133,12 @@
   roles:
     - role: icos.lxd_guest
       tags: guest
+      user_conf: "{{ vault_callisto_user_conf }}"
 
     - role: icos.docker
       tags: docker
       docker_periodic_cleanup: true
       docker_prevent_upgrade: true
-
-    - role: icos.superuser
-      tags: users
-      superuser_list: "{{ vault_callisto_superusers }}"
-      superuser_disable_coredump: true
 
     - role: icos.filedrop
       tags: filedrop
@@ -171,8 +167,11 @@
       sftp_user_hostdesc: fluxcom-upload
 
     - role: icos.bbclient2
-      tags: bbclient
+      tags: bbclient_ute
       bbclient_name: callisto_home_ute
+      bbclient_remotes:
+        - fsicos2.lunarc.lu.se
+        - icos1
       bbclient_timer_content: |
         #!/bin/bash
         set -eu
@@ -182,9 +181,15 @@
         echo "Pruning"
         {{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
 
+        echo "Compacting"
+        {{ bbclient_all }} compact --verbose
+
     - role: icos.bbclient2
-      tags: bbclient
+      tags: bbclient_radon
       bbclient_name: radon_map
+      bbclient_remotes:
+        - fsicos2.lunarc.lu.se
+        - icos1
       bbclient_timer_content: |
         #!/bin/bash
         set -eu
@@ -193,6 +198,9 @@
 
         echo "Pruning"
         {{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
+
+        echo "Compacting"
+        {{ bbclient_all }} compact --verbose
 
   tasks:
     - name: Port forward for filedrop
