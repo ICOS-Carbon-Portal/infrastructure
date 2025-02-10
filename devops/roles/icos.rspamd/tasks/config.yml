@@ -44,3 +44,32 @@
         min_balance = 0.9; # Keep diff for spam/ham learns for at least this value
       }
   notify: restart rspamd
+
+- name: Adjust symbol weight for neural network
+  copy:
+    dest: /etc/rspamd/local.d/neural_group.conf
+    mode: 0644
+    content: |
+      # Set NEURAL_SPAM to +3, NEURAL_HAM to -0.01
+
+      symbols = {
+        "NEURAL_SPAM" {
+          weight = 3.0;
+          description = "Neural network spam";
+        }
+        "NEURAL_HAM" {
+          weight = -0.01;
+          description = "Neural network ham";
+        }
+      }
+  notify: restart rspamd
+
+- name: Adjust action thresholds
+  copy:
+    dest: /etc/rspamd/local.d/actions.conf
+    mode: 0644
+    content: |
+      reject = 12;
+      add_header = 6;
+      greylist = 4;
+  notify: restart rspamd
