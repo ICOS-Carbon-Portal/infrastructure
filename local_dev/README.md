@@ -11,8 +11,17 @@ Before you get started, install these tools.
 - [LXD/LXC](https://ubuntu.com/server/docs/lxd-containers)
 
 ### Manual preparation
-- Create a `.vault_password` file in this directory, with contents given to you by a colleague.
-- Minimal configs for [data](https://github.com/ICOS-Carbon-Portal/data)  and [meta](https://github.com/ICOS-Carbon-Portal/meta)  services can be found in [example_configs](./example_configs). Copy the contents of these to `application.conf` in respective repository.
+- Clone infrastructure, data and meta repositories.
+- Create a `.vault_password` file in this directory (`infrastructure/local_dev`), with contents given to you by a colleague.
+- Minimal configs for [data](https://github.com/ICOS-Carbon-Portal/data) and [meta](https://github.com/ICOS-Carbon-Portal/meta) services can be found in [example_configs](./example_configs). If you are in this directory and the data and meta repositories are in the same directory as infrastructure:
+
+```
+cp example_configs/data_application.conf ../../data/application.conf
+cp example_configs/meta_application.conf ../../meta/application.conf
+```
+
+- You should run `lxd init` before proceeding. To run this, you probably need to add yourself to the lxd group (`sudo adduser USERNAME lxd`) and change your primary group to lxd (`newgrp lxd`).
+- Note: if using Ubuntu through WSL on Windows, you will need to enable IPv4 forwarding by editing the `/etc/sysctl.d/99-sysctl.conf` file and restarting the wsl service; otherwise the lxd container will not be able to fetch files from the internet. Additionally, you will probably need to change the binding addresses for data/meta to use 0.0.0.0 instead of 127.0.0.1 by editing the `application.conf` files and adding the appropriate line to each service.
 
 ### Running
 You should now be able to run:
