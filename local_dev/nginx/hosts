@@ -1,0 +1,6 @@
+
+# Add these entries to /etc/hosts
+# which lets nginx handle traffic
+
+127.0.0.1	metalocal.icos-cp.eu
+127.0.0.1	datalocal.icos-cp.eu
