@@ -9,6 +9,8 @@ Before you get started, install these tools.
 ### Tools needed:
 - [just](https://github.com/casey/just)
 - [LXD/LXC](https://ubuntu.com/server/docs/lxd-containers)
+- nginx
+- mkcert
 
 ### Manual preparation
 - Clone infrastructure, data and meta repositories.
@@ -29,6 +31,16 @@ You should now be able to run:
 just create-vm run-playbooks
 ```
 If this succeeds, an LXC container with the required services should now be running, and you should be able to run both the `meta` and `data` services.
+
+Next, you need to set up nginx to work as a proxy, using the datalocal.icos-cp.eu and metalocal.icos-cp.eu domains.
+Unfortunately nginx must currently be run from outside of the container, on the local machine.
+
+1. Copy the contents of `nginx/hosts` to your `etc/hosts` file.
+2. Change directory to the nginx folder, then run the `make_certs.sh` script.
+3. Run nginx: `nginx -c /absolute/path/to/infrastructure/local_dev/nginx/nginx.conf`
+
+Now, if you navigate to `datalocal.icos-cp.eu` from the machine after starting the data app, you should be able to access the front-end properly.
+
 
 ### Development/Testing
 
