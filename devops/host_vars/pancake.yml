@@ -1,5 +1,5 @@
 icosdata_exports: |
-  /data/avengers                      fsicos3.nebula(ro,no_subtree_check)
+  /data/avengers                      fsicos3.nebula(ro,no_subtree_check,fsid=1)
 
 icosdata_mkdirs:
   - /data/avengers
