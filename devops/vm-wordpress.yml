@@ -2,6 +2,7 @@
   vars:
     wordpress_domains:
       - www.ingos-infrastructure.eu
+      - eric-forum.eu
       - www.eric-forum.eu
       - www.icos-summerschool.eu
       - www.envriplus.eu
