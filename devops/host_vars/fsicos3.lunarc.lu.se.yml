@@ -107,3 +107,7 @@ icosdata_nfs_mounts:
   - path: /data/avengers
     src: pancake.nebula:/data/avengers
     opts: "ro,soft,x-systemd.after=nebula.service"
+
+  - path: /data/cupcake
+    src: cupcake.nebula:/data/flexpart/output
+    opts: "ro,soft,x-systemd.after=nebula.service"
