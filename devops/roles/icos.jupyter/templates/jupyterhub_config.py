@@ -104,7 +104,10 @@ c.DockerSpawner.read_only_volumes = {
     '/data'          : '/data'
 }
 
-c.DockerSpawner.volumes = {'/project': '/project'}
+c.DockerSpawner.volumes = {
+    '/project'       : '/project', 
+    '/data/fit_ic'   : '/data/fit_ic'}
+
 
 {% if conf.allowed_images is defined %}
 c.DockerSpawner.allowed_images = {{ conf.allowed_images }}
