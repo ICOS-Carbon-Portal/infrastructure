@@ -90,7 +90,7 @@ icosdata_nfs_mounts:
 
   - path: /nfs/flexextract_meteo
     src: icos1.nebula:/pool/flexextract/meteo
-    opts: "ro,soft"
+    opts: "rw,soft"
 
   - path: /data/flexpart/output
     src: fsicos3.lunarc.lu.se:/data/flexpart/output
