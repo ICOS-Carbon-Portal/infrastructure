@@ -9,7 +9,7 @@ bbclient_remotes:
 nginx_metrics_enable: True
 
 
-# NEXTCLOUD  
+# NEXTCLOUD
 nextcloud_volume_nextcloud: /disk/data/nextcloud
 
 
@@ -55,7 +55,7 @@ icosdata_bind_mounts:
 
   - path: /incoming
     src: /disk/data/incoming
-    
+
   - path: /data/project
     src: /disk/data/project
 
@@ -86,6 +86,10 @@ icosdata_nfs_mounts:
 
   - path: /data/project/stc
     src: fsicos3.lunarc.lu.se:/data/project/stc
+    opts: "ro,soft"
+
+  - path: /nfs/flexextract_meteo
+    src: icos1.nebula:/pool/flexextract/meteo
     opts: "ro,soft"
 
   - path: /data/flexpart/output
