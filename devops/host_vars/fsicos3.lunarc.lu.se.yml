@@ -17,7 +17,7 @@ icosdata_exports: |
   /pool/ute/stilt/RINGO/T1.3/STILT    fsicos2.lunarc.lu.se(ro,no_subtree_check)
   /data/flexpart/output               fsicos2.lunarc.lu.se(rw,no_subtree_check)
   /pool/jupyter/project/coco2/jupyter fsicos2.lunarc.lu.se(ro,no_subtree_check,no_root_squash)
-  /data/fit_ic                        pancake.nebula(ro,no_subtree_check)
+  /data/fit_ic                        pancake.nebula(ro,no_subtree_check,all_squash,anonuid=0,anongid=0)
 
 
 icosdata_mkdirs:
