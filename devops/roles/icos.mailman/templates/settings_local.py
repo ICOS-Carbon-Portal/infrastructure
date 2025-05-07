@@ -22,3 +22,7 @@ MAILMAN_WEB_SOCIAL_AUTH = []
 # This fixes archiver issues stemming from Docker using 172.19.199.1 for outbound traffic
 # (ip masquerading)
 MAILMAN_ARCHIVER_FROM = ('172.19.199.1', '172.19.199.2', '172.19.199.3', '172.19.199.4')
+
+# Fixes SMTP mismatch, allowing mailman-web django to send verification emails
+EMAIL_HOST = "{{ mailman_host_ipv4 }}"
+EMAIL_PORT = 25
