@@ -16,12 +16,12 @@ sync:
     mode: "one-way-replica"
     alpha: "stilt_utils"
     # [[[cog cog.outl(f'beta: "root@{host}:{home}/stilt-utils/stilt_utils"') ]]]
-    beta: "root@fsicos2.lunarc.lu.se:/home/stiltweb/stilt-utils/stilt_utils"
+    beta: "root@fsicos2.icos-cp.eu:/home/stiltweb/stilt-utils/stilt_utils"
     # [[[end]]]
 
   pyproject:
     mode: "one-way-replica"
     alpha: "pyproject.toml"
     # [[[cog cog.outl(f'beta: "root@{host}:{home}/stilt-utils/pystilt_utils"') ]]]
-    beta: "root@fsicos2.lunarc.lu.se:/home/stiltweb/stilt-utils/stilt_utils"
+    beta: "root@fsicos2.icos-cp.eu:/home/stiltweb/stilt-utils/stilt_utils"
     # [[[end]]]

@@ -1,5 +1,5 @@
 ### FSICOS2 ###
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars_files: vars/downtime.yml
   tasks:
     # NGINX

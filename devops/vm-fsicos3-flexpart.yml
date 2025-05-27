@@ -1,4 +1,4 @@
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     # These variable are prefixed with 'jupyter_' instead of 'flexpart_' so
     # that we can reuse files/jupyter.conf without change.

@@ -12,7 +12,7 @@
 # Deploy bbclient and cpauth's backup script
 #   $ icos play cpauth bbclient cpauth_backup
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - role: icos.certbot2
       tags: cert

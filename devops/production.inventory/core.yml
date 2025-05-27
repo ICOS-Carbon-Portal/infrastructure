@@ -37,7 +37,7 @@ all:
   children:
     core_host:
       hosts:
-        fsicos2.lunarc.lu.se:
+        fsicos2:
 
       vars:
         coreapp_bind_addr: 127.0.0.1
@@ -91,7 +91,7 @@ all:
 
     core_server:
       hosts:
-        fsicos2.lunarc.lu.se:
+        fsicos2:
 
       vars:
         coreapp_httpproxy_host: 127.0.0.1

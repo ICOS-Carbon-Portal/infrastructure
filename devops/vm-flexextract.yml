@@ -1,4 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - name: Create the flexextract VM
       tags: vm

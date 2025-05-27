@@ -1,4 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     quince_host: quince3.lxd
   roles:
@@ -39,5 +39,5 @@
     #
     # - role: icos.quince
     #   bbclient_remotes:
-    #     - fsicos2.lunarc.lu.se
+    #     - fsicos2
     #     - icos1

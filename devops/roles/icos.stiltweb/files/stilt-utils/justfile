@@ -1,7 +1,7 @@
 set positional-arguments
 set shell := ['/bin/bash', '-cu']
 
-mut_host := "fsicos2.lunarc.lu.se"
+mut_host := "fsicos2.icos-cp.eu"
 mut_home := "/home/stiltweb"
 
 

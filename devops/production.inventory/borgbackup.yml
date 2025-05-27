@@ -8,5 +8,5 @@ bbservers:
       bbserver_home: /pool/bbserver
     cdb.nateko.lu.se:
       bbserver_home: /disk/data/bbserver
-    fsicos2.lunarc.lu.se:
+    fsicos2:
       bbserver_home: /disk/data/bbserver

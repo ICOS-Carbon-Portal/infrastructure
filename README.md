@@ -126,17 +126,17 @@ key, at a minimum it should be password protected.
 Check that you can access our primary production server by running this
 command:
 
-`$ ssh -p 60022 root@fsicos2.lunarc.lu.se hostname`
+`$ ssh -p 60022 root@fsicos2.icos-cp.eu hostname`
 
 The output should be:
 
-`fsicos2.lunarc.lu.se`
+`fsicos2`
 
 If you want to save some on typing, you can create a ssh config file. Add the
 following to `~/.ssh/config`:
 ```
 host fsicos2
-    hostname fsicos2.lunarc.lu.se
+    hostname fsicos2.icos-cp.eu
     user root
     port 60022
 ```
@@ -146,7 +146,7 @@ Now you can re-run the same command in a simpler way:
 `$ ssh fsicos2 hostname`
 
 The results should be the same. The rest of this document will use the simpler
-syntax (i.e `ssh fsicos2` instead of `ssh -p 60022 root@fsicos2.lunarc.lu.se`)
+syntax (i.e `ssh fsicos2` instead of `ssh -p 60022 root@fsicos2.icos-cp.eu`)
 
 
 ## rdflog

@@ -8,7 +8,7 @@
 #   icos play jupyter jupyter_jusers -evirtualenv_recreate=True
 
 
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
     jupyter_domains:
@@ -113,7 +113,7 @@
     - role: icos.bbclient2
       tags: bbclient
       bbclient_remotes:
-        - fsicos2.lunarc.lu.se
+        - fsicos2
         - icos1
       bbclient_name: jupyter
       bbclient_timer_content: |

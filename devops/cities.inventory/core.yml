@@ -69,7 +69,7 @@ all:
 
     core_server:
       hosts:
-        fsicos2.lunarc.lu.se:
+        fsicos2:
 
       vars:
         coreapp_httpproxy_host: cities.lxd

@@ -1,0 +1,14 @@
+---
+collections:
+  - name: community.general
+    version: ">=9.0.0"
+
+  - name: ansible.posix
+
+  - name: community.docker
+
+  - name: community.mysql
+
+  - name: community.postgresql
+
+  - name: community.crypto

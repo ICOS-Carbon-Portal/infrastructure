@@ -46,7 +46,7 @@
     - name: reboot
       reboot:
 
-- host: jammy_hosts
+- hosts: jammy_hosts
   tasks:
     - name: Make sure docker isn't upgraded
       dpkg_selections:

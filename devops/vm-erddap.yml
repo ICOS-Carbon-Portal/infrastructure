@@ -1,7 +1,7 @@
 # update domains
 #   icos play erddap cert nginx
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     certbot_name: erddap
     certbot_domains:

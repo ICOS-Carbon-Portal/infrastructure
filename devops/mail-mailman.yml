@@ -10,7 +10,7 @@
 # Redeploy proxy configuration
 #   icos play mailman proxy
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     mailman_rest_pass: "{{ vault_mailman_rest_pass }}"
     mailman_rest_allow_deny: "{{ vault_mailman_rest_allow_deny }}"
@@ -32,7 +32,7 @@
         bbclient_home: "{{ mailman_home }}/bbclient"
         bbclient_coldbackup: "{{ mailman_home }}"
         bbclient_remotes:
-          - fsicos2.lunarc.lu.se
+          - fsicos2
           - icos1
 
   tasks:

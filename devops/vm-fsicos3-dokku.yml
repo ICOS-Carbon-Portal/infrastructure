@@ -1,4 +1,4 @@
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   roles:
     - name: Create the dokku VM
       role: icos.lxd_vm

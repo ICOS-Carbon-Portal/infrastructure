@@ -1,7 +1,7 @@
 # display instructions
 #   run nextcloud_sftp.yml howto
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     groupfolder_name: PAUL
     groupfolder_id: 27
@@ -160,7 +160,7 @@
       expect:
         command: >-
           sftp -P 60022 -oPreferredAuthentications=password
-          {{ sftp_user }}@fsicos2.lunarc.lu.se
+          {{ sftp_user }}@fsicos2.icos-cp.eu
         responses:
           "password:": "{{ vault_nc_paul_upload_password }}"
           "sftp>":
@@ -185,7 +185,7 @@
         msg: |
           # ssh config is as follows
           host sftp-paul-nextcloud
-            hostname fsicos2.lunarc.lu.se
+            hostname fsicos2.icos-cp.eu
             port {{ sftp_port }}
             user {{ sftp_user }}
             preferredauthentications password
@@ -194,5 +194,5 @@
           sftp sftp-paul-nextcloud
 
           # Without a ssh config, use the longer command:
-          sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.lunarc.lu.se
+          sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-cp.eu
           # The password is {{ vault_nc_paul_upload_password }}
