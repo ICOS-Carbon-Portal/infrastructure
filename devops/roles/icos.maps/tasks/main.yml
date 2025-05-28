@@ -3,5 +3,4 @@
   vars:
     nginxsite_name: maps
     nginxsite_file: maps-nginx.conf
-    nginxsite_domains:
-      - "{{ maps_domain }}"
+    nginxsite_domains: "{{ maps_domains }}"
