@@ -5,12 +5,12 @@ all:
 # The server running the main database.
 rdflog_server:
   hosts:
-    fsicos2.lunarc.lu.se:
+    fsicos2.icos-cp.eu:
 
 # The servers hosting VMs that run replicas.
 pgrep_rdflog_server:
   hosts:
-    fsicos3.lunarc.lu.se:
+    fsicos3:
       rdflog_vm_name: pgrep1
     cdb.nateko.lu.se:
       rdflog_vm_name: pgrep2
@@ -20,7 +20,7 @@ pgrep_rdflog:
   vars:
     pgrep_name: rdflog
     pgrep_peer_user: pgrepuser
-    pgrep_peer_host: fsicos2.lunarc.lu.se
+    pgrep_peer_host: fsicos2
     pgrep_peer_port: "{{ rdflog_ext_port }}"
     pgrep_peer_pass: "{{ vault_rdflog_rep_pass }}"
     pgrep_peer_cert: roles/icos.rdflog/files/server.crt

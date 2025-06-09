@@ -6,7 +6,7 @@
 - name: Install/upgrade uv
   include_tasks:
     file: install.yml
-  when: not _r.stat.exists or uv_upgrade
+  when: not _r.stat.exists or uv_upgrade or not ansible_check_mode
 
 - name: Create "global" version of uv
   copy:

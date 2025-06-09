@@ -1,4 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   tasks:
     - name: Add nextcloud to vmagent
       tags: nextcloud

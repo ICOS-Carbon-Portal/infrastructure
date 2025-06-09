@@ -5,9 +5,9 @@
 #  icos play callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
 #
 # Deploy filedrop website
-#  icos play callisto filedrop -lfsicos3.lunarc.lu.se
+#  icos play callisto filedrop -lfsicos3
 
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     callisto_ip: "{{ _lxd.addresses.eth0 | first }}"
   pre_tasks:
@@ -170,7 +170,7 @@
       tags: bbclient_ute
       bbclient_name: callisto_home_ute
       bbclient_remotes:
-        - fsicos2.lunarc.lu.se
+        - fsicos2
         - icos1
       bbclient_timer_content: |
         #!/bin/bash
@@ -188,7 +188,7 @@
       tags: bbclient_radon
       bbclient_name: radon_map
       bbclient_remotes:
-        - fsicos2.lunarc.lu.se
+        - fsicos2
         - icos1
       bbclient_timer_content: |
         #!/bin/bash

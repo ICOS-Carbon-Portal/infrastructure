@@ -9,7 +9,7 @@
 #   icos play ganymede jbuild -evirtualenv_recreate=True
 
 
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     # These variable are prefixed with 'jupyter_' instead of 'ganymede_' so
     # that we can reuse files/jupyter.conf without change.

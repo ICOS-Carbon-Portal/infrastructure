@@ -119,7 +119,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 		buildInfoKeys := Seq[BuildInfoKey](name, version),
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
 		buildInfoKeys ++= Seq(
-			BuildInfoKey.action("buildTime") {java.time.Instant.now()},
+			BuildInfoKey.action("buildTime") {java.time.Instant.now().toString()},
 			BuildInfoKey.action("gitHash") {
 				Process("git rev-parse HEAD").lineStream.mkString("")
 			},

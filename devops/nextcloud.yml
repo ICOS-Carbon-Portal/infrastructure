@@ -7,7 +7,7 @@
 # Deploy new version of onlyoffic
 #   icos play nextcloud onlyoffice
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - role: icos.nextcloud
       tags: nextcloud
@@ -38,5 +38,5 @@
         R /disk/data/nextcloud
         R /docker/nextcloud/volumes
       bbclient_remotes:
-        - fsicos2.lunarc.lu.se
+        - fsicos2
         - icos1

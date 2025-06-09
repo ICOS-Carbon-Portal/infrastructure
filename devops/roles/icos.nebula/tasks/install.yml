@@ -42,3 +42,4 @@
   debug:
     msg: |
       We've installed nebula {{ version.results[0].stdout_lines[0] }}
+  when: not ansible_check_mode

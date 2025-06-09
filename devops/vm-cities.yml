@@ -1,6 +1,6 @@
 # Create the ICOS Cities VM.
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     pool_name: cities
     # storage_pools is the same name as LXD uses

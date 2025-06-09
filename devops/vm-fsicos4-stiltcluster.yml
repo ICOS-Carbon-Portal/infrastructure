@@ -1,5 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
-  tags: stiltjar
+- hosts: fsicos2
   tasks:
     - name: Retrive stiltcluster.jar
       fetch:

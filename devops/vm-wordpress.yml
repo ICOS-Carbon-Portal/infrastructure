@@ -1,7 +1,8 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     wordpress_domains:
       - www.ingos-infrastructure.eu
+      - eric-forum.eu
       - www.eric-forum.eu
       - www.icos-summerschool.eu
       - www.envriplus.eu

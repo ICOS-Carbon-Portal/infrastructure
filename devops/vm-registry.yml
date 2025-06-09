@@ -1,4 +1,4 @@
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     registry_domain: registry.icos-cp.eu
   pre_tasks:

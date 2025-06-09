@@ -73,3 +73,25 @@
       add_header = 6;
       greylist = 4;
   notify: restart rspamd
+
+- name: Remove NiXSpam (remove once rspamd is updated to remove this from core)
+  ansible.builtin.copy:
+    dest: "{{ item.dest }}"
+    mode: "0644"
+    content: "{{ item.content }}"
+  loop:
+    - dest: "/etc/rspamd/local.d/rbl.conf"
+      content: |
+        rbls {
+          nixspam {
+            enabled = false;
+          }
+        }
+    - dest: "/etc/rspamd/local.d/rbl_group.conf"
+      content: |
+        symbols {
+          RBL_NIXSPAM {
+            enabled = false;
+          }
+        }
+  notify: restart rspamd

@@ -1,4 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - name: Create the flexextract VM
       tags: vm
@@ -14,6 +14,10 @@
           source: /disk/data/flexextract
           type: disk
           recursive: "true"
+        flexextract_meteo:
+          path: /data/flexextract/meteo
+          source: /nfs/flexextract_meteo
+          type: disk
         flexpart_output:
           path: /data/flexpart/output
           source: /data/flexpart/output

@@ -12,7 +12,7 @@
 
 # "For users of the snap, those limits are automatically raised."
 - name: Modify /etc/security/limits.conf
-  when: not lxd_is_snap
+  when: not lxd_is_snap and not ansible_check_mode
   tags: lxd_limits
   copy:
     dest: /etc/security/limits.conf

@@ -1,0 +1,23 @@
+- hosts: fsicos4
+  roles:
+    - role: icos.caddy
+      tags: caddy
+      caddy_name: fdpdemo
+      caddy_conf: |
+        fdpdemo.envri.eu {
+            reverse_proxy 10.10.10.236:80
+        }
+
+- hosts: fdp
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
+      tags: docker

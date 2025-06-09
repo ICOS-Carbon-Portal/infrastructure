@@ -1,7 +1,7 @@
 vmagent_hosts:
   vars:
     # We serve up the Web UI for vmagent on the host's domain name (i.e
-    # fsicos2.lunarc.lu.se) under this top-level path.
+    # fsicos2.icos-cp.eu) under this top-level path.
     vmagent_pathprefix: "/vmagent"
     vmagent_remote: "https://prom.icos-cp.eu/api/v1/write"
     vmagent_auth: "{{ vault_vmagent_auth }}"
@@ -16,11 +16,11 @@ vmagent_hosts:
       dockermon_enable: true
       lxdmon_enable: true
 
-    fsicos2.lunarc.lu.se:
+    fsicos2:
       dockermon_enable: true
       dirsize_initial:
         - /disk/data/nextcloud
         - /var/log
 
-    fsicos3.lunarc.lu.se:
+    fsicos3:
       lxdmon_enable: true

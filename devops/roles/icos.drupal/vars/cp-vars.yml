@@ -18,7 +18,6 @@ drupal_modules: [
   menu_breadcrumb,
   metatag,
   pathauto,
-  plausible,
   readonlymode,
   redirect,
   scheduler,

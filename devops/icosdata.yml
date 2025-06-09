@@ -1,6 +1,6 @@
 # ZFS
 - hosts:
-    - fsicos3.lunarc.lu.se
+    - fsicos3
   tags:
     - zfs
   tasks:
@@ -16,10 +16,11 @@
 
 # NFS
 - hosts:
-    - fsicos2.lunarc.lu.se
-    - fsicos3.lunarc.lu.se
+    - fsicos2
+    - fsicos3
     - icos1
     - cupcake
+    - pancake
 
   tags:
     - nfs
@@ -68,6 +69,12 @@
         block: "{{ icosdata_exports }}"
       notify: Reload NFS server
 
+    - when: icosdata_exports is defined
+      name: Export all directories listed in `/etc/exports`
+      tags: export
+      command: "exportfs -rav"
+      changed_when: no
+
     - when: icosdata_nfs_mounts is defined
       name: Mount nfs data
       tags: mount
@@ -84,7 +91,7 @@
 
 
 # LXD
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   tasks:
     - name: Create icosdata LXD profile
       tags: profile

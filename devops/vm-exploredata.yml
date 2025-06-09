@@ -1,4 +1,4 @@
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     exploredata_ip: "{{ _lxd.addresses.eth0 | first }}"
   tasks:
@@ -57,6 +57,7 @@
         wait_for_ipv4_interfaces: eth0
         timeout: 60
       register: _lxd
+      when: not ansible_check_mode
 
 
     - name: Forward ssh port and create /etc/hosts entry
