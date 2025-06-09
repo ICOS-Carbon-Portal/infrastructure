@@ -7,6 +7,6 @@
 # Show other tags
 #   $ icos play geoip --list-tags
 #
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - role: icos.geoip

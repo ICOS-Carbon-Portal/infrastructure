@@ -2,7 +2,7 @@
 #  Each host having been installed with docker etc.
 #  Each host being part of the nebula network.
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   handlers:
     - name: reload nfs server
       service:

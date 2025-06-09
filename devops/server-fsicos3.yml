@@ -1,9 +1,10 @@
 # icos play fsicos3 nginx_certbot
 
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   roles:
     - role: icos.server
       tags: server
+      when: not ansible_check_mode
 
     - role: icos.lxd_server
       tags: lxd

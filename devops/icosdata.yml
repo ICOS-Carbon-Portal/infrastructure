@@ -1,6 +1,6 @@
 # ZFS
 - hosts:
-    - fsicos3.lunarc.lu.se
+    - fsicos3
   tags:
     - zfs
   tasks:
@@ -16,8 +16,8 @@
 
 # NFS
 - hosts:
-    - fsicos2.lunarc.lu.se
-    - fsicos3.lunarc.lu.se
+    - fsicos2
+    - fsicos3
     - icos1
     - cupcake
     - pancake
@@ -91,7 +91,7 @@
 
 
 # LXD
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   tasks:
     - name: Create icosdata LXD profile
       tags: profile

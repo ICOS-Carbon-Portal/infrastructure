@@ -2,7 +2,7 @@ stiltcluster_hosts:
   vars:
     stiltcluster_hostname: "{{ inventory_hostname }}.nebula"
     stiltcluster_stiltweb_hostname: fsicos2.nebula
-    stiltcluster_fetch_host: fsicos2.lunarc.lu.se
+    stiltcluster_fetch_host: fsicos2
     stiltcluster_fetch_path: /home/stiltcluster/stiltcluster.jar
 
   hosts:
@@ -10,7 +10,7 @@ stiltcluster_hosts:
       stilt_input_dir: /data/stilt/Input
       stiltcluster_maxcores: 50
 
-    # fsicos2.lunarc.lu.se:
+    # fsicos2:
     #   stilt_input_dir: /disk/data/stilt/Input
     #   stiltcluster_maxcores: 12
 
@@ -20,7 +20,7 @@ stiltcluster_hosts:
       # The machine has 24
       stiltcluster_maxcores: 20
 
-    # fsicos3.lunarc.lu.se:
+    # fsicos3:
     #   stiltrun_user: stiltcluster
     #   stiltcluster_docker: false
     #   stiltcluster_maxcores: 40
