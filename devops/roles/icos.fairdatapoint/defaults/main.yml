@@ -1,13 +1,21 @@
 # Directory on host where we'll store docker-compose.yml etc.
-fdp_home: /opt/fairdatapoint
+fdp_home: /opt/fdpenvri
 
 # The publicly reachable https domain we'll reverse proxy to docker.
-fdp_domain: fdp.icos-cp.eu
+fdp_domain: fairdatapointdemo.envri.eu
 
 # The port on localhost that docker will forward to the fdp container.
-fdp_port: 8002
+fdp_port: 8003
 
+mongodb_uri: mongodb://mongo:27017/fdp
 
-nginxsite_name: fairdatapoint
+# If enabled, turn the FDP into a FDP Index that can be contacted by and harvest metadata from other FDPs.
+# Requires using the fairdatapoint-index-client Docker image.
+index_enabled: false
+
+# If enabled, ping the default FDP Index at https://home.fairdatapoint.org every 7 days.
+ping_enabled: false
+
+nginxsite_name: fairdatapointdemo
 nginxsite_file: fairdatapoint-nginx.conf
 nginxsite_domains: [ "{{ fdp_domain }}" ]

@@ -2,7 +2,7 @@
 
 - name: Create fairdatapoint directory
   file:
-    path: "{{ fdp_home }}/volumes/"
+    path: "{{ fdp_home }}/"
     state: directory
 
 
@@ -12,6 +12,20 @@
     dest: "{{ fdp_home }}"
     lstrip_blocks: yes
   register: _compose
+
+
+- name: Copy Dockerfile
+  template:
+    src: Dockerfile
+    dest: "{{ fdp_home }}"
+  register: _dockerfile
+
+
+- name: Copy jarfile
+  copy:
+    src: "{{ fdp_jar_file }}"
+    dest: "{{ fdp_home }}/fdp.jar"
+  register: _jarfile
 
 
 - name: Generate JWT secret
@@ -30,7 +44,7 @@
 - name: Copy application.yml
   template:
     src: application.yml
-    dest: "{{ fdp_home }}/volumes/"
+    dest: "{{ fdp_home }}/"
     lstrip_blocks: yes
   register: _config
 
@@ -38,4 +52,4 @@
 - name: Start fairdatapoint
   icos_docker_compose:
     chdir: "{{ fdp_home }}"
-    force_recreate: "{{ _config.changed or _compose.changed }}"
+    force_recreate: "{{ _config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed }}"
