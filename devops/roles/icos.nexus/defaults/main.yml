@@ -2,7 +2,7 @@ nexus_home: "{{ docker_compose_home | default('/docker') }}/nexus"
 
 nexus_host_port: 8881
 nexus_domains: ["repo.icos-cp.eu"]
-nexus_version: 2.11.4-01
+nexus_version: 2.15.2
 
 certbot_name: nexus
 certbot_domains: "{{ nexus_domains }}"

@@ -7,44 +7,41 @@ set -u
 # provide debug output
 set -x
 
-
 function sync_input_data_from_fsicos1 {
-	cd "{{ stiltweb_stiltdir }}/Input"
-	
-	INPUT_DIRS=(EDGARv4.3 # emission data
-				INI_BDY	  # initial boundary conditions
-				Metdata	  # meteorology data
-				Radon	  # radon fluxes
-				VPRM	  # biospheric fluxes
-			   )
-	
-	# comma-separate the dirs
-	printf -v include_pattern "%s," "${INPUT_DIRS[@]}"
-	# strip final comma
-	include_pattern=${include_pattern%?}
+  cd "{{ stiltweb_stiltdir }}/Input"
 
-	# don't use -a since that implies --owner and --group, which would require
-	# root to accomplish
-	rsync -rlptDv "fsicos.lunarc.lu.se:/disk/data/STILT/{$include_pattern}" .
+  INPUT_DIRS=(EDGARv4.3 # emission data
+    INI_BDY             # initial boundary conditions
+    Metdata             # meteorology data
+    Radon               # radon fluxes
+    VPRM                # biospheric fluxes
+  )
+
+  # comma-separate the dirs
+  printf -v include_pattern "%s," "${INPUT_DIRS[@]}"
+  # strip final comma
+  include_pattern=${include_pattern%?}
+
+  # don't use -a since that implies --owner and --group, which would require
+  # root to accomplish
+  rsync -rlptDv "fsicos.nebula:/disk/data/STILT/{$include_pattern}" .
 }
-
 
 function sync_output_data_from_fsicos1 {
-	cd "{{ stiltweb_stiltdir }}"
+  cd "{{ stiltweb_stiltdir }}"
 
-	rsync_opts=(
-		# preserve most everything and be verbose about it
-		-rlptDv
-		# skip about 2 million symbolink links
-		--exclude='/RData/*/RData*'
-		# source as a glob pattern for two directories
-		'fsicos.lunarc.lu.se:/disk/data/STILT/{Footprints,RData,Results}'
-		# destination, that's a dot, not a dirty screen.
-		.
-	)
-	rsync "${rsync_opts[@]}"
+  rsync_opts=(
+    # preserve most everything and be verbose about it
+    -rlptDv
+    # skip about 2 million symbolink links
+    --exclude='/RData/*/RData*'
+    # source as a glob pattern for two directories
+    'fsicos.nebula:/disk/data/STILT/{Footprints,RData,Results}'
+    # destination, that's a dot, not a dirty screen.
+    .
+  )
+  rsync "${rsync_opts[@]}"
 }
-
 
 sync_input_data_from_fsicos1
 sync_output_data_from_fsicos1

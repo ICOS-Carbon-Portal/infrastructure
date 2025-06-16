@@ -11,6 +11,7 @@
   register: _config
 
 - name: Copy jarfile
+  when: stiltweb_jar_file is defined
   copy:
     src: "{{ stiltweb_jar_file }}"
     dest: "{{ stiltweb_home }}/stiltweb.jar"

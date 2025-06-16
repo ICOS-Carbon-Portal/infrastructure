@@ -1,6 +1,6 @@
 # This playbook contains various domains.
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     # ICOS RI
     - role: icos.certbot2

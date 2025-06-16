@@ -12,7 +12,7 @@
       CONFIG_DIR={{ dnsmasq_config_dir }}
 
       # If the resolvconf package is installed, dnsmasq will tell resolvconf
-      # to use dnsmasq under 127.0.0.1 as the system's default resolver.
+      # to use dnsmasq at 127.0.0.1 as the system's default resolver.
       # Uncommenting this line inhibits this behaviour.
       DNSMASQ_EXCEPT="lo"
 

@@ -1,4 +1,4 @@
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     registry_domain: registry.icos-cp.eu
   pre_tasks:
@@ -78,7 +78,7 @@
     - role: icos.lxd_guest
       tags: guest
 
-    - role: icos.docker
+    - role: icos.docker2
       tags: docker
 
     - role: icos.registry

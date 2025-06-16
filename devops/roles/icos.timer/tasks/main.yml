@@ -58,6 +58,7 @@
   changed_when: '"Created" in _r.stdout'
 
 - name: Start timer
+  when: not ansible_check_mode
   systemd:
     name: "{{ timer_name }}.timer"
     enabled: yes

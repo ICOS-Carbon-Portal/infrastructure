@@ -57,7 +57,7 @@ restheart --is a proxy for--> mongo
 
 ## Install required utilities
 To get started, one needs:
-- Ubuntu 20.04 LTS or an equivalent Linux distribution (e.g. Linux Mint 20)
+- Ubuntu 22.04 LTS or an equivalent Linux distribution (e.g. Linux Mint 20)
 - Git
 - Docker
 - Docker compose plugin v2
@@ -83,6 +83,23 @@ candidate.)
 Make sure `ansible-playbook` is on your path. Get the ansible-vault password
 from a colleague and place it in file `~/.vault_password`.
 
+## (Optionally) install just
+"Just is a handy way to save and run project-specific commands."
+
+
+Install it by following the instructions at https://github.com/casey/just
+
+Then navigate to infrastructure/devops and run
+
+    $ just _shim
+
+Once this done, there'll be an ```icos``` command that serves as a frontend CLI for all tasks in the infrastructure repo. Running the command without arguments will provide help.
+
+    $ icos
+
+As an example, the stiltweb.yml playbook can be run as
+
+    $ icos play stiltweb -DC
 
 ## Install java and scala
 
@@ -109,17 +126,17 @@ key, at a minimum it should be password protected.
 Check that you can access our primary production server by running this
 command:
 
-`$ ssh -p 60022 root@fsicos2.lunarc.lu.se hostname`
+`$ ssh -p 60022 root@fsicos2.icos-cp.eu hostname`
 
 The output should be:
 
-`fsicos2.lunarc.lu.se`
+`fsicos2`
 
 If you want to save some on typing, you can create a ssh config file. Add the
 following to `~/.ssh/config`:
 ```
 host fsicos2
-    hostname fsicos2.lunarc.lu.se
+    hostname fsicos2.icos-cp.eu
     user root
     port 60022
 ```
@@ -129,7 +146,7 @@ Now you can re-run the same command in a simpler way:
 `$ ssh fsicos2 hostname`
 
 The results should be the same. The rest of this document will use the simpler
-syntax (i.e `ssh fsicos2` instead of `ssh -p 60022 root@fsicos2.lunarc.lu.se`)
+syntax (i.e `ssh fsicos2` instead of `ssh -p 60022 root@fsicos2.icos-cp.eu`)
 
 
 ## rdflog

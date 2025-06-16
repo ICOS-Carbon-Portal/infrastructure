@@ -1,0 +1,42 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+api := "localhost:2019"
+jq := "jq -C  | less -R"
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+# tail logs showing only the messages
+tail:
+    journalctl _EXE=/usr/bin/caddy -fu caddy -o json \
+    | jq -r '.MESSAGE' --unbuffered \
+    | jq -r '.msg'
+
+# show status for the systemd service
+status:
+    systemctl status caddy
+
+# dump current config
+dumpconfig:
+    curl {{api}}/config/ | {{jq}}
+
+# show a list of caddy moduls
+modules:
+    # if xcaddy has been used to introduce extra modules, these will be at the
+    # end of output
+    caddy list-modules
+
+# edit config, syntax check, reload, show logs
+edit:
+    mg /etc/caddy/Caddyfile
+    -systemctl reload caddy
+    journalctl -fu caddy
+
+# show current version
+version:
+    caddy --version
+
+# show latest version available on github
+latest:
+    # version
+    curl --silent https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.name | gsub("^v"; "")'

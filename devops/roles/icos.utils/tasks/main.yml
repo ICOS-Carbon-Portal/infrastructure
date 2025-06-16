@@ -55,3 +55,6 @@
 
 - import_tasks: trippy.yml
   tags: trippy
+
+- import_tasks: lazygit.yml
+  tags: lazygit

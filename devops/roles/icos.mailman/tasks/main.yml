@@ -21,17 +21,16 @@
       src: mailman-extra.cfg
     - dest: "{{ mailman_volume_web }}"
       src: settings_local.py
-    - dest: "{{ mailman_home }}/build/mailman-web/Dockerfile"
+    - dest: "{{ mailman_volume_web }}"
       src: Dockerfile.web
     - dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
       src: Dockerfile.core
   register: _files
 
 - name: Start containers
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ mailman_home }}"
-    build: true
-    restarted: "{{ _files.changed }}"
+    build: always
 
 - name: Test the REST API
   uri:
@@ -53,6 +52,54 @@
     append: "{{ item.append | default(omit) }}"
   loop: "{{ mailman_postfix_config }}"
 
+- name: delete_spam tasks
+  tags: mailman_delete_spam
+  block:
+  - name: Copy mailman_delete_spam files
+    template:
+      dest: "{{ item.dest | default(mailman_home) }}"
+      src: "{{ item.src }}"
+      mode: "{{ item.mode | default(omit) }}"
+    loop:
+      - src: delete_spam_hyperkitty.py
+      - src: get_spam_ids.py
+      - src: requirements.txt
+    register: _files
+
+  - name: Write config.ini file
+    copy:
+      dest: "{{ mailman_home }}/config.ini"
+      mode: 0644
+      content: |
+        [mm_settings]
+        url    = https://{{ mailman_domains | first }}/rest/3.0/
+        user   = {{ mailman_rest_user }}
+        pass   = {{ vault_mailman_rest_pass }}
+        hyperkittyuser = {{ vault_mailman_hyperkitty_user }}
+        hyperkittypass = {{ vault_mailman_hyperkitty_pass }}
+
+  - name: Install required modules into Python virtual environment
+    ansible.builtin.pip:
+      virtualenv: "{{ mailman_home }}/mailman-web-venv"
+      virtualenv_command: "python3 -m venv"
+      requirements: "{{ mailman_home }}/requirements.txt"
+
+  - name: Install mailman-delete-spam timer
+    include_role:
+      name: icos.timer
+    vars:
+      timer_user: "{{ mailman_user }}"
+      timer_home: "{{ mailman_home }}"
+      timer_name: "mailman-delete-spam"
+      timer_conf: |
+        OnCalendar=*-*-* 4:05:00
+      timer_content: |
+        #!/bin/bash
+        {{ mailman_home }}/mailman-web-venv/bin/python3 {{ mailman_home }}/get_spam_ids.py
+        docker exec mailman-web mkdir -p /opt/mailman-web/scripts
+        docker cp {{ mailman_home }}/all_spam_ids.csv mailman-web:/opt/mailman-web-data/
+        docker cp {{ mailman_home }}/delete_spam_hyperkitty.py mailman-web:/opt/mailman-web/scripts
+        docker exec mailman-web /opt/mailman-web/manage.py runscript delete_spam_hyperkitty
 
 - import_tasks: just.yml
   tags: mailman_just

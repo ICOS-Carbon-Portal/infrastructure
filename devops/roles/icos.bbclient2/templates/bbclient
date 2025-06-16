@@ -2,6 +2,6 @@
 
 set -Eeo pipefail
 
-export BORG_REPO="$(head -1 {{ bbclient_repo_file }})"
+export BORG_REPO="$(grep -v '^#' {{ bbclient_repo_file }} | head -1)"
 
 "{{ bbclient_wrapper }}" "$@"

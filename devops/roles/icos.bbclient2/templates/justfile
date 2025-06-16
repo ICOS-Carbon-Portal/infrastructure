@@ -5,11 +5,29 @@ set shell := ['/bin/bash', '-cu']
 @_default:
     just --list --unsorted --justfile {{justfile()}}
 
+
+
+# MISC
+# run the ssh wrapper
+[group('misc')]
+ssh *args:
+    {{{{ bbclient_ssh_bin }}}} "$@"
+
+
+
+# STATUS
+# run "borg info" for all configured repos
+[group('status')]
+info:
+    bin/bbclient-all info
+
 # show last time the timer ran
+[group('status')]
 last:
     systemctl list-timers "bbclient-{{{{ bbclient_name }}}}*"
 
 # tail the systemd logs
+[group('status')]
 tail *args:
     {% if bbclient_timer_content is defined %}
     journalctl -fu bbclient-{{{{ bbclient_name }}}}
@@ -20,7 +38,21 @@ tail *args:
     exit 1
     {% endif %}
 
+
+
+# BACKUP
+{% if bbclient_coldbackup is defined %}
+# make a dirty backup (without stopping service)
+[group('backup')]
+dirty:
+    cd "{{{{ bbclient_coldbackup }}}}" && {{{{ bbclient_all }}}} create -x -v --stats "::dirty-{now}" --patterns-from {{{{ bbclient_patterns_path }}}}
+{% endif %}
+
+
+
+# SYSTEMD
 # start the bbclient systemd service
+[group('systemd')]
 run:
     {% if bbclient_timer_content is defined %}
     systemctl start bbclient-{{{{ bbclient_name }}}}
@@ -32,6 +64,7 @@ run:
     {% endif %}
 
 # status of bbclient systemd service
+[group('systemd')]
 status *args=("-n 100"):
     {% if bbclient_timer_content is defined %}
     -systemctl status bbclient-{{{{ bbclient_name }}}} "$@"
@@ -41,10 +74,20 @@ status *args=("-n 100"):
     echo "no bbclient timer defined"
     {% endif %}
 
+
+
+# MAINTENANCE
+# allow relocated repos
+[group('maintenance')]
+relocate:
+    BORG_RELOCATED_REPO_ACCESS_IS_OK=yes ./bin/bbclient-all info
+
 # locate cache of a named directory
+[group('maintenance')]
 find-cache name:
-    grep {{name}} {{{{bbclient_home}}}}/borg/.config/borg/security/*/manifest-timestamp
+    grep {{name}} borg/.config/borg/security/*/manifest-timestamp
 
 # try to work around "cache is newer"
+[group('maintenance')]
 reset-cache id:
-    rm  {{{{bbclient_home}}}}/borg/.config/borg/security/{{id}}/manifest-timestamp
+    rm  borg/.config/borg/security/{{id}}/manifest-timestamp

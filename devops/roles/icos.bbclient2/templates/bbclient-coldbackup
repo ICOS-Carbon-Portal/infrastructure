@@ -46,6 +46,9 @@ def prune():
     bbclient('prune dirty',
              'prune -P dirty- --verbose --stats --keep-last 1')
 
+def compact():
+    bbclient('compact', 'compact --verbose')
+
 
 def start_down_hook():
     p = None
@@ -61,20 +64,12 @@ def start_down_hook():
 
 
 def backup(down=False, dirty=True):
-    if exists('{{ bbclient_patterns_path }}'):
-        patterns = '--patterns-from {{ bbclient_patterns_path }}'
-    else:
-        patterns = 'volumes'
-    try:
-        # If our docker-builds script is available then dump information about
-        # currently running images. Don't care if it fails.
-        run("docker-builds > volumes/build.info", shell=1, stderr=DEVNULL)
+    patterns = '--patterns-from {{ bbclient_patterns_path }}'
 
+    try:
         if dirty:
-            # Otherwise we're probably running from crontab and proceed as
-            # usual. Dirty means that we'll take a backup while the service is
-            # still running. The idea is that the cold backup will go much
-            # faster.
+            # Dirty means that we'll take a backup while the service is still
+            # running. The idea is that the cold backup will go much faster.
             # The dirty backup is run with check=False because borg signals an
             # error if any file changes during backup, which would make run()
             # throw an exception.
@@ -110,6 +105,7 @@ def backup(down=False, dirty=True):
 def main(down, dirty):
     backup(down, dirty)
     prune()
+    compact()
     log('done')
 
 

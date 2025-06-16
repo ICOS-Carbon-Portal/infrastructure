@@ -1,3 +1,7 @@
+- name: Install python3-click
+  apt:
+    name: python3-click
+
 - name: Create coldbackup helper scripts
   template:
     src: "{{ item }}"
@@ -6,12 +10,6 @@
   loop:
     - bbclient-coldbackup
     - bbclient-coldrestore
-
-- name: Remove coldbackup from crontab
-  cron:
-    state: absent
-    name: "bbclient_{{ bbclient_name }}_coldbackup"
-  when: bbclient_coldbackup is defined
 
 - name: Add coldbackup systemd timer
   include_role:

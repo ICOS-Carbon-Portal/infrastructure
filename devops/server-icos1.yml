@@ -5,7 +5,6 @@
 
     - role: icos.nfs4
       tags: nfs
-      nfs4_interface: wg-icos1
 
     - role: icos.docker2
       tags: docker

@@ -10,7 +10,7 @@ cpdata_bind_addr: "{{ coreapp_bind_addr }}"
 cpdata_host: "{{ coreapp_httpproxy_host }}"
 cpdata_port: 9011
 
-cpdata_b2safe_pass:          "{{ vault_cpdata_b2safe_pass }}"
+cpdata_irods_pass:           "{{ vault_cpdata_irods_pass }}"
 cpdata_dlreporter_pass:      "{{ vault_cpdata_dlreporter_pass }}"
 cpdata_cpuser_secret_salt:   "{{ vault_cpauth_user_secret_salt }}"
 cpdata_etcfacade_secret:     "{{ vault_cpdata_etcfacade_secret }}"

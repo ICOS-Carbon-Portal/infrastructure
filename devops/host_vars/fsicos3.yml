@@ -1,0 +1,112 @@
+# SERVER
+iptables_ssh_port: 60022
+lxd_vm_variant: zfs
+
+
+# PROMETHEUS
+nginx_metrics_enable: True
+
+
+# ICOSDATA
+icosdata_exports: |
+  # The 'no_subtree_check' is to avoid warnings about the default behaviour having changed.
+  /incoming                           fsicos2(rw,no_root_squash,no_subtree_check)
+  /data/project/stc                   fsicos2(ro,no_subtree_check)
+  /data/project/eurocom               fsicos2(ro,no_subtree_check)
+  /pool/ute/stilt/RINGO/T1.3/STILT    fsicos2(ro,no_subtree_check)
+  /data/flexpart/output               fsicos2(rw,no_subtree_check)
+  /pool/jupyter/project/coco2/jupyter fsicos2(ro,no_subtree_check,no_root_squash)
+  /data/fit_ic                        pancake.nebula(ro,no_subtree_check,all_squash,anonuid=0,anongid=0)
+
+
+icosdata_mkdirs:
+  - /nfs
+  - /nfs/fsicos2
+  - /data/fit_ic
+
+
+icosdata_nfs_mounts:
+  - path: /nfs/fsicos2
+    src: fsicos2.nebula:/disk/data/incoming
+    opts: "rw,x-systemd.after=nebula.service"
+
+  # flexextract - read-write
+  - path: /nfs/flexextract
+    src: fsicos2.nebula:/disk/data/flexextract
+    opts: "rw,x-systemd.after=zfs-mount.service"
+
+  # flexextract - read-only
+  - path: /data/flexextract
+    src: fsicos2.nebula:/disk/data/flexextract
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  # Cities
+  - path: /data/cities/dataAppStorage
+    src: fsicos2.nebula:/disk/data/cities/dataAppStorage
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  # PAUL
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP1_Data
+    src: fsicos2.nebula:/disk/data/nextcloud/data/__groupfolders/27/WP1/Data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP2_Data
+    src: fsicos2.nebula:/disk/data/nextcloud/data/__groupfolders/27/WP2/Data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP3_Data
+    src: fsicos2.nebula:/disk/data/nextcloud/data/__groupfolders/27/WP3/Data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/jupyter/project/icos_cities/fileshare/WP4_Data
+    src: fsicos2.nebula:/disk/data/nextcloud/data/__groupfolders/27/WP4/Data
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  # other
+  - path: /pool/jupyter/project/coco2/fileshare
+    src: fsicos2.nebula:/disk/data/nextcloud/data/__groupfolders/32
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /nfs/fluxcom_eo
+    src: fsicos2.nebula:/disk/data/nextcloud/data/__groupfolders/14/Data/FLUXCOM
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /data/flexpart/meteo
+    src: fsicos2.nebula:/disk/data/flexpart/meteo
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /data/dataAppStorage
+    src: fsicos2.nebula:/disk/data/dataAppStorage
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /data/stiltweb
+    src: fsicos2.nebula:/disk/data/stiltweb
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /data/obspack
+    src: fsicos2.nebula:/disk/data/obspack
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /data/stilt_legacy
+    src: fsicos2.nebula:/disk/data/stilt
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /data/project/climbeco
+    src: fsicos2.nebula:/disk/data/project/climbeco
+    opts: "ro,soft,x-systemd.after=zfs-mount.service"
+
+  - path: /pool/ute/dataDemo
+    src: fsicos2.nebula:/disk/data/common/netcdf/dataDemo
+    opts: "rw,x-systemd.after=zfs-mount.service"
+
+  - path: /nfs/flexextract_meteo
+    src: icos1.nebula:/pool/flexextract/meteo
+    opts: "rw,soft,x-systemd.after=nebula.service"
+
+  - path: /data/avengers
+    src: pancake.nebula:/data/avengers
+    opts: "ro,soft,x-systemd.after=nebula.service"
+
+  - path: /data/cupcake
+    src: cupcake.nebula:/data/flexpart/output
+    opts: "ro,soft,x-systemd.after=nebula.service"

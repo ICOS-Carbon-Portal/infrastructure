@@ -43,7 +43,7 @@
 # installations.
 - name: Add nextcloud cron to crontab
   cron:
-    job: "cd {{ nextcloud_home }} && time docker-compose exec -u www-data app php -f /var/www/html/cron.php || :"
+    job: "cd {{ nextcloud_home }} && docker compose exec -T -u www-data app php -f /var/www/html/cron.php || :"
     hour: "*"
     minute: "*/5"
     name: "nextcloud_cron"

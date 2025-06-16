@@ -14,7 +14,6 @@
     chdir: "{{ registry_home }}"
     creates: .env
 
-- name: Build and start
-  community.docker.docker_compose:
+- name: Start Build and start containers
+  community.docker.docker_compose_v2:
     project_src: "{{ registry_home }}"
-    build: yes

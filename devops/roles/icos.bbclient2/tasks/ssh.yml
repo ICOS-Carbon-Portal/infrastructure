@@ -11,20 +11,25 @@
     ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
       -C "bbclient_{{ bbclient_name }}@{{ inventory_hostname }}"
 
-- name: Read the public key
-  check_mode: false
-  slurpfact:
-    path: "{{ bbclient_ssh_key }}.pub"
-    fact: bbclient_key_data
-
-- name: Add ssh config
-  blockinfile:
-    # It's important that this config appears first in the file, that
-    # way it applies to all following 'Host' configurations.
-    insertbefore: BOF
-    path: "{{ bbclient_ssh_config }}"
-    block: |
+- name: Create ssh config
+  copy:
+    dest: "{{ bbclient_ssh_config }}"
+    content: |
       UserKnownHostsFile {{ bbclient_ssh_hosts }}
       Identityfile {{ bbclient_ssh_key }}
-    state: present
-    create: yes
+
+      {% for bbclient_remote in bbclient_remotes %}
+      Host {{ bbclient_remote }}
+          HostName {{ hostvars[bbclient_remote].bbserver_host }}
+          User {{ hostvars[bbclient_remote].bbserver_user }}
+          Port {{ hostvars[bbclient_remote].bbserver_port }}
+
+      {% endfor %}
+
+- name: Add ssh wrapper
+  copy:
+    mode: +x
+    dest: "{{ bbclient_ssh_bin }}"
+    content: |
+      #!/usr/bin/bash
+      exec ssh -F {{ bbclient_ssh_config }} "$@"

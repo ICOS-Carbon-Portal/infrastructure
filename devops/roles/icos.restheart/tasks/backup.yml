@@ -1,15 +1,3 @@
-# FIXME: Remove in 2024
-- name: Remove backup from crontab
-  cron:
-    state: absent
-    name: "restheart_backup"
-
-# FIXME: Remove in 2024
-- name: Remove old backup script
-  file:
-    path: "{{ restheart_home }}/backup.sh"
-    state: absent
-
 - include_role:
     name: icos.bbclient2
   vars:
@@ -28,5 +16,6 @@
 
       {{ bbclient_all }} create -xvs '::{now}' backup
       {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=150
+      {{ bbclient_all }} compact --verbose
 
       rm -rf -- ./backup

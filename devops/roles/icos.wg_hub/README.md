@@ -19,10 +19,10 @@ Configuration looks likes:
         icos1.gis.lu.se:
           name: icos1
           addr: 172.30.1.1
-        fsicos2.lunarc.lu.se:
+        fsicos2.icos-cp.eu:
           name: fsicos2
           addr: 172.30.1.2
-        fsicos3.lunarc.lu.se:
+        fsicos3.icos-cp.eu:
           name: fsicos3
           addr: 172.30.1.3
 

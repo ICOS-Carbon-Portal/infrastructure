@@ -1,5 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
-  tags: stiltjar
+- hosts: fsicos2
   tasks:
     - name: Retrive stiltcluster.jar
       fetch:
@@ -10,9 +9,6 @@
         flat: yes
 
 - hosts: fsicos4-stiltcluster
-  vars:
-    stiltcluster_jar_file: tmp/stiltcluster.jar
-    stiltcluster_hostname: fsicos4-stiltcluster.wg-fsicos2
   roles:
     - role: icos.pve_guest
       tags: guest

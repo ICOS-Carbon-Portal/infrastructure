@@ -28,7 +28,7 @@
 
 - name: Install victoriametrics grafana-datasource
   unarchive:
-    src: "https://github.com/VictoriaMetrics/grafana-datasource/releases/download/v{{ hostvars.localhost.grafana_datasource_version }}/victoriametrics-datasource-v{{ hostvars.localhost.grafana_datasource_version }}.zip"
+    src: "https://github.com/VictoriaMetrics/victoriametrics-datasource/releases/download/v{{ hostvars.localhost.grafana_datasource_version }}/victoriametrics-metrics-datasource-v{{ hostvars.localhost.grafana_datasource_version }}.zip"
     dest: "{{ vm_graf_plugins }}"
     remote_src: true
     creates: >-

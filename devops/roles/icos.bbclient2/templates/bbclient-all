@@ -1,5 +1,4 @@
 #!/bin/bash
-
-while read repo; do
+grep -v '^#' "{{ bbclient_repo_file }}" | while read repo; do
     BORG_REPO="$repo" "{{ bbclient_wrapper }}" "$@";
-done < "{{ bbclient_repo_file }}"
+done

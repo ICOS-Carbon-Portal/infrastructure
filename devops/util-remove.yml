@@ -1,4 +1,4 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   vars:
     nginxsite_name: foo
     lxd_vm_name: foo

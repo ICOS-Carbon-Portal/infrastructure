@@ -1,0 +1,56 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set positional-arguments
+set shell := ['/bin/bash', '-cu']
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+
+# DEBUG
+# activate rpcdebug
+[group('debug')]
+debug-on what="nfsd":
+    rpcdebug -m {{what}} -s proc
+
+# deactivate rpcdebug
+[group('debug')]
+debug-off what="nfsd"   :
+    rpcdebug -m {{what}} -c proc
+
+# tail the logs
+[group('debug')]
+tail:
+    tail -f /var/log/messages
+
+
+
+# SERVER
+# show open ports
+[group('server')]
+ports:
+    rpcinfo -p || echo "rcpbind.{service,socket} might be disabled"
+
+# look for iptables rules
+[group('server')]
+iptables:
+    iptables -Lvn | grep -q -C 2 -F -e 2049 -e INPUT -e 111
+
+# show mounts on remote server
+[group('client')]
+showmount host *args:
+    showmount -e {{host}} "{{args}}"
+
+
+
+# EXPORTS
+# show list of exports
+[group('exports')]
+list:
+    exportfs -vs
+
+# reload /etc/exports*
+[group('exports')]
+reload:
+    exportfs -r

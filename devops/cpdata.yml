@@ -1,9 +1,9 @@
-# icos run cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
-# icos run cpdata cpdata_config
+# icos play cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
+# icos play cpdata cpdata_config
 #
 # Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - role: icos.certbot2
       tags: cert
@@ -22,18 +22,3 @@
     - role: icos.dataold
       tags: dataold
 
-  tasks:
-    - name: Create mountpoint for netcdf
-      file:
-        path: /disk/data/common/netcdf/dataDemo
-        state: directory
-      tags: netcdf
-
-    - name: Mount netcdf
-      mount:
-        path: /disk/data/common/netcdf/dataDemo
-        src: fsicos.lunarc.lu.se:/disk/data/common/netcdf/dataDemo
-        fstype: nfs
-        opts: ro
-        state: mounted
-      tags: netcdf

@@ -1,19 +1,35 @@
-- include_tasks: user.yml
+- name: Create user
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password | default(omit) }}"
+    home: "{{ item.home | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    # If item.groups is specified, append defaults to true.
+    append: "{{ item.groups | default(false) | bool }}"
+  loop: "{{ user_conf.create_users | default([]) }}"
+
+- name: Install public key
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.key }}"
+    state: present
+    exclusive: true
+  loop: "{{ user_conf.create_users | default([]) }}"
+
+# Remember that all members of the sudo group have password-less sudo on
+# debian.
+- name: Install password-less sudo rule
+  copy:
+    dest: /etc/sudoers.d/{{ item.name }}
+    content: |
+      {{ item.name }} ALL=(ALL) NOPASSWD: ALL
+  when: item.sudopwless | default(false)
   loop: "{{ user_conf.create_users | default([]) }}"
 
 - name: Remove user
   user:
     name: "{{ item.name }}"
+    # Also remove directories associated with user.
     remove: "{{ item.remove | default(omit) }}"
     state: absent
   loop: "{{ user_conf.remove_users | default([]) }}"
-
-# # A workaround for certain versions of sudo.
-# # https://github.com/sudo-project/sudo/issues/42#issuecomment-609079906
-# - name: Modify sudo.conf
-#   lineinfile:
-#     path: /etc/sudo.conf
-#     line: "Set disable_coredump false"
-#     state: present
-#     create: yes
-#   when: user_disable_coredump

@@ -1,8 +1,8 @@
 # This playbook depends on:
 #  Each host having been installed with docker etc.
-#  The wg-fsicos2.yml playbook have been run
+#  Each host being part of the nebula network.
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   handlers:
     - name: reload nfs server
       service:
@@ -16,7 +16,7 @@
         create: yes
         path: /etc/exports
         block: |
-          /disk/data/stilt            *.wg-fsicos2(ro,no_root_squash)
+          /disk/data/stilt            *.nebula(ro,no_root_squash)
       notify: reload nfs server
 
 - hosts: stiltcluster_hosts
@@ -32,7 +32,7 @@
 
         - name: Mount stilt input data
           mount:
-            src: fsicos2.wg-fsicos2:/disk/data/stilt/Input
+            src: fsicos2.nebula:/disk/data/stilt/Input
             path: "{{ stilt_input_dir }}"
             state: mounted
             fstype: nfs4

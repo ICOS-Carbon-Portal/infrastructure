@@ -1,14 +1,14 @@
 # Deploy the jusers script:
-#   icos run jupyter jupyter_jusers_deploy
+#   icos play jupyter jupyter_jusers_deploy
 #
 # Redeploy/restart the hub:
-#   icos run jupyter jupyter
+#   icos play jupyter jupyter
 #
 # Redeploy jusers:
-#   icos run jupyter jupyter_jusers -evirtualenv_recreate=True
+#   icos play jupyter jupyter_jusers -evirtualenv_recreate=True
 
 
-- hosts: fsicos3.lunarc.lu.se
+- hosts: fsicos3
   vars:
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
     jupyter_domains:
@@ -109,7 +109,27 @@
         cpu_limit: 40
       jupyter_admins:
       jupyter_jusers_enable: true
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_remotes:
+        - fsicos2
+        - icos1
       bbclient_name: jupyter
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -xeu
+
+        # If the repos get moved to another disk - maybe because of storage
+        # running out - we don't want the backup to fail.
+        export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+        {{ bbclient_all }} create --verbose --stats -x "::{now}" /home /project /root/jusers.yml
+        {{ bbclient_all }} prune --stats --list --keep-daily=30 --keep-weekly=150
+
+        # since borg 1.2, a separate compaction is needed
+        {{ bbclient_all }} compact --verbose
+
 
   tasks:
     - name: Create project user
@@ -122,13 +142,6 @@
         home: /home/project
         shell: /usr/bin/bash
         password: '*'
-
-    - name: Install additional ssh keys
-      tags: ssh
-      authorized_key:
-        user: root
-        state: present
-        key: "{{ vault_jupyter_ssh_keys }}"
 
     - name: Deny ssh login to most users
       tags: ssh

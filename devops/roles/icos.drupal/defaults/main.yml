@@ -1,5 +1,5 @@
-drupal_version: 10.3
-drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "otctest", "se", "sites"]
+drupal_version: 10.4
+drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "otc", "otctest", "se", "sites"]
 drupal_home: /disk/data/drupal
 drupal_modules: []
 update: false

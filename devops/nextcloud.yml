@@ -1,13 +1,13 @@
 # Deploy nextcloud (copy files and compile images, but no restart!):
-#   icos run nextcloud nextcloud
+#   icos play nextcloud nextcloud
 #
 # Install coldbackup script:
-#   icos run nextcloud bbclient_coldbackup
+#   icos play nextcloud bbclient_coldbackup
 #
 # Deploy new version of onlyoffic
-#   icos run nextcloud onlyoffice
+#   icos play nextcloud onlyoffice
 
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2
   roles:
     - role: icos.nextcloud
       tags: nextcloud
@@ -37,7 +37,6 @@
       bbclient_patterns: |
         R /disk/data/nextcloud
         R /docker/nextcloud/volumes
-
       bbclient_remotes:
-        - fsicos2.lunarc.lu.se
+        - fsicos2
         - icos1

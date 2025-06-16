@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   nexus:
     # https://hub.docker.com/r/sonatype/nexus/tags
@@ -7,6 +5,8 @@ services:
     container_name: nexus
     ports:
       - "127.0.0.1:{{ nexus_host_port }}:8081"
+    environment:
+      CONTEXT_PATH: /
     volumes:
       - ./volumes/storage:/sonatype-work
       - /etc/localtime:/etc/localtime:ro

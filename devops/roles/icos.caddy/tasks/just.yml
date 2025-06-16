@@ -1,17 +1,8 @@
-# FIXME: Remove 202406
-- name: Remove /usr/local/bin/icos-caddy
-  file:
-    name: /usr/local/bin/icos-caddy
-    state: absent
-
 - name: Copy justfile
-  template:
-    src: justfile
-    dest: /usr/local/bin/ops-caddy
+  copy:
+    src: ops-caddy
+    dest: /usr/local/bin/
     mode: +x
-    variable_start_string: "(("
-    variable_end_string: "))"
-    lstrip_blocks: yes
   register: _justfile
 
 - name: Check that the justfile is executable

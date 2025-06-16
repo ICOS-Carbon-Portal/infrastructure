@@ -1,24 +1,23 @@
-### REMOTE ###
+# LOCAL
+- name: Read the public key
+  check_mode: false
+  slurpfact:
+    path: "{{ bbclient_ssh_key }}.pub"
+    fact: bbclient_key_data
 
+
+# REMOTE
 - name: Configure remote - bbserver - host
   delegate_to: "{{ bbclient_remote }}"
   block:
-    - name: Retrieve remote SSH IP
-      become: no # without this, the env disappear
-      check_mode: false
-      shellfact:
-        exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
-        fact: bbclient_remote_ip
-
     - name: Retrieve host keys
-      become: no # without this, the env disappear
       check_mode: false
       shellfact:
         # The keys don't always appear in the same order, so sort them.
         # Otherwise the known_hosts task on LOCAL will keep changing.
         exec: >-
-          ssh-keyscan -p {{ bbclient_remote_port }} localhost
-          | sed "s/localhost/{{ bbclient_remote_ip }}/"
+          ssh-keyscan -p {{ hostvars[bbclient_remote].bbserver_port }} localhost
+          | sed "s/localhost/{{ hostvars[bbclient_remote].bbserver_host }}/"
           | sort -u
         fact: bbclient_remote_keys
 
@@ -28,26 +27,14 @@
         state: present
         key: "{{ bbclient_key_data }}"
         key_options: >-
-          command="{{ bbclient_remote_bin }} serve --restrict-to-path {{ bbclient_remote_repo }}",restrict
+          command="/usr/local/bin/borg serve --restrict-to-path {{ bbclient_remote_repo }}",restrict
 
 
-### LOCAL ###
-
+# LOCAL
 - name: Configure local - bbclient - host
   become: yes
   become_user: "{{ bbclient_user }}"
   block:
-  - name: Write SSH config
-    blockinfile:
-      create: yes
-      path: "{{ bbclient_ssh_config }}"
-      marker: "# {mark} bbclient {{ bbclient_remote }}"
-      block: |
-        Host {{ bbclient_remote }}
-          HostName {{ bbclient_remote_ip }}
-          User {{ bbclient_remote_user }}
-          Port {{ bbclient_remote_port }}
-
   - name: Update known_hosts
     blockinfile:
       create: yes
@@ -65,10 +52,3 @@
     failed_when:
       - r.rc != 0
       - not r.stderr.startswith('A repository already exists at')
-
-  - name: Remember repo url
-    lineinfile:
-      path: "{{ bbclient_repo_file }}"
-      line: "{{ bbclient_repo_url }}"
-      state: present
-      create: yes
