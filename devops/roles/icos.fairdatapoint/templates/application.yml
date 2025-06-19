@@ -1,12 +1,7 @@
 instance:
     index: "{{ index_enabled }}"
     clientUrl: https://{{ fdp_domain }}
-#     persistentUrl: https://purl.org/fairdatapoint/example
-
-security:
-    jwt:
-        token:
-            secret-key: {{ fdp_jwt_secret }}
+    persistentUrl: http://{{ fdp_domain }}
 
 repository:
     type: 2
@@ -16,7 +11,7 @@ repository:
 spring:
     data:
         mongodb:
-            uri: "{{ mongodb_uri }}"
+            uri: mongodb://mongo:27017/fdp
 
 metadataProperties:
     language: http://id.loc.gov/vocabulary/iso639-1/en

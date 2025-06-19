@@ -28,25 +28,21 @@
   register: _jarfile
 
 
-- name: Generate JWT secret
-  include_role:
-    name: icos.password_env_file
-  vars:
-      file: "{{ item.file }}"
-      set_fact: "{{ item.set_fact }}"
-      file_var: "{{ item.file_var }}"
-  loop:
-    - file: "{{ fdp_home }}/jwt-secret"
-      set_fact: fdp_jwt_secret
-      file_var: FDP_JWT_SECRET
-
-
 - name: Copy application.yml
   template:
     src: application.yml
     dest: "{{ fdp_home }}/"
     lstrip_blocks: yes
   register: _config
+
+
+- name: Copy files
+  copy:
+    dest: "{{ fdp_home }}"
+    src: "{{ item }}"
+  loop:
+    - eh-next_logo.png
+    - _variables.scss
 
 
 - name: Start fairdatapoint

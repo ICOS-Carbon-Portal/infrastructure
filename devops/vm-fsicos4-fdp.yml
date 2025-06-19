@@ -21,3 +21,6 @@
 
     - role: icos.docker2
       tags: docker
+
+    - role: icos.fairdatapoint
+      tags: fairdatapoint
