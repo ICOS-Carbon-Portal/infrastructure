@@ -1,4 +1,10 @@
 - hosts: fsicos3
+  vars:
+    dokku_wildcard_domains:
+      - '*.dokku.fsicos3.icos-cp.eu'
+      - '*.app.icos-cp.eu'
+    dokku_static_domains:
+      - 'curve.icos-ri.eu'
   roles:
     - name: Create the dokku VM
       role: icos.lxd_vm
@@ -11,13 +17,15 @@
         limits.memory: "64GB"
       lxd_vm_ubuntu_version: "24.04"
 
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: dokku
+      certbot_domains: "{{ dokku_static_domains }}"
+
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: dokku
       nginxsite_file: templates/dokku-nginx.conf
-      dokku_domains:
-        - '*.dokku.fsicos3.icos-cp.eu'
-        - '*.app.icos-cp.eu'
       dokku_proxy_host: dokku.lxd
       dokku_proxy_port: 80
 
