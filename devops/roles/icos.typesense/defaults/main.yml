@@ -1,0 +1,10 @@
+typesense_port: 8108
+typesense_home: /disk/data/typesense
+typesense_user: typesense
+
+valid_websites: ["cp", "demo", "sites"]
+
+base_urls:
+  cp: "https://www.icos-cp.eu/"
+  demo: "https://demo.icos-cp.eu/"
+  sites: "https://www.fieldsites.se/"
