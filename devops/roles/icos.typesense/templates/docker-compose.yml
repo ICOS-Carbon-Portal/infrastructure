@@ -1,0 +1,9 @@
+services:
+  typesense:
+    image: typesense/typesense:28.0
+    restart: on-failure
+    ports:
+      - "127.0.0.1:{{ typesense_port }}:8108"
+    volumes:
+      - "{{ typesense_home }}/data:/data"
+    command: '--data-dir /data --api-key={{ vault_typesense_api_key }} --enable-cors'
