@@ -1,4 +1,4 @@
-typesense_port: 8108
+typesense_port: 8437
 typesense_home: /disk/data/typesense
 typesense_user: typesense
 
