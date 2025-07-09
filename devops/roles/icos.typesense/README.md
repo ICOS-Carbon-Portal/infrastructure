@@ -9,9 +9,8 @@ Three tags exist for different purposes:
 1) `setup` will run the setup/deployment tasks for the Typesense server.
 2) `initialize_collection` will run the tasks required to set up an initial collection and perform a first
    index on a website, which must be provided. Note that any existing collection for that site will be
-   deleted, you would need to change the name of the collection in the `schema.yml` if you wanted to test or
-   try something different. Results of initialization and updates are logged to `{{ typesense_home }}/{{
-   website }}/collection.log` (e.g., could be `/disk/data/typesense/cp/collection.log`)
+   deleted. Results of initialization and updates are logged to `{{ typesense_home }}/{{ website
+   }}/collection.log` (e.g., could be `/docker/typesense/cp/collection.log`)
 3) `timer` will restart the timer for updating the collection; website must be provided. Not necessary to run
    this unless the timer has stopped for some reason.
 
