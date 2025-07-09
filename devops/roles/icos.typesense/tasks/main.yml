@@ -54,7 +54,7 @@
     - name: Check that website is valid
       fail:
         msg: "website provided is not valid"
-      when: website not in valid_websites
+      when: website not in base_urls
   tags: ["initialize_collection", "timer"]
 
 

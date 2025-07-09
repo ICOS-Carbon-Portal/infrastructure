@@ -12,7 +12,7 @@ with open("schema.yml", "r") as file:
 
 url_views = get_analytics()
 
-# Crawl ICOS main site and prepare for document creation
+# Crawl site and prepare for document creation
 documents = get_all_pages()
 
 for doc in documents:
