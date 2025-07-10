@@ -7,11 +7,12 @@ from datetime import datetime, timedelta
 # to work; ensure content_id is updated as well!!
 base_url = '{{ base_urls[website] }}'
 
-# default to special domain_pattern for icos-cp and icos-ri sites
+# default to special domain_pattern for icos-cp and icos-ri sites, incl. demo
 domain_pattern = re.compile(r'https?://www\.icos\-(ri|cp)\.eu')
-
+if "demo.icos-cp" in base_url:
+    domain_pattern = re.compile(r'https?://demo\.icos\-(ri|cp)\.eu')
 # otherwise, build domain pattern to allow http or https
-if "icos-cp" not in base_url:
+elif "icos-cp" not in base_url:
     url_pattern = r'^https?://(?P<host>[^/]+)/?$'
     url_match = re.match(url_pattern, base_url)
     host = re.escape(url_match.groupdict()["host"])

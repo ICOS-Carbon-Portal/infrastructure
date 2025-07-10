@@ -4,5 +4,5 @@ typesense_user: typesense
 
 base_urls:
   cp: "https://www.icos-cp.eu/"
-  demo: "https://www.icos-cp.eu/"
+  demo: "https://demo.icos-cp.eu/"
   sites: "https://www.fieldsites.se/"
