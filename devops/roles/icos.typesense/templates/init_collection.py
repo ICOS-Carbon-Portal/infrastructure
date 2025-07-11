@@ -25,6 +25,6 @@ except:
 
 creation_success = client.collections.create(schema)
 if "name" in creation_success:
-    print(timestamp() + f"[init_collection] Schema with name={creation_success["name"]} created successfully.")
+    print(timestamp() + f"[init_collection] Schema with name={creation_success['name']} created successfully.")
 else:
-    print(timestamp() + f"[init_collection] Collection creation for schema name = {schema["name"]} failed.")
+    print(timestamp() + f"[init_collection] Collection creation for schema name = {schema['name']} failed.")

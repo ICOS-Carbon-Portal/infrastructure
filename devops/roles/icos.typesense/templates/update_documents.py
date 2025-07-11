@@ -13,6 +13,8 @@ base_url = '{{ base_urls[website] }}'
 with open("schema.yml", "r") as file:
     schema = yaml.safe_load(file)
 
+print(timestamp() + f"[update_documents] Updates started for {schema['name']}.")
+
 # Connect to Typesense client
 client = typesense.Client({
   'nodes': [{
@@ -62,7 +64,6 @@ for line in documents:
 # URL to be added to the collection. This ensures new pages are added as they are created.
 for link in links_to_check:
     if link not in links_seen:
-        print(link)
         links_seen.append(link)
         # need to freshly index this page
         doc_stub = {"id": url_to_id(link), "url": link}
@@ -94,16 +95,16 @@ for doc in documents_to_update:
 updates_success = client.collections[collection_name].documents.import_(documents_to_update,{'action': 'emplace'})
 success_count = sum(d['success'] for d in updates_success)
 
-print(timestamp() + f"[update_documents] Updated documents for {schema["name"]}:" + 
+print(timestamp() + f"[update_documents] Updated documents for {schema['name']}: " + 
       f"{success_count}/{len(updates_success)} updates succeeded, of {len(documents)} total documents.")
 if len(documents_to_remove) > 0:
-    print(timestamp() + f"[update_documents] Removing documents for {schema["name"]}:" + 
+    print(timestamp() + f"[update_documents] Removing documents for {schema['name']}:" + 
           f"{len(documents_to_remove)} documents to remove.")
 
 # Remove documents with errors
 for doc in documents_to_remove:
     deletion_success = client.collections[collection_name].documents[doc["id"]].delete({"ignore_not_found": True})
     if "url" in deletion_success:
-        print(timestamp() + f"[update_documents] Deleted url={doc["url"]}")
+        print(timestamp() + f"[update_documents] Deleted url={doc['url']}")
     else:
-        print(timestamp() + f"[update_documents] Failed to delete url={doc["url"]}")
+        print(timestamp() + f"[update_documents] Failed to delete url={doc['url']}")

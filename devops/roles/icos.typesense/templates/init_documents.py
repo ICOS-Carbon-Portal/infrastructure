@@ -9,7 +9,7 @@ base_url = '{{ base_urls[website] }}'
 with open("schema.yml", "r") as file:
     schema = yaml.safe_load(file)
 
-print(timestamp() + f"[init_documents] Initialization started for {schema["name"]}.")
+print(timestamp() + f"[init_documents] Initialization started for {schema['name']}.")
 
 url_views = get_analytics()
 
@@ -40,5 +40,5 @@ collection_name = schema["name"]
 document_success = client.collections[collection_name].documents.import_(documents, {'action': 'create'})
 success_count = sum(d['success'] for d in document_success)
 
-print(timestamp() + f"[init_documents] Initialization for {schema["name"]} finished with " + 
+print(timestamp() + f"[init_documents] Initialization for {schema['name']} finished with " + 
       f"{success_count}/{len(document_success)} documents created successfully.")
