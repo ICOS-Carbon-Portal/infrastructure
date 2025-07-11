@@ -3,9 +3,8 @@
 # Makes HEAD requests to the drupal server for each page and checks if ETag is different
 # Note that webforms do not have ETags, so they will be re-checked every time
 
-import pprint, typesense, json, time, yaml
-from utilities import update_page
-from utilities import get_analytics
+import typesense, json, time, yaml
+from utilities import update_page, get_analytics, timestamp, url_to_id
 
 typesense_api_key = "{{ vault_typesense_api_key }}"
 base_url = '{{ base_urls[website] }}'
@@ -27,6 +26,7 @@ client = typesense.Client({
 
 collection_name = schema["name"]
 
+# .documents.export() returns a JSONLines string; split to get one JSON object per entry
 documents = client.collections[collection_name].documents.export().split("\n")
 
 documents_to_update_content = []
@@ -36,14 +36,13 @@ links_to_check = []
 
 links_seen = [base_url]
 
-# Convert documents (a JSONlines string) to objects, and then update each page if necessary
+# Convert documents, a list of JSON strings, to objects, and then update each page if necessary
 counter = 0
 for line in documents:
     doc = json.loads(line)
     doc_status = update_page(doc)
     links_seen.append(doc["url"])
     if "status" in doc_status:
-        print("Failed to retrieve " + doc["url"] + " (status=" + str(doc_status["status"]) + ")")
         status = doc_status["status"]
         if status == 404:
             documents_to_remove.append(doc)
@@ -56,7 +55,6 @@ for line in documents:
     else:
         documents_to_update_analytics.append(doc_status["doc"])
     counter += 1
-    print("Have checked " + str(counter) + "/" + str(len(documents)) + " documents")
     time.sleep(0.25)
 
 # links_to_check contains any links from "updated" pages, as well as the destinations
@@ -67,10 +65,9 @@ for link in links_to_check:
         print(link)
         links_seen.append(link)
         # need to freshly index this page
-        doc_stub = {"id": link, "url": link}
+        doc_stub = {"id": url_to_id(link), "url": link}
         doc_status = update_page(doc_stub)
         if "status" in doc_status:
-            print("Failed to retrieve " + doc_stub["url"] + " (status=" + str(doc_status["status"]) + ")")
             if doc_status["status"] == 301:
                 if doc_status["dest"] not in links_seen:
                     links_to_check.append(doc_status["dest"])
@@ -94,11 +91,19 @@ for doc in documents_to_update:
 
 # Update documents in Typesense collection
 # using "emplace" to allow for partial updates as well as creations and full updates
-client.collections[collection_name].documents.import_(documents_to_update, {'action': 'emplace'})
+updates_success = client.collections[collection_name].documents.import_(documents_to_update,{'action': 'emplace'})
+success_count = sum(d['success'] for d in updates_success)
+
+print(timestamp() + f"[update_documents] Updated documents for {schema["name"]}:" + 
+      f"{success_count}/{len(updates_success)} updates succeeded, of {len(documents)} total documents.")
+if len(documents_to_remove) > 0:
+    print(timestamp() + f"[update_documents] Removing documents for {schema["name"]}:" + 
+          f"{len(documents_to_remove)} documents to remove.")
 
 # Remove documents with errors
 for doc in documents_to_remove:
-    print("Deleting document:")
-    pprint.pprint(doc)
-    client.collections[collection_name].documents[doc["id"]].delete()
-
+    deletion_success = client.collections[collection_name].documents[doc["id"]].delete({"ignore_not_found": True})
+    if "url" in deletion_success:
+        print(timestamp() + f"[update_documents] Deleted url={doc["url"]}")
+    else:
+        print(timestamp() + f"[update_documents] Failed to delete url={doc["url"]}")

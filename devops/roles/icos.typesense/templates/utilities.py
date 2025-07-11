@@ -1,4 +1,4 @@
-import requests, time, re
+import requests, time, re, hashlib
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
@@ -25,6 +25,9 @@ matomo_api_key = "{{ vault_matomo_api_key }}"
 matomo_site_id = "2"
 
 ## Utility functions
+def url_to_id(url):
+    return hashlib.sha256(url.encode('utf-8')).hexdigest()
+
 def is_in_main(link):
     if link.parent is None:
         return False
@@ -116,8 +119,11 @@ def get_links_on_page(soup, current_url):
             links_on_page.append(add_href)
     return links_on_page
 
+def timestamp():
+    return datetime.today().strftime('%Y-%m-%d %H:%M:%S ')
+
 ## Main functions for importing
-def update_page(doc):
+def update_page(doc, verbose=False):
     url = doc["url"]
     head = requests.head(url)
     updated_doc = {"id": doc["id"], "url": doc["url"]}
@@ -130,12 +136,12 @@ def update_page(doc):
         else:
             updated_doc["etag"] = curr_etag
     elif head.status_code == 301:
-        print("Redirected (301)")
+        print(timestamp() + "[update_page] Redirect from " + url)
         doc_status["status"] = 301
         doc_status["dest"] = head.headers["location"]
         return doc_status
     elif head.status_code != 200:
-        print("Bad status code (head) " + str(head.status_code))
+        print(timestamp() + "[update_page] Non-200 status (HEAD): " + url + " with status=" + str(head.status_code))
         doc_status["status"] = head.status_code
         return doc_status
     elif "etag" in head.headers:
@@ -145,7 +151,7 @@ def update_page(doc):
     # either no etag found OR page has changed
     resp = requests.get(url)
     if resp.status_code != 200:
-        print("Bad status code (get) " + str(resp.status_code))
+        print(timestamp() + "[update_page] Non-200 status (GET): " + url + " with status=" + str(head.status_code))
         doc_status["status"] = resp.status_code
         return doc_status
     soup = get_soup_with_iframes(resp.text)
@@ -155,7 +161,7 @@ def update_page(doc):
     return doc_status
 
 
-def get_all_pages():
+def get_all_pages(verbose=False):
     checked_urls = list()
     to_check_urls = list()
     to_check_urls.append(base_url)
@@ -173,7 +179,7 @@ def get_all_pages():
         checked_urls.append(current_url)
         if not current_url.startswith("http"):
             all_errors.append((current_url, "malformed"))
-            print("Not checking malformed URL: " + current_url)
+            print(timestamp() + "[get_all_pages] Malformed URL: " + current_url)
             continue
 
         # if processing is really fast, enable time.sleep to rate limit
@@ -182,12 +188,13 @@ def get_all_pages():
         reqs = requests.get(current_url)
         status = reqs.status_code
         if status != 200:
-            print("Skipping " + current_url + " with status=" + str(status))
+            print(timestamp() + "[get_all_pages] Non-200 status: " + current_url + " with status=" + str(status))
             all_errors.append((current_url, "status " + str(status)))
             continue
         if len(reqs.history) > 0 and (reqs.history[0].status_code == 301
                                     or reqs.history[0].status_code == 308):
-            print("Redirect from " + current_url)
+            if verbose:
+                print(timestamp() + "[get_all_pages] Redirect from " + current_url)
             redirected_url = reqs.url
             unique_urls.add(redirected_url)
             if (domain_pattern.match(redirected_url) is not None
@@ -196,7 +203,7 @@ def get_all_pages():
                 to_check_urls.append(redirected_url)
             continue
         if not reqs.headers["Content-Type"].startswith("text/html"):
-            print("Non-HTML document found at " + current_url)
+            print(timestamp() + "[get_all_pages] Non-HTML document found at " + current_url)
             all_errors.append((current_url, "non-html content-type: " + str(reqs.headers["Content-Type"])))
             continue
 
@@ -219,10 +226,10 @@ def get_all_pages():
                 url_seen[link] = 1
             if link not in checked_urls and link not in to_check_urls:
                 to_check_urls.append(link)
-
-        print(f"Finished {current_url}\n"
-            + f"Checked {len(checked_urls)} URLs.\n"
-            + f"Have {len(to_check_urls)} to go.\n")
+        if verbose:
+            print(timestamp() + f"[get_all_pages] Finished {current_url}\n"
+                + timestamp() + f"[get_all_pages] Checked {len(checked_urls)} URLs.\n"
+                + timestamp() + f"[get_all_pages] Have {len(to_check_urls)} to go.\n")
 
         # add to all_pages unless skip_index
         if not skip_index:
@@ -234,13 +241,13 @@ def get_all_pages():
             all_pages.append(page)
 
         final_urls.add(current_url)
-    for page in all_pages:
-        times_seen = 0
-        if page["url"] in url_seen:
-            times_seen = url_seen[page["url"]]
-        else:
-            print("Error counting times seen for URL = " + page["url"])
-        page["num_times_linked"] = times_seen
+    #for page in all_pages:
+    #    times_seen = 0
+    #    if page["url"] in url_seen:
+    #        times_seen = url_seen[page["url"]]
+    #    else:
+    #        print("Error counting times seen for URL = " + page["url"])
+    #    page["num_times_linked"] = times_seen
     return all_pages
 
 def get_analytics():
