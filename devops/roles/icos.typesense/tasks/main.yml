@@ -61,12 +61,25 @@
 - name: Create and initialize collection
   block:
     - name: Create {{ website }} directory
-      file: path={{ typesense_home }}/{{ website }}/ state=directory recurse=yes
+      file:
+        path: "{{ typesense_home }}/{{ website }}/"
+        state: directory
+        recurse: yes
+        owner: "{{ typesense_user }}"
 
     - name: Copy requirements.txt to {{ typesense_home }}
       ansible.builtin.template:
         src: requirements.txt
         dest: "{{ typesense_home }}/requirements.txt"
+        owner: "{{ typesense_user }}"
+
+    - name: Create log file in {{ typesense_home }}/{{ website }}
+      file:
+        path: "{{ typesense_home }}/{{ website }}/collection.log"
+        state: touch
+        mode: u+rw,g-wx,o-rwx
+        modification_time: preserve
+        access_time: preserve
         owner: "{{ typesense_user }}"
 
     - name: Copy python scripts and schema to {{ website }} directory
@@ -118,7 +131,7 @@
           OnCalendar=*-*-* 1/4:17:00
         timer_content: |
           #!/bin/bash
-          cd {{ typesense_home}}/{{ website }}
+          cd {{ typesense_home }}/{{ website }}
           {{ typesense_home }}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1
   tags:
     - initialize_collection
