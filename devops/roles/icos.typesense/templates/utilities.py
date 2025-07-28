@@ -128,6 +128,9 @@ def update_page(doc, verbose=False):
     head = requests.head(url)
     updated_doc = {"id": doc["id"], "url": doc["url"]}
     doc_status = {"changed": False, "doc": updated_doc}
+    if not head.headers["Content-Type"].startswith("text/html"):
+        print(timestamp() + "[update_page] Non-HTML document found at " + url)
+        return doc_status
     if (head.status_code == 200 and "etag" in head.headers and "etag" in doc):
         prev_etag = doc["etag"]
         curr_etag = head.headers["etag"]
