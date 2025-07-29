@@ -92,7 +92,7 @@ for doc in documents_to_update:
 
 # Update documents in Typesense collection
 # using "emplace" to allow for partial updates as well as creations and full updates
-updates_success = client.collections[collection_name].documents.import_(documents_to_update,{'action': 'emplace'})
+updates_success = client.collections[collection_name].documents.import_(documents_to_update, {'action': 'emplace'})
 success_count = sum(d['success'] for d in updates_success)
 
 print(timestamp() + f"[update_documents] Updated documents for {schema['name']}: " + 

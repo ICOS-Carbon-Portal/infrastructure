@@ -1,6 +1,7 @@
 import requests, time, re, hashlib
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from ftfy import fix_encoding
 
 # Configuration and private variables
 # NOTE: If website theme or structure changes, ensure the "is_in_main" function continues
@@ -55,7 +56,9 @@ def get_soup_with_iframes(text: str) -> BeautifulSoup:
     for iframe in soup.find_all("iframe"):
         # make separate request for iframe
         iframe_req = requests.get(iframe.get("src"))
-        iframe.insert(0, BeautifulSoup(iframe_req.text, "html.parser"))
+        text = fix_encoding(iframe_req.text)
+
+        iframe.insert(0, BeautifulSoup(text, "html.parser"))
     #pprint.pprint(soup)
     return soup
 
