@@ -64,7 +64,25 @@ def get_soup_with_iframes(text: str) -> BeautifulSoup:
 
 def get_page_content(soup: BeautifulSoup):
     main_content = soup.select("main")[0]
-    # Remove elements with style="display: none"
+    # Remove h1, as it is already in title
+    main_content.find("h1").decompose()
+    # Remove elements and children with specific classes
+    classes_to_remove = ["toc-js",
+                         "block-field-blocknodepagefield-side-links",
+                         "block-field-blocknodepagefield-side-links-title",
+                         "block-field-blocknodepagefield-bottom-left-links",
+                         "block-field-blocknodepagefield-bottom-left-links-title",
+                         "block-field-blocknodepagefield-bottom-right-links",
+                         "block-field-blocknodepagefield-bottom-right-links-title",
+                         "field--name-created",
+                         "node__meta",
+                         "visually-hidden"]
+    for tag in main_content.find_all(class_=classes_to_remove):
+        # check if tag parent is none; this indicates the tag parent has been destroyed so this tag is also "destroyed"
+        if tag.parent is None:
+            continue
+        tag.decompose()
+
     for tag in main_content.find_all(style=True):
         # check if tag parent is none; this indicates the tag parent has been destroyed so this tag is also "destroyed"
         if tag.parent is None:
@@ -83,7 +101,13 @@ def get_page_content(soup: BeautifulSoup):
             texts.append(t[1:].strip())
         else:
             texts.append(t.strip())
-    return "\n".join(texts)
+    content = "\n".join(texts)
+    # fix punctuation being separated by spaces before the mark:
+    content = re.sub(r"\n([.,)?!])", r"\1", content)
+    # fix chemical formulae/abbreviation; expand to ensure none are missed:
+    content = re.sub(r"([ONHFG])\n([2346])", r"\1\2", content)
+    content = re.sub(r"([234])\n([OCI])", r"\1\2", content)
+    return content
 
 def get_links_on_page(soup, current_url):
     links_on_page = []
@@ -128,12 +152,18 @@ def timestamp():
 ## Main functions for importing
 def update_page(doc, verbose=False):
     url = doc["url"]
-    head = requests.head(url)
     updated_doc = {"id": doc["id"], "url": doc["url"]}
     doc_status = {"changed": False, "doc": updated_doc}
+
+    # return unmodified doc_status if we should not index this page
+    if not index_page(url):
+        return doc_status
+
+    head = requests.head(url)
     if not head.headers["Content-Type"].startswith("text/html"):
         print(timestamp() + "[update_page] Non-HTML document found at " + url)
         return doc_status
+
     if (head.status_code == 200 and "etag" in head.headers and "etag" in doc):
         prev_etag = doc["etag"]
         curr_etag = head.headers["etag"]
@@ -153,6 +183,7 @@ def update_page(doc, verbose=False):
     elif "etag" in head.headers:
         # etag in response but not in doc, add to doc
         updated_doc["etag"] = head.headers["etag"]
+
     doc_status["changed"] = True
     # either no etag found OR page has changed
     resp = requests.get(url)
@@ -160,12 +191,21 @@ def update_page(doc, verbose=False):
         print(timestamp() + "[update_page] Non-200 status (GET): " + url + " with status=" + str(head.status_code))
         doc_status["status"] = resp.status_code
         return doc_status
+
     soup = get_soup_with_iframes(resp.text)
     updated_doc["title"] = soup.find("h1", attrs={"class":"page-title"}).text
     doc_status["links"] = get_links_on_page(soup, url)
     updated_doc["content"] = get_page_content(soup)
+
     return doc_status
 
+def index_page(url):
+    if (url is base_url
+            or url is (base_url + "news")
+            or "?" in url
+            or "/flipbook" in url):
+        return False
+    return True
 
 def get_all_pages(verbose=False):
     checked_urls = list()
@@ -215,13 +255,7 @@ def get_all_pages(verbose=False):
 
         unique_urls.add(reqs.url)
         soup = get_soup_with_iframes(reqs.text)
-        skip_index = False
-
-        # do not index front page; its contents change regularly and are not needed to find in search
-        if (current_url is base_url
-                or current_url is (base_url + "news")
-                or "?" in current_url):
-            skip_index = True
+        index_url = index_page(current_url)
 
         links_on_page = get_links_on_page(soup, current_url)
 
@@ -238,7 +272,7 @@ def get_all_pages(verbose=False):
                 + timestamp() + f"[get_all_pages] Have {len(to_check_urls)} to go.\n")
 
         # add to all_pages unless skip_index
-        if not skip_index:
+        if index_url:
             page = {}
             page["url"] = current_url
             page["etag"] = reqs.headers["etag"] if "etag" in reqs.headers else None
