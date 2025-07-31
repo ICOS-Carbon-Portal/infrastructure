@@ -54,6 +54,8 @@ def strip_query_and_anchor(url):
 def get_soup_with_iframes(text: str) -> BeautifulSoup:
     soup = BeautifulSoup(text, "html.parser")
     for iframe in soup.find_all("iframe"):
+        if "youtube.com" in iframe.get("src") or "youtu.be" in iframe.get("src"):
+            continue
         # make separate request for iframe
         iframe_req = requests.get(iframe.get("src"))
         text = fix_encoding(iframe_req.text)
@@ -200,12 +202,11 @@ def update_page(doc, verbose=False):
     return doc_status
 
 def index_page(url):
-    if (url is base_url
-            or url is (base_url + "news")
-            or "?" in url
-            or "/flipbook" in url):
-        return False
-    return True
+    return (url != base_url
+            and url != (base_url + "news-and-events/news")
+            and url != (base_url + "news")
+            and "?" not in url
+            and "/flipbook" not in url)
 
 def get_all_pages(verbose=False):
     checked_urls = list()
