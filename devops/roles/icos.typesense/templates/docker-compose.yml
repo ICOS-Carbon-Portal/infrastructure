@@ -6,4 +6,5 @@ services:
       - "127.0.0.1:{{ typesense_port }}:8108"
     volumes:
       - "{{ typesense_home }}/data:/data"
-    command: '--data-dir /data --api-key={{ vault_typesense_api_key }} --enable-cors'
+      - "{{ typesense_home }}/analytics:/analytics"
+    command: '--data-dir /data --api-key={{ vault_typesense_api_key }} --enable-cors --enable-search-analytics=true --analytics-dir /analytics'

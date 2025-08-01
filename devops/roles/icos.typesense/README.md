@@ -45,3 +45,30 @@ The general overview of the scripts here is:
 
 `utilities.py` contains functions that the other scripts use, the two main functions being `update_page`, used
 for updating a single page, and `get_all_pages`, which is used for finding all pages from the ICOS main site.
+
+## Creating API keys
+
+You can create a "master" read-only key using curl, with the typesense API key obtained from the vault:
+
+```
+curl 'https://typesense.icos-cp.eu/keys' \
+    -X POST \
+    -H 'X-TYPESENSE-API-KEY: TYPESENSE-API-KEY' \
+    -H 'Content-Type: application/json' \
+    -d '{"description":"Read-only key","actions": ["documents:search","documents:get","documents:export","collections:list","collections:get"], "collections": ["*"]}'
+```
+
+Using that key, you can then query the analytics collections, e.g. `main-popular-queries` or
+`main-nohits-queries`, either through curl or python (using the typesense library). Curl examples:
+
+```
+curl 'https://typesense.icos-cp.eu/collections/demo-main-popular-queries/documents/export' \
+    -X GET \
+    -H 'X-TYPESENSE-API-KEY: TYPESENSE-API-KEY'
+```
+
+```
+curl 'https://typesense.icos-cp.eu/collections/demo-main-nohits-queries/documents/export' \
+    -X GET \
+    -H 'X-TYPESENSE-API-KEY: TYPESENSE-API-KEY'
+```

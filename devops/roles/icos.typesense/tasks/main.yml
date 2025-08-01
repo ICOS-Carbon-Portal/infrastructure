@@ -23,6 +23,13 @@
         recurse: yes
         owner: "{{ typesense_user }}"
 
+    - name: Create {{ typesense_home }}/analytics/ directory
+      file: 
+        path: "{{ typesense_home }}/analytics/"
+        state: directory
+        recurse: yes
+        owner: "{{ typesense_user }}"
+
     - name: Copy docker-compose.yml
       template:
         src: docker-compose.yml
