@@ -372,10 +372,9 @@ created. We'll now use borgbackup (which you've just installed using apt) to
 list all the archives within the restheart repository.
 
 ```
-$ borg list --short fsicos2:~bbserver/repos/restheart.repo
+$ borg list --short --last=3 fsicos2:~bbserver/repos/restheart.repo
 Warning: Attempting to access a previously unknown unencrypted repository!
 Do you want to continue? [yN] y
-...
 2022-03-22T18:36:10
 2022-03-23T00:36:11
 2022-03-23T06:36:11

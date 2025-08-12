@@ -1,6 +1,4 @@
 #!/bin/bash
-set -euo pipefail
-
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 

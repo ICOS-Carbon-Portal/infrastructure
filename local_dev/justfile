@@ -77,3 +77,41 @@ init-vm:
     lxc file push {{passwords_file}} {{container_name}}/home/{{vm_user}}/infrastructure/devops/dev.inventory/group_vars/core_host/passwords.yml
     echo "Pushing .vault_password"
     lxc file push {{vault_password_file}} {{container_name}}/home/{{vm_user}}/.vault_password
+
+restore-rdflog:
+  #!/usr/bin/env bash
+  ssh fsicos2 'docker exec rdflog pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz
+  lxc file push /tmp/rdflog_dump.gz icos-devops/home/ubuntu/
+  lxc exec icos-devops -- bash -c "zcat /home/ubuntu/rdflog_dump.gz | docker exec -i rdflog psql -U rdflog -q"
+  rm /tmp/rdflog_dump.gz
+
+restore-restheart:
+  #!/usr/bin/env bash
+  mkdir -p /tmp/restheart
+  cd /tmp/restheart
+  borg extract fsicos2:~bbserver/repos/restheart.repo::$(borg list --short --last=1 fsicos2:~bbserver/repos/restheart.repo)
+  lxc file push /tmp/restheart/backup/server.archive icos-devops/home/ubuntu/restheart_backup.archive
+  lxc exec icos-devops -- bash -c "docker exec -i restheart-mongodb-1 mongorestore --archive --drop < /home/ubuntu/restheart_backup.archive"
+  rm /tmp/restheart/backup/server.archive
+
+restore-postgis:
+  #!/usr/bin/env bash
+  mkdir -p /tmp/postgis
+  cd /tmp/postgis
+  borg extract fsicos2:~bbserver/repos/postgis.repo::$(borg list --short --last=1 fsicos2:~bbserver/repos/postgis.repo)
+  lxc file push /tmp/postgis/stdin icos-devops/home/ubuntu/postgis_backup.sql
+  lxc exec icos-devops -- bash -c "egrep -v '^(CREATE ROLE postgres;|DROP ROLE( IF EXISTS)? postgres;)' /home/ubuntu/postgis_backup.sql | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres"
+  rm /tmp/postgis/stdin
+
+update-postgis:
+  #!/usr/bin/env bash
+  lxc exec icos-devops -- bash -c "egrep -v '^(CREATE ROLE (postgres|reader|writer);|DROP ROLE( IF EXISTS)? (postgres|reader|writer);)' /home/ubuntu/postgis_backup.sql | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres"
+  lxc exec icos-devops -- docker exec postgis psql -U postgres -c "ALTER USER reader WITH PASSWORD 'reader_pass'"
+  lxc exec icos-devops -- docker exec postgis psql -U postgres -c "ALTER USER writer WITH PASSWORD 'writer_pass'"
+  lxc exec icos-devops -- docker exec postgis psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'admin_pass'"
+
+clean-container-backups:
+  #!/usr/bin/env bash
+  lxc exec icos-devops -- rm /home/ubuntu/rdflog_dump.gz
+  lxc exec icos-devops -- rm /home/ubuntu/restheart_backup.archive
+  lxc exec icos-devops -- rm /home/ubuntu/postgis_backup.sql
