@@ -1,6 +1,11 @@
 - name: Include vars
   include_vars: vault.yml
-  tags: ["setup", "initialize_collection"]
+  tags:
+    - setup
+    - initialize_collection
+    - update_synonyms
+    - update_documents
+    - timer
 
 - name: Set up typesense service
   block:
@@ -62,8 +67,11 @@
       fail:
         msg: "website provided is not valid"
       when: website not in base_urls
-  tags: ["initialize_collection", "timer"]
-
+  tags: 
+    - initialize_collection
+    - update_synonyms
+    - update_documents
+    - timer
 
 - name: Create and initialize collection
   block:
@@ -143,3 +151,46 @@
   tags:
     - initialize_collection
     - timer
+
+- name: Update synonyms
+  block:
+    - name: Copy python scripts to {{ website }} directory
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ typesense_home }}/{{ website }}"
+        owner: "{{ typesense_user }}"
+      loop:
+        - src: update_synonyms.py
+        - src: utilities.py
+
+    - name: Run update synonyms script
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_synonyms.py
+        >> {{ typesense_home }}/{{ website }}/collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+  tags:
+    - update_synonyms
+    - initialize_collection
+
+- name: Update documents without reinitializing collection
+  block:
+    - name: Copy python scripts to {{ website }} directory
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ typesense_home }}/{{ website }}"
+        owner: "{{ typesense_user }}"
+      loop:
+        - src: update_documents.py
+        - src: utilities.py
+
+    - name: Run update documents script
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_documents.py
+        >> {{ typesense_home }}/{{ website }}/collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+  tags:
+    - update_documents
