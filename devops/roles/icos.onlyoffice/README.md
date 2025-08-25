@@ -1,11 +1,11 @@
 # Overview
 
-This role will install the OnlyOffice Documentserver as a docker container
+This role will install the OnlyOffice DocumentServer as a docker container
 proxied by a host nginx.
 
 # Purpose
 
-It's was meant for integration with Nextcloud. That's also how it was tested. It
+It is meant for integration with Nextcloud. That's also how it was tested. It
 doesn't really need any storage of its own.
 
 # Assumptions
@@ -15,7 +15,7 @@ doesn't really need any storage of its own.
 
 # Known bugs
 
-The below was true for 5.3.x, haven't looked into the new 5.4 version.
+The below was true for 5.3.x; we are now up to 9.0.4, so unsure if same issues apply.
 
 * The OnlyOffice image is very complex. The single container will use
   supervised(1) to start:
@@ -34,3 +34,15 @@ The below was true for 5.3.x, haven't looked into the new 5.4 version.
 + [The official forum](http://dev.onlyoffice.org/)
 + [Docker images and tags](https://hub.docker.com/r/onlyoffice/documentserver/)
 + [Nextcloud integration](https://api.onlyoffice.com/editors/nextcloud)
+
+# Upgrading OnlyOffice
+
+To ensure data is not lost, prepare for shutdown. On fsicos2:
+
+`docker exec onlyoffice /usr/bin/documentserver-prepare4shutdown.sh`
+
+This script may take up to 5 minutes.
+
+Update the version in `defaults/main.yml`. Then run the ansible playbook; the command below runs in check mode, so remove the `-C` flag to execute the command:
+
+`icos play nextcloud -t onlyoffice_docker -DC`
