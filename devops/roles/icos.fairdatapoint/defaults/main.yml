@@ -1,5 +1,5 @@
 # Directory on host where we'll store docker-compose.yml etc.
-fdp_home: /fdpenvri
+fdp_home: /home/fdp/fdpenvri
 
 # The publicly reachable https domain we'll reverse proxy to docker.
 fdp_domain: fdpdemo.envri.eu

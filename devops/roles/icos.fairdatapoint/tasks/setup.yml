@@ -20,7 +20,7 @@
     dest: "{{ fdp_home }}"
   register: _dockerfile
 
-
+# either get a copy of the jar in production or package the FAIRDataPoint project anew (https://github.com/ICOS-Carbon-Portal/FAIRDataPoint)
 - name: Copy jarfile
   copy:
     src: "{{ fdp_jar_file }}"
