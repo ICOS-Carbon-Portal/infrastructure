@@ -109,4 +109,4 @@ icosdata_nfs_mounts:
 
   - path: /data/cupcake
     src: cupcake.nebula:/data/flexpart/output
-    opts: "ro,soft,x-systemd.after=nebula.service"
+    opts: "rw,soft,x-systemd.after=nebula.service"
