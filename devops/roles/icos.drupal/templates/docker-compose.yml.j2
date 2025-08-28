@@ -1,6 +1,6 @@
 services:
   drupal:
-    image: drupal:{{ drupal_version }}
+    image: drupal:{{ drupal_version }}-php8.3
     links:
       - mariadb
     ports:
