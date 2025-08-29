@@ -1,13 +1,24 @@
 instance:
+    index: "{{ index_enabled }}"
     clientUrl: https://{{ fdp_domain }}
-#     persistentUrl: https://purl.org/fairdatapoint/example
-
-security:
-    jwt:
-        token:
-            secret-key: {{ fdp_jwt_secret }}
+    persistentUrl: http://{{ fdp_domain }}
 
 repository:
-    type: 5
-    blazegraph:
-        url: http://blazegraph:8080/blazegraph
+    type: 2
+    native:
+        dir: /fdp/fdp-store
+
+spring:
+    data:
+        mongodb:
+            uri: mongodb://mongo:27017/fdp
+
+metadataProperties:
+    language: http://id.loc.gov/vocabulary/iso639-1/en
+    license: https://creativecommons.org/licenses/by-nc/4.0/
+    accessRightsDescription: This resource has no access restriction
+
+metadataMetrics:
+
+ping:
+    enabled: "{{ ping_enabled }}"
