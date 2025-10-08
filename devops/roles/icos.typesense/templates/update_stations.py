@@ -59,6 +59,10 @@ def get_title(station_info):
     return (station_info.org.name + " station (" + station_info.org.self.label +
         ") - " + get_tc(station_info) + " station in " + get_country(station_info))
 
+def get_placeholder_content(station_info):
+    return (station_info.org.name + " station (" + station_info.org.self.label +
+        ") is an " + get_tc(station_info) + " station in " + get_country(station_info) + ".")
+
 def info_to_document(station_info):
     content = "".join(station_info.org.self.comments)
     doc = {
@@ -69,7 +73,11 @@ def info_to_document(station_info):
         "num_views_last_year": 0,
     }
     if len(content) == 0:
-        doc["content"] = get_title(station_info)
+        if (station_info.org.webpageDetails != None and
+                station_info.org.webpageDetails.self.comments != None):
+            doc["content"] = station_info.org.webpageDetails.self.comments
+        else:
+            doc["content"] = get_placeholder_content(station_info)
     return doc
 
 station_documents = list(map(info_to_document, stations_info))
