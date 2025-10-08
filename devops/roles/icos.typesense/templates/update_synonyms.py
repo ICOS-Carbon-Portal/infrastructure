@@ -63,7 +63,6 @@ collection_name = schema["name"]
 
 # .synonyms.retrieve() returns a JSONLines string; split to get one JSON object per entry
 synonyms = client.collections[collection_name].synonyms.retrieve()
-print(synonyms)
 
 # Delete existing synonyms, then add new_synonyms
 for syn in synonyms["synonyms"]:
@@ -74,7 +73,6 @@ for syn in synonyms["synonyms"]:
 for synonym in new_synonyms:
     id_name = "-".join(synonym).replace(" ", "-")
     syn_obj = {"synonyms": synonym}
-    print(syn_obj)
     client.collections[collection_name].synonyms.upsert(id_name, syn_obj)
 
 print(timestamp() + f"[update_synonyms] Updated synonyms for {schema['name']}")

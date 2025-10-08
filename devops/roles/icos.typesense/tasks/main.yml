@@ -107,6 +107,7 @@
         - src: init_collection.py
         - src: init_documents.py
         - src: update_documents.py
+        - src: update_stations.py
         - src: utilities.py
 
     - name: Install required modules into Python virtual environment
@@ -118,22 +119,27 @@
     - name: Create collection
       ansible.builtin.shell: >
         {{ typesense_home }}/typesense-venv/bin/python3
-        {{ typesense_home }}/{{ website }}/init_collection.py
-        >> {{ typesense_home }}/{{ website }}/collection.log 2>&1
+        {{ typesense_home }}/{{ website }}/init_collection.py >> collection.log 2>&1
       args:
         chdir: "{{ typesense_home }}/{{ website }}"
 
     - name: Add initial documents to collection
       ansible.builtin.shell: >
         {{ typesense_home }}/typesense-venv/bin/python3
-        {{ typesense_home }}/{{ website }}/init_documents.py
-        >> {{ typesense_home }}/{{ website }}/collection.log 2>&1
+        {{ typesense_home }}/{{ website }}/init_documents.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+
+    - name: Add initial stations to collection
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_stations.py >> collection.log 2>&1
       args:
         chdir: "{{ typesense_home }}/{{ website }}"
   tags:
     - initialize_collection
 
-- name: Add timer for updating documents
+- name: Add timer for updating documents and stations
   block:
     - name: Install typesense-update-{{ website }} timer
       include_role:
@@ -148,6 +154,7 @@
           #!/bin/bash
           cd {{ typesense_home }}/{{ website }}
           {{ typesense_home }}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1
+          {{ typesense_home }}/typesense-venv/bin/python3 update_stations.py >> collection.log 2>&1
   tags:
     - initialize_collection
     - timer
@@ -166,15 +173,14 @@
     - name: Run update synonyms script
       ansible.builtin.shell: >
         {{ typesense_home }}/typesense-venv/bin/python3
-        {{ typesense_home }}/{{ website }}/update_synonyms.py
-        >> {{ typesense_home }}/{{ website }}/collection.log 2>&1
+        {{ typesense_home }}/{{ website }}/update_synonyms.py >> collection.log 2>&1
       args:
         chdir: "{{ typesense_home }}/{{ website }}"
   tags:
     - update_synonyms
     - initialize_collection
 
-- name: Update documents without reinitializing collection
+- name: Update documents and stations without reinitializing collection
   block:
     - name: Copy python scripts to {{ website }} directory
       ansible.builtin.template:
@@ -188,8 +194,8 @@
     - name: Run update documents script
       ansible.builtin.shell: >
         {{ typesense_home }}/typesense-venv/bin/python3
-        {{ typesense_home }}/{{ website }}/update_documents.py
-        >> {{ typesense_home }}/{{ website }}/collection.log 2>&1
+        {{ typesense_home }}/{{ website }}/update_documents.py >> collection.log 2>&1
+        {{ typesense_home }}/{{ website }}/update_stations.py >> collection.log 2>&1
       args:
         chdir: "{{ typesense_home }}/{{ website }}"
   tags:

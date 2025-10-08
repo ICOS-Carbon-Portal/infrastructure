@@ -42,6 +42,9 @@ links_seen = [base_url]
 counter = 0
 for line in documents:
     doc = json.loads(line)
+    # Skip stations
+    if doc["category"] == "station":
+        continue
     doc_status = update_page(doc)
     links_seen.append(doc["url"])
     if "status" in doc_status:

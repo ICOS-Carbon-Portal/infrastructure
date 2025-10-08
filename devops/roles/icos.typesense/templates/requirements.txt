@@ -3,3 +3,4 @@ typesense==1.0.3
 requests==2.32.3
 pyyaml==6.0.2
 ftfy==6.3.1
+icoscp_core==0.3.11

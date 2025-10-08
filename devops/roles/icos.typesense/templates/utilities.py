@@ -279,6 +279,12 @@ def get_all_pages(verbose=False):
             page["etag"] = reqs.headers["etag"] if "etag" in reqs.headers else None
             page["title"] = soup.find("h1", attrs={"class":"page-title"}).text
             page["content"] = get_page_content(soup)
+            if "/news-and-events/news/" in current_url:
+                page["category"] = "news"
+            elif "/news-and-events/events/" in current_url:
+                page["category"] = "events"
+            else:
+                page["category"] = "main_website"
             all_pages.append(page)
 
         final_urls.add(current_url)
@@ -308,6 +314,45 @@ def get_analytics():
                     + "module=API&"
                     + "method=Actions.getPageUrls&"
                     + "idSite=" + matomo_site_id + "&"
+                    + "period=range&"
+                    + "date=" + one_year_ago + "," + today + "&"
+                    + "module=API&"
+                    + "format=json&"
+                    + "showColumns=nb_visits&"
+                    + "flat=1&"
+                    + "filter_limit=-1&" #can use filter_limit and filter_offset for pagination
+                    # limit to Europe and NA to avoid bot traffic
+                    + "continentCode==eur,continentCode==amn&"
+                    + "token_auth=" + matomo_token
+                )
+
+    matomo_req = requests.get(matomo_url)
+
+    url_data = matomo_req.json()
+
+    url_views = {}
+    for page in url_data:
+        url_views[page["label"]] = page["nb_visits"]
+    return url_views
+
+def get_analytics_stations():
+    # Get analytics data
+    if matomo_site_id == "0":
+        return {} # SITES, use Plausible API
+    station_site_id = "3"
+
+    today = datetime.today().strftime('%Y-%m-%d')
+    one_year_ago = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
+
+    # prepare to match analytics data with typesense data
+
+    # get analytics data
+    matomo_token = matomo_api_key
+
+    matomo_url = ("https://matomo.icos-cp.eu/?"
+                    + "module=API&"
+                    + "method=Actions.getPageUrls&"
+                    + "idSite=" + station_site_id + "&"
                     + "period=range&"
                     + "date=" + one_year_ago + "," + today + "&"
                     + "module=API&"
