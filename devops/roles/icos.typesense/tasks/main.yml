@@ -161,7 +161,7 @@
 
 - name: Update synonyms
   block:
-    - name: Copy python scripts to {{ website }} directory
+    - name: Copy update_synonyms required python scripts to {{ website }} directory
       ansible.builtin.template:
         src: "{{ item.src }}"
         dest: "{{ typesense_home }}/{{ website }}"

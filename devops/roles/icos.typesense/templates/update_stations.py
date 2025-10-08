@@ -75,7 +75,7 @@ def info_to_document(station_info):
     if len(content) == 0:
         if (station_info.org.webpageDetails != None and
                 station_info.org.webpageDetails.self.comments != None):
-            doc["content"] = station_info.org.webpageDetails.self.comments
+            doc["content"] = station_info.org.webpageDetails.self.comments[0]
         else:
             doc["content"] = get_placeholder_content(station_info)
     return doc
