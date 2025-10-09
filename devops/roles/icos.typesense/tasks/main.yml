@@ -189,12 +189,19 @@
         owner: "{{ typesense_user }}"
       loop:
         - src: update_documents.py
+        - src: update_stations.py
         - src: utilities.py
 
     - name: Run update documents script
       ansible.builtin.shell: >
         {{ typesense_home }}/typesense-venv/bin/python3
         {{ typesense_home }}/{{ website }}/update_documents.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+
+    - name: Run update stations script
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
         {{ typesense_home }}/{{ website }}/update_stations.py >> collection.log 2>&1
       args:
         chdir: "{{ typesense_home }}/{{ website }}"

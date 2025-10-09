@@ -19,11 +19,14 @@ stations_info = list()
 for station in stations:
     if station.uri == 'http://meta.icos-cp.eu/resources/icos/ES_FA-Lso':
         continue
-    station_info = meta.get_station_meta(station)
-    if (station_info.specificInfo.stationClass is None
-            or station_info.specificInfo.stationClass == "Associated"):
-        continue
-    stations_info.append(station_info)
+    try:
+        station_info = meta.get_station_meta(station)
+    except:
+        print(timestamp()  + f"[update_stations] Exception when fetching station info for {station.uri}")
+    else:
+        if (station_info.specificInfo.stationClass is None):
+            continue
+        stations_info.append(station_info)
 
 def get_https_url(station):
     uri = station.uri[:4] + "s" + station.uri[4:]
@@ -35,7 +38,7 @@ def get_tc(station_info):
 def get_country(station_info):
     match station_info.countryCode:
         case "BE": return "Belgium"
-        #case "CD": return "Democratic Republic of the Congo"
+        case "CD": return "Democratic Republic of the Congo"
         case "CH": return "Switzerland"
         case "CZ": return "Czech Republic"
         case "DE": return "Germany"
@@ -44,7 +47,7 @@ def get_country(station_info):
         case "FI": return "Finland"
         case "FR": return "France"
         case "GB": return "United Kingdom"
-        #case "GF": return "French Guiana"
+        case "GF": return "French Guiana"
         case "GL": return "Greenland (Denmark)"
         case "GR": return "Greece"
         case "HU": return "Hungary"
