@@ -1,5 +1,2 @@
 - import_tasks: setup.yml
   tags: fairdatapoint_setup
-
-- import_tasks: proxy.yml
-  tags: fairdatapoint_proxy

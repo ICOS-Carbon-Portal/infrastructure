@@ -1,0 +1,17 @@
+name: "{{ website }}-main"
+fields:
+  - name: url
+    type: string
+    infix: true
+  - name: title
+    type: string
+  - name: content
+    type: string
+  - name: num_views_last_year
+    type: int32
+  - name: etag
+    type: string
+    optional: true
+  - name: category
+    type: string
+default_sorting_field: num_views_last_year

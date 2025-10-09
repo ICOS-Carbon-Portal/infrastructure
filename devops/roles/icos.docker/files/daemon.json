@@ -1,4 +1,4 @@
 {
-     "default-address-pools": [{"base":"10.10.0.0/16", "size":24}],
+     "default-address-pools": [{"base":"172.22.0.0/16", "size":24}],
      "live-restore": true
 }

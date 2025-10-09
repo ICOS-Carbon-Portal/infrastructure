@@ -1,0 +1,209 @@
+- name: Include vars
+  include_vars: vault.yml
+  tags:
+    - setup
+    - initialize_collection
+    - update_synonyms
+    - update_documents
+    - timer
+
+- name: Set up typesense service
+  block:
+    - name: Create user
+      user:
+        name: "{{ typesense_user }}"
+        state: present
+
+    - name: Create {{ typesense_home }}/docker/ directory
+      file:
+        path: "{{ typesense_home }}/docker/"
+        state: directory
+        recurse: yes
+        owner: "{{ typesense_user }}"
+
+    - name: Create {{ typesense_home }}/data/ directory
+      file: 
+        path: "{{ typesense_home }}/data/"
+        state: directory
+        recurse: yes
+        owner: "{{ typesense_user }}"
+
+    - name: Create {{ typesense_home }}/analytics/ directory
+      file: 
+        path: "{{ typesense_home }}/analytics/"
+        state: directory
+        recurse: yes
+        owner: "{{ typesense_user }}"
+
+    - name: Copy docker-compose.yml
+      template:
+        src: docker-compose.yml
+        dest: "{{ typesense_home }}/docker/docker-compose.yml"
+        owner: "{{ typesense_user }}"
+
+    - name: (Re)start docker containers
+      community.docker.docker_compose_v2:
+        project_src: "{{ typesense_home }}/docker"
+        state: present
+        pull: always
+
+    - include_role:
+        name: icos.nginxsite
+      vars:
+        nginxsite_name: typesense
+        nginxsite_file: typesense-nginx.conf
+        nginxsite_domains: ["typesense.icos-cp.eu"]
+  tags:
+    - setup
+
+- name: Check that website is defined and valid
+  block:
+    - name: Check if website is defined
+      fail:
+        msg: "website needs to be defined"
+      when: website is undefined
+
+    - name: Check that website is valid
+      fail:
+        msg: "website provided is not valid"
+      when: website not in base_urls
+  tags: 
+    - initialize_collection
+    - update_synonyms
+    - update_documents
+    - timer
+
+- name: Create and initialize collection
+  block:
+    - name: Create {{ website }} directory
+      file:
+        path: "{{ typesense_home }}/{{ website }}/"
+        state: directory
+        recurse: yes
+        owner: "{{ typesense_user }}"
+
+    - name: Copy requirements.txt to {{ typesense_home }}
+      ansible.builtin.template:
+        src: requirements.txt
+        dest: "{{ typesense_home }}/requirements.txt"
+        owner: "{{ typesense_user }}"
+
+    - name: Create log file in {{ typesense_home }}/{{ website }}
+      file:
+        path: "{{ typesense_home }}/{{ website }}/collection.log"
+        state: touch
+        mode: u+rw,g-wx,o-rwx
+        modification_time: preserve
+        access_time: preserve
+        owner: "{{ typesense_user }}"
+
+    - name: Copy python scripts and schema to {{ website }} directory
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ typesense_home }}/{{ website }}"
+        owner: "{{ typesense_user }}"
+      loop:
+        - src: schema.yml
+        - src: init_collection.py
+        - src: init_documents.py
+        - src: update_documents.py
+        - src: update_stations.py
+        - src: utilities.py
+
+    - name: Install required modules into Python virtual environment
+      ansible.builtin.pip:
+        virtualenv: "{{ typesense_home }}/typesense-venv"
+        virtualenv_command: "python3 -m venv"
+        requirements: "{{ typesense_home }}/requirements.txt"
+
+    - name: Create collection
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/init_collection.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+
+    - name: Add initial documents to collection
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/init_documents.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+
+    - name: Add initial stations to collection
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_stations.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+  tags:
+    - initialize_collection
+
+- name: Add timer for updating documents and stations
+  block:
+    - name: Install typesense-update-{{ website }} timer
+      include_role:
+        name: icos.timer
+      vars:
+        timer_user: "{{ typesense_user }}"
+        timer_home: "{{ typesense_home }}"
+        timer_name: "typesense-update-{{ website }}"
+        timer_conf: |
+          OnCalendar=*-*-* 1/4:17:00
+        timer_content: |
+          #!/bin/bash
+          cd {{ typesense_home }}/{{ website }}
+          {{ typesense_home }}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1
+          {{ typesense_home }}/typesense-venv/bin/python3 update_stations.py >> collection.log 2>&1
+  tags:
+    - initialize_collection
+    - timer
+
+- name: Update synonyms
+  block:
+    - name: Copy update_synonyms required python scripts to {{ website }} directory
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ typesense_home }}/{{ website }}"
+        owner: "{{ typesense_user }}"
+      loop:
+        - src: update_synonyms.py
+        - src: utilities.py
+
+    - name: Run update synonyms script
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_synonyms.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+  tags:
+    - update_synonyms
+    - initialize_collection
+
+- name: Update documents and stations without reinitializing collection
+  block:
+    - name: Copy python scripts to {{ website }} directory
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ typesense_home }}/{{ website }}"
+        owner: "{{ typesense_user }}"
+      loop:
+        - src: update_documents.py
+        - src: update_stations.py
+        - src: utilities.py
+
+    - name: Run update documents script
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_documents.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+
+    - name: Run update stations script
+      ansible.builtin.shell: >
+        {{ typesense_home }}/typesense-venv/bin/python3
+        {{ typesense_home }}/{{ website }}/update_stations.py >> collection.log 2>&1
+      args:
+        chdir: "{{ typesense_home }}/{{ website }}"
+  tags:
+    - update_documents

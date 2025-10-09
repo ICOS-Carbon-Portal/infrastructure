@@ -26,6 +26,7 @@ drupal_modules: [
   smtp,
   toc_js,
   token,
-  webform
+  webform,
+  webform_views
 ]
 robots_txt: cp-robots.txt

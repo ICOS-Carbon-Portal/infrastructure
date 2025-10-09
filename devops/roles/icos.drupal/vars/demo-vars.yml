@@ -5,6 +5,7 @@ domain: demo.icos-cp.eu
 trusted_host: ^demo\.icos-cp\.eu$
 drupal_modules: [
   bartik,
+  better_exposed_filters,
   color_field,
   conflict,
   editor_advanced_link,
@@ -25,5 +26,6 @@ drupal_modules: [
   smtp,
   toc_js,
   token,
-  webform
+  webform,
+  webform_views
 ]
