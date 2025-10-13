@@ -43,6 +43,54 @@ container.
 
 ## Upgrading Nextcloud ver 29 to 31 (manual steps)
 
-On fsicos2
+### On fsicos2
 
-cd /docker/nextcloud
+```cd /docker/nextcloud
+
+# Check docker-compose version
+docker compose version
+
+# Install Compose v2 plugin (from Docker’s repo)
+apt-get update
+apt-get install -y docker-compose-plugin
+
+# Set nextcloud in maintenance mode on
+docker compose exec -u www-data app php occ maintenance:mode --on || true
+
+# Make a backup
+docker-compose exec -u 33 db pg_dump -U nextcloud nextcloud > backup_29.0.11_$(date +%Y%m%d).sql
+
+# Continue with
+docker compose stop app
+
+# Update docker-compose.yml to the next version
+vi docker-compose.yml
+grep "image: nextcloud:" docker-compose.yml
+
+# In another session window check logs
+docker-compose logs -f app
+
+# Upgrade 
+# Pull the new image and recreate the app
+docker compose pull app
+docker compose up -d app
+
+docker compose exec -u 33 app php occ upgrade
+
+# Check nextcloud version
+docker compose exec -u www-data app php occ config:system:get version
+
+# Check status
+docker compose exec -u www-data app php occ status
+
+# Create backup
+mkdir -p /docker/nextcloud/backups
+sudo chown $(id -u):$(id -g) /docker/nextcloud/backups
+
+docker compose exec -T db pg_dump -U nextcloud -d nextcloud \
+  > /docker/nextcloud/backups/pg_nextcloud_$(date +%F_%H%M%S).sql
+
+
+# Config tarball
+docker compose exec app bash -lc 'tar -C /var/www/html -czf - config' \
+  > /docker/nextcloud/backups/nc_config_$(date +%F_%H%M%S).tar.gz
