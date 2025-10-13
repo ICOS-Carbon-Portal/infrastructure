@@ -1,6 +1,10 @@
 ## Nextcloud upgrade procedure
 
-- [ ] test
+- [ ] Anouce and set a date for upgrading Nextcloud
+- [ ] Communicate and mail out date to users
+- [ ] Test upgrade procedure in lab first
+
+
 
 ## Overview
 
@@ -48,7 +52,7 @@ container.
 
 ## Manual steps - Upgrading Nextcloud ver 29 to 31
 
-The will be a an ansible script for upgrading version 31.0.9.1 to version 32.
+The will be an ansible script for upgrading version 31.0.9.1 to version 32.
 
 ### ver 29.0.11 to 29.0.16
 
