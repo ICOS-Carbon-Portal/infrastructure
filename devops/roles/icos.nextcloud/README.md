@@ -1,8 +1,62 @@
 ## Nextcloud upgrade procedure
 
-- [ ] Anouce and set a date for upgrading Nextcloud
+# Nextcloud Container Upgrade Checklist
+
+## Step 1 - Preparation
+
+- [ ] Test upgrade nextcloud in lab first
+- [ ] Review nextcloud release notes for breaking changes
+- [ ] Verify system requirements (PHP version, docker-compose, database)
+- [ ] Document current state:
+  - [ ] Make a list of all enabled apps
+  - [ ] Verify group/team fileshare
+  - [ ] Verify calendar functionality
+  - [ ] Verify all general mount settings and configuration
+  - [ ] Screenshot/document current settings
+- [ ] Create comprehensive backup:
+  - [ ] Database backup
+  - [ ] Config files backup (docker-compose.yml, config.php)
+
+## Step 2 - Announce Update
+
+- [ ] Announce and set a date for upgrading nextcloud
 - [ ] Communicate and mail out date to users
-- [ ] Test upgrade procedure in lab first
+- [ ] Schedule maintenance window
+- [ ] Prepare rollback plan and communicate it to team
+
+## Step 3 - Update Execution
+
+- [ ] Enable maintenance mode
+- [ ] Stop containers gracefully
+- [ ] Update docker-compose.yml with new version
+- [ ] Pull new nextcloud image
+- [ ] Start containers
+- [ ] Run upgrade command(s)
+- [ ] Check logs for errors (separate window)
+- [ ] Disable maintenance mode
+
+## Step 4 - Post-Update Verification
+
+- [ ] Verify nextcloud version and status
+- [ ] Compare enabled apps list with pre-update list
+- [ ] Re-enable any disabled apps (if compatible)
+- [ ] Verify critical functionality:
+  - [ ] User login
+  - [ ] File upload/download
+  - [ ] Group/team fileshare
+  - [ ] Calendar functionality
+  - [ ] General mounting points
+  - [ ] External storage
+- [ ] Check system warnings in admin panel
+- [ ] Review error logs
+
+## Step 5 - Post-Update Communication
+
+- [ ] Notify users that upgrade is complete
+- [ ] Report any known issues or changes
+- [ ] Update internal documentation
+- [ ] Document update ansible script for next upgrade
+
 
 
 
@@ -54,7 +108,7 @@ container.
 
 The will be an ansible script for upgrading version 31.0.9.1 to version 32.
 
-### ver 29.0.11 to 29.0.16
+### From ver 29.0.11 to 29.0.16
 
 ```
 # fsicos2
@@ -109,11 +163,13 @@ docker compose exec app bash -lc 'tar -C /var/www/html -czf - config' \
   > /docker/nextcloud/backups/nc_config_$(date +%F_%H%M%S).tar.gz
 ```
 
-### ver 29.0.16 to 30
+
+### From ver 29.0.16 to 30.0.16.1
 ```
+# Set maintenace mode
 docker compose exec -u www-data app php occ maintenance:mode --on
 
-# Bump image to NC30
+# Download image to Nextcloud 30
 
 docker compose stop app
 docker compose rm -f app
@@ -124,7 +180,7 @@ docker compose up -d app
 docker compose exec -u www-data app php occ upgrade
 docker compose exec -u www-data app php occ app:update --all
 
-# Repairs / schema checks (safe to run)
+# Repairs and checks schema 
 docker compose exec -u www-data app php occ maintenance:repair
 docker compose exec -u www-data app php occ db:add-missing-indices
 docker compose exec -u www-data app php occ db:add-missing-columns
@@ -138,14 +194,14 @@ docker compose exec -u www-data app php occ maintenance:mode --off
 docker compose exec -u www-data app php occ status
 
 docker compose exec -u www-data app php occ config:system:get version
-...........
+...................................................
 30.0.16.1
-...........
+...................................................
 
 ```
 
 
-### Upgrade from 30.0.16 to Nextcloud 31.0.9
+### Upgrade steps from version 30.0.16 to Nextcloud 31.0.9
 
 ```
 # list enabled apps (spot non-shipped ones)
@@ -187,12 +243,12 @@ docker compose exec -u www-data app php occ upgrade
 
 # Post-upgrade 
 docker compose exec -u www-data app php occ app:update --all
-..........
+...................................................
 Nextcloud or one of the apps require upgrade - only a limited number of commands are available
 You may use your browser or the occ upgrade command to do the upgrade
 passman new version available: 2.4.12
 passman couldn't be updated
-..........
+...................................................
 
 
 # Repairs and schema checks
@@ -202,18 +258,15 @@ docker compose exec -u www-data app php occ db:add-missing-columns
 docker compose exec -u www-data app php occ db:add-missing-primary-keys
 docker compose exec -u www-data app php occ db:convert-filecache-bigint --no-interaction 2>/dev/null || true
 
-# if you use Redis - Clear caches
+# If we use Redis when clear caches
 docker compose exec -u www-data app php occ memcache:flush 2>/dev/null || true
-
 
 # Exit maintenance and verify
 docker compose exec -u www-data app php occ maintenance:mode --off
 
-
 # Check status 
 docker compose exec -u www-data app php occ status
-Nextcloud or one of the apps require upgrade - only a limited number of commands are available
-You may use your browser or the occ upgrade command to do the upgrade
+...................................................
   - installed: true
   - version: 31.0.9.1
   - versionstring: 31.0.9
@@ -222,10 +275,14 @@ You may use your browser or the occ upgrade command to do the upgrade
   - needsDbUpgrade: true
   - productname: Nextcloud
   - extendedSupport: false
-  
+...................................................
+
+
 # Check NC version 
 docker compose exec -u www-data app php occ config:system:get version
-Nextcloud or one of the apps require upgrade - only a limited number of commands are available
-You may use your browser or the occ upgrade command to do the upgrade
-30.0.16.1
+...................................................
+31.0.9.1
+...................................................
 ```
+
+
