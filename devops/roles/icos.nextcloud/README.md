@@ -1,3 +1,7 @@
+## Nextcloud upgrade procedure
+
+- [ ] test
+
 ## Overview
 
 Note! All nextcloud links in this file goes to the latest ("stable") versions
@@ -41,7 +45,8 @@ container.
 [7]: https://hub.docker.com/_/postgres/?tab=tags
 [8]: https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/security_setup_warnings.html
 
-## Upgrading Nextcloud ver 29 to 31 (manual steps)
+
+## Manual steps - Upgrading Nextcloud ver 29 to 31
 
 The will be a an ansible script for upgrading version 31.0.9.1 to version 32.
 
@@ -133,8 +138,90 @@ docker compose exec -u www-data app php occ config:system:get version
 30.0.16.1
 ...........
 
-
 ```
 
 
+### Upgrade from 30.0.16 to Nextcloud 31.0.9
 
+```
+# list enabled apps (spot non-shipped ones)
+docker compose exec -u www-data app php occ app:list --enabled
+docker compose exec -u www-data app php occ app:list --enabled --shipped
+
+
+# Backup DB + config (recommended)
+sudo mkdir -p /docker/nextcloud/backups
+sudo chown $(id -u):$(id -g) /docker/nextcloud/backups
+
+# Postgres dump
+docker compose exec -T db pg_dump -U nextcloud -d nextcloud \
+  > /docker/nextcloud/backups/pg_nextcloud_$(date +%F_%H%M%S).sql
+  
+
+# Config directory
+docker compose exec app bash -lc 'tar -C /var/www/html -czf - config' \
+  > /docker/nextcloud/backups/nc_config_$(date +%F_%H%M%S).tar.gz
+  
+
+# Set maintenance ON
+docker compose exec -u www-data app php occ maintenance:mode --on
+
+# Update docker-compose.yml the image to NC31
+vi docker-compose.yml
+
+
+# Recreate only the app container
+docker compose stop app
+docker compose rm -f app
+docker compose pull app
+docker compose up -d app
+
+
+# Run the upgrade
+docker compose exec -u www-data app php occ upgrade
+
+
+# Post-upgrade 
+docker compose exec -u www-data app php occ app:update --all
+..........
+Nextcloud or one of the apps require upgrade - only a limited number of commands are available
+You may use your browser or the occ upgrade command to do the upgrade
+passman new version available: 2.4.12
+passman couldn't be updated
+..........
+
+
+# Repairs and schema checks
+docker compose exec -u www-data app php occ maintenance:repair
+docker compose exec -u www-data app php occ db:add-missing-indices
+docker compose exec -u www-data app php occ db:add-missing-columns
+docker compose exec -u www-data app php occ db:add-missing-primary-keys
+docker compose exec -u www-data app php occ db:convert-filecache-bigint --no-interaction 2>/dev/null || true
+
+# if you use Redis - Clear caches
+docker compose exec -u www-data app php occ memcache:flush 2>/dev/null || true
+
+
+# Exit maintenance and verify
+docker compose exec -u www-data app php occ maintenance:mode --off
+
+
+# Check status 
+docker compose exec -u www-data app php occ status
+Nextcloud or one of the apps require upgrade - only a limited number of commands are available
+You may use your browser or the occ upgrade command to do the upgrade
+  - installed: true
+  - version: 31.0.9.1
+  - versionstring: 31.0.9
+  - edition:
+  - maintenance: false
+  - needsDbUpgrade: true
+  - productname: Nextcloud
+  - extendedSupport: false
+  
+# Check NC version 
+docker compose exec -u www-data app php occ config:system:get version
+Nextcloud or one of the apps require upgrade - only a limited number of commands are available
+You may use your browser or the occ upgrade command to do the upgrade
+30.0.16.1
+```
