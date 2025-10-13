@@ -43,9 +43,13 @@ container.
 
 ## Upgrading Nextcloud ver 29 to 31 (manual steps)
 
-### On fsicos2
+The will be a an ansible script for upgrading version 31.0.9.1 to version 32.
 
-```cd /docker/nextcloud
+### ver 29.0.11 to 29.0.16
+
+```
+# fsicos2
+cd /docker/nextcloud
 
 # Check docker-compose version
 docker compose version
@@ -94,3 +98,43 @@ docker compose exec -T db pg_dump -U nextcloud -d nextcloud \
 # Config tarball
 docker compose exec app bash -lc 'tar -C /var/www/html -czf - config' \
   > /docker/nextcloud/backups/nc_config_$(date +%F_%H%M%S).tar.gz
+```
+
+### ver 29.0.16 to 30
+```
+docker compose exec -u www-data app php occ maintenance:mode --on
+
+# Bump image to NC30
+
+docker compose stop app
+docker compose rm -f app
+docker compose pull app
+docker compose up -d app
+
+# Run the upgrade
+docker compose exec -u www-data app php occ upgrade
+docker compose exec -u www-data app php occ app:update --all
+
+# Repairs / schema checks (safe to run)
+docker compose exec -u www-data app php occ maintenance:repair
+docker compose exec -u www-data app php occ db:add-missing-indices
+docker compose exec -u www-data app php occ db:add-missing-columns
+docker compose exec -u www-data app php occ db:add-missing-primary-keys
+
+docker compose exec -u www-data app php occ db:convert-filecache-bigint --no-interaction
+
+
+# Re-enable any apps you disabled (one by one is safest):
+docker compose exec -u www-data app php occ maintenance:mode --off
+docker compose exec -u www-data app php occ status
+
+docker compose exec -u www-data app php occ config:system:get version
+...........
+30.0.16.1
+...........
+
+
+```
+
+
+
