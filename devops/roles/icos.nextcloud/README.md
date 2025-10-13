@@ -40,3 +40,9 @@ container.
 [6]: https://www.postgresql.org/support/versioning/
 [7]: https://hub.docker.com/_/postgres/?tab=tags
 [8]: https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/security_setup_warnings.html
+
+## Upgrading Nextcloud ver 29 to 31 (manual steps)
+
+On fsicos2
+
+cd /docker/nextcloud

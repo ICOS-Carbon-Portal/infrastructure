@@ -1,0 +1,17 @@
+---
+# Zabbix version
+zabbix_version: "7.4"
+
+# Zabbix server configuration
+zabbix_server: "127.0.0.1"
+zabbix_server_active: "127.0.0.1"
+
+# Agent configuration
+zabbix_agent2_listen_port: 10050
+zabbix_agent2_timeout: 30
+
+# Optional: Add more defaults
+zabbix_agent2_loglevel: 3
+zabbix_agent2_logfile_size: 0
+zabbix_agent2_enable_remote_commands: false
+zabbix_agent2_log_type: "system"
