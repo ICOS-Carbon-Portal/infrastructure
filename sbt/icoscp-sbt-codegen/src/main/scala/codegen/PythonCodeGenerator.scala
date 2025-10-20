@@ -21,9 +21,19 @@ def parse_cp_json(input_text: str, data_class: Type[CPJson]) -> CPJson:
 
 		return d
 
+	def empty_dict_to_none(data: dict[str, dict[str, Any] | None]) -> dict[str, Any]:
+		for key, value in data.items():
+			if isinstance(value, dict) and not value:
+				data[key] = None
+			elif isinstance(value, dict):
+				empty_dict_to_none(value)
+		return data
+
 	input_dict=json.JSONDecoder(object_hook=tuple_hook).decode(input_text)
 
-	return from_dict(data_class=data_class, data=input_dict, config=Config(cast=[list]))
+	processed_input_dict = empty_dict_to_none(input_dict)
+
+	return from_dict(data_class=data_class, data=processed_input_dict, config=Config(cast=[list]))
 """
 
 	def getTypeAlias(from: String, to: String): String = s"$from: TypeAlias = $to\n"
