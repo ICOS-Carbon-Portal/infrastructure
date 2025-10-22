@@ -11,8 +11,6 @@ c = get_config()
 # JupyterHub configuration
 # Maximum number of concurrent servers that can be active at a time.
 c.JupyterHub.active_server_limit = {{ exploredata_max_notebooks }}
-# We handle authentication in the reverse proxy
-c.JupyterHub.authenticate_prometheus = False
 # The dummy authenticator allows any username with a hardcoded password.
 c.JupyterHub.authenticator_class = 'dummy'
 c.DummyAuthenticator.password = os.environ['PASSWORD']
@@ -24,7 +22,7 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.last_activity_interval = 300
 # Maximum concurrent named servers that can be created by a user.
 c.JupyterHub.named_server_limit_per_user = 1
-{% if exploredata_type == "prod" %}
+{% if exploredata_type == 'prod' %}
 # https://github.com/jupyterhub/jupyterhub-idle-culler
 c.JupyterHub.services = [
     {
@@ -64,38 +62,29 @@ c.DockerSpawner.use_internal_ip = True
 c.Spawner.mem_limit = '2G'
 # Maximum number of cpu-cores a single-user notebook server is allowed to use.
 c.Spawner.cpu_limit = 1
-# This tells jupyterhub that "root" is an admin user. That's supposed to give
-# the root user an admin panel, which I didn't get to work (because of
-# DummyAuthenticator?). What it does enable however, is executing "jupyterhub
-# token" in the hub container.
-c.Authenticator.admin_users = set(['root'])
-# We then say that root cannot login over the web. Executing "jupyterhub token"
-# will still work.
-c.Authenticator.blacklist = ['root']
-#######################################################################
 
 
 nbs = {
-    "icos_jupyter": [
-        "curve_fitting_obspack.ipynb",
-        "ecosystem_site_anomaly_visualization.ipynb",
-        "icos_atmObs_statistics.ipynb",
-        "radiocarbon.ipynb",
-        "station_characterization.ipynb",
+    'icos_jupyter': [
+        'curve_fitting_obspack.ipynb',
+        'ecosystem_site_anomaly_visualization.ipynb',
+        'icos_atmObs_statistics.ipynb',
+        'radiocarbon.ipynb',
+        'station_characterization.ipynb',
     ],
-    "pylib_examples": [
-        "ex1_data.ipynb",
-        "ex1a_atmo_data.ipynb",
-        "ex1b_eco_data.ipynb",
-        "ex1c_ocean_data.ipynb",
-        "ex2_station.ipynb",
-        "ex3_multisource.ipynb",
-        "ex4_collection.ipynb",
-        "ex5_sparql.ipynb",
-        "ex6a_STILT_find.ipynb",
-        "ex6b_STILT_footprint_animation.ipynb",
-        "ex7_ObsPackData.ipynb",
-        "how_to_authenticate.ipynb",
+    'pylib_examples': [
+        'ex1_data.ipynb',
+        'ex1a_atmo_data.ipynb',
+        'ex1b_eco_data.ipynb',
+        'ex1c_ocean_data.ipynb',
+        'ex2_station.ipynb',
+        'ex3_multisource.ipynb',
+        'ex4_collection.ipynb',
+        'ex5_sparql.ipynb',
+        'ex6a_STILT_find.ipynb',
+        'ex6b_STILT_footprint_animation.ipynb',
+        'ex7_ObsPackData.ipynb',
+        'how_to_authenticate.ipynb',
     ]
 }
 
@@ -119,45 +108,46 @@ class CustomDockerSpawner(DockerSpawner):
         if form_data:
             image_from_form, notebook = form_data.get('env')[0].split('&nb=')
             options['image'] = image_map[image_from_form]
-            if notebook in nbs["icos_jupyter"]:
-                options["notebook"] = f"/lab/tree/icos-jupyter-notebooks/{notebook}"
-            elif notebook in nbs["pylib_examples"]:
-                options["notebook"] = f"/lab/tree/{notebook}"
-            elif notebook == "ICOS_flasksampling_fossilfuel.ipynb":
-                options["notebook"] = (
-                    f"/lab/tree/project-jupyter-notebooks/RINGO-T1.3/{notebook}"
+            if notebook in nbs['icos_jupyter']:
+                options['notebook'] = f'/lab/tree/icos-jupyter-notebooks/{notebook}'
+            elif notebook in nbs['pylib_examples']:
+                options['notebook'] = f'/lab/tree/{notebook}'
+            elif notebook == 'ICOS_flasksampling_fossilfuel.ipynb':
+                options['notebook'] = (
+                    f'/lab/tree/project-jupyter-notebooks/RINGO-T1.3/{notebook}'
                 )
-            elif notebook == "city-characterization-tool":
-                options["notebook"] = (
-                    f"/lab/tree/project-jupyter-notebooks/city-characterization-tool/city_characteristic_analysis.ipynb"
+            elif notebook == 'city-characterization-tool':
+                options['notebook'] = (
+                    f'/lab/tree/project-jupyter-notebooks/city-characterization-tool/city_characteristic_analysis.ipynb'
                 )
-            elif notebook == "network-view-tool":
-                options["notebook"] = (
-                    f"/lab/tree/project-jupyter-notebooks/network-view-tool/network_view.ipynb"
+            elif notebook == 'network-view-tool':
+                options['notebook'] = (
+                    f'/lab/tree/project-jupyter-notebooks/network-view-tool/network_view.ipynb'
                 )
-            elif notebook == "envrifair_winterschool":
-                options["notebook"] = (
-                    f"/lab/tree/project-jupyter-notebooks/envrifair-winterschool/map"
+            elif notebook == 'envrifair_winterschool':
+                options['notebook'] = (
+                    f'/lab/tree/project-jupyter-notebooks/envrifair-winterschool/map'
                 )
-            elif notebook == "otc_data_reduction_workshop":
-                options["notebook"] = (
-                    f"/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
+            elif notebook == 'otc_data_reduction_workshop':
+                options['notebook'] = (
+                    f'/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop'
                 )
-            elif notebook == "summer_school":
+            elif notebook == 'summer_school':
                 pass
             else:
-                raise ValueError("Wrong or no image selected")
+                raise ValueError('Wrong or no image selected')
 
         return options
 
     async def start(self):
-        if "image" not in self.user_options:
+        if 'image' not in self.user_options:
             raise ValueError(
-                "You must select an environment before starting the server."
+                'You must select an environment before starting the server.'
             )
-        self.image = self.user_options["image"]
-        if "notebook" in self.user_options.keys():
-            self.default_url = self.user_options["notebook"]
+        self.image = self.user_options['image']
+        if 'notebook' in self.user_options.keys():
+            self.default_url = self.user_options['notebook']
         return await super().start()
 
 
+c.JupyterHub.spawner_class = CustomDockerSpawner
