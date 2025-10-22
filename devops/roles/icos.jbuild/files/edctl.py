@@ -7,12 +7,23 @@ import sys
 
 from subprocess import run
 
-REPO_URL = 'registry.icos-cp.eu/exploredata.%s.notebook'
-PRODTEST = ['prod', 'test']
+REPO_URL = "registry.icos-cp.eu/exploredata.%s.notebook"
+PRODTEST = [
+    'registry.icos-cp.eu/exploredata.test.icosbase',
+    'registry.icos-cp.eu/exploredata.test.icos-notebooks',
+    'registry.icos-cp.eu/exploredata.test.pylib-examples',
+    'registry.icos-cp.eu/exploredata.test.summer-school',
+    'registry.icos-cp.eu/exploredata.prod.icosbase',
+    'registry.icos-cp.eu/exploredata.prod.icos-notebooks',
+    'registry.icos-cp.eu/exploredata.prod.pylib-examples',
+    'registry.icos-cp.eu/exploredata.prod.summer-school',
+]
 
-RRSYNC = '/usr/bin/rrsync'
-TEMPLATES = {'test': '/docker/exploredata.test/jupyterhub_home/templates',
-             'prod': '/docker/exploredata.prod/jupyterhub_home/templates'}
+RRSYNC = "/usr/bin/rrsync"
+TEMPLATES = {
+    "test": "/docker/exploredata.test/jupyterhub_home/templates",
+    "prod": "/docker/exploredata.prod/jupyterhub_home/templates",
+}
 
 
 def die(msg):
@@ -25,10 +36,9 @@ def cli():
     pass
 
 
-@cli.command('images')
+@cli.command("images")
 def cli_images():
-    r = run(['docker', 'images', REPO_URL % '*'],
-            text=1, check=1, capture_output=1)
+    r = run(["docker", "images", REPO_URL % "*"], text=1, check=1, capture_output=1)
     for n, line in enumerate(r.stdout.splitlines()):
         # Skip header.
         if n == 0:
@@ -36,32 +46,32 @@ def cli_images():
         print(line)
 
 
-@cli.command('pull')
-@click.argument('what', type=click.Choice(PRODTEST))
+@cli.command("pull")
+@click.argument("what", type=click.Choice(PRODTEST))
 def cli_pull(what):
     client = docker.from_env()
-    tag = REPO_URL % what
+    tag = what
     for update in client.api.pull(tag, stream=True, decode=True):
-        if error := update.get('error'):
+        if error := update.get("error"):
             die(f"Error while pulling '{tag}' - {error}")
-        print(update.get('id'))
-    print('done')
-    img = client.images.get(REPO_URL % what)
+        print(update.get("id"))
+    print("done")
+    img = client.images.get(what)
     # sha256:c166280023
-    print('short_id %s' % img.short_id)
+    print("short_id %s" % img.short_id)
 
 
-@cli.command('templates', context_settings={"ignore_unknown_options": True})
-@click.argument('what', type=click.Choice(PRODTEST))
-@click.argument('options', nargs=-1)
+@cli.command("templates", context_settings={"ignore_unknown_options": True})
+@click.argument("what", type=click.Choice(PRODTEST))
+@click.argument("options", nargs=-1)
 def cli_templates(what, options):
     # rrsync(1) works by extracting options from the environment.
-    os.environ['SSH_ORIGINAL_COMMAND'] = ('rsync %s' % ' '.join(options))
-    os.execvp(RRSYNC, [RRSYNC, '%s/' % TEMPLATES[what]])
+    os.environ["SSH_ORIGINAL_COMMAND"] = "rsync %s" % " ".join(options)
+    os.execvp(RRSYNC, [RRSYNC, "%s/" % TEMPLATES[what]])
 
 
-if __name__ == '__main__':
-    cmd = os.environ.get('SSH_ORIGINAL_COMMAND')
+if __name__ == "__main__":
+    cmd = os.environ.get("SSH_ORIGINAL_COMMAND")
     if cmd is not None:
         argv = cmd.split()
     else:
