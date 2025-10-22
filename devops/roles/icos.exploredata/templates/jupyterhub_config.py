@@ -42,9 +42,14 @@ c.JupyterHub.template_paths = ['/srv/jupyterhub/templates']
 
 # DockerSpawner configuration
 c.DockerSpawner.allowed_images = [
+    'registry.icos-cp.eu/exploredata.test.icosbase',
     'registry.icos-cp.eu/exploredata.test.icos-notebooks',
     'registry.icos-cp.eu/exploredata.test.summer-school',
     'registry.icos-cp.eu/exploredata.test.pylib-examples',
+    'registry.icos-cp.eu/exploredata.prod.icosbase',
+    'registry.icos-cp.eu/exploredata.prod.icos-notebooks',
+    'registry.icos-cp.eu/exploredata.prod.summer-school',
+    'registry.icos-cp.eu/exploredata.prod.pylib-examples',
 ]
 c.DockerSpawner.debug = True
 c.DockerSpawner.host_ip = '0.0.0.0'
