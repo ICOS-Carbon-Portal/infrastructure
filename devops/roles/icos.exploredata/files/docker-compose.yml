@@ -1,7 +1,4 @@
 # https://docs.docker.com/compose/compose-file/#resources
-
-version: "2.4"
-
 networks:
   jupyter:
     name: ${NETWORK_NAME}
