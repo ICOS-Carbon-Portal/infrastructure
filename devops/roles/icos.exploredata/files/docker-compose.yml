@@ -4,26 +4,26 @@ version: "2.4"
 
 networks:
   jupyter:
-      name: ${NETWORK_NAME}
+    name: ${NETWORK_NAME}
 
 services:
   hub:
     build:
       context: build.hub
-    restart: ${HUB_RESTART}
-    image: ${HUB_IMAGE}
+    command: >
+      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
     container_name: ${HUB_CONTAINER_NAME}
+    env_file:
+      - .env
+    image: ${HUB_IMAGE}
+    networks:
+      - jupyter
+    ports:
+      - "${HUB_PORT-4567}:8000"
+    restart: ${HUB_RESTART}
     volumes:
       # Bind Docker socket on the host so we can connect to the daemon from
       # within the container
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       - "/etc/localtime:/etc/localtime:ro"
       - "./jupyterhub_home:/srv/jupyterhub:rw"
-    ports:
-      - "${HUB_PORT-4567}:8000"
-    command: >
-      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
-    networks:
-      - jupyter
-    env_file:
-      - .env

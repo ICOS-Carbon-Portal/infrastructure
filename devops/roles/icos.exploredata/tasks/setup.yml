@@ -28,7 +28,10 @@
       HUB_RESTART=always
       HUB_IMAGE={{ exploredata_hub_image }}
       HUB_CONTAINER_NAME={{ exploredata_hub_container }}
-      NOTEBOOK_IMAGE={{ exploredata_notebook_image }}
+      ICOSBASE_IMAGE={{ exploredata_icosbase_image }}
+      PYLIB_EXAMPLES_IMAGE={{ exploredata_pylib_examples_image }}
+      ICOS_NOTEBOOKS_IMAGE={{ exploredata_icos_notebooks_image }}
+      SUMMER_SCHOOL_IMAGE={{ exploredata_summer_school_image }}
       PASSWORD={{ exploredata_password[exploredata_type] }}
 
 - name: Login to registry
@@ -40,8 +43,13 @@
 
 - name: Make sure that the notebook images are present
   community.docker.docker_image:
-    name: "{{ exploredata_notebook_image }}"
+    name: "{{ item }}"
     source: pull
+  loop:
+    - "{{ exploredata_icosbase_image }}"
+    - "{{ exploredata_pylib_examples_image }}"
+    - "{{ exploredata_icos_notebooks_image }}"
+    - "{{ exploredata_summer_school_image }}"
 
 - name: Build and start the hub image
   docker_compose:

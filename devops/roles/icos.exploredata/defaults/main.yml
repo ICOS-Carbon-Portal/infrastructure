@@ -4,6 +4,9 @@ exploredata_home: "/docker/{{ exploredata_name }}"
 exploredata_network: "{{ exploredata_name }}"
 exploredata_hub_image: "{{ exploredata_name }}.hub"
 exploredata_hub_container: "{{ exploredata_name }}.hub"
-exploredata_notebook_image : "registry.icos-cp.eu/{{ exploredata_name }}.notebook"
+exploredata_icosbase_image : "registry.icos-cp.eu/{{ exploredata_name }}.icosbase"
+exploredata_pylib_examples_image : "registry.icos-cp.eu/{{ exploredata_name }}.pylib-examples"
+exploredata_icos_notebooks_image : "registry.icos-cp.eu/{{ exploredata_name }}.icos-notebooks"
+exploredata_summer_school_image : "registry.icos-cp.eu/{{ exploredata_name }}.summer-school"
 
 exploredata_max_notebooks: 50
