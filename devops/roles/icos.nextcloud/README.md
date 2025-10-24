@@ -6,14 +6,10 @@
 
 - [ ] Test upgrade nextcloud in lab first
 - [ ] Review nextcloud release notes for breaking changes
-- [ ] Verify system requirements (PHP version, docker-compose, database)
+- [ ] Verify package requirements (PHP version, docker-compose, database)
 - [ ] Document current state:
   - [ ] Make a list of all enabled apps
-  - [ ] Verify group/team fileshare
-  - [ ] Verify calendar functionality
-  - [ ] Verify all general mount settings and configuration
-  - [ ] Screenshot/document current settings
-- [ ] Create comprehensive backup:
+- [ ] Create backup:
   - [ ] Database backup
   - [ ] Config files backup (docker-compose.yml, config.php)
 
@@ -27,12 +23,12 @@
 ## Step 3 - Update Execution
 
 - [ ] Enable maintenance mode
+- [ ] Pull new nextcloud image
 - [ ] Stop containers gracefully
 - [ ] Update docker-compose.yml with new version
-- [ ] Pull new nextcloud image
 - [ ] Start containers
 - [ ] Run upgrade command(s)
-- [ ] Check logs for errors (separate window)
+- [ ] Check logs for errors (in separate window)
 - [ ] Disable maintenance mode
 
 ## Step 4 - Post-Update Verification
@@ -55,9 +51,10 @@
 - [ ] Notify users that upgrade is complete
 - [ ] Report any known issues or changes
 - [ ] Update internal documentation
-- [ ] Document update ansible script for next upgrade
+- [ ] Document and update ansible script for next upgrade
 
 
+---
 
 
 ## Overview
@@ -107,6 +104,8 @@ container.
 ## Manual steps - Upgrading Nextcloud ver 29 to 31
 
 The will be an ansible script for upgrading version 31.0.9.1 to version 32.
+These notes were for upgrading from (old) minor versions, and will not be relevant for upgrading from the current version to version 32.X.
+
 
 ### From ver 29.0.11 to 29.0.16
 
