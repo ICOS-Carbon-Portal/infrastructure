@@ -6,7 +6,7 @@
 
 - [ ] Test upgrade nextcloud in lab first
 - [ ] Review nextcloud release notes for breaking changes
-- [ ] Verify package requirements (PHP version, docker-compose, database)
+- [ ] Verify package requirements versions (PHP version, docker-compose, database)
 - [ ] Document current state:
   - [ ] Make a list of all enabled apps
 - [ ] Create backup:
