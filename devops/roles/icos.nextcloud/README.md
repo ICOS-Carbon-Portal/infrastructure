@@ -43,6 +43,7 @@
   - [ ] Calendar functionality
   - [ ] General mounting points
   - [ ] External storage
+  - [ ] OnlyOffice connectivity/document editing
 - [ ] Check system warnings in admin panel
 - [ ] Review error logs
 
