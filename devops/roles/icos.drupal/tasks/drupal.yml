@@ -60,7 +60,7 @@
 
 - name: Enable maintenance mode
   command: docker exec {{website}}_drupal_1 drush maint:set 1
-  when: update
+  when: update | bool
 
 - name: (Re)start docker containers
   community.docker.docker_compose_v2:
@@ -88,17 +88,17 @@
 
 - name: Composer update
   command: docker exec {{website}}_drupal_1 composer update
-  when: update
+  when: update | bool
   register: result
   changed_when: '"Package operations" in result.stderr'
 
 - name: Update database
   command: docker exec {{website}}_drupal_1 drush updb
-  when: update
+  when: update | bool
 
 - name: Disable maintenance mode
   command: docker exec {{website}}_drupal_1 drush maint:set 0
-  when: update
+  when: update | bool
 
 - name: Clear caches
   command: docker exec {{website}}_drupal_1 drush cr
