@@ -1,7 +1,9 @@
 /disk/data/dataAppStorage/etcFacadeStaging/errorLog.txt /disk/data/dataAppStorage/etcFacadeStaging/externalUploadsLog.txt {
 	weekly
+	rotate 4
 	size 5M
 	missingok
-	create 664 cpdata cpdata
+	notifempty
+	create 644 cpdata cpdata
 }
 
