@@ -5,6 +5,10 @@
         max-width: 300px;
         text-align: left;
     }
+
+    .form-check-input[type="radio"] {
+        border-color: #aaa;
+    }
 </style>
 
 <div class="container text-center my-4">
@@ -233,6 +237,16 @@
             collapseEl.addEventListener('hide.bs.collapse', () => {
                 arrowIcon.style.transform = 'rotate(0deg)';
             });
+        });
+
+        // Disable start button by default, then enable once selection made
+        const startButton = document.querySelector('button[type="submit"]');
+        startButton.disabled = true;
+
+        document.addEventListener("change", (e) => {
+            if (startButton.disabled && e.target.name == "env") {
+                startButton.disabled = false;
+            }
         });
     });
 </script>
