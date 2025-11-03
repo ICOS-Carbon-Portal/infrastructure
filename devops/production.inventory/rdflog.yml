@@ -5,14 +5,14 @@ all:
 # The server running the main database.
 rdflog_server:
   hosts:
-    fsicos2.icos-cp.eu:
+    fsicos2:
 
 # The servers hosting VMs that run replicas.
 pgrep_rdflog_server:
   hosts:
     fsicos3:
       rdflog_vm_name: pgrep1
-    cdb.nateko.lu.se:
+    cdb:
       rdflog_vm_name: pgrep2
 
 # The VMs running replicas.

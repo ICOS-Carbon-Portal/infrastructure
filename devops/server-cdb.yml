@@ -1,4 +1,4 @@
-- hosts: cdb.nateko.lu.se
+- hosts: cdb
   roles:
     - role: icos.server
       tags: server

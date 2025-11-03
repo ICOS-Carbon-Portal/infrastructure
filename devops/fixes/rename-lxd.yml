@@ -1,4 +1,4 @@
-- hosts: cdb.nateko.lu.se
+- hosts: cdb
   vars:
     old_name: pgrep-rdflog
     new_name: pgrep2

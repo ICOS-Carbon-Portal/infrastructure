@@ -6,7 +6,7 @@ bbservers:
   hosts:
     icos1:
       bbserver_home: /pool/bbserver
-    cdb.nateko.lu.se:
+    cdb:
       bbserver_home: /disk/data/bbserver
     fsicos2:
       bbserver_home: /disk/data/bbserver

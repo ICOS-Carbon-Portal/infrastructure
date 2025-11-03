@@ -5,7 +5,7 @@ all:
         localhost:
 
       vars:
-        corebackup_host: cdb.nateko.lu.se
+        corebackup_host: cdb
 
         borg_bin: ~/.local/bin/borg
 
