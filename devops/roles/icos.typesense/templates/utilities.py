@@ -36,6 +36,14 @@ def is_in_main(link):
         return True
     return is_in_main(link.parent)
 
+def get_category(url):
+    if "/news-and-events/news/" in url:
+        return "news"
+    elif "/news-and-events/events/" in url:
+        return "events"
+    else:
+        return "main_website"
+
 # unused, but may be useful in the future
 def is_in_menu(url, soup):
     url_path = url[len(base_url)-1:]
@@ -154,7 +162,7 @@ def timestamp():
 ## Main functions for importing
 def update_page(doc, verbose=False):
     url = doc["url"]
-    updated_doc = {"id": doc["id"], "url": doc["url"]}
+    updated_doc = {"id": doc["id"], "url": doc["url"], "category": get_category(doc["url"])}
     doc_status = {"changed": False, "doc": updated_doc}
 
     # return unmodified doc_status if we should not index this page
@@ -279,12 +287,7 @@ def get_all_pages(verbose=False):
             page["etag"] = reqs.headers["etag"] if "etag" in reqs.headers else None
             page["title"] = soup.find("h1", attrs={"class":"page-title"}).text
             page["content"] = get_page_content(soup)
-            if "/news-and-events/news/" in current_url:
-                page["category"] = "news"
-            elif "/news-and-events/events/" in current_url:
-                page["category"] = "events"
-            else:
-                page["category"] = "main_website"
+            page["category"] = get_category(current_url)
             all_pages.append(page)
 
         final_urls.add(current_url)

@@ -99,7 +99,16 @@ updates_success = client.collections[collection_name].documents.import_(document
 success_count = sum(d['success'] for d in updates_success)
 
 print(timestamp() + f"[update_documents] Updated documents for {schema['name']}: " + 
-      f"{success_count}/{len(updates_success)} updates succeeded, of {len(documents)} total documents.")
+      f"{success_count}/{len(updates_success)} updates succeeded, of {len(documents)} (pre-update) total documents.")
+
+def find_failure(x):
+    return not x["success"]
+
+if success_count < len(updates_success):
+    failures = list(filter(find_failure, updates_success))
+    for failure in failures:
+        print(timestamp() + f"[update_documents] Update failed with error {failure['error']}")
+
 if len(documents_to_remove) > 0:
     print(timestamp() + f"[update_documents] Removing documents for {schema['name']}:" + 
           f"{len(documents_to_remove)} documents to remove.")
