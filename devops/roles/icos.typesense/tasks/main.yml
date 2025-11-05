@@ -97,6 +97,11 @@
         access_time: preserve
         owner: "{{ typesense_user }}"
 
+    - name: Set up logrotate for typesense website {{ website }}
+      ansible.builtin.template:
+        src: logrotate
+        dest: "/etc/logrotate.d/typesense-{{ website }}"
+
     - name: Copy python scripts and schema to {{ website }} directory
       ansible.builtin.template:
         src: "{{ item.src }}"

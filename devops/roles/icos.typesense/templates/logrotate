@@ -1,0 +1,8 @@
+{{ typesense_home }}/{{ website }}/collection.log {
+	weekly
+	rotate 4
+	size 5M
+	missingok
+	notifempty
+	create 644 typesense root
+}
