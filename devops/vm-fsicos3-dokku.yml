@@ -30,6 +30,15 @@
       dokku_proxy_host: dokku.lxd
       dokku_proxy_port: 80
 
+  tasks:
+    - name: Add LXD disk device for dokku
+      tags: dokku_add_device
+      command: >
+        lxc config device add dokku flexpart disk
+        source=/data/cupcake
+        path=/data/flexpart/output
+        shift=true
+
 - hosts: dokku
   roles:
     - role: icos.lxd_guest
