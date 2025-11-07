@@ -27,7 +27,7 @@ services:
   mariadb:
     # When bumping version, uncomment 'MARIADB_AUTO_UPGRADE: 1' bellow to run mariadb-upgrade⁠
     image: mariadb:11.6
-    command: --transaction-isolation=READ-COMMITTED
+    command: --transaction-isolation=READ-COMMITTED --collation-server=utf8mb4_general_ci --character_set_collations='utf8mb4=utf8mb4_general_ci'
     ports:
       - "127.0.0.1:{{ mysql_docker_port }}:3306"
     environment:

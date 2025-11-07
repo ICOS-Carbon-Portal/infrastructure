@@ -94,7 +94,7 @@
             path: /data/cupcake
             source: /data/cupcake
             type: disk
-            readonly: "True"
+            readonly: "False"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
         timeout: 60
