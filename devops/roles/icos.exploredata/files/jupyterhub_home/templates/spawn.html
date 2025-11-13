@@ -1,0 +1,66 @@
+{% extends "page.html" %}
+{% if announcement_spawn is string %}
+{% set announcement = announcement_spawn %}
+{% endif %}
+{% block main %}
+<div class="container">
+    {% block heading %}
+        <div class="text-center mb-3">
+            <div style="display:inline-flex;
+                  align-items:center;
+                  gap:30px;
+                  padding:8px 24px;
+                  border-radius:12px;
+                  background-color:#5b5b5b;
+                  box-shadow:0 2px 5px rgba(0,0,0,0.12);">
+                <img src="https://www.icos-cp.eu/sites/default/files/ICOS-logo.svg"
+                     alt="ICOS Logo"
+                     style="height:55px;">
+                <h1 class="mb-0" style="display:inline-block;color:#ffffff;">ExploreData</h1>
+            </div>
+        </div>
+    <div class="row text-center">
+        <p>
+            Exploredata is a multi-purpose research platform designed for showcasing ICOS scientific output through
+            interactive Jupyter notebooks. It allows users to test, explore, and visualize ICOS data in an
+            interactive environment where results are not stored permanently. Each session runs in a temporary
+            container that is deleted after logout or an hour of inactivity.
+        </p>
+    </div>
+</div>
+{% endblock heading %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        {% if for_user and user.name != for_user.name -%}
+        <p>Spawning server for {{ for_user.name }}</p>
+        {% endif -%}
+        {% if error_message -%}<p class="spawn-error-msg alert alert-danger">Error: {{ error_message }}</p>{% endif %}
+        <form enctype="multipart/form-data"
+              id="spawn_form"
+              action="{{ url | safe }}"
+              method="post"
+              role="form">
+            {{ spawner_options_form | safe }}
+            <br>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-jupyter" style="min-width:220px;padding:0.7rem 1.8rem;font-size:1.1rem;">
+                    Start
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock main %}
+{% block script %}
+{{ super() }}
+<script>
+    // setup onSubmit feedback
+    $('form').submit((e) => {
+        var form = $(e.target);
+        form.find('.feedback-container>input').attr('disabled', true);
+        form.find('.feedback-container>*').toggleClass('hidden');
+        form.find('.feedback-widget>*').toggleClass('fa-pulse');
+    });
+</script>
+{% endblock script %}
