@@ -3,21 +3,39 @@
 {% set announcement = announcement_spawn %}
 {% endif %}
 {% block main %}
+<style>
+    [data-bs-theme=dark] #icos-logo {
+        content:url("https://www.icos-cp.eu/sites/default/files/ICOS-logo.svg");
+    }
+
+    [data-bs-theme=light] #icos-logo {
+        content:url("https://www.icos-cp.eu/sites/default/files/2020-04/ICOS%20RI_logo_rgb.png");
+    }
+
+    #icos-logo {
+        position: absolute;
+        padding: 0.5rem 1rem;
+        box-sizing: content-box;
+        z-index: -1;
+        margin-top: -1rem;
+    }
+
+    @media only screen and (max-width: 767px) {
+        #icos-logo {
+            position: relative;
+            margin: 0 auto 1rem;
+            display: block;
+        }
+    }
+</style>
 <div class="container">
     {% block heading %}
-        <div class="text-center mb-3">
-            <div style="display:inline-flex;
-                  align-items:center;
-                  gap:30px;
-                  padding:8px 24px;
-                  border-radius:12px;
-                  background-color:#5b5b5b;
-                  box-shadow:0 2px 5px rgba(0,0,0,0.12);">
-                <img src="https://www.icos-cp.eu/sites/default/files/ICOS-logo.svg"
-                     alt="ICOS Logo"
-                     style="height:55px;">
-                <h1 class="mb-0" style="display:inline-block;color:#ffffff;">ExploreData</h1>
-            </div>
+        <img id="icos-logo"
+            src="https://www.icos-cp.eu/sites/default/files/ICOS-logo.svg"
+            alt="ICOS: Integrated Carbon Observation System"
+            style="height:55px;">
+        <div class="text-center mb-4">
+            <h1>ExploreData</h1>
         </div>
     <div class="row text-center">
         <p>

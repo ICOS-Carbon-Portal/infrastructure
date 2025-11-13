@@ -251,9 +251,13 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize all tooltips
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+        // Initialize span tooltips without delay enabled
+        const tooltipSpanTriggerList = document.querySelectorAll('span[data-bs-toggle="tooltip"]');
+        tooltipSpanTriggerList.forEach(el => new bootstrap.Tooltip(el));
+
+        // Initialize label tooltips with delay enabled
+        const tooltipLabelTriggerList = document.querySelectorAll('label[data-bs-toggle="tooltip"]');
+        tooltipLabelTriggerList.forEach(el => new bootstrap.Tooltip(el, {delay: { show: 500, hide: 100 }}));
 
         // Handle collapse arrow rotation for all categories
         const collapsibleHeaders = document.querySelectorAll('[data-bs-toggle="collapse"]');
