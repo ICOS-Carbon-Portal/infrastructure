@@ -110,3 +110,9 @@ icosdata_nfs_mounts:
   - path: /data/cupcake
     src: cupcake.nebula:/data/flexpart/output
     opts: "rw,soft,x-systemd.after=nebula.service"
+
+
+# LXC containers to monitor on fsicos3
+lxc_containers_to_monitor:
+  - exploredata
+
