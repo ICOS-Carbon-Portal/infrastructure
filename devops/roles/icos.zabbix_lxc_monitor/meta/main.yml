@@ -1,0 +1,15 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: ICOS Infrastructure Team
+  description: Zabbix monitoring for LXC container configuration changes
+  company: ICOS
+  
+  min_ansible_version: "2.9"
+  
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy

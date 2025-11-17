@@ -1,0 +1,58 @@
+---
+- name: Ensure Zabbix scripts directory exists
+  ansible.builtin.file:
+    path: "{{ zabbix_scripts_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Ensure hash-keys directory exists
+  ansible.builtin.file:
+    path: "{{ zabbix_hash_keys_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure Zabbix agent conf.d directory exists
+  ansible.builtin.file:
+    path: "{{ zabbix_agent_conf_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Copy LXC config hash check script
+  ansible.builtin.copy:
+    src: check_lxc_config_hash.sh
+    dest: "{{ zabbix_scripts_dir }}/check_lxc_config_hash.sh"
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Copy sudoers file for Zabbix
+  ansible.builtin.copy:
+    src: zabbix
+    dest: /etc/sudoers.d/zabbix
+    owner: root
+    group: root
+    mode: '0440'
+    validate: 'visudo -cf %s'
+
+- name: Copy Zabbix userparameter config
+  ansible.builtin.copy:
+    src: userparam_check_lxc_config_hash.conf
+    dest: "{{ zabbix_agent_conf_dir }}/userparam_check_lxc_config_hash.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart zabbix-agent2
+
+- name: Generate baseline hash for LXC containers
+  ansible.builtin.shell: |
+    /snap/bin/lxc config show {{ item }} | md5sum | awk '{print $1}' > {{ zabbix_hash_keys_dir }}/{{ item }}-hash
+  args:
+    creates: "{{ zabbix_hash_keys_dir }}/{{ item }}-hash"
+  loop: "{{ lxc_containers_to_monitor }}"
+  when: lxc_containers_to_monitor is defined

@@ -1,0 +1,10 @@
+---
+# Zabbix LXC monitoring defaults
+zabbix_scripts_dir: /etc/zabbix/scripts
+zabbix_hash_keys_dir: /etc/zabbix/scripts/hash-keys
+zabbix_agent_conf_dir: /etc/zabbix/zabbix_agent2.d
+zabbix_agent_service: zabbix-agent2
+
+# LXC containers to monitor (can be overridden in host_vars)
+lxc_containers_to_monitor:
+  - exploredata
