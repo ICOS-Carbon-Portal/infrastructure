@@ -17,3 +17,8 @@
 
     - role: ops.zfs
       tags: zfs
+
+    - role: icos.zabbix_lxc_monitor
+      tags: 
+        - zabbix
+        - lxc-monitor
