@@ -20,8 +20,9 @@ stiltcluster_hosts:
       # The machine has 24
       stiltcluster_maxcores: 20
 
-    # fsicos3:
-    #   stiltrun_user: stiltcluster
-    #   stiltcluster_docker: false
-    #   stiltcluster_maxcores: 40
-    #   stilt_input_dir: /data/stilt_legacy/Input
+    fsicos3:
+       stiltrun_user: stiltcluster
+       stiltcluster_docker: false
+       stilt_input_dir: /data/stilt_legacy/Input
+       #stilt_input_mount: /data/stilt_legacy/Input
+       stiltcluster_maxcores: 20
