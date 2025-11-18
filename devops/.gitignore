@@ -3,5 +3,4 @@
 local_vars.yml
 
 .metals/
-.vscode/**/.DS_Store
-.DS_Store
+.vscode/
