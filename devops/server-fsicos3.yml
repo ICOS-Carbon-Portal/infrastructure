@@ -20,5 +20,3 @@
 
     - role: icos.zabbix_agent
       tags: zabbix-agent
-
-
