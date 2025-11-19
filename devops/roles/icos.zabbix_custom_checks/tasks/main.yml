@@ -1,0 +1,158 @@
+---
+# Ensure directories exist on all hosts
+- name: Ensure Zabbix directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: zabbix
+    group: zabbix
+    mode: '0755'
+  loop:
+    - "{{ zabbix_scripts_dir }}"
+    - "{{ zabbix_custom_dir }}"
+  become: yes
+
+# Block for fsicos2 custom checks deployment
+- name: Deploy custom checks for fsicos2
+  when: inventory_hostname == 'fsicos2' or 'fsicos2' in group_names
+  tags:
+    - fsicos2-custom
+    - zabbix-custom
+  block:
+    - name: Copy fsicos2 check scripts (.sh files)
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_scripts_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+      become: yes
+      with_fileglob:
+        - "files/fsicos2/check_*.sh"
+      register: sh_files
+
+    - name: Copy fsicos2 check scripts (.py files)
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_scripts_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+      become: yes
+      with_fileglob:
+        - "files/fsicos2/check_*.py"
+      register: py_files
+
+    - name: Copy fsicos2 custom configuration files
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_custom_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0644'
+      become: yes
+      with_fileglob:
+        - "files/fsicos2/custom_*.conf"
+      register: conf_files
+
+    - name: Copy fsicos2 sudoers file if exists
+      copy:
+        src: "files/fsicos2/zabbix"
+        dest: "{{ zabbix_sudoers_dir }}/zabbix"
+        owner: root
+        group: root
+        mode: '0440'
+        validate: 'visudo -cf %s'
+      become: yes
+      when: lookup('ansible.builtin.fileglob', 'files/fsicos2/zabbix', errors='ignore') | length > 0
+      register: sudo_file
+
+    - name: Trigger zabbix restart if fsicos2 files changed
+      debug:
+        msg: "Files changed, triggering zabbix-agent2 restart"
+      changed_when: true
+      when: >
+        sh_files.changed or 
+        py_files.changed or 
+        conf_files.changed or 
+        sudo_file.changed
+      notify: restart zabbix-agent2
+
+
+# Block for fsicos3 custom checks deployment
+- name: Deploy custom checks for fsicos3
+  when: inventory_hostname == 'fsicos3' or 'fsicos3' in group_names
+  tags:
+    - fsicos3-custom
+    - zabbix-custom
+  block:
+    - name: Copy fsicos3 check scripts (.sh files)
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_scripts_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+      become: yes
+      with_fileglob:
+        - "files/fsicos3/check_*.sh"
+      register: sh_files
+
+    - name: Copy fsicos3 check scripts (.py files)
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_scripts_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+      become: yes
+      with_fileglob:
+        - "files/fsicos3/check_*.py"
+      register: py_files
+
+    - name: Copy fsicos3 custom configuration files
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_custom_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0644'
+      become: yes
+      with_fileglob:
+        - "files/fsicos3/custom_*.conf"
+      register: conf_files
+
+    - name: Copy fsicos3 userparam configuration files
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_custom_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0644'
+      become: yes
+      with_fileglob:
+        - "files/fsicos3/userparam_*.conf"
+      register: conf_files
+
+    - name: Copy fsicos3 sudoers zabbix file
+      copy:
+        src: "files/fsicos3/zabbix"
+        dest: "{{ zabbix_sudoers_dir }}/zabbix"
+        owner: root
+        group: root
+        mode: '0440'
+        validate: 'visudo -cf %s'
+      become: yes
+      when: lookup('ansible.builtin.fileglob', 'files/fsicos3/zabbix', errors='ignore') | length > 0
+      register: sudo_file
+
+    - name: Trigger zabbix restart if fsicos3 files changed
+      ansible.builtin.debug:
+        msg: "*** Triggering zabbix-agent2 restart ****"
+      changed_when: true
+      when: >
+        sh_files.changed or 
+        py_files.changed or 
+        conf_files.changed or 
+        sudo_file.changed
+      notify: restart zabbix-agent2
