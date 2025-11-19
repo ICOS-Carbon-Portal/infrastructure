@@ -42,3 +42,4 @@ devops/roles/icos.postgresql/postgis_restore_log.txt
 devops/roles/icos.postgresql/rdflog_restore_log.txt
 devops/roles/icos.restheart/restheart_restore_log.txt
 
+.DS_Store
