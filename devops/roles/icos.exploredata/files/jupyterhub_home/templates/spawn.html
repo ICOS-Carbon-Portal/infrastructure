@@ -27,20 +27,6 @@
             display: block;
         }
     }
-
-    .btn-classic {
-        min-width: 100px;
-        padding: 0.5rem 1.2rem;
-        font-size: 0.85rem;
-        background-color: #6c757d;
-        border-color: #6c757d;
-        color: white;
-    }
-
-    .btn-classic:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
 </style>
 <div class="container">
     {% block heading %}
@@ -75,9 +61,6 @@
             {{ spawner_options_form | safe }}
             <br>
             <div class="text-center mt-4">
-                <button id="classic-btn" type="button" class="btn btn-classic" name="classic_mode">
-                    Classic
-                </button>
                 <button type="submit" class="btn btn-jupyter" style="min-width:220px;padding:0.7rem 1.8rem;font-size:1.1rem;">
                     Start
                 </button>
@@ -89,16 +72,4 @@
 {% endblock main %}
 {% block script %}
 {{ super() }}
-<script>
-    document.getElementById('classic-btn').addEventListener('click', () => {
-        const form = document.getElementById('spawn_form');
-        const classicEnv = document.createElement('input');
-        classicEnv.type = 'hidden';
-        classicEnv.name = 'env';
-        classicEnv.value = 'classic:latest&nb=classic';
-        form.appendChild(classicEnv);
-
-        form.submit();
-    });
-</script>
 {% endblock script %}
