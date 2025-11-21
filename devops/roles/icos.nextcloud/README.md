@@ -43,7 +43,10 @@
   - [ ] Calendar functionality
   - [ ] General mounting points
   - [ ] External storage
+<<<<<<< HEAD
   - [ ] OnlyOffice connectivity/document editing
+=======
+>>>>>>> robert-devel
 - [ ] Check system warnings in admin panel
 - [ ] Review error logs
 
@@ -125,7 +128,11 @@ apt-get install -y docker-compose-plugin
 docker compose exec -u www-data app php occ maintenance:mode --on || true
 
 # Make a backup
+<<<<<<< HEAD
 /docker/nextcloud/bbclient/bin/bbclient-coldbackup
+=======
+docker-compose exec -u 33 db pg_dump -U nextcloud nextcloud > backup_29.0.11_$(date +%Y%m%d).sql
+>>>>>>> robert-devel
 
 # Continue with
 docker compose stop app
