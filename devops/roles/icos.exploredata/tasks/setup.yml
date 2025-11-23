@@ -48,9 +48,10 @@
     source: pull
   loop:
     - "{{ exploredata_icosbase_image }}"
-    - "{{ exploredata_pylib_examples_image }}"
+    - "{{ exploredata_examples_image }}"
     - "{{ exploredata_icos_notebooks_image }}"
     - "{{ exploredata_summer_school_image }}"
+    - "{{ exploredata_classic_image }}"
 
 - name: Build and start the hub image
   docker_compose:
