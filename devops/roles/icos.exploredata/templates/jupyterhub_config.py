@@ -42,14 +42,11 @@ c.JupyterHub.template_paths = ['/srv/jupyterhub/templates']
 
 # DockerSpawner configuration
 c.DockerSpawner.allowed_images = [
-    'registry.icos-cp.eu/exploredata.test.icosbase',
-    'registry.icos-cp.eu/exploredata.test.icos-notebooks',
-    'registry.icos-cp.eu/exploredata.test.summer-school',
-    'registry.icos-cp.eu/exploredata.test.pylib-examples',
-    'registry.icos-cp.eu/exploredata.prod.icosbase',
-    'registry.icos-cp.eu/exploredata.prod.icos-notebooks',
-    'registry.icos-cp.eu/exploredata.prod.summer-school',
-    'registry.icos-cp.eu/exploredata.prod.pylib-examples',
+    os.environ['ICOSBASE_IMAGE'],
+    os.environ['ICOS_NOTEBOOKS_IMAGE'],
+    os.environ['EXAMPLES_IMAGE'],
+    os.environ['SUMMER_SCHOOL_IMAGE'],
+    os.environ['CLASSIC_IMAGE'],
 ]
 c.DockerSpawner.debug = True
 c.DockerSpawner.host_ip = '0.0.0.0'
@@ -68,35 +65,45 @@ c.Spawner.mem_limit = '2G'
 # Maximum number of cpu-cores a single-user notebook server is allowed to use.
 c.Spawner.cpu_limit = 1
 
-
-nbs = {
-    'icos_jupyter': [
-        'curve_fitting_obspack.ipynb',
-        'ecosystem_site_anomaly_visualization.ipynb',
-        'icos_atmObs_statistics.ipynb',
-        'radiocarbon.ipynb',
-        'station_characterization.ipynb',
-    ],
-    'pylib_examples': [
-        'ex1_data.ipynb',
-        'ex1a_atmo_data.ipynb',
-        'ex1b_eco_data.ipynb',
-        'ex1c_ocean_data.ipynb',
-        'ex2_station.ipynb',
-        'ex3_multisource.ipynb',
-        'ex4_collection.ipynb',
-        'ex5_sparql.ipynb',
-        'ex6a_STILT_find.ipynb',
-        'ex6b_STILT_footprint_animation.ipynb',
-        'ex7_ObsPackData.ipynb',
-        'how_to_authenticate.ipynb',
-    ]
+notebook_map = {
+    # Explore ICOS Data Notebooks
+    'nocfibs' : '/lab/tree/icos-jupyter-notebooks/NOAA Curve Fitting for ObsPack CO2.ipynb',
+    'icatobs' : '/lab/tree/icos-jupyter-notebooks/ICOS Atmospheric Observation Statistics.ipynb',
+    'chatmes' : '/lab/tree/icos-jupyter-notebooks/Characterization of Atmospheric Measurement Stations.ipynb',
+    'hifoe'   : '/lab/tree/project-jupyter-notebooks/RINGO-T1.3/High Fossil CO2 Events at ICOS Stations.ipynb',
+    # Examples
+    'ex1'     : '/lab/tree/ex1 - Access a Single Dataset.ipynb',
+    'ex1a'    : '/lab/tree/ex1a - Work with Atmospheric Data.ipynb',
+    'ex1b'    : '/lab/tree/ex1b - Work with Ecosystem Data.ipynb',
+    'ex1c'    : '/lab/tree/ex1c - Work with Ocean Data.ipynb',
+    'ex2'     : '/lab/tree/ex2 - Explore ICOS Stations.ipynb',
+    'ex3'     : '/lab/tree/ex3 - Combine ICOS & PANGAEA Data.ipynb',
+    'ex4'     : '/lab/tree/ex4 - Access Collection Data & Metadata.ipynb',
+    'ex5'     : '/lab/tree/ex5 - Query Metadata with SPARQL.ipynb',
+    'ex6a'    : '/lab/tree/ex6a - Search STILT Stations.ipynb',
+    'ex6b'    : '/lab/tree/ex6b - Animate STILT Footprints.ipynb',
+    'ex6c'    : '/lab/tree/ex6c - Plot STILT Time Series & Footprints.ipynb',
+    'ex7'     : '/lab/tree/ex7 - Read ObsPack Collections.ipynb',
+    'ex8'     : '/lab/tree/ex8 - Authenticate for Remote Data Access.ipynb',
+    # Notebooks with DOI
+    'cichato' : '/lab/tree/project-jupyter-notebooks/city-characterization-tool/City Characterization Tool.ipynb',
+    'ecosav'  : '/lab/tree/icos-jupyter-notebooks/Ecosystem Site Anomaly Visualization.ipynb',
+    'nevito'  : '/lab/tree/project-jupyter-notebooks/network-view-tool/Network View Tool.ipynb',
+    'riflas'  : '/lab/tree/project-jupyter-notebooks/RINGO-T1.3/RINGO Flask-Sampling(Task 1.3).ipynb',
+    'raca'    : '/lab/tree/icos-jupyter-notebooks/Radiocarbon.ipynb',
+    # Education
+    'suschoo' : '',
+    'enwishc' : '/lab/tree/project-jupyter-notebooks/envrifair-winterschool/map',
+    'otcdrew' : '/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop',
+    'classic': '',
 }
 
 image_map = {
+    'icosbase:latest'      : os.environ['ICOSBASE_IMAGE'],
     'icos-notebooks:latest': os.environ['ICOS_NOTEBOOKS_IMAGE'],
-    'pylib-examples:latest': os.environ['PYLIB_EXAMPLES_IMAGE'],
-    'summer-school:latest': os.environ['SUMMER_SCHOOL_IMAGE'],
+    'examples:latest'      : os.environ['EXAMPLES_IMAGE'],
+    'summer-school:latest' : os.environ['SUMMER_SCHOOL_IMAGE'],
+    'classic:latest'       : os.environ['CLASSIC_IMAGE'],
 }
 
 
@@ -111,44 +118,14 @@ class CustomDockerSpawner(DockerSpawner):
     def options_from_form(form_data):
         options = {}
         if form_data:
-            image_from_form, notebook = form_data.get('env')[0].split('&nb=')
-            options['image'] = image_map[image_from_form]
-            if notebook in nbs['icos_jupyter']:
-                options['notebook'] = f'/lab/tree/icos-jupyter-notebooks/{notebook}'
-            elif notebook in nbs['pylib_examples']:
-                options['notebook'] = f'/lab/tree/{notebook}'
-            elif notebook == 'ICOS_flasksampling_fossilfuel.ipynb':
-                options['notebook'] = (
-                    f'/lab/tree/project-jupyter-notebooks/RINGO-T1.3/{notebook}'
-                )
-            elif notebook == 'city-characterization-tool':
-                options['notebook'] = (
-                    f'/lab/tree/project-jupyter-notebooks/city-characterization-tool/city_characteristic_analysis.ipynb'
-                )
-            elif notebook == 'network-view-tool':
-                options['notebook'] = (
-                    f'/lab/tree/project-jupyter-notebooks/network-view-tool/network_view.ipynb'
-                )
-            elif notebook == 'envrifair_winterschool':
-                options['notebook'] = (
-                    f'/lab/tree/project-jupyter-notebooks/envrifair-winterschool/map'
-                )
-            elif notebook == 'otc_data_reduction_workshop':
-                options['notebook'] = (
-                    f'/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop'
-                )
-            elif notebook == 'summer_school':
-                pass
-            else:
-                raise ValueError('Wrong or no image selected')
-
+            image, notebook = form_data.get('env')[0].split('&nb=')
+            options['image'] = image_map[image]
+            options['notebook'] = notebook_map[notebook]
         return options
 
     async def start(self):
         if 'image' not in self.user_options:
-            raise ValueError(
-                'You must select an environment before starting the server.'
-            )
+            raise ValueError('You must select an environment before starting the server.')
         self.image = self.user_options['image']
         if 'notebook' in self.user_options.keys():
             self.default_url = self.user_options['notebook']
