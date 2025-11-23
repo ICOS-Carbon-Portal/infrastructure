@@ -11,12 +11,14 @@ REPO_URL = "registry.icos-cp.eu/exploredata.%s.notebook"
 PRODTEST = [
     'registry.icos-cp.eu/exploredata.test.icosbase',
     'registry.icos-cp.eu/exploredata.test.icos-notebooks',
-    'registry.icos-cp.eu/exploredata.test.pylib-examples',
+    'registry.icos-cp.eu/exploredata.test.examples',
     'registry.icos-cp.eu/exploredata.test.summer-school',
+    'registry.icos-cp.eu/exploredata.test.classic',
     'registry.icos-cp.eu/exploredata.prod.icosbase',
     'registry.icos-cp.eu/exploredata.prod.icos-notebooks',
-    'registry.icos-cp.eu/exploredata.prod.pylib-examples',
+    'registry.icos-cp.eu/exploredata.prod.examples',
     'registry.icos-cp.eu/exploredata.prod.summer-school',
+    'registry.icos-cp.eu/exploredata.prod.classic',
 ]
 
 RRSYNC = "/usr/bin/rrsync"
