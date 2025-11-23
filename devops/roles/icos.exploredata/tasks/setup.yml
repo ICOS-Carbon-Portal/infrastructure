@@ -29,9 +29,10 @@
       HUB_IMAGE={{ exploredata_hub_image }}
       HUB_CONTAINER_NAME={{ exploredata_hub_container }}
       ICOSBASE_IMAGE={{ exploredata_icosbase_image }}
-      PYLIB_EXAMPLES_IMAGE={{ exploredata_pylib_examples_image }}
+      EXAMPLES_IMAGE={{ exploredata_examples_image }}
       ICOS_NOTEBOOKS_IMAGE={{ exploredata_icos_notebooks_image }}
       SUMMER_SCHOOL_IMAGE={{ exploredata_summer_school_image }}
+      CLASSIC_IMAGE={{ exploredata_classic_image }}
       PASSWORD={{ exploredata_password[exploredata_type] }}
 
 - name: Login to registry
