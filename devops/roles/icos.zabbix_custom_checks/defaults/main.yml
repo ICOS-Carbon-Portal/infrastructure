@@ -1,5 +1,0 @@
-# Zabbix variables
-zabbix_scripts_dir: /etc/zabbix/scripts
-zabbix_custom_dir: /etc/zabbix/zabbix_agent2.d
-zabbix_sudoers_dir: /etc/sudoers.d
-zabbix_agent_service: zabbix-agent2

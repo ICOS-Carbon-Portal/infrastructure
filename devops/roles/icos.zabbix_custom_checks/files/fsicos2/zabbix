@@ -1,4 +1,0 @@
-# Zabbix monitoring
-Defaults:zabbix !requiretty
-zabbix ALL=(ALL) NOPASSWD: /etc/zabbix/scripts/check_docker_running.sh
-zabbix ALL=(ALL) NOPASSWD: /etc/zabbix/scripts/check_lxc_running.sh

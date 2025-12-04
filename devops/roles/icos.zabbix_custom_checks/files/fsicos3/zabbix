@@ -1,4 +1,0 @@
-zabbix ALL=(ALL) NOPASSWD: /snap/bin/lxc exec *
-zabbix ALL=(ALL) NOPASSWD: /snap/bin/lxc config show *
-zabbix ALL=(ALL) NOPASSWD: /usr/bin/md5sum
-zabbix ALL=(ALL) NOPASSWD: /etc/zabbix/scripts/check_lxc_config_hash.sh
