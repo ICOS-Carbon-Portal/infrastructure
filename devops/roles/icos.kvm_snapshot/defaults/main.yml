@@ -1,0 +1,5 @@
+  vm_domain: "{{ domain }}"
+  snapshot_name: "snapshot"
+  snapshot_description: "Snapshot for {{ vm_domain }}."
+  shutdown_timeout: 120
+  start_timeout: 60
