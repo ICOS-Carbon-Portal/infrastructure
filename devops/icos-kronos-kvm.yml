@@ -1,0 +1,4 @@
+- hosts: icos-kronos
+  roles:
+    - role: icos.kvm_snapshot
+      tags: kvm_snapshot
