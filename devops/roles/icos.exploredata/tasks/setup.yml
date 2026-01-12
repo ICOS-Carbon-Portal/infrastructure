@@ -32,6 +32,7 @@
       EXAMPLES_IMAGE={{ exploredata_examples_image }}
       ICOS_NOTEBOOKS_IMAGE={{ exploredata_icos_notebooks_image }}
       SUMMER_SCHOOL_IMAGE={{ exploredata_summer_school_image }}
+      OCEAN_CARBON_COURSE_IMAGE={{ exploredata_ocean_carbon_course_image }}
       CLASSIC_IMAGE={{ exploredata_classic_image }}
       PASSWORD={{ exploredata_password[exploredata_type] }}
 
@@ -50,6 +51,7 @@
     - "{{ exploredata_icosbase_image }}"
     - "{{ exploredata_examples_image }}"
     - "{{ exploredata_icos_notebooks_image }}"
+    - "{{ exploredata_ocean_carbon_course_image }}"
     - "{{ exploredata_summer_school_image }}"
     - "{{ exploredata_classic_image }}"
 

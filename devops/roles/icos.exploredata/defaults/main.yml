@@ -8,6 +8,7 @@ exploredata_icosbase_image : "registry.icos-cp.eu/{{ exploredata_name }}.icosbas
 exploredata_examples_image : "registry.icos-cp.eu/{{ exploredata_name }}.examples"
 exploredata_icos_notebooks_image : "registry.icos-cp.eu/{{ exploredata_name }}.icos-notebooks"
 exploredata_summer_school_image : "registry.icos-cp.eu/{{ exploredata_name }}.summer-school"
+exploredata_ocean_carbon_course_image : "registry.icos-cp.eu/{{ exploredata_name }}.ocean-carbon-course"
 exploredata_classic_image : "registry.icos-cp.eu/{{ exploredata_name }}.classic"
 
 exploredata_max_notebooks: 50

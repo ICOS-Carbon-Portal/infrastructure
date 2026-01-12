@@ -9,16 +9,18 @@ from subprocess import run
 
 REPO_URL = "registry.icos-cp.eu/exploredata.%s.notebook"
 PRODTEST = [
-    'registry.icos-cp.eu/exploredata.test.icosbase',
-    'registry.icos-cp.eu/exploredata.test.icos-notebooks',
-    'registry.icos-cp.eu/exploredata.test.examples',
-    'registry.icos-cp.eu/exploredata.test.summer-school',
-    'registry.icos-cp.eu/exploredata.test.classic',
-    'registry.icos-cp.eu/exploredata.prod.icosbase',
-    'registry.icos-cp.eu/exploredata.prod.icos-notebooks',
-    'registry.icos-cp.eu/exploredata.prod.examples',
-    'registry.icos-cp.eu/exploredata.prod.summer-school',
     'registry.icos-cp.eu/exploredata.prod.classic',
+    'registry.icos-cp.eu/exploredata.prod.examples',
+    'registry.icos-cp.eu/exploredata.prod.icos-notebooks',
+    'registry.icos-cp.eu/exploredata.prod.icosbase',
+    'registry.icos-cp.eu/exploredata.prod.ocean-carbon-course',
+    'registry.icos-cp.eu/exploredata.prod.summer-school',
+    'registry.icos-cp.eu/exploredata.test.classic',
+    'registry.icos-cp.eu/exploredata.test.examples',
+    'registry.icos-cp.eu/exploredata.test.icos-notebooks',
+    'registry.icos-cp.eu/exploredata.test.icosbase',
+    'registry.icos-cp.eu/exploredata.test.ocean-carbon-course',
+    'registry.icos-cp.eu/exploredata.test.summer-school',
 ]
 
 RRSYNC = "/usr/bin/rrsync"

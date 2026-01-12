@@ -46,8 +46,11 @@ c.DockerSpawner.allowed_images = [
     os.environ['ICOS_NOTEBOOKS_IMAGE'],
     os.environ['EXAMPLES_IMAGE'],
     os.environ['SUMMER_SCHOOL_IMAGE'],
+    os.environ['OCEAN_CARBON_COURSE_IMAGE'],
     os.environ['CLASSIC_IMAGE'],
 ]
+
+
 c.DockerSpawner.debug = True
 c.DockerSpawner.host_ip = '0.0.0.0'
 c.DockerSpawner.network_name = os.environ['NETWORK_NAME']
@@ -95,15 +98,17 @@ notebook_map = {
     'suschoo' : '',
     'enwishc' : '/lab/tree/project-jupyter-notebooks/envrifair-winterschool/map',
     'otcdrew' : '/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop',
-    'classic': '',
+    'ocecaco' : '',
+    'classic' : '',
 }
 
 image_map = {
-    'icosbase:latest'      : os.environ['ICOSBASE_IMAGE'],
-    'icos-notebooks:latest': os.environ['ICOS_NOTEBOOKS_IMAGE'],
-    'examples:latest'      : os.environ['EXAMPLES_IMAGE'],
-    'summer-school:latest' : os.environ['SUMMER_SCHOOL_IMAGE'],
-    'classic:latest'       : os.environ['CLASSIC_IMAGE'],
+    'icosbase:latest'            : os.environ['ICOSBASE_IMAGE'],
+    'icos-notebooks:latest'      : os.environ['ICOS_NOTEBOOKS_IMAGE'],
+    'examples:latest'            : os.environ['EXAMPLES_IMAGE'],
+    'summer-school:latest'       : os.environ['SUMMER_SCHOOL_IMAGE'],
+    'ocean-carbon-course:latest' : os.environ['OCEAN_CARBON_COURSE_IMAGE'],
+    'classic:latest'             : os.environ['CLASSIC_IMAGE'],
 }
 
 
