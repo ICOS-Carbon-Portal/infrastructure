@@ -1,0 +1,78 @@
+---
+- name: Ensure Zabbix directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: zabbix
+    group: zabbix
+    mode: '0755'
+  loop:
+    - "{{ zabbix_scripts_dir }}"
+    - "{{ zabbix_custom_dir }}"
+  become: yes
+
+- name: Deploy custom checks for fsicos2
+  tags:
+    - fsicos2-checks
+    - zabbix-checks
+  block:
+    - name: Copy fsicos2 check scripts (.sh files)
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_scripts_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+      become: yes
+      with_fileglob:
+        - "files/check_*.sh"
+      register: sh_files
+
+    - name: Copy fsicos2 check scripts (.py files)
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_scripts_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+      become: yes
+      with_fileglob:
+        - "files/check_*.py"
+      register: py_files
+
+    - name: Copy fsicos2 custom configuration files
+      copy:
+        src: "{{ item }}"
+        dest: "{{ zabbix_custom_dir }}/"
+        owner: zabbix
+        group: zabbix
+        mode: '0644'
+      become: yes
+      with_fileglob:
+        - "files/custom_*.conf"
+      register: conf_files
+
+    - name: Copy fsicos2 sudoers file if exists
+      copy:
+        src: "files/zabbix"
+        dest: "{{ zabbix_sudoers_dir }}/zabbix"
+        owner: root
+        group: root
+        mode: '0440'
+        validate: 'visudo -cf %s'
+      become: yes
+      when: lookup('ansible.builtin.fileglob', 'files/zabbix', errors='ignore') | length > 0
+      register: sudo_file
+
+    - name: Trigger zabbix restart if fsicos2 files changed
+      debug:
+        msg: "Files changed, triggering zabbix-agent2 restart"
+      changed_when: true
+      when: >
+        sh_files.changed or 
+        py_files.changed or 
+        conf_files.changed or 
+        sudo_file.changed
+      notify: restart zabbix-agent2
+
+
