@@ -76,6 +76,5 @@
     - role: icos.cpauth
       when: cpauth_envries is defined
     - role : icos.doi
-      when: doi_certbot_name is defined
 
 # After this playbook has ran, deploy the jar-files of cpmeta, cpdata and (if needed) cpauth and doi using sbt
