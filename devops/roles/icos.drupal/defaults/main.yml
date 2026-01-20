@@ -1,4 +1,4 @@
-drupal_version: 10.5
+drupal_version: 10.6
 drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "otc", "otctest", "se", "sites"]
 drupal_home: /disk/data/drupal
 drupal_modules: []
