@@ -21,11 +21,13 @@
       tags: opendkim
       opendkim_domains:
         - lists.icos-ri.eu
+        - lists.john-project.eu
         # - lists.eric-forum.eu
         # - lists.icos-cities.eu
         # - lists.kadi-project.eu
       opendkim_domains_testkeys:
         - lists.icos-ri.eu
+        - lists.john-project.eu
 
   tasks:
     # The ships sends data to quince using attachments. These are sometimes
