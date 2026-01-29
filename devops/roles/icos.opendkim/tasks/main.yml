@@ -32,7 +32,7 @@
     lstrip_blocks: yes
   loop:
     - signing.table
-    - keys.table
+    - key.table
     - trusted.hosts
   notify: Restart opendkim
 
