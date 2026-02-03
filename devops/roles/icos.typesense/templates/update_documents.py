@@ -49,7 +49,7 @@ for line in documents:
     links_seen.append(doc["url"])
     if "status" in doc_status:
         status = doc_status["status"]
-        if status == 404:
+        if status == 404 or status == 403:
             documents_to_remove.append(doc)
         elif status == 301:
             documents_to_remove.append(doc)
