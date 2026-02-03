@@ -39,7 +39,7 @@ def is_in_main(link):
 def get_category(url):
     if "/news-and-events/news/" in url:
         return "news"
-    elif "/news-and-events/events/" in url:
+    elif "/news-and-events/events/" in url or "/event/" in url:
         return "events"
     else:
         return "main_website"
