@@ -8,15 +8,3 @@
       OnCalendar=daily
       RandomizedDelaySec=1h
     bbclient_timer_content: "{{ lookup('template', 'borgbackup.sh') }}"
-
-# FIXME: Remove in 2024
-- name: Remove drupal backup script
-  file:
-    path: "{{ bbclient_bin_dir }}/borgbackup"
-    state: absent
-
-# FIXME: Remove in 2024
-- name: Remove drupal borgbackup from crontab
-  cron:
-    name: "drupal_borg"
-    state: absent
