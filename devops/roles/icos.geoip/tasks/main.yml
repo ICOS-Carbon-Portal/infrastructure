@@ -9,3 +9,6 @@
 
 - import_role: name=icos.nginxsite
   tags: geoip_nginx
+  vars:
+    nginxsite_domains:
+      - "{{ geoip_domain }}"

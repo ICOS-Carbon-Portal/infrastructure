@@ -6,14 +6,9 @@
     home: "{{ geoip_home }}"
   register: _user
 
-- name: Install sqlite
-  package:
-    name: sqlite3
-    state: present
-
 - name: Create build directory
   file:
-    path: "{{ geoip_home }}/build"
+    path: "{{ geoip_build_dir }}"
     state: directory
 
 - name: Create database volume directory

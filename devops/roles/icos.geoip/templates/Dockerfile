@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.6
+ARG PYTHON_VERSION="{{ geoip_python_version }}"
 FROM python:$PYTHON_VERSION
 
 ARG UID=1000
@@ -10,7 +10,6 @@ RUN pip install pipenv
 USER geoip
 
 COPY repo/src/main/python/geoip /geoip
-COPY config.py /geoip/py/config.py
 
 WORKDIR /geoip
 RUN pipenv install --deploy
