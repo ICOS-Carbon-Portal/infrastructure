@@ -17,11 +17,3 @@
 
     - role: icos.nfs4
       tags: nfs
-
-    - role: icos.zabbix_agent
-      tags: zabbix-agent
-
-    - role: icos.zabbix_custom_checks
-      tags: fsicos2-custom
-
-      
