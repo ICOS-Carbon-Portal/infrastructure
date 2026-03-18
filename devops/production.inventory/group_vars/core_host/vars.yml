@@ -8,3 +8,4 @@ rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
 stiltweb_atmoaccess_user_password: "{{ vault_stiltweb_atmoaccess_user_password }}"
 
 doi_admins: "{{ vault_doi_admins }}"
+doi_to_addresses: "{{ vault_doi_to_addresses }}"
