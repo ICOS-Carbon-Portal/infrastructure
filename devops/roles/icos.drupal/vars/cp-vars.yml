@@ -7,6 +7,7 @@ ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 drupal_modules: [
   bartik,
   better_exposed_filters,
+  bootstrap,
   ckeditor5_plugin_pack,
   color_field,
   conflict,
