@@ -182,7 +182,8 @@ def update_page(doc, verbose=False):
         else:
             updated_doc["etag"] = curr_etag
     elif head.status_code == 301:
-        print(timestamp() + "[update_page] Redirect from " + url)
+        if verbose:
+            print(timestamp() + "[update_page] Redirect from " + url)
         doc_status["status"] = 301
         doc_status["dest"] = head.headers["location"]
         return doc_status
@@ -203,7 +204,7 @@ def update_page(doc, verbose=False):
         return doc_status
 
     soup = get_soup_with_iframes(resp.text)
-    updated_doc["title"] = soup.find("h1", attrs={"class":"page-title"}).text
+    updated_doc["title"] = soup.find("h1", attrs={"class":"title"}).text
     doc_status["links"] = get_links_on_page(soup, url)
     updated_doc["content"] = get_page_content(soup)
 
@@ -285,7 +286,7 @@ def get_all_pages(verbose=False):
             page = {}
             page["url"] = current_url
             page["etag"] = reqs.headers["etag"] if "etag" in reqs.headers else None
-            page["title"] = soup.find("h1", attrs={"class":"page-title"}).text
+            page["title"] = soup.find("h1", attrs={"class":"title"}).text
             page["content"] = get_page_content(soup)
             page["category"] = get_category(current_url)
             all_pages.append(page)
