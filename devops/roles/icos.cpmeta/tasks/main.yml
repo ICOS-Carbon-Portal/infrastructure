@@ -5,6 +5,9 @@
   tags: cpmeta_deploy
   when: cpmeta_jar_file is defined
 
+- import_tasks: config.yml
+  tags: cpmeta_config
+
 - import_tasks: backup.yml
   tags: cpmeta_backup
   when: cpmeta_backup_enable | default(False)
