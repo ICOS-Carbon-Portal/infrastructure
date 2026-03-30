@@ -5,8 +5,10 @@
   tags: cpmeta_deploy
   when: cpmeta_jar_file is defined
 
-- import_tasks: config.yml
-  tags: cpmeta_config
+- import_tasks: restart.yml
+  tags: cpmeta_restart
+  vars:
+    _restart_needed: true
 
 - import_tasks: backup.yml
   tags: cpmeta_backup

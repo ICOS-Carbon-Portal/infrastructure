@@ -1,15 +1,4 @@
 
-- name: Create application.conf
-  copy:
-    dest: "{{ cpmeta_home }}/application.conf"
-    content: |
-      {% for item in cpmeta_config_files %}
-      # {{ item }}
-      {{ lookup('template', item) }}
-
-      {% endfor %}
-  register: _config
-
 - name: Copy jarfile
   copy:
     src: "{{ cpmeta_jar_file }}"

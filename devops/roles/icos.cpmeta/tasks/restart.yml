@@ -1,4 +1,15 @@
 
+- name: Create application.conf
+  copy:
+    dest: "{{ cpmeta_home }}/application.conf"
+    content: |
+      {% for item in cpmeta_config_files %}
+      # {{ item }}
+      {{ lookup('template', item) }}
+
+      {% endfor %}
+  register: _config
+
 - name: Temporarily switch cpmeta to readonly mode before restart
   uri:
     method: "POST"
