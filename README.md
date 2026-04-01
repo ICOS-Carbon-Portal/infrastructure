@@ -309,13 +309,20 @@ it's up and running we'll populate mongodb by restoring a database from backup.
 First, fetch `docker-compose.yml` and `restheart.yml` files:
 
 ```
-curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose.yml
+wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose.yml
 wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/restheart.yml
+```
+
+Update the ports line in the `docker-compose.yml` file:
+
+```
+    ports:
+      - "127.0.0.1:8088:8080"
 ```
 
 Create and start RestHeart and MongoDB containers with:
 
-`$ docker-compose up -d`
+`$ docker compose up -d`
 
 Now restheart is up and running and talking to mongodb. Next we'll restore a
 backup of the production database and use to populate mongodb.
@@ -350,23 +357,24 @@ mailman.repo
 nextcloud.repo
 nexus.repo
 nginx-static.repo
+plausible.repo
 postgis.repo
 prometheus.repo
 quince.repo
 radon_map.repo
+rdflog.repo
 restheart.repo
 ```
 
 Each of these directories are a borgbackup repository. Each `repository`
 contains several `archives`. Each time a backup is done, a new archive is
-created. We'll now use borgbackup (which you've just installed using pip) to
+created. We'll now use borgbackup (which you've just installed using apt) to
 list all the archives within the restheart repository.
 
 ```
-$ borg list --short fsicos2:~bbserver/repos/restheart.repo
+$ borg list --short --last=3 fsicos2:~bbserver/repos/restheart.repo
 Warning: Attempting to access a previously unknown unencrypted repository!
 Do you want to continue? [yN] y
-...
 2022-03-22T18:36:10
 2022-03-23T00:36:11
 2022-03-23T06:36:11
