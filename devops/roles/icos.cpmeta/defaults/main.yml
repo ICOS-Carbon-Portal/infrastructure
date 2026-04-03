@@ -21,4 +21,3 @@ cpmeta_bind_addr: "{{ coreapp_bind_addr }}"
 cpmeta_host: "{{ coreapp_httpproxy_host }}"
 cpmeta_port: 9094
 
-cpmeta_sentry_dsn: "{{ vault_sentry_dsn }}"
