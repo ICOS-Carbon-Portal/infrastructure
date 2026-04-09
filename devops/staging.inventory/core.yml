@@ -46,6 +46,10 @@ all:
 
     activity_log_ignore_ips: []
 
+    showUnderConstruction: "true"
+    showCarbonBadge: "false"
+    environmentName: "staging"
+
   children:
     core_host:
       hosts:

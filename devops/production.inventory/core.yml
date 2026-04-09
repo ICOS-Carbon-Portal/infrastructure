@@ -34,6 +34,9 @@ all:
     postgis_bbclient_name: postgis
     rdflog_bbclient_name: rdflog
 
+    showUnderConstruction: "false"
+    showCarbonBadge: "true"
+
   children:
     core_host:
       hosts:
