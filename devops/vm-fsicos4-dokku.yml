@@ -1,0 +1,196 @@
+- hosts: dokku
+  pre_tasks:
+    - name: Install dokku support packages
+      tags: dokku_support
+      apt:
+        name:
+          - nfs-common
+          - rpcbind
+
+    - name: Ensure dokku data symlink exists
+      tags: dokku_data
+      file:
+        src: /data/flexextract4/
+        dest: /root/data
+        state: link
+
+    - name: Install GitHub public key for dokku admin access
+      tags: dokku_keys
+      copy:
+        content: "{{ dokku_github_public_key }}\n"
+        dest: /root/.ssh/id_rsa_github.pub
+        mode: "0644"
+
+    - name: Install GitHub private key when provided
+      tags: dokku_keys
+      copy:
+        content: "{{ dokku_github_private_key }}"
+        dest: /root/.ssh/id_rsa_github
+        mode: "0600"
+      no_log: true
+      when: dokku_github_private_key is defined
+
+    - name: Install root SSH config for GitHub when private key is provided
+      tags: dokku_keys
+      copy:
+        dest: /root/.ssh/config
+        mode: "0600"
+        content: |
+          Host github.com
+            HostName github.com
+            User git
+            IdentityFile ~/.ssh/id_rsa_github
+      when: dokku_github_private_key is defined
+
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.dokku
+      tags: dokku
+
+  tasks:
+    - name: Check whether the trajectory-viewer repo is already present
+      tags: trajectory_viewer
+      stat:
+        path: "{{ dokku_trajectory_viewer_repo_dir }}"
+      register: trajectory_viewer_repo
+
+    - name: Sync the trajectory-viewer repo when a GitHub key is available
+      tags: trajectory_viewer
+      git:
+        repo: "{{ dokku_trajectory_viewer_repo }}"
+        dest: "{{ dokku_trajectory_viewer_repo_dir }}"
+        version: "{{ dokku_trajectory_viewer_branch }}"
+        key_file: /root/.ssh/id_rsa_github
+        accept_hostkey: true
+        update: true
+      register: trajectory_viewer_repo_sync
+      when: dokku_github_private_key is defined
+
+    - name: Require a checked-out trajectory-viewer repo when no GitHub key is provided
+      tags: trajectory_viewer
+      fail:
+        msg: >-
+          {{ dokku_trajectory_viewer_repo_dir }} is missing and no
+          dokku_github_private_key was provided to clone
+          {{ dokku_trajectory_viewer_repo }}.
+      when:
+        - dokku_github_private_key is not defined
+        - not trajectory_viewer_repo.stat.exists
+
+    - name: Install the trajectory-viewer deploy helper
+      tags: trajectory_viewer
+      copy:
+        src: files/dokku/deploy-trajectory-viewer
+        dest: /usr/local/bin/deploy-trajectory-viewer
+        mode: "0755"
+      register: trajectory_viewer_helper
+
+    - name: Ensure the trajectory-viewer app exists
+      tags: trajectory_viewer
+      shell: |
+        if dokku apps:exists {{ dokku_trajectory_viewer_name }}; then
+          exit 0
+        fi
+        dokku apps:create {{ dokku_trajectory_viewer_name }}
+        echo changed
+      args:
+        executable: /bin/bash
+      register: trajectory_viewer_app
+      changed_when: trajectory_viewer_app.stdout is search("changed")
+
+    - name: Ensure the dokku admin SSH key is named admin
+      tags: trajectory_viewer
+      shell: |
+        if [ ! -f /root/.ssh/id_rsa_github.pub ]; then
+          exit 0
+        fi
+        if dokku ssh-keys:list | grep -q 'NAME="default"'; then
+          dokku ssh-keys:remove default
+          dokku ssh-keys:add admin /root/.ssh/id_rsa_github.pub
+          echo changed
+        fi
+      args:
+        executable: /bin/bash
+      register: trajectory_viewer_admin_key
+      changed_when: trajectory_viewer_admin_key.stdout is search("changed")
+
+    - name: Ensure trajectory-viewer config vars are set
+      tags: trajectory_viewer
+      shell: |
+        current="$(dokku config:get {{ dokku_trajectory_viewer_name }} {{ item.key }} 2>/dev/null || true)"
+        if [ "$current" != {{ item.value | quote }} ]; then
+          dokku config:set --no-restart {{ dokku_trajectory_viewer_name }} {{ item.key }}={{ item.value | quote }}
+          echo changed
+        fi
+      args:
+        executable: /bin/bash
+      loop: "{{ dokku_trajectory_viewer_env | dict2items }}"
+      register: trajectory_viewer_env_result
+      changed_when: trajectory_viewer_env_result.stdout is search("changed")
+
+    - name: Ensure the trajectory-viewer storage mount exists
+      tags: trajectory_viewer
+      shell: |
+        if dokku storage:list {{ dokku_trajectory_viewer_name }} | grep -Fqx '{{ dokku_trajectory_viewer_storage_mount }}'; then
+          exit 0
+        fi
+        dokku storage:mount {{ dokku_trajectory_viewer_name }} '{{ dokku_trajectory_viewer_storage_mount }}'
+        echo changed
+      args:
+        executable: /bin/bash
+      register: trajectory_viewer_storage
+      changed_when: trajectory_viewer_storage.stdout is search("changed")
+
+    - name: Ensure the trajectory-viewer domain matches the live VM
+      tags: trajectory_viewer
+      shell: |
+        current="$(dokku domains:report {{ dokku_trajectory_viewer_name }} | awk -F: '/Domains app vhosts/ {gsub(/^ +| +$/, "", $2); print $2}')"
+        if [ "$current" = "{{ dokku_trajectory_viewer_domain }}" ]; then
+          exit 0
+        fi
+        dokku domains:clear {{ dokku_trajectory_viewer_name }} || true
+        dokku domains:add {{ dokku_trajectory_viewer_name }} {{ dokku_trajectory_viewer_domain }}
+        echo changed
+      args:
+        executable: /bin/bash
+      register: trajectory_viewer_domains
+      changed_when: trajectory_viewer_domains.stdout is search("changed")
+
+    - name: Ensure the trajectory-viewer port map matches the live VM
+      tags: trajectory_viewer
+      shell: |
+        current="$(dokku ports:report {{ dokku_trajectory_viewer_name }} | sed -n 's/^.*Ports map:[[:space:]]*//p')"
+        if [ "$current" = "{{ dokku_trajectory_viewer_port_map }}" ]; then
+          exit 0
+        fi
+        dokku ports:clear {{ dokku_trajectory_viewer_name }} || true
+        dokku ports:add {{ dokku_trajectory_viewer_name }} {{ dokku_trajectory_viewer_port_map }}
+        echo changed
+      args:
+        executable: /bin/bash
+      register: trajectory_viewer_ports
+      changed_when: trajectory_viewer_ports.stdout is search("changed")
+
+    - name: Deploy trajectory-viewer after repo or config changes
+      tags: trajectory_viewer
+      command: /usr/local/bin/deploy-trajectory-viewer {{ dokku_trajectory_viewer_branch }}
+      when: >-
+        (trajectory_viewer_repo_sync is defined and trajectory_viewer_repo_sync is changed)
+        or trajectory_viewer_helper is changed
+        or trajectory_viewer_app is changed
+        or trajectory_viewer_admin_key is changed
+        or trajectory_viewer_env_result is changed
+        or trajectory_viewer_storage is changed
+        or trajectory_viewer_domains is changed
+        or trajectory_viewer_ports is changed
