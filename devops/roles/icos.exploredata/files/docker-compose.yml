@@ -1,3 +1,4 @@
+---
 # https://docs.docker.com/compose/compose-file/#resources
 networks:
   jupyter:

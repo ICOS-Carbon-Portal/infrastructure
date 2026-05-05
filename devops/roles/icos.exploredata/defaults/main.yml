@@ -1,14 +1,370 @@
+---
 exploredata_port: "{{ 4567 if exploredata_type == 'test' else 4566 }}"
 exploredata_name: "exploredata.{{ exploredata_type }}"
 exploredata_home: "/docker/{{ exploredata_name }}"
 exploredata_network: "{{ exploredata_name }}"
 exploredata_hub_image: "{{ exploredata_name }}.hub"
 exploredata_hub_container: "{{ exploredata_name }}.hub"
-exploredata_icosbase_image : "registry.icos-cp.eu/{{ exploredata_name }}.icosbase"
-exploredata_examples_image : "registry.icos-cp.eu/{{ exploredata_name }}.examples"
-exploredata_icos_notebooks_image : "registry.icos-cp.eu/{{ exploredata_name }}.icos-notebooks"
-exploredata_summer_school_image : "registry.icos-cp.eu/{{ exploredata_name }}.summer-school"
-exploredata_ocean_carbon_course_image : "registry.icos-cp.eu/{{ exploredata_name }}.ocean-carbon-course"
-exploredata_classic_image : "registry.icos-cp.eu/{{ exploredata_name }}.classic"
+exploredata_templates_dir: "{{ exploredata_home }}/jupyterhub_home/templates"
+
+exploredata_registry: "registry.icos-cp.eu"
+exploredata_image_namespace: "stratos"
 
 exploredata_max_notebooks: 50
+
+exploredata_images:
+  - key: icosbase
+    image: icosbase
+    tags: [0.1.3, 0.1.0]
+  - key: examples
+    image: examples
+    tags: [0.1.4]
+  - key: icos-notebooks
+    image: icos-notebooks
+    tags: [0.1.0]
+  - key: summer-school
+    image: summer-school
+    tags: [0.1.0]
+  - key: ocean-carbon-course
+    image: ocean-carbon-course
+    tags: [0.1.0]
+  - key: classic
+    image: classic
+    tags: [0.1.0]
+
+exploredata_sections:
+  - key: explore
+    title: "Explore ICOS Data"
+    tooltip: >-
+      Notebooks that process ICOS data, compute statistics, generate
+      interactive visualizations (plots, maps, tables), and showcase
+      scientific outputs from ICOS projects and educational workshops.
+
+  - key: examples
+    title: "Examples"
+    tooltip: >-
+      This is a good place to start exploring ICOS data. Notebooks under
+      this category showcase how to use the ICOS Carbon Portal Python
+      libraries which give you access to data products provided by ICOS.
+
+  - key: doi
+    title: "Notebooks with DOI"
+    tooltip: >-
+      The notebooks here are connected to scientific publications or
+      persistent identified datasets and provide software, scripts,
+      interactive tools, showcasing how to compute and analyze the data,
+      and create the figures published in the manuscript.
+
+  - key: education
+    title: "Education"
+    tooltip: >-
+      Here we provide specific collections of notebooks for workshops or
+      university courses.
+
+  - key: classic
+    title: "Classic Environment"
+    tooltip: >-
+      Launch the Classic environment, with all notebooks through November
+      2025 available in a single environment.
+
+exploredata_notebooks:
+  # Explore ICOS Data
+  - slug: noaa-curve-fit
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/icos-jupyter-notebooks/NOAA Curve Fitting for ObsPack
+      CO2.ipynb
+    section: explore
+    label: "NOAA Curve Fitting for ObsPack CO₂"
+    tooltip: >-
+      Apply the NOAA curve-fitting method to ObsPack CO₂ time series and
+      follow the filtering, fitting, and growth-rate steps to reproduce
+      the full workflow.
+
+  - slug: atm-obs-stats
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/icos-jupyter-notebooks/ICOS Atmospheric Observation
+      Statistics.ipynb
+    section: explore
+    label: "ICOS Atmospheric Observation Statistics"
+    tooltip: >-
+      Explore ICOS atmosphere observations through summary statistics and
+      interactive visuals, and compare results across different stations.
+
+  - slug: atm-station-char
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/icos-jupyter-notebooks/Characterization of Atmospheric
+      Measurement Stations.ipynb
+    section: explore
+    label: "Characterization of Atmospheric Measurement Stations"
+    tooltip: >-
+      Create footprint-based characterizations of stations using STILT
+      along with emissions, biogenic-flux, and ancillary data, and
+      analyze any point available in the STILT domain.
+
+  - slug: fossil-co2
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/project-jupyter-notebooks/RINGO-T1.3/High Fossil CO2
+      Events at ICOS Stations.ipynb
+    section: explore
+    label: "High Fossil CO₂ Events at ICOS Stations"
+    tooltip: >-
+      Identify high fossil-CO₂ events by selecting a CO-offset threshold
+      using ICOS measurement time series and STILT footprints and
+      concentration time series for applicable stations.
+
+  # Examples
+  - slug: ex1
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex1 - Access a Single Dataset.ipynb"
+    section: examples
+    label: "ex1 - Access a Single Dataset"
+    tooltip: >-
+      Access ICOS observations and extract data and metadata information.
+
+  - slug: ex1a
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex1a - Work with Atmospheric Data.ipynb"
+    section: examples
+    label: "ex1a - Work with Atmospheric Data"
+    tooltip: >-
+      Access atmospheric ICOS observations and extract data and metadata
+      information.
+
+  - slug: ex1b
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex1b - Work with Ecosystem Data.ipynb"
+    section: examples
+    label: "ex1b - Work with Ecosystem Data"
+    tooltip: >-
+      Access ecosystem ICOS observations and extract data and metadata
+      information.
+
+  - slug: ex1c
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex1c - Work with Ocean Data.ipynb"
+    section: examples
+    label: "ex1c - Work with Ocean Data"
+    tooltip: >-
+      Access oceanic ICOS observations and extract data and metadata
+      information.
+
+  - slug: ex2
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex2 - Explore ICOS Stations.ipynb"
+    section: examples
+    label: "ex2 - Explore ICOS Stations"
+    tooltip: >-
+      Access, extract, and process data and metadata information for ICOS
+      stations.
+
+  - slug: ex3
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex3 - Combine ICOS & PANGAEA Data.ipynb"
+    section: examples
+    label: "ex3 - Combine ICOS & PANGAEA Data"
+    tooltip: >-
+      Combine information from two independent data sets, one from the
+      ICOS Carbon Portal and one from PANGAEA, both containing ocean
+      observations from Europe to South America.
+
+  - slug: ex4
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex4 - Access Collection Data & Metadata.ipynb"
+    section: examples
+    label: "ex4 - Access Collection Data & Metadata"
+    tooltip: "Access data and metadata of ICOS collections."
+
+  - slug: ex5
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex5 - Query Metadata with SPARQL.ipynb"
+    section: examples
+    label: "ex5 - Query Metadata with SPARQL"
+    tooltip: >-
+      Access data and metadata for ICOS stations and observations using
+      SPARQL queries.
+
+  - slug: ex6a
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex6a - Search STILT Stations.ipynb"
+    section: examples
+    label: "ex6a - Search STILT Stations"
+    tooltip: "Search for stations with available STILT model results."
+
+  - slug: ex6b
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex6b - Animate STILT Footprints.ipynb"
+    section: examples
+    label: "ex6b - Animate STILT Footprints"
+    tooltip: >-
+      Search for STILT stations, load modeled data, and create simple
+      visualizations and animations.
+
+  - slug: ex6c
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex6c - Plot STILT Time Series & Footprints.ipynb"
+    section: examples
+    label: "ex6c - Plot STILT Time Series & Footprints"
+    tooltip: >-
+      Load STILT time series data and footprints, and create plots and
+      maps using Holoviews and Geoviews.
+
+  - slug: ex7
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex7 - Read ObsPack Collections.ipynb"
+    section: examples
+    label: "ex7 - Read ObsPack Collections"
+    tooltip: >-
+      Read and explore the European ObsPack compilation and related ICOS
+      data products.
+
+  - slug: ex8
+    image: examples
+    tag: 0.1.4
+    path: "/lab/tree/ex8 - Authenticate for Remote Data Access.ipynb"
+    section: examples
+    label: "ex8 - Authenticate for Remote Data Access"
+    tooltip: >-
+      Authenticate and accept required licenses to access ICOS, ICOS
+      Cities, and SITES data portals.
+
+  # Notebooks with DOI
+  - slug: city-char
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/project-jupyter-notebooks/city-characterization-tool/City
+      Characterization Tool.ipynb
+    section: doi
+    label: "City Characterization Tool"
+    tooltip: >-
+      Explore CO₂-monitoring challenges across European cities using
+      CMC-CITYMAP tools, and generate the characterization and clustering
+      analyses used in the study.
+    doi: "10.18160/P8SV-B99F"
+
+  - slug: eco-anomaly
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/icos-jupyter-notebooks/Ecosystem Site Anomaly
+      Visualization.ipynb
+    section: doi
+    label: "Ecosystem Site Anomaly Visualization"
+    tooltip: >-
+      Visualize ecosystem anomalies by comparing daily averages with
+      long-term reference data, shown monthly or day-by-day, including
+      effects from weather, crop cycles, or land-use changes.
+    doi: "10.18160/4QPK-2N7W"
+
+  - slug: network-view
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/project-jupyter-notebooks/network-view-tool/Network View
+      Tool.ipynb
+    section: doi
+    label: "Network View Tool"
+    tooltip: >-
+      Analyze the spatial coverage of atmospheric station networks using
+      STILT footprints, including land cover and flux information, and
+      explore both current, future, or user-defined station networks.
+    doi: "10.18160/AMET-9KWT"
+
+  - slug: flask-sampling
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/project-jupyter-notebooks/RINGO-T1.3/RINGO
+      Flask-Sampling(Task 1.3).ipynb
+    section: doi
+    label: "RINGO Flask-Sampling(Task 1.3)"
+    tooltip: >-
+      Provide analyses of STILT model results and ICOS measurement time
+      series to develop and test a dedicated flask-sampling strategy with
+      an automated sampler.
+    doi: "10.18160/FSS2-SH26"
+
+  - slug: radiocarbon
+    image: icos-notebooks
+    tag: 0.1.0
+    path: "/lab/tree/icos-jupyter-notebooks/Radiocarbon.ipynb"
+    section: doi
+    label: "Radiocarbon"
+    tooltip: >-
+      Estimate radiocarbon (Δ¹⁴C) values by combining STILT footprints
+      with anthropogenic and biogenic flux data, and compare modelled
+      results with measurements through interactive maps and plots.
+    doi: "10.18160/GATA-SGZ5"
+
+  # Education
+  - slug: envrifair-ws
+    image: icos-notebooks
+    tag: 0.1.0
+    path: >-
+      /lab/tree/project-jupyter-notebooks/envrifair-winterschool/map
+    section: education
+    label: "Envrifair Winter School"
+    tooltip: >-
+      ENVRIFAIR Winterschool notebooks showing how to load ICOS data
+      products and build interactive maps.
+
+  - slug: otc-workshop
+    image: icos-notebooks
+    tag: 0.1.0
+    path: "/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
+    section: education
+    label: "OTC Data Reduction Workshop"
+    tooltip: >-
+      Ocean Thematic Centre workshop exercises on calibrating and
+      processing instrument-based oceanic CO₂ measurements.
+
+  - slug: ocean-carbon
+    image: ocean-carbon-course
+    tag: 0.1.0
+    path: ""
+    section: education
+    label: "Ocean carbon practicals 2025"
+    tooltip: >-
+      A collection of teaching notebooks for ocean carbon science,
+      guiding users through key concepts using interactive analysis and
+      real datasets.
+
+  - slug: summer-school
+    image: summer-school
+    tag: 0.1.0
+    path: ""
+    section: education
+    label: "Summer School 2025"
+    tooltip: >-
+      Learn about greenhouse gas measurements, carbon cycle science, and
+      ICOS data through lectures and hands-on training offered at the
+      annual ICOS Summer School.
+
+  # Classic
+  - slug: classic
+    image: classic
+    tag: 0.1.0
+    path: ""
+    section: classic
+    label: "Classic Environment"
+    tooltip: ""
