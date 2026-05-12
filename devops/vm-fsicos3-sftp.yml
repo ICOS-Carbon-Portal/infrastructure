@@ -1,0 +1,36 @@
+---
+# Creates the lxc-sftp container on fsicos3.
+#
+# The container runs openssh with internal-sftp and chroots users under
+# /srv/sftp/<username>.  fsicos3 DNAT-forwards port 60580 to port 22
+# in the container, so sftp clients connect directly to
+# fsicos3.icos-cp.eu on port 60580.  Port 22 on fsicos3 itself must
+# never be forwarded.
+#
+# Vault variables required:
+#   vault_sftp_robert_pubkey  – SSH public key for user robert
+
+- hosts: fsicos3
+  roles:
+    - name: Create the lxc-sftp VM
+      role: icos.lxd_vm
+      lxd_vm_name: lxc-sftp
+      lxd_vm_port: 60580
+      lxd_vm_ubuntu_version: "24.04"
+      lxd_vm_root_size: "20GB"
+      lxd_vm_config:
+        limits.cpu: "2"
+        limits.memory: "1GB"
+
+- hosts: lxc-sftp
+  vars:
+    ansible_port: 60580
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.lxc_sftp
+      tags: sftp
+      lxc_sftp_users:
+        - name: robert
+          pubkey: "{{ vault_sftp_robert_pubkey }}"
