@@ -1,0 +1,8 @@
+lxc_sftp_base_dir: /srv/sftp
+
+# List of sftp users.
+# Each entry:
+#   name: username
+#   pubkey: "ssh-rsa ..."      (optional, but recommended)
+#   password: "plaintext"      (optional, avoid in production)
+lxc_sftp_users: []

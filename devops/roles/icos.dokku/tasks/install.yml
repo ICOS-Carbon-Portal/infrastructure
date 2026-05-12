@@ -23,17 +23,18 @@
     vtype: "{{ item.vtype }}"
   loop:
     - question: "dokku/vhost_enable"
-      value: "true"
+      value: "{{ 'true' if dokku_vhost_enable else 'false' }}"
       vtype: boolean
     - question: "dokku/hostname"
-      value: "dokku.fsicos3.icos-cp.eu"
+      value: "{{ dokku_hostname }}"
       vtype: "string"
     - question: "dokku/nginx_enable"
-      value: "true"
+      value: "{{ 'true' if dokku_nginx_enable else 'false' }}"
       vtype: "boolean"
 
 - name: Install dokku
   apt:
     name:
       - dokku
+      - git
       
