@@ -1,7 +1,9 @@
 # PARAMETERS
 
 # The domain from which we're serving dokku apps.
-# dokku_hostname
+dokku_hostname: "{{ inventory_hostname }}"
+dokku_vhost_enable: true
+dokku_nginx_enable: true
 
 # CONFIG
 dokku_ssh_port: 3022

@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+BRANCH=${1:-trajectory_styled}
+REPO=/opt/trajectory-viewer
+SYNC_REPO=/var/lib/trajectory-viewer-sync.git
+
+echo "==> Deploying branch: $BRANCH"
+cd "$REPO"
+
+FETCHED=0
+if GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa_github -o IdentitiesOnly=yes" git fetch origin; then
+  FETCHED=1
+  echo "==> GitHub fetch succeeded"
+else
+  echo "==> Warning: git fetch origin failed; deploying current local branch state" >&2
+fi
+
+git checkout "$BRANCH"
+if [ "$FETCHED" -eq 1 ]; then
+  git merge --ff-only "origin/$BRANCH"
+fi
+
+python3 -m py_compile vsplot/backend/app.py vsplot/backend/callbacks.py vsplot/backend/matomo.py
+echo "==> Syntax OK"
+rm -rf "$SYNC_REPO"
+git clone --bare --no-local "$REPO" "$SYNC_REPO"
+chmod -R a+rX "$SYNC_REPO"
+sudo -u dokku git config --global --add safe.directory "$SYNC_REPO"
+dokku git:sync --build trajectory-viewer "file://$SYNC_REPO" "$BRANCH"
+echo "==> Deploy complete"
+dokku logs trajectory-viewer --tail 20

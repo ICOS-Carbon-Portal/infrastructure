@@ -1,0 +1,40 @@
+dokku_hostname: dokku
+
+dokku_github_public_key: >-
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDQZTvlk/bboloJVMfjGmy2kgbqig8Zop0f47nV0TNjArYTpqMq3gGIfNM9Ae+WbBCdpyIEq/4sxRbMyQXMmH42rvXiAM7ArJhyKMswGWYAVxUi4U7EFhGqTi4hyaA3b0/tm1vN4IisjKxleXthPOUvbcSDx210r6kZ5azu1WdBBBAwCDzi7FJhalPPj6QH7+5lmueeIzc4qRPJaAB3FINxS9PnUd+AxtVNJMqoi6nfDhQGhzhbfQs5vfilxlXNnp4XbpCK9xHhAHUGas/uaGvqV06WIm7VWQX1Lmbr4bjpVMXOTXVA7hjokGFkh6vDVe28UeCNQjw6PdQ6ErwxblxuMYMC7CNGXYHxLxpZb+It2S0VEUhqls4vsMnYSk1rY0i3bdeyG3k1llTDRV+yLluoG/h0puWnqHXFszO1kTx258vJku3HR44+nuGmoTuBAsnLe8LxPPlbr0KKZlBsN6ng0S6SIP8dvgGlYTis7Ce/waXygGC68bkkbKgOqPFx3VebWujFi+RamLsof/EFS4ezWj1fYHIgV3KSVH/QuE/Oe3wwJPYHFfH6JngfBumZZRcGUMTl4Y19Ut6c1/l4ARy1ETG9KKSnrb8KOd4zeihBzaIkzHaEfGdS6pXQ8slKqrTcdCc6Sv+tobUq3JjRF/ilVx5DRi0jOCH/+7N//9adlQ==
+  Roberts Github ssh key
+
+dokku_trajectory_viewer_name: trajectory-viewer
+dokku_trajectory_viewer_repo: git@github.com:ICOS-Carbon-Portal/trajectory-viewer.git
+dokku_trajectory_viewer_branch: main
+dokku_trajectory_viewer_repo_dir: /opt/trajectory-viewer
+dokku_trajectory_viewer_domain: trajectory.icos-cp.eu
+dokku_trajectory_viewer_storage_mount: /root/data:/data:ro
+dokku_trajectory_viewer_port_map: http:80:8050
+dokku_trajectory_viewer_env:
+  APP_URL: "https://trajectory.icos-cp.eu/"
+  DATA_DIR: /data/trj
+  DOKKU_APP_RESTORE: "1"
+  DOKKU_PROXY_PORT: "80"
+  ICOS_CHROME: "0"
+  ICOS_CHROME_ENABLED: "1"
+  MATOMO_AUTH_TOKEN: 0fcf14d8c6125a74ee621ccf6cf66dc1
+  MATOMO_SITE_ID: "12"
+  MATOMO_URL: https://matomo.icos-cp.eu/matomo.php
+  PORT: "8050"
+  URL_BASE_PATH: /
+
+icosdata_mkdirs:
+  - /data
+  - /data/flexextract4
+  - /data4
+
+icosdata_nfs_mounts:
+  - path: /data4
+    src: fsicos4.int:/tank/data/flexpart
+    fstype: nfs
+    opts: "rw,vers=3,_netdev,hard,timeo=600,retrans=2"
+  - path: /data/flexextract4
+    src: fsicos4.int:/tank/flexextract
+    fstype: nfs
+    opts: "rw,vers=3,_netdev,hard,timeo=600,retrans=2"

@@ -1,0 +1,3 @@
+icosdata_exports: |
+  /tank/flexextract 10.10.10.145/32(rw,sync,no_subtree_check,no_root_squash)
+  /tank/data/flexpart 10.10.10.145/32(rw,sync,no_subtree_check,no_root_squash)

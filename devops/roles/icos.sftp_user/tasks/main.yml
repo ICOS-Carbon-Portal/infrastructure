@@ -37,7 +37,9 @@
   authorized_key:
     user: "{{ sftp_user_login }}"
     key: "{{ sftp_user_pubkey }}"
-  when: sftp_user_pubkey
+  when:
+    - sftp_user_pubkey | default('') | length > 0
+    - not (ansible_check_mode and _user.changed)
 
 - name: Stat parent directory again
   stat:
@@ -48,7 +50,9 @@
 - name: Fail if parent directory isn't owned by root
   fail:
     msg: "{{ _sftp_parent_dir }} must be owned by root"
-  when: _parent.stat.uid != 0 or _parent.stat.gid != 0
+  when:
+    - _parent.stat.exists
+    - _parent.stat.uid != 0 or _parent.stat.gid != 0
 
 # This is the actual directory user for uploading/downloading. Depending on
 # "sftp_user_owner", the directory might be read-only or read-write for the
@@ -59,6 +63,7 @@
     state: directory
     owner: "{{ sftp_user_owner }}"
     group: "{{ sftp_user_group }}"
+  when: not (ansible_check_mode and (_user.changed or not _parent.stat.exists))
 
 # <2021-10-01> It's possible to instead create /etc/ssh/sshd_config.d/X.conf.
 # But then the global "PasswordAuthentication no" will override it (in

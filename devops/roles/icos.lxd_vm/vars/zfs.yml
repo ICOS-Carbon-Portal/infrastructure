@@ -6,17 +6,16 @@ __root_device:
     pool: "default"
     size: "{{ lxd_vm_root_size }}"
 
-__docker_device: >-
-  {% if lxd_vm_docker -%}
-  {"docker": {
-    "path": "/var/lib/docker",
-    "source": "{{ zfsdocker_zvol }}",
-    "type": "disk",
-    "raw.mount.options": "user_subvol_rm_allowed" }}
-  {% else -%}{}{% endif -%}
+__docker_device_data:
+  docker:
+    path: /var/lib/docker
+    source: "{{ zfsdocker_zvol }}"
+    type: disk
+    "raw.mount.options": user_subvol_rm_allowed
 
-lxd_vm_default_devices: >-
-  {{ __root_device | combine(__docker_device) }}
+__docker_device: "{{ __docker_device_data if lxd_vm_docker else {} }}"
+
+lxd_vm_default_devices: "{{ __root_device | combine(__docker_device) }}"
 
 
 # PROFILES
@@ -27,10 +26,6 @@ lxd_vm_default_profiles:
 # CONFIG
 __base_config: {}
 
-__docker_config: >-
-  {% if lxd_vm_docker -%}
-  {"security.nesting": "true"}
-  {% else %}{}{% endif -%}
+__docker_config: "{{ {'security.nesting': 'true'} if lxd_vm_docker else {} }}"
 
-lxd_vm_default_config: >-
-  {{ __base_config | combine(__docker_config) }}
+lxd_vm_default_config: "{{ __base_config | combine(__docker_config) }}"

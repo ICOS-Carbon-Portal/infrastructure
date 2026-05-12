@@ -1,0 +1,11 @@
+- name: Configure sftp user
+  include_role:
+    name: icos.sftp_user
+  vars:
+    sftp_user_login: "{{ sftp_user.name }}"
+    sftp_user_dir: "{{ lxc_sftp_base_dir }}/{{ sftp_user.name }}"
+    sftp_user_pubkey: "{{ sftp_user.pubkey | default('') }}"
+    sftp_user_password: "{{ sftp_user.password | default('') }}"
+  loop: "{{ lxc_sftp_users }}"
+  loop_control:
+    loop_var: sftp_user
