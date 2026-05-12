@@ -5,6 +5,157 @@ bbclient_remotes:
   - fsicos2
   - icos1
 
+fail2ban_config_files:
+  - dest: /etc/fail2ban/jail.d/sshd-allports.local
+    content: |
+      # Since we're running ssh on different ports that fail2ban is used to,
+      # block all ports.
+      [sshd]
+      banaction = iptables-allports
+
+  - dest: /etc/fail2ban/jail.local
+    content: |
+      [DEFAULT]
+      bantime  = 24h
+      findtime = 10m
+      maxretry = 10
+      banaction = iptables-allports
+
+      # -----------------------------------------------
+      # nginx — malicious path detection
+      # Strict — 3 hits = ban. These are always attacks.
+      # -----------------------------------------------
+      [nginx-malicious]
+      enabled   = true
+      port      = http,https
+      filter    = nginx-malicious
+      logpath   = /var/log/nginx/access.log
+                  /var/log/nginx/doi.log
+                  /var/log/nginx/erddap.log
+                  /var/log/nginx/eric-forum.log
+                  /var/log/nginx/kanidm.log
+                  /var/log/nginx/keycloak.log
+                  /var/log/nginx/mailman.log
+                  /var/log/nginx/maps.log
+                  /var/log/nginx/matomo.log
+                  /var/log/nginx/plausible.log
+                  /var/log/nginx/quince.log
+                  /var/log/nginx/rspamd.log
+                  /var/log/nginx/typesense.log
+                  /var/log/nginx/vmagent.log
+                  /var/log/nginx/wordpress.log
+      maxretry  = 3
+      findtime  = 10m
+      bantime   = 48h
+      banaction = iptables-multiport
+
+      # -----------------------------------------------
+      # nginx — 4xx flood (20 hits / 2m)
+      # -----------------------------------------------
+      [nginx-4xx]
+      enabled   = true
+      port      = http,https
+      filter    = nginx-4xx
+      logpath   = /var/log/nginx/access.log
+                  /var/log/nginx/doi.log
+                  /var/log/nginx/erddap.log
+                  /var/log/nginx/eric-forum.log
+                  /var/log/nginx/kanidm.log
+                  /var/log/nginx/keycloak.log
+                  /var/log/nginx/mailman.log
+                  /var/log/nginx/maps.log
+                  /var/log/nginx/matomo.log
+                  /var/log/nginx/plausible.log
+                  /var/log/nginx/quince.log
+                  /var/log/nginx/rspamd.log
+                  /var/log/nginx/typesense.log
+                  /var/log/nginx/vmagent.log
+                  /var/log/nginx/wordpress.log
+      maxretry  = 120
+      findtime  = 10m
+      bantime   = 1h
+      banaction = iptables-multiport
+
+      # -----------------------------------------------
+      # nginx — bot/vulnerability scanning
+      # -----------------------------------------------
+      [nginx-botsearch]
+      enabled   = true
+      port      = http,https
+      filter    = nginx-botsearch
+      logpath   = /var/log/nginx/access.log
+                  /var/log/nginx/doi.log
+                  /var/log/nginx/erddap.log
+                  /var/log/nginx/eric-forum.log
+                  /var/log/nginx/kanidm.log
+                  /var/log/nginx/keycloak.log
+                  /var/log/nginx/mailman.log
+                  /var/log/nginx/maps.log
+                  /var/log/nginx/matomo.log
+                  /var/log/nginx/plausible.log
+                  /var/log/nginx/quince.log
+                  /var/log/nginx/rspamd.log
+                  /var/log/nginx/typesense.log
+                  /var/log/nginx/vmagent.log
+                  /var/log/nginx/wordpress.log
+      maxretry  = 5
+      findtime  = 10m
+      bantime   = 48h
+      banaction = iptables-multiport
+
+      # -----------------------------------------------
+      # nginx — HTTP basic auth brute force
+      # -----------------------------------------------
+      [nginx-http-auth]
+      enabled   = true
+      port      = http,https
+      filter    = nginx-http-auth
+      logpath   = /var/log/nginx/error.log
+      maxretry  = 5
+      findtime  = 10m
+      bantime   = 24h
+      banaction = iptables-multiport
+
+      # -----------------------------------------------
+      # nginx — rate limit violations (DISABLED — no limit_req in nginx config)
+      # -----------------------------------------------
+      [nginx-limit-req]
+      enabled   = false
+
+      # -----------------------------------------------
+      # Recidive — repeat offenders get all-ports 4-week ban
+      # -----------------------------------------------
+      [recidive]
+      enabled   = true
+      filter    = recidive
+      logpath   = /var/log/fail2ban.log
+      maxretry  = 3
+      findtime  = 1d
+      bantime   = 4w
+      banaction = iptables-allports
+
+  - dest: /etc/fail2ban/jail.d/whitelist.local
+    content: |
+      [DEFAULT]
+      ignoreip = 158.248.42.234 158.39.74.161 129.177.63.11 66.249.77.0/24 129.132.144.22 10.7.95.0/24 130.235.0.0/16 172.16.0.0/12 10.7.89.0/24 193.205.145.87 80.187.119.148 195.254.249.168 80.187.107.166 109.37.152.211 147.100.95.201 5.180.2.164 109.37.149.230 128.214.251.97
+
+  - dest: /etc/fail2ban/filter.d/nginx-4xx.conf
+    content: |
+      [Definition]
+      failregex = ^<HOST> - \S+ \[.*?\] "(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH) \S+ HTTP/\d+\.\d+" (400|401|403|404|405|444) \d+
+      ignoreregex = \.(css|js|png|jpg|jpeg|gif|ico|woff|woff2|ttf|svg)(\?[^ ]*)? HTTP
+
+  - dest: /etc/fail2ban/filter.d/nginx-malicious.conf
+    content: |
+      [Definition]
+      failregex = ^<HOST> - \S+ \[.*?\] "(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH) /\S*(wp-admin|wp-login\.php|phpmyadmin|xmlrpc\.php|cgi-bin|actuator|console|boaform|setup\.cgi) HTTP/\S+" \d+ \d+ ".*?" ".*?" ".*?"$
+                  ^<HOST> - \S+ \[.*?\] "(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH) /\S*\.env\S* HTTP/\S+" \d+ \d+ ".*?" ".*?" ".*?"$
+                  ^<HOST> - \S+ \[.*?\] "(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH) /\S*(\.git|passwd|\.aws|\.ssh|backup|shell|eval) HTTP/\S+" \d+ \d+ ".*?" ".*?" ".*?"$
+                  ^<HOST> - \S+ \[.*?\] "(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH) /\S*(\.\.) HTTP/\S+" \d+ \d+ ".*?" ".*?" ".*?"$
+                  ^<HOST> - \S+ \[.*?\] "(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH) /\S*(cmd|exec|system|phpinfo)=\S* HTTP/\S+" \d+ \d+ ".*?" ".*?" ".*?"$
+      ignoreregex =
+      # datepattern line removed — fail2ban auto-detects nginx bracketed timestamps
+
 # PROMETHEUS
 nginx_metrics_enable: True
 
