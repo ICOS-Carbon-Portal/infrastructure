@@ -1,0 +1,74 @@
+---
+- name: Install Zabbix repository package on fsicos2 and fsicos3
+  when: ansible_hostname in ['fsicos2', 'fsicos3']
+  block:
+    - name: Copy Zabbix release package to /root/
+      copy:
+        src: files/zabbix-release_7.0-2+ubuntu22.04_all.deb
+        dest: /root/zabbix-release_7.0-2+ubuntu22.04_all.deb
+        owner: root
+        group: root
+        mode: '0644'
+      check_mode: no  
+
+    - name: Install Zabbix repository package
+      apt:
+        deb: /root/zabbix-release_7.0-2+ubuntu22.04_all.deb
+        state: present
+
+    - name: Update apt cache after adding Zabbix repository
+      apt:
+        update_cache: yes
+
+
+- name: Install Zabbix agent2
+  apt:
+    name: zabbix-agent2
+    state: present
+    update_cache: yes
+
+- name: Configure Zabbix agent2 - Set Server parameter
+  lineinfile:
+    path: "{{ zabbix_agent_conf_file }}"
+    regexp: '^Server=.*$'
+    line: 'Server={{ zabbix_server_host }}'
+  register: server_changed
+
+
+
+
+- name: Configure Zabbix agent2 - Set ServerActive parameter
+  lineinfile:
+    path: "{{ zabbix_agent_conf_file }}"
+    regexp: '^ServerActive=.*$'
+    line: 'ServerActive={{ zabbix_server_host }}'
+  register: serveractive_changed
+
+- name: Configure Zabbix agent2 - Set Hostname parameter
+  lineinfile:
+    path: "{{ zabbix_agent_conf_file }}"
+    regexp: '^Hostname=Zabbix server$'
+    line: "Hostname={{ ansible_hostname }}"
+  register: hostname_changed
+
+- name: Create Zabbix scripts directory
+  file:
+    path: "{{ zabbix_scripts_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Trigger restart if configuration changed
+  debug:
+    msg: "Zabbix agent2 configuration has been modified"
+  when: server_changed.changed or serveractive_changed.changed or hostname_changed.changed
+  notify: restart zabbix-agent2
+  changed_when: true
+
+- name: Ensure Zabbix agent2 service is started and enabled
+  systemd:
+    name: "{{ zabbix_agent_service }}"
+    state: started
+    enabled: yes
+    daemon_reload: yes
