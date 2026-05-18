@@ -68,17 +68,23 @@ for line in documents:
 for link in links_to_check:
     if link not in links_seen:
         links_seen.append(link)
-        # need to freshly index this page
-        doc_stub = {"id": url_to_id(link), "url": link}
-        doc_status = update_page(doc_stub)
-        if "status" in doc_status:
-            if doc_status["status"] == 301:
-                if doc_status["dest"] not in links_seen:
-                    links_to_check.append(doc_status["dest"])
-        elif doc_status["changed"]:
-            documents_to_update_content.append(doc_status["doc"])
-            links_to_check += doc_status["links"]
-        time.sleep(0.25)
+        if link.startswith("/"): # guard for malformed links
+            new_link = base_url + link[1:]
+            links_to_check.append(new_link)
+        else:
+            # need to freshly index this page
+            doc_stub = {"id": url_to_id(link), "url": link}
+            doc_status = update_page(doc_stub)
+            if doc_status["no_index"]: # we will not index this page, but include its links
+                links_to_check += doc_status["links"]
+            elif "status" in doc_status: # we tried to request this page and failed
+                if doc_status["status"] == 301:
+                    if doc_status["dest"] not in links_seen:
+                        links_to_check.append(doc_status["dest"])
+            elif doc_status["changed"]: # we will update the page
+                documents_to_update_content.append(doc_status["doc"])
+                links_to_check += doc_status["links"]
+            time.sleep(0.25)
 
 
 # Add analytics data
