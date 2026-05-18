@@ -1,0 +1,7 @@
+---
+# Zabbix variables
+zabbix_scripts_dir: /etc/zabbix/scripts
+zabbix_agent_conf_file: /etc/zabbix/zabbix_agent2.conf
+zabbix_agent_service: zabbix-agent2
+zabbix_server_host: icos-zbx1,127.0.0.1
+

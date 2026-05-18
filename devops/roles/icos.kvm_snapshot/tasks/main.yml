@@ -1,0 +1,74 @@
+    - name: Generate unique snapshot name
+      set_fact:
+        snapshot_name: "snapshot-{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
+
+    - name: Validate domain parameter is provided
+      fail:
+        msg: "You must provide a domain name using -e domain=<vm-name>"
+      when: domain is not defined
+
+    - name: Check if vm exists and is running
+      command:
+        cmd: virsh domstate {{ vm_domain }}
+      register: vm_state
+      changed_when: false
+      check_mode: false
+
+    - name: Display current VM state
+      debug:
+        msg: "VM {{ vm_domain }} is currently: {{ vm_state.stdout | trim }}"
+
+    - name: Shutdown running vm
+      command:
+        cmd: virsh shutdown {{ vm_domain }}
+      when: vm_state.stdout | trim == "running"
+
+    - name: Wait for VM to shut down
+      command:
+        cmd: virsh domstate {{ vm_domain }}
+      register: vm_shutdown_state
+      until: vm_shutdown_state.stdout | trim == "shut off"
+      retries: "{{ (shutdown_timeout / 5) | int }}"
+      delay: 20
+      changed_when: false
+      when: vm_state.stdout | trim == "running"
+
+    - name: Create snapshot
+      command:
+        cmd: >
+          virsh snapshot-create-as
+          --domain {{ vm_domain }}
+          --name "{{ snapshot_name }}"
+          --description "{{ snapshot_description }}"
+      register: snapshot_result
+
+    - name: Verify snapshot was created
+      command:
+        cmd: virsh snapshot-list {{ vm_domain }}
+      register: snapshot_list
+      changed_when: false
+      check_mode: false
+
+    - name: Fail if snapshot not found
+      fail:
+        msg: "Snapshot {{ snapshot_name }} was not created successfully"
+      when: snapshot_name not in snapshot_list.stdout
+
+    - name: Start vm
+      command:
+        cmd: virsh start {{ vm_domain }}
+
+    - name: Wait for vm to be running
+      command:
+        cmd: virsh domstate {{ vm_domain }}
+      register: vm_running_state
+      until: vm_running_state.stdout | trim == "running"
+      retries: "{{ (start_timeout / 5) | int }}"
+      delay: 20
+      changed_when: false
+
+    - name: Show status information
+      debug:
+        msg:
+          - "Snapshot '{{ snapshot_name }}' created for {{ vm_domain }}"
+          - "VM {{ vm_domain }} is now: {{ vm_running_state.stdout | trim }}"

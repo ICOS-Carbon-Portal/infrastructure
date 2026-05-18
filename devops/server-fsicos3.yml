@@ -17,3 +17,9 @@
 
     - role: ops.zfs
       tags: zfs
+
+    - role: icos.zabbix_agent
+      tags: zabbix-agent
+
+    - role: icos.zabbix_custom_checks
+      tags: fsicos3-custom
