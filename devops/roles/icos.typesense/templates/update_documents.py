@@ -68,7 +68,7 @@ for line in documents:
 for link in links_to_check:
     if link not in links_seen:
         links_seen.append(link)
-        if link.startswith("/"): # guard for malformed links
+        if link.startswith("/"): # guard for relative links
             new_link = base_url + link[1:]
             links_to_check.append(new_link)
         else:
