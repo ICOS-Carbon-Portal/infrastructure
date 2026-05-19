@@ -162,11 +162,19 @@ def timestamp():
 ## Main functions for importing
 def update_page(doc, verbose=False):
     url = doc["url"]
-    updated_doc = {"id": doc["id"], "url": doc["url"], "category": get_category(doc["url"])}
-    doc_status = {"changed": False, "doc": updated_doc}
+    updated_doc = {"id": doc["id"], "url": url, "category": get_category(doc["url"])}
+    doc_status = {"changed": False, "doc": updated_doc, "no_index": False}
 
-    # return unmodified doc_status if we should not index this page
+    # return doc_status with no_index and proper links if we should not index this page
     if not index_page(url):
+        doc_status["no_index"] = True
+        resp = requests.get(url)
+        if resp.status_code != 200:
+            print(timestamp() + "[update_page] Not indexing; non-200 status (GET): " + url + " with status=" + str(head.status_code))
+            doc_status["status"] = resp.status_code
+            return doc_status
+        soup = get_soup_with_iframes(resp.text)
+        doc_status["links"] = get_links_on_page(soup, url)
         return doc_status
 
     head = requests.head(url)
