@@ -170,7 +170,7 @@ def update_page(doc, verbose=False):
         doc_status["no_index"] = True
         resp = requests.get(url)
         if resp.status_code != 200:
-            print(timestamp() + "[update_page] Not indexing; non-200 status (GET): " + url + " with status=" + str(head.status_code))
+            print(timestamp() + "[update_page] Not indexing; non-200 status (GET): " + url + " with status=" + str(resp.status_code))
             doc_status["status"] = resp.status_code
             return doc_status
         soup = get_soup_with_iframes(resp.text)
