@@ -9,7 +9,7 @@ services:
       VIRT_SPARQL_ResultSetMaxRows: "{{ virtuoso_result_set_max_rows }}"
     ports:
       - "{{ virtuoso_bind_host }}:{{ virtuoso_http_port }}:8890"
-      - "{{ virtuoso_bind_host }}:{{ virtuoso_isql_port }}:1111"
+      # - "{{ virtuoso_bind_host }}:{{ virtuoso_isql_port }}:1111"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "{{ virtuoso_home }}/volumes/virtuoso.db:/database"
