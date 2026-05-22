@@ -70,6 +70,10 @@
     - role: icos.postgis
       tags: postgis
 
+    - role: icos.virtuoso
+      tags: virtuoso
+      when: virtuoso_enable | default(False)
+
     - role: icos.restheart
     - role: icos.cpmeta
     - role: icos.cpdata
