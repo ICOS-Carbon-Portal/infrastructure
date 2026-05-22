@@ -5,7 +5,6 @@ services:
       DBA_PASSWORD: "{{ virtuoso_dba_pass }}"
     ports:
       - "{{ virtuoso_bind_host }}:{{ virtuoso_http_port }}:8890"
-      # - "{{ virtuoso_bind_host }}:{{ virtuoso_isql_port }}:1111"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "{{ virtuoso_home }}/volumes/virtuoso.db:/database"
