@@ -2,13 +2,9 @@ virtuoso_home: "{{ docker_compose_home | default('/docker') }}/virtuoso"
 
 virtuoso_bind_host: 127.0.0.1
 virtuoso_http_port: 8890
-virtuoso_isql_port: 1111
 
 virtuoso_host: "{{ virtuoso_bind_host }}"
 virtuoso_port: "{{ virtuoso_http_port }}"
-
-# We most specific tag of recent opensource virtuoso version currently
-virtuoso_image: openlink/virtuoso-opensource-7:7.2.17
 
 # We are currently using 'dba' user for access from `cpmeta`.
 # TODO: Use specific user with more restricted access for the use-cases of `cpmeta`.
