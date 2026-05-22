@@ -1,3 +1,4 @@
+virtuoso_enable: true
 
 postgis_admin_pass:  "{{ vault_postgis_admin_pass }}"
 postgis_writer_pass: "{{ vault_postgis_writer_pass }}"
