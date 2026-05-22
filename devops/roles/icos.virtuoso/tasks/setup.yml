@@ -22,7 +22,6 @@
     project_src: "{{ virtuoso_home }}"
     state: present
     pull: always
-  register: _virtuoso_started
 
 - name: Restart Virtuoso if config changed
   community.docker.docker_compose_v2:
