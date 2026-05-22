@@ -13,8 +13,3 @@ virtuoso_image: openlink/virtuoso-opensource-7:7.2.17
 # We are currently using 'dba' user for access from `cpmeta`.
 # TODO: Use specific user with more restricted access for the use-cases of `cpmeta`.
 virtuoso_dba_pass: "{{ vault_virtuoso_dba_pass }}"
-
-virtuoso_number_of_buffers: 340000
-virtuoso_max_dirty_buffers: 250000
-virtuoso_max_client_connections: 10
-virtuoso_result_set_max_rows: 1000000
