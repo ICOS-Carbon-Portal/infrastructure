@@ -8,7 +8,7 @@
 - name: Copy virtuoso.ini
   template:
     src: virtuoso.ini
-    dest: "{{ virtuoso_home }}"
+    dest: "{{ virtuoso_home }}/volumes/virtuoso.db/virtuoso.ini"
   register: _virtuoso_ini
 
 - name: Copy docker-compose.yml
