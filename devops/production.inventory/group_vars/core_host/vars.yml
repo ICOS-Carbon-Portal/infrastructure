@@ -11,5 +11,6 @@ doi_admins: "{{ vault_doi_admins }}"
 doi_to_addresses: "{{ vault_doi_to_addresses }}"
 
 cpmeta_sentry_dsn: "{{ vault_cpmeta_sentry_dsn }}"
-cpdata_sentry_dsn: "{{ vault_cpdata_sentry_dsn }}"
+cpdata_sentry_backend_dsn: "{{ vault_cpdata_sentry_backend_dsn }}"
+cpdata_sentry_portal_dsn: "{{ vault_cpdata_sentry_portal_dsn }}"
 
