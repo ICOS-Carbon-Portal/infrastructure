@@ -37,7 +37,7 @@
     - not (_existing_job_status.finished | default(false))
 
 - name: Populate triplestore (async)
-  command: java -jar cpmeta.jar populateTriplestore
+  shell: java -jar cpmeta.jar populateTriplestore > populate.log 2>&1
   args:
     chdir: "{{ cpmeta_home }}"
   become: true
