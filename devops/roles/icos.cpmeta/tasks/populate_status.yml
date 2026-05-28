@@ -11,7 +11,7 @@
   become: true
   become_user: "{{ cpmeta_user }}"
   register: _populate_status
-  ignore_errors: true
+  failed_when: false
 
 - name: Show populate job status
   debug:
