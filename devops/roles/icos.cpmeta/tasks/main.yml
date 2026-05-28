@@ -13,3 +13,13 @@
 - import_tasks: backup.yml
   tags: cpmeta_backup
   when: cpmeta_backup_enable | default(False)
+
+- import_tasks: populate.yml
+  tags:
+    - cpmeta_populate
+    - never
+
+- import_tasks: populate_status.yml
+  tags:
+    - cpmeta_populate_status
+    - never

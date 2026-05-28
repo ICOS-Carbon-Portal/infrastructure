@@ -1,0 +1,20 @@
+- name: Populate triplestore (async)
+  command: "java -jar {{ cpmeta_home }}/cpmeta.jar populateTriplestore"
+  become: true
+  become_user: "{{ cpmeta_user }}"
+  async: 86400
+  poll: 0
+  register: _populate_job
+
+- name: Save job ID to file
+  copy:
+    content: "{{ _populate_job.ansible_job_id }}"
+    dest: "{{ cpmeta_home }}/.populate_job_id"
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
+
+- name: Show job ID
+  debug:
+    msg: >-
+      Triplestore population started with job ID {{ _populate_job.ansible_job_id }}.
+      Check status with: ansible-playbook cpmeta.yml -t cpmeta_populate_status
