@@ -6,15 +6,14 @@
   block:
 
   - name: Find the latest release of just
-    github_release:
-      user: casey
-      repo: just
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/casey/just/releases/latest
+      return_content: true
     register: gh
 
   - name: Set just_version fact
     set_fact:
-      just_version: "{{ gh.tag.lstrip('v') }}"
+      just_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 - name: Install just

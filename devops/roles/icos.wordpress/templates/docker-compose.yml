@@ -1,0 +1,47 @@
+services:
+  proxy:
+    image: {{ wordpress_caddy_image }}
+    container_name: wordpress_proxy
+    restart: unless-stopped
+    ports:
+      - "{{ wordpress_http_port }}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+{% for site in wordpress_sites %}
+      - {{ site.name }}
+{% endfor %}
+
+{% for site in wordpress_sites %}
+  {{ site.name }}-db:
+    image: {{ site.db_image | default(wordpress_mariadb_image) }}
+    container_name: wordpress_{{ site.name }}_db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: {{ site.db_name | default(site.name ~ '_wordpress') | to_json }}
+      MARIADB_USER: {{ site.db_user | default(site.name ~ '_wordpress') | to_json }}
+      MARIADB_PASSWORD: {{ site.db_password | to_json }}
+      MARIADB_ROOT_PASSWORD: {{ site.db_root_password | to_json }}
+    volumes:
+      - ./sites/{{ site.name }}/db:/var/lib/mysql
+
+  {{ site.name }}:
+    image: {{ site.image | default(wordpress_image) }}
+    container_name: wordpress_{{ site.name }}
+    restart: unless-stopped
+    depends_on:
+      - {{ site.name }}-db
+    environment:
+      WORDPRESS_DB_HOST: {{ site.name }}-db:3306
+      WORDPRESS_DB_NAME: {{ site.db_name | default(site.name ~ '_wordpress') | to_json }}
+      WORDPRESS_DB_USER: {{ site.db_user | default(site.name ~ '_wordpress') | to_json }}
+      WORDPRESS_DB_PASSWORD: {{ site.db_password | to_json }}
+      WORDPRESS_CONFIG_EXTRA: |
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            $_SERVER['HTTPS'] = 'on';
+            $_SERVER['SERVER_PORT'] = 443;
+        }
+    volumes:
+      - ./sites/{{ site.name }}/html:/var/www/html
+
+{% endfor %}

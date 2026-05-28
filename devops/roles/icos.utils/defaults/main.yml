@@ -38,10 +38,10 @@ watchexec_url_map:
 btop_version: "{{ hostvars.localhost.btop_version }}"
 btop_home: /opt
 btop_url_map:
-  "armv6l": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-armv5l-linux-musleabi.tbz"
-  "armv7l": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-armv7l-linux-musleabihf.tbz"
-  "aarch64": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-aarch64-linux-musl.tbz"
-  "x86_64": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-x86_64-linux-musl.tbz"
+  "armv6l": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-arm-unknown-linux-musleabi.tar.gz"
+  "armv7l": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-armv7-unknown-linux-musleabi.tar.gz"
+  "aarch64": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-aarch64-unknown-linux-musl.tar.gz"
+  "x86_64": "https://github.com/aristocratos/btop/releases/download/v{{ btop_version }}/btop-x86_64-unknown-linux-musl.tar.gz"
 
 
 # TRIPPY

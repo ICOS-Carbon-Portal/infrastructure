@@ -1,0 +1,78 @@
+- hosts: fsicos4
+  vars:
+    wordpress_domains:
+      - envri.eu
+  roles:
+    - role: icos.pve_server
+      tags: pve_server
+  tasks:
+    - name: Synchronize VM SSH port forwarding
+      tags: guest
+      command: icos-auto-dnat run
+      register: _wordpress_auto_dnat
+      changed_when: >-
+        'adding port' in _wordpress_auto_dnat.stdout or
+        'removing rule' in _wordpress_auto_dnat.stdout
+
+    - name: Configure wordpress reverse proxy
+      tags: caddy
+      include_role:
+        name: icos.caddy
+      vars:
+        caddy_name: wordpress
+        caddy_conf: |
+          {{ wordpress_domains | join(', ') }} {
+              reverse_proxy {{ hostvars['fsicos4-wordpress'].nebula_ip }}:80
+          }
+
+
+- hosts: fsicos4-wordpress
+  vars:
+    wordpress_home: /docker/wordpress
+    wordpress_sites:
+      - name: envri
+        domains:
+          - envri.eu
+        db_name: wordpress
+        db_user: wordpress
+        db_password: "{{ vault_wordpress_envri_db_password }}"
+        db_root_password: "{{ vault_wordpress_envri_db_root_password }}"
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.nebula
+      tags: nebula
+
+    - role: icos.wordpress
+      tags: wordpress
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_name: fsicos4-wordpress
+      bbclient_home: /opt/bbclient-fsicos4-wordpress
+      bbclient_remotes:
+        - icos1
+      bbclient_timer_conf: |
+        OnCalendar=daily
+        RandomizedDelaySec=2h
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -Eueo pipefail
+
+        cd {{ wordpress_home }}
+        trap 'docker compose up -d' EXIT
+
+        docker compose down
+        {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
+        {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
+        {{ bbclient_all }} compact --verbose

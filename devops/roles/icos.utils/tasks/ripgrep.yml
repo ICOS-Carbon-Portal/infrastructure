@@ -8,15 +8,14 @@
   delegate_facts: true
   block:
     - name: Find the latest release of ripgrep
-      github_release:
-        user: BurntSushi
-        repo: ripgrep
-        action: latest_release
+      uri:
+        url: https://api.github.com/repos/BurntSushi/ripgrep/releases/latest
+        return_content: true
       register: gh
 
     - name: Set ripgrep_version fact
       set_fact:
-        ripgrep_version: "{{ gh.tag.lstrip('v') }}"
+        ripgrep_version: "{{ gh.json.tag_name.lstrip('v') }}"
         cacheable: true
 
 - when: ansible_architecture == "x86_64"

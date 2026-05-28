@@ -6,15 +6,14 @@
   block:
 
   - name: Find the latest release of fd
-    github_release:
-      user: sharkdp
-      repo: fd
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/sharkdp/fd/releases/latest
+      return_content: true
     register: gh
 
   - name: Set fd_version fact
     set_fact:
-      fd_version: "{{ gh.tag.lstrip('v') }}"
+      fd_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 # Installing using the .deb is preferable because then we get manual pages etc

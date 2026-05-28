@@ -152,7 +152,7 @@ cert-check mindays:
     # finally check if the current certificate is expiring
     if [[ -f host.crt ]]; then
       # expiration datetime, eg '2024-11-11T18:42:50+01:00'
-      d=`nebula-cert print -path host.crt -json | jq -r .details.notAfter`
+      d=`nebula-cert print -path host.crt -json | jq -r 'if type == "array" then .[0].details.notAfter else .details.notAfter end'`
       # expiration in epoch seconds, e.g 1731346970
       later=`date -d "$d" '+%s'`
       # current epoch seconds

@@ -1,0 +1,49 @@
+- name: Check wordpress_sites is not empty
+  assert:
+    that:
+      - wordpress_sites | length > 0
+
+- name: Check wordpress site definitions
+  assert:
+    that:
+      - item.name is match('^[a-z0-9][a-z0-9_-]*$')
+      - item.domains is defined
+      - item.domains | length > 0
+      - item.db_password is defined
+      - item.db_root_password is defined
+    fail_msg: "Each wordpress site needs name, domains, db_password, and db_root_password"
+  loop: "{{ wordpress_sites }}"
+
+- name: Create wordpress home
+  file:
+    path: "{{ wordpress_home }}"
+    state: directory
+    mode: "0755"
+
+- name: Create wordpress site directories
+  file:
+    path: "{{ wordpress_home }}/sites/{{ item.0.name }}/{{ item.1 }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ wordpress_sites | product(['html', 'db']) }}"
+
+- name: Copy Caddyfile
+  template:
+    src: Caddyfile
+    dest: "{{ wordpress_home }}/Caddyfile"
+    mode: "0644"
+  register: _wordpress_caddyfile
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ wordpress_home }}/docker-compose.yml"
+    mode: "0600"
+  register: _wordpress_compose
+
+- name: Start wordpress containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ wordpress_home }}"
+    state: present
+    pull: always
+    recreate: "{{ 'always' if _wordpress_caddyfile.changed or _wordpress_compose.changed else 'auto' }}"

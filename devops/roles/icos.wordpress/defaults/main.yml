@@ -1,0 +1,8 @@
+wordpress_home: /docker/wordpress
+wordpress_http_port: 80
+
+wordpress_caddy_image: caddy:2.8-alpine
+wordpress_image: wordpress:6.6-php8.3-apache
+wordpress_mariadb_image: mariadb:10.11
+
+wordpress_sites: []

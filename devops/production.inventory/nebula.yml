@@ -59,3 +59,7 @@ nebula_hosts:
     pancake:
       nebula_ip: "100.100.4.9"
       nebula_port: 60706
+
+    fsicos4-wordpress:
+      nebula_ip: "100.100.4.10"
+      nebula_port: 60714

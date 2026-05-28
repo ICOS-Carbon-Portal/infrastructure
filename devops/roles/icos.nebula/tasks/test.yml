@@ -3,8 +3,8 @@
   meta: flush_handlers
 
 - when:
-    - nebula_resolve_servers
-    - nebula_resolve_test
+    - nebula_resolve_servers is not none
+    - nebula_resolve_test is not none
   block:
     - name: Install dnsutils
       apt:
