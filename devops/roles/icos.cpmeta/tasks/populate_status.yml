@@ -3,6 +3,8 @@
     src: "{{ cpmeta_home }}/.populate_job_id"
   register: _job_id_file
 
+- import_tasks: populate_log.yml
+
 - name: Check populate job status
   async_status:
     jid: "{{ _job_id_file.content | b64decode | trim }}"
