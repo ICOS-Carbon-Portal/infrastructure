@@ -1,5 +1,45 @@
+- name: Check that cpmeta is stopped
+  systemd:
+    name: cpmeta.service
+  register: _cpmeta_service
+
+- name: Fail if cpmeta is still running
+  fail:
+    msg: >-
+      cpmeta.service is {{ _cpmeta_service.status.ActiveState }}.
+      Stop it before populating the triplestore:
+      ansible-playbook cpmeta.yml -t cpmeta_setup -e cpmeta_service_state=stopped
+  when: _cpmeta_service.status.ActiveState == "active"
+
+- name: Check for existing populate job
+  slurp:
+    src: "{{ cpmeta_home }}/.populate_job_id"
+  register: _existing_job_id
+  ignore_errors: true
+
+- name: Check existing populate job status
+  async_status:
+    jid: "{{ _existing_job_id.content | b64decode | trim }}"
+  become: true
+  become_user: "{{ cpmeta_user }}"
+  register: _existing_job_status
+  ignore_errors: true
+  when: _existing_job_id is succeeded
+
+- name: Fail if a populate job is already running
+  fail:
+    msg: >-
+      A populate job is already running (job ID: {{ _existing_job_id.content | b64decode | trim }}).
+      Check status with: ansible-playbook cpmeta.yml -t cpmeta_populate_status
+  when:
+    - _existing_job_id is succeeded
+    - _existing_job_status is succeeded
+    - not (_existing_job_status.finished | default(false))
+
 - name: Populate triplestore (async)
-  command: "java -jar {{ cpmeta_home }}/cpmeta.jar populateTriplestore"
+  command: java -jar cpmeta.jar populateTriplestore
+  args:
+    chdir: "{{ cpmeta_home }}"
   become: true
   become_user: "{{ cpmeta_user }}"
   async: 86400

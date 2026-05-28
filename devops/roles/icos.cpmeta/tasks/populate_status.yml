@@ -6,6 +6,8 @@
 - name: Check populate job status
   async_status:
     jid: "{{ _job_id_file.content | b64decode | trim }}"
+  become: true
+  become_user: "{{ cpmeta_user }}"
   register: _populate_status
   ignore_errors: true
 
