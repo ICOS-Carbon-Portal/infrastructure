@@ -23,7 +23,7 @@
   become: true
   become_user: "{{ cpmeta_user }}"
   register: _existing_job_status
-  ignore_errors: true
+  failed_when: false
   when: _existing_job_id is succeeded
 
 - name: Fail if a populate job is already running
@@ -33,8 +33,8 @@
       Check status with: ansible-playbook cpmeta.yml -t cpmeta_populate_status
   when:
     - _existing_job_id is succeeded
-    - _existing_job_status is succeeded
-    - not (_existing_job_status.finished | default(false))
+    - _existing_job_status is not skipped
+    - not (_existing_job_status.finished | default(true))
 
 - name: Populate triplestore (async)
   shell: java -jar cpmeta.jar populateTriplestore > populate.log 2>&1
