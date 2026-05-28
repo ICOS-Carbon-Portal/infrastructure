@@ -1,16 +1,3 @@
-- name: Check that cpmeta is stopped
-  systemd:
-    name: cpmeta.service
-  register: _cpmeta_service
-
-- name: Fail if cpmeta is still running
-  fail:
-    msg: >-
-      cpmeta.service is {{ _cpmeta_service.status.ActiveState }}.
-      Stop it before populating the triplestore:
-      ansible-playbook cpmeta.yml -t cpmeta_setup -e cpmeta_service_state=stopped
-  when: _cpmeta_service.status.ActiveState == "active"
-
 - name: Check for existing populate job
   slurp:
     src: "{{ cpmeta_home }}/.populate_job_id"
