@@ -1,0 +1,32 @@
+-- Auto-generated from main.yml
+
+{
+    bbclient_user = "root"
+  , bbclient_home = "/opt/bbclient-{{ bbclient_name }}"
+  , bbclient_timer_conf = ''
+    OnCalendar=daily
+    RandomizedDelaySec=2h
+
+  ''
+  , bbclient_patterns = ''
+    R volumes
+
+  ''
+  , bbclient_ssh_dir = "{{ bbclient_home }}/ssh"
+  , bbclient_bin_dir = "{{ bbclient_home }}/bin"
+  , bbclient_borg_dir = "{{ bbclient_home }}/borg"
+  , bbclient_ssh_bin = "{{ bbclient_bin_dir }}/ssh"
+  , bbclient_ssh_config = "{{ bbclient_ssh_dir }}/config"
+  , bbclient_ssh_hosts = "{{ bbclient_ssh_dir }}/known_hosts"
+  , bbclient_ssh_key = "{{ bbclient_ssh_dir }}/bbclient.rsa"
+  , bbclient_repo_url = "{{ bbclient_remote }}:repos/{{ bbclient_name }}.repo"
+  , bbclient_repo_file = "{{ bbclient_home }}/repos"
+  , bbclient_wrapper = "{{ bbclient_bin_dir }}/borg"
+  , bbclient_one = "{{ bbclient_bin_dir }}/bbclient"
+  , bbclient_all = "{{ bbclient_bin_dir }}/bbclient-all"
+  , bbclient_remote_user = "{{ hostvars[bbclient_remote].bbserver_user }}"
+  , bbclient_remote_repo = "{{ hostvars[bbclient_remote].bbserver_home }}/repos/{{ bbclient_name }}.repo"
+  , bbclient_coldbackup_hour = "{{ 4 | random(seed=bbclient_name) }}"
+  , bbclient_coldbackup_minute = "{{ 60 | random(seed=bbclient_name) }}"
+  , bbclient_patterns_path = "{{ bbclient_home }}/patterns.lst"
+}

@@ -1,0 +1,6 @@
+-- Auto-generated from main.yml
+
+{
+    zfsdocker_size = "100G"
+  , zfsdocker_zvol = "/dev/zvol/pool/docker/{{ zfsdocker_name }}"
+}

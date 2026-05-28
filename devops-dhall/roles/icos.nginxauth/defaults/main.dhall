@@ -1,0 +1,11 @@
+-- Auto-generated from main.yml
+
+{
+    nginxauth_title = "Login required"
+  , nginxauth_file = "/etc/nginx/auth/{{ nginxauth_name }}"
+  , nginxauth_conf = ''
+    auth_basic "{{ nginxauth_title }}";
+    auth_basic_user_file {{ nginxauth_file }};
+
+  ''
+}

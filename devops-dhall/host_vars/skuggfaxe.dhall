@@ -1,0 +1,12 @@
+-- Auto-generated from skuggfaxe.yml
+
+{
+    icosdata_mkdirs = [ "/data/dataAppStorage" ]
+  , icosdata_nfs_mounts = [
+      {
+        src = "fsicos2.nebula:/disk/data/dataAppStorage"
+      , path = "/data/dataAppStorage"
+      , opts = "ro,hard,x-systemd.after=nebula.service"
+    }
+  ]
+}

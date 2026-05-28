@@ -1,0 +1,9 @@
+-- Auto-generated from main.yml
+
+{
+    onlyoffice_version = "9.0.4"
+  , onlyoffice_port = 8201
+  , onlyoffice_home = "/docker/onlyoffice"
+  , onlyoffice_build_dir = "{{ onlyoffice_home }}/build"
+  , onlyoffice_domain = "onlyoffice.icos-cp.eu"
+}

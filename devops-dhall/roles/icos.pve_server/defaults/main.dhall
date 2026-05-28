@@ -1,0 +1,6 @@
+-- Auto-generated from main.yml
+
+{
+    pve_dnat_bridge = "vmbr0"
+  , pve_dnat_leases = "/var/lib/misc/dnsmasq.{{ pve_dnat_bridge }}.leases"
+}

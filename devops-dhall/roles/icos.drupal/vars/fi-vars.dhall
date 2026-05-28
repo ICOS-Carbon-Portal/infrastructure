@@ -1,0 +1,17 @@
+-- Auto-generated from fi-vars.yml
+
+{
+    nginx_conf_name = "icosfi"
+  , drupal_docker_port = 8114
+  , mysql_docker_port = 3339
+  , domain = "www.icos-finland.fi"
+  , trusted_host = "^www\\.icos-finland\\.fi$"
+  , ssl_domains = [ "icos-finland.fi", "www.icos-finland.fi" ]
+  , drupal_modules = [
+      "bartik"
+    , "linkit"
+    , "pathauto"
+    , "redirect"
+    , "smtp"
+  ]
+}

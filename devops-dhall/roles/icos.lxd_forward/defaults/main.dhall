@@ -1,0 +1,3 @@
+-- Auto-generated from main.yml
+
+{ lxd_forward_port = "{{ hostvars[lxd_forward_name].ansible_port }}" }

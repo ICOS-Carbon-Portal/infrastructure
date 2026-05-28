@@ -1,0 +1,6 @@
+-- Auto-generated from main.yml
+
+{
+    pipx_home = "/opt/pipx"
+  , pipx_upgrade = "{{ upgrade_everything | default(False) | bool }}"
+}

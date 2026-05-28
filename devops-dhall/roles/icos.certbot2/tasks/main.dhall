@@ -1,0 +1,21 @@
+-- Auto-generated from main.yml
+
+[
+    {
+      name = "Run certbot"
+    , command = ''
+      {{ certbot_bin }}
+      certonly
+      --nginx
+      --non-interactive
+      --agree-tos
+      --expand
+      --cert-name {{ certbot_name }}
+      --email {{ certbot_email }}
+      {% for d in certbot_domains %} -d {{ d }} {% endfor %}
+
+    ''
+    , register = "_r"
+    , changed_when = "'Successfully received certificate.' in _r.stdout"
+  }
+]

@@ -1,0 +1,19 @@
+-- Auto-generated from ch-vars.yml
+
+{
+    nginx_conf_name = "icosch"
+  , drupal_docker_port = 8120
+  , mysql_docker_port = 3342
+  , domain = "www.icos-switzerland.ch"
+  , trusted_host = "^www\\.icos-switzerland\\.ch$"
+  , ssl_domains = [ "switzerland.icos-cp.eu", "www.icos-switzerland.ch" ]
+  , drupal_modules = [
+      "bartik"
+    , "honeypot"
+    , "linkit"
+    , "pathauto"
+    , "redirect"
+    , "smtp"
+    , "webform"
+  ]
+}

@@ -1,0 +1,42 @@
+-- Auto-generated from backup.yml
+
+[
+    {
+      include_role = { name = "icos.bbclient2", public = True }
+    , vars = {
+        bbclient_user = "root"
+      , bbclient_name = "{{ postgis_bbclient_name }}"
+      , bbclient_home = "{{ postgis_home }}/bbclient"
+      , bbclient_timer_conf = ''
+        # Run once every 6 hour
+        OnCalendar=0:0/6
+        # Spread the load for timers starting on a whole hour
+        RandomizedDelaySec=10m
+
+      ''
+      , bbclient_timer_content = ''
+        #!/bin/bash
+
+        # strict mode
+        set -Eueo pipefail
+
+        # verbose output
+        set -x
+
+        # If the repos get moved to another disk - maybe because of storage
+        # running out - we don't want the backup to fail.
+        export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+        while read repo; do
+            export BORG_REPO="$repo"
+            docker exec {{ postgis_container_name }} pg_dumpall --clean --if-exists -U postgres | {{ bbclient_wrapper }} create --verbose --stats '::{now}' -
+
+            {{ bbclient_wrapper }} prune --verbose --stats --keep-within=7d --keep-daily=30 --keep-weekly=150
+
+            {{ bbclient_wrapper }} compact
+        done < "{{ bbclient_repo_file }}"
+
+      ''
+    }
+  }
+]

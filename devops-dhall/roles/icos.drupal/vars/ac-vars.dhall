@@ -1,0 +1,11 @@
+-- Auto-generated from ac-vars.yml
+
+{
+    nginx_conf_name = "actris"
+  , drupal_docker_port = 8111
+  , mysql_docker_port = 3340
+  , domain = "www.actris.se"
+  , trusted_host = "^www\\.actris\\.se$"
+  , ssl_domains = [ "actris.se", "www.actris.se" ]
+  , drupal_modules = [ "bartik" ]
+}

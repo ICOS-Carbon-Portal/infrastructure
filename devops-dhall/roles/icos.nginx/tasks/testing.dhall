@@ -1,0 +1,10 @@
+-- Auto-generated from testing.yml
+
+[
+    {
+      name = "Create basic auth users for \"testing\""
+    , include_role = { name = "icos.nginxauth" }
+    , vars = { nginxauth_name = "testing", nginxauth_users = "{{ nginx_testing_users }}" }
+    , when = "nginx_testing_users is defined"
+  }
+]

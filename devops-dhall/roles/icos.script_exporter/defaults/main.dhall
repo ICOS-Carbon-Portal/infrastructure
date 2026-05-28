@@ -1,0 +1,15 @@
+-- Auto-generated from main.yml
+
+{
+    sexp_home = "/opt/script_exporter"
+  , sexp_config_file = "{{ sexp_home }}/config.yaml"
+  , sexp_listen = "localhost:9469"
+  , sexp_arch = ''
+    {{ sexp_arch_map[ansible_architecture] |
+       default(ansible_architecture) }}
+  ''
+  , sexp_arch_map = { armv7l = "armv7", x86_64 = "amd64" }
+  , sexp_scripts_venv = "{{ sexp_home }}/scripts-venv"
+  , sexp_scripts_repo = "{{ sexp_home }}/node-exporter-textfile-collector-scripts"
+  , sexp_scripts_enable = [] : List Text
+}

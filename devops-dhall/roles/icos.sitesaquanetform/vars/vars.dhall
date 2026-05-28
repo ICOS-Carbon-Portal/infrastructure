@@ -1,0 +1,8 @@
+-- Auto-generated from vars.yml
+
+{
+    project_dir = "/disk/data/sites-aquanet-form"
+  , certbot_domains = [ "apply.fieldsites.se" ]
+  , nginx_conf_name = "sites-aquanet-form"
+  , certbot_conf_name = "sites_aquanet_form"
+}

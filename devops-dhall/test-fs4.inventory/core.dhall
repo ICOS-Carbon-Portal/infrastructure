@@ -1,0 +1,121 @@
+-- Auto-generated from core.yml
+
+{
+    all = {
+      vars = {
+        fsicos4_ip = "130.235.92.135"
+      , vm_fsicos4_test = "10.10.10.54"
+      , cpauth_icos_domain = "cpauth.fs4vm.icos-cp.eu"
+      , cpauth_sites_domain = "auth.fs4vm.fielsites.se"
+      , cpauth_cities_domain = "cpauth.fs4vm.icos-cp.eu"
+      , cpmeta_icos_domain = "meta.fs4vm.icos-cp.eu"
+      , cpmeta_sites_domain = "meta.fs4vm.fieldsites.se"
+      , cpmeta_cities_domain = "citymeta.fs4vm.icos-cp.eu"
+      , cpdata_icos_domain = "data.fs4vm.icos-cp.eu"
+      , cpdata_sites_domain = "data.fs4vm.fielsites.se"
+      , cpdata_cities_domain = "citydata.fs4vm.icos-cp.eu"
+      , cpauth_domains = [ "{{ cpauth_icos_domain }}" ]
+      , cpmeta_domains = [ "{{ cpmeta_icos_domain }}" ]
+      , cpdata_domains = [ "{{ cpdata_icos_domain }}" ]
+      , doi_domains = [ "doi.fs4vm.icos-cp.eu" ]
+      , postgis_dbs = [
+          "{{ postgis_icos_db_name }}"
+        , "{{ postgis_sites_db_name }}"
+        , "{{ postgis_cities_db_name }}"
+      ]
+      , restheart_dbs = [
+          "{{ restheart_icos_db_name }}"
+        , "{{ restheart_sites_db_name }}"
+        , "{{ restheart_cities_db_name }}"
+      ]
+      , activity_log_ignore_ips = [] : List Text
+    }
+    , children = {
+        core_host = {
+          hosts = { `test-fs4` = None Text }
+        , vars = {
+            coreapp_bind_addr = "0.0.0.0"
+          , cpmeta_filestorage_target = "{{ cpmeta_home }}/filestorage"
+          , cpmeta_backup_enable = False
+          , cpmeta_config_files = [
+              "application_production.conf"
+            , "application_production_sensitive.conf"
+            , "application_staging_amendment.conf"
+          ]
+          , cpdata_filestorage_target = "/data/dataAppStorage"
+          , cpdata_b2safe_dry_run = True
+          , cpdata_config_files = [ "application_production.conf", "application_staging_amendment.conf" ]
+          , cpauth_config_files = [ "application_production.conf", "application_staging_amendment.conf" ]
+          , postgis_db_port = 5438
+          , postgis_hostname = "127.0.0.1"
+          , rdflog_postgres_version = 10
+          , cpauth_envries = let Entry =
+              { Type =
+                  { name : Text
+              , restheart_url : Text
+              , restheart_username : Optional Text
+              , restheart_password : Optional Text
+            }
+              , default =
+                  { restheart_username = None Text
+              , restheart_password = None Text
+            }
+              }
+
+          in  [
+              Entry::{
+                name = "ICOS",
+                restheart_url = "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_icos_db_name}}"
+              }
+            , Entry::{
+                name = "SITES",
+                restheart_url = "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name}}"
+              }
+            , Entry::{
+                name = "ICOSCities",
+                restheart_url = "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_cities_db_name }}",
+                restheart_username = Some "{{ city_restheart_basic_auth.username }}",
+                restheart_password = Some "{{ city_restheart_basic_auth.password }}"
+              }
+          ]
+          , data_envries = [
+              {
+                name = "ICOS"
+              , restheart_url = "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_icos_db_name}}"
+              , postgis_db_name = "{{ postgis_icos_db_name }}"
+            }
+            , {
+                name = "SITES"
+              , restheart_url = "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name}}"
+              , postgis_db_name = "{{ postgis_sites_db_name }}"
+            }
+            , {
+                name = "ICOSCities"
+              , restheart_url = "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_cities_db_name }}"
+              , postgis_db_name = "{{ postgis_cities_db_name }}"
+            }
+          ]
+        }
+      }
+      , core_server = {
+          hosts = { fsicos4 = { ansible_port = 60608 } }
+        , vars = {
+            coreapp_httpproxy_host = "fsicos4"
+          , coreapp_host_ip = "{{ fsicos4_ip }}"
+          , cpmeta_nginxsite_name = "cpmeta-test"
+          , cpmeta_certbot_name = "cpmeta-test"
+          , cpdata_certbot_name = "cpdata-test"
+          , cpdata_nginxsite_name = "cpdata-test"
+          , cpauth_certbot_name = "cpauth-test"
+          , cpauth_nginxsite_name = "cpauth-test"
+          , restheart_host = "vm_fsicos4_test"
+          , restheart_nginxsite_name = "restheart-test"
+          , restheart_certbot_name = "restheart-test"
+          , restheart_domains = [ "restheart.fs4vm.icos-cp.eu" ]
+          , doi_certbot_name = "doi-test"
+          , doi_nginxsite_name = "doi-test"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+-- Auto-generated from centos.yml
+
+{
+    certbot_fake_key = "/etc/pki/tls/private/{{ certbot_conf_name }}.key"
+  , certbot_fake_crt = "/etc/pki/tls/certs/{{ certbot_conf_name }}.crt"
+}

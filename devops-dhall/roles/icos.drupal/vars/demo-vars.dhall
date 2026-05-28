@@ -1,0 +1,35 @@
+-- Auto-generated from demo-vars.yml
+
+{
+    nginx_conf_name = "icosdemo"
+  , drupal_docker_port = 8110
+  , mysql_docker_port = 3337
+  , domain = "demo.icos-cp.eu"
+  , trusted_host = "^demo\\.icos-cp\\.eu$"
+  , drupal_modules = [
+      "bartik"
+    , "better_exposed_filters"
+    , "color_field"
+    , "conflict"
+    , "editor_advanced_link"
+    , "honeypot"
+    , "html_title"
+    , "linkit"
+    , "matomo"
+    , "media_alias_display"
+    , "media_bulk_upload"
+    , "menu_breadcrumb"
+    , "metatag"
+    , "pathauto"
+    , "readonlymode"
+    , "redirect"
+    , "scheduler"
+    , "simple_sitemap"
+    , "single_content_sync"
+    , "smtp"
+    , "toc_js"
+    , "token"
+    , "webform"
+    , "webform_views"
+  ]
+}

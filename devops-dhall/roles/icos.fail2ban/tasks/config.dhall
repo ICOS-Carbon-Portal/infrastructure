@@ -1,0 +1,11 @@
+-- Auto-generated from config.yml
+
+[
+    {
+      name = "Create fail2ban config files"
+    , copy = { dest = "{{ item.dest }}", content = "{{ item.content }}" }
+    , loop = "{{ fail2ban_config_files }}"
+    , loop_control = { label = "{{ item.dest }}" }
+    , notify = "fail2ban reload"
+  }
+]

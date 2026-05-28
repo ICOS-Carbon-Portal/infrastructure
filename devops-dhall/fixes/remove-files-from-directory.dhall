@@ -1,0 +1,17 @@
+-- Auto-generated from remove-files-from-directory.yml
+
+[
+    {
+      hosts = "all"
+    , tasks = [
+        {
+          name = "Remove files from /opt/downloads"
+        , `ansible.builtin.shell` = ''
+          find . -maxdepth 1 -type f -exec rm '{}' ';'
+
+        ''
+        , args = { executable = "/bin/bash", chdir = "/opt/downloads" }
+      }
+    ]
+  }
+]

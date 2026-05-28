@@ -1,0 +1,9 @@
+-- Auto-generated from util.yml
+
+[
+    {
+      name = "Install the icos_postgresql_util"
+    , import_role = { name = "icos.python_util" }
+    , vars = { python_util_src = "icos-postgresql-util" }
+  }
+]

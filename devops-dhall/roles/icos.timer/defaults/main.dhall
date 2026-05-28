@@ -1,0 +1,12 @@
+-- Auto-generated from main.yml
+
+{
+    timer_user = "root"
+  , timer_home = "/etc/systemd/system"
+  , timer_exec = "{{ timer_dest }}"
+  , timer_dest = "{{ timer_home }}/{{ timer_name }}"
+  , timer_desc = "{{ timer_name }}"
+  , timer_wdir = None Text
+  , _timer_sysd_timer = "{{ timer_home }}/{{ timer_name }}.timer"
+  , _timer_sysd_service = "{{ timer_home }}/{{ timer_name }}.service"
+}

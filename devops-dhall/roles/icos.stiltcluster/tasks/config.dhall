@@ -1,0 +1,9 @@
+-- Auto-generated from config.yml
+
+[
+    {
+      name = "Create stiltcluster configuration file"
+    , template = { dest = "{{ stiltcluster_home }}", src = "local.conf" }
+    , notify = "restart stiltcluster"
+  }
+]

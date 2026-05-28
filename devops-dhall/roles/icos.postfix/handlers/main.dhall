@@ -1,0 +1,11 @@
+-- Auto-generated from main.yml
+
+[
+    {
+      name = "fail2ban reload"
+    , command = "fail2ban-client reload"
+    , register = "_r"
+    , failed_when = "_r.rc != 0 or \"OK\" not in _r.stdout"
+    , changed_when = False
+  }
+]

@@ -1,0 +1,7 @@
+-- Auto-generated from drupal.yml
+
+{
+    project_dir = "{{ drupal_home }}/{{ website }}/drupal"
+  , certbot_domains = "{{ ssl_domains | default([domain]) }}"
+  , certbot_conf_name = "{{ nginx_conf_name }}"
+}

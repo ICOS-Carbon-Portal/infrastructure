@@ -1,0 +1,25 @@
+-- Auto-generated from zfs.yml
+
+{
+    __root_device = {
+      root = {
+        path = "/"
+      , type = "disk"
+      , pool = "default"
+      , size = "{{ lxd_vm_root_size }}"
+    }
+  }
+  , __docker_device = ''
+    {% if lxd_vm_docker -%} {"docker": {
+      "path": "/var/lib/docker",
+      "source": "{{ zfsdocker_zvol }}",
+      "type": "disk",
+      "raw.mount.options": "user_subvol_rm_allowed" }}
+    {% else -%}{}{% endif -%}
+  ''
+  , lxd_vm_default_devices = "{{ __root_device | combine(__docker_device) }}"
+  , lxd_vm_default_profiles = [ "default" ]
+  , __base_config = {=}
+  , __docker_config = "{% if lxd_vm_docker -%} {\"security.nesting\": \"true\"} {% else %}{}{% endif -%}"
+  , lxd_vm_default_config = "{{ __base_config | combine(__docker_config) }}"
+}

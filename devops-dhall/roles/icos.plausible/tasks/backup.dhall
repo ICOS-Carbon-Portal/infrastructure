@@ -1,0 +1,30 @@
+-- Auto-generated from backup.yml
+
+[
+    {
+      include_role = { name = "icos.bbclient2", public = True }
+    , vars = {
+        bbclient_name = "plausible"
+      , bbclient_home = "{{ plausible_home }}/.bbclient"
+      , bbclient_timer_content = ''
+        #!/bin/bash
+        set -Eueo pipefail
+
+        cd "{{ plausible_home }}"
+        mkdir -p backup
+
+        docker-compose exec -T plausible_events_db clickhouse-client --query "BACKUP DATABASE plausible_events_db TO File('/var/lib/clickhouse/backup/clickhouse.zip')"
+        docker-compose exec -T plausible_db pg_dump -d plausible_db -U postgres -Fc > backup/plausible_db.sql
+
+        mv event-data/backup/clickhouse.zip backup/
+
+        {{ bbclient_all }} create -xvs '::{now}' backup
+        {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=150
+        {{ bbclient_all }} compact --verbose
+
+        rm -rf -- ./backup
+
+      ''
+    }
+  }
+]

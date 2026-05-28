@@ -1,0 +1,12 @@
+-- Auto-generated from main.yml
+
+{
+    exploredata_port = "{{ 4567 if exploredata_type == 'test' else 4566 }}"
+  , exploredata_name = "exploredata.{{ exploredata_type }}"
+  , exploredata_home = "/docker/{{ exploredata_name }}"
+  , exploredata_network = "{{ exploredata_name }}"
+  , exploredata_hub_image = "{{ exploredata_name }}.hub"
+  , exploredata_hub_container = "{{ exploredata_name }}.hub"
+  , exploredata_notebook_image = "registry.icos-cp.eu/{{ exploredata_name }}.notebook"
+  , exploredata_max_notebooks = 50
+}

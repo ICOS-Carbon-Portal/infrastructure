@@ -1,0 +1,17 @@
+-- Auto-generated from main.yml
+
+{
+    wg_hub_self = "{{ wg_hub_config.peers[inventory_hostname] }}"
+  , wg_hub_peer = "{{ wg_hub_config.hub.addr if wg_hub_config.hub.addr in wg_hub_config.peers else wg_hub_config.hub.peer }}"
+  , wg_hub_ishub = ''
+    {{ wg_hub_config.hub.addr == inventory_hostname or
+       wg_hub_config.hub.peer | default("") == inventory_hostname }}
+  ''
+  , wg_hub_port = "{% if wg_hub_self.port is defined -%} {{ wg_hub_self.port }} {% elif wg_hub_ishub -%} {{ wg_hub_config.hub.port }} {% endif %}"
+  , wg_hub_addr = "{% if wg_hub_self.hub_addr is defined -%} {{ wg_hub_self.hub_addr -}} {% else -%} {{ wg_hub_config.hub.addr -}} {% endif %}"
+  , wg_hub_key_dir = "files/wireguard"
+  , wg_hub_key = "{{ wg_hub_config.peers[wg_hub_peer].key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, wg_hub_peer))) }}"
+  , wg_hub_intf = "wg-{{ wg_hub_config.name }}"
+  , wg_hub_allow_all = "{{ wg_hub_self.allow_all | default(wg_hub_config.allow_all) | default(False) }}"
+  , wg_hub_reresolve = "{{ wg_hub_self.reresolve | default(wg_hub_config.reresolve) | default(False) }}"
+}

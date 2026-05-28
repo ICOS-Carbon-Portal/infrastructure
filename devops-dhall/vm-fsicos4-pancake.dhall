@@ -1,0 +1,12 @@
+-- Auto-generated from vm-fsicos4-pancake.yml
+
+[
+    {
+      hosts = "pancake"
+    , roles = [
+        { role = "icos.pve_guest", tags = "guest" }
+      , { role = "icos.utils", tags = "utils" }
+      , { role = "icos.python3", tags = "python3" }
+    ]
+  }
+]

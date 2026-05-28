@@ -1,0 +1,12 @@
+-- Auto-generated from config.yml
+
+[
+    {
+      import_tasks = "config_present.yml"
+    , when = "dnsmasq_config_state == \"present\""
+  }
+  , {
+      import_tasks = "config_absent.yml"
+    , when = "dnsmasq_config_state == \"absent\""
+  }
+]

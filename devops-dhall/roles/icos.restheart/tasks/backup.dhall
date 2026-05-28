@@ -1,0 +1,29 @@
+-- Auto-generated from backup.yml
+
+[
+    {
+      include_role = { name = "icos.bbclient2" }
+    , vars = {
+        bbclient_user = "root"
+      , bbclient_home = "{{ restheart_home }}/bbclient"
+      , bbclient_name = "{{ restheart_bbclient_name }}"
+      , bbclient_timer_conf = "OnCalendar=00/6:36"
+      , bbclient_timer_content = ''
+        #!/bin/bash
+        set -Eueo pipefail
+
+        cd "{{ restheart_home }}"
+        mkdir -p backup
+
+        docker-compose exec -T mongodb mongodump --quiet --archive > backup/server.archive
+
+        {{ bbclient_all }} create -xvs '::{now}' backup
+        {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=150
+        {{ bbclient_all }} compact --verbose
+
+        rm -rf -- ./backup
+
+      ''
+    }
+  }
+]

@@ -1,0 +1,10 @@
+-- Auto-generated from lxd.yml
+
+[
+    {
+      hosts = "fsicos2 fsicos3 cdb"
+    , roles = [
+        { role = "icos.lxd_server" }
+    ]
+  }
+]

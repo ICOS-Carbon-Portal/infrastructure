@@ -1,0 +1,13 @@
+-- Auto-generated from main.yml
+
+{
+    matomo_home = "/opt/matomo"
+  , matomo_port = 8702
+  , matomo_domain = "matomo.icos-cp.eu"
+  , matomo_mysql_root_password = "{{ vault_matomo_mysql_root_password }}"
+  , matomo_mysql_password = "{{ vault_matomo_mysql_password }}"
+  , matomo_mysql_user = "{{ vault_matomo_mysql_user }}"
+  , matomo_mysql_database_password = "{{ vault_matomo_mysql_database_password }}"
+  , matomo_mysql_database_user = "{{ vault_matomo_mysql_database_user }}"
+  , matomo_backup_enable = False
+}

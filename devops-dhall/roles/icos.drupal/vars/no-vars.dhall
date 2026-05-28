@@ -1,0 +1,19 @@
+-- Auto-generated from no-vars.yml
+
+{
+    nginx_conf_name = "icosno"
+  , drupal_docker_port = 8108
+  , mysql_docker_port = 3335
+  , domain = "no.icos-cp.eu"
+  , trusted_host = "^no\\.icos-cp\\.eu$"
+  , drupal_modules = [
+      "bartik"
+    , "honeypot"
+    , "linkit"
+    , "media_alias_display"
+    , "pathauto"
+    , "redirect"
+    , "smtp"
+    , "webform"
+  ]
+}

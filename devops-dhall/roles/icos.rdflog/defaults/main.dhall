@@ -1,0 +1,12 @@
+-- Auto-generated from main.yml
+
+{
+    rdflog_home = "/docker/rdflog"
+  , rdflog_postgres_version = 15
+  , rdflog_db_name = "rdflog"
+  , rdflog_db_user = "rdflog"
+  , rdflog_db_port = 2345
+  , rdflog_db_pass = "{{ vault_rdflog_db_pass }}"
+  , rdflog_rep_user = "pgrepuser"
+  , rdflog_rep_pass = "{{ vault_rdflog_rep_pass }}"
+}

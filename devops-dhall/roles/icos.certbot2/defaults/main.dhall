@@ -1,0 +1,14 @@
+-- Auto-generated from main.yml
+
+{
+    certbot_bin = "certbot"
+  , certbot_email = "carbon.admin@nateko.lu.se"
+  , certbot_site_path = "/etc/letsencrypt/live/{{ certbot_name }}"
+  , certbot_cert_path = "{{ certbot_site_path }}/fullchain.pem"
+  , certbot_key_path = "{{ certbot_site_path }}/privkey.pem"
+  , certbot_nginx_conf = ''
+    ssl_certificate {{ certbot_cert_path }};
+    ssl_certificate_key {{ certbot_key_path }};
+
+  ''
+}

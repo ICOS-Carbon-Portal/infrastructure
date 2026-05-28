@@ -1,0 +1,18 @@
+-- Auto-generated from prometheus.yml
+
+[
+    {
+      name = "Create nextcloud-exporter config file"
+    , copy = {
+        dest = "{{ nextcloud_exporter_conf_host }}"
+      , mode = "og-w"
+      , content = ''
+        # https://github.com/xperimental/nextcloud-exporter#configuration-file
+        server: "https://{{ nextcloud_domain }}"
+        username: "nextcloud-exporter"
+        password: "{{ nextcloud_exporter_pass }}"
+
+      ''
+    }
+  }
+]

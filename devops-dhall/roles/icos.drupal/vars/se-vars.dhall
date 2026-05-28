@@ -1,0 +1,22 @@
+-- Auto-generated from se-vars.yml
+
+{
+    nginx_conf_name = "icosse"
+  , drupal_docker_port = 8119
+  , mysql_docker_port = 3341
+  , domain = "www.icos-sweden.se"
+  , trusted_host = "^www\\.icos-sweden\\.se$"
+  , ssl_domains = [ "sweden.icos-cp.eu", "icos-sweden.se", "www.icos-sweden.se" ]
+  , drupal_modules = [
+      "bartik"
+    , "editor_file"
+    , "honeypot"
+    , "linkit"
+    , "pathauto"
+    , "redirect"
+    , "restui"
+    , "smtp"
+    , "toc_js"
+    , "webform"
+  ]
+}

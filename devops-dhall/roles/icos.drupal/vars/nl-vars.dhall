@@ -1,0 +1,11 @@
+-- Auto-generated from nl-vars.yml
+
+{
+    nginx_conf_name = "icosnl"
+  , drupal_docker_port = 8121
+  , mysql_docker_port = 3343
+  , domain = "www.icos-netherlands.nl"
+  , trusted_host = "^www\\.icos-netherlands\\.nl$"
+  , ssl_domains = [ "icos-netherlands.nl", "www.icos-netherlands.nl" ]
+  , drupal_modules = [ "bartik" ]
+}

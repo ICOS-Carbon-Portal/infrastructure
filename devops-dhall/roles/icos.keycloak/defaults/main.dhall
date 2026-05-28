@@ -1,0 +1,3 @@
+-- Auto-generated from main.yml
+
+{ kc_home = "/opt/keycloak", kc_port = 28080 }

@@ -1,0 +1,8 @@
+-- Auto-generated from main.yml
+
+{
+    dataold_home = "/opt/dataold"
+  , dataold_ext_port = 60443
+  , certbot_name = "dataold"
+  , certbot_domains = [ "dataold.icos-cp.eu" ]
+}

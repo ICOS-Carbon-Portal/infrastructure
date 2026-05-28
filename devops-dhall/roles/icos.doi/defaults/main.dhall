@@ -1,0 +1,11 @@
+-- Auto-generated from main.yml
+
+{
+    doi_user = "doi"
+  , doi_home = "/home/doi"
+  , doi_servicename = "doi"
+  , doi_port = 8079
+  , doi_bind_addr = "{{ coreapp_bind_addr }}"
+  , doi_host = "{{ coreapp_httpproxy_host }}"
+  , doi_meta_domain = "{{ cpmeta_icos_domain }}"
+}

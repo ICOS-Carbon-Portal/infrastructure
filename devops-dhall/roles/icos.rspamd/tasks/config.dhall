@@ -1,0 +1,139 @@
+-- Auto-generated from config.yml
+
+let Task =
+    { Type =
+        { name : Text
+    , copy : Optional ({ dest : Text, mode : Natural, content : Text })
+    , notify : Text
+    , `ansible.builtin.copy` : Optional ({ dest : Text, mode : Text, content : Text })
+    , loop : Optional (List ({ dest : Text, content : Text }))
+  }
+    , default =
+        { copy = None ({ dest : Text, mode : Natural, content : Text })
+    , `ansible.builtin.copy` = None ({ dest : Text, mode : Text, content : Text })
+    , loop = None (List ({ dest : Text, content : Text }))
+  }
+    }
+
+in  [
+    Task::{
+      name = "Install milter configuration for rspamd",
+      copy = Some {
+        dest = "/etc/rspamd/local.d/worker-proxy.inc"
+      , mode = 420
+      , content = ''
+        # This will make the milter listen to all interfaces. Since we're in an
+        # LXD container, this will only enable connections from the LXD host.
+        bind_socket = "*:11332";
+        milter = yes;
+        timeout = 120s;
+        upstream "local" {
+            default = yes;
+            self_scan = yes;
+        }
+
+      ''
+    },
+      notify = "restart rspamd"
+    }
+  , Task::{
+      name = "Install web ui configuration for rspamd",
+      copy = Some {
+        dest = "/etc/rspamd/local.d/worker-controller.inc"
+      , mode = 420
+      , content = ''
+        # This will make the Web UI listen to all interfaces. Since we're in an
+        # LXD container, this will only enable connections from the LXD host.
+        bind_socket = "*:11334";
+        password = "{{ rspamd_admin_password_hashed }}"
+
+      ''
+    },
+      notify = "restart rspamd"
+    }
+  , Task::{
+      name = "Install autolearning configuration for rspamd",
+      copy = Some {
+        dest = "/etc/rspamd/local.d/classifier-bayes.conf"
+      , mode = 420
+      , content = ''
+        # This will turn on the autolearn feature.
+        autolearn {
+          spam_threshold = 6.0; # When to learn spam (score >= threshold and action is reject)
+          junk_threshold = 4.0; # When to learn spam (score >= threshold and action is rewrite subject or add header, and has two or more positive results)
+          ham_threshold = -0.5; # When to learn ham (score <= threshold and action is no action, and score is negative or has three or more negative results)
+          check_balance = true; # Check spam and ham balance
+          min_balance = 0.9; # Keep diff for spam/ham learns for at least this value
+        }
+
+      ''
+    },
+      notify = "restart rspamd"
+    }
+  , Task::{
+      name = "Adjust symbol weight for neural network",
+      copy = Some {
+        dest = "/etc/rspamd/local.d/neural_group.conf"
+      , mode = 420
+      , content = ''
+        # Set NEURAL_SPAM to +3, NEURAL_HAM to -0.01
+
+        symbols = {
+          "NEURAL_SPAM" {
+            weight = 3.0;
+            description = "Neural network spam";
+          }
+          "NEURAL_HAM" {
+            weight = -0.01;
+            description = "Neural network ham";
+          }
+        }
+
+      ''
+    },
+      notify = "restart rspamd"
+    }
+  , Task::{
+      name = "Adjust action thresholds",
+      copy = Some {
+        dest = "/etc/rspamd/local.d/actions.conf"
+      , mode = 420
+      , content = ''
+        reject = 12;
+        add_header = 6;
+        greylist = 4;
+
+      ''
+    },
+      notify = "restart rspamd"
+    }
+  , Task::{
+      name = "Remove NiXSpam (remove once rspamd is updated to remove this from core)",
+      notify = "restart rspamd",
+      `ansible.builtin.copy` = Some { dest = "{{ item.dest }}", mode = "0644", content = "{{ item.content }}" },
+      loop = Some [
+        {
+          dest = "/etc/rspamd/local.d/rbl.conf"
+        , content = ''
+          rbls {
+            nixspam {
+              enabled = false;
+            }
+          }
+
+        ''
+      }
+      , {
+          dest = "/etc/rspamd/local.d/rbl_group.conf"
+        , content = ''
+          symbols {
+            RBL_NIXSPAM {
+              enabled = false;
+            }
+          }
+
+        ''
+      }
+    ]
+    }
+]

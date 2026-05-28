@@ -1,0 +1,16 @@
+-- Auto-generated from main.yml
+
+{
+    fail2ban_config_files = [
+      {
+        dest = "/etc/fail2ban/jail.d/sshd-allports.local"
+      , content = ''
+        # Since we're running ssh on different ports that fail2ban is used to,
+        # block all ports.
+        [sshd]
+        banaction = iptables-allports
+
+      ''
+    }
+  ]
+}

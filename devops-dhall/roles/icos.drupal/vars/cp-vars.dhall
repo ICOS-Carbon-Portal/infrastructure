@@ -1,0 +1,40 @@
+-- Auto-generated from cp-vars.yml
+
+{
+    nginx_conf_name = "icoscp"
+  , drupal_docker_port = 8107
+  , mysql_docker_port = 3334
+  , trusted_host = "^www\\.icos-cp\\.eu$"
+  , domain = "www.icos-cp.eu"
+  , ssl_domains = [ "icos-cp.eu", "www.icos-cp.eu" ]
+  , drupal_modules = [
+      "bartik"
+    , "better_exposed_filters"
+    , "bootstrap"
+    , "ckeditor5_plugin_pack"
+    , "color_field"
+    , "conflict"
+    , "editor_advanced_link"
+    , "honeypot"
+    , "html_title"
+    , "linkit"
+    , "matomo"
+    , "media_alias_display"
+    , "media_bulk_upload"
+    , "menu_breadcrumb"
+    , "metatag"
+    , "pathauto"
+    , "readonlymode"
+    , "redirect"
+    , "scheduler"
+    , "simple_sitemap"
+    , "single_content_sync"
+    , "smtp"
+    , "toc_js"
+    , "token"
+    , "views_infinite_scroll"
+    , "webform"
+    , "webform_views"
+  ]
+  , robots_txt = "cp-robots.txt"
+}

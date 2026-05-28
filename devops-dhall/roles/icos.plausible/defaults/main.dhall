@@ -1,0 +1,14 @@
+-- Auto-generated from main.yml
+
+{
+    plausible_home = "/opt/plausible"
+  , plausible_port = 8701
+  , plausible_domain = "plausible.fieldsites.se"
+  , plausible_postgres_password = "{{ vault_plausible_postgres_password }}"
+  , plausible_secret = "{{ vault_plausible_secret }}"
+  , plausible_google_client_id = "{{ vault_plausible_google_client_id }}"
+  , plausible_google_client_secret = "{{ vault_plausible_google_client_secret }}"
+  , plausible_mailer_email = "{{ vault_plausible_mailer_email }}"
+  , plausible_backup_enabled = False
+  , plausible_totp_key = "{{ vault_plausible_totp_key }}"
+}

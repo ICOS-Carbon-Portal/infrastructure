@@ -1,0 +1,18 @@
+-- Auto-generated from otctest-vars.yml
+
+{
+    nginx_conf_name = "otctest"
+  , drupal_docker_port = 8112
+  , mysql_docker_port = 3338
+  , domain = "test.icos-otc.org"
+  , trusted_host = "^test\\.icos-otc\\.org$"
+  , ssl_domains = [ "test.icos-otc.org" ]
+  , drupal_modules = [
+      "bartik"
+    , "linkit"
+    , "media_alias_display"
+    , "pathauto"
+    , "redirect"
+    , "smtp"
+  ]
+}

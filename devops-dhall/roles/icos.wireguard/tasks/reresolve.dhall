@@ -1,0 +1,36 @@
+-- Auto-generated from reresolve.yml
+
+[
+    {
+      name = "Create reresolve template service"
+    , copy = {
+        dest = "/etc/systemd/system/wg-reresolve@.service"
+      , content = ''
+        [Unit]
+        Description=Reresolve dns names for wireguard
+
+        [Service]
+        Type=oneshot
+        ExecStart={{ wireguard_reresolve_script }} %i
+
+      ''
+    }
+    , notify = "systemd daemon-reload"
+  }
+  , {
+      name = "Create reresolve timer"
+    , copy = {
+        dest = "/etc/systemd/system/wg-reresolve@.timer"
+      , content = ''
+        [Unit]
+        Description=Run wireguard reresolve every 30 minutes
+        PartOf=wg-quick@%i.service
+
+        [Timer]
+        OnCalendar=*-*-* *:0/30
+
+      ''
+    }
+    , notify = "systemd daemon-reload"
+  }
+]

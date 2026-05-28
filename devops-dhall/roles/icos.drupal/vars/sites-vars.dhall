@@ -1,0 +1,32 @@
+-- Auto-generated from sites-vars.yml
+
+{
+    nginx_conf_name = "fieldsites"
+  , drupal_docker_port = 8122
+  , mysql_docker_port = 3344
+  , database_name = "sites"
+  , database_user = "sites"
+  , trusted_host = "^www\\.fieldsites\\.se$"
+  , domain = "www.fieldsites.se"
+  , ssl_domains = [ "demo.fieldsites.se", "fieldsites.se", "www.fieldsites.se" ]
+  , drupal_modules = [
+      "antibot"
+    , "editor_advanced_link"
+    , "feeds"
+    , "honeypot"
+    , "linkit"
+    , "mailchimp"
+    , "media_alias_display"
+    , "menu_breadcrumb"
+    , "metatag"
+    , "pathauto"
+    , "plausible"
+    , "redirect"
+    , "simple_sitemap"
+    , "smtp"
+    , "svg"
+    , "token"
+    , "twig_tweak"
+    , "webform"
+  ]
+}

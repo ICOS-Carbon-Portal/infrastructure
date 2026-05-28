@@ -1,0 +1,12 @@
+-- Auto-generated from main.yml
+
+[
+    {
+      include_role = { name = "icos.nginxsite" }
+    , vars = {
+        nginxsite_name = "maps"
+      , nginxsite_file = "maps-nginx.conf"
+      , nginxsite_domains = "{{ maps_domains }}"
+    }
+  }
+]

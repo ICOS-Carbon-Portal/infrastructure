@@ -1,0 +1,27 @@
+-- Auto-generated from server-cdb.yml
+
+[
+    {
+      hosts = "cdb"
+    , roles = [
+        { role = "icos.server", tags = "server" }
+      , { role = "icos.lxd_server", tags = "lxd_server" }
+      , { role = "icos.bbserver", tags = "bbserver" }
+      , { role = "icos.caddy", tags = "caddy" }
+    ]
+    , tasks = [
+        {
+          name = "Allow ssh and mosh"
+        , tags = "iptables"
+        , iptables_raw = {
+            name = "host_ssh_and_mosh"
+          , rules = ''
+            -A INPUT -p tcp --dport 22 -j ACCEPT -m comment --comment 'ssh'
+            -A INPUT -p udp -m multiport --dports 60000:61000 -j ACCEPT -m comment --comment "mosh"
+
+          ''
+        }
+      }
+    ]
+  }
+]

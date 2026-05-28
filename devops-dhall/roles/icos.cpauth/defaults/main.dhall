@@ -1,0 +1,14 @@
+-- Auto-generated from main.yml
+
+{
+    cpauth_user = "cpauth"
+  , cpauth_home = "/home/cpauth"
+  , cpauth_oauth_conf = "{{ vault_cpauth_oauth_conf }}"
+  , cpauth_mailing_smtp = "{{ vault_cpauth_mailing_smtp }}"
+  , cpauth_mailing_pass = "{{ vault_cpauth_mailing_pass }}"
+  , cpauth_masteradmin_pass = "{{ vault_cpauth_masteradmin_pass }}"
+  , cpauth_user_secret_salt = "{{ vault_cpauth_user_secret_salt }}"
+  , cpauth_port = 8080
+  , cpauth_bind_addr = "{{ coreapp_bind_addr }}"
+  , cpauth_host = "{{ coreapp_httpproxy_host }}"
+}

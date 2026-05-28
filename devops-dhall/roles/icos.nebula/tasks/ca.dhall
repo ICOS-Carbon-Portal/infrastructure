@@ -1,0 +1,9 @@
+-- Auto-generated from ca.yml
+
+[
+    {
+      name = "Copy Certificate Authority"
+    , copy = { src = "{{ nebula_cert_copy }}", dest = "{{ nebula_etc_dir }}/ca.crt" }
+    , notify = "reload nebula"
+  }
+]

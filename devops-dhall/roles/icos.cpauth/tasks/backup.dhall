@@ -1,0 +1,29 @@
+-- Auto-generated from backup.yml
+
+[
+    {
+      include_role = { name = "icos.bbclient2" }
+    , vars = {
+        bbclient_name = "cpauth"
+      , bbclient_user = "{{ cpauth_user }}"
+      , bbclient_home = "{{ cpauth_home }}/.bbclient"
+      , bbclient_timer_conf = ''
+        OnCalendar=daily
+        RandomizedDelaySec=1h
+
+      ''
+      , bbclient_timer_content = ''
+        #!/bin/bash
+
+        set -xEeo pipefail
+        cd "{{ cpauth_home }}"
+        export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+
+        {{ bbclient_all }} create -xvs "::{now}" .
+        {{ bbclient_all }} prune -vs --keep-within 7d --keep-daily=30 --keep-weekly=50
+        {{ bbclient_all }} compact
+
+      ''
+    }
+  }
+]

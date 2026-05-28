@@ -1,0 +1,6 @@
+-- Auto-generated from main.yml
+
+[
+    { import_tasks = "auto_dnat.yml", tags = "auto_dnat" }
+  , { import_tasks = "just.yml", tags = "pve_server_just" }
+]

@@ -1,0 +1,12 @@
+-- Auto-generated from proxy.yml
+
+[
+    {
+      import_role = "name=icos.nginxsite"
+    , vars = {
+        nginxsite_name = "{{ quince_name }}"
+      , nginxsite_file = "quince.conf"
+      , nginxsite_domains = "{{ quince_domains }}"
+    }
+  }
+]

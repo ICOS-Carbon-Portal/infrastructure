@@ -1,0 +1,9 @@
+-- Auto-generated from main.yml
+
+[
+    { import_tasks = "setup.yml", tags = "stiltweb_setup" }
+  , { import_tasks = "deploy.yml", tags = "stiltweb_deploy" }
+  , { import_tasks = "utils.yml", tags = "stiltweb_utils" }
+  , { import_tasks = "sync.yml", tags = "stiltweb_sync" }
+  , { import_tasks = "just.yml", tags = "stiltweb_just" }
+]
