@@ -3,5 +3,3 @@
 city_restheart_basic_auth: "{{ vault_city_restheart_basic_auth }}"
 
 doi_password: "{{ vault_doi_password }}"
-
-virtuoso_dba_pass: "{{ vault_virtuoso_dba_pass }}"
