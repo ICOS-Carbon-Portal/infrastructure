@@ -1,6 +1,6 @@
 services:
   virtuoso:
-    # Most specific tag of recent opensource virtuoso version currently
+    # Most specific tag of recent opensource virtuoso version
     image: openlink/virtuoso-opensource-7:7.2.17
     environment:
       DBA_PASSWORD: "{{ virtuoso_dba_pass }}"
