@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.quince/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 

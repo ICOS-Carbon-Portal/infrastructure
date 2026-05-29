@@ -1,4 +1,4 @@
--- Auto-generated from core.yml
+-- Auto-generated from ../../devops/test-fs4.inventory/core.yml
 
 {
     all = {

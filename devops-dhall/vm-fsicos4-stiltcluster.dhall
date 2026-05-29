@@ -1,4 +1,4 @@
--- Auto-generated from vm-fsicos4-stiltcluster.yml
+-- Auto-generated from ../devops/vm-fsicos4-stiltcluster.yml
 
 let Play =
     { Type =

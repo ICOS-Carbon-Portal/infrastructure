@@ -1,4 +1,4 @@
--- Auto-generated from nexus.yml
+-- Auto-generated from ../devops/nexus.yml
 
 [
     {

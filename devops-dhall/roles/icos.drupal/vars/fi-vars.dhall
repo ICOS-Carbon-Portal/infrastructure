@@ -1,4 +1,4 @@
--- Auto-generated from fi-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/fi-vars.yml
 
 {
     nginx_conf_name = "icosfi"

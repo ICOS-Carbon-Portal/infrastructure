@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.registry/defaults/main.yml
 
 {
     registry_home = "/docker/registry"

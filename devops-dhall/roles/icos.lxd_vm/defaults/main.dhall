@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_vm/defaults/main.yml
 
 {
     lxd_vm_ip = "{{ _lxd_static_ip.ip }}"

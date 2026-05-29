@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.onlyoffice/defaults/main.yml
 
 {
     onlyoffice_version = "9.0.4"

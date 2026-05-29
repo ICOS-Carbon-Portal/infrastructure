@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.podman_manual/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,26 +6,26 @@ in  [
     Task::{
       name = Some "Check whether podman is dpkg-installed",
       command = Some "dpkg -s podman",
-      failed_when = Some "False",
-      changed_when = Some "False",
+      failed_when = Some (Task.Poly_failed_when.Bool False),
+      changed_when = Some (Task.Poly_changed_when.Bool False),
       register = Some "_dpkg"
     }
   , Task::{
       name = Some "Fail if podman is apt-installed",
-      `ansible.builtin.shell` = Some ''
-      dpkg --get-selections podman | grep -vq '\binstall'
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str ''
+        dpkg --get-selections podman | grep -vq '\binstall'
 
-    '',
-      changed_when = Some "False",
+      ''),
+      changed_when = Some (Task.Poly_changed_when.Bool False),
       register = Some "r",
-      failed_when = Some "r.rc == 0"
+      failed_when = Some (Task.Poly_failed_when.Str "r.rc == 0")
     }
   , Task::{
       name = Some "Checking for version of installed podman",
       check_mode = Some False,
       command = Some "podman --version",
-      failed_when = Some "False",
-      changed_when = Some "False",
+      failed_when = Some (Task.Poly_failed_when.Bool False),
+      changed_when = Some (Task.Poly_changed_when.Bool False),
       register = Some "_podman"
     }
   , Task::{
@@ -40,6 +40,12 @@ in  [
       block = Some (let Item =
         { Type =
             { name : Optional Text
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user : Optional ({ db : Text, name : Text, password : Text })
+        , loop : Optional (List Text)
+        , postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text })
         , check_mode : Optional Bool
         , shellfact : Optional ({ exec : Text, fact : Text })
         , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
@@ -56,8 +62,6 @@ in  [
         , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
         , systemd : Optional ({ name : Text, state : Optional Text })
         , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
-        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
-        , loop : Optional (List Text)
         , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
         , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
         , when : Optional Text
@@ -88,6 +92,12 @@ in  [
       }
         , default =
             { name = None Text
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user = None ({ db : Text, name : Text, password : Text })
+        , loop = None (List Text)
+        , postgresql_pg_hba = None ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` = None ({ name : Text, db : Text, schema : Text })
         , check_mode = None Bool
         , shellfact = None ({ exec : Text, fact : Text })
         , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
@@ -104,8 +114,6 @@ in  [
         , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
         , systemd = None ({ name : Text, state : Optional Text })
         , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
-        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
-        , loop = None (List Text)
         , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
         , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
         , when = None Text
@@ -147,26 +155,26 @@ in  [
   , Task::{
       name = Some "Install conmon",
       tags = Some [ "podman_conmon" ],
-      import_role = Some { name = "icos.conmon" }
+      import_role = Some (Task.Poly_import_role.Record { name = "icos.conmon", tasks_from = None Text })
     }
   , Task::{
       name = Some "Install cni_plugins",
       tags = Some [ "podman_cni_plugins" ],
-      import_role = Some { name = "icos.cni_plugins" }
+      import_role = Some (Task.Poly_import_role.Record { name = "icos.cni_plugins", tasks_from = None Text })
     }
   , Task::{
       name = Some "Install containers-storage",
       apt = Some {
-        name = Some [ "containers-storage" ]
-      , state = None Text
-      , update_cache = None Bool
-      , deb = None Text
-      , purge = None Bool
-      , upgrade = None Bool
-      , autoclean = None Bool
-      , autoremove = None Bool
-      , cache_valid_time = None Text
-      , install_recommends = None Bool
+        name = Some [ "containers-storage" ],
+        state = None Text,
+        update_cache = None Bool,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
     }
   , Task::{
@@ -175,5 +183,8 @@ in  [
       tags = Some [ "podman_docker" ],
       import_tasks = Some "docker.yml"
     }
-  , Task::{ import_role = Some { name = "icos.docker_utils" }, tags = Some [ "podman_utils" ] }
+  , Task::{
+      import_role = Some (Task.Poly_import_role.Record { name = "icos.docker_utils", tasks_from = None Text }),
+      tags = Some [ "podman_utils" ]
+    }
 ]

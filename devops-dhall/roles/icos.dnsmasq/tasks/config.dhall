@@ -1,4 +1,4 @@
--- Auto-generated from config.yml
+-- Auto-generated from ../../../../devops/roles/icos.dnsmasq/tasks/config.yml
 
 let Task = ../../../types/Task.dhall
 

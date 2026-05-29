@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.postfix/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,78 +6,111 @@ in  [
     Task::{
       name = Some "Install postfix",
       apt = Some {
-        name = Some [ "postfix" ]
-      , state = Some "present"
-      , update_cache = None Bool
-      , deb = None Text
-      , purge = None Bool
-      , upgrade = None Bool
-      , autoclean = None Bool
-      , autoremove = None Bool
-      , cache_valid_time = None Text
-      , install_recommends = None Bool
+        name = Some [ "postfix" ],
+        state = Some "present",
+        update_cache = None Bool,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
     }
   , Task::{
       name = Some "Start and enable postfix",
-      service = Some { name = "postfix", state = "started", enabled = Some True }
+      service = Some (Task.Poly_service.Record { name = "postfix", state = "started", enabled = Some True })
     }
   , Task::{
       name = Some "Set configuration parameters",
       postconf = Some {
-        param = "{{ item.param }}"
-      , value = "{{ item.value }}"
-      , append = "{{ item.append | default(omit) }}"
-      , reload = Some "{{ item.reload | default(omit) }}"
-      , separator = Some "{{ item.separator | default(omit) }}"
+        param = "{{ item.param }}",
+        value = "{{ item.value }}",
+        reload = Some "{{ item.reload | default(omit) }}",
+        append = Some "{{ item.append | default(omit) }}",
+        separator = Some "{{ item.separator | default(omit) }}"
     },
-      loop = Some [ "{{ postfix_config_list }}" ]
+      loop = Some (Task.Poly_loop.Str "{{ postfix_config_list }}")
     }
   , Task::{
       name = Some "Allow SMTP through firewall",
       iptables_raw = Some {
-        name = "allow_SMTP"
-      , rules = Some "-A INPUT -p tcp --dport 25 -j ACCEPT -m comment --comment 'smtp'"
-      , weight = None Natural
-      , table = None Text
-      , state = None Text
+        name = "allow_SMTP",
+        rules = Some "-A INPUT -p tcp --dport 25 -j ACCEPT -m comment --comment 'smtp'",
+        table = None Text,
+        state = None Text,
+        weight = None Natural
     }
     }
   , Task::{
       name = Some "Install fail2ban",
       tags = Some [ "postfix_fail2ban" ],
-      include_role = Some {
-        name = "icos.fail2ban"
-      , apply = Some { tags = "postfix_fail2ban" }
-      , public = None Bool
-      , tasks_from = None Text
-    },
+      include_role = Some (Task.Poly_include_role.Record {
+          apply = Some { tags = "postfix_fail2ban" },
+          name = "icos.fail2ban",
+          tasks_from = None Text,
+          public = None Bool
+      }),
       vars = Some {
-        timer_home = None Text
-      , timer_exec = None Text
-      , timer_name = None Text
-      , timer_conf = None Text
-      , timer_envs = None (List Text)
-      , timer_content = None Text
-      , timer_user = None Text
-      , block = None Text
-      , marker = None Text
-      , where = None Text
-      , state = None Text
-      , bbclient_name = None Text
-      , bbclient_user = None Text
-      , bbclient_home = None Text
-      , bbclient_timer_conf = None Text
-      , bbclient_timer_content = None Text
-      , certbot_name = None Text
-      , certbot_domains = None (List Text)
-      , nginxsite_name = None Text
-      , nginxsite_file = None Text
-      , _restart_needed = None Text
-      , fail2ban_config_files = Some [
+        postgresql_backup_host = None Text,
+        postgresql_backup_location = None Text,
+        container_name = None Text,
+        postgresql_user = None Text,
+        postgresql_container_name = None Text,
+        restheart_backup_host = None Text,
+        fsd_name = None Text,
+        fsd_target = None Text,
+        zfsdocker_name = None Text,
+        zfsdocker_size = None Text,
+        nginxsite_name = None Text,
+        filedrop_domain = None Text,
+        filedrop_host = None Text,
+        jupyter_domain = None Text,
+        jupyter_ip = None Text,
+        lxd_forward_name = None Text,
+        lxd_forward_ip = None Text,
+        certbot_name = None Text,
+        certbot_domains = None ((List Text)),
+        nginxsite_file = None Text,
+        exploredata_name = None Text,
+        exploredata_port = None Natural,
+        exploredata_host = None Text,
+        exploredata_domains = None ((List Text)),
+        sshlogin_dst = None Text,
+        sshlogin_src_user = None Text,
+        sshlogin_dst_user = None Text,
+        sshlogin_src_dst_host = None Text,
+        sshlogin_src_dst_port = None Text,
+        postgresql_postgis_enable = None Bool,
+        postgresql_postgres_password = None Text,
+        postgresql_listen_addresses = None Text,
+        postgresql_pg_stat_enable = None Bool,
+        postgresql_backup_script = None Text,
+        postgis_bbclient_name = None Text,
+        quince_name = None Text,
+        quince_domains = None ((List Text)),
+        timer_home = None Text,
+        timer_exec = None Text,
+        timer_name = None Text,
+        timer_conf = None Text,
+        timer_envs = None ((List Text)),
+        timer_content = None Text,
+        timer_user = None Text,
+        block = None Text,
+        marker = None Text,
+        where = None Text,
+        state = None Text,
+        bbclient_name = None Text,
+        bbclient_user = None Text,
+        bbclient_home = None Text,
+        bbclient_timer_conf = None Text,
+        bbclient_timer_content = None Text,
+        _restart_needed = None Text,
+        fail2ban_config_files = Some [
           {
-            dest = "/etc/fail2ban/jail.d/postfix.local"
-          , content = ''
+            dest = "/etc/fail2ban/jail.d/postfix.local",
+            content = ''
             [postfix]
             enabled = true
             mode = aggressive
@@ -85,8 +118,8 @@ in  [
           ''
         }
         , {
-            dest = "/etc/fail2ban/filter.d/postfix-auth.local"
-          , content = ''
+            dest = "/etc/fail2ban/filter.d/postfix-auth.local",
+            content = ''
             [Definition]
             # Stop stupid bots from filling logs.
             failregex = lost connection after AUTH from unknown\[<HOST>\]$
@@ -94,8 +127,8 @@ in  [
           ''
         }
         , {
-            dest = "/etc/fail2ban/jail.d/postfix-auth.local"
-          , content = ''
+            dest = "/etc/fail2ban/jail.d/postfix-auth.local",
+            content = ''
             [postfix-auth]
             enabled = true
             port    = smtp
@@ -106,43 +139,40 @@ in  [
 
           ''
         }
-      ]
-      , nginxauth_file = None Text
-      , nginxauth_users = None Text
-      , jarservice_name = None Text
-      , jarservice_home = None Text
-      , jarservice_local = None Text
-      , jarservice_unit = None Text
-      , nginxsite_domains = None (List Text)
-      , jupyter_cert_name = None Text
-      , conf = None Text
-      , lxd_forward_name = None Text
-      , lxd_forward_ip = None Text
-      , lxd_forward_port = None Text
-      , file = None Text
-      , keys = None Text
-      , zfsdocker_size = None Text
-      , set_fact = None Text
-      , file_var = None Text
-      , python_util_src = None Text
-      , nginxauth_name = None Text
-      , dbin_download_dest = None Text
-      , dbin_user = None Text
-      , dbin_repo = None Text
-      , dbin_path = None Text
-      , dbin_arch = None Text
-      , timer_wdir = None Text
-      , vmagent_config_dest = None Text
-      , vmagent_config_content = None Text
-      , dbin_src = None Text
-      , dbin_url = None Text
-      , _builtin_version = None Text
-      , nginxauth_conf = None Text
-      , nginxsite_users = None (List Text)
-      , dbin_unar = None Bool
-      , timer_state = None Text
-      , timer_config = None Text
-      , timer_service = None Text
+      ],
+        nginxauth_file = None Text,
+        nginxauth_users = None Text,
+        jarservice_name = None Text,
+        jarservice_home = None Text,
+        jarservice_local = None Text,
+        jarservice_unit = None Text,
+        nginxsite_domains = None ((List Text)),
+        jupyter_cert_name = None Text,
+        conf = None Text,
+        lxd_forward_port = None Text,
+        file = None Text,
+        keys = None Text,
+        set_fact = None Text,
+        file_var = None Text,
+        python_util_src = None Text,
+        nginxauth_name = None Text,
+        dbin_download_dest = None Text,
+        dbin_user = None Text,
+        dbin_repo = None Text,
+        dbin_path = None Text,
+        dbin_arch = None Text,
+        timer_wdir = None Text,
+        vmagent_config_dest = None Text,
+        vmagent_config_content = None Text,
+        dbin_src = None Text,
+        dbin_url = None Text,
+        _builtin_version = None Text,
+        nginxauth_conf = None Text,
+        nginxsite_users = None ((List Text)),
+        dbin_unar = None Bool,
+        timer_state = None Text,
+        timer_config = None Text,
+        timer_service = None Text
     }
     }
 ]

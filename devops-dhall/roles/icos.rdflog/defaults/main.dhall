@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.rdflog/defaults/main.yml
 
 {
     rdflog_home = "/docker/rdflog"

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.conmon/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -17,15 +17,15 @@ in  [
           fi
         done
 
-      ''
-      , fact = "conmon_local_version"
-      , bool = None Bool
-      , list = None Bool
+      '',
+        fact = "conmon_local_version",
+        bool = None Bool,
+        list = None Bool
     }
     }
   , Task::{
       name = Some "Is installed version of conmon sufficient?",
-      debug = Some { msg = "Version ({{ conmon_local_version }}) is sufficient" },
+      debug = Some (Task.Poly_debug.Record { msg = "Version ({{ conmon_local_version }}) is sufficient" }),
       when = Some [ "conmon_local_version_ok" ]
     }
   , Task::{ import_tasks = Some "apt_install.yml", when = Some [ "not conmon_local_version_ok" ] }

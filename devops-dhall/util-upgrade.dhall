@@ -1,4 +1,4 @@
--- Auto-generated from util-upgrade.yml
+-- Auto-generated from ../devops/util-upgrade.yml
 
 [
     {

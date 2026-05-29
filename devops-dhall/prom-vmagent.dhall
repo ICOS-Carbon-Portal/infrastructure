@@ -1,4 +1,4 @@
--- Auto-generated from prom-vmagent.yml
+-- Auto-generated from ../devops/prom-vmagent.yml
 
 [
     {

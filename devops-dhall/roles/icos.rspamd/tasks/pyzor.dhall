@@ -1,43 +1,25 @@
--- Auto-generated from pyzor.yml
+-- Auto-generated from ../../../../devops/roles/icos.rspamd/tasks/pyzor.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , pip : Optional ({ name : Text, state : Text })
-    , shell : Optional Text
-    , changed_when : Optional Bool
-    , register : Optional Text
-    , failed_when : Optional (List Text)
-    , copy : Optional ({ dest : Text, content : Text })
-    , systemd : Optional ({ name : Text, state : Text, enabled : Bool, daemon_reload : Bool })
-    , notify : Optional Text
-  }
-    , default =
-        { pip = None ({ name : Text, state : Text })
-    , shell = None Text
-    , changed_when = None Bool
-    , register = None Text
-    , failed_when = None (List Text)
-    , copy = None ({ dest : Text, content : Text })
-    , systemd = None ({ name : Text, state : Text, enabled : Bool, daemon_reload : Bool })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "pip install pyzor", pip = Some { name = "pyzor", state = "present" } }
-  , Task::{
-      name = "Check that \"pyzor check\" works",
-      shell = Some "echo test | pyzor check",
-      changed_when = Some False,
-      register = Some "_r",
-      failed_when = Some [ "not \"public.pyzor.org\" in _r.stdout", "not \"(200, 'OK')\" in _r.stdout" ]
+    Task::{
+      name = Some "pip install pyzor",
+      pip = Some (Task.Poly_pip.Record { name = [ "pyzor" ], virtualenv = None Text, state = Some "present" })
     }
   , Task::{
-      name = "Create pyzor.socket",
+      name = Some "Check that \"pyzor check\" works",
+      shell = Some "echo test | pyzor check",
+      changed_when = Some (Task.Poly_changed_when.Bool False),
+      register = Some "_r",
+      failed_when = Some (Task.Poly_failed_when.Texts [ "not \"public.pyzor.org\" in _r.stdout", "not \"(200, 'OK')\" in _r.stdout" ])
+    }
+  , Task::{
+      name = Some "Create pyzor.socket",
       copy = Some {
-        dest = "/etc/systemd/system/pyzor.socket"
-      , content = ''
+        dest = "/etc/systemd/system/pyzor.socket",
+        mode = None Text,
+        content = Some ''
         [Unit]
         Description=Pyzor socket
 
@@ -48,14 +30,21 @@ in  [
         [Install]
         WantedBy=sockets.target
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
   , Task::{
-      name = "Create pyzor service",
+      name = Some "Create pyzor service",
       copy = Some {
-        dest = "/etc/systemd/system/pyzor@.service"
-      , content = ''
+        dest = "/etc/systemd/system/pyzor@.service",
+        mode = None Text,
+        content = Some ''
         [Unit]
         Description=Pyzor Socket Service
         Requires=pyzor.socket
@@ -81,30 +70,45 @@ in  [
         [Install]
         WantedBy=multi-user.target
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
   , Task::{
-      name = "Enable and start pyzor.socket",
+      name = Some "Enable and start pyzor.socket",
       systemd = Some {
-        name = "pyzor.socket"
-      , state = "started"
-      , enabled = True
-      , daemon_reload = True
+        name = Some "pyzor.socket",
+        state = Some "started",
+        daemon_reload = Some True,
+        enabled = Some "True",
+        `daemon-reload` = None Text,
+        status = None Text
     }
     }
   , Task::{
-      name = "Create rspamd config for pyzor",
+      name = Some "Create rspamd config for pyzor",
       copy = Some {
-        dest = "/etc/rspamd/local.d/external_services.conf"
-      , content = ''
+        dest = "/etc/rspamd/local.d/external_services.conf",
+        mode = None Text,
+        content = Some ''
         pyzor {
           # default pyzor settings
           servers = "127.0.0.1:5953"
         }
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = Some "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
 ]

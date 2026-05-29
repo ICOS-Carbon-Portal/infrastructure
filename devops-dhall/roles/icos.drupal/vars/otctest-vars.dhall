@@ -1,4 +1,4 @@
--- Auto-generated from otctest-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/otctest-vars.yml
 
 {
     nginx_conf_name = "otctest"

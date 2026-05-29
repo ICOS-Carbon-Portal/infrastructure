@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.mtail/defaults/main.yml
 
 {
     mtail_logs = [] : List Text

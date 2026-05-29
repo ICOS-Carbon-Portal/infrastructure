@@ -1,4 +1,4 @@
--- Auto-generated from cupcake.yml
+-- Auto-generated from ../../devops/host_vars/cupcake.yml
 
 {
     icosdata_nfs_mounts = [

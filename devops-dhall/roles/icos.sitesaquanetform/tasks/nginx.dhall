@@ -1,25 +1,23 @@
--- Auto-generated from nginx.yml
+-- Auto-generated from ../../../../devops/roles/icos.sitesaquanetform/tasks/nginx.yml
 
-let Item =
-    { Type =
-        { include_role : Optional Text
-    , name : Optional Text
-    , template : Optional ({ src : Text, dest : Text, mode : Natural })
-    , notify : Optional Text
-  }
-    , default =
-        { include_role = None Text
-    , name = None Text
-    , template = None ({ src : Text, dest : Text, mode : Natural })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ include_role = Some "name=icos.certbot" }
-  , Item::{
+    Task::{ include_role = Some (Task.Poly_include_role.Str "name=icos.certbot") }
+  , Task::{
       name = Some "Copy nginx conf",
-      template = Some { src = "sites-aquanet-form.conf", dest = "/etc/nginx/conf.d/", mode = 448 },
-      notify = Some "reload nginx config"
+      template = Some {
+        src = "sites-aquanet-form.conf",
+        dest = "/etc/nginx/conf.d/",
+        mode = Some "448",
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = None Bool,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
+    },
+      notify = Some [ "reload nginx config" ]
     }
 ]

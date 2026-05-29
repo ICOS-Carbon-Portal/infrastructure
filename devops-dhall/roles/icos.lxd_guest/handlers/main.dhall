@@ -1,27 +1,23 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_guest/handlers/main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , systemd : Optional ({ daemon_reload : Bool })
-    , service : Optional ({ name : Text, state : Text })
-    , register : Optional Text
-    , failed_when : Optional (List Text)
-  }
-    , default =
-        { systemd = None ({ daemon_reload : Bool })
-    , service = None ({ name : Text, state : Text })
-    , register = None Text
-    , failed_when = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{ name = "reload systemd config", systemd = Some { daemon_reload = True } }
-  , Entry::{
-      name = "restart cron",
-      service = Some { name = "cron", state = "restarted" },
+    Task::{
+      name = Some "reload systemd config",
+      systemd = Some {
+        name = None Text,
+        state = None Text,
+        daemon_reload = Some True,
+        enabled = None Text,
+        `daemon-reload` = None Text,
+        status = None Text
+    }
+    }
+  , Task::{
+      name = Some "restart cron",
+      service = Some (Task.Poly_service.Record { name = "cron", state = "restarted", enabled = None Bool }),
       register = Some "_r",
-      failed_when = Some [ "_r.failed", "_r.msg.find('Could not find the requested service cron') < 0" ]
+      failed_when = Some (Task.Poly_failed_when.Texts [ "_r.failed", "_r.msg.find('Could not find the requested service cron') < 0" ])
     }
 ]

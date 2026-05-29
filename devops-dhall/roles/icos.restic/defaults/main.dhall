@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.restic/defaults/main.yml
 
 {
     restic_upgrade = "{{ upgrade_everything | default(False) | bool }}"

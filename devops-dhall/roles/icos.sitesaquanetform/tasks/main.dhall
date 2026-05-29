@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.sitesaquanetform/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -8,17 +8,17 @@ in  [
   , Task::{ import_tasks = Some "nginx.yml", tags = Some [ "nginx" ] }
   , Task::{
       name = Some "Create project directory",
-      file = Some {
-        path = Some "{{ project_dir }}"
-      , state = Some "directory"
-      , mode = None Text
-      , owner = None Text
-      , group = None Text
-      , name = None Text
-      , dest = None Text
-      , recurse = Some True
-      , src = None Text
-    },
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ project_dir }}",
+          state = Some "directory",
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = Some True,
+          src = None Text
+      }),
       tags = Some [ "repo", "pull" ]
     }
   , Task::{ import_tasks = Some "bitbucket.yml", tags = Some [ "repo" ] }

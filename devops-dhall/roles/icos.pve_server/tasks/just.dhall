@@ -1,56 +1,56 @@
--- Auto-generated from just.yml
+-- Auto-generated from ../../../../devops/roles/icos.pve_server/tasks/just.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ src : Text, dest : Text, mode : Text })
-    , register : Optional Text
-    , shell : Optional Text
-    , changed_when : Optional Bool
-    , lineinfile : Optional ({ path : Text, regex : Text, line : Text, insertafter : Text, create : Bool })
-    , `ansible.builtin.shell` : Optional Text
-    , args : Optional ({ executable : Text })
-    , failed_when : Optional (List Text)
-  }
-    , default =
-        { copy = None ({ src : Text, dest : Text, mode : Text })
-    , register = None Text
-    , shell = None Text
-    , changed_when = None Bool
-    , lineinfile = None ({ path : Text, regex : Text, line : Text, insertafter : Text, create : Bool })
-    , `ansible.builtin.shell` = None Text
-    , args = None ({ executable : Text })
-    , failed_when = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Copy ops-proxmox-server",
-      copy = Some { src = "ops-proxmox-server", dest = "/usr/local/bin/", mode = "+x" },
+      name = Some "Copy ops-proxmox-server",
+      copy = Some {
+        dest = "/usr/local/bin/",
+        mode = Some "+x",
+        content = None Text,
+        src = Some "ops-proxmox-server",
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
+    },
       register = Some "_ops"
     }
   , Task::{
-      name = "Check that the justfile is executable",
+      name = Some "Check that the justfile is executable",
       shell = Some "{{ _ops.dest }}",
-      changed_when = Some False
+      changed_when = Some (Task.Poly_changed_when.Bool False)
     }
   , Task::{
-      name = "Add alias for ops-proxmox-server",
+      name = Some "Add alias for ops-proxmox-server",
       lineinfile = Some {
-        path = "/root/.bashrc"
-      , regex = "^alias [^=]+=ops-proxmox-server"
-      , line = "alias px=ops-proxmox-server"
-      , insertafter = "EOF"
-      , create = False
+        path = "/root/.bashrc",
+        regex = Some "^alias [^=]+=ops-proxmox-server",
+        line = Some "alias px=ops-proxmox-server",
+        state = None Text,
+        backrefs = None Bool,
+        regexp = None Text,
+        create = Some False,
+        owner = None Text,
+        group = None Text,
+        insertafter = Some "EOF",
+        mode = None Natural,
+        insertbefore = None Text
     }
     }
   , Task::{
-      name = "Check that alias and justfile works",
+      name = Some "Check that alias and justfile works",
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str "px"),
+      args = Some {
+        chdir = None Text,
+        creates = None Text,
+        executable = Some "/bin/bash",
+        removes = None Text
+    },
+      changed_when = Some (Task.Poly_changed_when.Bool False),
       register = Some "_r",
-      changed_when = Some False,
-      `ansible.builtin.shell` = Some "px",
-      args = Some { executable = "/bin/bash" },
-      failed_when = Some [ "\"onboot\" in _r.stdout" ]
+      failed_when = Some (Task.Poly_failed_when.Texts [ "\"onboot\" in _r.stdout" ])
     }
 ]

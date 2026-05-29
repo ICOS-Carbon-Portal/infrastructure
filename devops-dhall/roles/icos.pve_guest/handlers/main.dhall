@@ -1,27 +1,13 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.pve_guest/handlers/main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , service : Optional ({ name : Text, state : Text })
-    , register : Optional Text
-    , failed_when : Optional (List Text)
-    , reboot : Optional ({ reboot_timeout : Natural })
-  }
-    , default =
-        { service = None ({ name : Text, state : Text })
-    , register = None Text
-    , failed_when = None (List Text)
-    , reboot = None ({ reboot_timeout : Natural })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "restart cron",
-      service = Some { name = "cron", state = "restarted" },
+    Task::{
+      name = Some "restart cron",
+      service = Some (Task.Poly_service.Record { name = "cron", state = "restarted", enabled = None Bool }),
       register = Some "_r",
-      failed_when = Some [ "_r.failed", "_r.msg.find('Could not find the requested service cron') < 0" ]
+      failed_when = Some (Task.Poly_failed_when.Texts [ "_r.failed", "_r.msg.find('Could not find the requested service cron') < 0" ])
     }
-  , Entry::{ name = "reboot", reboot = Some { reboot_timeout = 120 } }
+  , Task::{ name = Some "reboot", reboot = Some { reboot_timeout = 120 } }
 ]

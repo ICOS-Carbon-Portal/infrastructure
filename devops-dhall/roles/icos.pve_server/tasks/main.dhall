@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.pve_server/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 

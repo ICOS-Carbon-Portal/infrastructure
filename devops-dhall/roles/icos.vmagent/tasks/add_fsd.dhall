@@ -1,4 +1,4 @@
--- Auto-generated from add_fsd.yml
+-- Auto-generated from ../../../../devops/roles/icos.vmagent/tasks/add_fsd.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -7,21 +7,20 @@ in  [
   , Task::{
       name = Some "Check that the metrics endpoint responds",
       uri = Some {
-        url = "http://{{ fsd_target }}/{{ fsd_path | default('/metrics') }}"
-      , return_content = None Bool
-      , method = None Text
-      , user = None Text
-      , password = None Text
+        url = "http://{{ fsd_target }}/{{ fsd_path | default('/metrics') }}",
+        return_content = None Bool,
+        method = None Text,
+        user = None Text,
+        password = None Text
     },
       retries = Some 3
     }
   , Task::{
       name = Some "Install scrape config",
       copy = Some {
-        src = None Text
-      , dest = "{{ vmagent_fsd }}/{{ fsd_name }}.yaml"
-      , mode = None Text
-      , content = Some ''
+        dest = "{{ vmagent_fsd }}/{{ fsd_name }}.yaml",
+        mode = None Text,
+        content = Some ''
         # {{ fsd_name }}
         - targets:
           - {{ fsd_target }}
@@ -31,12 +30,13 @@ in  [
             {%- endif %}
             host: {{ fsd_host }}
 
-      ''
-      , backup = None Bool
-      , owner = None Text
-      , group = None Text
-      , force = None Text
-      , validate = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
 ]

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.server/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,11 +6,11 @@ in  [
     Task::{
       name = Some "Install public keys",
       authorized_key = Some {
-        user = "root"
-      , key_options = None Text
-      , key = "{{ root_keys }}"
-      , state = Some "present"
-      , exclusive = Some True
+        user = "root",
+        key = "{{ root_keys }}",
+        state = Some "present",
+        exclusive = Some True,
+        key_options = None Text
     },
       when = Some [ "root_keys is truthy" ]
     }
@@ -22,6 +22,6 @@ in  [
   , Task::{
       name = Some "Generate locale",
       locale_gen = Some { name = "{{ item }}", state = "present" },
-      loop = Some [ "en_US.UTF-8", "sv_SE.UTF-8" ]
+      loop = Some (Task.Poly_loop.Texts [ "en_US.UTF-8", "sv_SE.UTF-8" ])
     }
 ]

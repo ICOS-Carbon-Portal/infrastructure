@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.just/defaults/main.yml
 
 {
     just_upgrade = "{{ upgrade_everything | default(False) | bool }}"

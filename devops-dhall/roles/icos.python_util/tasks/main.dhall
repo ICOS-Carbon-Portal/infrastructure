@@ -1,39 +1,37 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.python_util/tasks/main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ src : Text, dest : Text })
-    , register : Text
-    , `community.general.pipx` : Optional ({ executable : Text, python : Text, editable : Bool, name : Text })
-    , changed_when : Optional (List Text)
-  }
-    , default =
-        { copy = None ({ src : Text, dest : Text })
-    , `community.general.pipx` = None ({ executable : Text, python : Text, editable : Bool, name : Text })
-    , changed_when = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Copying python utility",
-      copy = Some { src = "{{ python_util_src }}", dest = "{{ python_util_install_prefix }}" },
-      register = "_util"
+      name = Some "Copying python utility",
+      copy = Some {
+        dest = "{{ python_util_install_prefix }}",
+        mode = None Text,
+        content = None Text,
+        src = Some "{{ python_util_src }}",
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
+    },
+      register = Some "_util"
     }
   , Task::{
-      name = "Installing python utility",
-      register = "_pipx",
+      name = Some "Installing python utility",
       `community.general.pipx` = Some {
-        executable = "pipx-global"
-      , python = "{{ python_util_python_executable }}"
-      , editable = True
-      , name = "{{ python_util_install_dir }}"
+        name = "{{ python_util_install_dir }}",
+        executable = "pipx-global",
+        python = Some "{{ python_util_python_executable }}",
+        editable = Some True,
+        force = None Text
     },
-      changed_when = Some [
-        "_pipx.changed"
-      , "_pipx.stdout"
-      , "_pipx.stdout.find('already seems to be installed') == -1"
-    ]
+      register = Some "_pipx",
+      changed_when = Some (Task.Poly_changed_when.Texts [
+          "_pipx.changed"
+        , "_pipx.stdout"
+        , "_pipx.stdout.find('already seems to be installed') == -1"
+      ])
     }
 ]

@@ -1,4 +1,4 @@
--- Auto-generated from vm-fsicos3-jupyter.yml
+-- Auto-generated from ../devops/vm-fsicos3-jupyter.yml
 
 let Play =
     { Type =

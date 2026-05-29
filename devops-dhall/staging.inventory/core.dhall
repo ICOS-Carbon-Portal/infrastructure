@@ -1,4 +1,4 @@
--- Auto-generated from core.yml
+-- Auto-generated from ../../devops/staging.inventory/core.yml
 
 {
     all = {

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -7,7 +7,7 @@ in  [
       name = Some "Check that all parameters are defined",
       fail = Some { msg = "{{ item }} needs to be defined" },
       when = Some [ "vars[item] is undefined" ],
-      loop = Some [ "website" ],
+      loop = Some (Task.Poly_loop.Texts [ "website" ]),
       tags = Some [ "drupal", "drupal_nginx" ]
     }
   , Task::{

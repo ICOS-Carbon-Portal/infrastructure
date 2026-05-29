@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.jarservice2/defaults/main.yml
 
 {
     jarservice_keep_n_old = 10

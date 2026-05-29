@@ -1,4 +1,4 @@
--- Auto-generated from setup.yml
+-- Auto-generated from ../../../../devops/roles/icos.rdflog/tasks/setup.yml
 
 let Task = ../../../types/Task.dhall
 

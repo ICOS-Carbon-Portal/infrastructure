@@ -1,4 +1,4 @@
--- Auto-generated from really_install.yml
+-- Auto-generated from ../../../../devops/roles/icos.vmagent/tasks/really_install.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -14,26 +14,26 @@ in  [
   , Task::{
       name = Some "Download vmagent release",
       get_url = Some {
-        url = "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/{{ release.tag }}/vmutils-linux-{{ vmagent_arch }}-{{ release.tag }}.tar.gz"
-      , dest = "/tmp"
-      , force = None Text
-      , mode = None Text
+        url = "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/{{ release.tag }}/vmutils-linux-{{ vmagent_arch }}-{{ release.tag }}.tar.gz",
+        dest = "/tmp",
+        force = None Text,
+        mode = None Text
     },
       register = Some "url"
     }
   , Task::{
       name = Some "Unarchive vmagent",
       unarchive = Some {
-        src = "{{ url.dest }}"
-      , dest = "{{ vmagent_bin }}"
-      , remote_src = True
-      , owner = None Text
-      , group = None Text
-      , include = None (List Text)
-      , list_files = None Bool
-      , extra_opts = None (List Text)
-      , mode = None Text
-      , creates = None Text
+        src = "{{ url.dest }}",
+        dest = "{{ vmagent_bin }}",
+        remote_src = True,
+        owner = None Text,
+        group = None Text,
+        include = None ((List Text)),
+        list_files = None Bool,
+        extra_opts = None ((List Text)),
+        mode = None Text,
+        creates = None Text
     },
       diff = Some False,
       register = Some "unar",

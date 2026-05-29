@@ -1,37 +1,19 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/ops.zfs/tasks/main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Text
-    , name : Optional Text
-    , stat : Optional ({ path : Text })
-    , register : Optional Text
-    , include_tasks : Optional ({ file : Text })
-    , when : Optional Text
-  }
-    , default =
-        { import_tasks = None Text
-    , name = None Text
-    , stat = None ({ path : Text })
-    , register = None Text
-    , include_tasks = None ({ file : Text })
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "just.yml", tags = "zfs_just" }
-  , Item::{
-      tags = "httm",
+    Task::{ import_tasks = Some "just.yml", tags = Some [ "zfs_just" ] }
+  , Task::{
       name = Some "Check whether httm is installed",
+      tags = Some [ "httm" ],
       stat = Some { path = "/usr/bin/httm" },
       register = Some "_r"
     }
-  , Item::{
-      tags = "httm",
+  , Task::{
       name = Some "Install/upgrade httm",
-      include_tasks = Some { file = "httm.yml" },
-      when = Some "not _r.stat.exists or httm_upgrade"
+      tags = Some [ "httm" ],
+      include_tasks = Some (Task.Poly_include_tasks.Record { file = "httm.yml", apply = None (({ tags : Text })) }),
+      when = Some [ "not _r.stat.exists or httm_upgrade" ]
     }
 ]

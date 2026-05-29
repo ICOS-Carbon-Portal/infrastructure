@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.utils/defaults/main.yml
 
 {
     ripgrep_version = "{{ hostvars.localhost.ripgrep_version }}"

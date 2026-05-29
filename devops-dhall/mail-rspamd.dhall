@@ -1,4 +1,4 @@
--- Auto-generated from mail-rspamd.yml
+-- Auto-generated from ../devops/mail-rspamd.yml
 
 let Play =
     { Type =

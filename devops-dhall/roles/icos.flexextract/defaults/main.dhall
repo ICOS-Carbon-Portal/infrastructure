@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.flexextract/defaults/main.yml
 
 {
     flexextract_user = "flexextract"

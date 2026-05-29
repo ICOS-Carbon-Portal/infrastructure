@@ -1,4 +1,4 @@
--- Auto-generated from vm-cities.yml
+-- Auto-generated from ../devops/vm-cities.yml
 
 let Play =
     { Type =

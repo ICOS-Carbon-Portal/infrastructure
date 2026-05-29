@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.dovecot/defaults/main.yml
 
 {
     dovecot_port = 60993

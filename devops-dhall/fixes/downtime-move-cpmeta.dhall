@@ -1,4 +1,4 @@
--- Auto-generated from downtime-move-cpmeta.yml
+-- Auto-generated from ../../devops/fixes/downtime-move-cpmeta.yml
 
 let Play =
     { Type =

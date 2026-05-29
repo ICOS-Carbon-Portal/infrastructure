@@ -1,4 +1,4 @@
--- Auto-generated from requirements.yml
+-- Auto-generated from ../devops/requirements.yml
 
 {
     collections = let Entry =

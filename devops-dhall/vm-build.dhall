@@ -1,4 +1,4 @@
--- Auto-generated from vm-build.yml
+-- Auto-generated from ../devops/vm-build.yml
 
 let Play =
     { Type =

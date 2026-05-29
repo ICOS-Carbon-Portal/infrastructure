@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.sftp_user/defaults/main.yml
 
 {
     sftp_user_owner = "{{ sftp_user_login }}"

@@ -155,6 +155,30 @@ def _parse_record_fields(type_str):
     return fields
 
 
+def _parse_record_fields_full(type_str):
+    """Like _parse_record_fields but preserves the full field type.
+
+    Keeps a leading `Optional ` so type-directed emission knows to wrap absent
+    values as `None T` and present ones as `Some v`.
+    """
+    type_str = type_str.strip()
+    if type_str.startswith('{') and type_str.endswith('}'):
+        type_str = type_str[1:-1].strip()
+    fields = {}
+    for part in _split_top_level(type_str, ','):
+        part = part.strip()
+        if not part:
+            continue
+        kv = _split_top_level(part, ':')
+        if len(kv) < 2:
+            continue
+        key = kv[0].strip()
+        if key.startswith('`') and key.endswith('`'):
+            key = key[1:-1]
+        fields[key] = ':'.join(kv[1:]).strip()
+    return fields
+
+
 def compute_dhall_type(value, depth=0):
     """Recursively compute the Dhall type for a Python value."""
     if depth > 5:
@@ -273,6 +297,101 @@ def common_type_for_key(key, dicts, depth=0):
     return 'Text'
 
 
+# Playbook/role keys whose value is an Ansible task list (eligible for the
+# shared Task type). block/always/rescue are handled separately as the inline
+# block sub-record type.
+TASK_LIST_KEYS = frozenset({
+    'tasks', 'pre_tasks', 'post_tasks', 'handlers',
+})
+
+
+def value_union_kind(value):
+    """Classify a value into a union (tag, kind) pair.
+
+    kind drives how the payload type is computed; tag is the Dhall union
+    alternative name. Returns None for null.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return ('Bool', 'bool')
+    if isinstance(value, int):
+        return ('Nat', 'nat') if value >= 0 else ('Int', 'int')
+    if isinstance(value, float):
+        return ('Double', 'double')
+    if isinstance(value, str):
+        return ('Str', 'str')
+    if isinstance(value, list):
+        if value and all(isinstance(x, dict) for x in value):
+            return ('Records', 'records')
+        return ('Texts', 'texts')
+    if isinstance(value, dict):
+        return ('Record', 'record')
+    return ('Str', 'str')
+
+
+# Maps a kind to a fixed scalar Dhall type (record kinds resolved separately).
+_UNION_SCALAR_TYPE = {
+    'bool': 'Bool',
+    'nat': 'Natural',
+    'int': 'Integer',
+    'double': 'Double',
+    'str': 'Text',
+    'texts': 'List Text',
+}
+
+
+def _fits_without_lossy_coercion(value, type_str):
+    """Whether a value fits a Dhall type using only structure-preserving coercion.
+
+    Permits Ansible's safe scalar->[scalar] promotion (a string where a list is
+    expected) and number<->text, but rejects dict->Text, list->Text and
+    bool->Text, which lose information and instead signal the need for a union.
+    """
+    type_str = type_str.strip()
+    while type_str.startswith('(') and type_str.endswith(')'):
+        type_str = type_str[1:-1].strip()
+
+    if isinstance(value, bool):
+        return type_str == 'Bool'
+    if isinstance(value, (int, float)):
+        return type_str in ('Natural', 'Integer', 'Double', 'Text', 'List Text')
+    if isinstance(value, str):
+        return type_str in ('Text', 'List Text')
+    if isinstance(value, list):
+        if type_str == 'List Text':
+            return all(isinstance(x, (str, int, float)) for x in value)
+        if type_str.startswith('List '):
+            inner = type_str[5:].strip()
+            return all(_fits_without_lossy_coercion(x, inner) for x in value)
+        return False
+    if isinstance(value, dict):
+        if not type_str.startswith('{'):
+            return False
+        field_types = _parse_record_fields(type_str)
+        for fk, fv in value.items():
+            if fv is None:
+                continue
+            if fk not in field_types:
+                return False
+            if not _fits_without_lossy_coercion(fv, field_types[fk]):
+                return False
+        return True
+    return True
+
+
+def union_type_name(field):
+    """Dhall identifier for a field's union type, e.g. loop -> Poly_loop."""
+    safe = re.sub(r'[^A-Za-z0-9_]', '_', str(field))
+    return f'Poly_{safe}'
+
+
+def render_union_type(variants):
+    """Render a Dhall union type from {tag: dhall_type}, tags sorted."""
+    parts = [f'{tag} : {variants[tag]}' for tag in sorted(variants)]
+    return '< ' + ' | '.join(parts) + ' >'
+
+
 def coerce_value(value, target_type):
     """Coerce a value to match the target Dhall type."""
     if target_type == 'List Text' and isinstance(value, str):
@@ -303,6 +422,10 @@ class DhallConverter:
         self._record_list_depth = 0
         self._pending_global_items = None
         self._dict_type_context = None
+        self._shared_task_keys = []
+        self._shared_unions = {}
+        self._active_task_import = None
+        self._task_import_used = False
 
     def convert_value(self, value, indent=0):
         """Convert a Python value (from YAML) to a Dhall expression string."""
@@ -638,6 +761,19 @@ class DhallConverter:
 
         for k, v in d.items():
             dk = dhall_key(str(k))
+
+            # Playbook task-list fields (tasks/pre_tasks/handlers/...) reuse the
+            # shared Task type when available and the tasks fit it.
+            if (k in TASK_LIST_KEYS and self._active_task_import
+                    and self._shared_task_keys
+                    and isinstance(v, list) and v
+                    and all(isinstance(x, dict) for x in v)
+                    and self._tasks_fit_shared_type(v)):
+                self._task_import_used = True
+                record_entries.append(
+                    f'{dk} = {self._emit_task_items(v, indent + 1)}')
+                continue
+
             converted = self.convert_value(v, indent + 1)
 
             if converted.startswith('let '):
@@ -785,6 +921,43 @@ class DhallConverter:
             if collected:
                 self._shared_subtasks[sub_key] = collected
 
+        # Detect polymorphic fields: those whose values can't all be coerced to
+        # a single Dhall type. These become union types so any Ansible form is
+        # representable (dhall-to-yaml renders union payloads transparently).
+        self._shared_unions = {}            # field -> {tag: dhall_type}
+        self._shared_union_payload = {}     # field -> {tag: [dicts]} for records
+        for k in all_keys:
+            if k in ('block', 'always', 'rescue'):
+                continue
+            values = [d[k] for d in all_tasks if k in d and d[k] is not None]
+            t = key_types[k]
+            if all(_fits_without_lossy_coercion(v, t) for v in values):
+                continue  # fits the common type cleanly; no union needed
+
+            variants = {}
+            record_items = {}
+            for v in values:
+                kind = value_union_kind(v)
+                if kind is None:
+                    continue
+                tag, knd = kind
+                if knd == 'records':
+                    record_items.setdefault(tag, []).extend(v)
+                elif knd == 'record':
+                    record_items.setdefault(tag, []).append(v)
+                else:
+                    variants[tag] = _UNION_SCALAR_TYPE[knd]
+            for tag, items in record_items.items():
+                rec = compute_unified_record_type(items, depth=1)
+                if tag == 'Records':
+                    variants[tag] = f'List {_wrap_type(rec)}'
+                else:
+                    variants[tag] = rec
+            if len(variants) >= 2:
+                self._shared_unions[k] = variants
+                if record_items:
+                    self._shared_union_payload[k] = record_items
+
     def render_shared_task_type(self):
         """Render the shared Task type as a Dhall Type/default record.
 
@@ -792,31 +965,39 @@ class DhallConverter:
         file on disk always matches the values the converter generates.
         """
         all_keys = self._shared_task_keys
+        unions = self._shared_unions
+
+        # Field type is the union (if polymorphic) or the plain common type.
+        def field_type(k):
+            if k in unions:
+                return union_type_name(k)
+            return _wrap_type(self._shared_task_types[k])
+
         type_lines = []
         default_lines = []
         for k in all_keys:
             dk = dhall_key(k)
-            t = self._shared_task_types[k]
-            type_lines.append(f'  , {dk} : Optional {_wrap_type(t)}')
-            default_lines.append(f'  , {dk} = None {_wrap_type(t)}')
+            ft = field_type(k)
+            type_lines.append(f'  , {dk} : Optional {ft}')
+            default_lines.append(f'  , {dk} = None {ft}')
         if type_lines:
             type_lines[0] = type_lines[0].replace(', ', '  ', 1)
             default_lines[0] = default_lines[0].replace(', ', '  ', 1)
         type_block = '\n'.join(type_lines)
         default_block = '\n'.join(default_lines)
+
+        # Union type definitions + exports so task files can construct values
+        # as `Task.Poly_<field>.<Tag> payload`.
+        union_defs = ''
+        export_lines = ''
+        for k in sorted(unions):
+            name = union_type_name(k)
+            union_defs += f'let {name} = {render_union_type(unions[k])}\n\n'
+            export_lines += f', {name} = {name}\n'
+
         n_tasks = self._shared_task_count
-        return (
-            '-- Shared Ansible task type, auto-generated from all role '
-            'task/handler files.\n'
-            f'-- Covers {n_tasks} task items across {len(all_keys)} unique '
-            'fields. Every field is\n'
-            '-- Optional so any single task uses only the keys it needs '
-            '(`Task::{ ... }`).\n'
-            '--\n'
-            '-- Usage from a role task file:\n'
-            '--   let Task = ../../../types/Task.dhall\n'
-            '--   in [ Task::{ name = Some "Install", apt = Some { ... } } ]\n'
-            '\n'
+        n_unions = len(unions)
+        record = (
             '{ Type =\n'
             '  {\n'
             f'{type_block}\n'
@@ -825,14 +1006,34 @@ class DhallConverter:
             '  {\n'
             f'{default_block}\n'
             '  }\n'
+            f'{export_lines}'
             '}\n'
         )
+        return (
+            '-- Shared Ansible task type, auto-generated from all role '
+            'task/handler files.\n'
+            f'-- Covers {n_tasks} task items across {len(all_keys)} unique '
+            'fields. Every field is\n'
+            '-- Optional so any single task uses only the keys it needs '
+            '(`Task::{ ... }`).\n'
+            f'-- {n_unions} polymorphic fields are union types '
+            '(e.g. `loop`, `file`); construct with\n'
+            '-- `Task.Poly_<field>.<Tag> value`. dhall-to-yaml renders the '
+            'payload transparently.\n'
+            '--\n'
+            '-- Usage from a role task file:\n'
+            '--   let Task = ../../../types/Task.dhall\n'
+            '--   in [ Task::{ name = Some "Install", apt = Some { ... } } ]\n'
+            '\n'
+            + (f'{union_defs}in  {record}' if union_defs else record)
+        )
 
-    def convert_file(self, yaml_path, task_import_path=None):
+    def convert_file(self, yaml_path, task_import_path=None, source_label=None):
         """Convert a YAML file to Dhall. Returns (dhall_text, warnings).
 
         If task_import_path is set, the file is a role task/handler file and
-        should use a shared Task type import.
+        should use a shared Task type import. source_label is the path shown in
+        the "Auto-generated from" header (defaults to the bare filename).
         """
         try:
             text = yaml_path.read_text(encoding='utf-8')
@@ -858,8 +1059,14 @@ class DhallConverter:
             return '{=}\n', []
 
         warnings = []
-        header = f'-- Auto-generated from {yaml_path.name}\n'
+        header = f'-- Auto-generated from {source_label or yaml_path.name}\n'
 
+        # Make the shared Task import available to this file's conversion; nested
+        # playbook task-lists pick it up via _convert_dict.
+        self._active_task_import = task_import_path
+        self._task_import_used = False
+
+        # A role task/handler file whose top-level document is itself a task list.
         if (task_import_path and self._shared_task_keys
                 and len(docs) == 1 and isinstance(docs[0], list)
                 and docs[0] and all(isinstance(d, dict) for d in docs[0])
@@ -873,9 +1080,17 @@ class DhallConverter:
             return result, warnings
 
         if len(docs) == 1:
-            result = self.convert_value(docs[0], 0)
+            body = self.convert_value(docs[0], 0)
         else:
-            result = self.convert_value(docs, 0)
+            body = self.convert_value(docs, 0)
+
+        # If a nested task-list used the shared type, add the import preamble.
+        if self._task_import_used and task_import_path:
+            result = f'let Task = {task_import_path}\n\nin  {body}'
+            self.stats.setdefault('shared_type', 0)
+            self.stats['shared_type'] += 1
+        else:
+            result = body
 
         result = header + '\n' + result + '\n'
         self.stats['converted'] += 1
@@ -888,13 +1103,44 @@ class DhallConverter:
                 if v is None:
                     continue
                 if k in ('block', 'always', 'rescue'):
+                    # Sub-tasks are converted against the globally-unified block
+                    # sub-type, so they fit by construction; verify only that
+                    # their fields/kinds are covered by that global sub-type.
                     if isinstance(v, list) and all(isinstance(x, dict) for x in v):
-                        if not self._tasks_fit_shared_type(v):
+                        if not self._subtasks_fit(k, v):
                             return False
                     continue
                 if k not in self._shared_task_types:
                     return False
+                if k in self._shared_unions:
+                    # Union must have a matching alternative whose type also
+                    # fully covers this value (e.g. all record sub-keys).
+                    kind = value_union_kind(v)
+                    if not kind or kind[0] not in self._shared_unions[k]:
+                        return False
+                    variant_type = self._shared_unions[k][kind[0]]
+                    if not self._value_fits_type(v, variant_type):
+                        return False
+                    continue
                 if not self._value_fits_type(v, self._shared_task_types[k]):
+                    return False
+        return True
+
+    def _subtasks_fit(self, sub_key, subtasks):
+        """Check block/always/rescue sub-tasks fit the global sub-type.
+
+        The sub-type is computed (per field) from every block sub-task across
+        all files, matching how the values are emitted; a value only fails if
+        the field is polymorphic within blocks (which blocks don't union-ise).
+        """
+        global_items = self._shared_subtasks.get(sub_key, subtasks)
+        sub_keys = set(k for d in global_items for k in d)
+        for d in subtasks:
+            for k, v in d.items():
+                if v is None or k not in sub_keys:
+                    continue
+                t = common_type_for_key(k, global_items, depth=0)
+                if not self._value_fits_type(coerce_value(v, t), t):
                     return False
         return True
 
@@ -939,6 +1185,62 @@ class DhallConverter:
             return True
         return True
 
+    def _emit_typed(self, value, type_str, indent):
+        """Emit a value as a Dhall expression matching `type_str` exactly.
+
+        Type-directed: records get every field (Some/None per the type), nested
+        records/lists recurse, so output always matches the shared annotation.
+        """
+        type_str = type_str.strip()
+        while type_str.startswith('(') and type_str.endswith(')'):
+            type_str = type_str[1:-1].strip()
+
+        if type_str.startswith('Optional '):
+            inner = type_str[len('Optional '):].strip()
+            if value is None:
+                return f'None {_wrap_type(inner)}'
+            return f'Some {self._wrap_expr(self._emit_typed(value, inner, indent))}'
+
+        if type_str.startswith('{') and isinstance(value, dict):
+            field_types = _parse_record_fields_full(type_str)
+            pad = '  ' * indent
+            ipad = '  ' * (indent + 1)
+            parts = []
+            for fk, ftype in field_types.items():
+                # find the source value for this field (keys may be backticked)
+                if fk in value:
+                    fv = value[fk]
+                else:
+                    fv = None
+                parts.append(f'{dhall_key(fk)} = '
+                             f'{self._emit_typed(fv, ftype, indent + 1)}')
+            inline = '{ ' + ', '.join(parts) + ' }'
+            if len(inline) <= 90 and '\n' not in inline:
+                return inline
+            body = ',\n'.join(f'{ipad}  {p}' for p in parts)
+            return '{\n' + body + f'\n{pad}}}'
+
+        if type_str == 'List Text':
+            items = value if isinstance(value, list) else [value]
+            items = [x if isinstance(x, str) else str(x) for x in items]
+            return self.convert_value(items, indent)
+
+        if type_str.startswith('List '):
+            inner = type_str[len('List '):].strip()
+            if not isinstance(value, list):
+                value = [value]
+            if not value:
+                return f'[] : {type_str}'
+            pad = '  ' * indent
+            ipad = '  ' * (indent + 1)
+            elems = [self._emit_typed(x, inner, indent + 1) for x in value]
+            formatted = [f'{ipad}, {e}' for e in elems]
+            formatted[0] = f'{ipad}  {elems[0]}'
+            return '[\n' + '\n'.join(formatted) + f'\n{pad}]'
+
+        # scalar leaf — reuse the standard coercion + literal emitter
+        return self.convert_value(coerce_value(value, type_str), indent)
+
     def _convert_task_item_fields(self, d, indent):
         """Convert a single task dict's fields using the shared type."""
         fields = []
@@ -959,27 +1261,44 @@ class DhallConverter:
                 fields.append(f'{dk} = Some ({sub_items})')
                 continue
 
-            v = coerce_value(v, t)
-            if k in self._shared_task_dict_ctx and isinstance(v, dict):
-                self._dict_type_context = self._shared_task_dict_ctx[k]
-            converted = self.convert_value(v, indent + 1)
-            self._dict_type_context = None
-            wrapped = self._wrap_expr(converted)
+            if k in self._shared_unions:
+                fields.append(
+                    f'{dk} = Some ({self._convert_union_value(k, v, indent + 1)})')
+                continue
+
+            emitted = self._emit_typed(v, t, indent + 1)
+            wrapped = self._wrap_expr(emitted)
             if wrapped.startswith('let ') or '\nlet ' in wrapped:
                 wrapped = f'({wrapped})'
             fields.append(f'{dk} = Some {wrapped}')
         return fields
 
+    def _convert_union_value(self, key, value, indent):
+        """Emit a polymorphic field value as `Task.Poly_<key>.<Tag> payload`."""
+        uname = union_type_name(key)
+        tag, knd = value_union_kind(value)
+        variant_type = self._shared_unions[key][tag]
+
+        # Type-directed emission against the chosen variant's type, so record
+        # payloads match the union alternative exactly (all fields, nesting).
+        payload = self._emit_typed(value, variant_type, indent + 1)
+        payload = self._wrap_expr(payload)
+        if payload.startswith('let ') or '\nlet ' in payload:
+            payload = f'({payload})'
+        return f'Task.{uname}.{tag} {payload}'
+
     def _convert_sub_task_list(self, tasks, indent):
         """Convert a nested task list (block/always/rescue) using regular converter."""
         return self._convert_list(tasks, indent)
 
-    def _convert_task_list_with_shared_type(self, tasks, import_path):
-        """Convert a list of task dicts using the shared Task type."""
+    def _emit_task_items(self, tasks, indent=0):
+        """Emit `[ Task::{...} ]` for a task list (assumes Task is in scope)."""
+        pad = '  ' * indent
+        ipad = '  ' * (indent + 1)
         items = []
         for d in tasks:
-            fields = self._convert_task_item_fields(d, 1)
-            entry_pad = '  ' * 2
+            fields = self._convert_task_item_fields(d, indent + 1)
+            entry_pad = '  ' * (indent + 2)
             record_str = '{ ' + ', '.join(fields) + ' }'
             if len(record_str) > 90:
                 record_str = (
@@ -988,15 +1307,14 @@ class DhallConverter:
                     + f'\n{entry_pad}}}'
                 )
             items.append(f'Task::{record_str}')
+        formatted = [f'{ipad}, {item}' for item in items]
+        formatted[0] = f'{ipad}  {items[0]}'
+        return '[\n' + '\n'.join(formatted) + f'\n{pad}]'
 
-        formatted = [f'  , {item}' for item in items]
-        formatted[0] = f'    {items[0]}'
-        list_str = '[\n' + '\n'.join(formatted) + '\n]'
-
-        return (
-            f'let Task = {import_path}\n\n'
-            f'in  {list_str}'
-        )
+    def _convert_task_list_with_shared_type(self, tasks, import_path):
+        """Convert a top-level task list, with the shared Task import preamble."""
+        self._task_import_used = True
+        return f'let Task = {import_path}\n\nin  {self._emit_task_items(tasks, 0)}'
 
     def _is_role_task_list(self, data):
         """Check if a parsed YAML document is a task list usable with shared type."""
@@ -1005,42 +1323,46 @@ class DhallConverter:
 
 
 def _collect_role_tasks(input_path):
-    """Collect all task items from role task/handler YAML files."""
+    """Collect every Ansible task item the shared Task type must cover.
+
+    Includes role tasks/handlers files (whose top-level document is a task
+    list) and playbook task-list fields (tasks/pre_tasks/post_tasks/handlers
+    inside plays), so the shared type and its unions are trained on all the
+    tasks they will actually be applied to.
+    """
     import yaml as _yaml
     all_tasks = []
-    for root, dirs, files in os.walk(input_path / 'roles'):
+    for root, dirs, files in os.walk(input_path):
+        if '.git' in root.split(os.sep):
+            continue
         for fname in sorted(files):
             if not fname.endswith(('.yml', '.yaml')):
-                continue
-            parts = root.split('/')
-            if not any(p in ('tasks', 'handlers') for p in parts):
                 continue
             fpath = os.path.join(root, fname)
             try:
                 text = open(fpath).read()
                 if text.strip().startswith('$ANSIBLE_VAULT'):
                     continue
-                data = _yaml.safe_load(text)
-                if (isinstance(data, list) and data
-                        and all(isinstance(d, dict) for d in data)):
-                    all_tasks.extend(data)
+                for doc in _yaml.safe_load_all(text):
+                    if not isinstance(doc, list):
+                        continue
+                    if not all(isinstance(d, dict) for d in doc):
+                        continue
+                    parts = Path(root).parts
+                    if parts and parts[-1] in ('tasks', 'handlers'):
+                        # bare task list (role tasks/handlers file)
+                        all_tasks.extend(doc)
+                    else:
+                        # playbook: pull task lists out of each play
+                        for play in doc:
+                            for key in TASK_LIST_KEYS:
+                                tl = play.get(key)
+                                if (isinstance(tl, list) and tl
+                                        and all(isinstance(x, dict) for x in tl)):
+                                    all_tasks.extend(tl)
             except Exception:
                 continue
     return all_tasks
-
-
-def _is_role_task_file(rel_root):
-    """Check if a file is in a role's tasks/ or handlers/ directory."""
-    parts = rel_root.parts
-    return (len(parts) >= 3
-            and parts[0] == 'roles'
-            and parts[-1] in ('tasks', 'handlers'))
-
-
-def _task_import_path(rel_root):
-    """Compute the relative Dhall import path from a role task file to types/Task.dhall."""
-    depth = len(rel_root.parts)
-    return '/'.join(['..'] * depth) + '/types/Task.dhall'
 
 
 def convert_directory(input_dir, output_dir):
@@ -1097,19 +1419,25 @@ def convert_directory(input_dir, output_dir):
                 converter.stats['skipped'] += 1
                 continue
 
-            task_import = None
-            if _is_role_task_file(rel_root):
-                task_import = _task_import_path(rel_root)
+            rel = fpath.relative_to(input_path)
+            out_file = output_path / rel.with_suffix('.dhall')
+            source_label = os.path.relpath(fpath, start=out_file.parent)
+            # Relative import to the shared Task type, valid from any file's
+            # location (role task files and playbooks alike). Dhall requires
+            # relative imports to begin with ./ or ../
+            task_import = os.path.relpath(
+                output_path / 'types' / 'Task.dhall', start=out_file.parent)
+            if not task_import.startswith('.'):
+                task_import = './' + task_import
 
             dhall_text, warnings = converter.convert_file(
-                fpath, task_import_path=task_import)
+                fpath, task_import_path=task_import,
+                source_label=source_label)
             all_warnings.extend(warnings)
 
             if dhall_text is None:
                 continue
 
-            rel = fpath.relative_to(input_path)
-            out_file = output_path / rel.with_suffix('.dhall')
             out_file.parent.mkdir(parents=True, exist_ok=True)
             out_file.write_text(dhall_text, encoding='utf-8')
 

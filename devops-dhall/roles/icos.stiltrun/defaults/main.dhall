@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.stiltrun/defaults/main.yml
 
 {
     stiltrun_image_id = "721eb2cdb9b5"

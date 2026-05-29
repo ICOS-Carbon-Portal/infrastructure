@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.docker_utils/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,7 +6,7 @@ in  [
     Task::{
       when = Some [ "dive_architecture in (\"armv6l\", \"armv7l\")" ],
       name = Some "Architecture is not supported",
-      debug = Some { msg = "dive is not supported on {{ dive_architecture }}" }
+      debug = Some (Task.Poly_debug.Record { msg = "dive is not supported on {{ dive_architecture }}" })
     }
   , Task::{
       when = Some [ "dive_architecture not in (\"armv6l\", \"armv7l\")" ],

@@ -1,6 +1,8 @@
--- Auto-generated from nextcloud_sftp.yml
+-- Auto-generated from ../devops/nextcloud_sftp.yml
 
-[
+let Task = ./types/Task.dhall
+
+in  [
     {
       hosts = "fsicos2"
     , vars = {
@@ -21,212 +23,94 @@
       , sftp_port = 60022
     }
     , handlers = [
-        { name = "reload sshd", systemd = { name = "sshd", state = "reloaded" } }
+        Task::{
+          name = Some "reload sshd",
+          systemd = Some {
+            name = Some "sshd",
+            state = Some "reloaded",
+            daemon_reload = None Bool,
+            enabled = None Text,
+            `daemon-reload` = None Text,
+            status = None Text
+        }
+        }
     ]
     , tasks = [
-        {
-          name = "Retrieve groupfolder id",
+        Task::{
+          name = Some "Retrieve groupfolder id",
           check_mode = Some False,
           shellfact = Some {
-            exec = "occ groupfolder:list --output json | jq  '.[] | select(.mount_point == \"{{ groupfolder_name }}\") | .id'"
-          , fact = "_gfid"
-        },
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+            exec = "occ groupfolder:list --output json | jq  '.[] | select(.mount_point == \"{{ groupfolder_name }}\") | .id'",
+            fact = "_gfid",
+            bool = None Bool,
+            list = None Bool
         }
-      , {
-          name = "Make sure we're dealing with the correct groupfolder",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = Some { that = "(_gfid | int) == groupfolder_id" },
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
         }
-      , {
-          name = "Check that all the src directories exists",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
+      , Task::{
+          name = Some "Make sure we're dealing with the correct groupfolder",
+          `assert` = Some { that = [ "(_gfid | int) == groupfolder_id" ], quiet = None Bool }
+        }
+      , Task::{
+          name = Some "Check that all the src directories exists",
           stat = Some { path = "{{ item.src }}" },
           register = Some "r",
-          failed_when = Some "not r.stat.exists",
-          loop = Some "{{ sftp_dirs }}",
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          failed_when = Some (Task.Poly_failed_when.Str "not r.stat.exists"),
+          loop = Some (Task.Poly_loop.Str "{{ sftp_dirs }}")
         }
-      , {
-          name = "Retrieve passwd data for www-data user",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = Some "getent",
-          failed_when = None Text,
-          loop = None Text,
+      , Task::{
+          name = Some "Retrieve passwd data for www-data user",
           getent = Some { database = "passwd", key = "www-data" },
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          register = Some "getent"
         }
-      , {
-          name = "Check our assumptions about www-data uid",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
+      , Task::{
+          name = Some "Check our assumptions about www-data uid",
           `assert` = Some {
-            that = "(getent.ansible_facts.getent_passwd[host_user][1] | int) == host_uid"
-        },
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+            that = [ "(getent.ansible_facts.getent_passwd[host_user][1] | int) == host_uid" ],
+            quiet = None Bool
         }
-      , {
-          name = "Create sftp user",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
+        }
+      , Task::{
+          name = Some "Create sftp user",
           user = Some {
-            name = "{{ sftp_user }}"
-          , uid = "{{ host_uid }}"
-          , group = "{{ host_uid }}"
-          , password = ''
+            name = "{{ sftp_user }}",
+            uid = Some "{{ host_uid }}",
+            group = Some "{{ host_uid }}",
+            password = Some ''
             {{ vault_nc_paul_upload_password |
                password_hash('sha512', vault_pw_salt) }}
-          ''
-          , non_unique = True
-          , create_home = True
-        },
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          '',
+            non_unique = Some True,
+            create_home = Some "True",
+            shell = None Text,
+            home = None Text,
+            password_lock = None Bool,
+            groups = None ((List Text)),
+            append = None Text,
+            state = None Text,
+            system = None Bool,
+            generate_ssh_key = None Bool,
+            remove = None Text
         }
-      , {
-          name = "Create passwd file",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = Some True,
+        }
+      , Task::{
+          name = Some "Create passwd file",
+          become = Some (Task.Poly_become.Bool True),
           become_user = Some "{{ sftp_user }}",
-          args = Some { chdir = "/home/{{sftp_user}}", creates = "/home/{{sftp_user}}/passwd" },
-          shell = Some "grep {{sftp_user}} /etc/passwd > passwd",
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          args = Some {
+            chdir = Some "/home/{{sftp_user}}",
+            creates = Some "/home/{{sftp_user}}/passwd",
+            executable = None Text,
+            removes = None Text
+        },
+          shell = Some "grep {{sftp_user}} /etc/passwd > passwd"
         }
-      , {
-          name = "Create sftp command script",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = Some "script",
+      , Task::{
+          name = Some "Create sftp command script",
+          tags = Some [ "script" ],
           copy = Some {
-            dest = "{{ sftp_exec }}"
-          , mode = Some "+x"
-          , content = ''
+            dest = "{{ sftp_exec }}",
+            mode = Some "+x",
+            content = Some ''
             #!/bin/bash
 
             # echo "### environment ###"  >> /tmp/sftp.log
@@ -250,37 +134,22 @@
               --chdir /upload \
               /usr/lib/openssh/sftp-server
 
-          ''
-        },
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          '',
+            src = None Text,
+            backup = None Bool,
+            owner = None Text,
+            group = None Text,
+            force = None Text,
+            validate = None Text
         }
-      , {
-          name = "Add user-specific config to sshd",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
+        }
+      , Task::{
+          name = Some "Add user-specific config to sshd",
           blockinfile = Some {
-            marker = "# {mark} ansible / nc_paul_upload"
-          , insertafter = "EOF"
-          , path = "/etc/ssh/sshd_config"
-          , block = ''
+            path = "/etc/ssh/sshd_config",
+            create = None Bool,
+            marker = "# {mark} ansible / nc_paul_upload",
+            block = Some ''
             # https://bugzilla.mindrot.org/show_bug.cgi?id=3122
             # When using sshd 8.2 (ubuntu 20.04), this config cannot be in an
             # include file.
@@ -289,69 +158,41 @@
               ForceCommand {{ sftp_exec }}
             Match All
 
-          ''
+          '',
+            insertafter = Some "EOF",
+            insertbefore = None Text,
+            state = None Text
         },
-          notify = Some "reload sshd",
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          notify = Some [ "reload sshd" ]
         }
-      , {
-          name = "Create nextcloud rescan script",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = Some "_script",
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
+      , Task::{
+          name = Some "Create nextcloud rescan script",
           copy = Some {
-            dest = "/usr/libexec/nextcloud-paul-upload-scan.sh"
-          , mode = Some "+x"
-          , content = ''
+            dest = "/usr/libexec/nextcloud-paul-upload-scan.sh",
+            mode = Some "+x",
+            content = Some ''
             #!/bin/bash
             while :; do
                 /usr/local/sbin/occ groupfolders:scan -- {{ groupfolder_id }}
                 sleep 120
             done
 
-          ''
+          '',
+            src = None Text,
+            backup = None Bool,
+            owner = None Text,
+            group = None Text,
+            force = None Text,
+            validate = None Text
         },
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          register = Some "_script"
         }
-      , {
-          name = "Create systemd service file",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = None Text,
+      , Task::{
+          name = Some "Create systemd service file",
           copy = Some {
-            dest = "/etc/systemd/system/nextcloud-paul-upload-scan.service"
-          , mode = None Text
-          , content = ''
+            dest = "/etc/systemd/system/nextcloud-paul-upload-scan.service",
+            mode = None Text,
+            content = Some ''
             [Service]
             User=root
             WorkingDirectory=/docker/nextcloud
@@ -367,116 +208,61 @@
             # www-data will be active, but www-data won't be logged in.
             WantedBy=user@{{ host_uid }}.service
 
-          ''
-        },
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = None ({ msg : Text })
+          '',
+            src = None Text,
+            backup = None Bool,
+            owner = None Text,
+            group = None Text,
+            force = None Text,
+            validate = None Text
         }
-      , {
-          name = "Test logging in to sftp",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = Some "expect",
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = Some "login",
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
+        }
+      , Task::{
+          name = Some "Test logging in to sftp",
+          tags = Some [ "login" ],
           delegate_to = Some "localhost",
           expect = Some {
-            command = "sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-cp.eu"
-          , responses = {
-              `password:` = "{{ vault_nc_paul_upload_password }}"
-            , `sftp>` = [ "ls -1", "quit" ]
-          }
+            command = "sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-cp.eu",
+            responses = { `password:` = "{{ vault_nc_paul_upload_password }}", `sftp>` = [ "ls -1", "quit" ] }
         },
-          changed_when = Some False,
-          debug = None ({ msg : Text })
+          register = Some "expect",
+          changed_when = Some (Task.Poly_changed_when.Bool False)
         }
-      , {
-          name = "Check directories",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
+      , Task::{
+          name = Some "Check directories",
+          tags = Some [ "login" ],
           `assert` = Some {
             that = [
               "expect.stdout_lines[-2] == \"WP4_Data\""
             , "expect.stdout_lines[-3] == \"WP3_Data\""
             , "expect.stdout_lines[-4] == \"WP2_Data\""
             , "expect.stdout_lines[-5] == \"WP1_Data\""
-          ]
+          ],
+            quiet = None Bool
         },
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = Some "login",
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = Some False,
-          debug = None ({ msg : Text })
+          changed_when = Some (Task.Poly_changed_when.Bool False)
         }
-      , {
-          name = "Display instructions",
-          check_mode = None Bool,
-          shellfact = None ({ exec : Text, fact : Text }),
-          `assert` = None ({ that : List Text }),
-          stat = None ({ path : Text }),
-          register = None Text,
-          failed_when = None Text,
-          loop = None Text,
-          getent = None ({ database : Text, key : Text }),
-          user = None ({ name : Text, uid : Text, group : Text, password : Text, non_unique : Bool, create_home : Bool }),
-          become = None Bool,
-          become_user = None Text,
-          args = None ({ chdir : Text, creates : Text }),
-          shell = None Text,
-          tags = Some "howto",
-          copy = None ({ dest : Text, mode : Optional Text, content : Text }),
-          blockinfile = None ({ marker : Text, insertafter : Text, path : Text, block : Text }),
-          notify = None Text,
-          delegate_to = None Text,
-          expect = None ({ command : Text, responses : { `password:` : Text, `sftp>` : List Text } }),
-          changed_when = None Bool,
-          debug = Some {
-            msg = ''
-            # ssh config is as follows
-            host sftp-paul-nextcloud
-              hostname fsicos2.icos-cp.eu
-              port {{ sftp_port }}
-              user {{ sftp_user }}
-              preferredauthentications password
+      , Task::{
+          name = Some "Display instructions",
+          tags = Some [ "howto" ],
+          debug = Some (Task.Poly_debug.Record {
+              msg = ''
+              # ssh config is as follows
+              host sftp-paul-nextcloud
+                hostname fsicos2.icos-cp.eu
+                port {{ sftp_port }}
+                user {{ sftp_user }}
+                preferredauthentications password
 
-            # With that config in place, the command used to connect looks like:
-            sftp sftp-paul-nextcloud
+              # With that config in place, the command used to connect looks like:
+              sftp sftp-paul-nextcloud
 
-            # Without a ssh config, use the longer command:
-            sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-cp.eu
-            # The password is {{ vault_nc_paul_upload_password }}
+              # Without a ssh config, use the longer command:
+              sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-cp.eu
+              # The password is {{ vault_nc_paul_upload_password }}
 
-          ''
-        }
+            ''
+          })
         }
     ]
   }

@@ -1,4 +1,4 @@
--- Auto-generated from keycloak.yml
+-- Auto-generated from ../devops/keycloak.yml
 
 [
     {

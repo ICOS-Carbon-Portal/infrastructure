@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.pve_server/defaults/main.yml
 
 {
     pve_dnat_bridge = "vmbr0"

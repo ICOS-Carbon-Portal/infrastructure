@@ -1,4 +1,4 @@
--- Auto-generated from vm-callisto.yml
+-- Auto-generated from ../devops/vm-callisto.yml
 
 let Play =
     { Type =

@@ -1,4 +1,4 @@
--- Auto-generated from centos.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot/vars/centos.yml
 
 {
     certbot_fake_key = "/etc/pki/tls/private/{{ certbot_conf_name }}.key"

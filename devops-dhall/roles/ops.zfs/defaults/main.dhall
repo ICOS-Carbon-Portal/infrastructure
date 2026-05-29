@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/ops.zfs/defaults/main.yml
 
 {
     httm_upgrade = "{{ upgrade_everything | default(False) | bool }}"

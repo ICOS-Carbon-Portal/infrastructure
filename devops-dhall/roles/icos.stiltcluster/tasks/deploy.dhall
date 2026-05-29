@@ -1,95 +1,212 @@
--- Auto-generated from deploy.yml
+-- Auto-generated from ../../../../devops/roles/icos.stiltcluster/tasks/deploy.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , template : Optional ({ src : Text, dest : Text })
-    , when : Optional (List Text)
-    , block : Optional (List ({ name : Text, delegate_to : Optional Text, run_once : Optional Bool, fetch : Optional ({ src : Text, dest : Text, flat : Bool }), set_fact : Optional ({ stiltcluster_jar_file : Text, cacheable : Bool }) }))
-    , copy : Optional ({ src : Text, dest : Text, backup : Bool })
-    , notify : Optional Text
-    , `ansible.builtin.shell` : Optional Text
-    , args : Optional ({ chdir : Text })
-    , register : Optional Text
-    , changed_when : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, `daemon-reload` : Bool, state : Text })
-  }
-    , default =
-        { name = None Text
-    , template = None ({ src : Text, dest : Text })
-    , when = None (List Text)
-    , block = None (List ({ name : Text, delegate_to : Optional Text, run_once : Optional Bool, fetch : Optional ({ src : Text, dest : Text, flat : Bool }), set_fact : Optional ({ stiltcluster_jar_file : Text, cacheable : Bool }) }))
-    , copy = None ({ src : Text, dest : Text, backup : Bool })
-    , notify = None Text
-    , `ansible.builtin.shell` = None Text
-    , args = None ({ chdir : Text })
-    , register = None Text
-    , changed_when = None Text
-    , systemd = None ({ name : Text, enabled : Bool, `daemon-reload` : Bool, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Add systemd service",
       template = Some {
-        src = "stiltcluster.service"
-      , dest = "/etc/systemd/system/stiltcluster.service"
+        src = "stiltcluster.service",
+        dest = "/etc/systemd/system/stiltcluster.service",
+        mode = None Text,
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = None Bool,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
     }
     }
-  , Item::{
+  , Task::{
       when = Some [
         "inventory_hostname != stiltcluster_fetch_host"
       , "stiltcluster_jar_file is undefined"
     ],
-      block = Some [
-        {
-          name = "Retrive stiltcluster.jar",
+      block = Some (let Entry =
+        { Type =
+            { name : Optional Text
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user : Optional ({ db : Text, name : Text, password : Text })
+        , loop : Optional (List Text)
+        , postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text })
+        , check_mode : Optional Bool
+        , shellfact : Optional ({ exec : Text, fact : Text })
+        , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile : Optional ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command : Optional Text
+        , register : Optional Text
+        , changed_when : Optional Text
+        , failed_when : Optional (List Text)
+        , github_release : Optional ({ user : Text, repo : Text, action : Text })
+        , set_fact : Optional ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args : Optional ({ chdir : Text })
+        , notify : Optional Text
+        , import_tasks : Optional Text
+        , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd : Optional ({ name : Text, state : Optional Text })
+        , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
+        , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when : Optional Text
+        , shell : Optional Text
+        , known_hosts : Optional ({ path : Text, name : Text, key : Text })
+        , import_role : Optional ({ name : Text, tasks_from : Text })
+        , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp : Optional ({ src : Text })
+        , delegate_to : Optional Text
+        , expect : Optional ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables : Optional ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw : Optional ({ name : Text, rules : Text })
+        , debug : Optional ({ msg : Text })
+        , tags : Optional Text
+        , `community.postgresql.postgresql_set` : Optional ({ name : Text, value : Text })
+        , user : Optional ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once : Optional Bool
+        , fetch : Optional ({ src : Text, dest : Text, flat : Bool })
+        , get_url : Optional ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Text })
+        , fail : Optional ({ msg : Text })
+        , `ansible.builtin.template` : Optional ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` : Optional Text
+        , retries : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user = None ({ db : Text, name : Text, password : Text })
+        , loop = None (List Text)
+        , postgresql_pg_hba = None ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` = None ({ name : Text, db : Text, schema : Text })
+        , check_mode = None Bool
+        , shellfact = None ({ exec : Text, fact : Text })
+        , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile = None ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command = None Text
+        , register = None Text
+        , changed_when = None Text
+        , failed_when = None (List Text)
+        , github_release = None ({ user : Text, repo : Text, action : Text })
+        , set_fact = None ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args = None ({ chdir : Text })
+        , notify = None Text
+        , import_tasks = None Text
+        , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd = None ({ name : Text, state : Optional Text })
+        , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
+        , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when = None Text
+        , shell = None Text
+        , known_hosts = None ({ path : Text, name : Text, key : Text })
+        , import_role = None ({ name : Text, tasks_from : Text })
+        , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp = None ({ src : Text })
+        , delegate_to = None Text
+        , expect = None ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables = None ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw = None ({ name : Text, rules : Text })
+        , debug = None ({ msg : Text })
+        , tags = None Text
+        , `community.postgresql.postgresql_set` = None ({ name : Text, value : Text })
+        , user = None ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once = None Bool
+        , fetch = None ({ src : Text, dest : Text, flat : Bool })
+        , get_url = None ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text })
+        , fail = None ({ msg : Text })
+        , `ansible.builtin.template` = None ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` = None Text
+        , retries = None Natural
+      }
+        }
+
+    in  [
+        Entry::{
+          name = Some "Retrive stiltcluster.jar",
           delegate_to = Some "{{ stiltcluster_fetch_host }}",
           run_once = Some True,
           fetch = Some {
             src = "{{ stiltcluster_fetch_path }}"
           , dest = "tmp/stiltcluster.jar"
           , flat = True
-        },
-          set_fact = None ({ stiltcluster_jar_file : Text, cacheable : Bool })
         }
-      , {
-          name = "Temporarily set stiltcluster_jar_file",
-          delegate_to = None Text,
-          run_once = None Bool,
-          fetch = None ({ src : Text, dest : Text, flat : Bool }),
-          set_fact = Some { stiltcluster_jar_file = "tmp/stiltcluster.jar", cacheable = False }
         }
-    ]
+      , Entry::{
+          name = Some "Temporarily set stiltcluster_jar_file",
+          set_fact = Some {
+            borg_version = None Text
+          , cacheable = False
+          , dive_version = None Text
+          , lazydocker_version = None Text
+          , just_version = None Text
+          , nebula_version = None Text
+          , nebula_resolve_type = None Text
+          , restic_version = None Text
+          , restic_server_version = None Text
+          , stiltcluster_jar_file = Some "tmp/stiltcluster.jar"
+          , btop_version = None Text
+          , fd_version = None Text
+          , lazygit_version = None Text
+          , ripgrep_version = None Text
+          , trippy_version = None Text
+          , watchexec_version = None Text
+          , uv_version = None Text
+          , grafana_datasource_version = None Text
+          , httm_version = None Text
+        }
+        }
+    ])
     }
-  , Item::{
+  , Task::{
       name = Some "Copy jarfile",
       when = Some [ "stiltcluster_jar_file is defined" ],
       copy = Some {
-        src = "{{ stiltcluster_jar_file }}"
-      , dest = "{{ stiltcluster_home }}/stiltcluster.jar"
-      , backup = True
+        dest = "{{ stiltcluster_home }}/stiltcluster.jar",
+        mode = None Text,
+        content = None Text,
+        src = Some "{{ stiltcluster_jar_file }}",
+        backup = Some True,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = Some "restart stiltcluster"
+      notify = Some [ "restart stiltcluster" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Remove all but the five newest of jar file backups",
-      `ansible.builtin.shell` = Some ''
-      ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str ''
+        ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 
-    '',
-      args = Some { chdir = "{{ stiltcluster_home }}" },
+      ''),
+      args = Some {
+        chdir = Some "{{ stiltcluster_home }}",
+        creates = None Text,
+        executable = None Text,
+        removes = None Text
+    },
       register = Some "_r",
-      changed_when = Some "_r.stdout.startswith(\"removed\")"
+      changed_when = Some (Task.Poly_changed_when.Str "_r.stdout.startswith(\"removed\")")
     }
-  , Item::{
+  , Task::{
       name = Some "Make sure stiltcluster is started",
       systemd = Some {
-        name = "stiltcluster.service"
-      , enabled = True
-      , `daemon-reload` = True
-      , state = "started"
+        name = Some "stiltcluster.service",
+        state = Some "started",
+        daemon_reload = None Bool,
+        enabled = Some "True",
+        `daemon-reload` = Some "True",
+        status = None Text
     }
     }
 ]

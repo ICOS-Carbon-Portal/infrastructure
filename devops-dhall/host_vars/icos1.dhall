@@ -1,4 +1,4 @@
--- Auto-generated from icos1.yml
+-- Auto-generated from ../../devops/host_vars/icos1.yml
 
 {
     caddy_modules = [ "github.com/caddyserver/replace-response" ]

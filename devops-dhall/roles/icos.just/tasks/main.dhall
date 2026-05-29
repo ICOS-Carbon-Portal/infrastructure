@@ -1,48 +1,43 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.just/tasks/main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , stat : Optional ({ path : Text })
-    , register : Optional Text
-    , include_tasks : Optional ({ file : Text })
-    , when : Optional Text
-    , file : Optional ({ path : Text, state : Text })
-    , `ansible.builtin.shell` : Optional Text
-    , args : Optional ({ creates : Text, executable : Text })
-  }
-    , default =
-        { stat = None ({ path : Text })
-    , register = None Text
-    , include_tasks = None ({ file : Text })
-    , when = None Text
-    , file = None ({ path : Text, state : Text })
-    , `ansible.builtin.shell` = None Text
-    , args = None ({ creates : Text, executable : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Check whether just is installed",
+    Task::{
+      name = Some "Check whether just is installed",
       stat = Some { path = "/usr/local/bin/just" },
       register = Some "_r"
     }
-  , Entry::{
-      name = "Install/upgrade just",
-      include_tasks = Some { file = "install.yml" },
-      when = Some "not _r.stat.exists or just_upgrade"
+  , Task::{
+      name = Some "Install/upgrade just",
+      include_tasks = Some (Task.Poly_include_tasks.Record { file = "install.yml", apply = None (({ tags : Text })) }),
+      when = Some [ "not _r.stat.exists or just_upgrade" ]
     }
-  , Entry::{
-      name = "Create bash_completion.d directory",
-      file = Some { path = "/etc/bash_completion.d", state = "directory" }
+  , Task::{
+      name = Some "Create bash_completion.d directory",
+      file = Some (Task.Poly_file.Record {
+          path = Some "/etc/bash_completion.d",
+          state = Some "directory",
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
-  , Entry::{
-      name = "Add bash completions for just",
-      `ansible.builtin.shell` = Some ''
-      just --completions bash > /etc/bash_completion.d/just
+  , Task::{
+      name = Some "Add bash completions for just",
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str ''
+        just --completions bash > /etc/bash_completion.d/just
 
-    '',
-      args = Some { creates = "/etc/bash_completion.d/just", executable = "/bin/bash" }
+      ''),
+      args = Some {
+        chdir = None Text,
+        creates = Some "/etc/bash_completion.d/just",
+        executable = Some "/bin/bash",
+        removes = None Text
+    }
     }
 ]

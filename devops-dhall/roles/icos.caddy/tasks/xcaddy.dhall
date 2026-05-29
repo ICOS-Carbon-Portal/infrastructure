@@ -1,59 +1,68 @@
--- Auto-generated from xcaddy.yml
+-- Auto-generated from ../../../../devops/roles/icos.caddy/tasks/xcaddy.yml
 
-let Item =
-    { Type =
-        { import_role : Optional Text
-    , name : Optional Text
-    , command : Optional Text
-    , args : Optional ({ chdir : Text, creates : Text })
-    , notify : Optional Text
-    , file : Optional ({ path : Text, state : Optional Text, mode : Optional Text })
-    , copy : Optional ({ dest : Text, content : Text })
-  }
-    , default =
-        { import_role = None Text
-    , name = None Text
-    , command = None Text
-    , args = None ({ chdir : Text, creates : Text })
-    , notify = None Text
-    , file = None ({ path : Text, state : Optional Text, mode : Optional Text })
-    , copy = None ({ dest : Text, content : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_role = Some "name=icos.xcaddy" }
-  , Item::{
+    Task::{ import_role = Some (Task.Poly_import_role.Str "name=icos.xcaddy") }
+  , Task::{
       name = Some "Compile caddy using xcaddy",
       command = Some "xcaddy build --output {{ caddy_via_xcaddy }} {% for module in caddy_modules %} --with {{ module }} {% endfor %}",
-      args = Some { chdir = "/tmp", creates = "{{ caddy_via_xcaddy }}" },
-      notify = Some "restart caddy"
+      args = Some {
+        chdir = Some "/tmp",
+        creates = Some "{{ caddy_via_xcaddy }}",
+        executable = None Text,
+        removes = None Text
+    },
+      notify = Some [ "restart caddy" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Create caddy systemd drop-in directory",
-      file = Some {
-        path = "{{ caddy_dropin_path | dirname }}"
-      , state = Some "directory"
-      , mode = None Text
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ caddy_dropin_path | dirname }}",
+          state = Some "directory",
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Create caddy systemd drop-in file",
-      notify = Some "restart caddy",
       copy = Some {
-        dest = "{{ caddy_dropin_path }}"
-      , content = ''
+        dest = "{{ caddy_dropin_path }}",
+        mode = None Text,
+        content = Some ''
         [Service]
         ExecStart=
         ExecStart={{ caddy_via_xcaddy }} run --environ --config /etc/caddy/Caddyfile
         ExecReload=
         ExecReload={{ caddy_via_xcaddy }} reload --config /etc/caddy/Caddyfile --force
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
+    },
+      notify = Some [ "restart caddy" ]
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Make /usr/bin/caddy non-executable to avoid confusion",
-      file = Some { path = "/usr/bin/caddy", state = None Text, mode = Some "-x" }
+      file = Some (Task.Poly_file.Record {
+          path = Some "/usr/bin/caddy",
+          state = None Text,
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = Some "-x",
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
 ]

@@ -1,33 +1,48 @@
--- Auto-generated from user_cleanup.yml
+-- Auto-generated from ../../devops/fixes/user_cleanup.yml
 
-[
+let Task = ../types/Task.dhall
+
+in  [
     {
       hosts = "physical_servers fsicos2_vms fsicos3_vms"
     , vars = { lockuser = "username", remove_keys = [ "ssh-rsa..." ] }
     , tasks = [
-        {
+        Task::{
           name = Some "Fetch root authorized_keys",
-          tags = "fetch",
-          fetch = Some { src = "/root/.ssh/authorized_keys", dest = "/tmp/ssh-pub-keys/" },
-          authorized_key = None ({ user : Text, key : Text, state : Text }),
-          loop = None Text,
-          user = None ({ name : Text, password_lock : Bool, shell : Text })
+          tags = Some [ "fetch" ],
+          fetch = Some { src = "/root/.ssh/authorized_keys", dest = "/tmp/ssh-pub-keys/", flat = None Bool }
         }
-      , {
+      , Task::{
           name = Some "Remove specific root key",
-          tags = "remove",
-          fetch = None ({ src : Text, dest : Text }),
-          authorized_key = Some { user = "root", key = "{{ item }}", state = "absent" },
-          loop = Some "{{ remove_keys }}",
-          user = None ({ name : Text, password_lock : Bool, shell : Text })
+          tags = Some [ "remove" ],
+          authorized_key = Some {
+            user = "root",
+            key = "{{ item }}",
+            state = Some "absent",
+            exclusive = None Bool,
+            key_options = None Text
+        },
+          loop = Some (Task.Poly_loop.Str "{{ remove_keys }}")
         }
-      , {
-          name = None Text,
-          tags = "lockuser",
-          fetch = None ({ src : Text, dest : Text }),
-          authorized_key = None ({ user : Text, key : Text, state : Text }),
-          loop = None Text,
-          user = Some { name = "{{ lockuser }}", password_lock = True, shell = "/usr/sbin/nologin" }
+      , Task::{
+          tags = Some [ "lockuser" ],
+          user = Some {
+            name = "{{ lockuser }}",
+            uid = None Text,
+            group = None Text,
+            password = None Text,
+            non_unique = None Bool,
+            create_home = None Text,
+            shell = Some "/usr/sbin/nologin",
+            home = None Text,
+            password_lock = Some True,
+            groups = None ((List Text)),
+            append = None Text,
+            state = None Text,
+            system = None Bool,
+            generate_ssh_key = None Bool,
+            remove = None Text
+        }
         }
     ]
   }

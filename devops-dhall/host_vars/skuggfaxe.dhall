@@ -1,4 +1,4 @@
--- Auto-generated from skuggfaxe.yml
+-- Auto-generated from ../../devops/host_vars/skuggfaxe.yml
 
 {
     icosdata_mkdirs = [ "/data/dataAppStorage" ]

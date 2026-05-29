@@ -1,49 +1,33 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.caddy/tasks/main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Optional Text
-    , name : Optional Text
-    , include_tasks : Optional ({ file : Text, apply : { tags : Text } })
-    , when : Optional Text
-    , `ansible.builtin.shell` : Optional Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { import_tasks = None Text
-    , tags = None Text
-    , name = None Text
-    , include_tasks = None ({ file : Text, apply : { tags : Text } })
-    , when = None Text
-    , `ansible.builtin.shell` = None Text
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "install.yml" }
-  , Item::{ import_tasks = Some "just.yml", tags = Some "caddy_just" }
-  , Item::{
+    Task::{ import_tasks = Some "install.yml" }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "caddy_just" ] }
+  , Task::{
       name = Some "Install plain caddy",
-      include_tasks = Some "plain.yml",
-      when = Some "not caddy_modules"
+      include_tasks = Some (Task.Poly_include_tasks.Str "plain.yml"),
+      when = Some [ "not caddy_modules" ]
     }
-  , Item::{
-      tags = Some "caddy_xcaddy",
-      include_tasks = Some { file = "xcaddy.yml", apply = { tags = "caddy_modules" } },
-      when = Some "caddy_modules"
+  , Task::{
+      include_tasks = Some (Task.Poly_include_tasks.Record { file = "xcaddy.yml", apply = Some { tags = "caddy_modules" } }),
+      tags = Some [ "caddy_xcaddy" ],
+      when = Some [ "caddy_modules" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Check that caddy was properly installed",
-      `ansible.builtin.shell` = Some "{{ caddy_bin }} version",
-      changed_when = Some False
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str "{{ caddy_bin }} version"),
+      changed_when = Some (Task.Poly_changed_when.Bool False)
     }
-  , Item::{ name = Some "Set caddy global configuration", include_tasks = Some "global.yml" }
-  , Item::{
-      tags = Some "caddy_site",
+  , Task::{
+      name = Some "Set caddy global configuration",
+      include_tasks = Some (Task.Poly_include_tasks.Str "global.yml")
+    }
+  , Task::{
       name = Some "Configure caddy site",
-      include_tasks = Some { file = "site.yml", apply = { tags = "caddy_site" } },
-      when = Some "caddy_name is defined"
+      include_tasks = Some (Task.Poly_include_tasks.Record { file = "site.yml", apply = Some { tags = "caddy_site" } }),
+      tags = Some [ "caddy_site" ],
+      when = Some [ "caddy_name is defined" ]
     }
 ]

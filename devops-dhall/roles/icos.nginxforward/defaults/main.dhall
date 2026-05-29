@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.nginxforward/defaults/main.yml
 
 {
     nginxforward_host = "127.0.0.1"

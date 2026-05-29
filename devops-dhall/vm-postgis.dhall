@@ -1,4 +1,4 @@
--- Auto-generated from vm-postgis.yml
+-- Auto-generated from ../devops/vm-postgis.yml
 
 let Play =
     { Type =

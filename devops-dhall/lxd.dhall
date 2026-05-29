@@ -1,4 +1,4 @@
--- Auto-generated from lxd.yml
+-- Auto-generated from ../devops/lxd.yml
 
 [
     {

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.restic_server/handlers/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,12 +6,12 @@ in  [
     Task::{
       name = Some "restart restic",
       systemd = Some {
-        name = Some "restic-server.socket"
-      , state = Some "restarted"
-      , daemon_reload = Some True
-      , enabled = None Text
-      , `daemon-reload` = None Text
-      , status = None Text
+        name = Some "restic-server.socket",
+        state = Some "restarted",
+        daemon_reload = Some True,
+        enabled = None Text,
+        `daemon-reload` = None Text,
+        status = None Text
     }
     }
 ]

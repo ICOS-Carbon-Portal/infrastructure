@@ -1,36 +1,28 @@
--- Auto-generated from remove.yml
+-- Auto-generated from ../../../../devops/roles/icos.timer/tasks/remove.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , command : Optional Text
-    , register : Optional Text
-    , changed_when : Optional Bool
-    , failed_when : Optional (List Text)
-    , when : Optional Text
-    , file : Optional ({ path : Text, state : Text })
-  }
-    , default =
-        { command = None Text
-    , register = None Text
-    , changed_when = None Bool
-    , failed_when = None (List Text)
-    , when = None Text
-    , file = None ({ path : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Stop and disable timer",
+    Task::{
+      name = Some "Stop and disable timer",
       command = Some "systemctl disable --now {{ timer_name }}.timer",
       register = Some "r",
-      changed_when = Some False,
-      failed_when = Some [ "r.rc != 0", "not r.stderr.endswith('does not exist.')" ]
+      changed_when = Some (Task.Poly_changed_when.Bool False),
+      failed_when = Some (Task.Poly_failed_when.Texts [ "r.rc != 0", "not r.stderr.endswith('does not exist.')" ])
     }
-  , Entry::{
-      name = "Remove home directory",
-      when = Some "timer_home != \"/etc/systemd/systemd\"",
-      file = Some { path = "{{ timer_home }}", state = "absent" }
+  , Task::{
+      name = Some "Remove home directory",
+      when = Some [ "timer_home != \"/etc/systemd/systemd\"" ],
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ timer_home }}",
+          state = Some "absent",
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
 ]

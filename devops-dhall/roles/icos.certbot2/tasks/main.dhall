@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot2/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -18,6 +18,6 @@ in  [
 
     '',
       register = Some "_r",
-      changed_when = Some "'Successfully received certificate.' in _r.stdout"
+      changed_when = Some (Task.Poly_changed_when.Str "'Successfully received certificate.' in _r.stdout")
     }
 ]

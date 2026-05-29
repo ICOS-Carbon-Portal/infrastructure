@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.docker_utils/defaults/main.yml
 
 {
     dive_architecture = "{{ fake_architecture | default(ansible_architecture) }}"

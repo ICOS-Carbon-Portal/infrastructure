@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.fairdatapoint/defaults/main.yml
 
 {
     fdp_home = "/home/fdp/fdpenvri"

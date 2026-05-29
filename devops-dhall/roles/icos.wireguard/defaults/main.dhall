@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.wireguard/defaults/main.yml
 
 {
     wireguard_update = False

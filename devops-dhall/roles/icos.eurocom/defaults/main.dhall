@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.eurocom/defaults/main.yml
 
 {
     eurocom_domain = "eurocom.icos-cp.eu"

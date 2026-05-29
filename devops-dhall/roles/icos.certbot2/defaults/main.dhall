@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot2/defaults/main.yml
 
 {
     certbot_bin = "certbot"

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.exploredata/defaults/main.yml
 
 {
     exploredata_port = "{{ 4567 if exploredata_type == 'test' else 4566 }}"

@@ -1,133 +1,137 @@
--- Auto-generated from jyctl.yml
+-- Auto-generated from ../../../../devops/roles/icos.jbuild/tasks/jyctl.yml
 
-let Item =
-    { Type =
-        { import_role : Optional Text
-    , name : Optional Text
-    , user : Optional ({ name : Text, home : Text, groups : Text, append : Bool })
-    , register : Optional Text
-    , file : Optional ({ path : Text, owner : Optional Text, group : Optional Text, mode : Optional Text, state : Optional Text })
-    , loop : Optional (List Text)
-    , become : Optional Bool
-    , become_user : Optional Text
-    , `community.general.docker_login` : Optional ({ registry_url : Text, username : Text, password : Text })
-    , when : Optional Text
-    , pip : Optional ({ virtualenv : Text, name : List Text, state : Text })
-    , copy : Optional ({ src : Optional Text, dest : Text, mode : Optional Text, force : Optional Text, content : Optional Text })
-    , authorized_key : Optional ({ user : Text, key_options : Text, key : Text })
-    , notify : Optional Text
-  }
-    , default =
-        { import_role = None Text
-    , name = None Text
-    , user = None ({ name : Text, home : Text, groups : Text, append : Bool })
-    , register = None Text
-    , file = None ({ path : Text, owner : Optional Text, group : Optional Text, mode : Optional Text, state : Optional Text })
-    , loop = None (List Text)
-    , become = None Bool
-    , become_user = None Text
-    , `community.general.docker_login` = None ({ registry_url : Text, username : Text, password : Text })
-    , when = None Text
-    , pip = None ({ virtualenv : Text, name : List Text, state : Text })
-    , copy = None ({ src : Optional Text, dest : Text, mode : Optional Text, force : Optional Text, content : Optional Text })
-    , authorized_key = None ({ user : Text, key_options : Text, key : Text })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_role = Some "name=icos.python3" }
-  , Item::{
+    Task::{ import_role = Some (Task.Poly_import_role.Str "name=icos.python3") }
+  , Task::{
       name = Some "Create jyctl user",
       user = Some {
-        name = "jyctl"
-      , home = "/opt/jyctl"
-      , groups = "docker"
-      , append = True
+        name = "jyctl",
+        uid = None Text,
+        group = None Text,
+        password = None Text,
+        non_unique = None Bool,
+        create_home = None Text,
+        shell = None Text,
+        home = Some "/opt/jyctl",
+        password_lock = None Bool,
+        groups = Some [ "docker" ],
+        append = Some "True",
+        state = None Text,
+        system = None Bool,
+        generate_ssh_key = None Bool,
+        remove = None Text
     },
       register = Some "_user"
     }
-  , Item::{
+  , Task::{
       name = Some "Change access rights on template directory",
-      file = Some {
-        path = "{{ item }}"
-      , owner = Some "{{ _user.uid }}"
-      , group = Some "{{ _user.group }}"
-      , mode = None Text
-      , state = None Text
-    },
-      loop = Some [ "/docker/jupyter/jupyterhub_home/templates" ]
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ item }}",
+          state = None Text,
+          owner = Some "{{ _user.uid }}",
+          group = Some "{{ _user.group }}",
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      }),
+      loop = Some (Task.Poly_loop.Texts [ "/docker/jupyter/jupyterhub_home/templates" ])
     }
-  , Item::{
+  , Task::{
       name = Some "Change access rights on /opt/jyctl",
-      file = Some {
-        path = "/opt/jyctl"
-      , owner = None Text
-      , group = None Text
-      , mode = Some "0700"
-      , state = None Text
+      file = Some (Task.Poly_file.Record {
+          path = Some "/opt/jyctl",
+          state = None Text,
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = Some "0700",
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Login to registry",
-      become = Some True,
+      become = Some (Task.Poly_become.Bool True),
       become_user = Some "jyctl",
       `community.general.docker_login` = Some {
-        registry_url = "{{ jbuild_registry.url }}"
-      , username = "{{ jbuild_registry.username }}"
-      , password = "{{ jbuild_registry.password }}"
+        registry_url = "{{ jbuild_registry.url }}",
+        username = "{{ jbuild_registry.username }}",
+        password = "{{ jbuild_registry.password }}"
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Remove virtual env",
-      file = Some {
-        path = "/opt/jyctl/venv"
-      , owner = None Text
-      , group = None Text
-      , mode = None Text
-      , state = Some "absent"
-    },
-      when = Some "virtualenv_recreate | default(False) | bool"
+      file = Some (Task.Poly_file.Record {
+          path = Some "/opt/jyctl/venv",
+          state = Some "absent",
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      }),
+      when = Some [ "virtualenv_recreate | default(False) | bool" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Create virtual env",
-      pip = Some { virtualenv = "/opt/jyctl/venv", name = [ "click", "docker" ], state = "present" }
+      pip = Some (Task.Poly_pip.Record {
+          name = [ "click", "docker" ],
+          virtualenv = Some "/opt/jyctl/venv",
+          state = Some "present"
+      })
     }
-  , Item::{
+  , Task::{
       name = Some "Copy jyctl.py",
       copy = Some {
-        src = Some "jyctl.py"
-      , dest = "/opt/jyctl/jyctl.py"
-      , mode = Some "+x"
-      , force = Some "{{ jbuild_force | default(True) | bool }}"
-      , content = None Text
+        dest = "/opt/jyctl/jyctl.py",
+        mode = Some "+x",
+        content = None Text,
+        src = Some "jyctl.py",
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = Some "{{ jbuild_force | default(True) | bool }}",
+        validate = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Add keys to authorized_keys",
       authorized_key = Some {
-        user = "jyctl"
-      , key_options = "command=\"/opt/jyctl/jyctl.py\""
-      , key = ''
+        user = "jyctl",
+        key = ''
         {% for elt in _jbuild_user_keys.results -%}
         {{ elt.public_key }}
         {% endfor %}
 
-      ''
+      '',
+        state = None Text,
+        exclusive = None Bool,
+        key_options = Some "command=\"/opt/jyctl/jyctl.py\""
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Allow jyctl to login",
       copy = Some {
-        src = None Text
-      , dest = "/etc/ssh/sshd_config.d/jyctl_allow_users.conf"
-      , mode = None Text
-      , force = None Text
-      , content = Some ''
+        dest = "/etc/ssh/sshd_config.d/jyctl_allow_users.conf",
+        mode = None Text,
+        content = Some ''
         AllowUsers jyctl
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = Some "reload sshd"
+      notify = Some [ "reload sshd" ]
     }
 ]

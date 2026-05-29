@@ -1,6 +1,8 @@
--- Auto-generated from mail-mailman.yml
+-- Auto-generated from ../devops/mail-mailman.yml
 
-[
+let Task = ./types/Task.dhall
+
+in  [
     {
       hosts = "fsicos2"
     , vars = {
@@ -32,11 +34,11 @@
         }
     ]
     , tasks = [
-        {
-          name = "Install proxy for mailman"
-        , tags = "proxy"
-        , import_role = { name = "icos.mailman", tasks_from = "proxy" }
-      }
+        Task::{
+          name = Some "Install proxy for mailman",
+          tags = Some [ "proxy" ],
+          import_role = Some (Task.Poly_import_role.Record { name = "icos.mailman", tasks_from = Some "proxy" })
+        }
     ]
   }
 ]

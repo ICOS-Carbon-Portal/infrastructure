@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.nebula/defaults/main.yml
 
 {
     nebula_is_lighthouse = False

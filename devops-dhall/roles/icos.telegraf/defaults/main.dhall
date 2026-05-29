@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.telegraf/defaults/main.yml
 
 {
     telegraf_config_root = "/etc/telegraf"

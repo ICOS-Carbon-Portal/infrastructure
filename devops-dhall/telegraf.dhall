@@ -1,4 +1,4 @@
--- Auto-generated from telegraf.yml
+-- Auto-generated from ../devops/telegraf.yml
 
 [
     {

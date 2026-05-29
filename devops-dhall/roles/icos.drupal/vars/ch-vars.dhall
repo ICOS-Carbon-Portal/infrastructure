@@ -1,4 +1,4 @@
--- Auto-generated from ch-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/ch-vars.yml
 
 {
     nginx_conf_name = "icosch"

@@ -1,4 +1,4 @@
--- Auto-generated from cpdata.yml
+-- Auto-generated from ../devops/cpdata.yml
 
 [
     {

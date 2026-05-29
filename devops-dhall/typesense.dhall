@@ -1,4 +1,4 @@
--- Auto-generated from typesense.yml
+-- Auto-generated from ../devops/typesense.yml
 
 [
     {

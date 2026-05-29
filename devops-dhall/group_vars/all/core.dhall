@@ -1,4 +1,4 @@
--- Auto-generated from core.yml
+-- Auto-generated from ../../../devops/group_vars/all/core.yml
 
 {
     restheart_icos_db_name = "db"

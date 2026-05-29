@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.dataold/defaults/main.yml
 
 {
     dataold_home = "/opt/dataold"

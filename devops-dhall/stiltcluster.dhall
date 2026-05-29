@@ -1,4 +1,4 @@
--- Auto-generated from stiltcluster.yml
+-- Auto-generated from ../devops/stiltcluster.yml
 
 let Play =
     { Type =

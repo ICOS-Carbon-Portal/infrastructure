@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.quince/vars/main.yml
 
 {
     bbclient_name = "quince"

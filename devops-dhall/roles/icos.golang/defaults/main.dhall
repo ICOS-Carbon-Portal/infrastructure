@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.golang/defaults/main.yml
 
 {
     golang_version_install = "1.21.1"

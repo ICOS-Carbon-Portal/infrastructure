@@ -1,4 +1,4 @@
--- Auto-generated from stilt.yml
+-- Auto-generated from ../../devops/production.inventory/stilt.yml
 
 {
     stiltcluster_hosts = {

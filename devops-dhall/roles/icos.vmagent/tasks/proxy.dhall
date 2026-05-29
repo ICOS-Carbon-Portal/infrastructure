@@ -1,4 +1,4 @@
--- Auto-generated from proxy.yml
+-- Auto-generated from ../../../../devops/roles/icos.vmagent/tasks/proxy.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -8,10 +8,10 @@ in  [
       name = Some "Probe for vmagent_proxy fact",
       check_mode = Some False,
       shellfact = Some {
-        exec = "ss -Htlp 'sport 443' | sed -re 's/.*(nginx|caddy).*/\\1/' | uniq"
-      , fact = "vmagent_proxy"
-      , bool = None Bool
-      , list = None Bool
+        exec = "ss -Htlp 'sport 443' | sed -re 's/.*(nginx|caddy).*/\\1/' | uniq",
+        fact = "vmagent_proxy",
+        bool = None Bool,
+        list = None Bool
     }
     }
   , Task::{
@@ -28,22 +28,22 @@ in  [
   , Task::{
       when = Some [ "vmagent_proxy == 'nginx'" ],
       name = Some "Setup nginx proxy for vmagent",
-      include_role = Some {
-        name = "icos.nginxsite"
-      , apply = None ({ tags : Text })
-      , public = None Bool
-      , tasks_from = None Text
-    }
+      include_role = Some (Task.Poly_include_role.Record {
+          apply = None (({ tags : Text })),
+          name = "icos.nginxsite",
+          tasks_from = None Text,
+          public = None Bool
+      })
     }
   , Task::{
       when = Some [ "vmagent_proxy == 'caddy'" ],
       name = Some "Setup caddy proxy for vmagent",
-      include_role = Some {
-        name = "icos.caddy"
-      , apply = None ({ tags : Text })
-      , public = None Bool
-      , tasks_from = Some "site.yml"
-    }
+      include_role = Some (Task.Poly_include_role.Record {
+          apply = None (({ tags : Text })),
+          name = "icos.caddy",
+          tasks_from = Some "site.yml",
+          public = None Bool
+      })
     }
   , Task::{ name = Some "Flush handlers", meta = Some "flush_handlers" }
   , Task::{
@@ -51,6 +51,12 @@ in  [
       block = Some (let Entry =
         { Type =
             { name : Optional Text
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user : Optional ({ db : Text, name : Text, password : Text })
+        , loop : Optional (List Text)
+        , postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text })
         , check_mode : Optional Bool
         , shellfact : Optional ({ exec : Text, fact : Text })
         , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
@@ -67,8 +73,6 @@ in  [
         , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
         , systemd : Optional ({ name : Text, state : Optional Text })
         , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
-        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
-        , loop : Optional (List Text)
         , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
         , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
         , when : Optional Text
@@ -99,6 +103,12 @@ in  [
       }
         , default =
             { name = None Text
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user = None ({ db : Text, name : Text, password : Text })
+        , loop = None (List Text)
+        , postgresql_pg_hba = None ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` = None ({ name : Text, db : Text, schema : Text })
         , check_mode = None Bool
         , shellfact = None ({ exec : Text, fact : Text })
         , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
@@ -115,8 +125,6 @@ in  [
         , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
         , systemd = None ({ name : Text, state : Optional Text })
         , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
-        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
-        , loop = None (List Text)
         , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
         , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
         , when = None Text

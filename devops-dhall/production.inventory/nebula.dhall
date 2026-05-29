@@ -1,4 +1,4 @@
--- Auto-generated from nebula.yml
+-- Auto-generated from ../../devops/production.inventory/nebula.yml
 
 {
     nebula_hosts = {

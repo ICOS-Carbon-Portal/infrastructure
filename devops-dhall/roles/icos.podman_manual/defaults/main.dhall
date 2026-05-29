@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.podman_manual/defaults/main.yml
 
 {
     podman_version = "4.3.1"

@@ -1,4 +1,4 @@
--- Auto-generated from borgbackup.yml
+-- Auto-generated from ../../devops/production.inventory/borgbackup.yml
 
 {
     bbservers = {

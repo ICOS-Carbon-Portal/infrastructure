@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.utils/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -7,40 +7,40 @@ in  [
       name = Some "Create common aliases",
       tags = Some [ "alias" ],
       copy = Some {
-        src = None Text
-      , dest = "/etc/profile.d/aliases.sh"
-      , mode = None Text
-      , content = Some ''
+        dest = "/etc/profile.d/aliases.sh",
+        mode = None Text,
+        content = Some ''
         alias sc=systemctl
         alias jc=journalctl
         alias df='df -h -x tmpfs -x overlay -x devtmpfs'
         alias dc='docker compose'
         alias psc='ps xawf -eo pid,user,cgroup,args'
 
-      ''
-      , backup = None Bool
-      , owner = None Text
-      , group = None Text
-      , force = None Text
-      , validate = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
   , Task::{
       name = Some "Copy utilities",
       tags = Some [ "utils_copy" ],
       template = Some {
-        src = "{{ item }}"
-      , dest = "/usr/local/sbin/{{ item }}"
-      , mode = Some "493"
-      , variable_start_string = None Text
-      , variable_end_string = None Text
-      , lstrip_blocks = None Bool
-      , validate = None Text
-      , backup = None Bool
-      , owner = None Text
-      , group = None Text
+        src = "{{ item }}",
+        dest = "/usr/local/sbin/{{ item }}",
+        mode = Some "493",
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = None Bool,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
     },
-      loop = Some [ "retrieve-original", "iptables-remove-duplicates", "ss", "ssh-merge-config" ]
+      loop = Some (Task.Poly_loop.Texts [ "retrieve-original", "iptables-remove-duplicates", "ss", "ssh-merge-config" ])
     }
   , Task::{
       name = Some "Install utilities",
@@ -56,16 +56,16 @@ in  [
         , "tcpdump"
         , "mutt"
         , "unzip"
-      ]
-      , state = None Text
-      , update_cache = Some True
-      , deb = None Text
-      , purge = None Bool
-      , upgrade = None Bool
-      , autoclean = None Bool
-      , autoremove = None Bool
-      , cache_valid_time = None Text
-      , install_recommends = None Bool
+      ],
+        state = None Text,
+        update_cache = Some True,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
     }
   , Task::{ import_tasks = Some "ripgrep.yml", tags = Some [ "ripgrep" ] }

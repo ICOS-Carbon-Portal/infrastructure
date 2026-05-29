@@ -1,4 +1,4 @@
--- Auto-generated from vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.sitesaquanetform/vars/vars.yml
 
 {
     project_dir = "/disk/data/sites-aquanet-form"

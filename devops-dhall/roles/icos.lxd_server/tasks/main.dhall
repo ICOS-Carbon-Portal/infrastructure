@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_server/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -8,10 +8,10 @@ in  [
   , Task::{
       name = Some "Retrieve lxd_is_snap fact",
       shellfact = Some {
-        exec = "which lxc | grep -q '/snap/bin' && echo yes"
-      , fact = "lxd_is_snap"
-      , bool = Some True
-      , list = None Bool
+        exec = "which lxc | grep -q '/snap/bin' && echo yes",
+        fact = "lxd_is_snap",
+        bool = Some True,
+        list = None Bool
     }
     }
   , Task::{
@@ -19,10 +19,9 @@ in  [
       when = Some [ "not lxd_is_snap and not ansible_check_mode" ],
       tags = Some [ "lxd_limits" ],
       copy = Some {
-        src = None Text
-      , dest = "/etc/security/limits.conf"
-      , mode = None Text
-      , content = Some ''
+        dest = "/etc/security/limits.conf",
+        mode = None Text,
+        content = Some ''
         *    soft  nofile  1048576   unset   # max number of open files
         *    hard  nofile  1048576   unset   # max number of open files
         root soft  nofile  1048576   unset   # max number of open files
@@ -30,12 +29,13 @@ in  [
         *    soft  memlock unlimited unset   # max locked-in-memory address space KB
         *    hard  memlock unlimited unset   # max locked-in-memory address space KB
 
-      ''
-      , backup = Some True
-      , owner = None Text
-      , group = None Text
-      , force = None Text
-      , validate = None Text
+      '',
+        src = None Text,
+        backup = Some True,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
 ]

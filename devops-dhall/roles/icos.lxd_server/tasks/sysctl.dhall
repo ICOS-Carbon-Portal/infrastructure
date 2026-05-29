@@ -1,21 +1,265 @@
--- Auto-generated from sysctl.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_server/tasks/sysctl.yml
 
-[
-    {
-      name = "Set sysctl value"
-    , sysctl = { name = "{{ item.name }}", value = "{{ item.value }}" }
-    , loop = [
-        { name = "fs.aio-max-nr", value = 524288 }
-      , { name = "fs.inotify.max_queued_events", value = 1048576 }
-      , { name = "fs.inotify.max_user_instances", value = 1048576 }
-      , { name = "fs.inotify.max_user_watches", value = 1048576 }
-      , { name = "kernel.keys.maxbytes", value = 100000 }
-      , { name = "kernel.keys.maxkeys", value = 4000 }
-      , { name = "net.ipv4.neigh.default.gc_thresh3", value = 8192 }
-      , { name = "net.ipv6.neigh.default.gc_thresh3", value = 8192 }
-      , { name = "vm.max_map_count", value = 262144 }
-      , { name = "kernel.dmesg_restrict", value = 1 }
-      , { name = "net.core.netdev_max_backlog", value = 300000 }
-    ]
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "Set sysctl value",
+      sysctl = Some { name = "{{ item.name }}", value = "{{ item.value }}" },
+      loop = Some (Task.Poly_loop.Records [
+          {
+            question = None Text,
+            value = Some "524288",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "fs.aio-max-nr",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "1048576",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "fs.inotify.max_queued_events",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "1048576",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "fs.inotify.max_user_instances",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "1048576",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "fs.inotify.max_user_watches",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "100000",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "kernel.keys.maxbytes",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "4000",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "kernel.keys.maxkeys",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "8192",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "net.ipv4.neigh.default.gc_thresh3",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "8192",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "net.ipv6.neigh.default.gc_thresh3",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "262144",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "vm.max_map_count",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "1",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "kernel.dmesg_restrict",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "300000",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = Some "net.core.netdev_max_backlog",
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+      ])
+    }
 ]

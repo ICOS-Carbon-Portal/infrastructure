@@ -1,4 +1,4 @@
--- Auto-generated from sites-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/sites-vars.yml
 
 {
     nginx_conf_name = "fieldsites"

@@ -1,4 +1,4 @@
--- Auto-generated from nl-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/nl-vars.yml
 
 {
     nginx_conf_name = "icosnl"

@@ -1,4 +1,4 @@
--- Auto-generated from cp-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/cp-vars.yml
 
 {
     nginx_conf_name = "icoscp"

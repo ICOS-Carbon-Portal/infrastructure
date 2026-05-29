@@ -1,4 +1,4 @@
--- Auto-generated from assert_installed.yml
+-- Auto-generated from ../../../../devops/roles/icos.vmagent/tasks/assert_installed.yml
 
 let Task = ../../../types/Task.dhall
 

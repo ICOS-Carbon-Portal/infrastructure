@@ -1,4 +1,4 @@
--- Auto-generated from geoip.yml
+-- Auto-generated from ../devops/geoip.yml
 
 [
     {

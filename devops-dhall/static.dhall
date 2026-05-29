@@ -1,4 +1,4 @@
--- Auto-generated from static.yml
+-- Auto-generated from ../devops/static.yml
 
 [
     {

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.matomo/defaults/main.yml
 
 {
     matomo_home = "/opt/matomo"

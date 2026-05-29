@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.mailman/defaults/main.yml
 
 {
     mailman_user = "mailman"

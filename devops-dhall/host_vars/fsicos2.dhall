@@ -1,4 +1,4 @@
--- Auto-generated from fsicos2.yml
+-- Auto-generated from ../../devops/host_vars/fsicos2.yml
 
 {
     iptables_ssh_port = 60022

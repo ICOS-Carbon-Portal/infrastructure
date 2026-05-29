@@ -1,4 +1,4 @@
--- Auto-generated from vm-staging.yml
+-- Auto-generated from ../devops/vm-staging.yml
 
 let Play =
     { Type =

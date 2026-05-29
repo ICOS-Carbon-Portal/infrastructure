@@ -1,4 +1,4 @@
--- Auto-generated from app-fairdatapoint.yml
+-- Auto-generated from ../devops/app-fairdatapoint.yml
 
 [
     {

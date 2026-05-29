@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.typesense/defaults/main.yml
 
 {
     typesense_port = 8437

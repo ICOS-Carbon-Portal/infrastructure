@@ -1,4 +1,4 @@
--- Auto-generated from vm-exploredata.yml
+-- Auto-generated from ../devops/vm-exploredata.yml
 
 let Play =
     { Type =

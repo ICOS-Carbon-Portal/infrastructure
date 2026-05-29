@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.cpauth/defaults/main.yml
 
 {
     cpauth_user = "cpauth"

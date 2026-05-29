@@ -1,4 +1,4 @@
--- Auto-generated from vm-fsicos3-flexpart.yml
+-- Auto-generated from ../devops/vm-fsicos3-flexpart.yml
 
 let Play =
     { Type =

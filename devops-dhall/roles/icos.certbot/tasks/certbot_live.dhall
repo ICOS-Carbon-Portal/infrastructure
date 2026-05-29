@@ -1,4 +1,4 @@
--- Auto-generated from certbot_live.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot/tasks/certbot_live.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -7,6 +7,12 @@ in  [
       block = Some (let Item =
         { Type =
             { name : Optional Text
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user : Optional ({ db : Text, name : Text, password : Text })
+        , loop : Optional (List Text)
+        , postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text })
         , check_mode : Optional Bool
         , shellfact : Optional ({ exec : Text, fact : Text })
         , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
@@ -23,8 +29,6 @@ in  [
         , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
         , systemd : Optional ({ name : Text, state : Optional Text })
         , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
-        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
-        , loop : Optional (List Text)
         , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
         , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
         , when : Optional Text
@@ -55,6 +59,12 @@ in  [
       }
         , default =
             { name = None Text
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user = None ({ db : Text, name : Text, password : Text })
+        , loop = None (List Text)
+        , postgresql_pg_hba = None ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` = None ({ name : Text, db : Text, schema : Text })
         , check_mode = None Bool
         , shellfact = None ({ exec : Text, fact : Text })
         , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
@@ -71,8 +81,6 @@ in  [
         , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
         , systemd = None ({ name : Text, state : Optional Text })
         , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
-        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
-        , loop = None (List Text)
         , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
         , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
         , when = None Text
@@ -109,21 +117,21 @@ in  [
     }
   , Task::{
       name = Some "Set nginx config variable",
-      set_fact = Some {
-        certbot_nginx_conf = Some ''
-        ssl_certificate {{ certbot_live_crt }};
-        ssl_certificate_key {{ certbot_live_key }};
+      set_fact = Some (Task.Poly_set_fact.Record {
+          certbot_nginx_conf = Some ''
+          ssl_certificate {{ certbot_live_crt }};
+          ssl_certificate_key {{ certbot_live_key }};
 
-      ''
-      , destjarfile = None Text
-      , name = None Text
-      , nebula_resolve_type = None Text
-      , cacheable = None Bool
-      , nebula_ssh_public = None Text
-      , quince_tomcat_dir = None Text
-      , sshlogin_src_user = None Text
-      , sshlogin_dst_user = None Text
-      , _wg_is_installed = None Natural
-    }
+        '',
+          destjarfile = None Text,
+          name = None Text,
+          nebula_resolve_type = None Text,
+          cacheable = None Bool,
+          nebula_ssh_public = None Text,
+          quince_tomcat_dir = None Text,
+          sshlogin_src_user = None Text,
+          sshlogin_dst_user = None Text,
+          _wg_is_installed = None Natural
+      })
     }
 ]

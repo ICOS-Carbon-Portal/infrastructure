@@ -1,65 +1,60 @@
--- Auto-generated from setup.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_guest/tasks/setup.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , apt : Optional ({ update_cache : Bool, name : List Text })
-    , timezone : Optional ({ name : Text })
-    , notify : Optional Text
-    , locale_gen : Optional ({ name : Text, state : Text })
-    , loop : Optional (List Text)
-    , authorized_key : Optional ({ user : Text, state : Text, key : Text, exclusive : Bool })
-    , when : Optional Text
-    , lineinfile : Optional ({ path : Text, line : Text, regex : Text, state : Text })
-    , import_role : Optional Text
-  }
-    , default =
-        { name = None Text
-    , apt = None ({ update_cache : Bool, name : List Text })
-    , timezone = None ({ name : Text })
-    , notify = None Text
-    , locale_gen = None ({ name : Text, state : Text })
-    , loop = None (List Text)
-    , authorized_key = None ({ user : Text, state : Text, key : Text, exclusive : Bool })
-    , when = None Text
-    , lineinfile = None ({ path : Text, line : Text, regex : Text, state : Text })
-    , import_role = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Install packages",
-      apt = Some { update_cache = True, name = [ "iptables-persistent" ] }
+      apt = Some {
+        name = Some [ "iptables-persistent" ],
+        state = None Text,
+        update_cache = Some True,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Set timezone to Europe/Stockholm",
       timezone = Some { name = "Europe/Stockholm" },
-      notify = Some "restart cron"
+      notify = Some [ "restart cron" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Generate locale",
       locale_gen = Some { name = "{{ item }}", state = "present" },
-      loop = Some [ "en_US.UTF-8", "sv_SE.UTF-8" ]
+      loop = Some (Task.Poly_loop.Texts [ "en_US.UTF-8", "sv_SE.UTF-8" ])
     }
-  , Item::{
+  , Task::{
       name = Some "Install public keys",
       authorized_key = Some {
-        user = "root"
-      , state = "present"
-      , key = "{{ lxd_guest_root_keys }}"
-      , exclusive = True
+        user = "root",
+        key = "{{ lxd_guest_root_keys }}",
+        state = Some "present",
+        exclusive = Some True,
+        key_options = None Text
     },
-      when = Some "lxd_guest_root_keys is truthy"
+      when = Some [ "lxd_guest_root_keys is truthy" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Add default gateway as host",
       lineinfile = Some {
-        path = "/etc/hosts"
-      , line = "{{ ansible_default_ipv4.gateway }} gateway.lxd"
-      , regex = "gateway.lxd$"
-      , state = "present"
+        path = "/etc/hosts",
+        regex = Some "gateway.lxd$",
+        line = Some "{{ ansible_default_ipv4.gateway }} gateway.lxd",
+        state = Some "present",
+        backrefs = None Bool,
+        regexp = None Text,
+        create = None Bool,
+        owner = None Text,
+        group = None Text,
+        insertafter = None Text,
+        mode = None Natural,
+        insertbefore = None Text
     }
     }
-  , Item::{ import_role = Some "name=icos.fail2ban" }
+  , Task::{ import_role = Some (Task.Poly_import_role.Str "name=icos.fail2ban") }
 ]

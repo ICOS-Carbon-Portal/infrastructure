@@ -1,4 +1,4 @@
--- Auto-generated from stiltweb.yml
+-- Auto-generated from ../devops/stiltweb.yml
 
 let Play =
     { Type =

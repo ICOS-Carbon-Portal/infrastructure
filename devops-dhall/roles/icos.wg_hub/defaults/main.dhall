@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.wg_hub/defaults/main.yml
 
 {
     wg_hub_self = "{{ wg_hub_config.peers[inventory_hostname] }}"

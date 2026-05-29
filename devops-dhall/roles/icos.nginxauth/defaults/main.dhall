@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.nginxauth/defaults/main.yml
 
 {
     nginxauth_title = "Login required"

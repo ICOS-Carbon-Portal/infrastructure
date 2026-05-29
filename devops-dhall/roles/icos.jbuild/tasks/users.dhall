@@ -1,27 +1,21 @@
--- Auto-generated from users.yml
+-- Auto-generated from ../../../../devops/roles/icos.jbuild/tasks/users.yml
 
 let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
       name = Some "Generate keys for jbuild",
-      openssh_keypair = Some {
-        path = "/home/{{ item }}/.ssh/jbuild"
-      , owner = "{{ item }}"
-      , group = "{{ item }}"
-    },
-      loop = Some [ "{{ jbuild_users }}" ],
+      openssh_keypair = Some { path = "/home/{{ item }}/.ssh/jbuild", owner = "{{ item }}", group = "{{ item }}" },
+      loop = Some (Task.Poly_loop.Str "{{ jbuild_users }}"),
       register = Some "_jbuild_user_keys"
     }
   , Task::{
       name = Some "Generate jbuild ssh config",
       blockinfile = Some {
-        marker = "# {mark} ansible / jbuild"
-      , state = None Text
-      , create = Some True
-      , insertafter = Some "EOF"
-      , path = "/home/{{ item }}/.ssh/config"
-      , block = Some ''
+        path = "/home/{{ item }}/.ssh/config",
+        create = Some True,
+        marker = "# {mark} ansible / jbuild",
+        block = Some ''
         Host edctl
           Hostname {{ jbuild_edctl_host_name }}
           Port {{ jbuild_edctl_host_port }}
@@ -40,73 +34,75 @@ in  [
           User project
           IdentityFile ~/.ssh/jbuild
 
-      ''
-      , insertbefore = None Text
+      '',
+        insertafter = Some "EOF",
+        insertbefore = None Text,
+        state = None Text
     },
-      loop = Some [ "{{ jbuild_users }}" ]
+      loop = Some (Task.Poly_loop.Str "{{ jbuild_users }}")
     }
   , Task::{
       name = Some "Create $HOME/bin directory",
-      file = Some {
-        path = Some "/home/{{ item }}/bin"
-      , state = Some "directory"
-      , mode = None Text
-      , owner = Some "{{ item }}"
-      , group = Some "{{ item }}"
-      , name = None Text
-      , dest = None Text
-      , recurse = None Bool
-      , src = None Text
-    },
-      loop = Some [ "{{ jbuild_users }}" ]
+      file = Some (Task.Poly_file.Record {
+          path = Some "/home/{{ item }}/bin",
+          state = Some "directory",
+          owner = Some "{{ item }}",
+          group = Some "{{ item }}",
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      }),
+      loop = Some (Task.Poly_loop.Str "{{ jbuild_users }}")
     }
   , Task::{
       name = Some "Create wrappers for edctl",
       copy = Some {
-        src = None Text
-      , dest = "/home/{{ item }}/bin/edctl"
-      , mode = Some "+x"
-      , content = Some ''
+        dest = "/home/{{ item }}/bin/edctl",
+        mode = Some "+x",
+        content = Some ''
         #!/bin/bash
         ssh edctl /opt/edctl/edctl.py "$@"
 
-      ''
-      , backup = None Bool
-      , owner = None Text
-      , group = None Text
-      , force = None Text
-      , validate = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      loop = Some [ "{{ jbuild_users }}" ]
+      loop = Some (Task.Poly_loop.Str "{{ jbuild_users }}")
     }
   , Task::{
       name = Some "Create wrappers for jyctl",
       copy = Some {
-        src = None Text
-      , dest = "/home/{{ item }}/bin/jyctl"
-      , mode = Some "+x"
-      , content = Some ''
+        dest = "/home/{{ item }}/bin/jyctl",
+        mode = Some "+x",
+        content = Some ''
         #!/bin/bash
         ssh jyctl /opt/jyctl/jyctl.py "$@"
 
-      ''
-      , backup = None Bool
-      , owner = None Text
-      , group = None Text
-      , force = None Text
-      , validate = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      loop = Some [ "{{ jbuild_users }}" ]
+      loop = Some (Task.Poly_loop.Str "{{ jbuild_users }}")
     }
   , Task::{
       name = Some "Login to registry",
-      become = Some "True",
+      become = Some (Task.Poly_become.Bool True),
       become_user = Some "{{ item }}",
       `community.general.docker_login` = Some {
-        registry_url = "{{ registry_domain }}"
-      , username = "docker"
-      , password = "{{ jbuild_registry_pass }}"
+        registry_url = "{{ registry_domain }}",
+        username = "docker",
+        password = "{{ jbuild_registry_pass }}"
     },
-      loop = Some [ "{{ jbuild_users }}" ]
+      loop = Some (Task.Poly_loop.Str "{{ jbuild_users }}")
     }
 ]

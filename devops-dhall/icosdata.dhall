@@ -1,4 +1,4 @@
--- Auto-generated from icosdata.yml
+-- Auto-generated from ../devops/icosdata.yml
 
 let Play =
     { Type =

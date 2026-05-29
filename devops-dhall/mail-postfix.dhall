@@ -1,6 +1,8 @@
--- Auto-generated from mail-postfix.yml
+-- Auto-generated from ../devops/mail-postfix.yml
 
-[
+let Task = ./types/Task.dhall
+
+in  [
     {
       hosts = "fsicos2"
     , roles = [
@@ -35,11 +37,17 @@
         }
     ]
     , tasks = [
-        {
-          name = "Configure postfix to accept a larger attachment size"
-        , tags = "postconf"
-        , postconf = { param = "message_size_limit", value = "20480000", reload = True }
-      }
+        Task::{
+          name = Some "Configure postfix to accept a larger attachment size",
+          tags = Some [ "postconf" ],
+          postconf = Some {
+            param = "message_size_limit",
+            value = "20480000",
+            reload = Some "True",
+            append = None Text,
+            separator = None Text
+        }
+        }
     ]
   }
 ]

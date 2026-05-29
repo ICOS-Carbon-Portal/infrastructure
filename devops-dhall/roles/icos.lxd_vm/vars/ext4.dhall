@@ -1,4 +1,4 @@
--- Auto-generated from ext4.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_vm/vars/ext4.yml
 
 {
     lxd_vm_default_devices = {

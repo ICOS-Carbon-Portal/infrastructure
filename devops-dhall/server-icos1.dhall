@@ -1,4 +1,4 @@
--- Auto-generated from server-icos1.yml
+-- Auto-generated from ../devops/server-icos1.yml
 
 [
     {

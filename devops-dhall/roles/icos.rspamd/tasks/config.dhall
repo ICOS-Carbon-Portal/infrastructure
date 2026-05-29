@@ -1,27 +1,14 @@
--- Auto-generated from config.yml
+-- Auto-generated from ../../../../devops/roles/icos.rspamd/tasks/config.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, mode : Natural, content : Text })
-    , notify : Text
-    , `ansible.builtin.copy` : Optional ({ dest : Text, mode : Text, content : Text })
-    , loop : Optional (List ({ dest : Text, content : Text }))
-  }
-    , default =
-        { copy = None ({ dest : Text, mode : Natural, content : Text })
-    , `ansible.builtin.copy` = None ({ dest : Text, mode : Text, content : Text })
-    , loop = None (List ({ dest : Text, content : Text }))
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Install milter configuration for rspamd",
+      name = Some "Install milter configuration for rspamd",
       copy = Some {
-        dest = "/etc/rspamd/local.d/worker-proxy.inc"
-      , mode = 420
-      , content = ''
+        dest = "/etc/rspamd/local.d/worker-proxy.inc",
+        mode = Some "420",
+        content = Some ''
         # This will make the milter listen to all interfaces. Since we're in an
         # LXD container, this will only enable connections from the LXD host.
         bind_socket = "*:11332";
@@ -32,31 +19,43 @@ in  [
             self_scan = yes;
         }
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
   , Task::{
-      name = "Install web ui configuration for rspamd",
+      name = Some "Install web ui configuration for rspamd",
       copy = Some {
-        dest = "/etc/rspamd/local.d/worker-controller.inc"
-      , mode = 420
-      , content = ''
+        dest = "/etc/rspamd/local.d/worker-controller.inc",
+        mode = Some "420",
+        content = Some ''
         # This will make the Web UI listen to all interfaces. Since we're in an
         # LXD container, this will only enable connections from the LXD host.
         bind_socket = "*:11334";
         password = "{{ rspamd_admin_password_hashed }}"
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
   , Task::{
-      name = "Install autolearning configuration for rspamd",
+      name = Some "Install autolearning configuration for rspamd",
       copy = Some {
-        dest = "/etc/rspamd/local.d/classifier-bayes.conf"
-      , mode = 420
-      , content = ''
+        dest = "/etc/rspamd/local.d/classifier-bayes.conf",
+        mode = Some "420",
+        content = Some ''
         # This will turn on the autolearn feature.
         autolearn {
           spam_threshold = 6.0; # When to learn spam (score >= threshold and action is reject)
@@ -66,16 +65,22 @@ in  [
           min_balance = 0.9; # Keep diff for spam/ham learns for at least this value
         }
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
   , Task::{
-      name = "Adjust symbol weight for neural network",
+      name = Some "Adjust symbol weight for neural network",
       copy = Some {
-        dest = "/etc/rspamd/local.d/neural_group.conf"
-      , mode = 420
-      , content = ''
+        dest = "/etc/rspamd/local.d/neural_group.conf",
+        mode = Some "420",
+        content = Some ''
         # Set NEURAL_SPAM to +3, NEURAL_HAM to -0.01
 
         symbols = {
@@ -89,51 +94,101 @@ in  [
           }
         }
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
   , Task::{
-      name = "Adjust action thresholds",
+      name = Some "Adjust action thresholds",
       copy = Some {
-        dest = "/etc/rspamd/local.d/actions.conf"
-      , mode = 420
-      , content = ''
+        dest = "/etc/rspamd/local.d/actions.conf",
+        mode = Some "420",
+        content = Some ''
         reject = 12;
         add_header = 6;
         greylist = 4;
 
-      ''
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      notify = "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
   , Task::{
-      name = "Remove NiXSpam (remove once rspamd is updated to remove this from core)",
-      notify = "restart rspamd",
+      name = Some "Remove NiXSpam (remove once rspamd is updated to remove this from core)",
       `ansible.builtin.copy` = Some { dest = "{{ item.dest }}", mode = "0644", content = "{{ item.content }}" },
-      loop = Some [
-        {
-          dest = "/etc/rspamd/local.d/rbl.conf"
-        , content = ''
-          rbls {
-            nixspam {
-              enabled = false;
+      loop = Some (Task.Poly_loop.Records [
+          {
+            question = None Text,
+            value = None Text,
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = Some "/etc/rspamd/local.d/rbl.conf",
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = Some ''
+            rbls {
+              nixspam {
+                enabled = false;
+              }
             }
-          }
 
-        ''
-      }
-      , {
-          dest = "/etc/rspamd/local.d/rbl_group.conf"
-        , content = ''
-          symbols {
-            RBL_NIXSPAM {
-              enabled = false;
+          '',
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = None Text,
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = Some "/etc/rspamd/local.d/rbl_group.conf",
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = Some ''
+            symbols {
+              RBL_NIXSPAM {
+                enabled = false;
+              }
             }
-          }
 
-        ''
-      }
-    ]
+          '',
+            port = None Text,
+            path = None Text
+        }
+      ]),
+      notify = Some [ "restart rspamd" ]
     }
 ]

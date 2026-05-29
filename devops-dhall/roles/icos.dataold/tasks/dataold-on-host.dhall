@@ -1,74 +1,52 @@
--- Auto-generated from dataold-on-host.yml
+-- Auto-generated from ../../../../devops/roles/icos.dataold/tasks/dataold-on-host.yml
 
-let Item =
-    { Type =
-        { import_role : Optional ({ name : Text })
-    , name : Optional Text
-    , copy : Optional ({ dest : Text, content : Text, mode : Optional Text })
-    , register : Optional Text
-    , when : Optional Text
-    , systemd : Optional ({ name : Text, state : Text, `daemon-reload` : Optional Bool, enabled : Optional Bool })
-    , loop : Optional (List Text)
-    , template : Optional ({ src : Text, dest : Text, lstrip_blocks : Bool, validate : Optional Text })
-    , iptables_raw : Optional ({ name : Text, rules : Text })
-    , delegate_to : Optional Text
-    , uri : Optional ({ url : Text })
-    , failed_when : Optional (List Text)
-    , retries : Optional Natural
-    , delay : Optional Natural
-  }
-    , default =
-        { import_role = None ({ name : Text })
-    , name = None Text
-    , copy = None ({ dest : Text, content : Text, mode : Optional Text })
-    , register = None Text
-    , when = None Text
-    , systemd = None ({ name : Text, state : Text, `daemon-reload` : Optional Bool, enabled : Optional Bool })
-    , loop = None (List Text)
-    , template = None ({ src : Text, dest : Text, lstrip_blocks : Bool, validate : Optional Text })
-    , iptables_raw = None ({ name : Text, rules : Text })
-    , delegate_to = None Text
-    , uri = None ({ url : Text })
-    , failed_when = None (List Text)
-    , retries = None Natural
-    , delay = None Natural
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_role = Some { name = "icos.certbot2" } }
-  , Item::{
+    Task::{
+      import_role = Some (Task.Poly_import_role.Record { name = "icos.certbot2", tasks_from = None Text })
+    }
+  , Task::{
       name = Some "Install rsyslog config for dataold",
       copy = Some {
-        dest = "/etc/rsyslog.d/20-dataold.conf"
-      , content = ''
+        dest = "/etc/rsyslog.d/20-dataold.conf",
+        mode = None Text,
+        content = Some ''
         # The tag ends with ":" once it's in rsyslogd.
         if $syslogtag == "dataold:" then {
            action(type="omfile" file="{{ dataold_log_file }}")
            stop
         }
 
-      ''
-      , mode = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
       register = Some "_rsyslog"
     }
-  , Item::{
+  , Task::{
       name = Some "Restart {{ item }}",
-      when = Some "_rsyslog.changed",
+      when = Some [ "_rsyslog.changed" ],
       systemd = Some {
-        name = "{{ item }}"
-      , state = "restarted"
-      , `daemon-reload` = None Bool
-      , enabled = None Bool
+        name = Some "{{ item }}",
+        state = Some "restarted",
+        daemon_reload = None Bool,
+        enabled = None Text,
+        `daemon-reload` = None Text,
+        status = None Text
     },
-      loop = Some [ "rsyslog", "syslog.socket" ]
+      loop = Some (Task.Poly_loop.Texts [ "rsyslog", "syslog.socket" ])
     }
-  , Item::{
+  , Task::{
       name = Some "Create logrotate config for dataold",
       copy = Some {
-        dest = "/etc/logrotate.d/dataold"
-      , content = ''
+        dest = "/etc/logrotate.d/dataold",
+        mode = None Text,
+        content = Some ''
         {{ dataold_log_file }}
         {
                 rotate 6
@@ -81,64 +59,98 @@ in  [
                 endscript
         }
 
-      ''
-      , mode = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Copy dataold.conf",
-      register = Some "_cf",
       template = Some {
-        src = "dataold.conf"
-      , dest = "/etc/nginx/"
-      , lstrip_blocks = True
-      , validate = Some "nginx -t -c %s"
+        src = "dataold.conf",
+        dest = "/etc/nginx/",
+        mode = None Text,
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = Some True,
+        validate = Some "nginx -t -c %s",
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
+    },
+      register = Some "_cf"
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Copy dataold.service",
-      register = Some "_sr",
       template = Some {
-        src = "dataold.service"
-      , dest = "/etc/systemd/system/"
-      , lstrip_blocks = True
-      , validate = None Text
+        src = "dataold.service",
+        dest = "/etc/systemd/system/",
+        mode = None Text,
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = Some True,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
+    },
+      register = Some "_sr"
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Start dataold service",
       systemd = Some {
-        name = "dataold.service"
-      , state = "{{ 'restarted' if _cf.changed or _sr.changed else 'started' }}"
-      , `daemon-reload` = Some True
-      , enabled = Some True
+        name = Some "dataold.service",
+        state = Some "{{ 'restarted' if _cf.changed or _sr.changed else 'started' }}",
+        daemon_reload = None Bool,
+        enabled = Some "True",
+        `daemon-reload` = Some "True",
+        status = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Add a certbot renewal hook",
       copy = Some {
-        dest = "/etc/letsencrypt/renewal-hooks/deploy/dataold.sh"
-      , content = ''
+        dest = "/etc/letsencrypt/renewal-hooks/deploy/dataold.sh",
+        mode = Some "+x",
+        content = Some ''
         #!/bin/bash
         systemctl reload dataold
 
-      ''
-      , mode = Some "+x"
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Open firewall for port {{ dataold_ext_port }}",
       iptables_raw = Some {
-        name = "allow_{{ dataold_ext_port }}"
-      , rules = "-A INPUT -p tcp --dport {{ dataold_ext_port }} -j ACCEPT -m comment --comment 'dataold'"
+        name = "allow_{{ dataold_ext_port }}",
+        rules = Some "-A INPUT -p tcp --dport {{ dataold_ext_port }} -j ACCEPT -m comment --comment 'dataold'",
+        table = None Text,
+        state = None Text,
+        weight = None Natural
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Test access to dataold from localhost",
-      register = Some "_r",
       delegate_to = Some "localhost",
-      uri = Some { url = "https://{{ certbot_domains | first }}:{{ dataold_ext_port }}" },
-      failed_when = Some [ "\"TLSV1_ALERT_PROTOCOL_VERSION\" not in _r.msg" ],
+      uri = Some {
+        url = "https://{{ certbot_domains | first }}:{{ dataold_ext_port }}",
+        return_content = None Bool,
+        method = None Text,
+        user = None Text,
+        password = None Text
+    },
+      register = Some "_r",
+      failed_when = Some (Task.Poly_failed_when.Texts [ "\"TLSV1_ALERT_PROTOCOL_VERSION\" not in _r.msg" ]),
       retries = Some 10,
       delay = Some 3
     }

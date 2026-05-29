@@ -1,4 +1,4 @@
--- Auto-generated from vm-rdflog.yml
+-- Auto-generated from ../devops/vm-rdflog.yml
 
 [
     {

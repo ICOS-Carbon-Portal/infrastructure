@@ -1,4 +1,4 @@
--- Auto-generated from vm-amalthea.yml
+-- Auto-generated from ../devops/vm-amalthea.yml
 
 let Play =
     { Type =

@@ -1,4 +1,4 @@
--- Auto-generated from maps.yml
+-- Auto-generated from ../devops/maps.yml
 
 [
     {

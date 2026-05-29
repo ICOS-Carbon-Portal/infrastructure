@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.dnsmasq/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -9,12 +9,12 @@ in  [
   , Task::{
       name = Some "Start and enable dnsmasq",
       systemd = Some {
-        name = Some "{{ dnsmasq_service_name }}"
-      , state = None Text
-      , daemon_reload = None Bool
-      , enabled = Some "True"
-      , `daemon-reload` = None Text
-      , status = None Text
+        name = Some "{{ dnsmasq_service_name }}",
+        state = None Text,
+        daemon_reload = None Bool,
+        enabled = Some "True",
+        `daemon-reload` = None Text,
+        status = None Text
     }
     }
 ]

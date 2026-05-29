@@ -1,4 +1,4 @@
--- Auto-generated from drupal.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/drupal.yml
 
 {
     project_dir = "{{ drupal_home }}/{{ website }}/drupal"

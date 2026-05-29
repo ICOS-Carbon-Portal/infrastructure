@@ -1,48 +1,40 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.password_env_file/tasks/main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , when : Optional Text
-    , shell : Optional Text
-    , args : Optional ({ creates : Text })
-    , slurp : Optional ({ src : Text })
-    , register : Optional Text
-    , set_fact : Optional Text
-  }
-    , default =
-        { copy = None ({ dest : Text, content : Text })
-    , when = None Text
-    , shell = None Text
-    , args = None ({ creates : Text })
-    , slurp = None ({ src : Text })
-    , register = None Text
-    , set_fact = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create password file",
+      name = Some "Create password file",
       copy = Some {
-        dest = "{{ file }}"
-      , content = "{{ file_var }}={{ lookup('vars', set_fact) }}"
+        dest = "{{ file }}",
+        mode = None Text,
+        content = Some "{{ file_var }}={{ lookup('vars', set_fact) }}",
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     },
-      when = Some "lookup('vars', set_fact, default=False)"
+      when = Some [ "lookup('vars', set_fact, default=False)" ]
     }
   , Task::{
-      name = "Generate password file",
+      name = Some "Generate password file",
       shell = Some "umask 0077; openssl rand -hex {{ length }} | awk '{ print \"{{ file_var }}=\" $1 }' > {{ file }}",
-      args = Some { creates = "{{ file }}" }
+      args = Some {
+        chdir = None Text,
+        creates = Some "{{ file }}",
+        executable = None Text,
+        removes = None Text
+    }
     }
   , Task::{
-      name = "Read password file",
+      name = Some "Read password file",
       slurp = Some { src = "{{ file }}" },
       register = Some "_slurp"
     }
   , Task::{
-      name = "Extract password",
-      set_fact = Some "{{ set_fact }}=\"{{ _slurp.content | b64decode | regex_replace('[^=]+=(\\\\S+)\\s*', '\\\\1') }}\""
+      name = Some "Extract password",
+      set_fact = Some (Task.Poly_set_fact.Str "{{ set_fact }}=\"{{ _slurp.content | b64decode | regex_replace('[^=]+=(\\\\S+)\\s*', '\\\\1') }}\"")
     }
 ]

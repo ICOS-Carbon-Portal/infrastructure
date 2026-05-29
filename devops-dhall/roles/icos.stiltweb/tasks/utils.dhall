@@ -1,72 +1,61 @@
--- Auto-generated from utils.yml
+-- Auto-generated from ../../../../devops/roles/icos.stiltweb/tasks/utils.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , `ansible.posix.synchronize` : Optional ({ src : Text, dest : Text, delete : Bool, owner : Bool, group : Bool, rsync_opts : List Text })
-    , register : Optional Text
-    , become : Optional Bool
-    , become_user : Optional Text
-    , `community.general.pipx` : Optional ({ executable : Text, python : Text, editable : Bool, force : Text, name : Text })
-    , changed_when : Optional (List Text)
-    , environment : Optional ({ PIPX_BIN_DIR : Text })
-    , template : Optional ({ src : Text, dest : Text, owner : Text, group : Text, mode : Natural })
-    , with_items : Optional (List Text)
-  }
-    , default =
-        { `ansible.posix.synchronize` = None ({ src : Text, dest : Text, delete : Bool, owner : Bool, group : Bool, rsync_opts : List Text })
-    , register = None Text
-    , become = None Bool
-    , become_user = None Text
-    , `community.general.pipx` = None ({ executable : Text, python : Text, editable : Bool, force : Text, name : Text })
-    , changed_when = None (List Text)
-    , environment = None ({ PIPX_BIN_DIR : Text })
-    , template = None ({ src : Text, dest : Text, owner : Text, group : Text, mode : Natural })
-    , with_items = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Synchronize stilt-utils source",
+    Task::{
+      name = Some "Synchronize stilt-utils source",
       `ansible.posix.synchronize` = Some {
-        src = "stilt-utils"
-      , dest = "{{ stiltweb_home }}/"
-      , delete = True
-      , owner = False
-      , group = False
-      , rsync_opts = [ "-F", "--delete-excluded" ]
+        mode = None Text,
+        copy_links = None Bool,
+        src = "stilt-utils",
+        dest = "{{ stiltweb_home }}/",
+        rsync_opts = Some [ "-F", "--delete-excluded" ],
+        owner = Some False,
+        group = Some False,
+        perms = None Bool,
+        delete = Some True
     },
       register = Some "_rsync"
     }
-  , Entry::{
-      name = "Install stilt-utils",
-      register = Some "_pipx",
-      become = Some True,
+  , Task::{
+      name = Some "Install stilt-utils",
+      become = Some (Task.Poly_become.Bool True),
       become_user = Some "{{ stiltweb_username }}",
       `community.general.pipx` = Some {
-        executable = "pipx"
-      , python = "python3.12"
-      , editable = True
-      , force = "{{ _rsync.changed }}"
-      , name = "{{ stiltweb_home }}/stilt-utils"
+        name = "{{ stiltweb_home }}/stilt-utils",
+        executable = "pipx",
+        python = Some "python3.12",
+        editable = Some True,
+        force = Some "{{ _rsync.changed }}"
     },
-      changed_when = Some [
-        "_pipx.changed"
-      , "_pipx.stdout"
-      , "_pipx.stdout.find('already seems to be installed') == -1"
-    ],
-      environment = Some { PIPX_BIN_DIR = "{{ stiltweb_bindir }}" }
+      register = Some "_pipx",
+      changed_when = Some (Task.Poly_changed_when.Texts [
+          "_pipx.changed"
+        , "_pipx.stdout"
+        , "_pipx.stdout.find('already seems to be installed') == -1"
+      ]),
+      environment = Some {
+        BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = None Text,
+        BORG_RELOCATED_REPO_ACCESS_IS_OK = None Text,
+        PIPX_BIN_DIR = Some "{{ stiltweb_bindir }}",
+        GOPATH = None Text
     }
-  , Entry::{
-      name = "Install scripts",
+    }
+  , Task::{
+      name = Some "Install scripts",
       template = Some {
-        src = "{{ item }}"
-      , dest = "{{ stiltweb_bindir }}/"
-      , owner = "{{ stiltweb_username }}"
-      , group = "{{ stiltweb_username }}"
-      , mode = 493
+        src = "{{ item }}",
+        dest = "{{ stiltweb_bindir }}/",
+        mode = Some "493",
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = None Bool,
+        validate = None Text,
+        backup = None Bool,
+        owner = Some "{{ stiltweb_username }}",
+        group = Some "{{ stiltweb_username }}"
     },
-      with_items = Some [ "tail-latest.sh", "sync-station-names.sh", "sync-fsicos1-to-fsicos2.sh" ]
+      with_items = Some (Task.Poly_with_items.Texts [ "tail-latest.sh", "sync-station-names.sh", "sync-fsicos1-to-fsicos2.sh" ])
     }
 ]

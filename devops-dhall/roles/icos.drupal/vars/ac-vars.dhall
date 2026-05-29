@@ -1,4 +1,4 @@
--- Auto-generated from ac-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/ac-vars.yml
 
 {
     nginx_conf_name = "actris"

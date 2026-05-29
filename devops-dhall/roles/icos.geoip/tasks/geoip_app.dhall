@@ -1,4 +1,4 @@
--- Auto-generated from geoip_app.yml
+-- Auto-generated from ../../../../devops/roles/icos.geoip/tasks/geoip_app.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,12 +6,12 @@ in  [
     Task::{
       name = Some "Pull source",
       git = Some {
-        repo = "{{ geoip_git_repo }}"
-      , version = Some "{{ geoip_git_version }}"
-      , dest = "{{ geoip_repo_dir }}"
-      , force = Some True
-      , update = None Text
-      , key_file = None Text
+        repo = "{{ geoip_git_repo }}",
+        version = Some "{{ geoip_git_version }}",
+        dest = "{{ geoip_repo_dir }}",
+        force = Some True,
+        update = None Text,
+        key_file = None Text
     },
       register = Some "_git"
     }
@@ -24,36 +24,36 @@ in  [
 
     '',
       args = Some {
-        creates = None Text
-      , chdir = Some "{{ geoip_home }}"
-      , executable = Some "/bin/bash"
-      , removes = None Text
+        chdir = Some "{{ geoip_home }}",
+        creates = None Text,
+        executable = Some "/bin/bash",
+        removes = None Text
     },
       register = Some "_output",
-      changed_when = Some "\" ---> Running in \" in _output.stdout",
+      changed_when = Some (Task.Poly_changed_when.Str "\" ---> Running in \" in _output.stdout"),
       when = Some [ "geoip_docker_build | default(True)" ]
     }
   , Task::{
       name = Some "Start containers",
       `community.docker.docker_compose_v2` = Some {
-        project_src = "{{ geoip_home }}"
-      , state = None Text
-      , pull = None Text
-      , services = None (List Text)
-      , build = None Text
+        project_src = "{{ geoip_home }}",
+        state = None Text,
+        pull = None Text,
+        services = None ((List Text)),
+        build = None Text
     }
     }
   , Task::{
       name = Some "Check that geoip responds",
       uri = Some {
-        url = "http://{{ certbot_domains | first }}:/ip/8.8.8.8"
-      , return_content = Some True
-      , method = None Text
-      , user = None Text
-      , password = None Text
+        url = "http://{{ certbot_domains | first }}:/ip/8.8.8.8",
+        return_content = Some True,
+        method = None Text,
+        user = None Text,
+        password = None Text
     },
       register = Some "r",
-      failed_when = Some "r.failed or r.json | json_query('ip') != '8.8.8.8'",
+      failed_when = Some (Task.Poly_failed_when.Str "r.failed or r.json | json_query('ip') != '8.8.8.8'"),
       retries = Some 2,
       delay = Some 10,
       until = Some "not r.failed",

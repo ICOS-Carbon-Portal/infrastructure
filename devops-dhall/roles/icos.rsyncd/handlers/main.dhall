@@ -1,10 +1,10 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.rsyncd/handlers/main.yml
 
 let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
       name = Some "restart rsync",
-      service = Some { name = "rsync", state = "restarted", enabled = None Bool }
+      service = Some (Task.Poly_service.Record { name = "rsync", state = "restarted", enabled = None Bool })
     }
 ]

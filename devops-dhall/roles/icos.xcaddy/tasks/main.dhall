@@ -1,26 +1,15 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.xcaddy/tasks/main.yml
 
-let Item =
-    { Type =
-        { import_role : Optional Text
-    , import_tasks : Optional Text
-    , when : Optional Text
-  }
-    , default =
-        { import_role = None Text
-    , import_tasks = None Text
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_role = Some "name=icos.golang" }
-  , Item::{
+    Task::{ import_role = Some (Task.Poly_import_role.Str "name=icos.golang") }
+  , Task::{
       import_tasks = Some "xcaddy-debian.yml",
-      when = Some "ansible_distribution_file_variety == 'Debian'"
+      when = Some [ "ansible_distribution_file_variety == 'Debian'" ]
     }
-  , Item::{
+  , Task::{
       import_tasks = Some "xcaddy-other.yml",
-      when = Some "ansible_distribution_file_variety != 'Debian'"
+      when = Some [ "ansible_distribution_file_variety != 'Debian'" ]
     }
 ]

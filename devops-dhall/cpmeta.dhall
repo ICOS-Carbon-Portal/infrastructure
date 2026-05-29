@@ -1,4 +1,4 @@
--- Auto-generated from cpmeta.yml
+-- Auto-generated from ../devops/cpmeta.yml
 
 let Play =
     { Type =

@@ -1,48 +1,124 @@
--- Auto-generated from install.yml
+-- Auto-generated from ../../../../devops/roles/icos.vmagent/tasks/install.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, mode : Text, state : Text })
-    , loop : Optional (List ({ path : Text, mode : Optional Text }))
-    , stat : Optional ({ path : Text })
-    , register : Optional Text
-    , import_tasks : Optional Text
-    , when : Optional Text
-  }
-    , default =
-        { file = None ({ path : Text, mode : Text, state : Text })
-    , loop = None (List ({ path : Text, mode : Optional Text }))
-    , stat = None ({ path : Text })
-    , register = None Text
-    , import_tasks = None Text
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Create vmagent directories",
-      file = Some {
-        path = "{{ item.path }}"
-      , mode = "{{ item.mode | default(omit) }}"
-      , state = "directory"
-    },
-      loop = Some [
-        { path = "{{ vmagent_home }}", mode = Some "0700" }
-      , { path = "{{ vmagent_bin }}", mode = None Text }
-      , { path = "{{ vmagent_fsd }}", mode = None Text }
-      , { path = "{{ vmagent_configs }}", mode = None Text }
-    ]
+    Task::{
+      name = Some "Create vmagent directories",
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ item.path }}",
+          state = Some "directory",
+          owner = None Text,
+          group = None Text,
+          name = None Text,
+          mode = Some "{{ item.mode | default(omit) }}",
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      }),
+      loop = Some (Task.Poly_loop.Records [
+          {
+            question = None Text,
+            value = None Text,
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = None Text,
+            mode = Some "0700",
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = Some "{{ vmagent_home }}"
+        }
+        , {
+            question = None Text,
+            value = None Text,
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = Some "{{ vmagent_bin }}"
+        }
+        , {
+            question = None Text,
+            value = None Text,
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = Some "{{ vmagent_fsd }}"
+        }
+        , {
+            question = None Text,
+            value = None Text,
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = None Text,
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = Some "{{ vmagent_configs }}"
+        }
+      ])
     }
-  , Entry::{
-      name = "Check whether vmagent is installed",
+  , Task::{
+      name = Some "Check whether vmagent is installed",
       stat = Some { path = "{{ vmagent_bin }}/vmagent-prod" },
       register = Some "_vmagent"
     }
-  , Entry::{
-      name = "Install/upgrade install vmagent",
+  , Task::{
+      name = Some "Install/upgrade install vmagent",
       import_tasks = Some "really_install.yml",
-      when = Some "not _vmagent.stat.exists or (vmagent_upgrade | default(False) | bool)"
+      when = Some [ "not _vmagent.stat.exists or (vmagent_upgrade | default(False) | bool)" ]
     }
 ]

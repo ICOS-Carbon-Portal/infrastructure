@@ -1,96 +1,208 @@
--- Auto-generated from config_present.yml
+-- Auto-generated from ../../../../devops/roles/icos.telegraf/tasks/config_present.yml
 
-let Item =
-    { Type =
-        { block : Optional (List ({ name : Text, copy : Optional ({ dest : Text, content : Text, backup : Bool }), register : Text, shell : Optional Text, changed_when : Optional Text, failed_when : Optional (List Text), notify : Optional Text }))
-    , rescue : Optional (List ({ name : Text, command : Optional Text, changed_when : Optional Bool, register : Optional Text, copy : Optional ({ remote_src : Bool, dest : Text, src : Text }), debug : Optional ({ msg : Text }), fail : Optional ({ msg : Text }) }))
-    , always : Optional (List ({ name : Text, file : { name : Text, state : Text }, when : Text }))
-    , name : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text })
-  }
-    , default =
-        { block = None (List ({ name : Text, copy : Optional ({ dest : Text, content : Text, backup : Bool }), register : Text, shell : Optional Text, changed_when : Optional Text, failed_when : Optional (List Text), notify : Optional Text }))
-    , rescue = None (List ({ name : Text, command : Optional Text, changed_when : Optional Bool, register : Optional Text, copy : Optional ({ remote_src : Bool, dest : Text, src : Text }), debug : Optional ({ msg : Text }), fail : Optional ({ msg : Text }) }))
-    , always = None (List ({ name : Text, file : { name : Text, state : Text }, when : Text }))
-    , name = None Text
-    , systemd = None ({ name : Text, enabled : Bool, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
-      block = Some [
-        {
-          name = "Create telegraf config file",
-          copy = Some {
-            dest = "{{ telegraf_config_root }}/{{ telegraf_config_file }}"
-          , content = "{{ telegraf_config }}"
-          , backup = True
-        },
-          register = "update",
-          shell = None Text,
-          changed_when = None Text,
-          failed_when = None (List Text),
-          notify = None Text
+    Task::{
+      block = Some (let Task =
+        { Type =
+            { name : Optional Text
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user : Optional ({ db : Text, name : Text, password : Text })
+        , loop : Optional (List Text)
+        , postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text })
+        , check_mode : Optional Bool
+        , shellfact : Optional ({ exec : Text, fact : Text })
+        , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile : Optional ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command : Optional Text
+        , register : Optional Text
+        , changed_when : Optional Text
+        , failed_when : Optional (List Text)
+        , github_release : Optional ({ user : Text, repo : Text, action : Text })
+        , set_fact : Optional ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args : Optional ({ chdir : Text })
+        , notify : Optional Text
+        , import_tasks : Optional Text
+        , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd : Optional ({ name : Text, state : Optional Text })
+        , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
+        , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when : Optional Text
+        , shell : Optional Text
+        , known_hosts : Optional ({ path : Text, name : Text, key : Text })
+        , import_role : Optional ({ name : Text, tasks_from : Text })
+        , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp : Optional ({ src : Text })
+        , delegate_to : Optional Text
+        , expect : Optional ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables : Optional ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw : Optional ({ name : Text, rules : Text })
+        , debug : Optional ({ msg : Text })
+        , tags : Optional Text
+        , `community.postgresql.postgresql_set` : Optional ({ name : Text, value : Text })
+        , user : Optional ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once : Optional Bool
+        , fetch : Optional ({ src : Text, dest : Text, flat : Bool })
+        , get_url : Optional ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Text })
+        , fail : Optional ({ msg : Text })
+        , `ansible.builtin.template` : Optional ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` : Optional Text
+        , retries : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+        , postgresql_user = None ({ db : Text, name : Text, password : Text })
+        , loop = None (List Text)
+        , postgresql_pg_hba = None ({ dest : Text, users : Text, source : Text, method : Text, contype : Text })
+        , `community.postgresql.postgresql_ext` = None ({ name : Text, db : Text, schema : Text })
+        , check_mode = None Bool
+        , shellfact = None ({ exec : Text, fact : Text })
+        , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile = None ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command = None Text
+        , register = None Text
+        , changed_when = None Text
+        , failed_when = None (List Text)
+        , github_release = None ({ user : Text, repo : Text, action : Text })
+        , set_fact = None ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args = None ({ chdir : Text })
+        , notify = None Text
+        , import_tasks = None Text
+        , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd = None ({ name : Text, state : Optional Text })
+        , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
+        , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when = None Text
+        , shell = None Text
+        , known_hosts = None ({ path : Text, name : Text, key : Text })
+        , import_role = None ({ name : Text, tasks_from : Text })
+        , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp = None ({ src : Text })
+        , delegate_to = None Text
+        , expect = None ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables = None ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw = None ({ name : Text, rules : Text })
+        , debug = None ({ msg : Text })
+        , tags = None Text
+        , `community.postgresql.postgresql_set` = None ({ name : Text, value : Text })
+        , user = None ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once = None Bool
+        , fetch = None ({ src : Text, dest : Text, flat : Bool })
+        , get_url = None ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text })
+        , fail = None ({ msg : Text })
+        , `ansible.builtin.template` = None ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` = None Text
+        , retries = None Natural
+      }
         }
-      , {
-          name = "Run validation",
-          copy = None ({ dest : Text, content : Text, backup : Bool }),
-          register = "test",
-          shell = Some "telegraf --test --config {{ update.dest }} > /dev/null",
+
+    in  [
+        Task::{
+          name = Some "Create telegraf config file",
+          register = Some "update",
+          copy = Some {
+            content = Some "{{ telegraf_config }}"
+          , dest = "{{ telegraf_config_root }}/{{ telegraf_config_file }}"
+          , backup = Some True
+          , src = None Text
+          , mode = None Natural
+        }
+        }
+      , Task::{
+          name = Some "Run validation",
+          register = Some "test",
           changed_when = Some "update.changed",
           failed_when = Some [ "test.failed", "test.stderr.find('no inputs found') < 0" ],
-          notify = Some "reload telegraf"
+          notify = Some "reload telegraf",
+          shell = Some "telegraf --test --config {{ update.dest }} > /dev/null"
         }
-    ],
-      rescue = Some [
-        {
+    ]),
+      rescue = Some (let Task =
+        { Type =
+            { name : Text
+        , command : Optional Text
+        , register : Optional Text
+        , debug : Optional ({ msg : Text })
+        , copy : Optional ({ remote_src : Bool, dest : Text, src : Text })
+        , when : Optional Text
+        , fail : Optional ({ msg : Text })
+        , file : Optional ({ path : Text, state : Text })
+        , changed_when : Optional Bool
+      }
+        , default =
+            { command = None Text
+        , register = None Text
+        , debug = None ({ msg : Text })
+        , copy = None ({ remote_src : Bool, dest : Text, src : Text })
+        , when = None Text
+        , fail = None ({ msg : Text })
+        , file = None ({ path : Text, state : Text })
+        , changed_when = None Bool
+      }
+        }
+
+    in  [
+        Task::{
           name = "Slurp failed file and add line numbers",
           command = Some "cat -n {{ update.dest }}",
-          changed_when = Some False,
           register = Some "_slurp",
-          copy = None ({ remote_src : Bool, dest : Text, src : Text }),
-          debug = None ({ msg : Text }),
-          fail = None ({ msg : Text })
+          changed_when = Some False
         }
-      , {
+      , Task::{
           name = "Restore config file",
-          command = None Text,
-          changed_when = None Bool,
-          register = None Text,
-          copy = Some { remote_src = True, dest = "{{ update.dest }}", src = "{{ update.backup_file }}" },
-          debug = None ({ msg : Text }),
-          fail = None ({ msg : Text })
+          copy = Some { remote_src = True, dest = "{{ update.dest }}", src = "{{ update.backup_file }}" }
         }
-      , {
-          name = "Dump failed configuration",
-          command = None Text,
-          changed_when = None Bool,
-          register = None Text,
-          copy = None ({ remote_src : Bool, dest : Text, src : Text }),
-          debug = Some { msg = "{{ _slurp.stdout }}" },
-          fail = None ({ msg : Text })
-        }
-      , {
-          name = "Fail",
-          command = None Text,
-          changed_when = None Bool,
-          register = None Text,
-          copy = None ({ remote_src : Bool, dest : Text, src : Text }),
-          debug = None ({ msg : Text }),
-          fail = Some { msg = "Telegraf config file is broken" }
-        }
-    ],
-      always = Some [
-        {
-          name = "Remove backup file"
-        , file = { name = "{{ update.backup_file }}", state = "absent" }
-        , when = "update['backup_file'] is defined"
+      , Task::{ name = "Dump failed configuration", debug = Some { msg = "{{ _slurp.stdout }}" } }
+      , Task::{ name = "Fail", fail = Some { msg = "Telegraf config file is broken" } }
+    ]),
+      always = Some (let Entry =
+        { Type =
+            { name : Text
+        , file : Optional ({ name : Optional Text, state : Text, path : Optional Text })
+        , changed_when : Optional Bool
+        , when : Optional Text
+        , meta : Optional Text
       }
-    ]
+        , default =
+            { file = None ({ name : Optional Text, state : Text, path : Optional Text })
+        , changed_when = None Bool
+        , when = None Text
+        , meta = None Text
+      }
+        }
+
+    in  [
+        Entry::{
+          name = "Remove backup file",
+          file = Some { name = Some "{{ update.backup_file }}", state = "absent", path = None Text },
+          when = Some "update['backup_file'] is defined"
+        }
+    ])
     }
-  , Item::{
+  , Task::{
       name = Some "Make sure telegraf is started",
-      systemd = Some { name = "telegraf", enabled = True, state = "started" }
+      systemd = Some {
+        name = Some "telegraf",
+        state = Some "started",
+        daemon_reload = None Bool,
+        enabled = Some "True",
+        `daemon-reload` = None Text,
+        status = None Text
+    }
     }
 ]

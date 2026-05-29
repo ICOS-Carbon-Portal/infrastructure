@@ -1,4 +1,4 @@
--- Auto-generated from certbot_fake.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot/tasks/certbot_fake.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -11,29 +11,29 @@ in  [
 
     '',
       args = Some {
-        creates = Some "{{ certbot_fake_crt }}"
-      , chdir = None Text
-      , executable = None Text
-      , removes = None Text
+        chdir = None Text,
+        creates = Some "{{ certbot_fake_crt }}",
+        executable = None Text,
+        removes = None Text
     }
     }
   , Task::{
       name = Some "Create nginx config string",
-      set_fact = Some {
-        certbot_nginx_conf = Some ''
-        ssl_certificate {{ certbot_fake_crt }};
-        ssl_certificate_key {{ certbot_fake_key}};
+      set_fact = Some (Task.Poly_set_fact.Record {
+          certbot_nginx_conf = Some ''
+          ssl_certificate {{ certbot_fake_crt }};
+          ssl_certificate_key {{ certbot_fake_key}};
 
-      ''
-      , destjarfile = None Text
-      , name = None Text
-      , nebula_resolve_type = None Text
-      , cacheable = None Bool
-      , nebula_ssh_public = None Text
-      , quince_tomcat_dir = None Text
-      , sshlogin_src_user = None Text
-      , sshlogin_dst_user = None Text
-      , _wg_is_installed = None Natural
-    }
+        '',
+          destjarfile = None Text,
+          name = None Text,
+          nebula_resolve_type = None Text,
+          cacheable = None Bool,
+          nebula_ssh_public = None Text,
+          quince_tomcat_dir = None Text,
+          sshlogin_src_user = None Text,
+          sshlogin_dst_user = None Text,
+          _wg_is_installed = None Natural
+      })
     }
 ]

@@ -1,6 +1,8 @@
--- Auto-generated from cpauth.yml
+-- Auto-generated from ../devops/cpauth.yml
 
-[
+let Task = ./types/Task.dhall
+
+in  [
     {
       hosts = "fsicos2"
     , roles = [
@@ -18,11 +20,11 @@
         }
     ]
     , tasks = [
-        {
-          name = "Install cpauth backup"
-        , tags = "backup"
-        , import_role = { name = "icos.cpauth", tasks_from = "backup" }
-      }
+        Task::{
+          name = Some "Install cpauth backup",
+          tags = Some [ "backup" ],
+          import_role = Some (Task.Poly_import_role.Record { name = "icos.cpauth", tasks_from = Some "backup" })
+        }
     ]
   }
 ]

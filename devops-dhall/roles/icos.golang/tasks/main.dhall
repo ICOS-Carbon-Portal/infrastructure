@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.golang/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -7,16 +7,16 @@ in  [
       name = Some "Retrieve version of installed golang (if any)",
       check_mode = Some False,
       shellfact = Some {
-        exec = "go version | cut -c14-20"
-      , fact = "golang_local_version"
-      , bool = None Bool
-      , list = None Bool
+        exec = "go version | cut -c14-20",
+        fact = "golang_local_version",
+        bool = None Bool,
+        list = None Bool
     },
-      failed_when = Some "False"
+      failed_when = Some (Task.Poly_failed_when.Bool False)
     }
   , Task::{
       name = Some "Is the installed version of golang sufficent?",
-      debug = Some { msg = "{{ golang_local_version }} is sufficient." },
+      debug = Some (Task.Poly_debug.Record { msg = "{{ golang_local_version }} is sufficient." }),
       when = Some [ "golang_local_version_ok" ]
     }
   , Task::{

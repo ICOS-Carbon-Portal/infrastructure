@@ -1,29 +1,23 @@
--- Auto-generated from nginx.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/tasks/nginx.yml
 
-let Item =
-    { Type =
-        { include_role : Optional Text
-    , name : Optional Text
-    , template : Optional ({ src : Text, dest : Text, mode : Natural })
-    , notify : Optional Text
-  }
-    , default =
-        { include_role = None Text
-    , name = None Text
-    , template = None ({ src : Text, dest : Text, mode : Natural })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ include_role = Some "name=icos.certbot" }
-  , Item::{
+    Task::{ include_role = Some (Task.Poly_include_role.Str "name=icos.certbot") }
+  , Task::{
       name = Some "Copy nginx {{ nginx_conf_name }}.conf",
       template = Some {
-        src = "nginx.conf.j2"
-      , dest = "/etc/nginx/conf.d/{{ nginx_conf_name }}.conf"
-      , mode = 448
+        src = "nginx.conf.j2",
+        dest = "/etc/nginx/conf.d/{{ nginx_conf_name }}.conf",
+        mode = Some "448",
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = None Bool,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
     },
-      notify = Some "reload nginx config"
+      notify = Some [ "reload nginx config" ]
     }
 ]

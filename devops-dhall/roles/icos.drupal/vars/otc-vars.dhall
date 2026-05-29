@@ -1,4 +1,4 @@
--- Auto-generated from otc-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/otc-vars.yml
 
 {
     nginx_conf_name = "icosotc"

@@ -1,4 +1,4 @@
--- Auto-generated from vm-erddap.yml
+-- Auto-generated from ../devops/vm-erddap.yml
 
 let Play =
     { Type =

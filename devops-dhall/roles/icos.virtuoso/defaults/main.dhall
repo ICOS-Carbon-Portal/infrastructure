@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.virtuoso/defaults/main.yml
 
 {
     virtuoso_home = "{{ docker_compose_home | default('/docker') }}/virtuoso"

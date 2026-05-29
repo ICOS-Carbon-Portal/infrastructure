@@ -1,4 +1,4 @@
--- Auto-generated from no-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/no-vars.yml
 
 {
     nginx_conf_name = "icosno"

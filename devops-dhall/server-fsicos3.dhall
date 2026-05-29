@@ -1,4 +1,4 @@
--- Auto-generated from server-fsicos3.yml
+-- Auto-generated from ../devops/server-fsicos3.yml
 
 [
     {

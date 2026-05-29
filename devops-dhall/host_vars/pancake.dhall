@@ -1,4 +1,4 @@
--- Auto-generated from pancake.yml
+-- Auto-generated from ../../devops/host_vars/pancake.yml
 
 {
     icosdata_exports = ''

@@ -1,4 +1,4 @@
--- Auto-generated from vm-ganymede.yml
+-- Auto-generated from ../devops/vm-ganymede.yml
 
 let Play =
     { Type =

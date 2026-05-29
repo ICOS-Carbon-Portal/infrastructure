@@ -1,4 +1,4 @@
--- Auto-generated from vm-fsicos3-dokku.yml
+-- Auto-generated from ../devops/vm-fsicos3-dokku.yml
 
 let Play =
     { Type =

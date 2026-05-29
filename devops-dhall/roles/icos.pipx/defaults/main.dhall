@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.pipx/defaults/main.yml
 
 {
     pipx_home = "/opt/pipx"

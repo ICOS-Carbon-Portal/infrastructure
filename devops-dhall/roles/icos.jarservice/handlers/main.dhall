@@ -1,31 +1,30 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.jarservice/handlers/main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , command : Optional Text
-    , systemd : Optional ({ daemon_reload : Bool })
-    , notify : Optional Text
-    , service : Optional Text
-  }
-    , default =
-        { command = None Text
-    , systemd = None ({ daemon_reload : Bool })
-    , notify = None Text
-    , service = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "restart {{ servicename }}",
+    Task::{
+      name = Some "restart {{ servicename }}",
       command = Some "systemctl restart {{ servicename }}"
     }
-  , Entry::{ name = "reload systemd config", systemd = Some { daemon_reload = True } }
-  , Entry::{
-      name = "reload nginx config",
-      command = Some "nginx -t",
-      notify = Some "really reload nginx config"
+  , Task::{
+      name = Some "reload systemd config",
+      systemd = Some {
+        name = None Text,
+        state = None Text,
+        daemon_reload = Some True,
+        enabled = None Text,
+        `daemon-reload` = None Text,
+        status = None Text
     }
-  , Entry::{ name = "really reload nginx config", service = Some "name=nginx state=reloaded" }
+    }
+  , Task::{
+      name = Some "reload nginx config",
+      command = Some "nginx -t",
+      notify = Some [ "really reload nginx config" ]
+    }
+  , Task::{
+      name = Some "really reload nginx config",
+      service = Some (Task.Poly_service.Str "name=nginx state=reloaded")
+    }
 ]

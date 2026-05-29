@@ -1,4 +1,4 @@
--- Auto-generated from configure.yml
+-- Auto-generated from ../../../../devops/roles/icos.podman_manual/tasks/configure.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,41 +6,44 @@ in  [
     Task::{
       name = Some "Block podman from being apt-installed",
       copy = Some {
-        src = None Text
-      , dest = "/etc/apt/preferences.d/podman"
-      , mode = None Text
-      , content = Some ''
+        dest = "/etc/apt/preferences.d/podman",
+        mode = None Text,
+        content = Some ''
         Package: podman
         Pin: release *
         Pin-Priority: -1
 
-      ''
-      , backup = None Bool
-      , owner = None Text
-      , group = None Text
-      , force = None Text
-      , validate = None Text
+      '',
+        src = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
     }
     }
   , Task::{
       name = Some "Synchronize configuration files to /etc/containers",
       `ansible.posix.synchronize` = Some {
-        src = "containers"
-      , dest = "/etc/"
-      , owner = False
-      , group = False
-      , rsync_opts = None (List Text)
-      , delete = None Bool
+        mode = None Text,
+        copy_links = None Bool,
+        src = "containers",
+        dest = "/etc/",
+        rsync_opts = None ((List Text)),
+        owner = Some False,
+        group = Some False,
+        perms = None Bool,
+        delete = None Bool
     }
     }
   , Task::{
       name = Some "Setup bash completion for podman",
       command = Some "podman completion -f /etc/bash_completion.d/podman bash",
       args = Some {
-        creates = Some "/etc/bash_completion.d/podman"
-      , chdir = None Text
-      , executable = None Text
-      , removes = None Text
+        chdir = None Text,
+        creates = Some "/etc/bash_completion.d/podman",
+        executable = None Text,
+        removes = None Text
     }
     }
   , Task::{

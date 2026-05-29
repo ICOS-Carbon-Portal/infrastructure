@@ -1,4 +1,4 @@
--- Auto-generated from vm-flexextract.yml
+-- Auto-generated from ../devops/vm-flexextract.yml
 
 [
     {

@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.nginx/defaults/main.yml
 
 {
     nginx_user = "www-data"

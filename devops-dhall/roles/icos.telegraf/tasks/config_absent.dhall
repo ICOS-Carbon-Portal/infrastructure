@@ -1,4 +1,4 @@
--- Auto-generated from config_absent.yml
+-- Auto-generated from ../../../../devops/roles/icos.telegraf/tasks/config_absent.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -10,17 +10,17 @@ in  [
     }
   , Task::{
       name = Some "Remove telegraf config file",
-      file = Some {
-        path = None Text
-      , state = Some "absent"
-      , mode = None Text
-      , owner = None Text
-      , group = None Text
-      , name = Some "{{ telegraf_config_root }}/{{ telegraf_config_file }}"
-      , dest = None Text
-      , recurse = None Bool
-      , src = None Text
-    },
+      file = Some (Task.Poly_file.Record {
+          path = None Text,
+          state = Some "absent",
+          owner = None Text,
+          group = None Text,
+          name = Some "{{ telegraf_config_root }}/{{ telegraf_config_file }}",
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      }),
       notify = Some [ "reload telegraf" ]
     }
 ]

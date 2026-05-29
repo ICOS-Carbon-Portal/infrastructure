@@ -1,4 +1,4 @@
--- Auto-generated from core.yml
+-- Auto-generated from ../devops/core.yml
 
 let Play =
     { Type =

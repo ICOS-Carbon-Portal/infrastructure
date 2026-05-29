@@ -1,6 +1,8 @@
--- Auto-generated from prom-victoriametrics.yml
+-- Auto-generated from ../devops/prom-victoriametrics.yml
 
-[
+let Task = ./types/Task.dhall
+
+in  [
     {
       hosts = "cdb"
     , roles = [
@@ -80,13 +82,13 @@
         }
     ]
     , tasks = [
-        {
-          name = "Show basic auth for prometheus"
-        , tags = "showauth"
-        , debug = {
-            msg = "Basic auth for prometheus is {{ vault_vmagent_auth.username }}/{{ vault_vmagent_auth.password }}"
+        Task::{
+          name = Some "Show basic auth for prometheus",
+          tags = Some [ "showauth" ],
+          debug = Some (Task.Poly_debug.Record {
+              msg = "Basic auth for prometheus is {{ vault_vmagent_auth.username }}/{{ vault_vmagent_auth.password }}"
+          })
         }
-      }
     ]
   }
 ]

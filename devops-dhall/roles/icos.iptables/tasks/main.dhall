@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.iptables/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,16 +6,16 @@ in  [
     Task::{
       name = Some "Install the iptables-persistent package",
       apt = Some {
-        name = Some [ "iptables-persistent" ]
-      , state = None Text
-      , update_cache = None Bool
-      , deb = None Text
-      , purge = None Bool
-      , upgrade = None Bool
-      , autoclean = None Bool
-      , autoremove = None Bool
-      , cache_valid_time = None Text
-      , install_recommends = None Bool
+        name = Some [ "iptables-persistent" ],
+        state = None Text,
+        update_cache = None Bool,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
     }
   , Task::{
@@ -25,8 +25,8 @@ in  [
   , Task::{
       name = Some "Setup default iptables rules",
       iptables_raw = Some {
-        name = "iptables_default"
-      , rules = Some ''
+        name = "iptables_default",
+        rules = Some ''
         # allow all on loopback
         -A INPUT -i lo -j ACCEPT
         -A OUTPUT -o lo -j ACCEPT
@@ -65,20 +65,20 @@ in  [
         -P OUTPUT ACCEPT
         -P FORWARD DROP
 
-      ''
-      , weight = Some 10
-      , table = None Text
-      , state = None Text
+      '',
+        table = None Text,
+        state = None Text,
+        weight = Some 10
     }
     }
   , Task::{
       name = Some "Allow ssh through firewall",
       iptables_raw = Some {
-        name = "allow_ssh"
-      , rules = Some "-A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT -m comment --comment 'ssh'"
-      , weight = None Natural
-      , table = None Text
-      , state = None Text
+        name = "allow_ssh",
+        rules = Some "-A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT -m comment --comment 'ssh'",
+        table = None Text,
+        state = None Text,
+        weight = None Natural
     }
     }
 ]

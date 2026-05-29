@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.timer2/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -11,8 +11,8 @@ in  [
         , "timer_name is defined"
         , "timer_config is defined"
         , "timer_service is defined"
-      ]
-      , quiet = None Bool
+      ],
+        quiet = None Bool
     },
       check_mode = Some False
     }

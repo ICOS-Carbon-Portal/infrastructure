@@ -1,4 +1,4 @@
--- Auto-generated from domains.yml
+-- Auto-generated from ../devops/domains.yml
 
 [
     {

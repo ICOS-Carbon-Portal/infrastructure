@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.cpdata/defaults/main.yml
 
 {
     cpdata_user = "cpdata"

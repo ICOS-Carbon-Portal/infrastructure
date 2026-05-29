@@ -1,4 +1,4 @@
--- Auto-generated from vm-quince.yml
+-- Auto-generated from ../devops/vm-quince.yml
 
 let Play =
     { Type =

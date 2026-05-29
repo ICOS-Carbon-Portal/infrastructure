@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.plausible/defaults/main.yml
 
 {
     plausible_home = "/opt/plausible"

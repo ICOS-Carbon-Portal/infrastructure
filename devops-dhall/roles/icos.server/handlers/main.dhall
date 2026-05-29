@@ -1,10 +1,12 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.server/handlers/main.yml
 
-[
-    {
-      name = "restart cron"
-    , service = { name = "cron", state = "restarted" }
-    , register = "_r"
-    , failed_when = [ "_r.failed", "_r.msg.find('Could not find the requested service cron') < 0" ]
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "restart cron",
+      service = Some (Task.Poly_service.Record { name = "cron", state = "restarted", enabled = None Bool }),
+      register = Some "_r",
+      failed_when = Some (Task.Poly_failed_when.Texts [ "_r.failed", "_r.msg.find('Could not find the requested service cron') < 0" ])
+    }
 ]

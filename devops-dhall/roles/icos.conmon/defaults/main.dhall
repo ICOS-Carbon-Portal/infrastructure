@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.conmon/defaults/main.yml
 
 {
     conmon_version_install = "2.1.4"

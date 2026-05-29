@@ -1,142 +1,219 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.opendkim/tasks/main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text })
-    , file : Optional ({ path : Text, mode : Optional Natural, state : Text, owner : Text, group : Text })
-    , template : Optional ({ dest : Text, src : Text, lstrip_blocks : Bool })
-    , notify : Optional Text
-    , loop : Optional (List Text)
-    , become : Optional Bool
-    , become_user : Optional Text
-    , command : Optional Text
-    , args : Optional ({ chdir : Text, creates : Text })
-    , `ansible.builtin.shell` : Optional Text
-    , register : Optional Text
-    , changed_when : Optional Bool
-    , when : Optional Text
-    , debug : Optional ({ msg : Text })
-    , postconf : Optional ({ param : Text, value : Text, append : Text })
-    , user : Optional ({ name : Text, append : Bool, groups : List Text })
-  }
-    , default =
-        { apt = None ({ name : List Text })
-    , file = None ({ path : Text, mode : Optional Natural, state : Text, owner : Text, group : Text })
-    , template = None ({ dest : Text, src : Text, lstrip_blocks : Bool })
-    , notify = None Text
-    , loop = None (List Text)
-    , become = None Bool
-    , become_user = None Text
-    , command = None Text
-    , args = None ({ chdir : Text, creates : Text })
-    , `ansible.builtin.shell` = None Text
-    , register = None Text
-    , changed_when = None Bool
-    , when = None Text
-    , debug = None ({ msg : Text })
-    , postconf = None ({ param : Text, value : Text, append : Text })
-    , user = None ({ name : Text, append : Bool, groups : List Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install opendkim", apt = Some { name = [ "opendkim", "opendkim-tools" ] } }
-  , Task::{
-      name = "Create keys directory",
-      file = Some {
-        path = "{{ opendkim_keys }}"
-      , mode = Some 448
-      , state = "directory"
-      , owner = "{{ opendkim_user }}"
-      , group = "{{ opendkim_user }}"
+    Task::{
+      name = Some "Install opendkim",
+      apt = Some {
+        name = Some [ "opendkim", "opendkim-tools" ],
+        state = None Text,
+        update_cache = None Bool,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
     }
   , Task::{
-      name = "Create opendkim.conf",
-      template = Some { dest = "/etc/opendkim.conf", src = "opendkim.conf", lstrip_blocks = True },
-      notify = Some "Restart opendkim"
+      name = Some "Create keys directory",
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ opendkim_keys }}",
+          state = Some "directory",
+          owner = Some "{{ opendkim_user }}",
+          group = Some "{{ opendkim_user }}",
+          name = None Text,
+          mode = Some "448",
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
   , Task::{
-      name = "Create config files",
-      template = Some { dest = "/etc/opendkim", src = "{{ item }}", lstrip_blocks = True },
-      notify = Some "Restart opendkim",
-      loop = Some [ "signing.table", "key.table", "trusted.hosts" ]
-    }
-  , Task::{
-      name = "Create key directory for domain",
-      file = Some {
-        path = "{{ opendkim_keys }}/{{ item }}"
-      , mode = None Natural
-      , state = "directory"
-      , owner = "{{ opendkim_user }}"
-      , group = "{{ opendkim_user }}"
+      name = Some "Create opendkim.conf",
+      template = Some {
+        src = "opendkim.conf",
+        dest = "/etc/opendkim.conf",
+        mode = None Text,
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = Some True,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
     },
-      loop = Some [ "{{ opendkim_domains }}" ]
+      notify = Some [ "Restart opendkim" ]
     }
   , Task::{
-      name = "Create domain keys",
-      loop = Some [ "{{ opendkim_domains }}" ],
-      become = Some True,
+      name = Some "Create config files",
+      template = Some {
+        src = "{{ item }}",
+        dest = "/etc/opendkim",
+        mode = None Text,
+        variable_start_string = None Text,
+        variable_end_string = None Text,
+        lstrip_blocks = Some True,
+        validate = None Text,
+        backup = None Bool,
+        owner = None Text,
+        group = None Text
+    },
+      loop = Some (Task.Poly_loop.Texts [ "signing.table", "key.table", "trusted.hosts" ]),
+      notify = Some [ "Restart opendkim" ]
+    }
+  , Task::{
+      name = Some "Create key directory for domain",
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ opendkim_keys }}/{{ item }}",
+          state = Some "directory",
+          owner = Some "{{ opendkim_user }}",
+          group = Some "{{ opendkim_user }}",
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      }),
+      loop = Some (Task.Poly_loop.Str "{{ opendkim_domains }}")
+    }
+  , Task::{
+      name = Some "Create domain keys",
+      become = Some (Task.Poly_become.Bool True),
       become_user = Some "{{ opendkim_user }}",
       command = Some "opendkim-genkey -b 2048 -d {{ item }} -s default -v && chmod 600 default.private",
-      args = Some { chdir = "{{ opendkim_keys }}/{{ item }}", creates = "default.private" }
+      args = Some {
+        chdir = Some "{{ opendkim_keys }}/{{ item }}",
+        creates = Some "default.private",
+        executable = None Text,
+        removes = None Text
+    },
+      loop = Some (Task.Poly_loop.Str "{{ opendkim_domains }}")
     }
   , Task::{
-      name = "Find domain keys that needs to be added to DNS",
-      `ansible.builtin.shell` = Some ''
-      for d in {{ opendkim_domains | difference(opendkim_domains_testkeys) | join(" ") }}; do
-        echo -n "default._domainkey $d ";
-        cat {{ opendkim_keys }}/$d/default.txt | sed -n 'N;N;s/.*( //g;s/\x0A/ /g;s/).*//g;s/"[[:blank:]]*"//g;s/"//g;p';
-      done
-    '',
+      name = Some "Find domain keys that needs to be added to DNS",
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str ''
+        for d in {{ opendkim_domains | difference(opendkim_domains_testkeys) | join(" ") }}; do
+          echo -n "default._domainkey $d ";
+          cat {{ opendkim_keys }}/$d/default.txt | sed -n 'N;N;s/.*( //g;s/\x0A/ /g;s/).*//g;s/"[[:blank:]]*"//g;s/"//g;p';
+        done
+      ''),
       register = Some "_r",
-      changed_when = Some False,
-      when = Some "opendkim_domains | difference(opendkim_domains_testkeys)"
+      changed_when = Some (Task.Poly_changed_when.Bool False),
+      when = Some [ "opendkim_domains | difference(opendkim_domains_testkeys)" ]
     }
   , Task::{
-      name = "Print instructions about adding DNS records",
-      when = Some "opendkim_domains | difference(opendkim_domains_testkeys)",
-      debug = Some {
-        msg = ''
-        Create the following DNS records:
-        "{{ _r.stdout }}"
+      name = Some "Print instructions about adding DNS records",
+      debug = Some (Task.Poly_debug.Record {
+          msg = ''
+          Create the following DNS records:
+          "{{ _r.stdout }}"
 
-      ''
-    }
+        ''
+      }),
+      when = Some [ "opendkim_domains | difference(opendkim_domains_testkeys)" ]
     }
   , Task::{
-      name = "Run opendkim-testkey on keys that have been added to DNS",
-      loop = Some [ "{{ opendkim_domains_testkeys }}" ],
+      name = Some "Run opendkim-testkey on keys that have been added to DNS",
       command = Some "opendkim-testkey -d {{ item }} -s default -vvv",
-      changed_when = Some False
+      changed_when = Some (Task.Poly_changed_when.Bool False),
+      loop = Some (Task.Poly_loop.Str "{{ opendkim_domains_testkeys }}")
     }
   , Task::{
-      name = "Create socket directory",
-      file = Some {
-        path = "{{ opendkim_sock | dirname }}"
-      , mode = None Natural
-      , state = "directory"
-      , owner = "opendkim"
-      , group = "postfix"
-    }
+      name = Some "Create socket directory",
+      file = Some (Task.Poly_file.Record {
+          path = Some "{{ opendkim_sock | dirname }}",
+          state = Some "directory",
+          owner = Some "opendkim",
+          group = Some "postfix",
+          name = None Text,
+          mode = None Text,
+          dest = None Text,
+          recurse = None Bool,
+          src = None Text
+      })
     }
   , Task::{
-      name = "Configure postfix",
-      notify = Some "Restart postfix",
-      loop = Some [
-        { param = "smtpd_milters", value = "local:opendkim/opendkim.sock", append = Some True }
-      , { param = "non_smtpd_milters", value = "$smtpd_milters", append = None Bool }
-    ],
+      name = Some "Configure postfix",
       postconf = Some {
-        param = "{{ item.param }}"
-      , value = "{{ item.value }}"
-      , append = "{{ item.append | default(omit) }}"
-    }
+        param = "{{ item.param }}",
+        value = "{{ item.value }}",
+        reload = None Text,
+        append = Some "{{ item.append | default(omit) }}",
+        separator = None Text
+    },
+      loop = Some (Task.Poly_loop.Records [
+          {
+            question = None Text,
+            value = Some "local:opendkim/opendkim.sock",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = Some "smtpd_milters",
+            append = Some True,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+        , {
+            question = None Text,
+            value = Some "$smtpd_milters",
+            vtype = None Text,
+            s = None Text,
+            f = None Text,
+            param = Some "non_smtpd_milters",
+            append = None Bool,
+            line = None Text,
+            regex = None Text,
+            src = None Text,
+            dest = None Text,
+            name = None Text,
+            mode = None Text,
+            key = None Text,
+            val = None Text,
+            file = None Text,
+            set_fact = None Text,
+            file_var = None Text,
+            content = None Text,
+            port = None Text,
+            path = None Text
+        }
+      ]),
+      notify = Some [ "Restart postfix" ]
     }
   , Task::{
-      name = "Add postfix to the opendkim group",
-      notify = Some "Restart postfix",
-      user = Some { name = "postfix", append = True, groups = [ "opendkim" ] }
+      name = Some "Add postfix to the opendkim group",
+      user = Some {
+        name = "postfix",
+        uid = None Text,
+        group = None Text,
+        password = None Text,
+        non_unique = None Bool,
+        create_home = None Text,
+        shell = None Text,
+        home = None Text,
+        password_lock = None Bool,
+        groups = Some [ "opendkim" ],
+        append = Some "True",
+        state = None Text,
+        system = None Bool,
+        generate_ssh_key = None Bool,
+        remove = None Text
+    },
+      notify = Some [ "Restart postfix" ]
     }
 ]

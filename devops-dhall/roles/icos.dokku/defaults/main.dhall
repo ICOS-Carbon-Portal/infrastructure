@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.dokku/defaults/main.yml
 
 {
     dokku_ssh_port = 3022

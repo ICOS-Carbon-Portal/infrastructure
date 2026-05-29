@@ -1,90 +1,96 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.docker2/tasks/main.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , `ansible.builtin.shell` : Optional Text
-    , changed_when : Optional Bool
-    , register : Optional Text
-    , failed_when : Optional Text
-    , import_tasks : Optional Text
-    , when : Optional Text
-    , fail : Optional ({ msg : Text })
-    , apt : Optional ({ name : List Text, state : Optional Text })
-    , systemd : Optional ({ name : Text, state : Text, enabled : Bool })
-    , copy : Optional ({ src : Text, dest : Text })
-    , notify : Optional Text
-    , tags : Optional Text
-    , import_role : Optional Text
-  }
-    , default =
-        { name = None Text
-    , `ansible.builtin.shell` = None Text
-    , changed_when = None Bool
-    , register = None Text
-    , failed_when = None Text
-    , import_tasks = None Text
-    , when = None Text
-    , fail = None ({ msg : Text })
-    , apt = None ({ name : List Text, state : Optional Text })
-    , systemd = None ({ name : Text, state : Text, enabled : Bool })
-    , copy = None ({ src : Text, dest : Text })
-    , notify = None Text
-    , tags = None Text
-    , import_role = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Fail if docker.io is apt-installed",
-      `ansible.builtin.shell` = Some ''
-      dpkg --get-selections docker.io | grep -vq '\binstall'
+      `ansible.builtin.shell` = Some (Task.Poly_ansible_builtin_shell.Str ''
+        dpkg --get-selections docker.io | grep -vq '\binstall'
 
-    '',
-      changed_when = Some False,
+      ''),
+      changed_when = Some (Task.Poly_changed_when.Bool False),
       register = Some "r",
-      failed_when = Some "r.rc == 0"
+      failed_when = Some (Task.Poly_failed_when.Str "r.rc == 0")
     }
-  , Item::{ import_tasks = Some "debian.yml", when = Some "ansible_distribution == \"Debian\"" }
-  , Item::{ import_tasks = Some "ubuntu.yml", when = Some "ansible_distribution == \"Ubuntu\"" }
-  , Item::{
+  , Task::{ import_tasks = Some "debian.yml", when = Some [ "ansible_distribution == \"Debian\"" ] }
+  , Task::{ import_tasks = Some "ubuntu.yml", when = Some [ "ansible_distribution == \"Ubuntu\"" ] }
+  , Task::{
       name = Some "Fail if we're not on a supported distribution",
-      when = Some "ansible_distribution not in ('Debian', 'Ubuntu')",
-      fail = Some { msg = "This role currently only support Debian and Ubuntu" }
+      fail = Some { msg = "This role currently only support Debian and Ubuntu" },
+      when = Some [ "ansible_distribution not in ('Debian', 'Ubuntu')" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Uninstall docker-compose version 1",
-      apt = Some { name = [ "docker-compose" ], state = Some "absent" }
+      apt = Some {
+        name = Some [ "docker-compose" ],
+        state = Some "absent",
+        update_cache = None Bool,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Install docker and docker-compose",
       apt = Some {
-        name = [
+        name = Some [
           "docker-ce"
         , "docker-ce-cli"
         , "containerd.io"
         , "docker-buildx-plugin"
         , "docker-compose-plugin"
-      ]
-      , state = None Text
+      ],
+        state = None Text,
+        update_cache = None Bool,
+        upgrade = None Text,
+        deb = None Text,
+        purge = None Bool,
+        autoclean = None Bool,
+        autoremove = None Bool,
+        cache_valid_time = None Text,
+        install_recommends = None Bool
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Make sure docker is started",
-      systemd = Some { name = "docker", state = "started", enabled = True }
+      systemd = Some {
+        name = Some "docker",
+        state = Some "started",
+        daemon_reload = None Bool,
+        enabled = Some "True",
+        `daemon-reload` = None Text,
+        status = None Text
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Install docker configuration",
-      copy = Some { src = "daemon.json", dest = "/etc/docker/" },
-      notify = Some "reload docker"
+      copy = Some {
+        dest = "/etc/docker/",
+        mode = None Text,
+        content = None Text,
+        src = Some "daemon.json",
+        backup = None Bool,
+        owner = None Text,
+        group = None Text,
+        force = None Text,
+        validate = None Text
+    },
+      notify = Some [ "reload docker" ]
     }
-  , Item::{
+  , Task::{
       import_tasks = Some "cleanup.yml",
-      when = Some "docker_periodic_cleanup",
-      tags = Some "docker_cleanup"
+      tags = Some [ "docker_cleanup" ],
+      when = Some [ "docker_periodic_cleanup" ]
     }
-  , Item::{ tags = Some "docker_utils", import_role = Some "name=icos.docker_utils" }
-  , Item::{ import_tasks = Some "test.yml", tags = Some "docker_test" }
-  , Item::{ import_tasks = Some "just.yml", tags = Some "docker_just" }
+  , Task::{
+      import_role = Some (Task.Poly_import_role.Str "name=icos.docker_utils"),
+      tags = Some [ "docker_utils" ]
+    }
+  , Task::{ import_tasks = Some "test.yml", tags = Some [ "docker_test" ] }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "docker_just" ] }
 ]

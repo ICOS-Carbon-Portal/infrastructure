@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.node_exporter/handlers/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,12 +6,12 @@ in  [
     Task::{
       name = Some "restart node-exporter",
       systemd = Some {
-        name = Some "node-exporter.socket"
-      , state = Some "restarted"
-      , daemon_reload = None Bool
-      , enabled = None Text
-      , `daemon-reload` = None Text
-      , status = None Text
+        name = Some "node-exporter.socket",
+        state = Some "restarted",
+        daemon_reload = None Bool,
+        enabled = None Text,
+        `daemon-reload` = None Text,
+        status = None Text
     }
     }
 ]

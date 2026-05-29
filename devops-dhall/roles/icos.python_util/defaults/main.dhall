@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.python_util/defaults/main.yml
 
 {
     python_util_bin_dir = "/usr/local/bin"

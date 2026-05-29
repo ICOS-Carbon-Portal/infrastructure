@@ -1,4 +1,4 @@
--- Auto-generated from prometheus.yml
+-- Auto-generated from ../../devops/production.inventory/prometheus.yml
 
 {
     vmagent_hosts = {

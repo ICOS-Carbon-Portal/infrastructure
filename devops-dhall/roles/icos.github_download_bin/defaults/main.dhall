@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.github_download_bin/defaults/main.yml
 
 {
     dbin_download_base = "/opt/downloads"

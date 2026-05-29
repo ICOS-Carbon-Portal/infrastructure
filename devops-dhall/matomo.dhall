@@ -1,4 +1,4 @@
--- Auto-generated from matomo.yml
+-- Auto-generated from ../devops/matomo.yml
 
 [
     {

@@ -1,4 +1,4 @@
--- Auto-generated from vm-wordpress.yml
+-- Auto-generated from ../devops/vm-wordpress.yml
 
 let Play =
     { Type =

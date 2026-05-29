@@ -1,4 +1,4 @@
--- Auto-generated from server-all.yml
+-- Auto-generated from ../devops/server-all.yml
 
 [
     {

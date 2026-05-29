@@ -1,4 +1,4 @@
--- Auto-generated from resolve-networkmanager.yml
+-- Auto-generated from ../../../../devops/roles/icos.nebula/tasks/resolve-networkmanager.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,12 +6,12 @@ in  [
     Task::{
       name = Some "Query systemd for systemd-networkd",
       systemd = Some {
-        name = Some "systemd-networkd"
-      , state = None Text
-      , daemon_reload = None Bool
-      , enabled = None Text
-      , `daemon-reload` = None Text
-      , status = None Text
+        name = Some "systemd-networkd",
+        state = None Text,
+        daemon_reload = None Bool,
+        enabled = None Text,
+        `daemon-reload` = None Text,
+        status = None Text
     },
       register = Some "_networkd"
     }

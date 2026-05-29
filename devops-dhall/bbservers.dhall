@@ -1,4 +1,4 @@
--- Auto-generated from bbservers.yml
+-- Auto-generated from ../devops/bbservers.yml
 
 [
     {

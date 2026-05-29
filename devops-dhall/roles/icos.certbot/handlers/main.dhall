@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot/handlers/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -10,6 +10,6 @@ in  [
     }
   , Task::{
       name = Some "really reload nginx config",
-      service = Some { name = "nginx", state = "reloaded", enabled = None Bool }
+      service = Some (Task.Poly_service.Record { name = "nginx", state = "reloaded", enabled = None Bool })
     }
 ]

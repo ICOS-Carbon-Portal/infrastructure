@@ -1,4 +1,4 @@
--- Auto-generated from cdb.yml
+-- Auto-generated from ../../devops/host_vars/cdb.yml
 
 {
     caddy_modules = [ "github.com/caddyserver/replace-response" ]

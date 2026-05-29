@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.dovecot/tasks/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -16,6 +16,6 @@ in  [
       doveconf 1>/dev/null && doveadm reload
 
     '',
-      changed_when = Some "False"
+      changed_when = Some (Task.Poly_changed_when.Bool False)
     }
 ]

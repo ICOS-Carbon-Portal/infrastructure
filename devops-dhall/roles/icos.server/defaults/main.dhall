@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.server/defaults/main.yml
 
 {
     fail2ban_config_files = [

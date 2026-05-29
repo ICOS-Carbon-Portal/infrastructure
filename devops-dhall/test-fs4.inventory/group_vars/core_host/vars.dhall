@@ -1,4 +1,4 @@
--- Auto-generated from vars.yml
+-- Auto-generated from ../../../../devops/test-fs4.inventory/group_vars/core_host/vars.yml
 
 {
     virtuoso_enable = True

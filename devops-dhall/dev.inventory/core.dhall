@@ -1,4 +1,4 @@
--- Auto-generated from core.yml
+-- Auto-generated from ../../devops/dev.inventory/core.yml
 
 {
     all = {

@@ -1,4 +1,4 @@
--- Auto-generated from drupal.yml
+-- Auto-generated from ../devops/drupal.yml
 
 [
     {

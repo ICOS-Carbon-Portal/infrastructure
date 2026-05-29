@@ -1,4 +1,4 @@
--- Auto-generated from hosts.yml
+-- Auto-generated from ../../devops/production.inventory/hosts.yml
 
 {
     all = {

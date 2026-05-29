@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.pgrep/defaults/main.yml
 
 {
     pgrep_home = "/docker/pgrep_{{ pgrep_name }}"

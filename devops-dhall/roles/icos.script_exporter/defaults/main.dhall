@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.script_exporter/defaults/main.yml
 
 {
     sexp_home = "/opt/script_exporter"

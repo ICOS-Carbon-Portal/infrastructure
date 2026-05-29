@@ -1,4 +1,4 @@
--- Auto-generated from zfs.yml
+-- Auto-generated from ../../../../devops/roles/icos.lxd_vm/vars/zfs.yml
 
 {
     __root_device = {

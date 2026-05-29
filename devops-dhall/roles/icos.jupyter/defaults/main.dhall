@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.jupyter/defaults/main.yml
 
 {
     jupyter_home = "/docker/jupyter"

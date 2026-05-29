@@ -1,4 +1,4 @@
--- Auto-generated from demo-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/demo-vars.yml
 
 {
     nginx_conf_name = "icosdemo"

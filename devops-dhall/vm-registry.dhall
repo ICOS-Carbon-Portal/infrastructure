@@ -1,4 +1,4 @@
--- Auto-generated from vm-registry.yml
+-- Auto-generated from ../devops/vm-registry.yml
 
 let Play =
     { Type =

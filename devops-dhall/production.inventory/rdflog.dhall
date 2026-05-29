@@ -1,4 +1,4 @@
--- Auto-generated from rdflog.yml
+-- Auto-generated from ../../devops/production.inventory/rdflog.yml
 
 {
     all = { vars = { rdflog_ext_port = 60002 } }

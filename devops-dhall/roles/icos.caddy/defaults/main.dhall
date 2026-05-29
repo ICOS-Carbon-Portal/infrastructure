@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.caddy/defaults/main.yml
 
 {
     caddy_global_conf = ''

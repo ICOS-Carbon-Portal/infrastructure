@@ -1,4 +1,4 @@
--- Auto-generated from vars.yml
+-- Auto-generated from ../../../../devops/cities.inventory/group_vars/core_host/vars.yml
 
 {
     postgis_admin_pass = "{{ vault_postgis_admin_pass }}"

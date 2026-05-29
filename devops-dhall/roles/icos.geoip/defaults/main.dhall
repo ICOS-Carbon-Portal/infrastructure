@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.geoip/defaults/main.yml
 
 {
     geoip_user = "geoip"

@@ -1,4 +1,4 @@
--- Auto-generated from ubuntu.yml
+-- Auto-generated from ../../../../devops/roles/icos.certbot/vars/ubuntu.yml
 
 {
     certbot_fake_key = "/etc/ssl/private/{{ certbot_conf_name }}.key"

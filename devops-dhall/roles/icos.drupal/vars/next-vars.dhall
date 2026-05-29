@@ -1,4 +1,4 @@
--- Auto-generated from next-vars.yml
+-- Auto-generated from ../../../../devops/roles/icos.drupal/vars/next-vars.yml
 
 {
     nginx_conf_name = "icosnext"

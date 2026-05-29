@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.node_exporter/defaults/main.yml
 
 {
     node_exporter_user = "node_exporter"

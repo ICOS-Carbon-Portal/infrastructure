@@ -1,4 +1,4 @@
--- Auto-generated from vm-ctehires.yml
+-- Auto-generated from ../devops/vm-ctehires.yml
 
 let Play =
     { Type =

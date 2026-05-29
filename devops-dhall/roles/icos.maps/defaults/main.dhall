@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.maps/defaults/main.yml
 
 {
     maps_domains = [ "maps.icos-cp.eu", "maps.fieldsites.se" ]

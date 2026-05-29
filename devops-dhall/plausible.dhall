@@ -1,4 +1,4 @@
--- Auto-generated from plausible.yml
+-- Auto-generated from ../devops/plausible.yml
 
 [
     {

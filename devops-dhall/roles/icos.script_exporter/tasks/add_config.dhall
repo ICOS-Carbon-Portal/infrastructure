@@ -1,4 +1,4 @@
--- Auto-generated from add_config.yml
+-- Auto-generated from ../../../../devops/roles/icos.script_exporter/tasks/add_config.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -6,13 +6,13 @@ in  [
     Task::{
       name = Some "Add config to script-exporters config.yaml",
       blockinfile = Some {
-        marker = "# {mark} {{ sexp_marker }}"
-      , state = Some "{{ sexp_state | default('present') }}"
-      , create = Some False
-      , insertafter = Some "EOF"
-      , path = "{{ sexp_config }}"
-      , block = Some "{{ sexp_block }}"
-      , insertbefore = None Text
+        path = "{{ sexp_config }}",
+        create = Some False,
+        marker = "# {mark} {{ sexp_marker }}",
+        block = Some "{{ sexp_block }}",
+        insertafter = Some "EOF",
+        insertbefore = None Text,
+        state = Some "{{ sexp_state | default('present') }}"
     },
       notify = Some [ "reload script-exporter" ]
     }

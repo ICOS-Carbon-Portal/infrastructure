@@ -1,4 +1,4 @@
--- Auto-generated from restheart.yml
+-- Auto-generated from ../devops/restheart.yml
 
 let Play =
     { Type =

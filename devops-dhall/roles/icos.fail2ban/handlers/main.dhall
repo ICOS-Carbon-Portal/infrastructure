@@ -1,4 +1,4 @@
--- Auto-generated from main.yml
+-- Auto-generated from ../../../../devops/roles/icos.fail2ban/handlers/main.yml
 
 let Task = ../../../types/Task.dhall
 
@@ -7,7 +7,7 @@ in  [
       name = Some "fail2ban reload",
       command = Some "fail2ban-client reload",
       register = Some "_r",
-      failed_when = Some "_r.rc != 0 or \"OK\" not in _r.stdout",
-      changed_when = Some "False"
+      failed_when = Some (Task.Poly_failed_when.Str "_r.rc != 0 or \"OK\" not in _r.stdout"),
+      changed_when = Some (Task.Poly_changed_when.Bool False)
     }
 ]
