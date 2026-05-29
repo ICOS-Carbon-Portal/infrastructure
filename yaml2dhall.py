@@ -778,6 +778,76 @@ class DhallConverter:
                 if variants:
                     field_unions[k] = variants
 
+        optional_keys = [k for k in all_keys if k not in universal_keys]
+
+        # When the list has optional fields and no polymorphic (union) fields,
+        # emit a local `{ Type, default }` schema and complete each item with
+        # `Name::{ ... }`, listing only the fields it actually sets. Absent
+        # optionals fall back to `None` via the schema default, so we no longer
+        # spell out a `field = None T` line per missing key. Union fields and
+        # shared-type sub-tasks keep the explicit, fully-expanded form so their
+        # inferred types stay exactly as before.
+        if optional_keys and not field_unions and not self._shared_emit:
+            type_name = self._generate_type_name(all_keys, dicts)
+
+            type_fields = []
+            default_fields = []
+            for k in all_keys:
+                dk = dhall_key(k)
+                t = key_types[k]
+                if k in universal_keys:
+                    type_fields.append(f'{dk} : {t}')
+                else:
+                    type_fields.append(f'{dk} : Optional {_wrap_type(t)}')
+                    default_fields.append(f'{dk} = None {_wrap_type(t)}')
+
+            type_pad = '  ' * (indent + 2)
+            type_def = ('{ ' + f'\n{type_pad}, '.join(type_fields)
+                        + f'\n{ipad}}}')
+            default_def = ('{ ' + f'\n{type_pad}, '.join(default_fields)
+                           + f'\n{ipad}}}')
+            let_block = (
+                f'let {type_name} =\n'
+                f'{ipad}  {{ Type =\n'
+                f'{ipad}      {type_def}\n'
+                f'{ipad}  , default =\n'
+                f'{ipad}      {default_def}\n'
+                f'{ipad}  }}\n\n'
+            )
+
+            items = []
+            for d in dicts:
+                fields = []
+                for k in all_keys:
+                    dk = dhall_key(k)
+                    t = key_types[k]
+                    if k in universal_keys:
+                        v = coerce_value(d.get(k), t)
+                        converted = self._convert_value_with_dict_ctx(
+                            v, indent + 2, k, dict_contexts)
+                        fields.append(f'{dk} = {converted}')
+                    elif k in d and d[k] is not None:
+                        v = coerce_value(d[k], t)
+                        converted = self._convert_value_with_dict_ctx(
+                            v, indent + 2, k, dict_contexts)
+                        fields.append(
+                            f'{dk} = Some {self._wrap_expr(converted)}')
+
+                entry_pad = '  ' * (indent + 2)
+                record_str = '{ ' + ', '.join(fields) + ' }'
+                if len(record_str) > 90:
+                    record_str = (
+                        '{\n'
+                        + ',\n'.join(f'{entry_pad}  {f}' for f in fields)
+                        + f'\n{entry_pad}}}'
+                    )
+                items.append(f'{type_name}::{record_str}')
+
+            formatted = [f'{ipad}, {item}' for item in items]
+            formatted[0] = f'{ipad}  {items[0]}'
+            list_str = f'[\n' + '\n'.join(formatted) + f'\n{pad}]'
+            return let_block + f'{pad}in  {list_str}'
+
         items = []
         for d in dicts:
             fields = []

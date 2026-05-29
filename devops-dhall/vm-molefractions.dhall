@@ -69,24 +69,46 @@ in  [
         , register = "_lxd"
       }
     ],
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_forward_ip : Optional Text
+        , lxd_forward_name : Optional Text
+        , tags : Optional Text
+      }
+        , default =
+            { lxd_forward_ip = None Text
+        , lxd_forward_name = None Text
+        , tags = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_forward",
           lxd_forward_ip = Some "{{ _lxd.addresses.eth0 | first }}",
-          lxd_forward_name = Some "molefractions",
-          tags = None Text
+          lxd_forward_name = Some "molefractions"
         }
     ]
     }
   , Play::{
       hosts = "molefractions",
-      roles = [
-        {
-          role = "icos.lxd_guest",
-          lxd_forward_ip = None Text,
-          lxd_forward_name = None Text,
-          tags = Some "guest"
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_forward_ip : Optional Text
+        , lxd_forward_name : Optional Text
+        , tags : Optional Text
+      }
+        , default =
+            { lxd_forward_ip = None Text
+        , lxd_forward_name = None Text
+        , tags = None Text
+      }
         }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = Some "guest" }
     ],
       vars = Some { username = "anonymous" },
       handlers = Some [
@@ -96,23 +118,36 @@ in  [
         , changed_when = False
       }
     ],
-      tasks = Some [
-        {
+      tasks = Some (let Task =
+        { Type =
+            { name : Text
+        , user : Optional ({ name : Text, shell : Text, create_home : Bool, password_lock : Bool })
+        , blockinfile : Optional ({ marker : Text, path : Text, block : Text, insertbefore : Optional Text })
+        , notify : Optional Text
+        , copy : Optional ({ dest : Text, src : Text, mode : Text })
+        , debug : Optional ({ msg : Text })
+      }
+        , default =
+            { user = None ({ name : Text, shell : Text, create_home : Bool, password_lock : Bool })
+        , blockinfile = None ({ marker : Text, path : Text, block : Text, insertbefore : Optional Text })
+        , notify = None Text
+        , copy = None ({ dest : Text, src : Text, mode : Text })
+        , debug = None ({ msg : Text })
+      }
+        }
+
+    in  [
+        Task::{
           name = "add {{ username }} user",
           user = Some {
             name = "{{ username }}"
           , shell = "/sbin/nologin"
           , create_home = False
           , password_lock = True
-        },
-          blockinfile = None ({ marker : Text, path : Text, block : Text, insertbefore : Optional Text }),
-          notify = None Text,
-          copy = None ({ dest : Text, src : Text, mode : Text }),
-          debug = None ({ msg : Text })
         }
-      , {
+        }
+      , Task::{
           name = "set sshd sftp chroot",
-          user = None ({ name : Text, shell : Text, create_home : Bool, password_lock : Bool }),
           blockinfile = Some {
             marker = "# {mark} ansible sftp chroot"
           , path = "/etc/ssh/sshd_config"
@@ -126,21 +161,14 @@ in  [
           ''
           , insertbefore = None Text
         },
-          notify = Some "reload sshd",
-          copy = None ({ dest : Text, src : Text, mode : Text }),
-          debug = None ({ msg : Text })
+          notify = Some "reload sshd"
         }
-      , {
+      , Task::{
           name = "Create pam_sftp",
-          user = None ({ name : Text, shell : Text, create_home : Bool, password_lock : Bool }),
-          blockinfile = None ({ marker : Text, path : Text, block : Text, insertbefore : Optional Text }),
-          notify = None Text,
-          copy = Some { dest = "/usr/sbin/pam_sftp", src = "files/pam_sftp", mode = "+x" },
-          debug = None ({ msg : Text })
+          copy = Some { dest = "/usr/sbin/pam_sftp", src = "files/pam_sftp", mode = "+x" }
         }
-      , {
+      , Task::{
           name = "Add pam_sftp rule",
-          user = None ({ name : Text, shell : Text, create_home : Bool, password_lock : Bool }),
           blockinfile = Some {
             marker = "# {mark} ansible / molefractions"
           , path = "/etc/pam.d/sshd"
@@ -149,17 +177,10 @@ in  [
 
           ''
           , insertbefore = Some "BOF"
-        },
-          notify = None Text,
-          copy = None ({ dest : Text, src : Text, mode : Text }),
-          debug = None ({ msg : Text })
         }
-      , {
+        }
+      , Task::{
           name = "Print ssh config",
-          user = None ({ name : Text, shell : Text, create_home : Bool, password_lock : Bool }),
-          blockinfile = None ({ marker : Text, path : Text, block : Text, insertbefore : Optional Text }),
-          notify = None Text,
-          copy = None ({ dest : Text, src : Text, mode : Text }),
           debug = Some {
             msg = ''
             Host {{ inventory_hostname }}
@@ -171,6 +192,6 @@ in  [
           ''
         }
         }
-    ]
+    ])
     }
 ]

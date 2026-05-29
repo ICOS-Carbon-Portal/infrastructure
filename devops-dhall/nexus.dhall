@@ -3,16 +3,26 @@
 [
     {
       hosts = "fsicos2"
-    , roles = [
-        {
-          role = "icos.nexus",
-          tags = "nexus",
-          bbclient_name = None Text,
-          bbclient_user = None Text,
-          bbclient_home = None Text,
-          bbclient_coldbackup = None Text
+    , roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , bbclient_name : Optional Text
+        , bbclient_user : Optional Text
+        , bbclient_home : Optional Text
+        , bbclient_coldbackup : Optional Text
+      }
+        , default =
+            { bbclient_name = None Text
+        , bbclient_user = None Text
+        , bbclient_home = None Text
+        , bbclient_coldbackup = None Text
+      }
         }
-      , {
+
+    in  [
+        Role::{ role = "icos.nexus", tags = "nexus" }
+      , Role::{
           role = "icos.bbclient2",
           tags = "bbclient",
           bbclient_name = Some "nexus",

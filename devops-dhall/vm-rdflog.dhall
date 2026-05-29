@@ -4,49 +4,70 @@
     {
       hosts = "rdflog_server",
       tags = "rdflog",
-      roles = [
-        {
-          role = "icos.rdflog",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          tags = None Text
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , tags : Optional Text
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , tags = None Text
+      }
         }
+
+    in  [
+        Role::{ role = "icos.rdflog" }
     ]
     }
   , {
       hosts = "pgrep_rdflog_server",
       tags = "vm",
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , tags : Optional Text
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , tags = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_vm",
           lxd_vm_name = Some "{{ rdflog_vm_name }}",
-          lxd_vm_docker = Some True,
-          tags = None Text
+          lxd_vm_docker = Some True
         }
     ]
     }
   , {
       hosts = "pgrep_rdflog",
       tags = "replica",
-      roles = [
-        {
-          role = "icos.lxd_guest",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          tags = Some "guest"
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , tags : Optional Text
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , tags = None Text
+      }
         }
-      , {
-          role = "icos.docker",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          tags = Some "docker"
-        }
-      , {
-          role = "icos.pgrep",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          tags = Some "pgrep"
-        }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = Some "guest" }
+      , Role::{ role = "icos.docker", tags = Some "docker" }
+      , Role::{ role = "icos.pgrep", tags = Some "pgrep" }
     ]
     }
 ]

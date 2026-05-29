@@ -33,37 +33,46 @@ in  [
         , "www.kadi-project.eu"
       ]
     },
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , certbot_name : Optional Text
+        , certbot_domains : Optional Text
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_root_size = None Text
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , certbot_name = None Text
+        , certbot_domains = None Text
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_vm",
           tags = "lxd",
           lxd_vm_name = Some "wordpress",
           lxd_vm_root_size = Some "500GB",
-          lxd_vm_config = Some { `limits.cpu` = "4", `limits.memory` = "8GB" },
-          certbot_name = None Text,
-          certbot_domains = None Text,
-          nginxsite_name = None Text,
-          nginxsite_file = None Text
+          lxd_vm_config = Some { `limits.cpu` = "4", `limits.memory` = "8GB" }
         }
-      , {
+      , Role::{
           role = "icos.certbot2",
           tags = "cert",
-          lxd_vm_name = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
           certbot_name = Some "wordpress",
-          certbot_domains = Some "{{ wordpress_domains }}",
-          nginxsite_name = None Text,
-          nginxsite_file = None Text
+          certbot_domains = Some "{{ wordpress_domains }}"
         }
-      , {
+      , Role::{
           role = "icos.nginxsite",
           tags = "nginx",
-          lxd_vm_name = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          certbot_name = None Text,
-          certbot_domains = None Text,
           nginxsite_name = Some "wordpress",
           nginxsite_file = Some "files/wordpress.conf"
         }
@@ -71,18 +80,31 @@ in  [
     }
   , Play::{
       hosts = "wordpress",
-      roles = [
-        {
-          role = "icos.lxd_guest",
-          tags = "guest",
-          lxd_vm_name = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          certbot_name = None Text,
-          certbot_domains = None Text,
-          nginxsite_name = None Text,
-          nginxsite_file = None Text
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , certbot_name : Optional Text
+        , certbot_domains : Optional Text
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_root_size = None Text
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , certbot_name = None Text
+        , certbot_domains = None Text
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+      }
         }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = "guest" }
     ],
       tasks = Some [
         {

@@ -25,21 +25,35 @@ in  [
       , docker_path = "/disk/cities_docker"
       , data_fast_path = "/disk/cities_data_fast"
     },
-      pre_tasks = Some [
-        {
+      pre_tasks = Some (let Task =
+        { Type =
+            { name : Text
+        , file : Optional ({ path : Text, state : Text, owner : Optional Natural, group : Optional Natural })
+        , loop : Optional (List Text)
+        , shell : Optional Text
+        , register : Optional Text
+        , changed_when : Optional (List Text)
+      }
+        , default =
+            { file = None ({ path : Text, state : Text, owner : Optional Natural, group : Optional Natural })
+        , loop = None (List Text)
+        , shell = None Text
+        , register = None Text
+        , changed_when = None (List Text)
+      }
+        }
+
+    in  [
+        Task::{
           name = "Create cities storage_pool directory",
           file = Some {
             path = "{{ pool_path }}"
           , state = "directory"
           , owner = None Natural
           , group = None Natural
-        },
-          loop = None (List Text),
-          shell = None Text,
-          register = None Text,
-          changed_when = None (List Text)
         }
-      , {
+        }
+      , Task::{
           name = "Create cities directories",
           file = Some {
             path = "{{ item }}"
@@ -47,15 +61,10 @@ in  [
           , owner = Some 1000000
           , group = Some 1000000
         },
-          loop = Some [ "{{ data_path }}", "{{ docker_path }}", "{{ data_fast_path }}" ],
-          shell = None Text,
-          register = None Text,
-          changed_when = None (List Text)
+          loop = Some [ "{{ data_path }}", "{{ docker_path }}", "{{ data_fast_path }}" ]
         }
-      , {
+      , Task::{
           name = "Create cities storage pool",
-          file = None ({ path : Text, state : Text, owner : Optional Natural, group : Optional Natural }),
-          loop = None (List Text),
           shell = Some ''
           /snap/bin/lxc storage show {{ pool_name }} > /dev/null 2>&1 || \ /snap/bin/lxc storage create {{ pool_name }} dir source="{{ pool_path}}"
 
@@ -63,9 +72,23 @@ in  [
           register = Some "_r",
           changed_when = Some [ "(\"Storage pool %s created\" % pool_name) in _r.stdout" ]
         }
-    ],
-      roles = [
-        {
+    ]),
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , role : Text
+        , vars : Optional ({ lxd_vm_name : Text, lxd_vm_ubuntu_version : Text, lxd_vm_root_pool : Text, lxd_vm_config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }, lxd_vm_devices : { data : { path : Text, source : Text, type : Text }, data_fast : { path : Text, source : Text, type : Text }, docker : { path : Text, source : Text, type : Text } } })
+        , tags : Optional Text
+      }
+        , default =
+            { name = None Text
+        , vars = None ({ lxd_vm_name : Text, lxd_vm_ubuntu_version : Text, lxd_vm_root_pool : Text, lxd_vm_config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }, lxd_vm_devices : { data : { path : Text, source : Text, type : Text }, data_fast : { path : Text, source : Text, type : Text }, docker : { path : Text, source : Text, type : Text } } })
+        , tags = None Text
+      }
+        }
+
+    in  [
+        Role::{
           name = Some "Create the cities VM",
           role = "icos.lxd_vm",
           vars = Some {
@@ -82,26 +105,29 @@ in  [
             }
             , docker = { path = "/var/lib/docker", source = "{{ docker_path }}", type = "disk" }
           }
-        },
-          tags = None Text
+        }
         }
     ]
     }
   , Play::{
       hosts = "cities",
-      roles = [
-        {
-          name = None Text,
-          role = "icos.lxd_guest",
-          vars = None ({ lxd_vm_name : Text, lxd_vm_ubuntu_version : Text, lxd_vm_root_pool : Text, lxd_vm_config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }, lxd_vm_devices : { data : { path : Text, source : Text, type : Text }, data_fast : { path : Text, source : Text, type : Text }, docker : { path : Text, source : Text, type : Text } } }),
-          tags = Some "guest"
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , role : Text
+        , vars : Optional ({ lxd_vm_name : Text, lxd_vm_ubuntu_version : Text, lxd_vm_root_pool : Text, lxd_vm_config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }, lxd_vm_devices : { data : { path : Text, source : Text, type : Text }, data_fast : { path : Text, source : Text, type : Text }, docker : { path : Text, source : Text, type : Text } } })
+        , tags : Optional Text
+      }
+        , default =
+            { name = None Text
+        , vars = None ({ lxd_vm_name : Text, lxd_vm_ubuntu_version : Text, lxd_vm_root_pool : Text, lxd_vm_config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }, lxd_vm_devices : { data : { path : Text, source : Text, type : Text }, data_fast : { path : Text, source : Text, type : Text }, docker : { path : Text, source : Text, type : Text } } })
+        , tags = None Text
+      }
         }
-      , {
-          name = None Text,
-          role = "icos.docker2",
-          vars = None ({ lxd_vm_name : Text, lxd_vm_ubuntu_version : Text, lxd_vm_root_pool : Text, lxd_vm_config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }, lxd_vm_devices : { data : { path : Text, source : Text, type : Text }, data_fast : { path : Text, source : Text, type : Text }, docker : { path : Text, source : Text, type : Text } } }),
-          tags = Some "docker"
-        }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = Some "guest" }
+      , Role::{ role = "icos.docker2", tags = Some "docker" }
     ],
       tasks = Some [
         {

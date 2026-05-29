@@ -17,8 +17,26 @@ in  [
     Play::{
       hosts = "fsicos2",
       vars = Some { quince_host = "quince3.lxd" },
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , tags : Optional Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+      }
+        , default =
+            { name = None Text
+        , tags = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_root_size = None Text
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+      }
+        }
+
+    in  [
+        Role::{
           name = Some "Create the quince3 VM",
           tags = Some "lxd",
           role = "icos.lxd_vm",
@@ -45,15 +63,26 @@ in  [
     }
   , Play::{
       hosts = "quince3",
-      roles = [
-        {
-          name = None Text,
-          tags = None Text,
-          role = "icos.lxd_guest",
-          lxd_vm_name = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , tags : Optional Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+      }
+        , default =
+            { name = None Text
+        , tags = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_root_size = None Text
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+      }
         }
+
+    in  [
+        Role::{ role = "icos.lxd_guest" }
     ]
     }
 ]

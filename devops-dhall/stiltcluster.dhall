@@ -48,15 +48,25 @@ in  [
         {
           when = "stilt_input_mount | default(False)"
         , tags = "inputdata"
-        , block = [
-            {
-              name = "Create stilt input dir",
-              file = Some { path = "{{ stilt_input_dir }}", state = "directory" },
-              mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+        , block = let Entry =
+            { Type =
+                { name : Text
+            , file : Optional ({ path : Text, state : Text })
+            , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+          }
+            , default =
+                { file = None ({ path : Text, state : Text })
+            , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+          }
             }
-          , {
+
+        in  [
+            Entry::{
+              name = "Create stilt input dir",
+              file = Some { path = "{{ stilt_input_dir }}", state = "directory" }
+            }
+          , Entry::{
               name = "Mount stilt input data",
-              file = None ({ path : Text, state : Text }),
               mount = Some {
                 src = "fsicos2.nebula:/disk/data/stilt/Input"
               , path = "{{ stilt_input_dir }}"

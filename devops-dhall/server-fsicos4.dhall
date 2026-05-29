@@ -3,58 +3,34 @@
 [
     {
       hosts = "fsicos4"
-    , roles = [
-        {
-          role = "icos.mosh",
-          tags = "mosh",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
+    , roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , fail2ban_config_files : Optional (List ({ dest : Text, content : Text }))
+        , dnsmasq_interface : Optional Text
+        , dnsmasq_config : Optional Text
+        , rsyncd_enable : Optional Bool
+        , rsyncd_users : Optional (List ({ name : Text }))
+        , rsyncd_conf : Optional Text
+      }
+        , default =
+            { fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+        , dnsmasq_interface = None Text
+        , dnsmasq_config = None Text
+        , rsyncd_enable = None Bool
+        , rsyncd_users = None (List ({ name : Text }))
+        , rsyncd_conf = None Text
+      }
         }
-      , {
-          role = "icos.caddy",
-          tags = "caddy",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
-        }
-      , {
-          role = "icos.pve_server",
-          tags = "pve_server",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
-        }
-      , {
-          role = "icos.utils",
-          tags = "utils",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
-        }
-      , {
-          role = "icos.python3",
-          tags = "python",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
-        }
-      , {
+
+    in  [
+        Role::{ role = "icos.mosh", tags = "mosh" }
+      , Role::{ role = "icos.caddy", tags = "caddy" }
+      , Role::{ role = "icos.pve_server", tags = "pve_server" }
+      , Role::{ role = "icos.utils", tags = "utils" }
+      , Role::{ role = "icos.python3", tags = "python" }
+      , Role::{
           role = "icos.fail2ban",
           tags = "fail2ban",
           fail2ban_config_files = Some [
@@ -72,17 +48,11 @@
 
             ''
           }
-        ],
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
+        ]
         }
-      , {
+      , Role::{
           role = "icos.dnsmasq",
           tags = "dnsmasq",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
           dnsmasq_interface = Some "vmbr0",
           dnsmasq_config = Some ''
           # bind only to the interface given on the command line
@@ -96,17 +66,11 @@
 
           dhcp-leasefile=/var/lib/misc/dnsmasq.{{ dnsmasq_interface }}.leases
 
-        '',
-          rsyncd_enable = None Bool,
-          rsyncd_users = None (List ({ name : Text })),
-          rsyncd_conf = None Text
+        ''
         }
-      , {
+      , Role::{
           role = "icos.rsyncd",
           tags = "rsyncd",
-          fail2ban_config_files = None (List ({ dest : Text, content : Text })),
-          dnsmasq_interface = None Text,
-          dnsmasq_config = None Text,
           rsyncd_enable = Some True,
           rsyncd_users = Some [
             { name = "root" }

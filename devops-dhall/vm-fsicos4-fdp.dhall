@@ -3,8 +3,21 @@
 [
     {
       hosts = "fsicos4",
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , caddy_name : Optional Text
+        , caddy_conf : Optional Text
+      }
+        , default =
+            { caddy_name = None Text
+        , caddy_conf = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.caddy",
           tags = "caddy",
           caddy_name = Some "fdpdemo",
@@ -19,13 +32,21 @@
     }
   , {
       hosts = "fdp",
-      roles = [
-        {
-          role = "icos.fairdatapoint",
-          tags = "fairdatapoint",
-          caddy_name = None Text,
-          caddy_conf = None Text
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , caddy_name : Optional Text
+        , caddy_conf : Optional Text
+      }
+        , default =
+            { caddy_name = None Text
+        , caddy_conf = None Text
+      }
         }
+
+    in  [
+        Role::{ role = "icos.fairdatapoint", tags = "fairdatapoint" }
     ]
     }
 ]

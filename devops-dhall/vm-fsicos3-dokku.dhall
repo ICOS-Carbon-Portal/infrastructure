@@ -21,8 +21,44 @@ in  [
       , dokku_static_domains = [ "curve.icos-ri.eu" ]
       , dokku_redirect_domains = [ "curve.icos-cp.eu" ]
     },
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_docker_size : Optional Text
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_ubuntu_version : Optional Text
+        , tags : Optional Text
+        , certbot_name : Optional Text
+        , certbot_domains : Optional Text
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+        , dokku_proxy_host : Optional Text
+        , dokku_proxy_port : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_docker_size = None Text
+        , lxd_vm_root_size = None Text
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_ubuntu_version = None Text
+        , tags = None Text
+        , certbot_name = None Text
+        , certbot_domains = None Text
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+        , dokku_proxy_host = None Text
+        , dokku_proxy_port = None Natural
+      }
+        }
+
+    in  [
+        Role::{
           name = Some "Create the dokku VM",
           role = "icos.lxd_vm",
           lxd_vm_name = Some "dokku",
@@ -30,44 +66,17 @@ in  [
           lxd_vm_docker_size = Some "200GB",
           lxd_vm_root_size = Some "500GB",
           lxd_vm_config = Some { `limits.cpu` = "8", `limits.memory` = "64GB" },
-          lxd_vm_ubuntu_version = Some "24.04",
-          tags = None Text,
-          certbot_name = None Text,
-          certbot_domains = None Text,
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          dokku_proxy_host = None Text,
-          dokku_proxy_port = None Natural
+          lxd_vm_ubuntu_version = Some "24.04"
         }
-      , {
-          name = None Text,
+      , Role::{
           role = "icos.certbot2",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_docker_size = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_ubuntu_version = None Text,
           tags = Some "cert",
           certbot_name = Some "dokku",
-          certbot_domains = Some "{{ (dokku_static_domains + dokku_redirect_domains) }}",
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          dokku_proxy_host = None Text,
-          dokku_proxy_port = None Natural
+          certbot_domains = Some "{{ (dokku_static_domains + dokku_redirect_domains) }}"
         }
-      , {
-          name = None Text,
+      , Role::{
           role = "icos.nginxsite",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_docker_size = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_ubuntu_version = None Text,
           tags = Some "nginx",
-          certbot_name = None Text,
-          certbot_domains = None Text,
           nginxsite_name = Some "dokku",
           nginxsite_file = Some "templates/dokku-nginx.conf",
           dokku_proxy_host = Some "dokku.lxd",
@@ -87,58 +96,46 @@ in  [
     }
   , Play::{
       hosts = "dokku",
-      roles = [
-        {
-          name = None Text,
-          role = "icos.lxd_guest",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_docker_size = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_ubuntu_version = None Text,
-          tags = Some "guest",
-          certbot_name = None Text,
-          certbot_domains = None Text,
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          dokku_proxy_host = None Text,
-          dokku_proxy_port = None Natural
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_docker_size : Optional Text
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_ubuntu_version : Optional Text
+        , tags : Optional Text
+        , certbot_name : Optional Text
+        , certbot_domains : Optional Text
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+        , dokku_proxy_host : Optional Text
+        , dokku_proxy_port : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_docker_size = None Text
+        , lxd_vm_root_size = None Text
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_ubuntu_version = None Text
+        , tags = None Text
+        , certbot_name = None Text
+        , certbot_domains = None Text
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+        , dokku_proxy_host = None Text
+        , dokku_proxy_port = None Natural
+      }
         }
-      , {
-          name = None Text,
-          role = "icos.docker2",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_docker_size = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_ubuntu_version = None Text,
-          tags = Some "docker",
-          certbot_name = None Text,
-          certbot_domains = None Text,
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          dokku_proxy_host = None Text,
-          dokku_proxy_port = None Natural
-        }
-      , {
-          name = None Text,
-          role = "icos.dokku",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_docker_size = None Text,
-          lxd_vm_root_size = None Text,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_ubuntu_version = None Text,
-          tags = Some "dokku",
-          certbot_name = None Text,
-          certbot_domains = None Text,
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          dokku_proxy_host = None Text,
-          dokku_proxy_port = None Natural
-        }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = Some "guest" }
+      , Role::{ role = "icos.docker2", tags = Some "docker" }
+      , Role::{ role = "icos.dokku", tags = Some "dokku" }
     ]
     }
 ]

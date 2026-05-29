@@ -26,8 +26,25 @@ in  [
         }
       }
     ],
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_devices : Optional ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_root_size = None Text
+        , lxd_vm_devices = None ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_vm",
           tags = "vm",
           lxd_vm_name = Some "staging",
@@ -47,31 +64,27 @@ in  [
     }
   , Play::{
       hosts = "staging",
-      roles = [
-        {
-          role = "icos.lxd_guest",
-          tags = "guest",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_root_size = None Text,
-          lxd_vm_devices = None ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_root_size : Optional Text
+        , lxd_vm_devices : Optional ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
+      }
+        , default =
+            { lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_root_size = None Text
+        , lxd_vm_devices = None ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
+      }
         }
-      , {
-          role = "icos.docker",
-          tags = "docker",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_root_size = None Text,
-          lxd_vm_devices = None ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
-        }
-      , {
-          role = "icos.restheart",
-          tags = "restheart",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_root_size = None Text,
-          lxd_vm_devices = None ({ dataprod : { path : Text, source : Text, type : Text, readonly : Text }, staging : { path : Text, source : Text, type : Text } })
-        }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = "guest" }
+      , Role::{ role = "icos.docker", tags = "docker" }
+      , Role::{ role = "icos.restheart", tags = "restheart" }
     ]
     }
 ]

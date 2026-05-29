@@ -23,21 +23,34 @@ in  [
       , rspamd_admin_password = Some "{{ vault_rspamd_admin_password }}"
       , rspamd_admin_password_hashed = None Text
     },
-      pre_tasks = Some [
-        {
+      pre_tasks = Some (let Task =
+        { Type =
+            { name : Text
+        , tags : Optional Text
+        , shell : Optional Text
+        , register : Text
+        , changed_when : Optional (List Text)
+        , lxd_container : Optional ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, type : Text, pool : Text, size : Text } }, wait_for_ipv4_addresses : Bool, timeout : Natural })
+      }
+        , default =
+            { tags = None Text
+        , shell = None Text
+        , changed_when = None (List Text)
+        , lxd_container = None ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, type : Text, pool : Text, size : Text } }, wait_for_ipv4_addresses : Bool, timeout : Natural })
+      }
+        }
+
+    in  [
+        Task::{
           name = "Create rspamd storage pool",
           tags = Some "pool",
           shell = Some "/snap/bin/lxc storage show rspamd > /dev/null 2>&1 || /snap/bin/lxc storage create rspamd btrfs size=50GB",
           register = "_r",
-          changed_when = Some [ "\"Storage pool rspamd created\" in _r.stdout" ],
-          lxd_container = None ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, type : Text, pool : Text, size : Text } }, wait_for_ipv4_addresses : Bool, timeout : Natural })
+          changed_when = Some [ "\"Storage pool rspamd created\" in _r.stdout" ]
         }
-      , {
+      , Task::{
           name = "Create the rspamd container",
-          tags = None Text,
-          shell = None Text,
           register = "_lxd",
-          changed_when = None (List Text),
           lxd_container = Some {
             name = "rspamd"
           , state = "started"
@@ -61,37 +74,46 @@ in  [
           , timeout = 600
         }
         }
-    ],
-      roles = [
-        {
+    ]),
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_forward_ip : Optional Text
+        , lxd_forward_name : Optional Text
+        , tags : Optional Text
+        , certbot_name : Optional Text
+        , certbot_domains : Optional (List Text)
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+        , nginxsite_users : Optional (List ({ username : Text, password : Text }))
+      }
+        , default =
+            { lxd_forward_ip = None Text
+        , lxd_forward_name = None Text
+        , tags = None Text
+        , certbot_name = None Text
+        , certbot_domains = None (List Text)
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+        , nginxsite_users = None (List ({ username : Text, password : Text }))
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_forward",
           lxd_forward_ip = Some "{{ _lxd.addresses.eth0 | first }}",
-          lxd_forward_name = Some "rspamd",
-          tags = None Text,
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          nginxsite_users = None (List ({ username : Text, password : Text }))
+          lxd_forward_name = Some "rspamd"
         }
-      , {
+      , Role::{
           role = "icos.certbot2",
-          lxd_forward_ip = None Text,
-          lxd_forward_name = None Text,
           tags = Some "cert",
           certbot_name = Some "rspamd",
-          certbot_domains = Some [ "{{ rspamd_domain }}" ],
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          nginxsite_users = None (List ({ username : Text, password : Text }))
+          certbot_domains = Some [ "{{ rspamd_domain }}" ]
         }
-      , {
+      , Role::{
           role = "icos.nginxsite",
-          lxd_forward_ip = None Text,
-          lxd_forward_name = None Text,
           tags = Some "nginx",
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
           nginxsite_name = Some "rspamd",
           nginxsite_file = Some "files/rspamd.conf",
           nginxsite_users = Some [
@@ -120,29 +142,33 @@ in  [
       , rspamd_admin_password = None Text
       , rspamd_admin_password_hashed = Some "{{ vault_rspamd_admin_password_hashed }}"
     },
-      roles = [
-        {
-          role = "icos.lxd_guest",
-          lxd_forward_ip = None Text,
-          lxd_forward_name = None Text,
-          tags = Some "guest",
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          nginxsite_users = None (List ({ username : Text, password : Text }))
+      roles = let Role =
+        { Type =
+            { role : Text
+        , lxd_forward_ip : Optional Text
+        , lxd_forward_name : Optional Text
+        , tags : Optional Text
+        , certbot_name : Optional Text
+        , certbot_domains : Optional (List Text)
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+        , nginxsite_users : Optional (List ({ username : Text, password : Text }))
+      }
+        , default =
+            { lxd_forward_ip = None Text
+        , lxd_forward_name = None Text
+        , tags = None Text
+        , certbot_name = None Text
+        , certbot_domains = None (List Text)
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+        , nginxsite_users = None (List ({ username : Text, password : Text }))
+      }
         }
-      , {
-          role = "icos.rspamd",
-          lxd_forward_ip = None Text,
-          lxd_forward_name = None Text,
-          tags = Some "rspamd",
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          nginxsite_users = None (List ({ username : Text, password : Text }))
-        }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = Some "guest" }
+      , Role::{ role = "icos.rspamd", tags = Some "rspamd" }
     ]
     }
 ]

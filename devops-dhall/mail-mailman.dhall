@@ -15,13 +15,20 @@ in  [
         , "lists.kadi-project.eu"
       ]
     }
-    , roles = [
-        {
-          role = "icos.mailman",
-          tags = "mailman",
-          vars = None ({ bbclient_name : Text, bbclient_user : Text, bbclient_home : Text, bbclient_coldbackup : Text, bbclient_remotes : List Text })
+    , roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , vars : Optional ({ bbclient_name : Text, bbclient_user : Text, bbclient_home : Text, bbclient_coldbackup : Text, bbclient_remotes : List Text })
+      }
+        , default =
+            { vars = None ({ bbclient_name : Text, bbclient_user : Text, bbclient_home : Text, bbclient_coldbackup : Text, bbclient_remotes : List Text })
+      }
         }
-      , {
+
+    in  [
+        Role::{ role = "icos.mailman", tags = "mailman" }
+      , Role::{
           role = "icos.bbclient2",
           tags = "bbclient",
           vars = Some {

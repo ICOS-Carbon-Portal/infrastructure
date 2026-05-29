@@ -5,8 +5,25 @@ let Task = ./types/Task.dhall
 in  [
     {
       hosts = "fsicos2"
-    , roles = [
-        {
+    , roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , postfix_config_list : Optional (List ({ param : Text, value : Text }))
+        , dovecot_domains : Optional (List Text)
+        , opendkim_domains : Optional (List Text)
+        , opendkim_domains_testkeys : Optional (List Text)
+      }
+        , default =
+            { postfix_config_list = None (List ({ param : Text, value : Text }))
+        , dovecot_domains = None (List Text)
+        , opendkim_domains = None (List Text)
+        , opendkim_domains_testkeys = None (List Text)
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.postfix",
           tags = "postfix",
           postfix_config_list = Some [
@@ -14,24 +31,16 @@ in  [
               param = "mynetworks"
             , value = "127.0.0.0/8 172.16.0.0/12 172.19.199.2 172.19.199.3"
           }
-        ],
-          dovecot_domains = None (List Text),
-          opendkim_domains = None (List Text),
-          opendkim_domains_testkeys = None (List Text)
+        ]
         }
-      , {
+      , Role::{
           role = "icos.dovecot",
           tags = "dovecot",
-          postfix_config_list = None (List ({ param : Text, value : Text })),
-          dovecot_domains = Some [ "otc-nrt.icos-cp.eu" ],
-          opendkim_domains = None (List Text),
-          opendkim_domains_testkeys = None (List Text)
+          dovecot_domains = Some [ "otc-nrt.icos-cp.eu" ]
         }
-      , {
+      , Role::{
           role = "icos.opendkim",
           tags = "opendkim",
-          postfix_config_list = None (List ({ param : Text, value : Text })),
-          dovecot_domains = None (List Text),
           opendkim_domains = Some [ "lists.icos-ri.eu", "lists.john-project.eu" ],
           opendkim_domains_testkeys = Some [ "lists.icos-ri.eu", "lists.john-project.eu" ]
         }

@@ -18,20 +18,33 @@ in  [
     Play::{
       hosts = "fsicos3",
       vars = Some { callisto_ip = "{{ _lxd.addresses.eth0 | first }}" },
-      pre_tasks = Some [
-        {
+      pre_tasks = Some (let Entry =
+        { Type =
+            { name : Text
+        , tags : List Text
+        , include_role : Optional ({ name : Text, public : Bool })
+        , vars : Optional ({ zfsdocker_name : Text, zfsdocker_size : Text })
+        , lxd_container : Optional ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text }, fluxcom : { path : Text, source : Text, type : Text }, fluxcom_eo : { path : Text, source : Text, type : Text }, stilt : { path : Text, source : Text, type : Text }, eurocom : { path : Text, source : Text, type : Text }, eurocom_web_root : { path : Text, source : Text, type : Text }, filedrop : { path : Text, source : Text, type : Text }, datademo : { path : Text, source : Text, type : Text }, radonmap : { path : Text, source : Text, type : Text } }, config : { `limits.memory` : Text, `security.nesting` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural })
+        , register : Optional Text
+      }
+        , default =
+            { include_role = None ({ name : Text, public : Bool })
+        , vars = None ({ zfsdocker_name : Text, zfsdocker_size : Text })
+        , lxd_container = None ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text }, fluxcom : { path : Text, source : Text, type : Text }, fluxcom_eo : { path : Text, source : Text, type : Text }, stilt : { path : Text, source : Text, type : Text }, eurocom : { path : Text, source : Text, type : Text }, eurocom_web_root : { path : Text, source : Text, type : Text }, filedrop : { path : Text, source : Text, type : Text }, datademo : { path : Text, source : Text, type : Text }, radonmap : { path : Text, source : Text, type : Text } }, config : { `limits.memory` : Text, `security.nesting` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural })
+        , register = None Text
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Cre ate storage for docker",
           tags = [ "lxd" ],
           include_role = Some { name = "icos.zfsdocker", public = True },
-          vars = Some { zfsdocker_name = "callisto", zfsdocker_size = "50G" },
-          lxd_container = None ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text }, fluxcom : { path : Text, source : Text, type : Text }, fluxcom_eo : { path : Text, source : Text, type : Text }, stilt : { path : Text, source : Text, type : Text }, eurocom : { path : Text, source : Text, type : Text }, eurocom_web_root : { path : Text, source : Text, type : Text }, filedrop : { path : Text, source : Text, type : Text }, datademo : { path : Text, source : Text, type : Text }, radonmap : { path : Text, source : Text, type : Text } }, config : { `limits.memory` : Text, `security.nesting` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural }),
-          register = None Text
+          vars = Some { zfsdocker_name = "callisto", zfsdocker_size = "50G" }
         }
-      , {
+      , Entry::{
           name = "Create the callisto container",
           tags = [ "lxd", "forward" ],
-          include_role = None ({ name : Text, public : Bool }),
-          vars = None ({ zfsdocker_name : Text, zfsdocker_size : Text }),
           lxd_container = Some {
             name = "callisto"
           , state = "started"
@@ -82,59 +95,88 @@ in  [
         },
           register = Some "_lxd"
         }
-    ],
-      roles = [
-        {
+    ]),
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , lxd_forward_name : Optional Text
+        , lxd_forward_ip : Optional Text
+        , eurocom_users : Optional Text
+        , eurocom_web_root : Optional Text
+        , eurocom_data_home : Optional Text
+        , user_conf : Optional Text
+        , docker_periodic_cleanup : Optional Bool
+        , docker_prevent_upgrade : Optional Bool
+        , filedrop_data_home : Optional Text
+        , jupyter_admins : Optional Text
+        , jupyter_user_volumes : Optional Text
+        , jupyter_backup_enable : Optional Bool
+        , sftp_user_dir : Optional Text
+        , sftp_user_login : Optional Text
+        , sftp_user_owner : Optional Text
+        , sftp_user_password : Optional Text
+        , sftp_user_hostdesc : Optional Text
+        , bbclient_name : Optional Text
+        , bbclient_remotes : Optional (List Text)
+        , bbclient_timer_content : Optional Text
+      }
+        , default =
+            { lxd_forward_name = None Text
+        , lxd_forward_ip = None Text
+        , eurocom_users = None Text
+        , eurocom_web_root = None Text
+        , eurocom_data_home = None Text
+        , user_conf = None Text
+        , docker_periodic_cleanup = None Bool
+        , docker_prevent_upgrade = None Bool
+        , filedrop_data_home = None Text
+        , jupyter_admins = None Text
+        , jupyter_user_volumes = None Text
+        , jupyter_backup_enable = None Bool
+        , sftp_user_dir = None Text
+        , sftp_user_login = None Text
+        , sftp_user_owner = None Text
+        , sftp_user_password = None Text
+        , sftp_user_hostdesc = None Text
+        , bbclient_name = None Text
+        , bbclient_remotes = None (List Text)
+        , bbclient_timer_content = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_forward",
           tags = "forward",
           lxd_forward_name = Some "callisto",
-          lxd_forward_ip = Some "{{ callisto_ip }}",
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          lxd_forward_ip = Some "{{ callisto_ip }}"
         }
-      , {
+      , Role::{
           role = "icos.eurocom",
           tags = "eurocom",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
           eurocom_users = Some "{{ vault_eurocom_users }}",
           eurocom_web_root = Some "/pool/ute/eurocom_web_root",
-          eurocom_data_home = Some "/data/project/eurocom",
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          eurocom_data_home = Some "/data/project/eurocom"
         }
     ],
-      tasks = [
-        {
+      tasks = let Entry =
+        { Type =
+            { name : Text
+        , tags : Text
+        , include_role : Optional ({ name : Text, tasks_from : Text })
+        , vars : Optional ({ nginxsite_name : Text, filedrop_domain : Optional Text, filedrop_host : Optional Text, jupyter_domain : Optional Text, jupyter_ip : Optional Text })
+        , iptables_raw : Optional ({ name : Text, table : Text, rules : Text })
+      }
+        , default =
+            { include_role = None ({ name : Text, tasks_from : Text })
+        , vars = None ({ nginxsite_name : Text, filedrop_domain : Optional Text, filedrop_host : Optional Text, jupyter_domain : Optional Text, jupyter_ip : Optional Text })
+        , iptables_raw = None ({ name : Text, table : Text, rules : Text })
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Proxy filedrop",
           tags = "filedrop",
           include_role = Some { name = "icos.filedrop", tasks_from = "proxy" },
@@ -144,10 +186,9 @@ in  [
           , filedrop_host = Some "callisto.lxd"
           , jupyter_domain = None Text
           , jupyter_ip = None Text
-        },
-          iptables_raw = None ({ name : Text, table : Text, rules : Text })
         }
-      , {
+        }
+      , Entry::{
           name = "Proxy jupyter",
           tags = "jupyter",
           include_role = Some { name = "icos.jupyter", tasks_from = "proxy" },
@@ -157,178 +198,100 @@ in  [
           , filedrop_host = None Text
           , jupyter_domain = Some "callisto.icos-cp.eu"
           , jupyter_ip = Some "callisto.lxd"
-        },
-          iptables_raw = None ({ name : Text, table : Text, rules : Text })
+        }
         }
     ]
     }
   , Play::{
       hosts = "callisto",
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , lxd_forward_name : Optional Text
+        , lxd_forward_ip : Optional Text
+        , eurocom_users : Optional Text
+        , eurocom_web_root : Optional Text
+        , eurocom_data_home : Optional Text
+        , user_conf : Optional Text
+        , docker_periodic_cleanup : Optional Bool
+        , docker_prevent_upgrade : Optional Bool
+        , filedrop_data_home : Optional Text
+        , jupyter_admins : Optional Text
+        , jupyter_user_volumes : Optional Text
+        , jupyter_backup_enable : Optional Bool
+        , sftp_user_dir : Optional Text
+        , sftp_user_login : Optional Text
+        , sftp_user_owner : Optional Text
+        , sftp_user_password : Optional Text
+        , sftp_user_hostdesc : Optional Text
+        , bbclient_name : Optional Text
+        , bbclient_remotes : Optional (List Text)
+        , bbclient_timer_content : Optional Text
+      }
+        , default =
+            { lxd_forward_name = None Text
+        , lxd_forward_ip = None Text
+        , eurocom_users = None Text
+        , eurocom_web_root = None Text
+        , eurocom_data_home = None Text
+        , user_conf = None Text
+        , docker_periodic_cleanup = None Bool
+        , docker_prevent_upgrade = None Bool
+        , filedrop_data_home = None Text
+        , jupyter_admins = None Text
+        , jupyter_user_volumes = None Text
+        , jupyter_backup_enable = None Bool
+        , sftp_user_dir = None Text
+        , sftp_user_login = None Text
+        , sftp_user_owner = None Text
+        , sftp_user_password = None Text
+        , sftp_user_hostdesc = None Text
+        , bbclient_name = None Text
+        , bbclient_remotes = None (List Text)
+        , bbclient_timer_content = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.lxd_guest",
           tags = "guest",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = Some "{{ vault_callisto_user_conf }}",
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          user_conf = Some "{{ vault_callisto_user_conf }}"
         }
-      , {
+      , Role::{
           role = "icos.docker",
           tags = "docker",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
           docker_periodic_cleanup = Some True,
-          docker_prevent_upgrade = Some True,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          docker_prevent_upgrade = Some True
         }
-      , {
-          role = "icos.filedrop",
-          tags = "filedrop",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = Some "/ute/filedrop",
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
-        }
-      , {
+      , Role::{ role = "icos.filedrop", tags = "filedrop", filedrop_data_home = Some "/ute/filedrop" }
+      , Role::{
           role = "icos.jupyter",
           tags = "jupyter",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
           jupyter_admins = Some "{{ vault_callisto_admins }}",
           jupyter_user_volumes = Some "{{ vault_callisto_user_volumes }}",
-          jupyter_backup_enable = Some False,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          jupyter_backup_enable = Some False
         }
-      , {
+      , Role::{
           role = "icos.sftp_user",
           tags = "sftp",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
           sftp_user_dir = Some "/ute/sftp_home/data",
           sftp_user_login = Some "sftp",
           sftp_user_owner = Some "ute",
-          sftp_user_password = Some "{{ vault_callisto_sftp_password }}",
-          sftp_user_hostdesc = None Text,
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          sftp_user_password = Some "{{ vault_callisto_sftp_password }}"
         }
-      , {
+      , Role::{
           role = "icos.sftp_user",
           tags = "sftp",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
           sftp_user_dir = Some "/ute/fluxcom/upload",
           sftp_user_login = Some "{{ vault_callisto_sftp_fluxcom_upload_username }}",
-          sftp_user_owner = None Text,
           sftp_user_password = Some "{{ vault_callisto_sftp_fluxcom_upload_password }}",
-          sftp_user_hostdesc = Some "fluxcom-upload",
-          bbclient_name = None Text,
-          bbclient_remotes = None (List Text),
-          bbclient_timer_content = None Text
+          sftp_user_hostdesc = Some "fluxcom-upload"
         }
-      , {
+      , Role::{
           role = "icos.bbclient2",
           tags = "bbclient_ute",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
           bbclient_name = Some "callisto_home_ute",
           bbclient_remotes = Some [ "fsicos2", "icos1" ],
           bbclient_timer_content = Some ''
@@ -345,26 +308,9 @@ in  [
 
         ''
         }
-      , {
+      , Role::{
           role = "icos.bbclient2",
           tags = "bbclient_radon",
-          lxd_forward_name = None Text,
-          lxd_forward_ip = None Text,
-          eurocom_users = None Text,
-          eurocom_web_root = None Text,
-          eurocom_data_home = None Text,
-          user_conf = None Text,
-          docker_periodic_cleanup = None Bool,
-          docker_prevent_upgrade = None Bool,
-          filedrop_data_home = None Text,
-          jupyter_admins = None Text,
-          jupyter_user_volumes = None Text,
-          jupyter_backup_enable = None Bool,
-          sftp_user_dir = None Text,
-          sftp_user_login = None Text,
-          sftp_user_owner = None Text,
-          sftp_user_password = None Text,
-          sftp_user_hostdesc = None Text,
           bbclient_name = Some "radon_map",
           bbclient_remotes = Some [ "fsicos2", "icos1" ],
           bbclient_timer_content = Some ''
@@ -382,12 +328,25 @@ in  [
         ''
         }
     ],
-      tasks = [
-        {
+      tasks = let Entry =
+        { Type =
+            { name : Text
+        , tags : Text
+        , include_role : Optional ({ name : Text, tasks_from : Text })
+        , vars : Optional ({ nginxsite_name : Text, filedrop_domain : Optional Text, filedrop_host : Optional Text, jupyter_domain : Optional Text, jupyter_ip : Optional Text })
+        , iptables_raw : Optional ({ name : Text, table : Text, rules : Text })
+      }
+        , default =
+            { include_role = None ({ name : Text, tasks_from : Text })
+        , vars = None ({ nginxsite_name : Text, filedrop_domain : Optional Text, filedrop_host : Optional Text, jupyter_domain : Optional Text, jupyter_ip : Optional Text })
+        , iptables_raw = None ({ name : Text, table : Text, rules : Text })
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Port forward for filedrop",
           tags = "iptables",
-          include_role = None ({ name : Text, tasks_from : Text }),
-          vars = None ({ nginxsite_name : Text, filedrop_domain : Optional Text, filedrop_host : Optional Text, jupyter_domain : Optional Text, jupyter_ip : Optional Text }),
           iptables_raw = Some {
             name = "forward_filedrop"
           , table = "nat"

@@ -17,25 +17,47 @@ in  [
     Play::{
       hosts = [ "fsicos3" ],
       tags = Some [ "zfs" ],
-      tasks = [
-        {
+      tasks = let Entry =
+        { Type =
+            { name : Text
+        , tags : Optional Text
+        , zfs : Optional ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } })
+        , when : Optional Text
+        , apt : Optional ({ name : List Text, state : Optional Text })
+        , file : Optional ({ path : Text, state : Text })
+        , loop : Optional Text
+        , mount : Optional ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text })
+        , blockinfile : Optional ({ path : Text, create : Bool, marker : Text, block : Text })
+        , notify : Optional Text
+        , command : Optional Text
+        , changed_when : Optional Bool
+        , lxd_profile : Optional ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+      }
+        , default =
+            { tags = None Text
+        , zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } })
+        , when = None Text
+        , apt = None ({ name : List Text, state : Optional Text })
+        , file = None ({ path : Text, state : Text })
+        , loop = None Text
+        , mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text })
+        , blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text })
+        , notify = None Text
+        , command = None Text
+        , changed_when = None Bool
+        , lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Create /incoming",
           tags = Some "incoming",
           zfs = Some {
             name = "pool/incoming"
           , state = "present"
           , extra_zfs_properties = { mountpoint = "/incoming" }
-        },
-          when = None Text,
-          apt = None ({ name : List Text, state : Optional Text }),
-          file = None ({ path : Text, state : Text }),
-          loop = None Text,
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+        }
         }
     ]
     }
@@ -48,59 +70,56 @@ in  [
       , "pancake"
     ],
       tags = Some [ "nfs" ],
-      tasks = [
-        {
+      tasks = let Task =
+        { Type =
+            { name : Text
+        , tags : Optional Text
+        , zfs : Optional ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } })
+        , when : Optional Text
+        , apt : Optional ({ name : List Text, state : Optional Text })
+        , file : Optional ({ path : Text, state : Text })
+        , loop : Optional Text
+        , mount : Optional ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text })
+        , blockinfile : Optional ({ path : Text, create : Bool, marker : Text, block : Text })
+        , notify : Optional Text
+        , command : Optional Text
+        , changed_when : Optional Bool
+        , lxd_profile : Optional ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+      }
+        , default =
+            { tags = None Text
+        , zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } })
+        , when = None Text
+        , apt = None ({ name : List Text, state : Optional Text })
+        , file = None ({ path : Text, state : Text })
+        , loop = None Text
+        , mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text })
+        , blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text })
+        , notify = None Text
+        , command = None Text
+        , changed_when = None Bool
+        , lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+      }
+        }
+
+    in  [
+        Task::{
           name = "Install packages",
-          tags = None Text,
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
           when = Some "icosdata_exports is defined",
-          apt = Some { name = [ "nfs-kernel-server" ], state = Some "present" },
-          file = None ({ path : Text, state : Text }),
-          loop = None Text,
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+          apt = Some { name = [ "nfs-kernel-server" ], state = Some "present" }
         }
-      , {
+      , Task::{
           name = "Install nfs-client",
-          tags = None Text,
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
           when = Some "icosdata_nfs_mounts is defined",
-          apt = Some { name = [ "nfs-client" ], state = None Text },
-          file = None ({ path : Text, state : Text }),
-          loop = None Text,
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+          apt = Some { name = [ "nfs-client" ], state = None Text }
         }
-      , {
+      , Task::{
           name = "Create directories",
-          tags = None Text,
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
-          when = None Text,
-          apt = None ({ name : List Text, state : Optional Text }),
           file = Some { path = "{{ item }}", state = "directory" },
-          loop = Some "{{ icosdata_mkdirs | default([]) }}",
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+          loop = Some "{{ icosdata_mkdirs | default([]) }}"
         }
-      , {
+      , Task::{
           name = "Do bind-mount local data",
-          tags = None Text,
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
-          when = None Text,
-          apt = None ({ name : List Text, state : Optional Text }),
-          file = None ({ path : Text, state : Text }),
           loop = Some "{{ icosdata_bind_mounts | default([]) }}",
           mount = Some {
             fstype = "none"
@@ -108,55 +127,31 @@ in  [
           , path = "{{ item.path }}"
           , src = "{{ item.src }}"
           , opts = "bind{{ item.opts | default('') }}"
-        },
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
         }
-      , {
+        }
+      , Task::{
           name = "Export data via nfs",
           tags = Some "export",
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
           when = Some "icosdata_exports is defined",
-          apt = None ({ name : List Text, state : Optional Text }),
-          file = None ({ path : Text, state : Text }),
-          loop = None Text,
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
           blockinfile = Some {
             path = "/etc/exports"
           , create = True
           , marker = "# {mark} icosdata"
           , block = "{{ icosdata_exports }}"
         },
-          notify = Some "Reload NFS server",
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+          notify = Some "Reload NFS server"
         }
-      , {
+      , Task::{
           name = "Export all directories listed in `/etc/exports`",
           tags = Some "export",
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
           when = Some "icosdata_exports is defined",
-          apt = None ({ name : List Text, state : Optional Text }),
-          file = None ({ path : Text, state : Text }),
-          loop = None Text,
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
           command = Some "exportfs -rav",
-          changed_when = Some False,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+          changed_when = Some False
         }
-      , {
+      , Task::{
           name = "Mount nfs data",
           tags = Some "mount",
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
           when = Some "icosdata_nfs_mounts is defined",
-          apt = None ({ name : List Text, state : Optional Text }),
-          file = None ({ path : Text, state : Text }),
           loop = Some "{{ icosdata_nfs_mounts }}",
           mount = Some {
             fstype = "nfs4"
@@ -164,12 +159,7 @@ in  [
           , src = "{{ item.src | default(omit) }}"
           , path = "{{ item.path | default(omit) }}"
           , opts = "{{ item.opts | default('ro') }}"
-        },
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
-          lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+        }
         }
     ],
       handlers = Some [
@@ -181,20 +171,42 @@ in  [
     }
   , Play::{
       hosts = [ "fsicos3" ],
-      tasks = [
-        {
+      tasks = let Entry =
+        { Type =
+            { name : Text
+        , tags : Optional Text
+        , zfs : Optional ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } })
+        , when : Optional Text
+        , apt : Optional ({ name : List Text, state : Optional Text })
+        , file : Optional ({ path : Text, state : Text })
+        , loop : Optional Text
+        , mount : Optional ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text })
+        , blockinfile : Optional ({ path : Text, create : Bool, marker : Text, block : Text })
+        , notify : Optional Text
+        , command : Optional Text
+        , changed_when : Optional Bool
+        , lxd_profile : Optional ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+      }
+        , default =
+            { tags = None Text
+        , zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } })
+        , when = None Text
+        , apt = None ({ name : List Text, state : Optional Text })
+        , file = None ({ path : Text, state : Text })
+        , loop = None Text
+        , mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text })
+        , blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text })
+        , notify = None Text
+        , command = None Text
+        , changed_when = None Bool
+        , lxd_profile = None ({ name : Text, devices : { radonmap : { path : Text, source : Text, type : Text, readonly : Text }, stilt : { path : Text, source : Text, type : Text, readonly : Text }, fluxcom_upload : { path : Text, source : Text, type : Text, readonly : Text } } })
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Create icosdata LXD profile",
           tags = Some "profile",
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { mountpoint : Text } }),
-          when = None Text,
-          apt = None ({ name : List Text, state : Optional Text }),
-          file = None ({ path : Text, state : Text }),
-          loop = None Text,
-          mount = None ({ fstype : Text, state : Text, path : Text, src : Text, opts : Text }),
-          blockinfile = None ({ path : Text, create : Bool, marker : Text, block : Text }),
-          notify = None Text,
-          command = None Text,
-          changed_when = None Bool,
           lxd_profile = Some {
             name = "icosdata"
           , devices = {

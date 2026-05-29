@@ -15,74 +15,111 @@ let Play =
 in  [
     Play::{
       hosts = "fsicos3",
-      pre_tasks = [
-        {
+      pre_tasks = let Entry =
+        { Type =
+            { name : Text
+        , zfs : Optional ({ name : Text, state : Text, extra_zfs_properties : { quota : Text } })
+        , file : Optional ({ path : Text, owner : Natural, group : Natural })
+        , `ansible.builtin.group` : Optional ({ name : Text })
+      }
+        , default =
+            { zfs = None ({ name : Text, state : Text, extra_zfs_properties : { quota : Text } })
+        , file = None ({ path : Text, owner : Natural, group : Natural })
+        , `ansible.builtin.group` = None ({ name : Text })
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Create /pool/ctehires",
           zfs = Some {
             name = "pool/ctehires"
           , state = "present"
           , extra_zfs_properties = { quota = "1T" }
-        },
-          file = None ({ path : Text, owner : Natural, group : Natural }),
-          `ansible.builtin.group` = None ({ name : Text })
         }
-      , {
+        }
+      , Entry::{
           name = "Change owner of /pool/ctehires",
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { quota : Text } }),
-          file = Some { path = "/pool/ctehires", owner = 1000000, group = 1000000 },
-          `ansible.builtin.group` = None ({ name : Text })
+          file = Some { path = "/pool/ctehires", owner = 1000000, group = 1000000 }
         }
     ],
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_config : Optional ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices : Optional ({ ctehires : { path : Text, source : Text, type : Text } })
+        , tags : Optional Text
+      }
+        , default =
+            { name = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_config = None ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices = None ({ ctehires : { path : Text, source : Text, type : Text } })
+        , tags = None Text
+      }
+        }
+
+    in  [
+        Role::{
           name = Some "Create the ctehires VM",
           role = "icos.lxd_vm",
           lxd_vm_name = Some "ctehires",
           lxd_vm_docker = Some True,
           lxd_vm_config = Some { `security.nesting` = "true", `limits.cpu` = "16", `limits.memory` = "64GB" },
-          lxd_vm_devices = Some { ctehires = { path = "/ctehires", source = "/pool/ctehires", type = "disk" } },
-          tags = None Text
+          lxd_vm_devices = Some { ctehires = { path = "/ctehires", source = "/pool/ctehires", type = "disk" } }
         }
     ]
     }
   , Play::{
       hosts = "ctehires",
-      pre_tasks = [
-        {
+      pre_tasks = let Entry =
+        { Type =
+            { name : Text
+        , zfs : Optional ({ name : Text, state : Text, extra_zfs_properties : { quota : Text } })
+        , file : Optional ({ path : Text, owner : Natural, group : Natural })
+        , `ansible.builtin.group` : Optional ({ name : Text })
+      }
+        , default =
+            { zfs = None ({ name : Text, state : Text, extra_zfs_properties : { quota : Text } })
+        , file = None ({ path : Text, owner : Natural, group : Natural })
+        , `ansible.builtin.group` = None ({ name : Text })
+      }
+        }
+
+    in  [
+        Entry::{
           name = "Create the ctehires group",
-          zfs = None ({ name : Text, state : Text, extra_zfs_properties : { quota : Text } }),
-          file = None ({ path : Text, owner : Natural, group : Natural }),
           `ansible.builtin.group` = Some { name = "ctehires" }
         }
     ],
-      roles = [
-        {
-          name = None Text,
-          role = "icos.lxd_guest",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ ctehires : { path : Text, source : Text, type : Text } }),
-          tags = Some "guest"
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_config : Optional ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices : Optional ({ ctehires : { path : Text, source : Text, type : Text } })
+        , tags : Optional Text
+      }
+        , default =
+            { name = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_config = None ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices = None ({ ctehires : { path : Text, source : Text, type : Text } })
+        , tags = None Text
+      }
         }
-      , {
-          name = None Text,
-          role = "icos.docker",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ ctehires : { path : Text, source : Text, type : Text } }),
-          tags = Some "docker"
-        }
-      , {
-          name = None Text,
-          role = "icos.users",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ ctehires : { path : Text, source : Text, type : Text } }),
-          tags = Some "users"
-        }
+
+    in  [
+        Role::{ role = "icos.lxd_guest", tags = Some "guest" }
+      , Role::{ role = "icos.docker", tags = Some "docker" }
+      , Role::{ role = "icos.users", tags = Some "users" }
     ],
       vars = Some { user_conf = "{{ vault_ctehires_user_conf }}", user_disable_coredump = True }
     }

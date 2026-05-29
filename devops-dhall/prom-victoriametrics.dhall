@@ -5,31 +5,37 @@ let Task = ./types/Task.dhall
 in  [
     {
       hosts = "cdb"
-    , roles = [
-        {
-          role = "icos.docker2",
-          tags = "docker",
-          vm_graf_domain = None Text,
-          vm_graf_pass = None Text,
-          vm_promlens_token = None Text,
-          caddy_name = None Text,
-          caddy_conf = None Text
+    , roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , vm_graf_domain : Optional Text
+        , vm_graf_pass : Optional Text
+        , vm_promlens_token : Optional Text
+        , caddy_name : Optional Text
+        , caddy_conf : Optional Text
+      }
+        , default =
+            { vm_graf_domain = None Text
+        , vm_graf_pass = None Text
+        , vm_promlens_token = None Text
+        , caddy_name = None Text
+        , caddy_conf = None Text
+      }
         }
-      , {
+
+    in  [
+        Role::{ role = "icos.docker2", tags = "docker" }
+      , Role::{
           role = "icos.victoriametrics",
           tags = "prom",
           vm_graf_domain = Some "graf.icos-cp.eu",
           vm_graf_pass = Some "{{ vault_vm_graf_pass }}",
-          vm_promlens_token = Some "{{ vault_prometheus_promlens_token }}",
-          caddy_name = None Text,
-          caddy_conf = None Text
+          vm_promlens_token = Some "{{ vault_prometheus_promlens_token }}"
         }
-      , {
+      , Role::{
           role = "icos.caddy",
           tags = "caddy",
-          vm_graf_domain = None Text,
-          vm_graf_pass = None Text,
-          vm_promlens_token = None Text,
           caddy_name = Some "prometheus",
           caddy_conf = Some ''
           # SNIPPET

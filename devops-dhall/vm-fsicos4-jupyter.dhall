@@ -14,8 +14,29 @@ let Play =
 in  [
     Play::{
       hosts = "fsicos4",
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , caddy_name : Optional Text
+        , caddy_conf : Optional Text
+        , jupyter_hub_config : Optional ({ admin_users : List Text })
+        , jupyter_jusers_enable : Optional Bool
+        , jupyter_backup_enable : Optional Bool
+        , bbclient_name : Optional Text
+      }
+        , default =
+            { caddy_name = None Text
+        , caddy_conf = None Text
+        , jupyter_hub_config = None ({ admin_users : List Text })
+        , jupyter_jusers_enable = None Bool
+        , jupyter_backup_enable = None Bool
+        , bbclient_name = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.caddy",
           tags = "caddy",
           caddy_name = Some "jupyter4",
@@ -24,79 +45,65 @@ in  [
               reverse_proxy 10.10.10.227:8000
           }
 
-        '',
-          jupyter_hub_config = None ({ admin_users : List Text }),
-          jupyter_jusers_enable = None Bool,
-          jupyter_backup_enable = None Bool,
-          bbclient_name = None Text
+        ''
         }
     ]
     }
   , Play::{
       hosts = "fsicos4-jupyter",
-      roles = [
-        {
-          role = "icos.pve_guest",
-          tags = "guest",
-          caddy_name = None Text,
-          caddy_conf = None Text,
-          jupyter_hub_config = None ({ admin_users : List Text }),
-          jupyter_jusers_enable = None Bool,
-          jupyter_backup_enable = None Bool,
-          bbclient_name = None Text
+      roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , caddy_name : Optional Text
+        , caddy_conf : Optional Text
+        , jupyter_hub_config : Optional ({ admin_users : List Text })
+        , jupyter_jusers_enable : Optional Bool
+        , jupyter_backup_enable : Optional Bool
+        , bbclient_name : Optional Text
+      }
+        , default =
+            { caddy_name = None Text
+        , caddy_conf = None Text
+        , jupyter_hub_config = None ({ admin_users : List Text })
+        , jupyter_jusers_enable = None Bool
+        , jupyter_backup_enable = None Bool
+        , bbclient_name = None Text
+      }
         }
-      , {
-          role = "icos.utils",
-          tags = "utils",
-          caddy_name = None Text,
-          caddy_conf = None Text,
-          jupyter_hub_config = None ({ admin_users : List Text }),
-          jupyter_jusers_enable = None Bool,
-          jupyter_backup_enable = None Bool,
-          bbclient_name = None Text
-        }
-      , {
-          role = "icos.python3",
-          tags = "python3",
-          caddy_name = None Text,
-          caddy_conf = None Text,
-          jupyter_hub_config = None ({ admin_users : List Text }),
-          jupyter_jusers_enable = None Bool,
-          jupyter_backup_enable = None Bool,
-          bbclient_name = None Text
-        }
-      , {
-          role = "icos.docker2",
-          tags = "docker",
-          caddy_name = None Text,
-          caddy_conf = None Text,
-          jupyter_hub_config = None ({ admin_users : List Text }),
-          jupyter_jusers_enable = None Bool,
-          jupyter_backup_enable = None Bool,
-          bbclient_name = None Text
-        }
-      , {
+
+    in  [
+        Role::{ role = "icos.pve_guest", tags = "guest" }
+      , Role::{ role = "icos.utils", tags = "utils" }
+      , Role::{ role = "icos.python3", tags = "python3" }
+      , Role::{ role = "icos.docker2", tags = "docker" }
+      , Role::{
           role = "icos.jupyter",
           tags = "jupyter",
-          caddy_name = None Text,
-          caddy_conf = None Text,
           jupyter_hub_config = Some { admin_users = [ "ida" ] },
           jupyter_jusers_enable = Some True,
           jupyter_backup_enable = Some False,
           bbclient_name = Some "jupyter"
         }
     ],
-      tasks = Some [
-        {
-          name = "Install nfs-common",
-          tags = "nfs",
-          apt = Some { name = [ "nfs-common" ] },
-          mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+      tasks = Some (let Task =
+        { Type =
+            { name : Text
+        , tags : Text
+        , apt : Optional ({ name : List Text })
+        , mount : Optional ({ src : Text, path : Text, state : Text, fstype : Text })
+      }
+        , default =
+            { apt = None ({ name : List Text })
+        , mount = None ({ src : Text, path : Text, state : Text, fstype : Text })
+      }
         }
-      , {
+
+    in  [
+        Task::{ name = "Install nfs-common", tags = "nfs", apt = Some { name = [ "nfs-common" ] } }
+      , Task::{
           name = "Mount 10.10.10.1/tank/data/ida_swift at /data/ida_swift",
           tags = "nfs",
-          apt = None ({ name : List Text }),
           mount = Some {
             src = "10.10.10.1:/tank/data/ida_swift"
           , path = "/data/ida_swift"
@@ -104,6 +111,6 @@ in  [
           , fstype = "nfs"
         }
         }
-    ]
+    ])
     }
 ]

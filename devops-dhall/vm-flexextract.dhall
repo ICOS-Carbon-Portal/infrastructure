@@ -3,8 +3,45 @@
 [
     {
       hosts = "fsicos2",
-      roles = [
-        {
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , tags : Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices : Optional ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } })
+        , certbot_name : Optional Text
+        , certbot_domains : Optional (List Text)
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+        , flexextract_src_dir : Optional Text
+        , flexextract_download_host : Optional Text
+        , sshlogin_dst : Optional Text
+        , sshlogin_src_user : Optional Text
+        , sshlogin_dst_user : Optional Text
+      }
+        , default =
+            { name = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } })
+        , certbot_name = None Text
+        , certbot_domains = None (List Text)
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+        , flexextract_src_dir = None Text
+        , flexextract_download_host = None Text
+        , sshlogin_dst = None Text
+        , sshlogin_src_user = None Text
+        , sshlogin_dst_user = None Text
+      }
+        }
+
+    in  [
+        Role::{
           name = Some "Create the flexextract VM",
           tags = "vm",
           role = "icos.lxd_vm",
@@ -29,126 +66,73 @@
             , type = "disk"
             , readonly = "False"
           }
-        },
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          flexextract_src_dir = None Text,
-          flexextract_download_host = None Text,
-          sshlogin_dst = None Text,
-          sshlogin_src_user = None Text,
-          sshlogin_dst_user = None Text
         }
-      , {
-          name = None Text,
+        }
+      , Role::{
           tags = "cert",
           role = "icos.certbot2",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } }),
           certbot_name = Some "flexextract",
-          certbot_domains = Some [ "flexextract.icos-cp.eu" ],
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          flexextract_src_dir = None Text,
-          flexextract_download_host = None Text,
-          sshlogin_dst = None Text,
-          sshlogin_src_user = None Text,
-          sshlogin_dst_user = None Text
+          certbot_domains = Some [ "flexextract.icos-cp.eu" ]
         }
-      , {
-          name = None Text,
+      , Role::{
           tags = "nginx",
           role = "icos.nginxsite",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } }),
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
           nginxsite_name = Some "flexextract",
-          nginxsite_file = Some "files/flexextract.conf",
-          flexextract_src_dir = None Text,
-          flexextract_download_host = None Text,
-          sshlogin_dst = None Text,
-          sshlogin_src_user = None Text,
-          sshlogin_dst_user = None Text
+          nginxsite_file = Some "files/flexextract.conf"
         }
     ]
     }
   , {
       hosts = "flexextract",
-      roles = [
-        {
-          name = None Text,
-          tags = "guest",
-          role = "icos.lxd_guest",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } }),
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          flexextract_src_dir = None Text,
-          flexextract_download_host = None Text,
-          sshlogin_dst = None Text,
-          sshlogin_src_user = None Text,
-          sshlogin_dst_user = None Text
+      roles = let Role =
+        { Type =
+            { name : Optional Text
+        , tags : Text
+        , role : Text
+        , lxd_vm_name : Optional Text
+        , lxd_vm_docker : Optional Bool
+        , lxd_vm_config : Optional ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices : Optional ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } })
+        , certbot_name : Optional Text
+        , certbot_domains : Optional (List Text)
+        , nginxsite_name : Optional Text
+        , nginxsite_file : Optional Text
+        , flexextract_src_dir : Optional Text
+        , flexextract_download_host : Optional Text
+        , sshlogin_dst : Optional Text
+        , sshlogin_src_user : Optional Text
+        , sshlogin_dst_user : Optional Text
+      }
+        , default =
+            { name = None Text
+        , lxd_vm_name = None Text
+        , lxd_vm_docker = None Bool
+        , lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text })
+        , lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } })
+        , certbot_name = None Text
+        , certbot_domains = None (List Text)
+        , nginxsite_name = None Text
+        , nginxsite_file = None Text
+        , flexextract_src_dir = None Text
+        , flexextract_download_host = None Text
+        , sshlogin_dst = None Text
+        , sshlogin_src_user = None Text
+        , sshlogin_dst_user = None Text
+      }
         }
-      , {
-          name = None Text,
-          tags = "docker",
-          role = "icos.docker",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } }),
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          flexextract_src_dir = None Text,
-          flexextract_download_host = None Text,
-          sshlogin_dst = None Text,
-          sshlogin_src_user = None Text,
-          sshlogin_dst_user = None Text
-        }
-      , {
-          name = None Text,
+
+    in  [
+        Role::{ tags = "guest", role = "icos.lxd_guest" }
+      , Role::{ tags = "docker", role = "icos.docker" }
+      , Role::{
           tags = "flexextract",
           role = "icos.flexextract",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } }),
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
           flexextract_src_dir = Some "/tmp/docker_flexextract_7.1.0",
-          flexextract_download_host = Some "/disk/data/flexextract_download",
-          sshlogin_dst = None Text,
-          sshlogin_src_user = None Text,
-          sshlogin_dst_user = None Text
+          flexextract_download_host = Some "/disk/data/flexextract_download"
         }
-      , {
-          name = None Text,
+      , Role::{
           tags = "sshlogin",
           role = "icos.sshlogin",
-          lxd_vm_name = None Text,
-          lxd_vm_docker = None Bool,
-          lxd_vm_config = None ({ `limits.cpu` : Text, `limits.memory` : Text }),
-          lxd_vm_devices = None ({ flexextract : { path : Text, source : Text, type : Text, recursive : Text }, flexextract_meteo : { path : Text, source : Text, type : Text }, flexpart_output : { path : Text, source : Text, type : Text, readonly : Text } }),
-          certbot_name = None Text,
-          certbot_domains = None (List Text),
-          nginxsite_name = None Text,
-          nginxsite_file = None Text,
-          flexextract_src_dir = None Text,
-          flexextract_download_host = None Text,
           sshlogin_dst = Some "flexpart",
           sshlogin_src_user = Some "root",
           sshlogin_dst_user = Some "ubuntu"

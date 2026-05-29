@@ -7,18 +7,30 @@
         bbclient_home = "/opt/bbclient-nginx-static"
       , backup_script = "{{ bbclient_home }}/backup.sh"
     }
-    , roles = [
-        {
+    , roles = let Role =
+        { Type =
+            { role : Text
+        , tags : Text
+        , vars : Optional ({ nginxsite_name : Text, nginxsite_file : Text })
+        , bbclient_name : Optional Text
+        , bbclient_timer_content : Optional Text
+      }
+        , default =
+            { vars = None ({ nginxsite_name : Text, nginxsite_file : Text })
+        , bbclient_name = None Text
+        , bbclient_timer_content = None Text
+      }
+        }
+
+    in  [
+        Role::{
           role = "icos.nginxsite",
           tags = "static",
-          vars = Some { nginxsite_name = "static", nginxsite_file = "files/domains/static.conf" },
-          bbclient_name = None Text,
-          bbclient_timer_content = None Text
+          vars = Some { nginxsite_name = "static", nginxsite_file = "files/domains/static.conf" }
         }
-      , {
+      , Role::{
           role = "icos.bbclient2",
           tags = "bbclient",
-          vars = None ({ nginxsite_name : Text, nginxsite_file : Text }),
           bbclient_name = Some "nginx-static",
           bbclient_timer_content = Some ''
           #!/bin/bash

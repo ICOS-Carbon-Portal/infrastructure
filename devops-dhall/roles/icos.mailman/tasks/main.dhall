@@ -127,8 +127,30 @@
       until = None Text,
       postconf = None ({ param : Text, value : Text, append : Text }),
       tags = Some "mailman_delete_spam",
-      block = Some [
-        {
+      block = Some (let Task =
+        { Type =
+            { name : Text
+        , template : Optional ({ dest : Text, src : Text, mode : Text })
+        , loop : Optional (List ({ src : Text }))
+        , register : Optional Text
+        , copy : Optional ({ dest : Text, mode : Natural, content : Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text })
+      }
+        , default =
+            { template = None ({ dest : Text, src : Text, mode : Text })
+        , loop = None (List ({ src : Text }))
+        , register = None Text
+        , copy = None ({ dest : Text, mode : Natural, content : Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text })
+      }
+        }
+
+    in  [
+        Task::{
           name = "Copy mailman_delete_spam files",
           template = Some {
             dest = "{{ item.dest | default(mailman_home) }}"
@@ -140,17 +162,10 @@
           , { src = "get_spam_ids.py" }
           , { src = "requirements.txt" }
         ],
-          register = Some "_files",
-          copy = None ({ dest : Text, mode : Natural, content : Text }),
-          `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }),
-          include_role = None ({ name : Text }),
-          vars = None ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text })
+          register = Some "_files"
         }
-      , {
+      , Task::{
           name = "Write config.ini file",
-          template = None ({ dest : Text, src : Text, mode : Text }),
-          loop = None (List ({ src : Text })),
-          register = None Text,
           copy = Some {
             dest = "{{ mailman_home }}/config.ini"
           , mode = 420
@@ -163,32 +178,18 @@
             hyperkittypass = {{ vault_mailman_hyperkitty_pass }}
 
           ''
-        },
-          `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }),
-          include_role = None ({ name : Text }),
-          vars = None ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text })
         }
-      , {
+        }
+      , Task::{
           name = "Install required modules into Python virtual environment",
-          template = None ({ dest : Text, src : Text, mode : Text }),
-          loop = None (List ({ src : Text })),
-          register = None Text,
-          copy = None ({ dest : Text, mode : Natural, content : Text }),
           `ansible.builtin.pip` = Some {
             virtualenv = "{{ mailman_home }}/mailman-web-venv"
           , virtualenv_command = "python3 -m venv"
           , requirements = "{{ mailman_home }}/requirements.txt"
-        },
-          include_role = None ({ name : Text }),
-          vars = None ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text })
         }
-      , {
+        }
+      , Task::{
           name = "Install mailman-delete-spam timer",
-          template = None ({ dest : Text, src : Text, mode : Text }),
-          loop = None (List ({ src : Text })),
-          register = None Text,
-          copy = None ({ dest : Text, mode : Natural, content : Text }),
-          `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }),
           include_role = Some { name = "icos.timer" },
           vars = Some {
             timer_user = "{{ mailman_user }}"
@@ -209,7 +210,7 @@
           ''
         }
         }
-    ],
+    ]),
       import_tasks = None Text
     }
   , {
