@@ -1,0 +1,16 @@
+services:
+  proxy:
+    image: {{ wordpress_caddy_image }}
+    container_name: wordpress_proxy
+    restart: unless-stopped
+    ports:
+      - "{{ wordpress_http_port }}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - wordpress
+
+networks:
+  wordpress:
+    name: {{ wordpress_network_name }}
+    external: true

@@ -1,0 +1,8 @@
+{% for site in wordpress_site_configs %}
+{{ site.domains | map('regex_replace', '^', 'http://') | join(', ') }} {
+    reverse_proxy {{ site.name }}:80 {
+        header_up X-Forwarded-Proto https
+    }
+}
+
+{% endfor %}

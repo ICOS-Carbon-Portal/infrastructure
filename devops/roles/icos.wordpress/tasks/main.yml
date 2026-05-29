@@ -7,16 +7,44 @@
   assert:
     that:
       - item.name is match('^[a-z0-9][a-z0-9_-]*$')
+      - item.db_name | default(item.name ~ '_wordpress') is match('^[a-z0-9][a-z0-9_]*$')
+      - item.db_user | default(item.name ~ '_wordpress') is match('^[a-z0-9][a-z0-9_]*$')
       - item.domains is defined
       - item.domains | length > 0
       - item.db_password is defined
       - item.db_root_password is defined
     fail_msg: "Each wordpress site needs name, domains, db_password, and db_root_password"
   loop: "{{ wordpress_sites }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+
+- name: Reset normalized wordpress site config
+  set_fact:
+    wordpress_site_configs: []
+
+- name: Set normalized wordpress site config
+  set_fact:
+    wordpress_site_configs: >-
+      {{ wordpress_site_configs + [item | combine({
+        'db_name': item.db_name | default(item.name ~ '_wordpress'),
+        'db_user': item.db_user | default(item.name ~ '_wordpress'),
+        'db_host': item.name ~ '-db'
+      })] }}
+  loop: "{{ wordpress_sites }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
 
 - name: Create wordpress home
   file:
     path: "{{ wordpress_home }}"
+    state: directory
+    mode: "0755"
+
+- name: Create wordpress proxy directory
+  file:
+    path: "{{ wordpress_home }}/proxy"
     state: directory
     mode: "0755"
 
@@ -25,25 +53,205 @@
     path: "{{ wordpress_home }}/sites/{{ item.0.name }}/{{ item.1 }}"
     state: directory
     mode: "0755"
-  loop: "{{ wordpress_sites | product(['html', 'db']) }}"
+  loop: "{{ wordpress_site_configs | product(['html', 'db']) }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1 }}"
+
+- name: Create shared wordpress network
+  community.docker.docker_network:
+    name: "{{ wordpress_network_name }}"
+
+- name: Check for existing wp-config.php
+  stat:
+    path: "{{ wordpress_home }}/sites/{{ item.name }}/html/wp-config.php"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: _wordpress_wp_configs
+
+- name: Check for existing wp-content directories
+  stat:
+    path: "{{ wordpress_home }}/sites/{{ item.name }}/html/wp-content"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: _wordpress_wp_content_dirs
+
+- name: Make wp-content writable by WordPress
+  file:
+    path: "{{ item.stat.path }}"
+    owner: "{{ wordpress_web_owner }}"
+    group: "{{ wordpress_web_group }}"
+    state: directory
+    recurse: true
+  loop: "{{ _wordpress_wp_content_dirs.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when: item.stat.exists
+
+- name: Configure restored WordPress sites for reverse proxy
+  blockinfile:
+    path: "{{ item.stat.path }}"
+    marker: "// {mark} ANSIBLE MANAGED WORDPRESS PROXY"
+    insertbefore: "^(?:/\\* That's all|require_once)"
+    block: |
+      if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+          $_SERVER['HTTPS'] = 'on';
+          $_SERVER['SERVER_PORT'] = 443;
+      }
+
+      if (!defined('FS_METHOD')) {
+          define('FS_METHOD', 'direct');
+      }
+
+      $wordpress_allowed_hosts = array({% for domain in item.item.domains %}{{ domain | to_json }}{{ ',' if not loop.last else '' }}{% endfor %});
+      if (isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $wordpress_allowed_hosts, true)) {
+          if (!defined('WP_HOME')) {
+              define('WP_HOME', 'https://' . $_SERVER['HTTP_HOST']);
+          }
+          if (!defined('WP_SITEURL')) {
+              define('WP_SITEURL', 'https://' . $_SERVER['HTTP_HOST']);
+          }
+      }
+  loop: "{{ _wordpress_wp_configs.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when: item.stat.exists
+
+- name: Configure restored WordPress database name
+  replace:
+    path: "{{ item.stat.path }}"
+    regexp: "define\\(\\s*'DB_NAME'\\s*,\\s*'[^']*'\\s*\\);"
+    replace: "define('DB_NAME', '{{ item.item.db_name }}');"
+  loop: "{{ _wordpress_wp_configs.results }}"
+  loop_control:
+    label: "{{ item.item.name }} DB_NAME"
+  when: item.stat.exists
+
+- name: Configure restored WordPress database user
+  replace:
+    path: "{{ item.stat.path }}"
+    regexp: "define\\(\\s*'DB_USER'\\s*,\\s*'[^']*'\\s*\\);"
+    replace: "define('DB_USER', '{{ item.item.db_user }}');"
+  loop: "{{ _wordpress_wp_configs.results }}"
+  loop_control:
+    label: "{{ item.item.name }} DB_USER"
+  when: item.stat.exists
+
+- name: Configure restored WordPress database host
+  replace:
+    path: "{{ item.stat.path }}"
+    regexp: "define\\(\\s*'DB_HOST'\\s*,\\s*'[^']*'\\s*\\);"
+    replace: "define('DB_HOST', '{{ item.item.db_host }}');"
+  loop: "{{ _wordpress_wp_configs.results }}"
+  loop_control:
+    label: "{{ item.item.name }} DB_HOST"
+  when: item.stat.exists
+
+- name: Configure restored WordPress database password
+  replace:
+    path: "{{ item.stat.path }}"
+    regexp: "define\\(\\s*'DB_PASSWORD'\\s*,\\s*'[^']*'\\s*\\);"
+    replace: "define('DB_PASSWORD', '{{ item.item.db_password }}');"
+  loop: "{{ _wordpress_wp_configs.results }}"
+  loop_control:
+    label: "{{ item.item.name }} DB_PASSWORD"
+  when: item.stat.exists
+  no_log: true
 
 - name: Copy Caddyfile
   template:
-    src: Caddyfile
-    dest: "{{ wordpress_home }}/Caddyfile"
+    src: Caddyfile.j2
+    dest: "{{ wordpress_home }}/proxy/Caddyfile"
     mode: "0644"
   register: _wordpress_caddyfile
 
-- name: Copy docker-compose.yml
+- name: Copy proxy docker-compose.yml
   template:
-    src: docker-compose.yml
-    dest: "{{ wordpress_home }}/docker-compose.yml"
-    mode: "0600"
-  register: _wordpress_compose
+    src: proxy-docker-compose.yml.j2
+    dest: "{{ wordpress_home }}/proxy/docker-compose.yml"
+    mode: "0644"
+  register: _wordpress_proxy_compose
 
-- name: Start wordpress containers
+- name: Copy site docker-compose.yml
+  template:
+    src: site-docker-compose.yml.j2
+    dest: "{{ wordpress_home }}/sites/{{ item.name }}/docker-compose.yml"
+    mode: "0600"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: _wordpress_site_compose
+  no_log: true
+
+- name: Check for legacy wordpress compose file
+  stat:
+    path: "{{ wordpress_home }}/docker-compose.yml"
+  register: _wordpress_legacy_compose
+
+- name: Stop legacy wordpress compose project
   community.docker.docker_compose_v2:
     project_src: "{{ wordpress_home }}"
+    state: absent
+  when: _wordpress_legacy_compose.stat.exists
+
+- name: Remove legacy wordpress compose files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ wordpress_home }}/docker-compose.yml"
+    - "{{ wordpress_home }}/Caddyfile"
+
+- name: Start wordpress site containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ wordpress_home }}/sites/{{ item.name }}"
     state: present
     pull: always
-    recreate: "{{ 'always' if _wordpress_caddyfile.changed or _wordpress_compose.changed else 'auto' }}"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Enforce wordpress database users and grants
+  shell: |
+    set -Eueo pipefail
+    docker exec -i -e MYSQL_PWD="$MYSQL_PWD" wordpress_{{ item.name }}_db mariadb -uroot <<'SQL'
+    CREATE DATABASE IF NOT EXISTS `{{ item.db_name }}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE USER IF NOT EXISTS '{{ item.db_user }}'@'%' IDENTIFIED BY '{{ item.db_password | replace("'", "''") }}';
+    ALTER USER '{{ item.db_user }}'@'%' IDENTIFIED BY '{{ item.db_password | replace("'", "''") }}';
+    GRANT ALL PRIVILEGES ON `{{ item.db_name }}`.* TO '{{ item.db_user }}'@'%';
+    FLUSH PRIVILEGES;
+    SQL
+  args:
+    executable: /bin/bash
+  environment:
+    MYSQL_PWD: "{{ item.db_root_password }}"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+  changed_when: true
+
+- name: Remove legacy wordpress database user
+  shell: |
+    docker exec -i -e MYSQL_PWD="$MYSQL_PWD" wordpress_{{ item.name }}_db mariadb -uroot <<'SQL'
+    DROP USER IF EXISTS 'wordpress'@'%';
+    FLUSH PRIVILEGES;
+    SQL
+  args:
+    executable: /bin/bash
+  environment:
+    MYSQL_PWD: "{{ item.db_root_password }}"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.db_user != 'wordpress'
+  no_log: true
+  changed_when: true
+
+- name: Start wordpress proxy containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ wordpress_home }}/proxy"
+    state: present
+    pull: always
+    recreate: "{{ 'always' if _wordpress_caddyfile.changed or _wordpress_proxy_compose.changed else 'auto' }}"

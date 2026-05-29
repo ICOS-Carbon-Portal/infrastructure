@@ -2,6 +2,7 @@
   vars:
     wordpress_domains:
       - envri.eu
+    wordpress_enable_production_domains: true
   roles:
     - role: icos.pve_server
       tags: pve_server
@@ -18,12 +19,16 @@
       tags: caddy
       include_role:
         name: icos.caddy
+        apply:
+          tags: caddy
       vars:
         caddy_name: wordpress
         caddy_conf: |
+          {% if wordpress_enable_production_domains %}
           {{ wordpress_domains | join(', ') }} {
               reverse_proxy {{ hostvars['fsicos4-wordpress'].nebula_ip }}:80
           }
+          {% endif %}
 
 
 - hosts: fsicos4-wordpress
@@ -33,8 +38,8 @@
       - name: envri
         domains:
           - envri.eu
-        db_name: wordpress
-        db_user: wordpress
+        db_name: envri
+        db_user: envri
         db_password: "{{ vault_wordpress_envri_db_password }}"
         db_root_password: "{{ vault_wordpress_envri_db_root_password }}"
   roles:
@@ -63,16 +68,33 @@
       bbclient_remotes:
         - icos1
       bbclient_timer_conf: |
-        OnCalendar=daily
-        RandomizedDelaySec=2h
+        OnCalendar=*-*-* 03:00:00
+        RandomizedDelaySec=30m
       bbclient_timer_content: |
         #!/bin/bash
         set -Eueo pipefail
 
         cd {{ wordpress_home }}
-        trap 'docker compose up -d' EXIT
 
-        docker compose down
+        compose_down() {
+          for project in proxy sites/*; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose down)
+            fi
+          done
+        }
+
+        compose_up() {
+          for project in sites/* proxy; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose up -d)
+            fi
+          done
+        }
+
+        trap compose_up EXIT
+
+        compose_down
         {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
         {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
         {{ bbclient_all }} compact --verbose
