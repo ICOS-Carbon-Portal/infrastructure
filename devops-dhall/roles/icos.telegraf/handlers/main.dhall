@@ -1,9 +1,14 @@
 -- Auto-generated from main.yml
 
-[
-    { name = "reload telegraf", service = { name = "telegraf", state = "reloaded" } }
-  , {
-      name = "restart telegraf"
-    , service = { name = "telegraf", state = "restarted" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "reload telegraf",
+      service = Some { name = "telegraf", state = "reloaded", enabled = None Bool }
+    }
+  , Task::{
+      name = Some "restart telegraf",
+      service = Some { name = "telegraf", state = "restarted", enabled = None Bool }
+    }
 ]

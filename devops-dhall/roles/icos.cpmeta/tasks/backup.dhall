@@ -1,42 +1,62 @@
 -- Auto-generated from backup.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , cron : Optional ({ state : Text, name : Text })
-    , file : Optional ({ path : Text, state : Text })
-    , include_role : Optional ({ name : Text, public : Bool })
-    , vars : Optional ({ bbclient_name : Text, bbclient_home : Text, bbclient_timer_conf : Text, bbclient_timer_content : Text })
-  }
-    , default =
-        { name = None Text
-    , cron = None ({ state : Text, name : Text })
-    , file = None ({ path : Text, state : Text })
-    , include_role = None ({ name : Text, public : Bool })
-    , vars = None ({ bbclient_name : Text, bbclient_home : Text, bbclient_timer_conf : Text, bbclient_timer_content : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Remove backup from crontab",
-      cron = Some { state = "absent", name = "cpmeta_backup" }
+      cron = Some {
+        user = None Text
+      , job = None Text
+      , hour = None Text
+      , minute = None Text
+      , name = "cpmeta_backup"
+      , state = Some "absent"
+      , special_time = None Text
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Remove old backup script",
-      file = Some { path = "{{ cpmeta_home }}/backup.sh", state = "absent" }
+      file = Some {
+        path = Some "{{ cpmeta_home }}/backup.sh"
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
-  , Item::{
-      include_role = Some { name = "icos.bbclient2", public = True },
+    }
+  , Task::{
+      include_role = Some {
+        name = "icos.bbclient2"
+      , apply = None ({ tags : Text })
+      , public = Some True
+      , tasks_from = None Text
+    },
       vars = Some {
-        bbclient_name = "{{ cpmeta_bbclient_name }}"
-      , bbclient_home = "{{ cpmeta_home }}/.bbclient"
-      , bbclient_timer_conf = ''
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = Some "{{ cpmeta_bbclient_name }}"
+      , bbclient_user = None Text
+      , bbclient_home = Some "{{ cpmeta_home }}/.bbclient"
+      , bbclient_timer_conf = Some ''
         OnCalendar=hourly
         RandomizedDelaySec=10m
 
       ''
-      , bbclient_timer_content = ''
+      , bbclient_timer_content = Some ''
         #!/bin/bash
         set -xEeo pipefail
         cd "{{ cpmeta_home }}"
@@ -48,6 +68,48 @@ in  [
         {{ bbclient_all }} compact --verbose
 
       ''
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = None Text
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
     }
     }
 ]

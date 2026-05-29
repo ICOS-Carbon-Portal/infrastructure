@@ -1,34 +1,35 @@
 -- Auto-generated from plain.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : { name : Optional Text, state : Optional Text, path : Optional Text, mode : Optional Text }
-    , notify : Optional Text
-  }
-    , default =
-        { notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Remove caddy dropin directory",
-      file = {
-        name = Some "{{ caddy_dropin_path | dirname }}"
+    Task::{
+      name = Some "Remove caddy dropin directory",
+      file = Some {
+        path = None Text
       , state = Some "absent"
-      , path = None Text
       , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "{{ caddy_dropin_path | dirname }}"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     },
-      notify = Some "restart caddy"
+      notify = Some [ "restart caddy" ]
     }
-  , Entry::{
-      name = "Make /usr/bin/caddy executable",
-      file = {
-        name = None Text
+  , Task::{
+      name = Some "Make /usr/bin/caddy executable",
+      file = Some {
+        path = Some "/usr/bin/caddy"
       , state = None Text
-      , path = Some "/usr/bin/caddy"
       , mode = Some "+x"
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
 ]

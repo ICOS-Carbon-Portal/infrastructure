@@ -1,74 +1,143 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text })
-    , shell : Optional Text
-    , args : Optional ({ chdir : Text, creates : Text })
-    , docker_network : Optional ({ name : Text })
-    , copy : Optional ({ dest : Text, src : Text })
-    , loop : Optional (List Text)
-    , template : Optional ({ src : Text, dest : Text })
-    , vars : Optional ({ conf : Text })
-    , register : Optional Text
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, services : Optional (List Text), state : Optional Text, build : Optional Text })
-    , changed_when : Optional Bool
-  }
-    , default =
-        { file = None ({ path : Text, state : Text })
-    , shell = None Text
-    , args = None ({ chdir : Text, creates : Text })
-    , docker_network = None ({ name : Text })
-    , copy = None ({ dest : Text, src : Text })
-    , loop = None (List Text)
-    , template = None ({ src : Text, dest : Text })
-    , vars = None ({ conf : Text })
-    , register = None Text
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text, services : Optional (List Text), state : Optional Text, build : Optional Text })
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create jupyter home",
-      file = Some { path = "{{ jupyter_home }}", state = "directory" }
+      name = Some "Create jupyter home",
+      file = Some {
+        path = Some "{{ jupyter_home }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Create auth token",
+      name = Some "Create auth token",
       shell = Some "openssl rand -hex 20 | awk '{ print \"CONFIGPROXY_AUTH_TOKEN=\" $1 }' > auth_token.env",
-      args = Some { chdir = "{{ jupyter_home }}", creates = "auth_token.env" }
+      args = Some {
+        creates = Some "auth_token.env"
+      , chdir = Some "{{ jupyter_home }}"
+      , executable = None Text
+      , removes = None Text
     }
-  , Task::{ name = "Create jupyter network", docker_network = Some { name = "jupyter" } }
+    }
+  , Task::{ name = Some "Create jupyter network", docker_network = Some { name = "jupyter" } }
   , Task::{
-      name = "Copy files",
-      copy = Some { dest = "{{ jupyter_home }}", src = "{{ item }}" },
+      name = Some "Copy files",
+      copy = Some {
+        src = Some "{{ item }}"
+      , dest = "{{ jupyter_home }}"
+      , mode = None Text
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
       loop = Some [ "build.hub", "docker-compose.yml" ]
     }
   , Task::{
-      name = "Copy jupyterhub_config.py",
-      template = Some { src = "jupyterhub_config.py", dest = "{{ jupyter_home }}/jupyterhub_home/" },
-      vars = Some { conf = "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}" },
+      name = Some "Copy jupyterhub_config.py",
+      template = Some {
+        src = "jupyterhub_config.py"
+      , dest = "{{ jupyter_home }}/jupyterhub_home/"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
+      vars = Some {
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = Some "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}"
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
+    },
       register = Some "_config"
     }
   , Task::{
-      name = "Start proxy and hub",
+      name = Some "Start proxy and hub",
       `community.docker.docker_compose_v2` = Some {
         project_src = "{{ jupyter_home }}"
-      , services = None (List Text)
       , state = None Text
+      , pull = None Text
+      , services = None (List Text)
       , build = None Text
     }
     }
   , Task::{
-      name = "Restart the hub",
+      name = Some "Restart the hub",
       `community.docker.docker_compose_v2` = Some {
         project_src = "{{ jupyter_home }}"
-      , services = Some [ "hub" ]
       , state = Some "restarted"
+      , pull = None Text
+      , services = Some [ "hub" ]
       , build = Some "always"
     },
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

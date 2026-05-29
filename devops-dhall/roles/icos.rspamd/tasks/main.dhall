@@ -1,10 +1,12 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "install.yml", tags = "rspamd_install" }
-  , { import_tasks = "just.yml", tags = "rspamd_just" }
-  , { import_tasks = "redis.yml", tags = "rspamd_redis" }
-  , { import_tasks = "unbound.yml", tags = "rspamd_unbound" }
-  , { import_tasks = "pyzor.yml", tags = "rspamd_pyzor" }
-  , { import_tasks = "config.yml", tags = "rspamd_config" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "install.yml", tags = Some [ "rspamd_install" ] }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "rspamd_just" ] }
+  , Task::{ import_tasks = Some "redis.yml", tags = Some [ "rspamd_redis" ] }
+  , Task::{ import_tasks = Some "unbound.yml", tags = Some [ "rspamd_unbound" ] }
+  , Task::{ import_tasks = Some "pyzor.yml", tags = Some [ "rspamd_pyzor" ] }
+  , Task::{ import_tasks = Some "config.yml", tags = Some [ "rspamd_config" ] }
 ]

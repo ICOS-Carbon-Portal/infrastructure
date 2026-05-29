@@ -1,38 +1,87 @@
 -- Auto-generated from site.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , file : Optional ({ dest : Text, state : Text })
-    , loop : Optional (List Text)
-    , import_tasks : Optional Text
-    , vars : Optional ({ block : Text, marker : Text, state : Text, where : Text })
-  }
-    , default =
-        { name = None Text
-    , file = None ({ dest : Text, state : Text })
-    , loop = None (List Text)
-    , import_tasks = None Text
-    , vars = None ({ block : Text, marker : Text, state : Text, where : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Remove old caddy config files",
-      file = Some { dest = "{{ item }}", state = "absent" },
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = Some "{{ item }}"
+      , recurse = None Bool
+      , src = None Text
+    },
       loop = Some [
         "/etc/caddy/sites/Caddyfile.{{ caddy_name }}"
       , "/etc/caddy/{{ caddy_name }}.caddy"
     ]
     }
-  , Item::{
+  , Task::{
       import_tasks = Some "config.yml",
       vars = Some {
-        block = "{{ caddy_conf }}"
-      , marker = "{{ caddy_name }}"
-      , state = "{{ caddy_site_state }}"
-      , where = "EOF"
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = Some "{{ caddy_conf }}"
+      , marker = Some "{{ caddy_name }}"
+      , where = Some "EOF"
+      , state = Some "{{ caddy_site_state }}"
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = None Text
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
     }
     }
 ]

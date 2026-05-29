@@ -1,58 +1,74 @@
 -- Auto-generated from systemd.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , notify : Optional Text
-    , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Bool })
-    , command : Optional Text
-    , args : Optional ({ creates : Text })
-    , systemd : Optional ({ name : Text, state : Text, enabled : Bool })
-  }
-    , default =
-        { copy = None ({ dest : Text, content : Text })
-    , notify = None Text
-    , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Bool })
-    , command = None Text
-    , args = None ({ creates : Text })
-    , systemd = None ({ name : Text, state : Text, enabled : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create prometheus.yml",
-      copy = Some { dest = "{{ vmagent_home }}/prometheus.yml", content = "{{ vmagent_conf }}" },
-      notify = Some "reload vmagent"
-    }
-  , Task::{
-      name = "Create vmagent environ file",
-      notify = Some "restart vmagent",
-      template = Some {
-        dest = "{{ vmagent_environ }}"
-      , src = "vmagent.environ"
-      , mode = Some "0600"
-      , lstrip_blocks = True
-    }
-    }
-  , Task::{
-      name = "Create vmagent service file",
-      notify = Some "restart vmagent",
-      template = Some {
-        dest = "{{ vmagent_home }}/vmagent.service"
-      , src = "vmagent.service"
+      name = Some "Create prometheus.yml",
+      copy = Some {
+        src = None Text
+      , dest = "{{ vmagent_home }}/prometheus.yml"
       , mode = None Text
-      , lstrip_blocks = True
-    }
+      , content = Some "{{ vmagent_conf }}"
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
+      notify = Some [ "reload vmagent" ]
     }
   , Task::{
-      name = "Link service",
+      name = Some "Create vmagent environ file",
+      template = Some {
+        src = "vmagent.environ"
+      , dest = "{{ vmagent_environ }}"
+      , mode = Some "0600"
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
+      notify = Some [ "restart vmagent" ]
+    }
+  , Task::{
+      name = Some "Create vmagent service file",
+      template = Some {
+        src = "vmagent.service"
+      , dest = "{{ vmagent_home }}/vmagent.service"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
+      notify = Some [ "restart vmagent" ]
+    }
+  , Task::{
+      name = Some "Link service",
       command = Some "systemctl link {{ vmagent_home }}/vmagent.service",
-      args = Some { creates = "/etc/systemd/system/vmagent.service" }
+      args = Some {
+        creates = Some "/etc/systemd/system/vmagent.service"
+      , chdir = None Text
+      , executable = None Text
+      , removes = None Text
+    }
     }
   , Task::{
-      name = "Start vmagent service",
-      systemd = Some { name = "vmagent", state = "started", enabled = True }
+      name = Some "Start vmagent service",
+      systemd = Some {
+        name = Some "vmagent"
+      , state = Some "started"
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
     }
 ]

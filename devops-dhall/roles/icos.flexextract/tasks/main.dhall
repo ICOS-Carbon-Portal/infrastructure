@@ -1,48 +1,44 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , user : Optional ({ name : Text, home : Text, shell : Text, groups : Text, append : Bool })
-    , copy : Optional ({ dest : Text, content : Text })
-    , import_tasks : Optional Text
-    , become : Optional Bool
-    , become_user : Optional Text
-  }
-    , default =
-        { name = None Text
-    , user = None ({ name : Text, home : Text, shell : Text, groups : Text, append : Bool })
-    , copy = None ({ dest : Text, content : Text })
-    , import_tasks = None Text
-    , become = None Bool
-    , become_user = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Create flexextract user",
       user = Some {
         name = "{{ flexextract_user }}"
-      , home = "{{ flexextract_home | default(omit) }}"
-      , shell = "/bin/bash"
-      , groups = "docker"
-      , append = True
+      , home = Some "{{ flexextract_home | default(omit) }}"
+      , create_home = None Text
+      , shell = Some "/bin/bash"
+      , groups = Some [ "docker" ]
+      , append = Some "True"
+      , state = None Text
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Add passwordless sudo for flexextract",
       copy = Some {
-        dest = "/etc/sudoers.d/flexextract"
-      , content = ''
+        src = None Text
+      , dest = "/etc/sudoers.d/flexextract"
+      , mode = None Text
+      , content = Some ''
         flexextract ALL = NOPASSWD: ALL
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
-  , Item::{
+  , Task::{
       import_tasks = Some "flexextract.yml",
-      become = Some True,
+      become = Some "True",
       become_user = Some "flexextract"
     }
 ]

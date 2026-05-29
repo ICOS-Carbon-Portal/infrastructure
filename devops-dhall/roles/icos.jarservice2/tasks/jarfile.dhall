@@ -3,7 +3,7 @@
 let Task =
     { Type =
         { name : Text
-    , file : Optional Text
+    , file : Optional ({ path : Optional Text, state : Text, src : Optional Text, dest : Optional Text })
     , register : Optional Text
     , become : Optional Bool
     , local_action : Optional Text
@@ -17,7 +17,7 @@ let Task =
     , with_items : Optional (List Text)
   }
     , default =
-        { file = None Text
+        { file = None ({ path : Optional Text, state : Text, src : Optional Text, dest : Optional Text })
     , register = None Text
     , become = None Bool
     , local_action = None Text

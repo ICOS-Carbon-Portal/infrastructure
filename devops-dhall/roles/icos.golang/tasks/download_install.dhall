@@ -1,74 +1,74 @@
 -- Auto-generated from download_install.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , `ansible.builtin.shell` : Optional Text
-    , changed_when : Optional Bool
-    , register : Optional Text
-    , failed_when : Optional Text
-    , `assert` : Optional ({ that : Text })
-    , get_url : Optional ({ url : Text, dest : Text })
-    , file : Optional ({ path : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , unarchive : Optional ({ src : Text, dest : Text, remote_src : Bool })
-    , diff : Optional Bool
-    , loop : Optional (List Text)
-  }
-    , default =
-        { `ansible.builtin.shell` = None Text
-    , changed_when = None Bool
-    , register = None Text
-    , failed_when = None Text
-    , `assert` = None ({ that : Text })
-    , get_url = None ({ url : Text, dest : Text })
-    , file = None ({ path : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , unarchive = None ({ src : Text, dest : Text, remote_src : Bool })
-    , diff = None Bool
-    , loop = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Fail if golang-go is apt-installed",
+    Task::{
+      name = Some "Fail if golang-go is apt-installed",
       `ansible.builtin.shell` = Some ''
       dpkg --get-selections golang-go | grep -vq '\binstall'
 
     '',
-      changed_when = Some False,
+      changed_when = Some "False",
       register = Some "r",
       failed_when = Some "r.rc == 0"
     }
-  , Entry::{
-      name = "We only support amd64 for now",
-      changed_when = Some False,
-      `assert` = Some { that = "ansible_machine == \"x86_64\"" }
+  , Task::{
+      name = Some "We only support amd64 for now",
+      `assert` = Some { that = [ "ansible_machine == \"x86_64\"" ], quiet = None Bool },
+      changed_when = Some "False"
     }
-  , Entry::{
-      name = "Download go binary",
-      register = Some "_download",
-      get_url = Some { url = "{{ golang_url }}", dest = "/tmp" }
+  , Task::{
+      name = Some "Download go binary",
+      get_url = Some {
+        url = "{{ golang_url }}"
+      , dest = "/tmp"
+      , force = None Text
+      , mode = None Text
+    },
+      register = Some "_download"
     }
-  , Entry::{
-      name = "Create golang directory",
+  , Task::{
+      name = Some "Create golang directory",
       file = Some {
         path = Some "{{ golang_opt_dir }}"
-      , state = "directory"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = None Text
+      , recurse = None Bool
       , src = None Text
     }
     }
-  , Entry::{
-      name = "Unarchive golang",
-      unarchive = Some { src = "{{ _download.dest }}", dest = "{{ golang_opt_dir }}", remote_src = True },
+  , Task::{
+      name = Some "Unarchive golang",
+      unarchive = Some {
+        src = "{{ _download.dest }}"
+      , dest = "{{ golang_opt_dir }}"
+      , remote_src = True
+      , owner = None Text
+      , group = None Text
+      , include = None (List Text)
+      , list_files = None Bool
+      , extra_opts = None (List Text)
+      , mode = None Text
+      , creates = None Text
+    },
       diff = Some False
     }
-  , Entry::{
-      name = "Create symlinks for go binaries",
+  , Task::{
+      name = Some "Create symlinks for go binaries",
       file = Some {
         path = None Text
-      , state = "link"
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = Some "/usr/local/bin/{{ item }}"
+      , recurse = None Bool
       , src = Some "{{ golang_bin_dir }}/{{ item }}"
     },
       loop = Some [ "go", "gofmt" ]

@@ -1,23 +1,14 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Text
-    , tags : Text
-    , when : Optional Text
-  }
-    , default =
-        { when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = "install.yml", tags = "vmagent_install" }
-  , Item::{ import_tasks = "systemd.yml", tags = "vmagent_systemd" }
-  , Item::{
-      import_tasks = "proxy.yml",
-      tags = "vmagent_proxy",
-      when = Some "vmagent_proxy != \"disabled\""
+    Task::{ import_tasks = Some "install.yml", tags = Some [ "vmagent_install" ] }
+  , Task::{ import_tasks = Some "systemd.yml", tags = Some [ "vmagent_systemd" ] }
+  , Task::{
+      when = Some [ "vmagent_proxy != \"disabled\"" ],
+      import_tasks = Some "proxy.yml",
+      tags = Some [ "vmagent_proxy" ]
     }
-  , Item::{ import_tasks = "just.yml", tags = "vmagent_just" }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "vmagent_just" ] }
 ]

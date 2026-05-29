@@ -1,30 +1,26 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , include_vars : Optional Text
-    , tags : List Text
-    , import_tasks : Optional Text
-    , file : Optional ({ path : Text, state : Text, recurse : Bool })
-  }
-    , default =
-        { name = None Text
-    , include_vars = None Text
-    , import_tasks = None Text
-    , file = None ({ path : Text, state : Text, recurse : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ name = Some "Include vars", include_vars = Some "vars.yml", tags = [ "always" ] }
-  , Item::{ name = Some "Include vault", include_vars = Some "vault.yml", tags = [ "always" ] }
-  , Item::{ tags = [ "nginx" ], import_tasks = Some "nginx.yml" }
-  , Item::{
+    Task::{ name = Some "Include vars", include_vars = Some "vars.yml", tags = Some [ "always" ] }
+  , Task::{ name = Some "Include vault", include_vars = Some "vault.yml", tags = Some [ "always" ] }
+  , Task::{ import_tasks = Some "nginx.yml", tags = Some [ "nginx" ] }
+  , Task::{
       name = Some "Create project directory",
-      tags = [ "repo", "pull" ],
-      file = Some { path = "{{ project_dir }}", state = "directory", recurse = True }
+      file = Some {
+        path = Some "{{ project_dir }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = Some True
+      , src = None Text
+    },
+      tags = Some [ "repo", "pull" ]
     }
-  , Item::{ tags = [ "repo" ], import_tasks = Some "bitbucket.yml" }
-  , Item::{ tags = [ "pull" ], import_tasks = Some "sitesaquanetform.yml" }
+  , Task::{ import_tasks = Some "bitbucket.yml", tags = Some [ "repo" ] }
+  , Task::{ import_tasks = Some "sitesaquanetform.yml", tags = Some [ "pull" ] }
 ]

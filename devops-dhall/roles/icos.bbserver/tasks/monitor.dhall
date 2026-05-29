@@ -1,39 +1,92 @@
 -- Auto-generated from monitor.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , cron : Optional ({ user : Text, state : Text, name : Text })
-    , include_role : Optional ({ name : Text })
-    , vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_envs : List Text, timer_content : Text })
-  }
-    , default =
-        { cron = None ({ user : Text, state : Text, name : Text })
-    , include_role = None ({ name : Text })
-    , vars = None ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_envs : List Text, timer_content : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Remove cron job",
-      cron = Some { user = "{{ bbserver_user }}", state = "absent", name = "bbserver_borgmon" }
+    Task::{
+      name = Some "Remove cron job",
+      cron = Some {
+        user = Some "{{ bbserver_user }}"
+      , job = None Text
+      , hour = None Text
+      , minute = None Text
+      , name = "bbserver_borgmon"
+      , state = Some "absent"
+      , special_time = None Text
     }
-  , Entry::{
-      name = "Create borgmon timer",
-      include_role = Some { name = "icos.timer" },
+    }
+  , Task::{
+      name = Some "Create borgmon timer",
+      include_role = Some {
+        name = "icos.timer"
+      , apply = None ({ tags : Text })
+      , public = None Bool
+      , tasks_from = None Text
+    },
       vars = Some {
-        timer_user = "bbserver"
-      , timer_home = "{{ bbserver_monitor_home }}"
-      , timer_name = "bbserver-borgmon"
-      , timer_conf = "OnCalendar=*:0/5"
-      , timer_envs = [
+        timer_home = Some "{{ bbserver_monitor_home }}"
+      , timer_exec = None Text
+      , timer_name = Some "bbserver-borgmon"
+      , timer_conf = Some "OnCalendar=*:0/5"
+      , timer_envs = Some [
           "PYTHONUNBUFFERED=1"
         , "BORG_RELOCATED_REPO_ACCESS_IS_OK=yes"
         , "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes"
         , "PATH=/usr/bin:/usr/local/bin"
       ]
-      , timer_content = "{{ lookup('template', 'borgmon.py') }}"
+      , timer_content = Some "{{ lookup('template', 'borgmon.py') }}"
+      , timer_user = Some "bbserver"
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = None Text
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
     }
     }
 ]

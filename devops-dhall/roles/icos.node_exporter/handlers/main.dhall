@@ -1,8 +1,17 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "restart node-exporter"
-    , systemd = { name = "node-exporter.socket", state = "restarted" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "restart node-exporter",
+      systemd = Some {
+        name = Some "node-exporter.socket"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
 ]

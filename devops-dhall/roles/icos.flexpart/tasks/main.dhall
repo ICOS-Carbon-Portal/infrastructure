@@ -1,14 +1,16 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      import_tasks = "flexpart_run.yml"
-    , tags = [ "flexpart_only", "flexpart_run" ]
-    , when = "flexpart_install_run is defined"
-  }
-  , {
-      import_tasks = "flexpart_ssh.yml"
-    , tags = [ "flexpart_only", "flexpart_ssh" ]
-    , when = "flexpart_ssh_users is defined"
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      import_tasks = Some "flexpart_run.yml",
+      tags = Some [ "flexpart_only", "flexpart_run" ],
+      when = Some [ "flexpart_install_run is defined" ]
+    }
+  , Task::{
+      import_tasks = Some "flexpart_ssh.yml",
+      tags = Some [ "flexpart_only", "flexpart_ssh" ],
+      when = Some [ "flexpart_ssh_users is defined" ]
+    }
 ]

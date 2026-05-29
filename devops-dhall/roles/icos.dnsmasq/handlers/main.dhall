@@ -1,8 +1,17 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "dnsmasq restart"
-    , systemd = { name = "{{ dnsmasq_service_name }}", state = "restarted" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "dnsmasq restart",
+      systemd = Some {
+        name = Some "{{ dnsmasq_service_name }}"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
 ]

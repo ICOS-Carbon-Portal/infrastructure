@@ -1,41 +1,47 @@
 -- Auto-generated from cli.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text, owner : Text, group : Text })
-    , template : Optional ({ src : Text, mode : Text, dest : Text })
-    , cron : Optional ({ user : Text, job : Text, hour : Text, minute : Text, name : Text })
-  }
-    , default =
-        { file = None ({ path : Text, state : Text, owner : Text, group : Text })
-    , template = None ({ src : Text, mode : Text, dest : Text })
-    , cron = None ({ user : Text, job : Text, hour : Text, minute : Text, name : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Create {{ bbserver_home }}/bin directory",
+    Task::{
+      name = Some "Create {{ bbserver_home }}/bin directory",
       file = Some {
-        path = "{{ bbserver_home }}/bin"
-      , state = "directory"
-      , owner = "{{ bbserver_user }}"
-      , group = "{{ bbserver_user }}"
+        path = Some "{{ bbserver_home }}/bin"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "{{ bbserver_user }}"
+      , group = Some "{{ bbserver_user }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
-  , Entry::{
-      name = "Copy bbserver.py",
-      template = Some { src = "bbserver.py", mode = "+x", dest = "{{ bbserver_home }}/bin/bbserver" }
+  , Task::{
+      name = Some "Copy bbserver.py",
+      template = Some {
+        src = "bbserver.py"
+      , dest = "{{ bbserver_home }}/bin/bbserver"
+      , mode = Some "+x"
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
-  , Entry::{
-      name = "Prime borg cache by running 'bbserver list' each night",
+    }
+  , Task::{
+      name = Some "Prime borg cache by running 'bbserver list' each night",
       cron = Some {
-        user = "bbserver"
-      , job = "{{ bbserver_home }}/bin/bbserver list > /dev/null 2>&1"
-      , hour = "{{ 4 | random(seed='bbserver') }}"
-      , minute = "{{ 60 | random(seed='bbserver') }}"
+        user = Some "bbserver"
+      , job = Some "{{ bbserver_home }}/bin/bbserver list > /dev/null 2>&1"
+      , hour = Some "{{ 4 | random(seed='bbserver') }}"
+      , minute = Some "{{ 60 | random(seed='bbserver') }}"
       , name = "bbserver_prime_borg_cache"
+      , state = None Text
+      , special_time = None Text
     }
     }
 ]

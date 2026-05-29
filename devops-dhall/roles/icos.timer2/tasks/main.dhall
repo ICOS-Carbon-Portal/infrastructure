@@ -1,24 +1,10 @@
 -- Auto-generated from main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , `assert` : Optional ({ that : List Text })
-    , check_mode : Optional Bool
-    , import_tasks : Optional Text
-    , when : Optional Text
-  }
-    , default =
-        { `assert` = None ({ that : List Text })
-    , check_mode = None Bool
-    , import_tasks = None Text
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Check parameters",
+    Task::{
+      name = Some "Check parameters",
       `assert` = Some {
         that = [
           "timer_state in ('started', 'stopped', 'absent')"
@@ -26,17 +12,18 @@ in  [
         , "timer_config is defined"
         , "timer_service is defined"
       ]
+      , quiet = None Bool
     },
       check_mode = Some False
     }
-  , Entry::{
-      name = "Install timer and service",
+  , Task::{
+      name = Some "Install timer and service",
       import_tasks = Some "setup.yml",
-      when = Some "timer_state != 'absent'"
+      when = Some [ "timer_state != 'absent'" ]
     }
-  , Entry::{
-      name = "Remove timer and service",
+  , Task::{
+      name = Some "Remove timer and service",
       import_tasks = Some "remove.yml",
-      when = Some "timer_state == 'absent'"
+      when = Some [ "timer_state == 'absent'" ]
     }
 ]

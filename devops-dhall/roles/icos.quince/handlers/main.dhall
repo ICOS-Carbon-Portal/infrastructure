@@ -1,16 +1,39 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "reload systemd config",
-      systemd = { daemon_reload = Some True, name = None Text, state = None Text }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "reload systemd config",
+      systemd = Some {
+        name = None Text
+      , state = None Text
+      , daemon_reload = Some True
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
     }
-  , {
-      name = "restart the quince service",
-      systemd = { daemon_reload = None Bool, name = Some "quince", state = Some "restarted" }
     }
-  , {
-      name = "restart rsyslog",
-      systemd = { daemon_reload = None Bool, name = Some "rsyslog", state = Some "restarted" }
+  , Task::{
+      name = Some "restart the quince service",
+      systemd = Some {
+        name = Some "quince"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
+  , Task::{
+      name = Some "restart rsyslog",
+      systemd = Some {
+        name = Some "rsyslog"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
     }
 ]

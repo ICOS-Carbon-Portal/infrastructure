@@ -1,49 +1,50 @@
 -- Auto-generated from dovecot_listen.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , lineinfile : Optional ({ path : Text, regex : Text, line : Text, state : Text })
-    , iptables_raw : Optional ({ name : Text, rules : Text })
-    , blockinfile : Optional ({ path : Text, marker : Text, insertafter : Text, block : Text })
-  }
-    , default =
-        { lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text })
-    , iptables_raw = None ({ name : Text, rules : Text })
-    , blockinfile = None ({ path : Text, marker : Text, insertafter : Text, block : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Change listening port",
+    Task::{
+      name = Some "Change listening port",
       lineinfile = Some {
         path = "/etc/dovecot/conf.d/10-master.conf"
-      , regex = "(?:#port = 993$)|(?:^    port = {{ dovecot_port }}$)"
-      , line = "    port = {{ dovecot_port }}"
-      , state = "present"
+      , line = Some "    port = {{ dovecot_port }}"
+      , state = Some "present"
+      , regex = Some "(?:#port = 993$)|(?:^    port = {{ dovecot_port }}$)"
+      , regexp = None Text
+      , create = None Bool
+      , owner = None Text
+      , group = None Text
+      , insertafter = None Text
+      , mode = None Natural
+      , insertbefore = None Text
     }
     }
-  , Entry::{
-      name = "Allow dovecot through firewall",
+  , Task::{
+      name = Some "Allow dovecot through firewall",
       iptables_raw = Some {
         name = "allow_dovecot"
-      , rules = "-A INPUT -p tcp --dport {{ dovecot_port }} -j ACCEPT -m comment --comment 'dovecot'"
+      , rules = Some "-A INPUT -p tcp --dport {{ dovecot_port }} -j ACCEPT -m comment --comment 'dovecot'"
+      , weight = None Natural
+      , table = None Text
+      , state = None Text
     }
     }
-  , Entry::{
-      name = "Add postfix lmtp listener",
+  , Task::{
+      name = Some "Add postfix lmtp listener",
       blockinfile = Some {
-        path = "/etc/dovecot/conf.d/10-master.conf"
-      , marker = "# {mark} ansible / icos.dovecot / postfix lmtp"
-      , insertafter = "^service lmtp {"
-      , block = ''
+        marker = "# {mark} ansible / icos.dovecot / postfix lmtp"
+      , state = None Text
+      , create = None Bool
+      , insertafter = Some "^service lmtp {"
+      , path = "/etc/dovecot/conf.d/10-master.conf"
+      , block = Some ''
           unix_listener {{ dovecot_lmtp }} {
             user = postfix
             group = postfix
           }
 
       ''
+      , insertbefore = None Text
     }
     }
 ]

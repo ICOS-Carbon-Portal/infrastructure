@@ -98,6 +98,63 @@ def _wrap_type(t):
     return t
 
 
+def _split_top_level(s, sep=','):
+    """Split a string on `sep`, ignoring separators inside braces/parens/backticks."""
+    parts = []
+    depth = 0
+    in_tick = False
+    cur = []
+    for ch in s:
+        if ch == '`':
+            in_tick = not in_tick
+            cur.append(ch)
+        elif in_tick:
+            cur.append(ch)
+        elif ch in '{(':
+            depth += 1
+            cur.append(ch)
+        elif ch in '})':
+            depth -= 1
+            cur.append(ch)
+        elif ch == sep and depth == 0:
+            parts.append(''.join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    if cur:
+        parts.append(''.join(cur))
+    return parts
+
+
+def _parse_record_fields(type_str):
+    """Parse a Dhall record type `{ a : T, b : Optional U }` into {field: type}.
+
+    The returned type strips a leading `Optional ` so callers compare the inner
+    type (a None/absent value is always acceptable).
+    """
+    type_str = type_str.strip()
+    if type_str.startswith('{') and type_str.endswith('}'):
+        type_str = type_str[1:-1].strip()
+    fields = {}
+    for part in _split_top_level(type_str, ','):
+        part = part.strip()
+        if not part:
+            continue
+        kv = _split_top_level(part, ':')
+        if len(kv) < 2:
+            continue
+        key = kv[0].strip()
+        if key.startswith('`') and key.endswith('`'):
+            key = key[1:-1]
+        val = ':'.join(kv[1:]).strip()
+        if val.startswith('Optional '):
+            val = val[len('Optional '):].strip()
+            while val.startswith('(') and val.endswith(')'):
+                val = val[1:-1].strip()
+        fields[key] = val
+    return fields
+
+
 def compute_dhall_type(value, depth=0):
     """Recursively compute the Dhall type for a Python value."""
     if depth > 5:
@@ -194,6 +251,23 @@ def common_type_for_key(key, dicts, depth=0):
 
     if types == {'str', 'int'} or types == {'str', 'float'}:
         return 'Text'
+
+    # Mixed forms (e.g. Ansible module key that is sometimes a scalar string
+    # and sometimes a structured dict/list). Pick the dominant representation
+    # so the shared type fits the most values; the minority falls back.
+    dict_vals = [v for v in values if isinstance(v, dict)]
+    list_vals = [v for v in values if isinstance(v, list)]
+    scalar_vals = [v for v in values
+                   if isinstance(v, (str, int, float, bool))]
+
+    if dict_vals and len(dict_vals) >= len(scalar_vals) and not list_vals:
+        return compute_unified_record_type(dict_vals, depth + 1)
+    if list_vals and len(list_vals) >= len(scalar_vals) and not dict_vals:
+        all_items = [item for v in list_vals for item in v]
+        if all_items and all(isinstance(i, dict) for i in all_items):
+            return f'List {_wrap_type(compute_unified_record_type(all_items, depth + 1))}'
+        return 'List Text'
+
     if {'list', 'str'} == types:
         return 'List Text'
     return 'Text'
@@ -209,6 +283,11 @@ def coerce_value(value, target_type):
         return str(value).lower()
     if target_type == 'Text' and isinstance(value, list):
         return ', '.join(str(v) for v in value)
+    if target_type == 'Text' and isinstance(value, dict):
+        parts = []
+        for k, v in value.items():
+            parts.append(f'{k}={v}' if v is not None else str(k))
+        return ' '.join(parts)
     return value
 
 
@@ -319,9 +398,10 @@ class DhallConverter:
         """Format a list of strings."""
         pad = '  ' * indent
         ipad = '  ' * (indent + 1)
-        items = [f'"{dhall_escape_string(s)}"' for s in strings]
+        items = [self._convert_string(s, indent + 1) for s in strings]
+        has_multiline = any('\n' in i for i in items)
         total = sum(len(i) for i in items) + 2 * len(items)
-        if total < 80 and len(items) <= 4:
+        if not has_multiline and total < 80 and len(items) <= 4:
             return f'[ {", ".join(items)} ]'
         formatted = [f'{ipad}, {item}' for item in items]
         formatted[0] = f'{ipad}  {items[0]}'
@@ -406,7 +486,8 @@ class DhallConverter:
 
             if self._record_list_depth > 1:
                 return self._inline_record_list(
-                    dicts, indent, all_keys, universal_keys, key_types)
+                    dicts, indent, all_keys, universal_keys, key_types,
+                    type_dicts)
 
             field_global_items = {}
             for k in all_keys:
@@ -444,7 +525,8 @@ class DhallConverter:
                 f'{ipad}  }}\n\n'
             )
 
-            dict_contexts = self._compute_field_dict_contexts(dicts, all_keys)
+            dict_contexts = self._compute_field_dict_contexts(
+                type_dicts, all_keys)
 
             items = []
             for d in dicts:
@@ -493,7 +575,8 @@ class DhallConverter:
         finally:
             self._record_list_depth -= 1
 
-    def _inline_record_list(self, dicts, indent, all_keys, universal_keys, key_types):
+    def _inline_record_list(self, dicts, indent, all_keys, universal_keys,
+                            key_types, type_dicts=None):
         """Generate a heterogeneous list as expanded inline records (no let block).
 
         Used for nested lists to avoid type mismatches with the outer annotation.
@@ -502,7 +585,8 @@ class DhallConverter:
         pad = '  ' * indent
         ipad = '  ' * (indent + 1)
 
-        type_dicts = self._pending_global_items or dicts
+        if type_dicts is None:
+            type_dicts = dicts
         dict_contexts = self._compute_field_dict_contexts(type_dicts, all_keys)
 
         items = []
@@ -672,8 +756,84 @@ class DhallConverter:
             return expr
         return f'({expr})'
 
-    def convert_file(self, yaml_path):
-        """Convert a YAML file to Dhall. Returns (dhall_text, warnings)."""
+    def set_shared_task_type(self, all_tasks):
+        """Pre-compute shared task type info from all collected task items."""
+        all_keys = sorted(dict.fromkeys(k for d in all_tasks for k in d))
+        key_types = {}
+        for k in all_keys:
+            key_types[k] = common_type_for_key(k, all_tasks, depth=0)
+        self._shared_task_keys = all_keys
+        self._shared_task_types = key_types
+        self._shared_task_count = len(all_tasks)
+        dict_values_by_key = {}
+        for k in all_keys:
+            dicts = [d[k] for d in all_tasks
+                     if k in d and isinstance(d[k], dict)]
+            if len(dicts) >= 1:
+                dict_values_by_key[k] = dicts
+        self._shared_task_dict_ctx = dict_values_by_key
+
+        # Collect all block/always/rescue sub-tasks globally so nested task
+        # lists expand to match the shared type's unified sub-record type.
+        self._shared_subtasks = {}
+        for sub_key in ('block', 'always', 'rescue'):
+            collected = []
+            for d in all_tasks:
+                v = d.get(sub_key)
+                if isinstance(v, list) and all(isinstance(x, dict) for x in v):
+                    collected.extend(v)
+            if collected:
+                self._shared_subtasks[sub_key] = collected
+
+    def render_shared_task_type(self):
+        """Render the shared Task type as a Dhall Type/default record.
+
+        Uses the same key_types computed in set_shared_task_type so the type
+        file on disk always matches the values the converter generates.
+        """
+        all_keys = self._shared_task_keys
+        type_lines = []
+        default_lines = []
+        for k in all_keys:
+            dk = dhall_key(k)
+            t = self._shared_task_types[k]
+            type_lines.append(f'  , {dk} : Optional {_wrap_type(t)}')
+            default_lines.append(f'  , {dk} = None {_wrap_type(t)}')
+        if type_lines:
+            type_lines[0] = type_lines[0].replace(', ', '  ', 1)
+            default_lines[0] = default_lines[0].replace(', ', '  ', 1)
+        type_block = '\n'.join(type_lines)
+        default_block = '\n'.join(default_lines)
+        n_tasks = self._shared_task_count
+        return (
+            '-- Shared Ansible task type, auto-generated from all role '
+            'task/handler files.\n'
+            f'-- Covers {n_tasks} task items across {len(all_keys)} unique '
+            'fields. Every field is\n'
+            '-- Optional so any single task uses only the keys it needs '
+            '(`Task::{ ... }`).\n'
+            '--\n'
+            '-- Usage from a role task file:\n'
+            '--   let Task = ../../../types/Task.dhall\n'
+            '--   in [ Task::{ name = Some "Install", apt = Some { ... } } ]\n'
+            '\n'
+            '{ Type =\n'
+            '  {\n'
+            f'{type_block}\n'
+            '  }\n'
+            ', default =\n'
+            '  {\n'
+            f'{default_block}\n'
+            '  }\n'
+            '}\n'
+        )
+
+    def convert_file(self, yaml_path, task_import_path=None):
+        """Convert a YAML file to Dhall. Returns (dhall_text, warnings).
+
+        If task_import_path is set, the file is a role task/handler file and
+        should use a shared Task type import.
+        """
         try:
             text = yaml_path.read_text(encoding='utf-8')
         except UnicodeDecodeError:
@@ -698,17 +858,189 @@ class DhallConverter:
             return '{=}\n', []
 
         warnings = []
+        header = f'-- Auto-generated from {yaml_path.name}\n'
+
+        if (task_import_path and self._shared_task_keys
+                and len(docs) == 1 and isinstance(docs[0], list)
+                and docs[0] and all(isinstance(d, dict) for d in docs[0])
+                and self._tasks_fit_shared_type(docs[0])):
+            result = self._convert_task_list_with_shared_type(
+                docs[0], task_import_path)
+            result = header + '\n' + result + '\n'
+            self.stats['converted'] += 1
+            self.stats.setdefault('shared_type', 0)
+            self.stats['shared_type'] += 1
+            return result, warnings
 
         if len(docs) == 1:
             result = self.convert_value(docs[0], 0)
         else:
             result = self.convert_value(docs, 0)
 
-        header = f'-- Auto-generated from {yaml_path.name}\n'
         result = header + '\n' + result + '\n'
-
         self.stats['converted'] += 1
         return result, warnings
+
+    def _tasks_fit_shared_type(self, tasks):
+        """Check every task's fields are representable by the shared Task type."""
+        for d in tasks:
+            for k, v in d.items():
+                if v is None:
+                    continue
+                if k in ('block', 'always', 'rescue'):
+                    if isinstance(v, list) and all(isinstance(x, dict) for x in v):
+                        if not self._tasks_fit_shared_type(v):
+                            return False
+                    continue
+                if k not in self._shared_task_types:
+                    return False
+                if not self._value_fits_type(v, self._shared_task_types[k]):
+                    return False
+        return True
+
+    def _value_fits_type(self, value, type_str):
+        """Check a Python value can be faithfully represented as a Dhall type."""
+        type_str = type_str.strip()
+        while type_str.startswith('(') and type_str.endswith(')'):
+            type_str = type_str[1:-1].strip()
+
+        if type_str == 'Text':
+            # scalars only; coercing list/dict to Text would lose structure
+            return isinstance(value, (str, int, float, bool))
+        if type_str == 'Bool':
+            return isinstance(value, bool)
+        if type_str in ('Natural', 'Integer'):
+            return isinstance(value, int) and not isinstance(value, bool)
+        if type_str == 'Double':
+            return isinstance(value, (int, float)) and not isinstance(value, bool)
+        if type_str == 'List Text':
+            if isinstance(value, str):
+                return True
+            if isinstance(value, list):
+                return all(isinstance(x, (str, int, float, bool)) for x in value)
+            return False
+        if type_str.startswith('List '):
+            inner = type_str[5:].strip()
+            if not isinstance(value, list):
+                return False
+            return all(self._value_fits_type(x, inner) for x in value)
+        if type_str.startswith('{'):
+            # record type
+            if not isinstance(value, dict):
+                return False
+            field_types = _parse_record_fields(type_str)
+            for fk, fv in value.items():
+                if fv is None:
+                    continue
+                if fk not in field_types:
+                    return False
+                if not self._value_fits_type(fv, field_types[fk]):
+                    return False
+            return True
+        return True
+
+    def _convert_task_item_fields(self, d, indent):
+        """Convert a single task dict's fields using the shared type."""
+        fields = []
+        for k, v in d.items():
+            if v is None:
+                continue
+            dk = dhall_key(k)
+            t = self._shared_task_types.get(k, 'Text')
+
+            if (isinstance(v, list) and v
+                    and all(isinstance(x, dict) for x in v)
+                    and k in ('block', 'always', 'rescue')):
+                global_sub = self._shared_subtasks.get(k)
+                if global_sub:
+                    self._pending_global_items = global_sub
+                sub_items = self._convert_sub_task_list(v, indent + 1)
+                self._pending_global_items = None
+                fields.append(f'{dk} = Some ({sub_items})')
+                continue
+
+            v = coerce_value(v, t)
+            if k in self._shared_task_dict_ctx and isinstance(v, dict):
+                self._dict_type_context = self._shared_task_dict_ctx[k]
+            converted = self.convert_value(v, indent + 1)
+            self._dict_type_context = None
+            wrapped = self._wrap_expr(converted)
+            if wrapped.startswith('let ') or '\nlet ' in wrapped:
+                wrapped = f'({wrapped})'
+            fields.append(f'{dk} = Some {wrapped}')
+        return fields
+
+    def _convert_sub_task_list(self, tasks, indent):
+        """Convert a nested task list (block/always/rescue) using regular converter."""
+        return self._convert_list(tasks, indent)
+
+    def _convert_task_list_with_shared_type(self, tasks, import_path):
+        """Convert a list of task dicts using the shared Task type."""
+        items = []
+        for d in tasks:
+            fields = self._convert_task_item_fields(d, 1)
+            entry_pad = '  ' * 2
+            record_str = '{ ' + ', '.join(fields) + ' }'
+            if len(record_str) > 90:
+                record_str = (
+                    '{\n'
+                    + ',\n'.join(f'{entry_pad}  {f}' for f in fields)
+                    + f'\n{entry_pad}}}'
+                )
+            items.append(f'Task::{record_str}')
+
+        formatted = [f'  , {item}' for item in items]
+        formatted[0] = f'    {items[0]}'
+        list_str = '[\n' + '\n'.join(formatted) + '\n]'
+
+        return (
+            f'let Task = {import_path}\n\n'
+            f'in  {list_str}'
+        )
+
+    def _is_role_task_list(self, data):
+        """Check if a parsed YAML document is a task list usable with shared type."""
+        return (isinstance(data, list) and data
+                and all(isinstance(d, dict) for d in data))
+
+
+def _collect_role_tasks(input_path):
+    """Collect all task items from role task/handler YAML files."""
+    import yaml as _yaml
+    all_tasks = []
+    for root, dirs, files in os.walk(input_path / 'roles'):
+        for fname in sorted(files):
+            if not fname.endswith(('.yml', '.yaml')):
+                continue
+            parts = root.split('/')
+            if not any(p in ('tasks', 'handlers') for p in parts):
+                continue
+            fpath = os.path.join(root, fname)
+            try:
+                text = open(fpath).read()
+                if text.strip().startswith('$ANSIBLE_VAULT'):
+                    continue
+                data = _yaml.safe_load(text)
+                if (isinstance(data, list) and data
+                        and all(isinstance(d, dict) for d in data)):
+                    all_tasks.extend(data)
+            except Exception:
+                continue
+    return all_tasks
+
+
+def _is_role_task_file(rel_root):
+    """Check if a file is in a role's tasks/ or handlers/ directory."""
+    parts = rel_root.parts
+    return (len(parts) >= 3
+            and parts[0] == 'roles'
+            and parts[-1] in ('tasks', 'handlers'))
+
+
+def _task_import_path(rel_root):
+    """Compute the relative Dhall import path from a role task file to types/Task.dhall."""
+    depth = len(rel_root.parts)
+    return '/'.join(['..'] * depth) + '/types/Task.dhall'
 
 
 def convert_directory(input_dir, output_dir):
@@ -718,6 +1050,18 @@ def convert_directory(input_dir, output_dir):
 
     add_yaml_constructors()
     converter = DhallConverter()
+
+    print('Collecting role tasks for shared type...')
+    all_tasks = _collect_role_tasks(input_path)
+    if all_tasks:
+        converter.set_shared_task_type(all_tasks)
+        print(f'  {len(all_tasks)} task items, '
+              f'{len(converter._shared_task_keys)} fields')
+        type_file = output_path / 'types' / 'Task.dhall'
+        type_file.parent.mkdir(parents=True, exist_ok=True)
+        type_file.write_text(converter.render_shared_task_type(),
+                             encoding='utf-8')
+        print(f'  wrote shared type to {type_file.relative_to(output_path)}')
 
     all_warnings = []
 
@@ -753,7 +1097,12 @@ def convert_directory(input_dir, output_dir):
                 converter.stats['skipped'] += 1
                 continue
 
-            dhall_text, warnings = converter.convert_file(fpath)
+            task_import = None
+            if _is_role_task_file(rel_root):
+                task_import = _task_import_path(rel_root)
+
+            dhall_text, warnings = converter.convert_file(
+                fpath, task_import_path=task_import)
             all_warnings.extend(warnings)
 
             if dhall_text is None:

@@ -1,70 +1,65 @@
 -- Auto-generated from deploy.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , template : Optional ({ src : Text, dest : Text })
-    , register : Optional Text
-    , copy : Optional ({ src : Text, dest : Text, backup : Bool })
-    , `ansible.builtin.shell` : Optional Text
-    , args : Optional ({ chdir : Text })
-    , changed_when : Optional Text
-    , import_tasks : Optional Text
-    , tags : Optional Text
-    , uri : Optional ({ url : Text, return_content : Bool })
-    , failed_when : Optional Text
-    , retries : Optional Natural
-    , delay : Optional Natural
-    , until : Optional Text
-  }
-    , default =
-        { name = None Text
-    , template = None ({ src : Text, dest : Text })
-    , register = None Text
-    , copy = None ({ src : Text, dest : Text, backup : Bool })
-    , `ansible.builtin.shell` = None Text
-    , args = None ({ chdir : Text })
-    , changed_when = None Text
-    , import_tasks = None Text
-    , tags = None Text
-    , uri = None ({ url : Text, return_content : Bool })
-    , failed_when = None Text
-    , retries = None Natural
-    , delay = None Natural
-    , until = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Add systemd service",
-      template = Some { src = "cpdata.service", dest = "/etc/systemd/system/cpdata.service" },
+      template = Some {
+        src = "cpdata.service"
+      , dest = "/etc/systemd/system/cpdata.service"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
       register = Some "_service"
     }
-  , Item::{
+  , Task::{
       name = Some "Copy jarfile",
-      register = Some "_jarfile",
       copy = Some {
-        src = "{{ cpdata_jar_file }}"
+        src = Some "{{ cpdata_jar_file }}"
       , dest = "{{ cpdata_home }}/cpdata.jar"
-      , backup = True
+      , mode = None Text
+      , content = None Text
+      , backup = Some True
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
+      register = Some "_jarfile"
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Remove all but the five newest of jar file backups",
-      register = Some "_r",
       `ansible.builtin.shell` = Some ''
       ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 
     '',
-      args = Some { chdir = "{{ cpdata_home }}" },
+      args = Some {
+        creates = None Text
+      , chdir = Some "{{ cpdata_home }}"
+      , executable = None Text
+      , removes = None Text
+    },
+      register = Some "_r",
       changed_when = Some "_r.stdout.startswith(\"removed\")"
     }
-  , Item::{ import_tasks = Some "config.yml", tags = Some "cpdata_config" }
-  , Item::{
+  , Task::{ import_tasks = Some "config.yml", tags = Some [ "cpdata_config" ] }
+  , Task::{
       name = Some "Check that the service responds",
+      uri = Some {
+        url = "https://{{ cpdata_domains | first }}/buildInfo"
+      , return_content = Some True
+      , method = None Text
+      , user = None Text
+      , password = None Text
+    },
       register = Some "r",
-      uri = Some { url = "https://{{ cpdata_domains | first }}/buildInfo", return_content = True },
       failed_when = Some "r.failed",
       retries = Some 30,
       delay = Some 10,

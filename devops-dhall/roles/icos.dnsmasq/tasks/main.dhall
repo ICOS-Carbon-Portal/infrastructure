@@ -1,26 +1,20 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Optional Text
-    , name : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool })
-  }
-    , default =
-        { import_tasks = None Text
-    , tags = None Text
-    , name = None Text
-    , systemd = None ({ name : Text, enabled : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "setup.yml", tags = Some "dnsmasq_setup" }
-  , Item::{ import_tasks = Some "config.yml", tags = Some "dnsmasq_config" }
-  , Item::{ import_tasks = Some "hosts.yml", tags = Some "dnsmasq_hosts" }
-  , Item::{
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "dnsmasq_setup" ] }
+  , Task::{ import_tasks = Some "config.yml", tags = Some [ "dnsmasq_config" ] }
+  , Task::{ import_tasks = Some "hosts.yml", tags = Some [ "dnsmasq_hosts" ] }
+  , Task::{
       name = Some "Start and enable dnsmasq",
-      systemd = Some { name = "{{ dnsmasq_service_name }}", enabled = True }
+      systemd = Some {
+        name = Some "{{ dnsmasq_service_name }}"
+      , state = None Text
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
     }
 ]

@@ -1,30 +1,39 @@
 -- Auto-generated from redis.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : Text, state : Text })
-    , copy : Optional ({ dest : Text, content : Text })
-    , notify : Optional Text
-  }
-    , default =
-        { apt = None ({ name : Text, state : Text })
-    , copy = None ({ dest : Text, content : Text })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install redis", apt = Some { name = "redis", state = "present" } }
+    Task::{
+      name = Some "Install redis",
+      apt = Some {
+        name = Some [ "redis" ]
+      , state = Some "present"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
   , Task::{
-      name = "Configure rspamd to use redis",
+      name = Some "Configure rspamd to use redis",
       copy = Some {
-        dest = "/etc/rspamd/local.d/redis.conf"
-      , content = ''
+        src = None Text
+      , dest = "/etc/rspamd/local.d/redis.conf"
+      , mode = None Text
+      , content = Some ''
         servers = "127.0.0.1";
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "restart rspamd"
+      notify = Some [ "restart rspamd" ]
     }
 ]

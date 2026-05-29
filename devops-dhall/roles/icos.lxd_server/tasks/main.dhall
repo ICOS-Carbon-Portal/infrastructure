@@ -1,43 +1,28 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Optional Text
-    , name : Optional Text
-    , shellfact : Optional ({ exec : Text, fact : Text, bool : Bool })
-    , when : Optional Text
-    , copy : Optional ({ dest : Text, backup : Bool, content : Text })
-  }
-    , default =
-        { import_tasks = None Text
-    , tags = None Text
-    , name = None Text
-    , shellfact = None ({ exec : Text, fact : Text, bool : Bool })
-    , when = None Text
-    , copy = None ({ dest : Text, backup : Bool, content : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "sysctl.yml", tags = Some "lxd_sysctl" }
-  , Item::{ import_tasks = Some "utils.yml", tags = Some "lxd_utils" }
-  , Item::{
+    Task::{ import_tasks = Some "sysctl.yml", tags = Some [ "lxd_sysctl" ] }
+  , Task::{ import_tasks = Some "utils.yml", tags = Some [ "lxd_utils" ] }
+  , Task::{
       name = Some "Retrieve lxd_is_snap fact",
       shellfact = Some {
         exec = "which lxc | grep -q '/snap/bin' && echo yes"
       , fact = "lxd_is_snap"
-      , bool = True
+      , bool = Some True
+      , list = None Bool
     }
     }
-  , Item::{
-      tags = Some "lxd_limits",
+  , Task::{
       name = Some "Modify /etc/security/limits.conf",
-      when = Some "not lxd_is_snap and not ansible_check_mode",
+      when = Some [ "not lxd_is_snap and not ansible_check_mode" ],
+      tags = Some [ "lxd_limits" ],
       copy = Some {
-        dest = "/etc/security/limits.conf"
-      , backup = True
-      , content = ''
+        src = None Text
+      , dest = "/etc/security/limits.conf"
+      , mode = None Text
+      , content = Some ''
         *    soft  nofile  1048576   unset   # max number of open files
         *    hard  nofile  1048576   unset   # max number of open files
         root soft  nofile  1048576   unset   # max number of open files
@@ -46,6 +31,11 @@ in  [
         *    hard  memlock unlimited unset   # max locked-in-memory address space KB
 
       ''
+      , backup = Some True
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
 ]

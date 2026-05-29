@@ -1,34 +1,15 @@
 -- Auto-generated from repos.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , include_tasks : Optional Text
-    , loop : Optional Text
-    , loop_control : Optional ({ loop_var : Text })
-    , command : Optional Text
-    , environment : Optional ({ BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK : Text, BORG_RELOCATED_REPO_ACCESS_IS_OK : Text })
-    , changed_when : Optional Bool
-  }
-    , default =
-        { name = None Text
-    , copy = None ({ dest : Text, content : Text })
-    , include_tasks = None Text
-    , loop = None Text
-    , loop_control = None ({ loop_var : Text })
-    , command = None Text
-    , environment = None ({ BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK : Text, BORG_RELOCATED_REPO_ACCESS_IS_OK : Text })
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Create new repo file",
       copy = Some {
-        dest = "{{ bbclient_repo_file }}"
-      , content = ''
+        src = None Text
+      , dest = "{{ bbclient_repo_file }}"
+      , mode = None Text
+      , content = Some ''
         # Be aware that the "hostnames" in this file are then transformed by the
         # ssh config at {{ bbclient_ssh_config }}
         {% for br in bbclient_remotes %}
@@ -36,20 +17,27 @@ in  [
         {% endfor %}
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
-  , Item::{
+  , Task::{
       include_tasks = Some "single_repo.yml",
-      loop = Some "{{ bbclient_remotes }}",
-      loop_control = Some { loop_var = "bbclient_remote" }
+      loop = Some [ "{{ bbclient_remotes }}" ],
+      loop_control = Some { loop_var = Some "bbclient_remote", label = None Text }
     }
-  , Item::{
+  , Task::{
       name = Some "Run bbclient-all info to verify access",
       command = Some "{{ bbclient_all }} info",
       environment = Some {
-        BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = "y"
-      , BORG_RELOCATED_REPO_ACCESS_IS_OK = "y"
+        BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = Some "y"
+      , BORG_RELOCATED_REPO_ACCESS_IS_OK = Some "y"
+      , PIPX_BIN_DIR = None Text
+      , GOPATH = None Text
     },
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

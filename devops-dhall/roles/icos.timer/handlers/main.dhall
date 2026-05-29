@@ -1,9 +1,18 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "restart icos timer"
-    , when = "not ansible_check_mode"
-    , systemd = { name = "{{ timer_name }}.timer", state = "restarted" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "restart icos timer",
+      when = Some [ "not ansible_check_mode" ],
+      systemd = Some {
+        name = Some "{{ timer_name }}.timer"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
 ]

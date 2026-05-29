@@ -1,6 +1,8 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "install.yml" }
-  , { import_tasks = "vmagent.yml" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "install.yml" }
+  , Task::{ import_tasks = Some "vmagent.yml" }
 ]

@@ -1,9 +1,11 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      include_tasks = "setup.yml"
-    , loop = [ "test", "prod" ]
-    , loop_control = { loop_var = "exploredata_type" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      include_tasks = Some "setup.yml",
+      loop = Some [ "test", "prod" ],
+      loop_control = Some { loop_var = Some "exploredata_type", label = None Text }
+    }
 ]

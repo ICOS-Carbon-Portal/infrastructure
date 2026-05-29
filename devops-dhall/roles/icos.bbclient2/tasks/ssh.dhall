@@ -1,39 +1,42 @@
 -- Auto-generated from ssh.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text, mode : Natural })
-    , args : Optional ({ creates : Text })
-    , command : Optional Text
-    , copy : Optional ({ dest : Text, content : Text, mode : Optional Text })
-  }
-    , default =
-        { file = None ({ path : Text, state : Text, mode : Natural })
-    , args = None ({ creates : Text })
-    , command = None Text
-    , copy = None ({ dest : Text, content : Text, mode : Optional Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create ssh directory",
-      file = Some { path = "{{ bbclient_ssh_dir }}", state = "directory", mode = 448 }
+      name = Some "Create ssh directory",
+      file = Some {
+        path = Some "{{ bbclient_ssh_dir }}"
+      , state = Some "directory"
+      , mode = Some "448"
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Generate RSA keys",
-      args = Some { creates = "{{ bbclient_ssh_key }}" },
+      name = Some "Generate RSA keys",
+      args = Some {
+        creates = Some "{{ bbclient_ssh_key }}"
+      , chdir = None Text
+      , executable = None Text
+      , removes = None Text
+    },
       command = Some ''
       ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
         -C "bbclient_{{ bbclient_name }}@{{ inventory_hostname }}"
     ''
     }
   , Task::{
-      name = "Create ssh config",
+      name = Some "Create ssh config",
       copy = Some {
-        dest = "{{ bbclient_ssh_config }}"
-      , content = ''
+        src = None Text
+      , dest = "{{ bbclient_ssh_config }}"
+      , mode = None Text
+      , content = Some ''
         UserKnownHostsFile {{ bbclient_ssh_hosts }}
         Identityfile {{ bbclient_ssh_key }}
 
@@ -46,19 +49,29 @@ in  [
         {% endfor %}
 
       ''
-      , mode = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Add ssh wrapper",
+      name = Some "Add ssh wrapper",
       copy = Some {
-        dest = "{{ bbclient_ssh_bin }}"
-      , content = ''
+        src = None Text
+      , dest = "{{ bbclient_ssh_bin }}"
+      , mode = Some "+x"
+      , content = Some ''
         #!/usr/bin/bash
         exec ssh -F {{ bbclient_ssh_config }} "$@"
 
       ''
-      , mode = Some "+x"
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
 ]

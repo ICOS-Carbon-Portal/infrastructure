@@ -1,30 +1,45 @@
 -- Auto-generated from docker.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text })
-    , template : Optional ({ src : Text, dest : Text })
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text })
-  }
-    , default =
-        { file = None ({ path : Text, state : Text })
-    , template = None ({ src : Text, dest : Text })
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Create nexus home directory",
-      file = Some { path = "{{ nexus_home }}", state = "directory" }
+    Task::{
+      name = Some "Create nexus home directory",
+      file = Some {
+        path = Some "{{ nexus_home }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
-  , Entry::{
-      name = "Copy docker-compose.yml",
-      template = Some { src = "docker-compose.yml", dest = "{{ nexus_home }}" }
     }
-  , Entry::{
-      name = "Start containers",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ nexus_home }}" }
+  , Task::{
+      name = Some "Copy docker-compose.yml",
+      template = Some {
+        src = "docker-compose.yml"
+      , dest = "{{ nexus_home }}"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    }
+    }
+  , Task::{
+      name = Some "Start containers",
+      `community.docker.docker_compose_v2` = Some {
+        project_src = "{{ nexus_home }}"
+      , state = None Text
+      , pull = None Text
+      , services = None (List Text)
+      , build = None Text
+    }
     }
 ]

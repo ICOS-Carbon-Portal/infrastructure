@@ -1,32 +1,38 @@
 -- Auto-generated from docker.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, mode : Text, content : Text })
-    , file : Optional ({ dest : Text, src : Text, state : Text })
-  }
-    , default =
-        { copy = None ({ dest : Text, mode : Text, content : Text })
-    , file = None ({ dest : Text, src : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create docker wrapper",
+      name = Some "Create docker wrapper",
       copy = Some {
-        dest = "/usr/local/bin/docker"
-      , mode = "+x"
-      , content = ''
+        src = None Text
+      , dest = "/usr/local/bin/docker"
+      , mode = Some "+x"
+      , content = Some ''
         #!/bin/sh
         exec /usr/local/bin/podman "$@"
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Create /run/docker.sock symlink",
-      file = Some { dest = "/run/docker.sock", src = "/run/podman/podman.sock", state = "link" }
+      name = Some "Create /run/docker.sock symlink",
+      file = Some {
+        path = None Text
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = Some "/run/docker.sock"
+      , recurse = None Bool
+      , src = Some "/run/podman/podman.sock"
+    }
     }
 ]

@@ -14,7 +14,7 @@
           command = Some "lxc stop {{ old_name }}",
           register = Some "r",
           failed_when = Some [ "r.rc != 0", "'not found' not in r.stderr.lower()" ],
-          changed_when = Some "r.rc == 0",
+          changed_when = Some [ "r.rc == 0" ],
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = None ({ name : Text, state : Optional Text, table : Text, rules : Optional Text }),
           shell = None Text,
@@ -25,7 +25,7 @@
           command = Some "lxc rename {{ old_name }} {{ new_name }}",
           register = Some "r",
           failed_when = Some [ "r.rc != 0", "'not found' not in r.stderr.lower()" ],
-          changed_when = Some "r.rc == 0",
+          changed_when = Some [ "r.rc == 0" ],
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = None ({ name : Text, state : Optional Text, table : Text, rules : Optional Text }),
           shell = None Text,
@@ -36,7 +36,7 @@
           command = None Text,
           register = Some "r",
           failed_when = None (List Text),
-          changed_when = None Text,
+          changed_when = None (List Text),
           lineinfile = Some {
             path = "/etc/hosts"
           , regex = "(\\S*)\\s+(?:{{ old_name }})\\.lxd$"
@@ -53,7 +53,7 @@
           command = None Text,
           register = None Text,
           failed_when = None (List Text),
-          changed_when = None Text,
+          changed_when = None (List Text),
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = Some {
             name = "forward_ssh_to_{{ old_name }}"
@@ -69,7 +69,7 @@
           command = None Text,
           register = Some "ip",
           failed_when = None (List Text),
-          changed_when = Some "False",
+          changed_when = Some False,
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = None ({ name : Text, state : Optional Text, table : Text, rules : Optional Text }),
           shell = Some "awk '/{{ new_name }}/ {print $1}' < /etc/hosts",
@@ -80,7 +80,7 @@
           command = None Text,
           register = None Text,
           failed_when = None (List Text),
-          changed_when = None Text,
+          changed_when = None (List Text),
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = Some {
             name = "forward_ssh_to_{{ new_name }}"
@@ -96,7 +96,7 @@
           command = Some "lxc start {{ new_name }}",
           register = None Text,
           failed_when = None (List Text),
-          changed_when = None Text,
+          changed_when = None (List Text),
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = None ({ name : Text, state : Optional Text, table : Text, rules : Optional Text }),
           shell = None Text,
@@ -107,7 +107,7 @@
           command = None Text,
           register = None Text,
           failed_when = None (List Text),
-          changed_when = None Text,
+          changed_when = None (List Text),
           lineinfile = None ({ path : Text, regex : Text, line : Text, state : Text, backrefs : Bool }),
           iptables_raw = None ({ name : Text, state : Optional Text, table : Text, rules : Optional Text }),
           shell = None Text,

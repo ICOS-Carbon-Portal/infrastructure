@@ -1,34 +1,25 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Text
-    , tags : List Text
-    , when : Optional (List Text)
-  }
-    , default =
-        { when = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = "install.yml", tags = [ "nebula_install" ] }
-  , Item::{
-      import_tasks = "ssh.yml",
-      tags = [ "nebula_ssh", "nebula_config" ],
-      when = Some [ "nebula_ssh_enable", "nebula_ssh_public is not defined" ]
+    Task::{ import_tasks = Some "install.yml", tags = Some [ "nebula_install" ] }
+  , Task::{
+      when = Some [ "nebula_ssh_enable", "nebula_ssh_public is not defined" ],
+      import_tasks = Some "ssh.yml",
+      tags = Some [ "nebula_ssh", "nebula_config" ]
     }
-  , Item::{ import_tasks = "just.yml", tags = [ "nebula_just" ] }
-  , Item::{ import_tasks = "ca.yml", tags = [ "nebula_ca" ] }
-  , Item::{ import_tasks = "cert.yml", tags = [ "nebula_cert" ] }
-  , Item::{ import_tasks = "iptables.yml", tags = [ "nebula_iptables" ] }
-  , Item::{ import_tasks = "config.yml", tags = [ "nebula_config" ] }
-  , Item::{ import_tasks = "service.yml", tags = [ "nebula_service" ] }
-  , Item::{ import_tasks = "hosts.yml", tags = [ "nebula_hosts" ] }
-  , Item::{
-      import_tasks = "resolve.yml",
-      tags = [ "nebula_resolve" ],
-      when = Some [ "nebula_resolve_enable" ]
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "nebula_just" ] }
+  , Task::{ import_tasks = Some "ca.yml", tags = Some [ "nebula_ca" ] }
+  , Task::{ import_tasks = Some "cert.yml", tags = Some [ "nebula_cert" ] }
+  , Task::{ import_tasks = Some "iptables.yml", tags = Some [ "nebula_iptables" ] }
+  , Task::{ import_tasks = Some "config.yml", tags = Some [ "nebula_config" ] }
+  , Task::{ import_tasks = Some "service.yml", tags = Some [ "nebula_service" ] }
+  , Task::{ import_tasks = Some "hosts.yml", tags = Some [ "nebula_hosts" ] }
+  , Task::{
+      when = Some [ "nebula_resolve_enable" ],
+      import_tasks = Some "resolve.yml",
+      tags = Some [ "nebula_resolve" ]
     }
-  , Item::{ import_tasks = "test.yml", tags = [ "nebula_test", "nebula_resolve" ] }
+  , Task::{ import_tasks = Some "test.yml", tags = Some [ "nebula_test", "nebula_resolve" ] }
 ]

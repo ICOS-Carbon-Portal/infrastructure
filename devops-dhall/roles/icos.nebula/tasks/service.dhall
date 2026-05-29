@@ -1,32 +1,33 @@
 -- Auto-generated from service.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , template : Optional ({ src : Text, dest : Text, lstrip_blocks : Bool })
-    , notify : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text, `daemon-reload` : Bool })
-  }
-    , default =
-        { template = None ({ src : Text, dest : Text, lstrip_blocks : Bool })
-    , notify = None Text
-    , systemd = None ({ name : Text, enabled : Bool, state : Text, `daemon-reload` : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Copy nebula.service",
-      template = Some { src = "nebula.service", dest = "/etc/systemd/system", lstrip_blocks = True },
-      notify = Some "restart nebula"
+    Task::{
+      name = Some "Copy nebula.service",
+      template = Some {
+        src = "nebula.service"
+      , dest = "/etc/systemd/system"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
+      notify = Some [ "restart nebula" ]
     }
-  , Entry::{
-      name = "Start nebula service",
+  , Task::{
+      name = Some "Start nebula service",
       systemd = Some {
-        name = "nebula"
-      , enabled = True
-      , state = "started"
-      , `daemon-reload` = True
+        name = Some "nebula"
+      , state = Some "started"
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = Some "True"
+      , status = None Text
     }
     }
 ]

@@ -1,5 +1,7 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "setup.yml", tags = "fairdatapoint_setup" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "fairdatapoint_setup" ] }
 ]

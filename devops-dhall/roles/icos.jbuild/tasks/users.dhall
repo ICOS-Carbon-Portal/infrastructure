@@ -1,50 +1,27 @@
 -- Auto-generated from users.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , openssh_keypair : Optional ({ path : Text, owner : Text, group : Text })
-    , loop : Text
-    , register : Optional Text
-    , blockinfile : Optional ({ path : Text, marker : Text, create : Bool, insertafter : Text, block : Text })
-    , file : Optional ({ path : Text, state : Text, owner : Text, group : Text })
-    , copy : Optional ({ dest : Text, mode : Text, content : Text })
-    , become : Optional Bool
-    , become_user : Optional Text
-    , `community.general.docker_login` : Optional ({ registry_url : Text, username : Text, password : Text })
-  }
-    , default =
-        { openssh_keypair = None ({ path : Text, owner : Text, group : Text })
-    , register = None Text
-    , blockinfile = None ({ path : Text, marker : Text, create : Bool, insertafter : Text, block : Text })
-    , file = None ({ path : Text, state : Text, owner : Text, group : Text })
-    , copy = None ({ dest : Text, mode : Text, content : Text })
-    , become = None Bool
-    , become_user = None Text
-    , `community.general.docker_login` = None ({ registry_url : Text, username : Text, password : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Generate keys for jbuild",
+      name = Some "Generate keys for jbuild",
       openssh_keypair = Some {
         path = "/home/{{ item }}/.ssh/jbuild"
       , owner = "{{ item }}"
       , group = "{{ item }}"
     },
-      loop = "{{ jbuild_users }}",
+      loop = Some [ "{{ jbuild_users }}" ],
       register = Some "_jbuild_user_keys"
     }
   , Task::{
-      name = "Generate jbuild ssh config",
-      loop = "{{ jbuild_users }}",
+      name = Some "Generate jbuild ssh config",
       blockinfile = Some {
-        path = "/home/{{ item }}/.ssh/config"
-      , marker = "# {mark} ansible / jbuild"
-      , create = True
-      , insertafter = "EOF"
-      , block = ''
+        marker = "# {mark} ansible / jbuild"
+      , state = None Text
+      , create = Some True
+      , insertafter = Some "EOF"
+      , path = "/home/{{ item }}/.ssh/config"
+      , block = Some ''
         Host edctl
           Hostname {{ jbuild_edctl_host_name }}
           Port {{ jbuild_edctl_host_port }}
@@ -64,53 +41,72 @@ in  [
           IdentityFile ~/.ssh/jbuild
 
       ''
-    }
+      , insertbefore = None Text
+    },
+      loop = Some [ "{{ jbuild_users }}" ]
     }
   , Task::{
-      name = "Create $HOME/bin directory",
-      loop = "{{ jbuild_users }}",
+      name = Some "Create $HOME/bin directory",
       file = Some {
-        path = "/home/{{ item }}/bin"
-      , state = "directory"
-      , owner = "{{ item }}"
-      , group = "{{ item }}"
-    }
+        path = Some "/home/{{ item }}/bin"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "{{ item }}"
+      , group = Some "{{ item }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    },
+      loop = Some [ "{{ jbuild_users }}" ]
     }
   , Task::{
-      name = "Create wrappers for edctl",
-      loop = "{{ jbuild_users }}",
+      name = Some "Create wrappers for edctl",
       copy = Some {
-        dest = "/home/{{ item }}/bin/edctl"
-      , mode = "+x"
-      , content = ''
+        src = None Text
+      , dest = "/home/{{ item }}/bin/edctl"
+      , mode = Some "+x"
+      , content = Some ''
         #!/bin/bash
         ssh edctl /opt/edctl/edctl.py "$@"
 
       ''
-    }
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
+      loop = Some [ "{{ jbuild_users }}" ]
     }
   , Task::{
-      name = "Create wrappers for jyctl",
-      loop = "{{ jbuild_users }}",
+      name = Some "Create wrappers for jyctl",
       copy = Some {
-        dest = "/home/{{ item }}/bin/jyctl"
-      , mode = "+x"
-      , content = ''
+        src = None Text
+      , dest = "/home/{{ item }}/bin/jyctl"
+      , mode = Some "+x"
+      , content = Some ''
         #!/bin/bash
         ssh jyctl /opt/jyctl/jyctl.py "$@"
 
       ''
-    }
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
+      loop = Some [ "{{ jbuild_users }}" ]
     }
   , Task::{
-      name = "Login to registry",
-      loop = "{{ jbuild_users }}",
-      become = Some True,
+      name = Some "Login to registry",
+      become = Some "True",
       become_user = Some "{{ item }}",
       `community.general.docker_login` = Some {
         registry_url = "{{ registry_domain }}"
       , username = "docker"
       , password = "{{ jbuild_registry_pass }}"
-    }
+    },
+      loop = Some [ "{{ jbuild_users }}" ]
     }
 ]

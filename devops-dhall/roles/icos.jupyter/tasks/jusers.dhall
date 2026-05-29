@@ -1,79 +1,91 @@
 -- Auto-generated from jusers.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , when : Optional Text
-    , pip : Optional ({ virtualenv : Text, name : List Text, state : Text })
-    , template : Optional ({ src : Text, dest : Text, mode : Text, backup : Bool })
-    , copy : Optional ({ src : Text, dest : Text, backup : Optional Bool })
-    , shell : Optional Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { file = None ({ path : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , when = None Text
-    , pip = None ({ virtualenv : Text, name : List Text, state : Text })
-    , template = None ({ src : Text, dest : Text, mode : Text, backup : Bool })
-    , copy = None ({ src : Text, dest : Text, backup : Optional Bool })
-    , shell = None Text
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Remove virtual env",
+      name = Some "Remove virtual env",
       file = Some {
         path = Some "{{ jusers_venv }}"
-      , state = "absent"
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = None Text
+      , recurse = None Bool
       , src = None Text
     },
-      when = Some "virtualenv_recreate | default(False) | bool"
+      when = Some [ "virtualenv_recreate | default(False) | bool" ]
     }
   , Task::{
-      name = "Create virtual env",
+      name = Some "Create virtual env",
       pip = Some {
-        virtualenv = "{{ jusers_venv }}"
-      , name = [ "ruamel.yaml", "click", "pandas", "requests" ]
-      , state = "present"
+        name = [ "ruamel.yaml", "click", "pandas", "requests" ]
+      , virtualenv = Some "{{ jusers_venv }}"
+      , state = Some "present"
     }
     }
   , Task::{
-      name = "Copy jusers.py",
+      name = Some "Copy jusers.py",
       template = Some {
         src = "jusers.py"
       , dest = "{{ jusers_home }}/jusers.py"
-      , mode = "+x"
-      , backup = True
-    }
-    }
-  , Task::{
-      name = "Copy plugins",
-      copy = Some { src = "plugins", dest = "{{ jusers_home }}/", backup = None Bool }
-    }
-  , Task::{
-      name = "Copy readme_template.html",
-      copy = Some {
-        src = "readme_template.html"
-      , dest = "/root/readme_template.html"
+      , mode = Some "+x"
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
       , backup = Some True
+      , owner = None Text
+      , group = None Text
     }
     }
   , Task::{
-      name = "Create /usr/local/sbin/jusers symlink",
+      name = Some "Copy plugins",
+      copy = Some {
+        src = Some "plugins"
+      , dest = "{{ jusers_home }}/"
+      , mode = None Text
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    }
+    }
+  , Task::{
+      name = Some "Copy readme_template.html",
+      copy = Some {
+        src = Some "readme_template.html"
+      , dest = "/root/readme_template.html"
+      , mode = None Text
+      , content = None Text
+      , backup = Some True
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    }
+    }
+  , Task::{
+      name = Some "Create /usr/local/sbin/jusers symlink",
       file = Some {
         path = None Text
-      , state = "link"
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = Some "/usr/local/sbin/jusers"
+      , recurse = None Bool
       , src = Some "{{ jusers_home }}/jusers.py"
     }
     }
   , Task::{
-      name = "Check that jusers executes",
+      name = Some "Check that jusers executes",
       shell = Some "/usr/local/sbin/jusers",
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

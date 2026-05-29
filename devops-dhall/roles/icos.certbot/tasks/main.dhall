@@ -1,9 +1,11 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      import_tasks = "certbot.yml"
-    , tags = "certbot_only"
-    , when = "not certbot_disabled"
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      import_tasks = Some "certbot.yml",
+      tags = Some [ "certbot_only" ],
+      when = Some [ "not certbot_disabled" ]
+    }
 ]

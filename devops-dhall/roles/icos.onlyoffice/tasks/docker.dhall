@@ -1,40 +1,27 @@
 -- Auto-generated from docker.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, src : Optional Text, mode : Optional Text, content : Optional Text })
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, build : Text })
-    , uri : Optional ({ url : Text })
-    , retries : Optional Natural
-    , delay : Optional Natural
-    , changed_when : Optional Bool
-  }
-    , default =
-        { copy = None ({ dest : Text, src : Optional Text, mode : Optional Text, content : Optional Text })
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text })
-    , uri = None ({ url : Text })
-    , retries = None Natural
-    , delay = None Natural
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Copy build directory",
+      name = Some "Copy build directory",
       copy = Some {
-        dest = "{{ onlyoffice_home }}/"
-      , src = Some "build"
+        src = Some "build"
+      , dest = "{{ onlyoffice_home }}/"
       , mode = None Text
       , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Install runtime environment file",
+      name = Some "Install runtime environment file",
       copy = Some {
-        dest = "{{ onlyoffice_home }}/onlyoffice.env"
-      , src = None Text
+        src = None Text
+      , dest = "{{ onlyoffice_home }}/onlyoffice.env"
       , mode = Some "o-r"
       , content = Some ''
         # JWT == JSON Web Tokens. This is how Nextcloud authenticates
@@ -47,48 +34,80 @@ in  [
         JWT_REJECT_UNAUTHORIZED=true
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Copy license.lic",
+      name = Some "Copy license.lic",
       copy = Some {
-        dest = "{{ onlyoffice_home }}/volumes/data/"
-      , src = Some "license.lic"
+        src = Some "license.lic"
+      , dest = "{{ onlyoffice_home }}/volumes/data/"
       , mode = None Text
       , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Copy docker-compose.yml",
+      name = Some "Copy docker-compose.yml",
       copy = Some {
-        dest = "{{ onlyoffice_home }}"
-      , src = Some "docker-compose.yml"
+        src = Some "docker-compose.yml"
+      , dest = "{{ onlyoffice_home }}"
       , mode = None Text
       , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Install parsetime environment file",
+      name = Some "Install parsetime environment file",
       copy = Some {
-        dest = "{{ onlyoffice_home }}/.env"
-      , src = None Text
+        src = None Text
+      , dest = "{{ onlyoffice_home }}/.env"
       , mode = None Text
       , content = Some ''
         ONLYOFFICE_PORT={{ onlyoffice_port }}
         ONLYOFFICE_VERSION={{ onlyoffice_version }}
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Build and start",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ onlyoffice_home }}", build = "always" }
+      name = Some "Build and start",
+      `community.docker.docker_compose_v2` = Some {
+        project_src = "{{ onlyoffice_home }}"
+      , state = None Text
+      , pull = None Text
+      , services = None (List Text)
+      , build = Some "always"
+    }
     }
   , Task::{
-      name = "Check that onlyoffice responds - might take a while",
-      uri = Some { url = "https://{{ onlyoffice_domain }}" },
+      name = Some "Check that onlyoffice responds - might take a while",
+      uri = Some {
+        url = "https://{{ onlyoffice_domain }}"
+      , return_content = None Bool
+      , method = None Text
+      , user = None Text
+      , password = None Text
+    },
       retries = Some 60,
       delay = Some 10,
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

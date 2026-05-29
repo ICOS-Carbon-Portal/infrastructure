@@ -1,23 +1,14 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Text
-    , tags : Text
-    , when : Optional Text
-  }
-    , default =
-        { when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = "setup.yml", tags = "jupyter_setup" }
-  , Item::{ import_tasks = "registry.yml", tags = "jupyter_registry" }
-  , Item::{
-      import_tasks = "jusers.yml",
-      tags = "jupyter_jusers",
-      when = Some "jupyter_jusers_enable"
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "jupyter_setup" ] }
+  , Task::{ import_tasks = Some "registry.yml", tags = Some [ "jupyter_registry" ] }
+  , Task::{
+      import_tasks = Some "jusers.yml",
+      tags = Some [ "jupyter_jusers" ],
+      when = Some [ "jupyter_jusers_enable" ]
     }
-  , Item::{ import_tasks = "just.yml", tags = "jupyter_just" }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "jupyter_just" ] }
 ]

@@ -1,36 +1,29 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Text
-    , name : Optional Text
-    , template : Optional ({ src : Text, dest : Text, mode : Text })
-    , when : Optional Text
-  }
-    , default =
-        { import_tasks = None Text
-    , name = None Text
-    , template = None ({ src : Text, dest : Text, mode : Text })
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "docker.yml", tags = "postgis_setup" }
-  , Item::{
-      tags = "postgis_restore_script",
+    Task::{ import_tasks = Some "docker.yml", tags = Some [ "postgis_setup" ] }
+  , Task::{
       name = Some "Install postgis restore script",
+      tags = Some [ "postgis_restore_script" ],
       template = Some {
         src = "restore_postgis_db.py"
       , dest = "/usr/local/bin/restore_postgis_db.py"
-      , mode = "+x"
+      , mode = Some "+x"
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
     }
-  , Item::{
+  , Task::{
       import_tasks = Some "backup.yml",
-      tags = "postgis_backup",
-      when = Some "postgis_backup_enable"
+      tags = Some [ "postgis_backup" ],
+      when = Some [ "postgis_backup_enable" ]
     }
-  , Item::{ import_tasks = Some "just.yml", tags = "postgis_just" }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "postgis_just" ] }
 ]

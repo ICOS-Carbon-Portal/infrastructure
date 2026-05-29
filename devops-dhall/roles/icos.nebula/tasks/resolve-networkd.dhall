@@ -1,25 +1,15 @@
 -- Auto-generated from resolve-networkd.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , notify : Optional Text
-    , file : Optional ({ path : Text, state : Text })
-  }
-    , default =
-        { copy = None ({ dest : Text, content : Text })
-    , notify = None Text
-    , file = None ({ path : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Add nebula dns server",
+      name = Some "Add nebula dns server",
       copy = Some {
-        dest = "/etc/systemd/network/{{ nebula_interface }}.network"
-      , content = ''
+        src = None Text
+      , dest = "/etc/systemd/network/{{ nebula_interface }}.network"
+      , mode = None Text
+      , content = Some ''
         # This file is read by both systemd-networkd and systemd-resolved. The
         # trick is to configure systemd-resolved to add a specific dns server
         # for the nebula link while keeping systemd-networkd from messing things
@@ -38,18 +28,35 @@ in  [
         KeepConfiguration=static
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "restart systemd-networkd"
+      notify = Some [ "restart systemd-networkd" ]
     }
   , Task::{
-      name = "Create drop-in directory",
-      file = Some { path = "/etc/systemd/system/nebula.service.d", state = "directory" }
+      name = Some "Create drop-in directory",
+      file = Some {
+        path = Some "/etc/systemd/system/nebula.service.d"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Create drop-in configuration",
+      name = Some "Create drop-in configuration",
       copy = Some {
-        dest = "/etc/systemd/system/nebula.service.d/restart-networkd.conf"
-      , content = ''
+        src = None Text
+      , dest = "/etc/systemd/system/nebula.service.d/restart-networkd.conf"
+      , mode = None Text
+      , content = Some ''
         [Service]
         # When nebula is restarted, systemd-networkd will lose the
         # nebula-specific name servers configured in
@@ -58,7 +65,12 @@ in  [
         ExecStartPost=/bin/sh -c 'sleep 1; systemctl restart systemd-networkd'
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "systemd reload"
+      notify = Some [ "systemd reload" ]
     }
 ]

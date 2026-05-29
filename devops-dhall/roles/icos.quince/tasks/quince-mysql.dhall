@@ -1,29 +1,26 @@
 -- Auto-generated from quince-mysql.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : Text, state : Text })
-    , loop : Optional (List Text)
-    , mysql_db : Optional ({ name : Text, state : Text, login_unix_socket : Text })
-    , mysql_user : Optional ({ name : Text, password : Text, priv : Text, state : Text, login_unix_socket : Text })
-  }
-    , default =
-        { apt = None ({ name : Text, state : Text })
-    , loop = None (List Text)
-    , mysql_db = None ({ name : Text, state : Text, login_unix_socket : Text })
-    , mysql_user = None ({ name : Text, password : Text, priv : Text, state : Text, login_unix_socket : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Install MySQL",
-      apt = Some { name = "{{ item }}", state = "present" },
+      name = Some "Install MySQL",
+      apt = Some {
+        name = Some [ "{{ item }}" ]
+      , state = Some "present"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    },
       loop = Some [ "mysql-server", "python3-pymysql" ]
     }
   , Task::{
-      name = "Create quince database",
+      name = Some "Create quince database",
       mysql_db = Some {
         name = "quince"
       , state = "present"
@@ -31,7 +28,7 @@ in  [
     }
     }
   , Task::{
-      name = "Create quince database user",
+      name = Some "Create quince database user",
       mysql_user = Some {
         name = "quince"
       , password = "quince"

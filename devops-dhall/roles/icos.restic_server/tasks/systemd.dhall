@@ -1,30 +1,34 @@
 -- Auto-generated from systemd.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , template : Optional ({ src : Text, dest : Text, lstrip_blocks : Bool })
-    , loop : Optional (List Text)
-    , notify : Optional Text
-    , systemd : Optional ({ name : Text, state : Text })
-  }
-    , default =
-        { template = None ({ src : Text, dest : Text, lstrip_blocks : Bool })
-    , loop = None (List Text)
-    , notify = None Text
-    , systemd = None ({ name : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Copy systemd service files",
-      template = Some { src = "{{ item }}", dest = "/etc/systemd/system", lstrip_blocks = True },
+    Task::{
+      name = Some "Copy systemd service files",
+      template = Some {
+        src = "{{ item }}"
+      , dest = "/etc/systemd/system"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
       loop = Some [ "restic-server.service", "restic-server.socket" ],
-      notify = Some "restart restic"
+      notify = Some [ "restart restic" ]
     }
-  , Entry::{
-      name = "Start restic socket",
-      systemd = Some { name = "restic-server.socket", state = "started" }
+  , Task::{
+      name = Some "Start restic socket",
+      systemd = Some {
+        name = Some "restic-server.socket"
+      , state = Some "started"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
     }
 ]

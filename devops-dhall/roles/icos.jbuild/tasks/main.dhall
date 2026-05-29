@@ -1,32 +1,23 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Text
-    , tags : Text
-    , delegate_to : Optional Text
-  }
-    , default =
-        { delegate_to = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = "jbuild.yml", tags = "jbuild_jbuild" }
-  , Item::{ import_tasks = "users.yml", tags = "jbuild_users" }
-  , Item::{
-      import_tasks = "edctl.yml",
-      tags = "jbuild_edctl",
+    Task::{ import_tasks = Some "jbuild.yml", tags = Some [ "jbuild_jbuild" ] }
+  , Task::{ import_tasks = Some "users.yml", tags = Some [ "jbuild_users" ] }
+  , Task::{
+      import_tasks = Some "edctl.yml",
+      tags = Some [ "jbuild_edctl" ],
       delegate_to = Some "{{ jbuild_edctl_host }}"
     }
-  , Item::{
-      import_tasks = "jyctl.yml",
-      tags = "jbuild_jyctl",
+  , Task::{
+      import_tasks = Some "jyctl.yml",
+      tags = Some [ "jbuild_jyctl" ],
       delegate_to = Some "{{ jbuild_jyctl_host }}"
     }
-  , Item::{
-      import_tasks = "rsync.yml",
-      tags = "jbuild_rsync",
+  , Task::{
+      import_tasks = Some "rsync.yml",
+      tags = Some [ "jbuild_rsync" ],
       delegate_to = Some "{{ jbuild_rsync_host }}"
     }
 ]

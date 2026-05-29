@@ -1,47 +1,64 @@
 -- Auto-generated from remove.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text })
-    , iptables_raw : Optional ({ name : Text, state : Text })
-    , when : Optional Text
-    , blockinfile : Optional ({ marker : Text, path : Text, state : Text })
-    , file : Optional ({ path : Text, state : Text })
-  }
-    , default =
-        { systemd = None ({ name : Text, enabled : Bool, state : Text })
-    , iptables_raw = None ({ name : Text, state : Text })
-    , when = None Text
-    , blockinfile = None ({ marker : Text, path : Text, state : Text })
-    , file = None ({ path : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Stop and disable wg-quick",
-      systemd = Some { name = "wg-quick@{{ wg_hub_intf }}.service", enabled = False, state = "stopped" }
+    Task::{
+      name = Some "Stop and disable wg-quick",
+      systemd = Some {
+        name = Some "wg-quick@{{ wg_hub_intf }}.service"
+      , state = Some "stopped"
+      , daemon_reload = None Bool
+      , enabled = Some "False"
+      , `daemon-reload` = None Text
+      , status = None Text
     }
-  , Entry::{
-      name = "Remove - \"Allow all inbound traffic on the wireguard interface\"",
-      iptables_raw = Some { name = "wireguard_{{ wg_hub_config.name }}_allow_all", state = "absent" }
     }
-  , Entry::{
-      name = "Remove - Allow wireguard through firewall",
-      iptables_raw = Some { name = "wireguard_{{ wg_hub_config.name }}", state = "absent" },
-      when = Some "wg_hub_ishub"
+  , Task::{
+      name = Some "Remove - \"Allow all inbound traffic on the wireguard interface\"",
+      iptables_raw = Some {
+        name = "wireguard_{{ wg_hub_config.name }}_allow_all"
+      , rules = None Text
+      , weight = None Natural
+      , table = None Text
+      , state = Some "absent"
     }
-  , Entry::{
-      name = "Remove hosts",
+    }
+  , Task::{
+      name = Some "Remove - Allow wireguard through firewall",
+      when = Some [ "wg_hub_ishub" ],
+      iptables_raw = Some {
+        name = "wireguard_{{ wg_hub_config.name }}"
+      , rules = None Text
+      , weight = None Natural
+      , table = None Text
+      , state = Some "absent"
+    }
+    }
+  , Task::{
+      name = Some "Remove hosts",
       blockinfile = Some {
         marker = "# {mark} cloud.wg_hub {{ wg_hub_config.name }}"
+      , state = Some "absent"
+      , create = None Bool
+      , insertafter = None Text
       , path = "/etc/hosts"
-      , state = "absent"
+      , block = None Text
+      , insertbefore = None Text
     }
     }
-  , Entry::{
-      name = "Remove wireguard config",
-      file = Some { path = "/etc/wireguard/{{ wg_hub_intf }}.conf", state = "absent" }
+  , Task::{
+      name = Some "Remove wireguard config",
+      file = Some {
+        path = Some "/etc/wireguard/{{ wg_hub_intf }}.conf"
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
 ]

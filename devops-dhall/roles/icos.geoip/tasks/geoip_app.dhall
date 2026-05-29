@@ -1,78 +1,62 @@
 -- Auto-generated from geoip_app.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , git : Optional ({ repo : Text, version : Text, dest : Text, force : Bool })
-    , register : Optional Text
-    , shell : Optional Text
-    , args : Optional ({ chdir : Text, executable : Text })
-    , changed_when : Optional Text
-    , when : Optional Text
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text })
-    , uri : Optional ({ url : Text, return_content : Bool })
-    , failed_when : Optional Text
-    , retries : Optional Natural
-    , delay : Optional Natural
-    , until : Optional Text
-    , tags : Optional Text
-  }
-    , default =
-        { git = None ({ repo : Text, version : Text, dest : Text, force : Bool })
-    , register = None Text
-    , shell = None Text
-    , args = None ({ chdir : Text, executable : Text })
-    , changed_when = None Text
-    , when = None Text
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text })
-    , uri = None ({ url : Text, return_content : Bool })
-    , failed_when = None Text
-    , retries = None Natural
-    , delay = None Natural
-    , until = None Text
-    , tags = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Pull source",
+      name = Some "Pull source",
       git = Some {
         repo = "{{ geoip_git_repo }}"
-      , version = "{{ geoip_git_version }}"
+      , version = Some "{{ geoip_git_version }}"
       , dest = "{{ geoip_repo_dir }}"
-      , force = True
+      , force = Some True
+      , update = None Text
+      , key_file = None Text
     },
       register = Some "_git"
     }
   , Task::{
-      name = "Build geoip images using docker-compose",
-      register = Some "_output",
+      name = Some "Build geoip images using docker-compose",
       shell = Some ''
       set -o pipefail
       ( echo -n '=== starting build '; date; docker-compose build --pull) \
       | tee -a build.log
 
     '',
-      args = Some { chdir = "{{ geoip_home }}", executable = "/bin/bash" },
+      args = Some {
+        creates = None Text
+      , chdir = Some "{{ geoip_home }}"
+      , executable = Some "/bin/bash"
+      , removes = None Text
+    },
+      register = Some "_output",
       changed_when = Some "\" ---> Running in \" in _output.stdout",
-      when = Some "geoip_docker_build | default(True)"
+      when = Some [ "geoip_docker_build | default(True)" ]
     }
   , Task::{
-      name = "Start containers",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ geoip_home }}" }
+      name = Some "Start containers",
+      `community.docker.docker_compose_v2` = Some {
+        project_src = "{{ geoip_home }}"
+      , state = None Text
+      , pull = None Text
+      , services = None (List Text)
+      , build = None Text
+    }
     }
   , Task::{
-      name = "Check that geoip responds",
-      register = Some "r",
+      name = Some "Check that geoip responds",
       uri = Some {
         url = "http://{{ certbot_domains | first }}:/ip/8.8.8.8"
-      , return_content = True
+      , return_content = Some True
+      , method = None Text
+      , user = None Text
+      , password = None Text
     },
+      register = Some "r",
       failed_when = Some "r.failed or r.json | json_query('ip') != '8.8.8.8'",
       retries = Some 2,
       delay = Some 10,
       until = Some "not r.failed",
-      tags = Some "geoip_check"
+      tags = Some [ "geoip_check" ]
     }
 ]

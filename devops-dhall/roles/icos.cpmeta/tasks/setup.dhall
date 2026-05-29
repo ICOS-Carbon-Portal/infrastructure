@@ -1,69 +1,92 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , user : Optional ({ name : Text, home : Text, shell : Text })
-    , copy : Optional ({ src : Text, dest : Text, owner : Text, group : Text })
-    , file : Optional ({ path : Text, state : Text, owner : Text, group : Text, recurse : Bool })
-    , template : Optional ({ src : Text, dest : Text })
-    , register : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, `daemon-reload` : Bool })
-    , when : Optional Text
-  }
-    , default =
-        { user = None ({ name : Text, home : Text, shell : Text })
-    , copy = None ({ src : Text, dest : Text, owner : Text, group : Text })
-    , file = None ({ path : Text, state : Text, owner : Text, group : Text, recurse : Bool })
-    , template = None ({ src : Text, dest : Text })
-    , register = None Text
-    , systemd = None ({ name : Text, enabled : Bool, `daemon-reload` : Bool })
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create cpmeta user",
-      user = Some { name = "{{ cpmeta_user }}", home = "{{ cpmeta_home }}", shell = "/bin/bash" }
+      name = Some "Create cpmeta user",
+      user = Some {
+        name = "{{ cpmeta_user }}"
+      , home = Some "{{ cpmeta_home }}"
+      , create_home = None Text
+      , shell = Some "/bin/bash"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
+    }
     }
   , Task::{
-      name = "Copy SSL certs and private key for Handle.net client",
+      name = Some "Copy SSL certs and private key for Handle.net client",
       copy = Some {
-        src = "ssl"
+        src = Some "ssl"
       , dest = "{{ cpmeta_home }}/"
-      , owner = "{{ cpmeta_user }}"
-      , group = "{{ cpmeta_user }}"
+      , mode = None Text
+      , content = None Text
+      , backup = None Bool
+      , owner = Some "{{ cpmeta_user }}"
+      , group = Some "{{ cpmeta_user }}"
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Create metaAppStorage directory (if not present), take ownership",
+      name = Some "Create metaAppStorage directory (if not present), take ownership",
       file = Some {
-        path = "{{ cpmeta_filestorage_target }}"
-      , state = "directory"
-      , owner = "{{ cpmeta_user }}"
-      , group = "{{ cpmeta_user }}"
-      , recurse = True
+        path = Some "{{ cpmeta_filestorage_target }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "{{ cpmeta_user }}"
+      , group = Some "{{ cpmeta_user }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = Some True
+      , src = None Text
     }
     }
   , Task::{
-      name = "Create rdfStorage directory (if not present), take ownership",
+      name = Some "Create rdfStorage directory (if not present), take ownership",
       file = Some {
-        path = "{{ cpmeta_rdfstorage_path }}"
-      , state = "directory"
-      , owner = "{{ cpmeta_user }}"
-      , group = "{{ cpmeta_user }}"
-      , recurse = True
+        path = Some "{{ cpmeta_rdfstorage_path }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "{{ cpmeta_user }}"
+      , group = Some "{{ cpmeta_user }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = Some True
+      , src = None Text
     }
     }
   , Task::{
-      name = "Add systemd service",
-      template = Some { src = "cpmeta.service", dest = "/etc/systemd/system/cpmeta.service" },
+      name = Some "Add systemd service",
+      template = Some {
+        src = "cpmeta.service"
+      , dest = "/etc/systemd/system/cpmeta.service"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
       register = Some "_service"
     }
   , Task::{
-      name = "Restart systemd service daemon",
-      systemd = Some { name = "cpmeta.service", enabled = True, `daemon-reload` = True },
-      when = Some "_service.changed"
+      name = Some "Restart systemd service daemon",
+      systemd = Some {
+        name = Some "cpmeta.service"
+      , state = None Text
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = Some "True"
+      , status = None Text
+    },
+      when = Some [ "_service.changed" ]
     }
 ]

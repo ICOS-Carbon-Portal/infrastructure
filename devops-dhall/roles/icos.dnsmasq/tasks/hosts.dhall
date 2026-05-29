@@ -1,15 +1,18 @@
 -- Auto-generated from hosts.yml
 
-[
-    {
-      name = "Populate /etc/hosts"
-    , blockinfile = {
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "Populate /etc/hosts",
+      blockinfile = Some {
         marker = "# {mark} ansible / dnsmasq / {{ dnsmasq_config_name }}"
-      , state = "{{ 'present' if dnsmasq_hosts else 'absent' }}"
-      , create = False
-      , insertafter = "EOF"
+      , state = Some "{{ 'present' if dnsmasq_hosts else 'absent' }}"
+      , create = Some False
+      , insertafter = Some "EOF"
       , path = "/etc/hosts"
-      , block = "{{ dnsmasq_hosts }}"
+      , block = Some "{{ dnsmasq_hosts }}"
+      , insertbefore = None Text
     }
-  }
+    }
 ]

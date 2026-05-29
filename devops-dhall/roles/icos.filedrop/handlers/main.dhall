@@ -1,8 +1,17 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "restart filedrop"
-    , systemd = { name = "filedrop", state = "restarted" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "restart filedrop",
+      systemd = Some {
+        name = Some "filedrop"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
 ]

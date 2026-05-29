@@ -1,30 +1,12 @@
 -- Auto-generated from registry.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , tags : Optional Text
-    , become : Optional Bool
-    , become_user : Optional Text
-    , `community.general.docker_login` : Optional ({ registry_url : Text, username : Text, password : Text })
-    , docker_image : Optional ({ name : Text, source : Text })
-    , vars : Optional ({ conf : Text })
-  }
-    , default =
-        { tags = None Text
-    , become = None Bool
-    , become_user = None Text
-    , `community.general.docker_login` = None ({ registry_url : Text, username : Text, password : Text })
-    , docker_image = None ({ name : Text, source : Text })
-    , vars = None ({ conf : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Login to registry",
-      tags = Some "login",
-      become = Some True,
+    Task::{
+      name = Some "Login to registry",
+      tags = Some [ "login" ],
+      become = Some "True",
       become_user = Some "root",
       `community.general.docker_login` = Some {
         registry_url = "registry.icos-cp.eu"
@@ -32,9 +14,68 @@ in  [
       , password = "{{ vault_registry_pass }}"
     }
     }
-  , Entry::{
-      name = "Pull the notebook image from registry",
+  , Task::{
+      name = Some "Pull the notebook image from registry",
       docker_image = Some { name = "{{ conf.image }}", source = "pull" },
-      vars = Some { conf = "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}" }
+      vars = Some {
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = Some "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}"
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
+    }
     }
 ]

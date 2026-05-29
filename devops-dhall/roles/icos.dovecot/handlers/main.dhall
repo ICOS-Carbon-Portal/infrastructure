@@ -1,24 +1,15 @@
 -- Auto-generated from main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , command : Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{ name = "Reload postfix", command = "postfix reload" }
-  , Entry::{
-      name = "Restart rsyslog",
-      command = ''
+    Task::{ name = Some "Reload postfix", command = Some "postfix reload" }
+  , Task::{
+      name = Some "Restart rsyslog",
+      command = Some ''
       rsyslogd -N 1 && systemctl restart rsyslog
 
     '',
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

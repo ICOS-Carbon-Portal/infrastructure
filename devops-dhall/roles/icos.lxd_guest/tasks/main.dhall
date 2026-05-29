@@ -1,25 +1,17 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Text
-    , name : Optional Text
-    , import_role : Optional ({ name : Text })
-  }
-    , default =
-        { import_tasks = None Text
-    , name = None Text
-    , import_role = None ({ name : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "setup.yml", tags = "lxd_guest_setup" }
-  , Item::{
-      tags = "utils",
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "lxd_guest_setup" ] }
+  , Task::{
       name = Some "Install icos utilities",
+      tags = Some [ "utils" ],
       import_role = Some { name = "icos.utils" }
     }
-  , Item::{ tags = "users", name = Some "Add users", import_role = Some { name = "icos.users" } }
+  , Task::{
+      name = Some "Add users",
+      tags = Some [ "users" ],
+      import_role = Some { name = "icos.users" }
+    }
 ]

@@ -1,65 +1,62 @@
 -- Auto-generated from jbuild.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , when : Optional Text
-    , pip : Optional ({ virtualenv : Text, name : List Text, state : Text })
-    , copy : Optional ({ src : Text, dest : Text, mode : Text, force : Text })
-    , shell : Optional Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { file = None ({ path : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , when = None Text
-    , pip = None ({ virtualenv : Text, name : List Text, state : Text })
-    , copy = None ({ src : Text, dest : Text, mode : Text, force : Text })
-    , shell = None Text
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Remove virtual env",
+      name = Some "Remove virtual env",
       file = Some {
         path = Some "/opt/jbuild/venv"
-      , state = "absent"
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = None Text
+      , recurse = None Bool
       , src = None Text
     },
-      when = Some "virtualenv_recreate | default(False) | bool"
+      when = Some [ "virtualenv_recreate | default(False) | bool" ]
     }
   , Task::{
-      name = "Create virtual env",
+      name = Some "Create virtual env",
       pip = Some {
-        virtualenv = "/opt/jbuild/venv"
-      , name = [ "click", "GitPython", "docker" ]
-      , state = "present"
+        name = [ "click", "GitPython", "docker" ]
+      , virtualenv = Some "/opt/jbuild/venv"
+      , state = Some "present"
     }
     }
   , Task::{
-      name = "Copy jbuild.py",
+      name = Some "Copy jbuild.py",
       copy = Some {
-        src = "jbuild.py"
+        src = Some "jbuild.py"
       , dest = "/opt/jbuild/jbuild.py"
-      , mode = "+x"
-      , force = "{{ jbuild_force | default(True) | bool }}"
+      , mode = Some "+x"
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = Some "{{ jbuild_force | default(True) | bool }}"
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Create /usr/local/sbin/jbuild symlink",
+      name = Some "Create /usr/local/sbin/jbuild symlink",
       file = Some {
         path = None Text
-      , state = "link"
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = Some "/usr/local/sbin/jbuild"
+      , recurse = None Bool
       , src = Some "/opt/jbuild/jbuild.py"
     }
     }
   , Task::{
-      name = "Check that jbuild executes",
+      name = Some "Check that jbuild executes",
       shell = Some "/usr/local/sbin/jbuild",
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

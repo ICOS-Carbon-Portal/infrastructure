@@ -1,32 +1,23 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Text
-    , tags : List Text
-    , name : Optional Text
-  }
-    , default =
-        { name = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = "quince-system.yml", tags = [ "quince-system" ] }
-  , Item::{
-      import_tasks = "quince-tomcat.yml",
-      tags = [ "quince-setup", "quince-tomcat" ],
-      name = Some "Download specific version of tomcat"
+    Task::{ import_tasks = Some "quince-system.yml", tags = Some [ "quince-system" ] }
+  , Task::{
+      name = Some "Download specific version of tomcat",
+      tags = Some [ "quince-setup", "quince-tomcat" ],
+      import_tasks = Some "quince-tomcat.yml"
     }
-  , Item::{
-      import_tasks = "quince-mysql.yml",
-      tags = [ "quince-setup", "quince-mysql" ],
-      name = Some "Setup mysql database"
+  , Task::{
+      name = Some "Setup mysql database",
+      tags = Some [ "quince-setup", "quince-mysql" ],
+      import_tasks = Some "quince-mysql.yml"
     }
-  , Item::{
-      import_tasks = "quince-backup.yml",
-      tags = [ "quince-backup", "quince-backup-script" ],
-      name = Some "Install backup script"
+  , Task::{
+      name = Some "Install backup script",
+      tags = Some [ "quince-backup", "quince-backup-script" ],
+      import_tasks = Some "quince-backup.yml"
     }
-  , Item::{ import_tasks = "quince-logging.yml", tags = [ "quince-logging" ] }
+  , Task::{ import_tasks = Some "quince-logging.yml", tags = Some [ "quince-logging" ] }
 ]

@@ -1,35 +1,46 @@
 -- Auto-generated from auth.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text })
-    , apt : Optional ({ name : Text })
-    , htpasswd : Optional ({ path : Text, name : Text, password : Text, crypt_scheme : Text })
-    , loop : Optional Text
-  }
-    , default =
-        { file = None ({ path : Text, state : Text })
-    , apt = None ({ name : Text })
-    , htpasswd = None ({ path : Text, name : Text, password : Text, crypt_scheme : Text })
-    , loop = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create auth directory",
-      file = Some { path = "{{ registry_htpasswd_file | dirname }}", state = "directory" }
+      name = Some "Create auth directory",
+      file = Some {
+        path = Some "{{ registry_htpasswd_file | dirname }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
-  , Task::{ name = "Install the passlib library", apt = Some { name = "python3-passlib" } }
+    }
   , Task::{
-      name = "Add basic auth users",
+      name = Some "Install the passlib library",
+      apt = Some {
+        name = Some [ "python3-passlib" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
+  , Task::{
+      name = Some "Add basic auth users",
       htpasswd = Some {
         path = "{{ registry_htpasswd_file }}"
       , name = "{{ item.name }}"
       , password = "{{ item.password }}"
-      , crypt_scheme = "bcrypt"
+      , crypt_scheme = Some "bcrypt"
+      , state = None Text
     },
-      loop = Some "{{ registry_users }}"
+      loop = Some [ "{{ registry_users }}" ]
     }
 ]

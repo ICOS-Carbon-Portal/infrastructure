@@ -1,34 +1,27 @@
 -- Auto-generated from add_fsd.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , name : Optional Text
-    , uri : Optional ({ url : Text })
-    , retries : Optional Natural
-    , copy : Optional ({ dest : Text, content : Text })
-  }
-    , default =
-        { import_tasks = None Text
-    , name = None Text
-    , uri = None ({ url : Text })
-    , retries = None Natural
-    , copy = None ({ dest : Text, content : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "assert_installed.yml" }
-  , Item::{
+    Task::{ import_tasks = Some "assert_installed.yml" }
+  , Task::{
       name = Some "Check that the metrics endpoint responds",
-      uri = Some { url = "http://{{ fsd_target }}/{{ fsd_path | default('/metrics') }}" },
+      uri = Some {
+        url = "http://{{ fsd_target }}/{{ fsd_path | default('/metrics') }}"
+      , return_content = None Bool
+      , method = None Text
+      , user = None Text
+      , password = None Text
+    },
       retries = Some 3
     }
-  , Item::{
+  , Task::{
       name = Some "Install scrape config",
       copy = Some {
-        dest = "{{ vmagent_fsd }}/{{ fsd_name }}.yaml"
-      , content = ''
+        src = None Text
+      , dest = "{{ vmagent_fsd }}/{{ fsd_name }}.yaml"
+      , mode = None Text
+      , content = Some ''
         # {{ fsd_name }}
         - targets:
           - {{ fsd_target }}
@@ -39,6 +32,11 @@ in  [
             host: {{ fsd_host }}
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
 ]

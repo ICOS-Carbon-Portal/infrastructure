@@ -51,8 +51,11 @@ in  [
           file = Some {
             path = "{{ typesense_home }}/docker/"
           , state = "directory"
-          , recurse = True
+          , recurse = Some True
           , owner = "{{ typesense_user }}"
+          , mode = None Text
+          , modification_time = None Text
+          , access_time = None Text
         },
           template = None ({ src : Text, dest : Text, owner : Text }),
           `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text }),
@@ -72,8 +75,11 @@ in  [
           file = Some {
             path = "{{ typesense_home }}/data/"
           , state = "directory"
-          , recurse = True
+          , recurse = Some True
           , owner = "{{ typesense_user }}"
+          , mode = None Text
+          , modification_time = None Text
+          , access_time = None Text
         },
           template = None ({ src : Text, dest : Text, owner : Text }),
           `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text }),
@@ -93,8 +99,11 @@ in  [
           file = Some {
             path = "{{ typesense_home }}/analytics/"
           , state = "directory"
-          , recurse = True
+          , recurse = Some True
           , owner = "{{ typesense_user }}"
+          , mode = None Text
+          , modification_time = None Text
+          , access_time = None Text
         },
           template = None ({ src : Text, dest : Text, owner : Text }),
           `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text }),
@@ -152,9 +161,14 @@ in  [
           `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text }),
           include_role = Some { name = "icos.nginxsite" },
           vars = Some {
-            nginxsite_name = "typesense"
-          , nginxsite_file = "typesense-nginx.conf"
-          , nginxsite_domains = [ "typesense.icos-cp.eu" ]
+            nginxsite_name = Some "typesense"
+          , nginxsite_file = Some "typesense-nginx.conf"
+          , nginxsite_domains = Some [ "typesense.icos-cp.eu" ]
+          , timer_user = None Text
+          , timer_home = None Text
+          , timer_name = None Text
+          , timer_conf = None Text
+          , timer_content = None Text
         },
           fail = None ({ msg : Text }),
           when = None Text,
@@ -414,14 +428,17 @@ in  [
           `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text }),
           include_role = Some { name = "icos.timer" },
           vars = Some {
-            timer_user = "{{ typesense_user }}"
-          , timer_home = "{{ typesense_home }}"
-          , timer_name = "typesense-update-{{ website }}"
-          , timer_conf = ''
+            nginxsite_name = None Text
+          , nginxsite_file = None Text
+          , nginxsite_domains = None (List Text)
+          , timer_user = Some "{{ typesense_user }}"
+          , timer_home = Some "{{ typesense_home }}"
+          , timer_name = Some "typesense-update-{{ website }}"
+          , timer_conf = Some ''
             OnCalendar=*-*-* 1/4:17:00
 
           ''
-          , timer_content = ''
+          , timer_content = Some ''
             #!/bin/bash
             cd {{ typesense_home }}/{{ website }}
             {{ typesense_home }}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1
@@ -456,7 +473,7 @@ in  [
           `ansible.builtin.template` = Some {
             src = "{{ item.src }}"
           , dest = "{{ typesense_home }}/{{ website }}"
-          , owner = "{{ typesense_user }}"
+          , owner = Some "{{ typesense_user }}"
         },
           loop = Some [
             { src = "update_synonyms.py" }
@@ -504,7 +521,7 @@ in  [
           `ansible.builtin.template` = Some {
             src = "{{ item.src }}"
           , dest = "{{ typesense_home }}/{{ website }}"
-          , owner = "{{ typesense_user }}"
+          , owner = Some "{{ typesense_user }}"
         },
           loop = Some [
             { src = "update_documents.py" }

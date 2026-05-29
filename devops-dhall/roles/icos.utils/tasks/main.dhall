@@ -1,33 +1,16 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , tags : Optional Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , template : Optional ({ src : Text, dest : Text, mode : Natural })
-    , loop : Optional (List Text)
-    , apt : Optional ({ update_cache : Bool, name : List Text })
-    , import_tasks : Optional Text
-  }
-    , default =
-        { name = None Text
-    , tags = None Text
-    , copy = None ({ dest : Text, content : Text })
-    , template = None ({ src : Text, dest : Text, mode : Natural })
-    , loop = None (List Text)
-    , apt = None ({ update_cache : Bool, name : List Text })
-    , import_tasks = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Create common aliases",
-      tags = Some "alias",
+      tags = Some [ "alias" ],
       copy = Some {
-        dest = "/etc/profile.d/aliases.sh"
-      , content = ''
+        src = None Text
+      , dest = "/etc/profile.d/aliases.sh"
+      , mode = None Text
+      , content = Some ''
         alias sc=systemctl
         alias jc=journalctl
         alias df='df -h -x tmpfs -x overlay -x devtmpfs'
@@ -35,19 +18,34 @@ in  [
         alias psc='ps xawf -eo pid,user,cgroup,args'
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Copy utilities",
-      tags = Some "utils_copy",
-      template = Some { src = "{{ item }}", dest = "/usr/local/sbin/{{ item }}", mode = 493 },
+      tags = Some [ "utils_copy" ],
+      template = Some {
+        src = "{{ item }}"
+      , dest = "/usr/local/sbin/{{ item }}"
+      , mode = Some "493"
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
       loop = Some [ "retrieve-original", "iptables-remove-duplicates", "ss", "ssh-merge-config" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Install utilities",
       apt = Some {
-        update_cache = True
-      , name = [
+        name = Some [
           "mg"
         , "htop"
         , "jq"
@@ -59,13 +57,22 @@ in  [
         , "mutt"
         , "unzip"
       ]
+      , state = None Text
+      , update_cache = Some True
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
     }
     }
-  , Item::{ tags = Some "ripgrep", import_tasks = Some "ripgrep.yml" }
-  , Item::{ tags = Some "ncdu", import_tasks = Some "ncdu.yml" }
-  , Item::{ tags = Some "fd", import_tasks = Some "fd.yml" }
-  , Item::{ tags = Some "watchexec", import_tasks = Some "watchexec.yml" }
-  , Item::{ tags = Some "btop", import_tasks = Some "btop.yml" }
-  , Item::{ tags = Some "trippy", import_tasks = Some "trippy.yml" }
-  , Item::{ tags = Some "lazygit", import_tasks = Some "lazygit.yml" }
+  , Task::{ import_tasks = Some "ripgrep.yml", tags = Some [ "ripgrep" ] }
+  , Task::{ import_tasks = Some "ncdu.yml", tags = Some [ "ncdu" ] }
+  , Task::{ import_tasks = Some "fd.yml", tags = Some [ "fd" ] }
+  , Task::{ import_tasks = Some "watchexec.yml", tags = Some [ "watchexec" ] }
+  , Task::{ import_tasks = Some "btop.yml", tags = Some [ "btop" ] }
+  , Task::{ import_tasks = Some "trippy.yml", tags = Some [ "trippy" ] }
+  , Task::{ import_tasks = Some "lazygit.yml", tags = Some [ "lazygit" ] }
 ]

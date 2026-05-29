@@ -1,27 +1,35 @@
 -- Auto-generated from remove.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ state : Text, name : List Text })
-    , file : Optional ({ name : Text, state : Text })
-  }
-    , default =
-        { apt = None ({ state : Text, name : List Text })
-    , file = None ({ name : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Uninstall podman",
+      name = Some "Uninstall podman",
       apt = Some {
-        state = "absent"
-      , name = [ "podman", "podman-plugins", "netavark", "containernetworking-plugins" ]
+        name = Some [ "podman", "podman-plugins", "netavark", "containernetworking-plugins" ]
+      , state = Some "absent"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
     }
     }
   , Task::{
-      name = "Remove kubic key",
-      file = Some { name = "/etc/apt/trusted.gpg.d/kubic.asc", state = "absent" }
+      name = Some "Remove kubic key",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/etc/apt/trusted.gpg.d/kubic.asc"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
 ]

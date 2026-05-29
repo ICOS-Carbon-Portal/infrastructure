@@ -1,10 +1,12 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "setup.yml", tags = "stiltcluster_setup" }
-  , {
-      import_tasks = "config.yml"
-    , tags = [ "stiltcluster_config", "stiltcluster_deploy" ]
-  }
-  , { import_tasks = "deploy.yml", tags = "stiltcluster_deploy" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "stiltcluster_setup" ] }
+  , Task::{
+      import_tasks = Some "config.yml",
+      tags = Some [ "stiltcluster_config", "stiltcluster_deploy" ]
+    }
+  , Task::{ import_tasks = Some "deploy.yml", tags = Some [ "stiltcluster_deploy" ] }
 ]

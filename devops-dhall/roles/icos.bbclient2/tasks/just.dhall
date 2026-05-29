@@ -1,30 +1,35 @@
 -- Auto-generated from just.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , template : Optional ({ src : Text, dest : Text, variable_start_string : Text, variable_end_string : Text, lstrip_blocks : Bool })
-    , copy : Optional ({ src : Text, dest : Text, mode : Text })
-  }
-    , default =
-        { template = None ({ src : Text, dest : Text, variable_start_string : Text, variable_end_string : Text, lstrip_blocks : Bool })
-    , copy = None ({ src : Text, dest : Text, mode : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Copy justfile",
+      name = Some "Copy justfile",
       template = Some {
         src = "justfile"
       , dest = "{{ bbclient_home }}/"
-      , variable_start_string = "{{ '{{{{' }}"
-      , variable_end_string = "{{ '}}}}' }}"
-      , lstrip_blocks = True
+      , mode = None Text
+      , variable_start_string = Some "{{ '{{{{' }}"
+      , variable_end_string = Some "{{ '}}}}' }}"
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
     }
   , Task::{
-      name = "Copy systemd-wide justfile",
-      copy = Some { src = "ops-bbclient", dest = "/usr/local/bin/", mode = "+x" }
+      name = Some "Copy systemd-wide justfile",
+      copy = Some {
+        src = Some "ops-bbclient"
+      , dest = "/usr/local/bin/"
+      , mode = Some "+x"
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    }
     }
 ]

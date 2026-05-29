@@ -1,32 +1,48 @@
 -- Auto-generated from main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text })
-    , lineinfile : Optional ({ path : Text, regexp : Text, line : Text, state : Text })
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text })
-  }
-    , default =
-        { apt = None ({ name : List Text })
-    , lineinfile = None ({ path : Text, regexp : Text, line : Text, state : Text })
-    , systemd = None ({ name : Text, enabled : Bool, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install sysstat", apt = Some { name = [ "sysstat" ] } }
+    Task::{
+      name = Some "Install sysstat",
+      apt = Some {
+        name = Some [ "sysstat" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
   , Task::{
-      name = "Enable sysstat",
+      name = Some "Enable sysstat",
       lineinfile = Some {
         path = "/etc/default/sysstat"
-      , regexp = "^ENABLED="
-      , line = "ENABLED=\"true\""
-      , state = "present"
+      , line = Some "ENABLED=\"true\""
+      , state = Some "present"
+      , regex = None Text
+      , regexp = Some "^ENABLED="
+      , create = None Bool
+      , owner = None Text
+      , group = None Text
+      , insertafter = None Text
+      , mode = None Natural
+      , insertbefore = None Text
     }
     }
   , Task::{
-      name = "Start sysstat service",
-      systemd = Some { name = "sysstat", enabled = True, state = "started" }
+      name = Some "Start sysstat service",
+      systemd = Some {
+        name = Some "sysstat"
+      , state = Some "started"
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
     }
 ]

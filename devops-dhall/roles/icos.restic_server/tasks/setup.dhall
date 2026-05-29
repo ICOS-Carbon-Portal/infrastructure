@@ -1,53 +1,80 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text, owner : Optional Text, group : Optional Text })
-    , user : Optional ({ name : Text, home : Text, shell : Text, system : Bool })
-    , apt : Optional ({ name : Text, state : Optional Text })
-  }
-    , default =
-        { file = None ({ path : Text, state : Text, owner : Optional Text, group : Optional Text })
-    , user = None ({ name : Text, home : Text, shell : Text, system : Bool })
-    , apt = None ({ name : Text, state : Optional Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create restic_server directory",
+      name = Some "Create restic_server directory",
       file = Some {
-        path = "{{ restic_server_exec | dirname }}"
-      , state = "directory"
+        path = Some "{{ restic_server_exec | dirname }}"
+      , state = Some "directory"
+      , mode = None Text
       , owner = None Text
       , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
   , Task::{
-      name = "Create restic user",
+      name = Some "Create restic user",
       user = Some {
         name = "{{ restic_server_user }}"
-      , home = "{{ restic_server_data }}"
-      , shell = "/usr/sbin/nologin"
-      , system = True
+      , home = Some "{{ restic_server_data }}"
+      , create_home = None Text
+      , shell = Some "/usr/sbin/nologin"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = Some True
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
     }
     }
   , Task::{
-      name = "Create restic data directory",
+      name = Some "Create restic data directory",
       file = Some {
-        path = "{{ restic_server_data }}"
-      , state = "directory"
+        path = Some "{{ restic_server_data }}"
+      , state = Some "directory"
+      , mode = None Text
       , owner = Some "{{ restic_server_user }}"
       , group = Some "{{ restic_server_user }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
   , Task::{
-      name = "Install the passlib library",
-      apt = Some { name = "python3-passlib", state = None Text }
+      name = Some "Install the passlib library",
+      apt = Some {
+        name = Some [ "python3-passlib" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Install apache2-utils",
-      apt = Some { name = "apache2-utils", state = Some "present" }
+      name = Some "Install apache2-utils",
+      apt = Some {
+        name = Some [ "apache2-utils" ]
+      , state = Some "present"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
 ]

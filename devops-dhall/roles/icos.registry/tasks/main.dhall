@@ -1,39 +1,42 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Optional Text
-    , name : Optional Text
-    , template : Optional ({ src : Text, dest : Text })
-    , shell : Optional Text
-    , args : Optional ({ chdir : Text, creates : Text })
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text })
-  }
-    , default =
-        { import_tasks = None Text
-    , tags = None Text
-    , name = None Text
-    , template = None ({ src : Text, dest : Text })
-    , shell = None Text
-    , args = None ({ chdir : Text, creates : Text })
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "auth.yml", tags = Some "registry_auth" }
-  , Item::{
+    Task::{ import_tasks = Some "auth.yml", tags = Some [ "registry_auth" ] }
+  , Task::{
       name = Some "Copy docker-compose.yml",
-      template = Some { src = "docker-compose.yml", dest = "{{ registry_home }}/" }
+      template = Some {
+        src = "docker-compose.yml"
+      , dest = "{{ registry_home }}/"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Create http secret",
       shell = Some "openssl rand -hex 20 | awk '{ print \"REGISTRY_HTTP_SECRET=\" $1 }' > .env",
-      args = Some { chdir = "{{ registry_home }}", creates = ".env" }
+      args = Some {
+        creates = Some ".env"
+      , chdir = Some "{{ registry_home }}"
+      , executable = None Text
+      , removes = None Text
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Start Build and start containers",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ registry_home }}" }
+      `community.docker.docker_compose_v2` = Some {
+        project_src = "{{ registry_home }}"
+      , state = None Text
+      , pull = None Text
+      , services = None (List Text)
+      , build = None Text
+    }
     }
 ]

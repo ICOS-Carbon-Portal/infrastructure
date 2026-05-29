@@ -1,40 +1,39 @@
 -- Auto-generated from certbot_fake.yml
 
-let Item =
-    { Type =
-        { include_vars : Optional Text
-    , name : Optional Text
-    , command : Optional Text
-    , args : Optional ({ creates : Text })
-    , set_fact : Optional ({ certbot_nginx_conf : Text })
-  }
-    , default =
-        { include_vars = None Text
-    , name = None Text
-    , command = None Text
-    , args = None ({ creates : Text })
-    , set_fact = None ({ certbot_nginx_conf : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ include_vars = Some "vars/{{ ansible_distribution | lower }}.yml" }
-  , Item::{
+    Task::{ include_vars = Some "vars/{{ ansible_distribution | lower }}.yml" }
+  , Task::{
       name = Some "Create self-signed certificate",
       command = Some ''
       openssl req -x509 -nodes -subj '/CN={{ certbot_fake_cn }}' -days 365 -newkey rsa:4096 -sha256 -keyout {{ certbot_fake_key }} -out {{ certbot_fake_crt }}
 
     '',
-      args = Some { creates = "{{ certbot_fake_crt }}" }
+      args = Some {
+        creates = Some "{{ certbot_fake_crt }}"
+      , chdir = None Text
+      , executable = None Text
+      , removes = None Text
     }
-  , Item::{
+    }
+  , Task::{
       name = Some "Create nginx config string",
       set_fact = Some {
-        certbot_nginx_conf = ''
+        certbot_nginx_conf = Some ''
         ssl_certificate {{ certbot_fake_crt }};
         ssl_certificate_key {{ certbot_fake_key}};
 
       ''
+      , destjarfile = None Text
+      , name = None Text
+      , nebula_resolve_type = None Text
+      , cacheable = None Bool
+      , nebula_ssh_public = None Text
+      , quince_tomcat_dir = None Text
+      , sshlogin_src_user = None Text
+      , sshlogin_dst_user = None Text
+      , _wg_is_installed = None Natural
     }
     }
 ]

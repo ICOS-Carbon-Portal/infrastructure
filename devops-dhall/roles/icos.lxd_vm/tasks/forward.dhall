@@ -1,51 +1,96 @@
 -- Auto-generated from forward.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , include_role : Optional ({ name : Text })
-    , vars : Optional ({ lxd_forward_name : Text, lxd_forward_ip : Text, lxd_forward_port : Text })
-    , delegate_to : Optional Text
-    , known_hosts : Optional ({ name : Text, key : Text })
-    , local_action : Optional ({ module : Text, ssh_config_file : Text, hostname : Text, remote_user : Text, host : Text, port : Text, state : Text })
-  }
-    , default =
-        { include_role = None ({ name : Text })
-    , vars = None ({ lxd_forward_name : Text, lxd_forward_ip : Text, lxd_forward_port : Text })
-    , delegate_to = None Text
-    , known_hosts = None ({ name : Text, key : Text })
-    , local_action = None ({ module : Text, ssh_config_file : Text, hostname : Text, remote_user : Text, host : Text, port : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Forward ssh port and create /etc/hosts entry",
-      include_role = Some { name = "icos.lxd_forward" },
+    Task::{
+      name = Some "Forward ssh port and create /etc/hosts entry",
+      include_role = Some {
+        name = "icos.lxd_forward"
+      , apply = None ({ tags : Text })
+      , public = None Bool
+      , tasks_from = None Text
+    },
       vars = Some {
-        lxd_forward_name = "{{ lxd_vm_name }}"
-      , lxd_forward_ip = "{{ lxd_vm_ip }}"
-      , lxd_forward_port = "{{ lxd_vm_port }}"
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = None Text
+      , lxd_forward_name = Some "{{ lxd_vm_name }}"
+      , lxd_forward_ip = Some "{{ lxd_vm_ip }}"
+      , lxd_forward_port = Some "{{ lxd_vm_port }}"
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
     }
     }
-  , Entry::{
-      name = "Add local known_host",
+  , Task::{
+      name = Some "Add local known_host",
       delegate_to = Some "localhost",
       known_hosts = Some {
         name = "[{{ inventory_hostname }}]:{{ lxd_vm_port }}"
       , key = "[{{ inventory_hostname }}]:{{ lxd_vm_port }} {{ _key.stdout}}"
     }
     }
-  , Entry::{
-      name = "Add vm to local ssh config",
+  , Task::{
+      name = Some "Add vm to local ssh config",
       local_action = Some {
         module = "community.general.ssh_config"
-      , ssh_config_file = "~{{ lookup('env', 'USER') }}/.ssh/config.icos"
-      , hostname = "{{ inventory_hostname }}"
-      , remote_user = "root"
-      , host = "{{ lxd_vm_name }}"
-      , port = "{{ lxd_vm_port }}"
+      , ssh_config_file = Some "~{{ lookup('env', 'USER') }}/.ssh/config.icos"
+      , hostname = Some "{{ inventory_hostname }}"
+      , remote_user = Some "root"
+      , host = Some "{{ lxd_vm_name }}"
+      , port = Some "{{ lxd_vm_port }}"
       , state = "present"
+      , name = None Text
     }
     }
 ]

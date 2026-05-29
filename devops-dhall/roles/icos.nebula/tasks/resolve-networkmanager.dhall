@@ -1,35 +1,23 @@
 -- Auto-generated from resolve-networkmanager.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , systemd : Optional ({ name : Text })
-    , register : Optional Text
-    , when : Optional Text
-    , fail : Optional ({ msg : Text })
-    , import_tasks : Optional Text
-    , notify : Optional Text
-  }
-    , default =
-        { name = None Text
-    , systemd = None ({ name : Text })
-    , register = None Text
-    , when = None Text
-    , fail = None ({ msg : Text })
-    , import_tasks = None Text
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Query systemd for systemd-networkd",
-      systemd = Some { name = "systemd-networkd" },
+      systemd = Some {
+        name = Some "systemd-networkd"
+      , state = None Text
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    },
       register = Some "_networkd"
     }
-  , Item::{
+  , Task::{
+      when = Some [ "_networkd.status.ActiveState == \"active\"" ],
       name = Some "Warn about NetworkManage+systemd-networkd",
-      when = Some "_networkd.status.ActiveState == \"active\"",
       fail = Some {
         msg = ''
         We're not setup for provisioning NetworkManager+systemd-networkd
@@ -37,5 +25,5 @@ in  [
       ''
     }
     }
-  , Item::{ import_tasks = Some "resolve-dnsmasq.yml", notify = Some "restart NetworkManager" }
+  , Task::{ import_tasks = Some "resolve-dnsmasq.yml", notify = Some [ "restart NetworkManager" ] }
 ]

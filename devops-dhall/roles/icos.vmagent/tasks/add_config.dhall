@@ -1,28 +1,22 @@
 -- Auto-generated from add_config.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , name : Optional Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , notify : Optional Text
-  }
-    , default =
-        { import_tasks = None Text
-    , name = None Text
-    , copy = None ({ dest : Text, content : Text })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "assert_installed.yml" }
-  , Item::{
+    Task::{ import_tasks = Some "assert_installed.yml" }
+  , Task::{
       name = Some "Add a vmagent scrape config",
       copy = Some {
-        dest = "{{ vmagent_configs }}/{{ vmagent_config_dest }}"
-      , content = "{{ vmagent_config_content }}"
+        src = None Text
+      , dest = "{{ vmagent_configs }}/{{ vmagent_config_dest }}"
+      , mode = None Text
+      , content = Some "{{ vmagent_config_content }}"
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "reload vmagent"
+      notify = Some [ "reload vmagent" ]
     }
 ]

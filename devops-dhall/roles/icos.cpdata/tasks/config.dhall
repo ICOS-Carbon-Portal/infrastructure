@@ -1,25 +1,15 @@
 -- Auto-generated from config.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , register : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, `daemon-reload` : Text, state : Text })
-  }
-    , default =
-        { copy = None ({ dest : Text, content : Text })
-    , register = None Text
-    , systemd = None ({ name : Text, enabled : Bool, `daemon-reload` : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create application.conf",
+      name = Some "Create application.conf",
       copy = Some {
-        dest = "{{ cpdata_home }}/application.conf"
-      , content = ''
+        src = None Text
+      , dest = "{{ cpdata_home }}/application.conf"
+      , mode = None Text
+      , content = Some ''
         {% for item in cpdata_config_files %}
         # {{ item }}
         {{ lookup('template', item) }}
@@ -27,16 +17,23 @@ in  [
         {% endfor %}
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
       register = Some "_config"
     }
   , Task::{
-      name = "Start/restart service",
+      name = Some "Start/restart service",
       systemd = Some {
-        name = "cpdata.service"
-      , enabled = True
-      , `daemon-reload` = "{{ 'yes' if _service.changed | default(false) else 'no' }}"
-      , state = "{{ 'restarted' if _jarfile.changed | default(false) or _config.changed else 'started' }}"
+        name = Some "cpdata.service"
+      , state = Some "{{ 'restarted' if _jarfile.changed | default(false) or _config.changed else 'started' }}"
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = Some "{{ 'yes' if _service.changed | default(false) else 'no' }}"
+      , status = None Text
     }
     }
 ]

@@ -1,8 +1,17 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "reload script-exporter"
-    , systemd = { name = "script-exporter", state = "reloaded" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "reload script-exporter",
+      systemd = Some {
+        name = Some "script-exporter"
+      , state = Some "reloaded"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
 ]

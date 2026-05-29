@@ -1,40 +1,43 @@
 -- Auto-generated from script.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text })
-    , copy : Optional ({ src : Optional Text, dest : Text, mode : Text, content : Optional Text })
-    , register : Optional Text
-  }
-    , default =
-        { file = None ({ path : Text, state : Text })
-    , copy = None ({ src : Optional Text, dest : Text, mode : Text, content : Optional Text })
-    , register = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create {{ flexextract_bin_dir }} directory",
-      file = Some { path = "{{ flexextract_bin_dir }}", state = "directory" }
+      name = Some "Create {{ flexextract_bin_dir }} directory",
+      file = Some {
+        path = Some "{{ flexextract_bin_dir }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Copy flexextract script",
+      name = Some "Copy flexextract script",
       copy = Some {
         src = Some "flexextract.sh"
       , dest = "{{ flexextract_bin_dir }}/"
-      , mode = "-x"
+      , mode = Some "-x"
       , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
       register = Some "_script"
     }
   , Task::{
-      name = "Create flexextract wrapper",
+      name = Some "Create flexextract wrapper",
       copy = Some {
         src = None Text
       , dest = "{{ flexextract_bin_dir }}/flexextract"
-      , mode = "+x"
+      , mode = Some "+x"
       , content = Some ''
         #!/bin/bash
         TAG="{{ flexextract_tag }}"
@@ -43,6 +46,11 @@ in  [
         source "{{ _script.dest }}"
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
 ]

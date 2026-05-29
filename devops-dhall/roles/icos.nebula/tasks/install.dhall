@@ -1,87 +1,82 @@
 -- Auto-generated from install.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text })
-    , user : Optional ({ name : Text, shell : Text, system : Bool, create_home : Bool })
-    , file : Optional ({ path : Text, owner : Text, group : Text, state : Text, mode : Natural })
-    , stat : Optional ({ path : Text })
-    , register : Optional Text
-    , include_tasks : Optional Text
-    , when : Optional Text
-    , shell : Optional Text
-    , changed_when : Optional Bool
-    , loop : Optional (List Text)
-    , run_once : Optional Bool
-    , debug : Optional ({ msg : Text })
-  }
-    , default =
-        { apt = None ({ name : List Text })
-    , user = None ({ name : Text, shell : Text, system : Bool, create_home : Bool })
-    , file = None ({ path : Text, owner : Text, group : Text, state : Text, mode : Natural })
-    , stat = None ({ path : Text })
-    , register = None Text
-    , include_tasks = None Text
-    , when = None Text
-    , shell = None Text
-    , changed_when = None Bool
-    , loop = None (List Text)
-    , run_once = None Bool
-    , debug = None ({ msg : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install packages", apt = Some { name = [ "jq" ] } }
+    Task::{
+      name = Some "Install packages",
+      apt = Some {
+        name = Some [ "jq" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
   , Task::{
-      name = "Create nebula user",
+      name = Some "Create nebula user",
       user = Some {
         name = "{{ nebula_user }}"
-      , shell = "/usr/sbin/nologin"
-      , system = True
-      , create_home = False
+      , home = None Text
+      , create_home = Some "False"
+      , shell = Some "/usr/sbin/nologin"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = Some True
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
     }
     }
   , Task::{
-      name = "Create etc directory",
+      name = Some "Create etc directory",
       file = Some {
-        path = "{{ nebula_etc_dir }}"
-      , owner = "{{ nebula_user }}"
-      , group = "{{ nebula_user }}"
-      , state = "directory"
-      , mode = 448
+        path = Some "{{ nebula_etc_dir }}"
+      , state = Some "directory"
+      , mode = Some "448"
+      , owner = Some "{{ nebula_user }}"
+      , group = Some "{{ nebula_user }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
   , Task::{
-      name = "Check whether nebula is already installed",
+      name = Some "Check whether nebula is already installed",
       stat = Some { path = "{{ nebula_bin_dir }}/nebula" },
       register = Some "_r"
     }
   , Task::{
-      name = "Download and unpack nebula",
+      name = Some "Download and unpack nebula",
       include_tasks = Some "download.yml",
-      when = Some "not _r.stat.exists or nebula_upgrade"
+      when = Some [ "not _r.stat.exists or nebula_upgrade" ]
     }
   , Task::{
-      name = "Check that nebula runs",
-      register = Some "version",
+      name = Some "Check that nebula runs",
       shell = Some ''
       {{ nebula_bin_dir }}/{{ item }} -version
 
     '',
-      changed_when = Some False,
+      changed_when = Some "False",
+      register = Some "version",
       loop = Some [ "nebula", "nebula-cert" ]
     }
   , Task::{
-      name = "Inform about installed version",
-      when = Some "not ansible_check_mode",
+      name = Some "Inform about installed version",
       run_once = Some True,
       debug = Some {
         msg = ''
         We've installed nebula {{ version.results[0].stdout_lines[0] }}
 
       ''
-    }
+    },
+      when = Some [ "not ansible_check_mode" ]
     }
 ]

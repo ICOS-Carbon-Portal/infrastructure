@@ -1,34 +1,32 @@
 -- Auto-generated from main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : Text })
-    , sysctl : Optional ({ name : Text, value : Text })
-    , iptables_raw : Optional ({ name : Text, weight : Optional Natural, rules : Text })
-  }
-    , default =
-        { apt = None ({ name : Text })
-    , sysctl = None ({ name : Text, value : Text })
-    , iptables_raw = None ({ name : Text, weight : Optional Natural, rules : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Install the iptables-persistent package",
-      apt = Some { name = "iptables-persistent" }
+      name = Some "Install the iptables-persistent package",
+      apt = Some {
+        name = Some [ "iptables-persistent" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Set IP forwarding",
+      name = Some "Set IP forwarding",
       sysctl = Some { name = "net.ipv4.ip_forward", value = "{{ iptables_forward | int }}" }
     }
   , Task::{
-      name = "Setup default iptables rules",
+      name = Some "Setup default iptables rules",
       iptables_raw = Some {
         name = "iptables_default"
-      , weight = Some 10
-      , rules = ''
+      , rules = Some ''
         # allow all on loopback
         -A INPUT -i lo -j ACCEPT
         -A OUTPUT -o lo -j ACCEPT
@@ -68,14 +66,19 @@ in  [
         -P FORWARD DROP
 
       ''
+      , weight = Some 10
+      , table = None Text
+      , state = None Text
     }
     }
   , Task::{
-      name = "Allow ssh through firewall",
+      name = Some "Allow ssh through firewall",
       iptables_raw = Some {
         name = "allow_ssh"
+      , rules = Some "-A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT -m comment --comment 'ssh'"
       , weight = None Natural
-      , rules = "-A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT -m comment --comment 'ssh'"
+      , table = None Text
+      , state = None Text
     }
     }
 ]

@@ -1,11 +1,13 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "reload nginx config"
-    , shell = ''
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "reload nginx config",
+      shell = Some ''
       nginx -t && systemctl reload nginx
 
     ''
-  }
+    }
 ]

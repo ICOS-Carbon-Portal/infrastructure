@@ -1,41 +1,20 @@
 -- Auto-generated from certbot_generate_live.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , stat : Optional ({ path : Text })
-    , register : Optional Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , when : Optional Text
-    , service : Optional ({ name : Text, state : Text })
-    , command : Optional Text
-    , changed_when : Optional Text
-    , set_fact : Optional ({ certbot_nginx_conf : Text })
-  }
-    , default =
-        { stat = None ({ path : Text })
-    , register = None Text
-    , copy = None ({ dest : Text, content : Text })
-    , when = None Text
-    , service = None ({ name : Text, state : Text })
-    , command = None Text
-    , changed_when = None Text
-    , set_fact = None ({ certbot_nginx_conf : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Check if {{ certbot_conf_name }} exists",
+      name = Some "Check if {{ certbot_conf_name }} exists",
       stat = Some { path = "{{ certbot_conf_path }}" },
       register = Some "_conf_file"
     }
   , Task::{
-      name = "Create an initial nginx {{ certbot_conf_name }} for the certbot certification",
-      register = Some "_write_conf",
+      name = Some "Create an initial nginx {{ certbot_conf_name }} for the certbot certification",
       copy = Some {
-        dest = "{{ certbot_conf_path }}"
-      , content = ''
+        src = None Text
+      , dest = "{{ certbot_conf_path }}"
+      , mode = None Text
+      , content = Some ''
         server {
           listen 80;
           server_name {% for domain in certbot_domains %} {{ domain }}{% endfor %};
@@ -46,31 +25,46 @@ in  [
         }
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      when = Some "not _conf_file.stat.exists"
+      register = Some "_write_conf",
+      when = Some [ "not _conf_file.stat.exists" ]
     }
   , Task::{
-      name = "Reload nginx",
-      when = Some "_write_conf.changed",
-      service = Some { name = "nginx", state = "reloaded" }
+      name = Some "Reload nginx",
+      service = Some { name = "nginx", state = "reloaded", enabled = None Bool },
+      when = Some [ "_write_conf.changed" ]
     }
   , Task::{
-      name = "Install SSL certificate",
-      register = Some "o",
+      name = Some "Install SSL certificate",
       command = Some ''
       {{ certbot_bin }} certonly --authenticator nginx --non-interactive {% for domain in certbot_domains %} --domain {{ domain }} {% endfor %} --email {{ certbot_email }} --agree-tos --expand
 
     '',
+      register = Some "o",
       changed_when = Some "\"Certificate not yet due for renewal; no action taken.\" not in o.stdout"
     }
   , Task::{
-      name = "Set nginx config variable",
+      name = Some "Set nginx config variable",
       set_fact = Some {
-        certbot_nginx_conf = ''
+        certbot_nginx_conf = Some ''
         ssl_certificate {{ certbot_live_crt }};
         ssl_certificate_key {{ certbot_live_key }};
 
       ''
+      , destjarfile = None Text
+      , name = None Text
+      , nebula_resolve_type = None Text
+      , cacheable = None Bool
+      , nebula_ssh_public = None Text
+      , quince_tomcat_dir = None Text
+      , sshlogin_src_user = None Text
+      , sshlogin_dst_user = None Text
+      , _wg_is_installed = None Natural
     }
     }
 ]

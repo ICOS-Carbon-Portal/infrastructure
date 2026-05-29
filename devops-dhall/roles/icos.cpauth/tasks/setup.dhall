@@ -1,24 +1,36 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , user : Optional ({ name : Text, home : Text, shell : Text })
-    , copy : Optional ({ src : Text, dest : Text, owner : Text })
-  }
-    , default =
-        { user = None ({ name : Text, home : Text, shell : Text })
-    , copy = None ({ src : Text, dest : Text, owner : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create cpauth user",
-      user = Some { name = "{{ cpauth_user }}", home = "{{ cpauth_home }}", shell = "/bin/bash" }
+      name = Some "Create cpauth user",
+      user = Some {
+        name = "{{ cpauth_user }}"
+      , home = Some "{{ cpauth_home }}"
+      , create_home = None Text
+      , shell = Some "/bin/bash"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
+    }
     }
   , Task::{
-      name = "Copy keys",
-      copy = Some { src = "privateKeys", dest = "{{ cpauth_home }}", owner = "{{ cpauth_user }}" }
+      name = Some "Copy keys",
+      copy = Some {
+        src = Some "privateKeys"
+      , dest = "{{ cpauth_home }}"
+      , mode = None Text
+      , content = None Text
+      , backup = None Bool
+      , owner = Some "{{ cpauth_user }}"
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    }
     }
 ]

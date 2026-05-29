@@ -1,21 +1,12 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Text
-    , tags : Text
-    , when : Optional Text
-  }
-    , default =
-        { when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = "setup.yml", tags = "cpdata_setup" }
-  , Item::{
-      import_tasks = "deploy.yml",
-      tags = "cpdata_deploy",
-      when = Some "cpdata_jar_file is defined"
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "cpdata_setup" ] }
+  , Task::{
+      import_tasks = Some "deploy.yml",
+      tags = Some [ "cpdata_deploy" ],
+      when = Some [ "cpdata_jar_file is defined" ]
     }
 ]

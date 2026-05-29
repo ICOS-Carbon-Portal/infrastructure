@@ -29,7 +29,7 @@ let Task =
 in  [
     Task::{
       name = "Create project directory",
-      file = Some { path = "{{ project_dir }}", state = "directory" }
+      file = Some "path={{ project_dir }} state=directory"
     }
   , Task::{
       name = "Pull source code from git",

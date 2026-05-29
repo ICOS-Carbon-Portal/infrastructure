@@ -1,57 +1,49 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ update_cache : Bool, name : Optional (List Text), upgrade : Optional Bool, autoclean : Optional Bool, autoremove : Optional Bool })
-    , notify : Optional Text
-    , timezone : Optional ({ name : Text })
-    , locale_gen : Optional ({ name : Text, state : Text })
-    , loop : Optional (List Text)
-    , when : Optional Text
-  }
-    , default =
-        { apt = None ({ update_cache : Bool, name : Optional (List Text), upgrade : Optional Bool, autoclean : Optional Bool, autoremove : Optional Bool })
-    , notify = None Text
-    , timezone = None ({ name : Text })
-    , locale_gen = None ({ name : Text, state : Text })
-    , loop = None (List Text)
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Install qemu-guest-agent",
+      name = Some "Install qemu-guest-agent",
       apt = Some {
-        update_cache = True
-      , name = Some [ "qemu-guest-agent" ]
+        name = Some [ "qemu-guest-agent" ]
+      , state = None Text
+      , update_cache = Some True
+      , deb = None Text
+      , purge = None Bool
       , upgrade = None Bool
       , autoclean = None Bool
       , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
     },
-      notify = Some "reboot"
+      notify = Some [ "reboot" ]
     }
   , Task::{
-      name = "Set timezone to Europe/Stockholm",
-      notify = Some "restart cron",
-      timezone = Some { name = "Europe/Stockholm" }
+      name = Some "Set timezone to Europe/Stockholm",
+      timezone = Some { name = "Europe/Stockholm" },
+      notify = Some [ "restart cron" ]
     }
   , Task::{
-      name = "Generate locale",
+      name = Some "Generate locale",
       locale_gen = Some { name = "{{ item }}", state = "present" },
       loop = Some [ "en_US.UTF-8", "sv_SE.UTF-8" ]
     }
   , Task::{
-      name = "Upgrade everything",
+      name = Some "Upgrade everything",
       apt = Some {
-        update_cache = True
-      , name = None (List Text)
+        name = None (List Text)
+      , state = None Text
+      , update_cache = Some True
+      , deb = None Text
+      , purge = None Bool
       , upgrade = Some True
       , autoclean = Some True
       , autoremove = Some True
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
     },
-      notify = Some "reboot",
-      when = Some "upgrade_everything"
+      when = Some [ "upgrade_everything" ],
+      notify = Some [ "reboot" ]
     }
 ]

@@ -1,7 +1,9 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "install.yml", tags = "zrepl_install" }
-  , { import_tasks = "just.yml", tags = "zrepl_just" }
-  , { import_tasks = "config.yml", tags = "zrepl_config" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "install.yml", tags = Some [ "zrepl_install" ] }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "zrepl_just" ] }
+  , Task::{ import_tasks = Some "config.yml", tags = Some [ "zrepl_config" ] }
 ]

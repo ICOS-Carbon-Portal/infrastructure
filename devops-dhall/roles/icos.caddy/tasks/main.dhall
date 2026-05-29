@@ -5,7 +5,7 @@ let Item =
         { import_tasks : Optional Text
     , tags : Optional Text
     , name : Optional Text
-    , include_tasks : Optional Text
+    , include_tasks : Optional ({ file : Text, apply : { tags : Text } })
     , when : Optional Text
     , `ansible.builtin.shell` : Optional Text
     , changed_when : Optional Bool
@@ -14,7 +14,7 @@ let Item =
         { import_tasks = None Text
     , tags = None Text
     , name = None Text
-    , include_tasks = None Text
+    , include_tasks = None ({ file : Text, apply : { tags : Text } })
     , when = None Text
     , `ansible.builtin.shell` = None Text
     , changed_when = None Bool

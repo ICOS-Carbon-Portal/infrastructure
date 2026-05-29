@@ -1,45 +1,16 @@
 -- Auto-generated from flexextract.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , tags : Optional Text
-    , synchronize : Optional ({ src : Text, dest : Text })
-    , shell : Optional Text
-    , args : Optional ({ chdir : Text, executable : Text })
-    , register : Optional Text
-    , changed_when : Optional Text
-    , when : Optional Text
-    , become : Optional Bool
-    , become_user : Optional Text
-    , file : Optional ({ path : Optional Text, state : Text, owner : Optional Text, group : Optional Text, dest : Optional Text, src : Optional Text })
-    , import_tasks : Optional Text
-  }
-    , default =
-        { name = None Text
-    , tags = None Text
-    , synchronize = None ({ src : Text, dest : Text })
-    , shell = None Text
-    , args = None ({ chdir : Text, executable : Text })
-    , register = None Text
-    , changed_when = None Text
-    , when = None Text
-    , become = None Bool
-    , become_user = None Text
-    , file = None ({ path : Optional Text, state : Text, owner : Optional Text, group : Optional Text, dest : Optional Text, src : Optional Text })
-    , import_tasks = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       name = Some "Copy {{ flexextract_src_dir }} directory",
-      tags = Some "flexextract_sync",
+      tags = Some [ "flexextract_sync" ],
       synchronize = Some { src = "{{ flexextract_src_dir }}/", dest = "{{ flexextract_home }}/build" }
     }
-  , Item::{
+  , Task::{
       name = Some "Build flexextract image",
-      tags = Some "flexextract_build",
+      tags = Some [ "flexextract_build" ],
       shell = Some ''
       set -o pipefail
       ( echo -n '=== starting build '; date; \
@@ -47,35 +18,46 @@ in  [
       | tee -a build.log
 
     '',
-      args = Some { chdir = "{{ flexextract_home }}", executable = "/bin/bash" },
+      args = Some {
+        creates = None Text
+      , chdir = Some "{{ flexextract_home }}"
+      , executable = Some "/bin/bash"
+      , removes = None Text
+    },
       register = Some "_output",
       changed_when = Some "\" ---> Running in \" in _output.stdout",
-      when = Some "flexextract_docker_build | default(True)"
+      when = Some [ "flexextract_docker_build | default(True)" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Create download directory",
-      become = Some True,
+      become = Some "True",
       become_user = Some "root",
       file = Some {
         path = Some "{{ flexextract_download_host }}"
-      , state = "directory"
+      , state = Some "directory"
+      , mode = None Text
       , owner = Some "{{ flexextract_user }}"
       , group = Some "{{ flexextract_user }}"
+      , name = None Text
       , dest = None Text
+      , recurse = None Bool
       , src = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Create a link to the download directory in home directory",
-      when = Some "flexextract_download_host  != (flexextract_home+\"/download\")",
       file = Some {
         path = None Text
-      , state = "link"
+      , state = Some "link"
+      , mode = None Text
       , owner = None Text
       , group = None Text
+      , name = None Text
       , dest = Some "{{ flexextract_home }}/download"
+      , recurse = None Bool
       , src = Some "{{ flexextract_download_host }}"
+    },
+      when = Some [ "flexextract_download_host  != (flexextract_home+\"/download\")" ]
     }
-    }
-  , Item::{ tags = Some "flexextract_script", import_tasks = Some "script.yml" }
+  , Task::{ import_tasks = Some "script.yml", tags = Some [ "flexextract_script" ] }
 ]

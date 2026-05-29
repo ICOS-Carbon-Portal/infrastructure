@@ -1,9 +1,28 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "Restart opendkim"
-    , systemd = { name = "opendkim", state = "restarted" }
-  }
-  , { name = "Restart postfix", systemd = { name = "postfix", state = "restarted" } }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "Restart opendkim",
+      systemd = Some {
+        name = Some "opendkim"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
+  , Task::{
+      name = Some "Restart postfix",
+      systemd = Some {
+        name = Some "postfix"
+      , state = Some "restarted"
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = None Text
+    }
+    }
 ]

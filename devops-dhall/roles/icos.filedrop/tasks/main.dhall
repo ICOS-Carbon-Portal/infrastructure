@@ -1,58 +1,128 @@
 -- Auto-generated from main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , user : Optional ({ name : Text, home : Text, shell : Text })
-    , register : Optional Text
-    , apt : Optional ({ name : Text })
-    , include_role : Optional ({ name : Text })
-    , vars : Optional ({ jarservice_name : Text, jarservice_home : Text, jarservice_local : Text, jarservice_unit : Text })
-    , when : Optional Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , notify : Optional Text
-  }
-    , default =
-        { user = None ({ name : Text, home : Text, shell : Text })
-    , register = None Text
-    , apt = None ({ name : Text })
-    , include_role = None ({ name : Text })
-    , vars = None ({ jarservice_name : Text, jarservice_home : Text, jarservice_local : Text, jarservice_unit : Text })
-    , when = None Text
-    , copy = None ({ dest : Text, content : Text })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create filedrop user",
-      user = Some { name = "filedrop", home = "/home/filedrop", shell = "/usr/sbin/nologin" },
+      name = Some "Create filedrop user",
+      user = Some {
+        name = "filedrop"
+      , home = Some "/home/filedrop"
+      , create_home = None Text
+      , shell = Some "/usr/sbin/nologin"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
+    },
       register = Some "_user"
     }
-  , Task::{ name = "Install Java", apt = Some { name = "default-jdk" } }
   , Task::{
-      name = "Deploy filedrop jarfile as a service",
-      include_role = Some { name = "icos.jarservice2" },
-      vars = Some {
-        jarservice_name = "filedrop"
-      , jarservice_home = "{{ _user.home }}"
-      , jarservice_local = "{{ filedrop_jar_file }}"
-      , jarservice_unit = "{{ lookup('template', 'filedrop.service') }}"
-    },
-      when = Some "filedrop_jar_file is defined"
+      name = Some "Install Java",
+      apt = Some {
+        name = Some [ "default-jdk" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Create filedrop config file",
+      name = Some "Deploy filedrop jarfile as a service",
+      include_role = Some {
+        name = "icos.jarservice2"
+      , apply = None ({ tags : Text })
+      , public = None Bool
+      , tasks_from = None Text
+    },
+      vars = Some {
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = None Text
+      , nginxsite_file = None Text
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = Some "filedrop"
+      , jarservice_home = Some "{{ _user.home }}"
+      , jarservice_local = Some "{{ filedrop_jar_file }}"
+      , jarservice_unit = Some "{{ lookup('template', 'filedrop.service') }}"
+      , nginxsite_domains = None (List Text)
+      , jupyter_cert_name = None Text
+      , conf = None Text
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
+    },
+      when = Some [ "filedrop_jar_file is defined" ]
+    }
+  , Task::{
+      name = Some "Create filedrop config file",
       copy = Some {
-        dest = "{{ _user.home }}/application.conf"
-      , content = ''
+        src = None Text
+      , dest = "{{ _user.home }}/application.conf"
+      , mode = None Text
+      , content = Some ''
         cpfiledrop{
                 folder = "{{ filedrop_data_home }}"
         }
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "restart filedrop"
+      notify = Some [ "restart filedrop" ]
     }
 ]

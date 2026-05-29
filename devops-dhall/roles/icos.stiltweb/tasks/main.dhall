@@ -1,9 +1,11 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "setup.yml", tags = "stiltweb_setup" }
-  , { import_tasks = "deploy.yml", tags = "stiltweb_deploy" }
-  , { import_tasks = "utils.yml", tags = "stiltweb_utils" }
-  , { import_tasks = "sync.yml", tags = "stiltweb_sync" }
-  , { import_tasks = "just.yml", tags = "stiltweb_just" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "setup.yml", tags = Some [ "stiltweb_setup" ] }
+  , Task::{ import_tasks = Some "deploy.yml", tags = Some [ "stiltweb_deploy" ] }
+  , Task::{ import_tasks = Some "utils.yml", tags = Some [ "stiltweb_utils" ] }
+  , Task::{ import_tasks = Some "sync.yml", tags = Some [ "stiltweb_sync" ] }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "stiltweb_just" ] }
 ]

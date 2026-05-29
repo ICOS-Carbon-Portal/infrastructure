@@ -1,35 +1,47 @@
 -- Auto-generated from auth.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : Text, state : Optional Text })
-    , htpasswd : Optional ({ path : Text, name : Text, password : Text })
-    , loop : Optional Text
-  }
-    , default =
-        { apt = None ({ name : Text, state : Optional Text })
-    , htpasswd = None ({ path : Text, name : Text, password : Text })
-    , loop = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Install apache2-utils",
-      apt = Some { name = "apache2-utils", state = Some "present" }
+      name = Some "Install apache2-utils",
+      apt = Some {
+        name = Some [ "apache2-utils" ]
+      , state = Some "present"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Install the passlib library",
-      apt = Some { name = "python3-passlib", state = None Text }
+      name = Some "Install the passlib library",
+      apt = Some {
+        name = Some [ "python3-passlib" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Add basic auth users",
+      name = Some "Add basic auth users",
       htpasswd = Some {
         path = "{{ nginxforward_user_file }}"
       , name = "{{ item.name }}"
       , password = "{{ item.password }}"
+      , crypt_scheme = None Text
+      , state = None Text
     },
-      loop = Some "{{ nginxforward_users }}"
+      loop = Some [ "{{ nginxforward_users }}" ]
     }
 ]

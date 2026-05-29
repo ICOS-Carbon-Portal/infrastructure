@@ -1,21 +1,25 @@
 -- Auto-generated from smart.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text })
-    , `community.general.sudoers` : Optional ({ name : Text, state : Text, user : Text, commands : Text })
-  }
-    , default =
-        { apt = None ({ name : List Text })
-    , `community.general.sudoers` = None ({ name : Text, state : Text, user : Text, commands : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install smartmontools", apt = Some { name = [ "smartmontools" ] } }
+    Task::{
+      name = Some "Install smartmontools",
+      apt = Some {
+        name = Some [ "smartmontools" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
   , Task::{
-      name = "Allow the telegraf user to sudo /usr/sbin/smartctl",
+      name = Some "Allow the telegraf user to sudo /usr/sbin/smartctl",
       `community.general.sudoers` = Some {
         name = "allow-telegraf-smart"
       , state = "present"

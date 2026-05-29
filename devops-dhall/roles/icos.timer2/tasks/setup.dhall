@@ -1,81 +1,89 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , `assert` : Optional ({ that : Text })
-    , changed_when : Optional Text
-    , when : Optional Text
-    , file : Optional ({ path : Text, state : Text })
-    , copy : Optional ({ dest : Text, mode : Optional Text, content : Text })
-    , notify : Optional Text
-    , command : Optional Text
-    , register : Optional Text
-    , failed_when : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text, daemon_reload : Bool })
-  }
-    , default =
-        { `assert` = None ({ that : Text })
-    , changed_when = None Text
-    , when = None Text
-    , file = None ({ path : Text, state : Text })
-    , copy = None ({ dest : Text, mode : Optional Text, content : Text })
-    , notify = None Text
-    , command = None Text
-    , register = None Text
-    , failed_when = None Text
-    , systemd = None ({ name : Text, enabled : Bool, state : Text, daemon_reload : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Don't create timer script in /etc/systemd/system",
-      `assert` = Some { that = "timer_home != \"/etc/systemd/system\"" },
+      name = Some "Don't create timer script in /etc/systemd/system",
+      `assert` = Some { that = [ "timer_home != \"/etc/systemd/system\"" ], quiet = None Bool },
       changed_when = Some "False",
-      when = Some "timer_content is defined"
+      when = Some [ "timer_content is defined" ]
     }
   , Task::{
-      name = "Create home directory",
-      file = Some { path = "{{ timer_home }}", state = "directory" }
-    }
-  , Task::{
-      name = "Create timer script",
-      when = Some "timer_content is defined",
-      copy = Some { dest = "{{ timer_dest }}", mode = Some "+x", content = "{{ timer_content }}" }
-    }
-  , Task::{
-      name = "Create systemd timer",
-      copy = Some {
-        dest = "{{ _timer_sysd_timer }}"
+      name = Some "Create home directory",
+      file = Some {
+        path = Some "{{ timer_home }}"
+      , state = Some "directory"
       , mode = None Text
-      , content = "{{ timer_config }}"
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
+    }
+  , Task::{
+      name = Some "Create timer script",
+      copy = Some {
+        src = None Text
+      , dest = "{{ timer_dest }}"
+      , mode = Some "+x"
+      , content = Some "{{ timer_content }}"
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "restart icos timer"
+      when = Some [ "timer_content is defined" ]
     }
   , Task::{
-      name = "Create systemd service",
+      name = Some "Create systemd timer",
       copy = Some {
-        dest = "{{ _timer_sysd_service }}"
+        src = None Text
+      , dest = "{{ _timer_sysd_timer }}"
       , mode = None Text
-      , content = "{{ timer_service }}"
+      , content = Some "{{ timer_config }}"
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
+      notify = Some [ "restart icos timer" ]
+    }
+  , Task::{
+      name = Some "Create systemd service",
+      copy = Some {
+        src = None Text
+      , dest = "{{ _timer_sysd_service }}"
+      , mode = None Text
+      , content = Some "{{ timer_service }}"
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Link systemd files",
-      changed_when = Some "\"Created\" in _r.stdout",
-      when = Some "timer_home != \"/etc/systemd/system\"",
+      name = Some "Link systemd files",
+      when = Some [ "timer_home != \"/etc/systemd/system\"" ],
       command = Some "systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}",
       register = Some "_r",
-      failed_when = Some "_r.rc != 0"
+      failed_when = Some "_r.rc != 0",
+      changed_when = Some "\"Created\" in _r.stdout"
     }
   , Task::{
-      name = "Start timer",
+      name = Some "Start timer",
       systemd = Some {
-        name = "{{ timer_name }}.timer"
-      , enabled = True
-      , state = "{{ timer_state }}"
-      , daemon_reload = True
+        name = Some "{{ timer_name }}.timer"
+      , state = Some "{{ timer_state }}"
+      , daemon_reload = Some True
+      , enabled = Some "True"
+      , `daemon-reload` = None Text
+      , status = None Text
     }
     }
 ]

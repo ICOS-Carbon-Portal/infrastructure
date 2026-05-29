@@ -1,33 +1,32 @@
 -- Auto-generated from apt_install.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , check_mode : Optional Bool
-    , shellfact : Optional ({ exec : Text, fact : Text })
-    , apt : Optional ({ name : Text })
-    , when : Optional Text
-  }
-    , default =
-        { check_mode = None Bool
-    , shellfact = None ({ exec : Text, fact : Text })
-    , apt = None ({ name : Text })
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Retrieve conmon_apt_version fact",
+      name = Some "Retrieve conmon_apt_version fact",
       check_mode = Some False,
       shellfact = Some {
         exec = "apt show conmon 2>/dev/null |  perl -ne '/Version: ([0-9.]+)/ && print $1'"
       , fact = "conmon_apt_version"
+      , bool = None Bool
+      , list = None Bool
     }
     }
   , Task::{
-      name = "install conmon using apt",
-      apt = Some { name = "conmon" },
-      when = Some "conmon_apt_version_ok"
+      name = Some "install conmon using apt",
+      apt = Some {
+        name = Some [ "conmon" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    },
+      when = Some [ "conmon_apt_version_ok" ]
     }
 ]

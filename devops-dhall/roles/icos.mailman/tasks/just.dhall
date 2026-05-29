@@ -1,58 +1,56 @@
 -- Auto-generated from just.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ name : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , template : Optional ({ src : Text, dest : Text, mode : Text, variable_start_string : Text, variable_end_string : Text, lstrip_blocks : Bool })
-    , register : Optional Text
-    , shell : Optional Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { file = None ({ name : Optional Text, state : Text, dest : Optional Text, src : Optional Text })
-    , template = None ({ src : Text, dest : Text, mode : Text, variable_start_string : Text, variable_end_string : Text, lstrip_blocks : Bool })
-    , register = None Text
-    , shell = None Text
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Remove Makefile",
+      name = Some "Remove Makefile",
       file = Some {
-        name = Some "{{ mailman_home }}/Makefile"
-      , state = "absent"
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "{{ mailman_home }}/Makefile"
       , dest = None Text
+      , recurse = None Bool
       , src = None Text
     }
     }
   , Task::{
-      name = "Copy justfile",
+      name = Some "Copy justfile",
       template = Some {
         src = "justfile"
       , dest = "{{ mailman_home }}/justfile"
-      , mode = "+x"
-      , variable_start_string = "(("
-      , variable_end_string = "))"
-      , lstrip_blocks = True
+      , mode = Some "+x"
+      , variable_start_string = Some "(("
+      , variable_end_string = Some "))"
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     },
       register = Some "_justfile"
     }
   , Task::{
-      name = "Create executable symlink to justfile",
+      name = Some "Create executable symlink to justfile",
       file = Some {
-        name = None Text
-      , state = "link"
+        path = None Text
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
       , dest = Some "/usr/local/bin/icos-mailman"
+      , recurse = None Bool
       , src = Some "{{ _justfile.dest }}"
     },
       register = Some "_symlink"
     }
   , Task::{
-      name = "Check that the mailman justfile is executable",
+      name = Some "Check that the mailman justfile is executable",
       shell = Some "{{ _symlink.dest }}",
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

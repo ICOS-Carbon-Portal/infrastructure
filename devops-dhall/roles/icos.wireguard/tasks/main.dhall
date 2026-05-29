@@ -1,24 +1,23 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , name : Optional Text
-    , copy : Optional ({ src : Text, dest : Text, mode : Text })
-  }
-    , default =
-        { import_tasks = None Text
-    , name = None Text
-    , copy = None ({ src : Text, dest : Text, mode : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "install.yml" }
-  , Item::{ import_tasks = Some "keys.yml" }
-  , Item::{ import_tasks = Some "reresolve.yml" }
-  , Item::{
+    Task::{ import_tasks = Some "install.yml" }
+  , Task::{ import_tasks = Some "keys.yml" }
+  , Task::{ import_tasks = Some "reresolve.yml" }
+  , Task::{
       name = Some "Install wg(1) overlay",
-      copy = Some { src = "wg.py", dest = "/usr/local/bin/wg", mode = "+x" }
+      copy = Some {
+        src = Some "wg.py"
+      , dest = "/usr/local/bin/wg"
+      , mode = Some "+x"
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    }
     }
 ]

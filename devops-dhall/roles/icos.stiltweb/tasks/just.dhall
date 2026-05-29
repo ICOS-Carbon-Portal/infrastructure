@@ -1,39 +1,41 @@
 -- Auto-generated from just.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ name : Text, state : Text })
-    , template : Optional ({ src : Text, mode : Text, dest : Text, variable_start_string : Text, variable_end_string : Text, lstrip_blocks : Bool })
-    , register : Optional Text
-    , shell : Optional Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { file = None ({ name : Text, state : Text })
-    , template = None ({ src : Text, mode : Text, dest : Text, variable_start_string : Text, variable_end_string : Text, lstrip_blocks : Bool })
-    , register = None Text
-    , shell = None Text
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Remove old stiltweb justfile",
-      file = Some { name = "{{ stiltweb_home }}/justfile", state = "absent" }
+      name = Some "Remove old stiltweb justfile",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "{{ stiltweb_home }}/justfile"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Copy justfile",
+      name = Some "Copy justfile",
       template = Some {
         src = "justfile"
-      , mode = "+x"
       , dest = "/usr/local/bin/icos-stiltweb"
-      , variable_start_string = "(("
-      , variable_end_string = "))"
-      , lstrip_blocks = True
+      , mode = Some "+x"
+      , variable_start_string = Some "(("
+      , variable_end_string = Some "))"
+      , lstrip_blocks = Some True
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     },
       register = Some "_justfile"
     }
-  , Task::{ name = "Check justfile", shell = Some "icos-stiltweb", changed_when = Some False }
+  , Task::{
+      name = Some "Check justfile",
+      shell = Some "icos-stiltweb",
+      changed_when = Some "False"
+    }
 ]

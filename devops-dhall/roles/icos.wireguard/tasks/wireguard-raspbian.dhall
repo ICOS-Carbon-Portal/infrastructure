@@ -1,37 +1,20 @@
 -- Auto-generated from wireguard-raspbian.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt_key : Optional ({ url : Text, state : Text })
-    , apt_repository : Optional ({ filename : Text, repo : Text })
-    , copy : Optional ({ dest : Text, content : Text })
-    , apt : Optional ({ name : List Text, state : Text })
-    , file : Optional ({ dest : Text, src : Text, state : Text })
-    , set_fact : Optional ({ _wg_is_installed : Natural, cacheable : Bool })
-  }
-    , default =
-        { apt_key = None ({ url : Text, state : Text })
-    , apt_repository = None ({ filename : Text, repo : Text })
-    , copy = None ({ dest : Text, content : Text })
-    , apt = None ({ name : List Text, state : Text })
-    , file = None ({ dest : Text, src : Text, state : Text })
-    , set_fact = None ({ _wg_is_installed : Natural, cacheable : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Add key for debian {{ ansible_lsb.release }}",
+      name = Some "Add key for debian {{ ansible_lsb.release }}",
       apt_key = Some {
-        url = "https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release}}.asc"
+        id = None Text
+      , url = "https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release}}.asc"
       , state = "present"
     }
     }
   , Task::{
-      name = "Add debian apt repository",
+      name = Some "Add debian apt repository",
       apt_repository = Some {
-        filename = "debian_unstable.list"
+        filename = Some "debian_unstable.list"
       , repo = ''
         deb http://deb.debian.org/debian/ unstable main
 
@@ -39,31 +22,66 @@ in  [
     }
     }
   , Task::{
-      name = "Set debian unstable packages to a lower priority",
+      name = Some "Set debian unstable packages to a lower priority",
       copy = Some {
-        dest = "/etc/apt/preferences.d/debian_unstable"
-      , content = ''
+        src = None Text
+      , dest = "/etc/apt/preferences.d/debian_unstable"
+      , mode = None Text
+      , content = Some ''
         Package: *
         Pin: release o=Debian,a=unstable
         Pin-Priority: 150
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Install wireguard",
-      apt = Some { name = [ "raspberrypi-kernel-headers", "wireguard" ], state = "present" }
+      name = Some "Install wireguard",
+      apt = Some {
+        name = Some [ "raspberrypi-kernel-headers", "wireguard" ]
+      , state = Some "present"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Create wireguard-reresolve-dns.sh symlink",
+      name = Some "Create wireguard-reresolve-dns.sh symlink",
       file = Some {
-        dest = "{{ wireguard_reresolve_script }}"
-      , src = "/usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh"
-      , state = "link"
+        path = None Text
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = Some "{{ wireguard_reresolve_script }}"
+      , recurse = None Bool
+      , src = Some "/usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh"
     }
     }
   , Task::{
-      name = "Making a note that wireguard is installed",
-      set_fact = Some { _wg_is_installed = 1, cacheable = True }
+      name = Some "Making a note that wireguard is installed",
+      set_fact = Some {
+        certbot_nginx_conf = None Text
+      , destjarfile = None Text
+      , name = None Text
+      , nebula_resolve_type = None Text
+      , cacheable = Some True
+      , nebula_ssh_public = None Text
+      , quince_tomcat_dir = None Text
+      , sshlogin_src_user = None Text
+      , sshlogin_dst_user = None Text
+      , _wg_is_installed = Some 1
+    }
     }
 ]

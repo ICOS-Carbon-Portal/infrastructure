@@ -1,16 +1,19 @@
 -- Auto-generated from add_config.yml
 
-[
-    {
-      name = "Add config to script-exporters config.yaml"
-    , blockinfile = {
-        path = "{{ sexp_config }}"
-      , create = False
-      , marker = "# {mark} {{ sexp_marker }}"
-      , state = "{{ sexp_state | default('present') }}"
-      , insertafter = "EOF"
-      , block = "{{ sexp_block }}"
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "Add config to script-exporters config.yaml",
+      blockinfile = Some {
+        marker = "# {mark} {{ sexp_marker }}"
+      , state = Some "{{ sexp_state | default('present') }}"
+      , create = Some False
+      , insertafter = Some "EOF"
+      , path = "{{ sexp_config }}"
+      , block = Some "{{ sexp_block }}"
+      , insertbefore = None Text
+    },
+      notify = Some [ "reload script-exporter" ]
     }
-    , notify = "reload script-exporter"
-  }
 ]

@@ -1,27 +1,15 @@
 -- Auto-generated from main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , command : Optional Text
-    , notify : Optional Text
-    , service : Optional ({ name : Text, state : Text })
-  }
-    , default =
-        { command = None Text
-    , notify = None Text
-    , service = None ({ name : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "reload nginx config",
+    Task::{
+      name = Some "reload nginx config",
       command = Some "nginx -t",
-      notify = Some "really reload nginx config"
+      notify = Some [ "really reload nginx config" ]
     }
-  , Entry::{
-      name = "really reload nginx config",
-      service = Some { name = "nginx", state = "reloaded" }
+  , Task::{
+      name = Some "really reload nginx config",
+      service = Some { name = "nginx", state = "reloaded", enabled = None Bool }
     }
 ]

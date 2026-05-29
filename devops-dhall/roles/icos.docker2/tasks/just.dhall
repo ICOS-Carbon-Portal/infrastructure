@@ -1,30 +1,26 @@
 -- Auto-generated from just.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ src : Text, dest : Text, mode : Text })
-    , register : Optional Text
-    , shell : Optional Text
-    , changed_when : Optional Bool
-  }
-    , default =
-        { copy = None ({ src : Text, dest : Text, mode : Text })
-    , register = None Text
-    , shell = None Text
-    , changed_when = None Bool
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Copy ops-docker",
-      copy = Some { src = "ops-docker", dest = "/usr/local/bin/", mode = "+x" },
+      name = Some "Copy ops-docker",
+      copy = Some {
+        src = Some "ops-docker"
+      , dest = "/usr/local/bin/"
+      , mode = Some "+x"
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
       register = Some "_justfile"
     }
   , Task::{
-      name = "Check that the justfile is executable",
+      name = Some "Check that the justfile is executable",
       shell = Some "{{ _justfile.dest }}",
-      changed_when = Some False
+      changed_when = Some "False"
     }
 ]

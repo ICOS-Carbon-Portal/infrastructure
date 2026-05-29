@@ -1,42 +1,54 @@
 -- Auto-generated from dovecot_auth.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , user : Optional ({ name : Text, home : Text, create_home : Bool, shell : Text })
-    , register : Optional Text
-    , template : Optional ({ src : Text, dest : Text })
-    , lineinfile : Optional ({ path : Text, line : Text, state : Text })
-  }
-    , default =
-        { user = None ({ name : Text, home : Text, create_home : Bool, shell : Text })
-    , register = None Text
-    , template = None ({ src : Text, dest : Text })
-    , lineinfile = None ({ path : Text, line : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Create dovecot vmail user",
+    Task::{
+      name = Some "Create dovecot vmail user",
       user = Some {
         name = "{{ dovecot_vmail_name }}"
-      , home = "{{ dovecot_vmail_home }}"
-      , create_home = True
-      , shell = "/usr/sbin/nologin"
+      , home = Some "{{ dovecot_vmail_home }}"
+      , create_home = Some "True"
+      , shell = Some "/usr/sbin/nologin"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
     },
       register = Some "dovecot_vmail_user"
     }
-  , Entry::{
-      name = "Copy {{ dovecot_auth_file }}",
-      template = Some { src = "{{ dovecot_auth_file }}", dest = "/etc/dovecot/conf.d" }
+  , Task::{
+      name = Some "Copy {{ dovecot_auth_file }}",
+      template = Some {
+        src = "{{ dovecot_auth_file }}"
+      , dest = "/etc/dovecot/conf.d"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
-  , Entry::{
-      name = "Add passwd-file authentication to dovecot",
+    }
+  , Task::{
+      name = Some "Add passwd-file authentication to dovecot",
       lineinfile = Some {
         path = "/etc/dovecot/conf.d/10-auth.conf"
-      , line = "!include {{ dovecot_auth_file | basename }}"
-      , state = "present"
+      , line = Some "!include {{ dovecot_auth_file | basename }}"
+      , state = Some "present"
+      , regex = None Text
+      , regexp = None Text
+      , create = None Bool
+      , owner = None Text
+      , group = None Text
+      , insertafter = None Text
+      , mode = None Natural
+      , insertbefore = None Text
     }
     }
 ]

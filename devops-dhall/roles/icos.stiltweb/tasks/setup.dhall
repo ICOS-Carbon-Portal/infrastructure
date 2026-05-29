@@ -1,48 +1,56 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , user : Optional ({ name : Text, state : Text, shell : Text, home : Text, groups : Text, append : Bool })
-    , file : Optional ({ path : Text, state : Text, owner : Text, group : Text })
-    , with_items : Optional (List Text)
-    , `ansible.builtin.package` : Optional ({ name : Text, state : Text })
-    , apt : Optional ({ name : Text })
-  }
-    , default =
-        { user = None ({ name : Text, state : Text, shell : Text, home : Text, groups : Text, append : Bool })
-    , file = None ({ path : Text, state : Text, owner : Text, group : Text })
-    , with_items = None (List Text)
-    , `ansible.builtin.package` = None ({ name : Text, state : Text })
-    , apt = None ({ name : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create stiltweb user",
+      name = Some "Create stiltweb user",
       user = Some {
         name = "{{ stiltweb_username }}"
-      , state = "present"
-      , shell = "/bin/bash"
-      , home = "{{ stiltweb_home }}"
-      , groups = "docker"
-      , append = True
+      , home = Some "{{ stiltweb_home }}"
+      , create_home = None Text
+      , shell = Some "/bin/bash"
+      , groups = Some [ "docker" ]
+      , append = Some "True"
+      , state = Some "present"
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = None Text
     }
     }
   , Task::{
-      name = "Create directories",
+      name = Some "Create directories",
       file = Some {
-        path = "{{ item }}"
-      , state = "directory"
-      , owner = "{{ stiltweb_username }}"
-      , group = "{{ stiltweb_username }}"
+        path = Some "{{ item }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "{{ stiltweb_username }}"
+      , group = Some "{{ stiltweb_username }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     },
       with_items = Some [ "{{ stiltweb_statedir }}", "{{ stiltweb_bindir }}" ]
     }
   , Task::{
-      name = "Install netcdf C library",
+      name = Some "Install netcdf C library",
       `ansible.builtin.package` = Some { name = "netcdf-bin", state = "present" }
     }
-  , Task::{ name = "Install jre", apt = Some { name = "{{ stiltweb_jre_package }}" } }
+  , Task::{
+      name = Some "Install jre",
+      apt = Some {
+        name = Some [ "{{ stiltweb_jre_package }}" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
 ]

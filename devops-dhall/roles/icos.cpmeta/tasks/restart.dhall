@@ -1,37 +1,15 @@
 -- Auto-generated from restart.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , register : Optional Text
-    , uri : Optional ({ method : Optional Text, url : Text, return_content : Optional Bool })
-    , failed_when : Optional Text
-    , when : Optional Text
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text })
-    , retries : Optional Natural
-    , delay : Optional Natural
-    , until : Optional Text
-  }
-    , default =
-        { copy = None ({ dest : Text, content : Text })
-    , register = None Text
-    , uri = None ({ method : Optional Text, url : Text, return_content : Optional Bool })
-    , failed_when = None Text
-    , when = None Text
-    , systemd = None ({ name : Text, enabled : Bool, state : Text })
-    , retries = None Natural
-    , delay = None Natural
-    , until = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create application.conf",
+      name = Some "Create application.conf",
       copy = Some {
-        dest = "{{ cpmeta_home }}/application.conf"
-      , content = ''
+        src = None Text
+      , dest = "{{ cpmeta_home }}/application.conf"
+      , mode = None Text
+      , content = Some ''
         {% for item in cpmeta_config_files %}
         # {{ item }}
         {{ lookup('template', item) }}
@@ -39,52 +17,66 @@ in  [
         {% endfor %}
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
       register = Some "_config"
     }
   , Task::{
-      name = "Temporarily switch cpmeta to readonly mode before restart",
+      name = Some "Temporarily switch cpmeta to readonly mode before restart",
       uri = Some {
-        method = Some "POST"
-      , url = "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
+        url = "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
       , return_content = None Bool
+      , method = Some "POST"
+      , user = None Text
+      , password = None Text
     },
       failed_when = Some "False",
-      when = Some "_restart_needed"
+      when = Some [ "_restart_needed" ]
     }
   , Task::{
-      name = "Start/restart service",
+      name = Some "Start/restart service",
       systemd = Some {
-        name = "cpmeta.service"
-      , enabled = True
-      , state = "{{ 'restarted' if _restart_needed else 'started' }}"
+        name = Some "cpmeta.service"
+      , state = Some "{{ 'restarted' if _restart_needed else 'started' }}"
+      , daemon_reload = None Bool
+      , enabled = Some "True"
+      , `daemon-reload` = None Text
+      , status = None Text
     }
     }
   , Task::{
-      name = "Check that the service responds",
-      register = Some "r",
+      name = Some "Check that the service responds",
       uri = Some {
-        method = None Text
-      , url = "https://{{ cpmeta_domains | first }}/buildInfo"
+        url = "https://{{ cpmeta_domains | first }}/buildInfo"
       , return_content = Some True
+      , method = None Text
+      , user = None Text
+      , password = None Text
     },
+      register = Some "r",
       failed_when = Some "r.failed",
       retries = Some 30,
       delay = Some 10,
       until = Some "not r.failed"
     }
   , Task::{
-      name = "Leave cpmeta in readonly mode",
-      register = Some "r",
+      name = Some "Leave cpmeta in readonly mode",
       uri = Some {
-        method = Some "POST"
-      , url = "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
+        url = "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
       , return_content = None Bool
+      , method = Some "POST"
+      , user = None Text
+      , password = None Text
     },
+      register = Some "r",
       failed_when = Some "r.failed",
-      when = Some "cpmeta_readonly_mode",
       retries = Some 30,
       delay = Some 10,
-      until = Some "not r.failed"
+      until = Some "not r.failed",
+      when = Some [ "cpmeta_readonly_mode" ]
     }
 ]

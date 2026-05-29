@@ -1,24 +1,25 @@
 -- Auto-generated from dovecot_install.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text, state : Text })
-    , service : Optional ({ name : Text, state : Text, enabled : Bool })
-  }
-    , default =
-        { apt = None ({ name : List Text, state : Text })
-    , service = None ({ name : Text, state : Text, enabled : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Install dovecot",
-      apt = Some { name = [ "dovecot-imapd", "dovecot-lmtpd" ], state = "present" }
+      name = Some "Install dovecot",
+      apt = Some {
+        name = Some [ "dovecot-imapd", "dovecot-lmtpd" ]
+      , state = Some "present"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Enable dovecot",
-      service = Some { name = "dovecot", state = "started", enabled = True }
+      name = Some "Enable dovecot",
+      service = Some { name = "dovecot", state = "started", enabled = Some True }
     }
 ]

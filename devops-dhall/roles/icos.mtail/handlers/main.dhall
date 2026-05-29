@@ -1,5 +1,10 @@
 -- Auto-generated from main.yml
 
-[
-    { name = "reload mtail", service = { name = "mtail", state = "restarted" } }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "reload mtail",
+      service = Some { name = "mtail", state = "restarted", enabled = None Bool }
+    }
 ]

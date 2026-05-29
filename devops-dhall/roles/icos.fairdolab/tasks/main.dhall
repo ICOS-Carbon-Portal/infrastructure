@@ -1,43 +1,56 @@
 -- Auto-generated from main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text })
-    , git : Optional ({ repo : Text, dest : Text, update : Bool })
-    , diff : Optional Bool
-    , template : Optional ({ dest : Text, src : Text })
-    , docker_compose : Optional ({ project_src : Text, build : Bool })
-  }
-    , default =
-        { file = None ({ path : Text, state : Text })
-    , git = None ({ repo : Text, dest : Text, update : Bool })
-    , diff = None Bool
-    , template = None ({ dest : Text, src : Text })
-    , docker_compose = None ({ project_src : Text, build : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Create  directory",
-      file = Some { path = "{{ fairdolab_home }}", state = "directory" }
+    Task::{
+      name = Some "Create  directory",
+      file = Some {
+        path = Some "{{ fairdolab_home }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
-  , Entry::{
-      name = "Clone fairdolab",
+    }
+  , Task::{
+      name = Some "Clone fairdolab",
       git = Some {
         repo = "https://github.com/kit-data-manager/FAIR-DO-Lab"
+      , version = None Text
       , dest = "{{ fairdolab_home }}"
-      , update = False
+      , force = None Bool
+      , update = Some "False"
+      , key_file = None Text
     },
       diff = Some False
     }
-  , Entry::{
-      name = "Create docker-compose.yml",
-      template = Some { dest = "{{ fairdolab_home }}", src = "docker-compose.yml" }
+  , Task::{
+      name = Some "Create docker-compose.yml",
+      template = Some {
+        src = "docker-compose.yml"
+      , dest = "{{ fairdolab_home }}"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
-  , Entry::{
-      name = "Build and start",
-      docker_compose = Some { project_src = "{{ fairdolab_home }}", build = True }
+    }
+  , Task::{
+      name = Some "Build and start",
+      docker_compose = Some {
+        project_src = "{{ fairdolab_home }}"
+      , build = Some True
+      , restarted = None Text
+      , state = None Text
+    }
     }
 ]

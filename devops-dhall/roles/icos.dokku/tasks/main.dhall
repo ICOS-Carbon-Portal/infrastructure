@@ -1,6 +1,8 @@
 -- Auto-generated from main.yml
 
-[
-    { import_tasks = "install.yml", tags = "dokku_install" }
-  , { import_tasks = "just.yml", tags = "dokku_just" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "install.yml", tags = Some [ "dokku_install" ] }
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "dokku_just" ] }
 ]

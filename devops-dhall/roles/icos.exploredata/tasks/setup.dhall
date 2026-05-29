@@ -1,53 +1,48 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , `assert` : Optional ({ that : Text, quiet : Bool })
-    , copy : Optional ({ dest : Text, src : Optional Text, content : Optional Text })
-    , loop : Optional (List Text)
-    , template : Optional ({ src : Text, dest : Text, backup : Bool, validate : Text })
-    , tags : Optional Text
-    , `community.general.docker_login` : Optional ({ registry_url : Text, username : Text, password : Text })
-    , `community.docker.docker_image` : Optional ({ name : Text, source : Text })
-    , docker_compose : Optional ({ project_src : Text, build : Bool })
-  }
-    , default =
-        { `assert` = None ({ that : Text, quiet : Bool })
-    , copy = None ({ dest : Text, src : Optional Text, content : Optional Text })
-    , loop = None (List Text)
-    , template = None ({ src : Text, dest : Text, backup : Bool, validate : Text })
-    , tags = None Text
-    , `community.general.docker_login` = None ({ registry_url : Text, username : Text, password : Text })
-    , `community.docker.docker_image` = None ({ name : Text, source : Text })
-    , docker_compose = None ({ project_src : Text, build : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Check type of deployment",
-      `assert` = Some { that = "exploredata_type in ('prod', 'test')", quiet = True }
+      name = Some "Check type of deployment",
+      `assert` = Some { that = [ "exploredata_type in ('prod', 'test')" ], quiet = Some True }
     }
   , Task::{
-      name = "Copy files",
-      copy = Some { dest = "{{ exploredata_home }}/", src = Some "{{ item }}", content = None Text },
+      name = Some "Copy files",
+      copy = Some {
+        src = Some "{{ item }}"
+      , dest = "{{ exploredata_home }}/"
+      , mode = None Text
+      , content = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
+    },
       loop = Some [ "build.hub", "jupyterhub_home", "docker-compose.yml" ]
     }
   , Task::{
-      name = "Copy jupyterhub_config.py",
+      name = Some "Copy jupyterhub_config.py",
       template = Some {
         src = "jupyterhub_config.py"
       , dest = "{{ exploredata_home }}/jupyterhub_home/"
-      , backup = True
-      , validate = "python3 -m py_compile %s"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = Some "python3 -m py_compile %s"
+      , backup = Some True
+      , owner = None Text
+      , group = None Text
     }
     }
   , Task::{
-      name = "Install runtime environment file",
+      name = Some "Install runtime environment file",
       copy = Some {
-        dest = "{{ exploredata_home }}/.env"
-      , src = None Text
+        src = None Text
+      , dest = "{{ exploredata_home }}/.env"
+      , mode = None Text
       , content = Some ''
         NETWORK_NAME={{ exploredata_network }}
         HUB_PORT={{ exploredata_port }}
@@ -58,11 +53,16 @@ in  [
         PASSWORD={{ exploredata_password[exploredata_type] }}
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "Login to registry",
-      tags = Some "docker_login",
+      name = Some "Login to registry",
+      tags = Some [ "docker_login" ],
       `community.general.docker_login` = Some {
         registry_url = "{{ registry_domain }}"
       , username = "docker"
@@ -70,11 +70,16 @@ in  [
     }
     }
   , Task::{
-      name = "Make sure that the notebook images are present",
+      name = Some "Make sure that the notebook images are present",
       `community.docker.docker_image` = Some { name = "{{ exploredata_notebook_image }}", source = "pull" }
     }
   , Task::{
-      name = "Build and start the hub image",
-      docker_compose = Some { project_src = "{{ exploredata_home }}", build = True }
+      name = Some "Build and start the hub image",
+      docker_compose = Some {
+        project_src = "{{ exploredata_home }}"
+      , build = Some True
+      , restarted = None Text
+      , state = None Text
+    }
     }
 ]

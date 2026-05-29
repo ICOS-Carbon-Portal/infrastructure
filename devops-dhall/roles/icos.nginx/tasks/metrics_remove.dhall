@@ -1,42 +1,73 @@
 -- Auto-generated from metrics_remove.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : Optional ({ name : Text, state : Text })
-    , systemd : Optional ({ name : Text, enabled : Bool, state : Text })
-  }
-    , default =
-        { file = None ({ name : Text, state : Text })
-    , systemd = None ({ name : Text, enabled : Bool, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Remove /opt/vmagent/file_sd_configs/nginx-exporter-host.yaml",
+    Task::{
+      name = Some "Remove /opt/vmagent/file_sd_configs/nginx-exporter-host.yaml",
       file = Some {
-        name = "/opt/vmagent/file_sd_configs/nginx-exporter-host.yaml"
-      , state = "absent"
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/opt/vmagent/file_sd_configs/nginx-exporter-host.yaml"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
-  , Entry::{
-      name = "Stop nginx-prometheus-exporter",
-      systemd = Some { name = "nginx-prometheus-exporter", enabled = False, state = "stopped" }
+  , Task::{
+      name = Some "Stop nginx-prometheus-exporter",
+      systemd = Some {
+        name = Some "nginx-prometheus-exporter"
+      , state = Some "stopped"
+      , daemon_reload = None Bool
+      , enabled = Some "False"
+      , `daemon-reload` = None Text
+      , status = None Text
     }
-  , Entry::{
-      name = "Remove /etc/systemd/system/nginx-prometheus-exporter.service",
+    }
+  , Task::{
+      name = Some "Remove /etc/systemd/system/nginx-prometheus-exporter.service",
       file = Some {
-        name = "/etc/systemd/system/nginx-prometheus-exporter.service"
-      , state = "absent"
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/etc/systemd/system/nginx-prometheus-exporter.service"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
-  , Entry::{
-      name = "Remove /usr/local/sbin/nginx-prometheus-exporter",
-      file = Some { name = "/usr/local/sbin/nginx-prometheus-exporter", state = "absent" }
+  , Task::{
+      name = Some "Remove /usr/local/sbin/nginx-prometheus-exporter",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/usr/local/sbin/nginx-prometheus-exporter"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
-  , Entry::{
-      name = "Remove /opt/downloads/nginx-prometheus-exporter/",
-      file = Some { name = "/opt/downloads/nginx-prometheus-exporter/", state = "absent" }
+    }
+  , Task::{
+      name = Some "Remove /opt/downloads/nginx-prometheus-exporter/",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/opt/downloads/nginx-prometheus-exporter/"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
 ]

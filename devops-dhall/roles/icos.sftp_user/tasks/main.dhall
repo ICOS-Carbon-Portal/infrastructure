@@ -1,106 +1,99 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { fail : Optional ({ msg : Text })
-    , when : Optional Text
-    , loop : Optional (List Text)
-    , name : Optional Text
-    , stat : Optional ({ path : Text })
-    , check_mode : Optional Bool
-    , register : Optional Text
-    , file : Optional ({ path : Text, state : Text, owner : Text, group : Text })
-    , user : Optional ({ name : Text, password : Text, create_home : Text, shell : Text })
-    , authorized_key : Optional ({ user : Text, key : Text })
-    , blockinfile : Optional ({ marker : Text, create : Bool, insertafter : Text, path : Text, block : Text })
-    , notify : Optional Text
-    , debug : Optional ({ msg : Text })
-  }
-    , default =
-        { fail = None ({ msg : Text })
-    , when = None Text
-    , loop = None (List Text)
-    , name = None Text
-    , stat = None ({ path : Text })
-    , check_mode = None Bool
-    , register = None Text
-    , file = None ({ path : Text, state : Text, owner : Text, group : Text })
-    , user = None ({ name : Text, password : Text, create_home : Text, shell : Text })
-    , authorized_key = None ({ user : Text, key : Text })
-    , blockinfile = None ({ marker : Text, create : Bool, insertafter : Text, path : Text, block : Text })
-    , notify = None Text
-    , debug = None ({ msg : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       fail = Some { msg = "{{ item }} needs to be defined" },
-      when = Some "vars[item] is undefined",
+      when = Some [ "vars[item] is undefined" ],
       loop = Some [ "sftp_user_dir", "sftp_user_login" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Check whether sftp parent directory exists",
       stat = Some { path = "{{ _sftp_parent_dir }}" },
       check_mode = Some False,
       register = Some "_parent"
     }
-  , Item::{
-      when = Some "not _parent.stat.exists",
+  , Task::{
       name = Some "Create sftp parent directory",
       file = Some {
-        path = "{{ _sftp_parent_dir }}"
-      , state = "directory"
-      , owner = "root"
-      , group = "root"
+        path = Some "{{ _sftp_parent_dir }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "root"
+      , group = Some "root"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    },
+      when = Some [ "not _parent.stat.exists" ]
     }
-    }
-  , Item::{
+  , Task::{
       name = Some "Create sftp user",
-      register = Some "_user",
       user = Some {
         name = "{{ sftp_user_login }}"
-      , password = ''
+      , home = None Text
+      , create_home = Some "{{ sftp_user_pubkey is truthy }}"
+      , shell = Some "/usr/sbin/nologin"
+      , groups = None (List Text)
+      , append = None Text
+      , state = None Text
+      , system = None Bool
+      , password = Some ''
         {{ sftp_user_password | password_hash('sha512', vault_pw_salt)
            if sftp_user_password else omit }}
       ''
-      , create_home = "{{ sftp_user_pubkey is truthy }}"
-      , shell = "/usr/sbin/nologin"
+      , generate_ssh_key = None Bool
+      , remove = None Text
+    },
+      register = Some "_user"
     }
-    }
-  , Item::{
-      when = Some "sftp_user_pubkey",
+  , Task::{
       name = Some "Install public key",
-      authorized_key = Some { user = "{{ sftp_user_login }}", key = "{{ sftp_user_pubkey }}" }
+      authorized_key = Some {
+        user = "{{ sftp_user_login }}"
+      , key_options = None Text
+      , key = "{{ sftp_user_pubkey }}"
+      , state = None Text
+      , exclusive = None Bool
+    },
+      when = Some [ "sftp_user_pubkey" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Stat parent directory again",
       stat = Some { path = "{{ _sftp_parent_dir }}" },
       check_mode = Some False,
       register = Some "_parent"
     }
-  , Item::{
+  , Task::{
+      name = Some "Fail if parent directory isn't owned by root",
       fail = Some { msg = "{{ _sftp_parent_dir }} must be owned by root" },
-      when = Some "_parent.stat.uid != 0 or _parent.stat.gid != 0",
-      name = Some "Fail if parent directory isn't owned by root"
+      when = Some [ "_parent.stat.uid != 0 or _parent.stat.gid != 0" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Create sftp directory",
       file = Some {
-        path = "{{ sftp_user_dir }}"
-      , state = "directory"
-      , owner = "{{ sftp_user_owner }}"
-      , group = "{{ sftp_user_group }}"
+        path = Some "{{ sftp_user_dir }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "{{ sftp_user_owner }}"
+      , group = Some "{{ sftp_user_group }}"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Add sftp user config to sshd to sshd_config",
       blockinfile = Some {
         marker = "# {mark} ansible / sftp_user / {{ sftp_user_login }}"
-      , create = True
-      , insertafter = "EOF"
+      , state = None Text
+      , create = Some True
+      , insertafter = Some "EOF"
       , path = "/etc/ssh/sshd_config"
-      , block = ''
+      , block = Some ''
         Match User {{ sftp_user_login }}
           ChrootDirectory {{ _sftp_parent_dir }}
           ForceCommand internal-sftp -d {{ sftp_user_dir | basename }}
@@ -108,10 +101,11 @@ in  [
           PasswordAuthentication yes
 
       ''
+      , insertbefore = None Text
     },
-      notify = Some "reload sshd"
+      notify = Some [ "reload sshd" ]
     }
-  , Item::{
+  , Task::{
       name = Some "Print ssh config",
       debug = Some {
         msg = ''

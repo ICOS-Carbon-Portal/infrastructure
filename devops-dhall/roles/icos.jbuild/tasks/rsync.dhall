@@ -1,30 +1,36 @@
 -- Auto-generated from rsync.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text })
-    , authorized_key : Optional ({ user : Text, key_options : Text, key : Text })
-  }
-    , default =
-        { apt = None ({ name : List Text })
-    , authorized_key = None ({ user : Text, key_options : Text, key : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install rsync", apt = Some { name = [ "rsync" ] } }
+    Task::{
+      name = Some "Install rsync",
+      apt = Some {
+        name = Some [ "rsync" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
   , Task::{
-      name = "Add keys to authorized_keys",
+      name = Some "Add keys to authorized_keys",
       authorized_key = Some {
         user = "{{ jbuild_rsync_user }}"
-      , key_options = "command=\"{{ jbuild_rrsync_bin }} /project/common\""
+      , key_options = Some "command=\"{{ jbuild_rrsync_bin }} /project/common\""
       , key = ''
         {% for elt in _jbuild_user_keys.results -%}
         {{ elt.public_key }}
         {% endfor %}
 
       ''
+      , state = None Text
+      , exclusive = None Bool
     }
     }
 ]

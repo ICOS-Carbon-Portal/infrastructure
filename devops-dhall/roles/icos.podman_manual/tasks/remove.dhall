@@ -1,61 +1,125 @@
 -- Auto-generated from remove.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , file : Optional ({ name : Text, state : Text })
-    , apt : Optional ({ state : Text, purge : Bool, name : List Text })
-    , shell : Optional Text
-    , changed_when : Optional Bool
-    , loop : Optional (List Text)
-  }
-    , default =
-        { file = None ({ name : Text, state : Text })
-    , apt = None ({ state : Text, purge : Bool, name : List Text })
-    , shell = None Text
-    , changed_when = None Bool
-    , loop = None (List Text)
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Remove podman docker wrapper",
-      file = Some { name = "/usr/local/bin/docker", state = "absent" }
+      name = Some "Remove podman docker wrapper",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/usr/local/bin/docker"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Purge podman requirements",
+      name = Some "Purge podman requirements",
       apt = Some {
-        state = "absent"
-      , purge = True
-      , name = [ "containers-storage", "podman", "buildah" ]
+        name = Some [ "containers-storage", "podman", "buildah" ]
+      , state = Some "absent"
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = Some True
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
     }
     }
   , Task::{
-      name = "Remove /etc/cni/net.d",
-      file = Some { name = "/etc/cni/net.d", state = "absent" }
+      name = Some "Remove /etc/cni/net.d",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/etc/cni/net.d"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "rmdir /etc/cni",
+      name = Some "rmdir /etc/cni",
       shell = Some "rmdir --ignore-fail-on-non-empty /etc/cni || :",
-      changed_when = Some False
-    }
-  , Task::{ name = "Remove /opt/cni", file = Some { name = "/opt/cni", state = "absent" } }
-  , Task::{
-      name = "Remove /etc/containers",
-      file = Some { name = "/etc/containers", state = "absent" }
+      changed_when = Some "False"
     }
   , Task::{
-      name = "Remove /etc/bash_completion.d/podman",
-      file = Some { name = "/etc/bash_completion.d/podman", state = "absent" }
+      name = Some "Remove /opt/cni",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/opt/cni"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Remove /etc/apt/preferences.d/podman",
-      file = Some { name = "/etc/apt/preferences.d/podman", state = "absent" }
+      name = Some "Remove /etc/containers",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/etc/containers"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
     }
   , Task::{
-      name = "Remove podman binaries",
-      file = Some { name = "{{ item }}", state = "absent" },
+      name = Some "Remove /etc/bash_completion.d/podman",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/etc/bash_completion.d/podman"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
+    }
+  , Task::{
+      name = Some "Remove /etc/apt/preferences.d/podman",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "/etc/apt/preferences.d/podman"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    }
+    }
+  , Task::{
+      name = Some "Remove podman binaries",
+      file = Some {
+        path = None Text
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = Some "{{ item }}"
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    },
       loop = Some [ "/usr/local/bin/podman", "/usr/local/bin/podman-remote" ]
     }
 ]

@@ -1,88 +1,105 @@
 -- Auto-generated from quince-tomcat.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , get_url : Optional ({ url : Text, dest : Text })
-    , unarchive : Optional ({ src : Text, dest : Text, remote_src : Bool, owner : Text, group : Text })
-    , diff : Optional Bool
-    , find : Optional ({ file_type : Text, recurse : Bool, paths : Text, patterns : Text })
-    , register : Optional Text
-    , set_fact : Optional ({ quince_tomcat_dir : Text })
-    , file : Optional ({ dest : Text, src : Text, state : Text })
-    , template : Optional ({ src : Text, dest : Text })
-    , notify : Optional Text
-    , service : Optional ({ name : Text, state : Text, enabled : Bool })
-  }
-    , default =
-        { get_url = None ({ url : Text, dest : Text })
-    , unarchive = None ({ src : Text, dest : Text, remote_src : Bool, owner : Text, group : Text })
-    , diff = None Bool
-    , find = None ({ file_type : Text, recurse : Bool, paths : Text, patterns : Text })
-    , register = None Text
-    , set_fact = None ({ quince_tomcat_dir : Text })
-    , file = None ({ dest : Text, src : Text, state : Text })
-    , template = None ({ src : Text, dest : Text })
-    , notify = None Text
-    , service = None ({ name : Text, state : Text, enabled : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Download tomcat binary",
-      get_url = Some { url = "{{ quince_tomcat_url }}", dest = "/opt/tomcat.tgz" }
+    Task::{
+      name = Some "Download tomcat binary",
+      get_url = Some {
+        url = "{{ quince_tomcat_url }}"
+      , dest = "/opt/tomcat.tgz"
+      , force = None Text
+      , mode = None Text
     }
-  , Entry::{
-      name = "Unarchive /opt/tomcat.tgz",
+    }
+  , Task::{
+      name = Some "Unarchive /opt/tomcat.tgz",
       unarchive = Some {
         src = "/opt/tomcat.tgz"
       , dest = "/opt"
       , remote_src = True
-      , owner = "{{ quince_user }}"
-      , group = "{{ quince_user }}"
+      , owner = Some "{{ quince_user }}"
+      , group = Some "{{ quince_user }}"
+      , include = None (List Text)
+      , list_files = None Bool
+      , extra_opts = None (List Text)
+      , mode = None Text
+      , creates = None Text
     },
       diff = Some False
     }
-  , Entry::{
-      name = "Find the unpackad tomcat directory",
+  , Task::{
+      name = Some "Find the unpackad tomcat directory",
       find = Some {
-        file_type = "directory"
-      , recurse = False
-      , paths = "/opt"
+        paths = "/opt"
       , patterns = "apache-tomcat-*"
+      , excludes = None Text
+      , file_type = Some "directory"
+      , recurse = Some False
     },
       register = Some "_fs"
     }
-  , Entry::{
-      name = "Extract the version-specific directory of tomcat",
+  , Task::{
+      name = Some "Extract the version-specific directory of tomcat",
       set_fact = Some {
-        quince_tomcat_dir = "{{ (_fs.files | sort(attribute='path') | last).path  }}"
+        certbot_nginx_conf = None Text
+      , destjarfile = None Text
+      , name = None Text
+      , nebula_resolve_type = None Text
+      , cacheable = None Bool
+      , nebula_ssh_public = None Text
+      , quince_tomcat_dir = Some "{{ (_fs.files | sort(attribute='path') | last).path  }}"
+      , sshlogin_src_user = None Text
+      , sshlogin_dst_user = None Text
+      , _wg_is_installed = None Natural
     }
     }
-  , Entry::{
-      name = "Create /opt/tomcat symlink",
+  , Task::{
+      name = Some "Create /opt/tomcat symlink",
       file = Some {
-        dest = "{{ quince_tomcat_home }}"
-      , src = "{{ quince_tomcat_dir }}"
-      , state = "link"
+        path = None Text
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = Some "{{ quince_tomcat_home }}"
+      , recurse = None Bool
+      , src = Some "{{ quince_tomcat_dir }}"
     }
     }
-  , Entry::{
-      name = "Create /usr/bin/catalina.sh symlink",
+  , Task::{
+      name = Some "Create /usr/bin/catalina.sh symlink",
       file = Some {
-        dest = "/usr/bin/catalina.sh"
-      , src = "{{ quince_tomcat_home }}/bin/catalina.sh"
-      , state = "link"
+        path = None Text
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = Some "/usr/bin/catalina.sh"
+      , recurse = None Bool
+      , src = Some "{{ quince_tomcat_home }}/bin/catalina.sh"
     }
     }
-  , Entry::{
-      name = "Copy quince.service",
-      template = Some { src = "quince.service", dest = "/etc/systemd/system/quince.service" },
-      notify = Some "reload systemd config"
+  , Task::{
+      name = Some "Copy quince.service",
+      template = Some {
+        src = "quince.service"
+      , dest = "/etc/systemd/system/quince.service"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
+      notify = Some [ "reload systemd config" ]
     }
-  , Entry::{
-      name = "Enable QuinCe service",
-      service = Some { name = "quince", state = "started", enabled = True }
+  , Task::{
+      name = Some "Enable QuinCe service",
+      service = Some { name = "quince", state = "started", enabled = Some True }
     }
 ]

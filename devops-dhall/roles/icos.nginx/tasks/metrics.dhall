@@ -1,29 +1,15 @@
 -- Auto-generated from metrics.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : Optional ({ dest : Text, content : Text })
-    , shell : Optional Text
-    , changed_when : Optional Bool
-    , uri : Optional ({ url : Text })
-    , retries : Optional Natural
-  }
-    , default =
-        { copy = None ({ dest : Text, content : Text })
-    , shell = None Text
-    , changed_when = None Bool
-    , uri = None ({ url : Text })
-    , retries = None Natural
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Enable stub_status for nginx",
+      name = Some "Enable stub_status for nginx",
       copy = Some {
-        dest = "/etc/nginx/conf.d/stub_status.conf"
-      , content = ''
+        src = None Text
+      , dest = "/etc/nginx/conf.d/stub_status.conf"
+      , mode = None Text
+      , content = Some ''
         server {
           listen localhost:80;
           server_name localhost;
@@ -34,16 +20,27 @@ in  [
         }
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
   , Task::{
-      name = "reload nginx config",
+      name = Some "reload nginx config",
       shell = Some "nginx -t && systemctl reload nginx",
-      changed_when = Some False
+      changed_when = Some "False"
     }
   , Task::{
-      name = "Check that nginx /metrics respond",
-      uri = Some { url = "{{ nginx_metrics_url }}" },
+      name = Some "Check that nginx /metrics respond",
+      uri = Some {
+        url = "{{ nginx_metrics_url }}"
+      , return_content = None Bool
+      , method = None Text
+      , user = None Text
+      , password = None Text
+    },
       retries = Some 10
     }
 ]

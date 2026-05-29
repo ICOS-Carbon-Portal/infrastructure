@@ -1,5 +1,10 @@
 -- Auto-generated from main.yml
 
-[
-    { name = "restart cpdata", service = { name = "cpdata", state = "restarted" } }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "restart cpdata",
+      service = Some { name = "cpdata", state = "restarted", enabled = None Bool }
+    }
 ]

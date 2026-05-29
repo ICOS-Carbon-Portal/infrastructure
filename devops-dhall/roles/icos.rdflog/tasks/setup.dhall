@@ -1,5 +1,7 @@
 -- Auto-generated from setup.yml
 
-[
-    { import_tasks = "barebones.yml", tags = "rdflog_setup" }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{ import_tasks = Some "barebones.yml", tags = Some [ "rdflog_setup" ] }
 ]

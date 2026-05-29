@@ -1,59 +1,71 @@
 -- Auto-generated from setup.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt : Optional ({ name : List Text })
-    , template : Optional ({ src : Text, dest : Text, owner : Text, group : Text, backup : Bool })
-    , tags : Optional Text
-    , notify : Optional Text
-    , file : Optional ({ path : Text, state : Text })
-    , iptables_raw : Optional ({ name : Text, rules : Text })
-    , service : Optional ({ name : Text, state : Text, enabled : Bool })
-  }
-    , default =
-        { apt = None ({ name : List Text })
-    , template = None ({ src : Text, dest : Text, owner : Text, group : Text, backup : Bool })
-    , tags = None Text
-    , notify = None Text
-    , file = None ({ path : Text, state : Text })
-    , iptables_raw = None ({ name : Text, rules : Text })
-    , service = None ({ name : Text, state : Text, enabled : Bool })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Task::{ name = "Install nginx", apt = Some { name = [ "nginx" ] } }
+    Task::{
+      name = Some "Install nginx",
+      apt = Some {
+        name = Some [ "nginx" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
+    }
   , Task::{
-      name = "Install nginx.conf",
+      name = Some "Install nginx.conf",
       template = Some {
         src = "nginx.conf"
       , dest = "/etc/nginx/nginx.conf"
-      , owner = "{{ nginx_user }}"
-      , group = "{{ nginx_user }}"
-      , backup = True
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = Some True
+      , owner = Some "{{ nginx_user }}"
+      , group = Some "{{ nginx_user }}"
     },
-      tags = Some "nginx_conf",
-      notify = Some "reload nginx config"
+      tags = Some [ "nginx_conf" ],
+      notify = Some [ "reload nginx config" ]
     }
   , Task::{
-      name = "Remove nginx default site",
-      notify = Some "reload nginx config",
-      file = Some { path = "/etc/nginx/sites-enabled/default", state = "absent" }
+      name = Some "Remove nginx default site",
+      file = Some {
+        path = Some "/etc/nginx/sites-enabled/default"
+      , state = Some "absent"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    },
+      notify = Some [ "reload nginx config" ]
     }
   , Task::{
-      name = "Allow nginx through firewall",
+      name = Some "Allow nginx through firewall",
       iptables_raw = Some {
         name = "allow_nginx"
-      , rules = ''
+      , rules = Some ''
         -A INPUT -p tcp --dport 80 -j ACCEPT
         -A INPUT -p tcp --dport 443 -j ACCEPT
 
       ''
+      , weight = None Natural
+      , table = None Text
+      , state = None Text
     }
     }
   , Task::{
-      name = "Start nginx",
-      service = Some { name = "nginx", state = "started", enabled = True }
+      name = Some "Start nginx",
+      service = Some { name = "nginx", state = "started", enabled = Some True }
     }
 ]

@@ -1,12 +1,28 @@
 -- Auto-generated from main.yml
 
-[
-    {
-      name = "reload postgresql"
-    , systemd = { name = "postgresql", status = "reloaded" }
-  }
-  , {
-      name = "restart postgresql"
-    , systemd = { name = "postgresql", status = "restarted" }
-  }
+let Task = ../../../types/Task.dhall
+
+in  [
+    Task::{
+      name = Some "reload postgresql",
+      systemd = Some {
+        name = Some "postgresql"
+      , state = None Text
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = Some "reloaded"
+    }
+    }
+  , Task::{
+      name = Some "restart postgresql",
+      systemd = Some {
+        name = Some "postgresql"
+      , state = None Text
+      , daemon_reload = None Bool
+      , enabled = None Text
+      , `daemon-reload` = None Text
+      , status = Some "restarted"
+    }
+    }
 ]

@@ -1,30 +1,36 @@
 -- Auto-generated from xcaddy-other.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , command : Optional Text
-    , args : Optional ({ creates : Text })
-    , environment : Optional ({ GOPATH : Text })
-    , file : Optional ({ dest : Text, src : Text, state : Text })
-  }
-    , default =
-        { command = None Text
-    , args = None ({ creates : Text })
-    , environment = None ({ GOPATH : Text })
-    , file = None ({ dest : Text, src : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Install xcaddy",
+    Task::{
+      name = Some "Install xcaddy",
       command = Some "go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest",
-      args = Some { creates = "{{ omit if xcaddy_upgrade else '/opt/xcaddy' }}" },
-      environment = Some { GOPATH = "/opt/xcaddy" }
+      args = Some {
+        creates = Some "{{ omit if xcaddy_upgrade else '/opt/xcaddy' }}"
+      , chdir = None Text
+      , executable = None Text
+      , removes = None Text
+    },
+      environment = Some {
+        BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = None Text
+      , BORG_RELOCATED_REPO_ACCESS_IS_OK = None Text
+      , PIPX_BIN_DIR = None Text
+      , GOPATH = Some "/opt/xcaddy"
     }
-  , Entry::{
-      name = "Create /usr/local/bin/xcaddy symlink",
-      file = Some { dest = "/usr/local/bin/xcaddy", src = "/opt/xcaddy/bin/xcaddy", state = "link" }
+    }
+  , Task::{
+      name = Some "Create /usr/local/bin/xcaddy symlink",
+      file = Some {
+        path = None Text
+      , state = Some "link"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = Some "/usr/local/bin/xcaddy"
+      , recurse = None Bool
+      , src = Some "/opt/xcaddy/bin/xcaddy"
+    }
     }
 ]

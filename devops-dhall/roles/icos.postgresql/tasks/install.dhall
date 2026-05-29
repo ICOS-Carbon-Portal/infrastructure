@@ -1,75 +1,86 @@
 -- Auto-generated from install.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , apt_key : Optional ({ id : Text, url : Text, state : Text })
-    , apt_repository : Optional ({ repo : Text, filename : Text })
-    , apt : Optional ({ name : Text })
-    , when : Optional Text
-    , pip : Optional ({ name : Text, state : Text })
-    , file : Optional ({ path : Text, state : Text, owner : Text, group : Text })
-    , lineinfile : Optional ({ owner : Text, group : Text, create : Bool, path : Text, regex : Text, line : Text, state : Text })
-  }
-    , default =
-        { apt_key = None ({ id : Text, url : Text, state : Text })
-    , apt_repository = None ({ repo : Text, filename : Text })
-    , apt = None ({ name : Text })
-    , when = None Text
-    , pip = None ({ name : Text, state : Text })
-    , file = None ({ path : Text, state : Text, owner : Text, group : Text })
-    , lineinfile = None ({ owner : Text, group : Text, create : Bool, path : Text, regex : Text, line : Text, state : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Adding the apt key for postgresql",
+      name = Some "Adding the apt key for postgresql",
       apt_key = Some {
-        id = "ACCC4CF8"
+        id = Some "ACCC4CF8"
       , url = "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
       , state = "present"
     }
     }
   , Task::{
-      name = "Adding the postgresql repo",
+      name = Some "Adding the postgresql repo",
       apt_repository = Some {
-        repo = "deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main"
-      , filename = "pgdg"
+        filename = Some "pgdg"
+      , repo = "deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main"
     }
     }
   , Task::{
-      name = "Install postgresql",
-      apt = Some { name = "{{ 'postgresql-%s' % postgresql_version }}" }
+      name = Some "Install postgresql",
+      apt = Some {
+        name = Some [ "{{ 'postgresql-%s' % postgresql_version }}" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    }
     }
   , Task::{
-      name = "Install postgis",
-      apt = Some { name = "{{ 'postgresql-%s-postgis-3' % postgresql_version }}" },
-      when = Some "postgresql_postgis_enable"
+      name = Some "Install postgis",
+      apt = Some {
+        name = Some [ "{{ 'postgresql-%s-postgis-3' % postgresql_version }}" ]
+      , state = None Text
+      , update_cache = None Bool
+      , deb = None Text
+      , purge = None Bool
+      , upgrade = None Bool
+      , autoclean = None Bool
+      , autoremove = None Bool
+      , cache_valid_time = None Text
+      , install_recommends = None Bool
+    },
+      when = Some [ "postgresql_postgis_enable" ]
     }
   , Task::{
-      name = "Install python3 psycopg2-binary library",
-      pip = Some { name = "psycopg2-binary", state = "present" }
+      name = Some "Install python3 psycopg2-binary library",
+      pip = Some { name = [ "psycopg2-binary" ], virtualenv = None Text, state = Some "present" }
     }
   , Task::{
-      name = "Create {{ postgresql_bin }} directory",
+      name = Some "Create {{ postgresql_bin }} directory",
       file = Some {
-        path = "{{ postgresql_bin }}"
-      , state = "directory"
-      , owner = "postgres"
-      , group = "postgres"
+        path = Some "{{ postgresql_bin }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = Some "postgres"
+      , group = Some "postgres"
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
     }
     }
   , Task::{
-      name = "Modify ~/.profile",
+      name = Some "Modify ~/.profile",
       lineinfile = Some {
-        owner = "postgres"
-      , group = "postgres"
-      , create = True
-      , path = "{{ postgresql_home }}/.profile"
-      , regex = "^PATH="
-      , line = "PATH=$HOME/bin:$PATH"
-      , state = "present"
+        path = "{{ postgresql_home }}/.profile"
+      , line = Some "PATH=$HOME/bin:$PATH"
+      , state = Some "present"
+      , regex = Some "^PATH="
+      , regexp = None Text
+      , create = Some True
+      , owner = Some "postgres"
+      , group = Some "postgres"
+      , insertafter = None Text
+      , mode = None Natural
+      , insertbefore = None Text
     }
     }
 ]

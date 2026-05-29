@@ -1,35 +1,35 @@
 -- Auto-generated from quince-logging.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , copy : { dest : Text, content : Text }
-    , notify : Optional Text
-  }
-    , default =
-        { notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create rsyslog config",
-      copy = {
-        dest = "/etc/rsyslog.d/30-quince.conf"
-      , content = ''
+      name = Some "Create rsyslog config",
+      copy = Some {
+        src = None Text
+      , dest = "/etc/rsyslog.d/30-quince.conf"
+      , mode = None Text
+      , content = Some ''
         $FileCreateMode 0644
         :programname,isequal,"catalina.sh"          {{ quince_log_file }}
         & stop
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      notify = Some "restart rsyslog"
+      notify = Some [ "restart rsyslog" ]
     }
   , Task::{
-      name = "Create logrotate config",
-      copy = {
-        dest = "/etc/logrotate.d/quince"
-      , content = ''
+      name = Some "Create logrotate config",
+      copy = Some {
+        src = None Text
+      , dest = "/etc/logrotate.d/quince"
+      , mode = None Text
+      , content = Some ''
         {{ quince_log_file }}
         {
                 rotate 12
@@ -43,6 +43,11 @@ in  [
         }
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     }
     }
 ]

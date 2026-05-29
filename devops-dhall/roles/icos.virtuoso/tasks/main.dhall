@@ -1,51 +1,74 @@
 -- Auto-generated from main.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , file : Optional ({ path : Text, state : Text })
-    , loop : Optional (List Text)
-    , template : Optional ({ src : Text, dest : Text })
-    , register : Optional Text
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Optional Text })
-    , when : Optional Text
-  }
-    , default =
-        { file = None ({ path : Text, state : Text })
-    , loop = None (List Text)
-    , template = None ({ src : Text, dest : Text })
-    , register = None Text
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Optional Text })
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Create volume directories",
-      file = Some { path = "{{ item }}", state = "directory" },
+    Task::{
+      name = Some "Create volume directories",
+      file = Some {
+        path = Some "{{ item }}"
+      , state = Some "directory"
+      , mode = None Text
+      , owner = None Text
+      , group = None Text
+      , name = None Text
+      , dest = None Text
+      , recurse = None Bool
+      , src = None Text
+    },
       loop = Some [ "{{ virtuoso_home }}/volumes/virtuoso.db" ]
     }
-  , Entry::{
-      name = "Copy virtuoso.ini",
+  , Task::{
+      name = Some "Copy virtuoso.ini",
       template = Some {
         src = "virtuoso.ini"
       , dest = "{{ virtuoso_home }}/volumes/virtuoso.db/virtuoso.ini"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     },
       register = Some "_virtuoso_ini"
     }
-  , Entry::{
-      name = "Copy docker-compose.yml",
-      template = Some { src = "docker-compose.yml", dest = "{{ virtuoso_home }}" },
+  , Task::{
+      name = Some "Copy docker-compose.yml",
+      template = Some {
+        src = "docker-compose.yml"
+      , dest = "{{ virtuoso_home }}"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    },
       register = Some "_virtuoso_compose"
     }
-  , Entry::{
-      name = "Start Virtuoso",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ virtuoso_home }}", state = "present", pull = Some "always" }
+  , Task::{
+      name = Some "Start Virtuoso",
+      `community.docker.docker_compose_v2` = Some {
+        project_src = "{{ virtuoso_home }}"
+      , state = Some "present"
+      , pull = Some "always"
+      , services = None (List Text)
+      , build = None Text
     }
-  , Entry::{
-      name = "Restart Virtuoso if config changed",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ virtuoso_home }}", state = "restarted", pull = None Text },
-      when = Some "_virtuoso_ini.changed or _virtuoso_compose.changed"
+    }
+  , Task::{
+      name = Some "Restart Virtuoso if config changed",
+      `community.docker.docker_compose_v2` = Some {
+        project_src = "{{ virtuoso_home }}"
+      , state = Some "restarted"
+      , pull = None Text
+      , services = None (List Text)
+      , build = None Text
+    },
+      when = Some [ "_virtuoso_ini.changed or _virtuoso_compose.changed" ]
     }
 ]

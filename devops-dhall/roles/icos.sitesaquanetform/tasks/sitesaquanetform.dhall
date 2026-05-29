@@ -1,41 +1,57 @@
 -- Auto-generated from sitesaquanetform.yml
 
-let Entry =
-    { Type =
-        { name : Text
-    , git : Optional ({ repo : Text, dest : Text, key_file : Text })
-    , template : Optional ({ src : Text, dest : Text })
-    , docker_compose : Optional ({ project_src : Text, state : Text, build : Bool })
-    , notify : Optional Text
-  }
-    , default =
-        { git = None ({ repo : Text, dest : Text, key_file : Text })
-    , template = None ({ src : Text, dest : Text })
-    , docker_compose = None ({ project_src : Text, state : Text, build : Bool })
-    , notify = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Entry::{
-      name = "Pull source from git",
+    Task::{
+      name = Some "Pull source from git",
       git = Some {
         repo = "{{ vault_aquanet_form_git_repo }}"
+      , version = None Text
       , dest = "{{ project_dir }}/repo"
-      , key_file = "{{ project_dir }}/.ssh/id_rsa"
+      , force = None Bool
+      , update = None Text
+      , key_file = Some "{{ project_dir }}/.ssh/id_rsa"
     }
     }
-  , Entry::{
-      name = "Copy config",
-      template = Some { src = "config.json", dest = "{{ project_dir }}/repo/" }
+  , Task::{
+      name = Some "Copy config",
+      template = Some {
+        src = "config.json"
+      , dest = "{{ project_dir }}/repo/"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
     }
-  , Entry::{
-      name = "Copy docker-compose.yml",
-      template = Some { src = "docker-compose.yml.j2", dest = "{{ project_dir }}/docker-compose.yml" }
     }
-  , Entry::{
-      name = "Run docker-compose",
-      docker_compose = Some { project_src = "{{ project_dir }}", state = "present", build = True },
-      notify = Some "reload nginx config"
+  , Task::{
+      name = Some "Copy docker-compose.yml",
+      template = Some {
+        src = "docker-compose.yml.j2"
+      , dest = "{{ project_dir }}/docker-compose.yml"
+      , mode = None Text
+      , variable_start_string = None Text
+      , variable_end_string = None Text
+      , lstrip_blocks = None Bool
+      , validate = None Text
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+    }
+    }
+  , Task::{
+      name = Some "Run docker-compose",
+      docker_compose = Some {
+        project_src = "{{ project_dir }}"
+      , build = Some True
+      , restarted = None Text
+      , state = Some "present"
+    },
+      notify = Some [ "reload nginx config" ]
     }
 ]

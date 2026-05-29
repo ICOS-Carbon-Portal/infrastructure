@@ -1,69 +1,70 @@
 -- Auto-generated from main.yml
 
-let Task =
-    { Type =
-        { name : Text
-    , user : Optional ({ name : Text, password : Optional Text, home : Optional Text, groups : Optional Text, append : Optional Text, remove : Optional Text, state : Optional Text })
-    , loop : Text
-    , authorized_key : Optional ({ user : Text, key : Text, state : Text, exclusive : Bool })
-    , copy : Optional ({ dest : Text, content : Text })
-    , when : Optional Text
-  }
-    , default =
-        { user = None ({ name : Text, password : Optional Text, home : Optional Text, groups : Optional Text, append : Optional Text, remove : Optional Text, state : Optional Text })
-    , authorized_key = None ({ user : Text, key : Text, state : Text, exclusive : Bool })
-    , copy = None ({ dest : Text, content : Text })
-    , when = None Text
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
     Task::{
-      name = "Create user",
+      name = Some "Create user",
       user = Some {
         name = "{{ item.name }}"
-      , password = Some "{{ item.password | default(omit) }}"
       , home = Some "{{ item.home | default(omit) }}"
-      , groups = Some "{{ item.groups | default(omit) }}"
+      , create_home = None Text
+      , shell = None Text
+      , groups = Some [ "{{ item.groups | default(omit) }}" ]
       , append = Some "{{ item.groups | default(false) | bool }}"
-      , remove = None Text
       , state = None Text
+      , system = None Bool
+      , password = Some "{{ item.password | default(omit) }}"
+      , generate_ssh_key = None Bool
+      , remove = None Text
     },
-      loop = "{{ user_conf.create_users | default([]) }}"
+      loop = Some [ "{{ user_conf.create_users | default([]) }}" ]
     }
   , Task::{
-      name = "Install public key",
-      loop = "{{ user_conf.create_users | default([]) }}",
+      name = Some "Install public key",
       authorized_key = Some {
         user = "{{ item.name }}"
+      , key_options = None Text
       , key = "{{ item.key }}"
-      , state = "present"
-      , exclusive = True
-    }
+      , state = Some "present"
+      , exclusive = Some True
+    },
+      loop = Some [ "{{ user_conf.create_users | default([]) }}" ]
     }
   , Task::{
-      name = "Install password-less sudo rule",
-      loop = "{{ user_conf.create_users | default([]) }}",
+      name = Some "Install password-less sudo rule",
       copy = Some {
-        dest = "/etc/sudoers.d/{{ item.name }}"
-      , content = ''
+        src = None Text
+      , dest = "/etc/sudoers.d/{{ item.name }}"
+      , mode = None Text
+      , content = Some ''
         {{ item.name }} ALL=(ALL) NOPASSWD: ALL
 
       ''
+      , backup = None Bool
+      , owner = None Text
+      , group = None Text
+      , force = None Text
+      , validate = None Text
     },
-      when = Some "item.sudopwless | default(false)"
+      when = Some [ "item.sudopwless | default(false)" ],
+      loop = Some [ "{{ user_conf.create_users | default([]) }}" ]
     }
   , Task::{
-      name = "Remove user",
+      name = Some "Remove user",
       user = Some {
         name = "{{ item.name }}"
-      , password = None Text
       , home = None Text
-      , groups = None Text
+      , create_home = None Text
+      , shell = None Text
+      , groups = None (List Text)
       , append = None Text
-      , remove = Some "{{ item.remove | default(omit) }}"
       , state = Some "absent"
+      , system = None Bool
+      , password = None Text
+      , generate_ssh_key = None Bool
+      , remove = Some "{{ item.remove | default(omit) }}"
     },
-      loop = "{{ user_conf.remove_users | default([]) }}"
+      loop = Some [ "{{ user_conf.remove_users | default([]) }}" ]
     }
 ]

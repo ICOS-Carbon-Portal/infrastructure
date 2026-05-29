@@ -1,97 +1,441 @@
 -- Auto-generated from resolve-probe.yml
 
-let Item =
-    { Type =
-        { when : Optional (List Text)
-    , block : Optional (List ({ name : Text, systemd : Optional ({ name : Text }), register : Optional Text, when : Optional Text, set_fact : Optional ({ nebula_resolve_type : Text, cacheable : Bool }) }))
-    , set_fact : Optional ({ name : Text, nebula_resolve_type : Text, cacheable : Bool })
-    , name : Optional Text
-    , debug : Optional ({ msg : Text })
-  }
-    , default =
-        { when = None (List Text)
-    , block = None (List ({ name : Text, systemd : Optional ({ name : Text }), register : Optional Text, when : Optional Text, set_fact : Optional ({ nebula_resolve_type : Text, cacheable : Bool }) }))
-    , set_fact = None ({ name : Text, nebula_resolve_type : Text, cacheable : Bool })
-    , name = None Text
-    , debug = None ({ msg : Text })
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{
+    Task::{
       when = Some [ "nebula_resolve_type == \"probe\"" ],
-      block = Some [
-        {
-          name = "Query systemd for dhcpcd",
-          systemd = Some { name = "dhcpcd" },
+      block = Some (let Entry =
+        { Type =
+            { name : Optional Text
+        , check_mode : Optional Bool
+        , shellfact : Optional ({ exec : Text, fact : Text })
+        , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile : Optional ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command : Optional Text
+        , register : Optional Text
+        , changed_when : Optional Text
+        , failed_when : Optional (List Text)
+        , github_release : Optional ({ user : Text, repo : Text, action : Text })
+        , set_fact : Optional ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args : Optional ({ chdir : Text })
+        , notify : Optional Text
+        , import_tasks : Optional Text
+        , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd : Optional ({ name : Text, state : Optional Text })
+        , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop : Optional (List Text)
+        , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
+        , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when : Optional Text
+        , shell : Optional Text
+        , known_hosts : Optional ({ path : Text, name : Text, key : Text })
+        , import_role : Optional ({ name : Text, tasks_from : Text })
+        , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp : Optional ({ src : Text })
+        , delegate_to : Optional Text
+        , expect : Optional ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables : Optional ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw : Optional ({ name : Text, rules : Text })
+        , debug : Optional ({ msg : Text })
+        , tags : Optional Text
+        , `community.postgresql.postgresql_set` : Optional ({ name : Text, value : Text })
+        , user : Optional ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once : Optional Bool
+        , fetch : Optional ({ src : Text, dest : Text, flat : Bool })
+        , get_url : Optional ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Text })
+        , fail : Optional ({ msg : Text })
+        , `ansible.builtin.template` : Optional ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` : Optional Text
+        , retries : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , check_mode = None Bool
+        , shellfact = None ({ exec : Text, fact : Text })
+        , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile = None ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command = None Text
+        , register = None Text
+        , changed_when = None Text
+        , failed_when = None (List Text)
+        , github_release = None ({ user : Text, repo : Text, action : Text })
+        , set_fact = None ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args = None ({ chdir : Text })
+        , notify = None Text
+        , import_tasks = None Text
+        , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd = None ({ name : Text, state : Optional Text })
+        , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop = None (List Text)
+        , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
+        , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when = None Text
+        , shell = None Text
+        , known_hosts = None ({ path : Text, name : Text, key : Text })
+        , import_role = None ({ name : Text, tasks_from : Text })
+        , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp = None ({ src : Text })
+        , delegate_to = None Text
+        , expect = None ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables = None ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw = None ({ name : Text, rules : Text })
+        , debug = None ({ msg : Text })
+        , tags = None Text
+        , `community.postgresql.postgresql_set` = None ({ name : Text, value : Text })
+        , user = None ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once = None Bool
+        , fetch = None ({ src : Text, dest : Text, flat : Bool })
+        , get_url = None ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text })
+        , fail = None ({ msg : Text })
+        , `ansible.builtin.template` = None ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` = None Text
+        , retries = None Natural
+      }
+        }
+
+    in  [
+        Entry::{
+          name = Some "Query systemd for dhcpcd",
           register = Some "_r",
-          when = None Text,
-          set_fact = None ({ nebula_resolve_type : Text, cacheable : Bool })
+          systemd = Some { name = "dhcpcd", state = None Text }
         }
-      , {
-          name = "Set nebula_resolve_type to dnsmasq",
-          systemd = None ({ name : Text }),
-          register = None Text,
-          when = Some "_r.status.ActiveState == \"active\"",
-          set_fact = Some { nebula_resolve_type = "dnsmasq", cacheable = True }
+      , Entry::{
+          name = Some "Set nebula_resolve_type to dnsmasq",
+          set_fact = Some {
+            borg_version = None Text
+          , cacheable = True
+          , dive_version = None Text
+          , lazydocker_version = None Text
+          , just_version = None Text
+          , nebula_version = None Text
+          , nebula_resolve_type = Some "dnsmasq"
+          , restic_version = None Text
+          , restic_server_version = None Text
+          , stiltcluster_jar_file = None Text
+          , btop_version = None Text
+          , fd_version = None Text
+          , lazygit_version = None Text
+          , ripgrep_version = None Text
+          , trippy_version = None Text
+          , watchexec_version = None Text
+          , uv_version = None Text
+          , grafana_datasource_version = None Text
+          , httm_version = None Text
+        },
+          when = Some "_r.status.ActiveState == \"active\""
         }
-    ]
+    ])
     }
-  , Item::{
+  , Task::{
       when = Some [ "nebula_resolve_type == \"probe\"" ],
-      block = Some [
-        {
-          name = "Query systemd for NetworkManager",
-          systemd = Some { name = "NetworkManager" },
+      block = Some (let Entry =
+        { Type =
+            { name : Optional Text
+        , check_mode : Optional Bool
+        , shellfact : Optional ({ exec : Text, fact : Text })
+        , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile : Optional ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command : Optional Text
+        , register : Optional Text
+        , changed_when : Optional Text
+        , failed_when : Optional (List Text)
+        , github_release : Optional ({ user : Text, repo : Text, action : Text })
+        , set_fact : Optional ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args : Optional ({ chdir : Text })
+        , notify : Optional Text
+        , import_tasks : Optional Text
+        , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd : Optional ({ name : Text, state : Optional Text })
+        , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop : Optional (List Text)
+        , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
+        , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when : Optional Text
+        , shell : Optional Text
+        , known_hosts : Optional ({ path : Text, name : Text, key : Text })
+        , import_role : Optional ({ name : Text, tasks_from : Text })
+        , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp : Optional ({ src : Text })
+        , delegate_to : Optional Text
+        , expect : Optional ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables : Optional ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw : Optional ({ name : Text, rules : Text })
+        , debug : Optional ({ msg : Text })
+        , tags : Optional Text
+        , `community.postgresql.postgresql_set` : Optional ({ name : Text, value : Text })
+        , user : Optional ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once : Optional Bool
+        , fetch : Optional ({ src : Text, dest : Text, flat : Bool })
+        , get_url : Optional ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Text })
+        , fail : Optional ({ msg : Text })
+        , `ansible.builtin.template` : Optional ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` : Optional Text
+        , retries : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , check_mode = None Bool
+        , shellfact = None ({ exec : Text, fact : Text })
+        , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile = None ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command = None Text
+        , register = None Text
+        , changed_when = None Text
+        , failed_when = None (List Text)
+        , github_release = None ({ user : Text, repo : Text, action : Text })
+        , set_fact = None ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args = None ({ chdir : Text })
+        , notify = None Text
+        , import_tasks = None Text
+        , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd = None ({ name : Text, state : Optional Text })
+        , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop = None (List Text)
+        , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
+        , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when = None Text
+        , shell = None Text
+        , known_hosts = None ({ path : Text, name : Text, key : Text })
+        , import_role = None ({ name : Text, tasks_from : Text })
+        , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp = None ({ src : Text })
+        , delegate_to = None Text
+        , expect = None ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables = None ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw = None ({ name : Text, rules : Text })
+        , debug = None ({ msg : Text })
+        , tags = None Text
+        , `community.postgresql.postgresql_set` = None ({ name : Text, value : Text })
+        , user = None ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once = None Bool
+        , fetch = None ({ src : Text, dest : Text, flat : Bool })
+        , get_url = None ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text })
+        , fail = None ({ msg : Text })
+        , `ansible.builtin.template` = None ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` = None Text
+        , retries = None Natural
+      }
+        }
+
+    in  [
+        Entry::{
+          name = Some "Query systemd for NetworkManager",
           register = Some "_r",
-          when = None Text,
-          set_fact = None ({ nebula_resolve_type : Text, cacheable : Bool })
+          systemd = Some { name = "NetworkManager", state = None Text }
         }
-      , {
-          name = "Set nebula_resolve_type to NetworkManager",
-          systemd = None ({ name : Text }),
-          register = None Text,
-          when = Some "_r.status.ActiveState == \"active\"",
-          set_fact = Some { nebula_resolve_type = "NetworkManager", cacheable = True }
+      , Entry::{
+          name = Some "Set nebula_resolve_type to NetworkManager",
+          set_fact = Some {
+            borg_version = None Text
+          , cacheable = True
+          , dive_version = None Text
+          , lazydocker_version = None Text
+          , just_version = None Text
+          , nebula_version = None Text
+          , nebula_resolve_type = Some "NetworkManager"
+          , restic_version = None Text
+          , restic_server_version = None Text
+          , stiltcluster_jar_file = None Text
+          , btop_version = None Text
+          , fd_version = None Text
+          , lazygit_version = None Text
+          , ripgrep_version = None Text
+          , trippy_version = None Text
+          , watchexec_version = None Text
+          , uv_version = None Text
+          , grafana_datasource_version = None Text
+          , httm_version = None Text
+        },
+          when = Some "_r.status.ActiveState == \"active\""
         }
-    ]
+    ])
     }
-  , Item::{
+  , Task::{
       when = Some [ "nebula_resolve_type == \"probe\"" ],
-      block = Some [
-        {
-          name = "Query systemd for systemd-networkd",
-          systemd = Some { name = "systemd-networkd" },
+      block = Some (let Entry =
+        { Type =
+            { name : Optional Text
+        , check_mode : Optional Bool
+        , shellfact : Optional ({ exec : Text, fact : Text })
+        , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile : Optional ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command : Optional Text
+        , register : Optional Text
+        , changed_when : Optional Text
+        , failed_when : Optional (List Text)
+        , github_release : Optional ({ user : Text, repo : Text, action : Text })
+        , set_fact : Optional ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args : Optional ({ chdir : Text })
+        , notify : Optional Text
+        , import_tasks : Optional Text
+        , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd : Optional ({ name : Text, state : Optional Text })
+        , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop : Optional (List Text)
+        , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
+        , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when : Optional Text
+        , shell : Optional Text
+        , known_hosts : Optional ({ path : Text, name : Text, key : Text })
+        , import_role : Optional ({ name : Text, tasks_from : Text })
+        , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp : Optional ({ src : Text })
+        , delegate_to : Optional Text
+        , expect : Optional ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables : Optional ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw : Optional ({ name : Text, rules : Text })
+        , debug : Optional ({ msg : Text })
+        , tags : Optional Text
+        , `community.postgresql.postgresql_set` : Optional ({ name : Text, value : Text })
+        , user : Optional ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once : Optional Bool
+        , fetch : Optional ({ src : Text, dest : Text, flat : Bool })
+        , get_url : Optional ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Text })
+        , fail : Optional ({ msg : Text })
+        , `ansible.builtin.template` : Optional ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` : Optional Text
+        , retries : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , check_mode = None Bool
+        , shellfact = None ({ exec : Text, fact : Text })
+        , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile = None ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command = None Text
+        , register = None Text
+        , changed_when = None Text
+        , failed_when = None (List Text)
+        , github_release = None ({ user : Text, repo : Text, action : Text })
+        , set_fact = None ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args = None ({ chdir : Text })
+        , notify = None Text
+        , import_tasks = None Text
+        , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd = None ({ name : Text, state : Optional Text })
+        , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop = None (List Text)
+        , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
+        , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when = None Text
+        , shell = None Text
+        , known_hosts = None ({ path : Text, name : Text, key : Text })
+        , import_role = None ({ name : Text, tasks_from : Text })
+        , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp = None ({ src : Text })
+        , delegate_to = None Text
+        , expect = None ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables = None ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw = None ({ name : Text, rules : Text })
+        , debug = None ({ msg : Text })
+        , tags = None Text
+        , `community.postgresql.postgresql_set` = None ({ name : Text, value : Text })
+        , user = None ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once = None Bool
+        , fetch = None ({ src : Text, dest : Text, flat : Bool })
+        , get_url = None ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text })
+        , fail = None ({ msg : Text })
+        , `ansible.builtin.template` = None ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` = None Text
+        , retries = None Natural
+      }
+        }
+
+    in  [
+        Entry::{
+          name = Some "Query systemd for systemd-networkd",
           register = Some "_r",
-          when = None Text,
-          set_fact = None ({ nebula_resolve_type : Text, cacheable : Bool })
+          systemd = Some { name = "systemd-networkd", state = None Text }
         }
-      , {
-          name = "Set nebula_resolve_type to systemd-networkd",
-          systemd = None ({ name : Text }),
-          register = None Text,
-          when = Some "_r.status.ActiveState == \"active\"",
-          set_fact = Some { nebula_resolve_type = "systemd-networkd", cacheable = True }
+      , Entry::{
+          name = Some "Set nebula_resolve_type to systemd-networkd",
+          set_fact = Some {
+            borg_version = None Text
+          , cacheable = True
+          , dive_version = None Text
+          , lazydocker_version = None Text
+          , just_version = None Text
+          , nebula_version = None Text
+          , nebula_resolve_type = Some "systemd-networkd"
+          , restic_version = None Text
+          , restic_server_version = None Text
+          , stiltcluster_jar_file = None Text
+          , btop_version = None Text
+          , fd_version = None Text
+          , lazygit_version = None Text
+          , ripgrep_version = None Text
+          , trippy_version = None Text
+          , watchexec_version = None Text
+          , uv_version = None Text
+          , grafana_datasource_version = None Text
+          , httm_version = None Text
+        },
+          when = Some "_r.status.ActiveState == \"active\""
         }
-    ]
+    ])
     }
-  , Item::{
+  , Task::{
       when = Some [ "nebula_resolve_type == \"probe\"", "ansible_distribution == \"Debian\"" ],
       set_fact = Some {
-        name = "Set nebula_resolve_type to dnsmasq"
-      , nebula_resolve_type = "dnsmasq"
-      , cacheable = True
+        certbot_nginx_conf = None Text
+      , destjarfile = None Text
+      , name = Some "Set nebula_resolve_type to dnsmasq"
+      , nebula_resolve_type = Some "dnsmasq"
+      , cacheable = Some True
+      , nebula_ssh_public = None Text
+      , quince_tomcat_dir = None Text
+      , sshlogin_src_user = None Text
+      , sshlogin_dst_user = None Text
+      , _wg_is_installed = None Natural
     }
     }
-  , Item::{
+  , Task::{
       when = Some [ "nebula_resolve_type == \"probe\"" ],
       set_fact = Some {
-        name = "Set nebula_resolve_type to unknown"
-      , nebula_resolve_type = "unknown"
-      , cacheable = True
+        certbot_nginx_conf = None Text
+      , destjarfile = None Text
+      , name = Some "Set nebula_resolve_type to unknown"
+      , nebula_resolve_type = Some "unknown"
+      , cacheable = Some True
+      , nebula_ssh_public = None Text
+      , quince_tomcat_dir = None Text
+      , sshlogin_src_user = None Text
+      , sshlogin_dst_user = None Text
+      , _wg_is_installed = None Natural
     }
     }
-  , Item::{
+  , Task::{
       name = Some "Inform about the client dns resolution setup",
       debug = Some {
         msg = "nebula_resolve_type == {{ nebula_resolve_type }} for {{ ansible_lsb.id }}/{{ ansible_lsb.major_release }}"

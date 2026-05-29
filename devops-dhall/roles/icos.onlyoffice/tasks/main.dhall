@@ -1,54 +1,200 @@
 -- Auto-generated from main.yml
 
-let Item =
-    { Type =
-        { import_tasks : Optional Text
-    , tags : Optional (List Text)
-    , name : Optional Text
-    , include_role : Optional ({ name : Text })
-    , vars : Optional ({ nginxsite_name : Text, nginxsite_file : Text, nginxsite_domains : List Text })
-    , block : Optional (List ({ name : Text, copy : Optional ({ src : Text, dest : Text }), shell : Optional Text }))
-  }
-    , default =
-        { import_tasks = None Text
-    , tags = None (List Text)
-    , name = None Text
-    , include_role = None ({ name : Text })
-    , vars = None ({ nginxsite_name : Text, nginxsite_file : Text, nginxsite_domains : List Text })
-    , block = None (List ({ name : Text, copy : Optional ({ src : Text, dest : Text }), shell : Optional Text }))
-  }
-    }
+let Task = ../../../types/Task.dhall
 
 in  [
-    Item::{ import_tasks = Some "docker.yml", tags = Some [ "onlyoffice_docker" ] }
-  , Item::{
+    Task::{ import_tasks = Some "docker.yml", tags = Some [ "onlyoffice_docker" ] }
+  , Task::{
       name = Some "Install nginx configuration for onlyoffice",
-      include_role = Some { name = "icos.nginxsite" },
+      include_role = Some {
+        name = "icos.nginxsite"
+      , apply = None ({ tags : Text })
+      , public = None Bool
+      , tasks_from = None Text
+    },
       vars = Some {
-        nginxsite_name = "onlyoffice"
-      , nginxsite_file = "onlyoffice.conf"
-      , nginxsite_domains = [ "{{ onlyoffice_domain }}" ]
+        timer_home = None Text
+      , timer_exec = None Text
+      , timer_name = None Text
+      , timer_conf = None Text
+      , timer_envs = None (List Text)
+      , timer_content = None Text
+      , timer_user = None Text
+      , block = None Text
+      , marker = None Text
+      , where = None Text
+      , state = None Text
+      , bbclient_name = None Text
+      , bbclient_user = None Text
+      , bbclient_home = None Text
+      , bbclient_timer_conf = None Text
+      , bbclient_timer_content = None Text
+      , certbot_name = None Text
+      , certbot_domains = None (List Text)
+      , nginxsite_name = Some "onlyoffice"
+      , nginxsite_file = Some "onlyoffice.conf"
+      , _restart_needed = None Text
+      , fail2ban_config_files = None (List ({ dest : Text, content : Text }))
+      , nginxauth_file = None Text
+      , nginxauth_users = None Text
+      , jarservice_name = None Text
+      , jarservice_home = None Text
+      , jarservice_local = None Text
+      , jarservice_unit = None Text
+      , nginxsite_domains = Some [ "{{ onlyoffice_domain }}" ]
+      , jupyter_cert_name = None Text
+      , conf = None Text
+      , lxd_forward_name = None Text
+      , lxd_forward_ip = None Text
+      , lxd_forward_port = None Text
+      , file = None Text
+      , keys = None Text
+      , zfsdocker_size = None Text
+      , set_fact = None Text
+      , file_var = None Text
+      , python_util_src = None Text
+      , nginxauth_name = None Text
+      , dbin_download_dest = None Text
+      , dbin_user = None Text
+      , dbin_repo = None Text
+      , dbin_path = None Text
+      , dbin_arch = None Text
+      , timer_wdir = None Text
+      , vmagent_config_dest = None Text
+      , vmagent_config_content = None Text
+      , dbin_src = None Text
+      , dbin_url = None Text
+      , _builtin_version = None Text
+      , nginxauth_conf = None Text
+      , nginxsite_users = None (List Text)
+      , dbin_unar = None Bool
+      , timer_state = None Text
+      , timer_config = None Text
+      , timer_service = None Text
     }
     }
-  , Item::{ import_tasks = Some "just.yml", tags = Some [ "onlyoffice_just" ] }
-  , Item::{
-      tags = Some [ "onlyoffice_install_fonts", "onlyoffice_docker" ],
+  , Task::{ import_tasks = Some "just.yml", tags = Some [ "onlyoffice_just" ] }
+  , Task::{
       name = Some "Install onlyoffice fonts inside container",
-      block = Some [
-        {
-          name = "Copy fonts directory to docker host",
-          copy = Some { src = "fonts/", dest = "{{ onlyoffice_home }}/fonts/" },
-          shell = None Text
+      block = Some (let Task =
+        { Type =
+            { name : Optional Text
+        , check_mode : Optional Bool
+        , shellfact : Optional ({ exec : Text, fact : Text })
+        , authorized_key : Optional ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile : Optional ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command : Optional Text
+        , register : Optional Text
+        , changed_when : Optional Text
+        , failed_when : Optional (List Text)
+        , github_release : Optional ({ user : Text, repo : Text, action : Text })
+        , set_fact : Optional ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args : Optional ({ chdir : Text })
+        , notify : Optional Text
+        , import_tasks : Optional Text
+        , uri : Optional ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd : Optional ({ name : Text, state : Optional Text })
+        , copy : Optional ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file : Optional ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop : Optional (List Text)
+        , docker_image : Optional ({ source : Text, name : Text, build : { path : Text } })
+        , apt : Optional ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when : Optional Text
+        , shell : Optional Text
+        , known_hosts : Optional ({ path : Text, name : Text, key : Text })
+        , import_role : Optional ({ name : Text, tasks_from : Text })
+        , template : Optional ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role : Optional ({ name : Text })
+        , vars : Optional ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp : Optional ({ src : Text })
+        , delegate_to : Optional Text
+        , expect : Optional ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables : Optional ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw : Optional ({ name : Text, rules : Text })
+        , debug : Optional ({ msg : Text })
+        , tags : Optional Text
+        , `community.postgresql.postgresql_set` : Optional ({ name : Text, value : Text })
+        , user : Optional ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once : Optional Bool
+        , fetch : Optional ({ src : Text, dest : Text, flat : Bool })
+        , get_url : Optional ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, state : Text, pull : Text })
+        , fail : Optional ({ msg : Text })
+        , `ansible.builtin.template` : Optional ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` : Optional Text
+        , retries : Optional Natural
+      }
+        , default =
+            { name = None Text
+        , check_mode = None Bool
+        , shellfact = None ({ exec : Text, fact : Text })
+        , authorized_key = None ({ user : Text, state : Text, key : Text, key_options : Text })
+        , blockinfile = None ({ create : Bool, path : Text, marker : Text, block : Text, state : Optional Text, backup : Optional Bool, insertafter : Optional Text, insertbefore : Optional Text, mode : Optional Natural })
+        , command = None Text
+        , register = None Text
+        , changed_when = None Text
+        , failed_when = None (List Text)
+        , github_release = None ({ user : Text, repo : Text, action : Text })
+        , set_fact = None ({ borg_version : Optional Text, cacheable : Bool, dive_version : Optional Text, lazydocker_version : Optional Text, just_version : Optional Text, nebula_version : Optional Text, nebula_resolve_type : Optional Text, restic_version : Optional Text, restic_server_version : Optional Text, stiltcluster_jar_file : Optional Text, btop_version : Optional Text, fd_version : Optional Text, lazygit_version : Optional Text, ripgrep_version : Optional Text, trippy_version : Optional Text, watchexec_version : Optional Text, uv_version : Optional Text, grafana_datasource_version : Optional Text, httm_version : Optional Text })
+        , args = None ({ chdir : Text })
+        , notify = None Text
+        , import_tasks = None Text
+        , uri = None ({ url : Text, user : Optional Text, password : Optional Text })
+        , systemd = None ({ name : Text, state : Optional Text })
+        , copy = None ({ content : Optional Text, dest : Text, backup : Optional Bool, src : Optional Text, mode : Optional Natural })
+        , file = None ({ path : Optional Text, state : Text, mode : Optional Text, dest : Optional Text, recurse : Optional Bool, owner : Optional Text, modification_time : Optional Text, access_time : Optional Text })
+        , loop = None (List Text)
+        , docker_image = None ({ source : Text, name : Text, build : { path : Text } })
+        , apt = None ({ name : List Text, state : Optional Text, update_cache : Optional Bool, cache_valid_time : Optional Natural })
+        , when = None Text
+        , shell = None Text
+        , known_hosts = None ({ path : Text, name : Text, key : Text })
+        , import_role = None ({ name : Text, tasks_from : Text })
+        , template = None ({ dest : Text, src : Text, mode : Optional Text, lstrip_blocks : Optional Bool, backup : Optional Bool, owner : Optional Text })
+        , `ansible.builtin.pip` = None ({ virtualenv : Text, virtualenv_command : Text, requirements : Text })
+        , include_role = None ({ name : Text })
+        , vars = None ({ timer_user : Optional Text, timer_home : Optional Text, timer_name : Optional Text, timer_conf : Optional Text, timer_content : Optional Text, nginxsite_name : Optional Text, nginxsite_file : Optional Text, nginxsite_domains : Optional (List Text) })
+        , slurp = None ({ src : Text })
+        , delegate_to = None Text
+        , expect = None ({ chdir : Text, command : Text, responses : { `Enter passphrase: ` : Text } })
+        , iptables = None ({ state : Text, chain : Text, protocol : Optional Text, destination_port : Optional Text, jump : Text, action : Optional Text, in_interface : Optional Text })
+        , iptables_raw = None ({ name : Text, rules : Text })
+        , debug = None ({ msg : Text })
+        , tags = None Text
+        , `community.postgresql.postgresql_set` = None ({ name : Text, value : Text })
+        , user = None ({ name : Text, home : Optional Text, state : Optional Text })
+        , run_once = None Bool
+        , fetch = None ({ src : Text, dest : Text, flat : Bool })
+        , get_url = None ({ url : Text, dest : Text })
+        , `community.docker.docker_compose_v2` = None ({ project_src : Text, state : Text, pull : Text })
+        , fail = None ({ msg : Text })
+        , `ansible.builtin.template` = None ({ src : Text, dest : Text, owner : Optional Text })
+        , `ansible.builtin.shell` = None Text
+        , retries = None Natural
+      }
         }
-      , {
-          name = "Copy fonts into container and refresh font cache",
-          copy = None ({ src : Text, dest : Text }),
+
+    in  [
+        Task::{
+          name = Some "Copy fonts directory to docker host",
+          copy = Some {
+            content = None Text
+          , dest = "{{ onlyoffice_home }}/fonts/"
+          , backup = None Bool
+          , src = Some "fonts/"
+          , mode = None Natural
+        }
+        }
+      , Task::{
+          name = Some "Copy fonts into container and refresh font cache",
           shell = Some ''
           docker cp {{ onlyoffice_home }}/fonts/. onlyoffice:/usr/share/fonts/truetype/custom/
           docker exec onlyoffice bash -lc 'fc-cache -f -v && /usr/bin/documentserver-generate-allfonts.sh'
 
         ''
         }
-    ]
+    ]),
+      tags = Some [ "onlyoffice_install_fonts", "onlyoffice_docker" ]
     }
 ]
