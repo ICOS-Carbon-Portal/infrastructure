@@ -4,10 +4,10 @@ let Play =
     { Type =
         { hosts : Text
     , roles : List ({ name : Optional Text, tags : Text, role : Text, lxd_vm_name : Optional Text, lxd_vm_root_size : Optional Text, lxd_vm_config : Optional ({ `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text }) })
-    , tasks : Optional (List ({ include_role : Optional ({ name : Text, tasks_from : Text }), tags : Text, vars : Optional ({ postgresql_postgis_enable : Optional Bool, postgresql_postgres_password : Optional Text, postgresql_listen_addresses : Optional Text, postgresql_pg_stat_enable : Optional Bool, postgresql_backup_script : Optional Text, postgis_bbclient_name : Optional Text }), name : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), become : Optional Bool, become_user : Optional Text, block : Optional (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) })) }))
+    , tasks : Optional (List ({ include_role : Optional (< Record : { name : Text, tasks_from : Text } | Str : Text >), tags : Text, vars : Optional ({ postgresql_postgis_enable : Optional Bool, postgresql_postgres_password : Optional Text, postgresql_listen_addresses : Optional Text, postgresql_pg_stat_enable : Optional Bool, postgresql_backup_script : Optional Text, postgis_bbclient_name : Optional Text }), name : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), become : Optional Bool, become_user : Optional Text, block : Optional (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) })) }))
   }
     , default =
-        { tasks = None (List ({ include_role : Optional ({ name : Text, tasks_from : Text }), tags : Text, vars : Optional ({ postgresql_postgis_enable : Optional Bool, postgresql_postgres_password : Optional Text, postgresql_listen_addresses : Optional Text, postgresql_pg_stat_enable : Optional Bool, postgresql_backup_script : Optional Text, postgis_bbclient_name : Optional Text }), name : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), become : Optional Bool, become_user : Optional Text, block : Optional (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) })) }))
+        { tasks = None (List ({ include_role : Optional (< Record : { name : Text, tasks_from : Text } | Str : Text >), tags : Text, vars : Optional ({ postgresql_postgis_enable : Optional Bool, postgresql_postgres_password : Optional Text, postgresql_listen_addresses : Optional Text, postgresql_pg_stat_enable : Optional Bool, postgresql_backup_script : Optional Text, postgis_bbclient_name : Optional Text }), name : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), become : Optional Bool, become_user : Optional Text, block : Optional (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) })) }))
   }
     }
 
@@ -47,7 +47,7 @@ in  [
     ],
       tasks = Some [
         {
-          include_role = Some "name=icos.postgresql",
+          include_role = Some ((< Record : { name : Text, tasks_from : Text } | Str : Text >).Str "name=icos.postgresql"),
           tags = "postgresql",
           vars = Some {
             postgresql_postgis_enable = Some True
@@ -64,7 +64,7 @@ in  [
           block = None (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) }))
         }
       , {
-          include_role = Some { name = "icos.postgresql", tasks_from = "backup" },
+          include_role = Some ((< Record : { name : Text, tasks_from : Text } | Str : Text >).Record { name = "icos.postgresql", tasks_from = "backup" }),
           tags = "backup",
           vars = Some {
             postgresql_postgis_enable = None Bool
@@ -81,7 +81,7 @@ in  [
           block = None (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) }))
         }
       , {
-          include_role = None ({ name : Text, tasks_from : Text }),
+          include_role = None (< Record : { name : Text, tasks_from : Text } | Str : Text >),
           tags = "hba",
           vars = None ({ postgresql_postgis_enable : Optional Bool, postgresql_postgres_password : Optional Text, postgresql_listen_addresses : Optional Text, postgresql_pg_stat_enable : Optional Bool, postgresql_backup_script : Optional Text, postgis_bbclient_name : Optional Text }),
           name = Some "Allow postgres user to connect from same subnet",
@@ -97,7 +97,7 @@ in  [
           block = None (List ({ name : Text, postgresql_user : Optional ({ db : Text, name : Text, password : Text }), loop : Optional Text, postgresql_pg_hba : Optional ({ dest : Text, users : Text, source : Text, method : Text, contype : Text }), `community.postgresql.postgresql_ext` : Optional ({ name : Text, db : Text, schema : Text }) }))
         }
       , {
-          include_role = None ({ name : Text, tasks_from : Text }),
+          include_role = None (< Record : { name : Text, tasks_from : Text } | Str : Text >),
           tags = "cplog",
           vars = None ({ postgresql_postgis_enable : Optional Bool, postgresql_postgres_password : Optional Text, postgresql_listen_addresses : Optional Text, postgresql_pg_stat_enable : Optional Bool, postgresql_backup_script : Optional Text, postgis_bbclient_name : Optional Text }),
           name = None Text,

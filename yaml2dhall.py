@@ -392,6 +392,39 @@ def render_union_type(variants):
     return '< ' + ' | '.join(parts) + ' >'
 
 
+def detect_field_union(values, common_type):
+    """Return {tag: dhall_type} if a field is polymorphic, else None.
+
+    A field is polymorphic when its values can't all be represented as the
+    common type via structure-preserving coercion. The union has one
+    alternative per observed value kind; record alternatives are unified.
+    """
+    vals = [v for v in values if v is not None]
+    if not vals:
+        return None
+    if all(_fits_without_lossy_coercion(v, common_type) for v in vals):
+        return None
+
+    variants = {}
+    record_items = {}
+    for v in vals:
+        kind = value_union_kind(v)
+        if kind is None:
+            continue
+        tag, knd = kind
+        if knd == 'records':
+            record_items.setdefault(tag, []).extend(v)
+        elif knd == 'record':
+            record_items.setdefault(tag, []).append(v)
+        else:
+            variants[tag] = _UNION_SCALAR_TYPE[knd]
+    for tag, items in record_items.items():
+        rec = compute_unified_record_type(items, depth=1)
+        variants[tag] = f'List {_wrap_type(rec)}' if tag == 'Records' else rec
+
+    return variants if len(variants) >= 2 else None
+
+
 def coerce_value(value, target_type):
     """Coerce a value to match the target Dhall type."""
     if target_type == 'List Text' and isinstance(value, str):
@@ -426,6 +459,10 @@ class DhallConverter:
         self._shared_unions = {}
         self._active_task_import = None
         self._task_import_used = False
+        # True while emitting block sub-tasks that must match the union-free
+        # block sub-type baked into the shared Task.dhall; suppresses the local
+        # converter's inline-union behaviour.
+        self._shared_emit = False
 
     def convert_value(self, value, indent=0):
         """Convert a Python value (from YAML) to a Dhall expression string."""
@@ -553,9 +590,26 @@ class DhallConverter:
 
             optional_keys = [k for k in all_keys if k not in universal_keys]
 
+            # base_types drive union detection; key_types (union-aware) are used
+            # for type annotations and None payloads so they match emission.
+            base_types = {}
             key_types = {}
             for k in all_keys:
-                key_types[k] = common_type_for_key(k, type_dicts, depth=0)
+                base_types[k] = common_type_for_key(k, type_dicts, depth=0)
+                key_types[k] = self._uatype(
+                    [d.get(k) for d in type_dicts], base_types[k])
+
+            # If any field is polymorphic (incompatible value shapes), emit the
+            # list with inline union types — handled uniformly by the inline
+            # record path regardless of depth. Suppressed while emitting block
+            # sub-tasks for the shared type (those match a union-free sub-type).
+            if not self._shared_emit and any(
+                    detect_field_union(
+                        [d.get(k) for d in type_dicts], base_types[k])
+                    for k in all_keys):
+                return self._inline_record_list(
+                    dicts, indent, all_keys, universal_keys, key_types,
+                    type_dicts)
 
             if not optional_keys:
                 dict_contexts = self._compute_field_dict_contexts(
@@ -712,12 +766,28 @@ class DhallConverter:
             type_dicts = dicts
         dict_contexts = self._compute_field_dict_contexts(type_dicts, all_keys)
 
+        # Polymorphic fields (e.g. a block's loop being both a list and a
+        # string) get an inline union type so the list stays homogeneous.
+        # Suppressed while emitting shared-type block sub-tasks.
+        field_unions = {}
+        if not self._shared_emit:
+            for k in all_keys:
+                base = common_type_for_key(k, type_dicts, depth=0)
+                variants = detect_field_union(
+                    [d.get(k) for d in type_dicts], base)
+                if variants:
+                    field_unions[k] = variants
+
         items = []
         for d in dicts:
             fields = []
             for k in all_keys:
                 dk = dhall_key(k)
                 t = key_types[k]
+                if k in field_unions:
+                    fields.append(
+                        f'{dk} = {self._emit_inline_union(field_unions[k], d.get(k), indent + 2)}')
+                    continue
                 if k in d and d[k] is not None:
                     v = coerce_value(d[k], t)
                     converted = self._convert_value_with_dict_ctx(
@@ -868,6 +938,48 @@ class DhallConverter:
         self._dict_type_context = None
         return result
 
+    def _uatype(self, values, base_type):
+        """Union-aware Dhall type for a field's values.
+
+        Mirrors what the inline converter emits: a polymorphic field becomes a
+        union, a list-of-records / record recurses (so nested polymorphism is
+        reflected), everything else keeps its base type.
+        """
+        if not self._shared_emit:
+            u = detect_field_union(values, base_type)
+            if u:
+                return render_union_type(u)
+        nonnull = [v for v in values if v is not None]
+        if nonnull and all(isinstance(v, list) and v
+                           and all(isinstance(x, dict) for x in v)
+                           for v in nonnull):
+            items = [x for v in nonnull for x in v]
+            return f'List {_wrap_type(self._ua_record_type(items))}'
+        if nonnull and all(isinstance(v, dict) for v in nonnull):
+            return self._ua_record_type(nonnull)
+        return base_type
+
+    def _ua_record_type(self, dicts):
+        """Union-aware unified record type for a list of dicts."""
+        all_keys = list(dict.fromkeys(k for d in dicts for k in d))
+        universal = set(all_keys)
+        for d in dicts:
+            universal &= set(d.keys())
+        parts = []
+        for k in all_keys:
+            vals = [d.get(k) for d in dicts]
+            base = common_type_for_key(k, dicts, depth=0)
+            u = None if self._shared_emit else detect_field_union(vals, base)
+            if u:
+                parts.append(
+                    f'{dhall_key(k)} : Optional {_wrap_type(render_union_type(u))}')
+            else:
+                t = self._uatype(vals, base)
+                if k not in universal:
+                    t = f'Optional {_wrap_type(t)}'
+                parts.append(f'{dhall_key(k)} : {t}')
+        return '{ ' + ', '.join(parts) + ' }'
+
     def _generate_type_name(self, keys, dicts):
         """Generate a Dhall type name for a heterogeneous list."""
         if all('role' in d for d in dicts):
@@ -925,38 +1037,13 @@ class DhallConverter:
         # a single Dhall type. These become union types so any Ansible form is
         # representable (dhall-to-yaml renders union payloads transparently).
         self._shared_unions = {}            # field -> {tag: dhall_type}
-        self._shared_union_payload = {}     # field -> {tag: [dicts]} for records
         for k in all_keys:
             if k in ('block', 'always', 'rescue'):
                 continue
-            values = [d[k] for d in all_tasks if k in d and d[k] is not None]
-            t = key_types[k]
-            if all(_fits_without_lossy_coercion(v, t) for v in values):
-                continue  # fits the common type cleanly; no union needed
-
-            variants = {}
-            record_items = {}
-            for v in values:
-                kind = value_union_kind(v)
-                if kind is None:
-                    continue
-                tag, knd = kind
-                if knd == 'records':
-                    record_items.setdefault(tag, []).extend(v)
-                elif knd == 'record':
-                    record_items.setdefault(tag, []).append(v)
-                else:
-                    variants[tag] = _UNION_SCALAR_TYPE[knd]
-            for tag, items in record_items.items():
-                rec = compute_unified_record_type(items, depth=1)
-                if tag == 'Records':
-                    variants[tag] = f'List {_wrap_type(rec)}'
-                else:
-                    variants[tag] = rec
-            if len(variants) >= 2:
+            values = [d[k] for d in all_tasks if k in d]
+            variants = detect_field_union(values, key_types[k])
+            if variants:
                 self._shared_unions[k] = variants
-                if record_items:
-                    self._shared_union_payload[k] = record_items
 
     def render_shared_task_type(self):
         """Render the shared Task type as a Dhall Type/default record.
@@ -1287,9 +1374,36 @@ class DhallConverter:
             payload = f'({payload})'
         return f'Task.{uname}.{tag} {payload}'
 
+    def _emit_inline_union(self, variants, value, indent):
+        """Emit an Optional inline-union field value for a local heterogeneous list.
+
+        Always Optional so the column stays homogeneous: present values become
+        `Some ((<union>).Tag payload)`, absent ones `None (<union>)`.
+        """
+        utype = render_union_type(variants)
+        if value is None:
+            return f'None ({utype})'
+        tag, _ = value_union_kind(value)
+        if tag not in variants:
+            # Shouldn't happen (fit check guarantees coverage); be safe.
+            return f'None ({utype})'
+        payload = self._wrap_expr(self._emit_typed(value, variants[tag], indent))
+        if payload.startswith('let ') or '\nlet ' in payload:
+            payload = f'({payload})'
+        return f'Some (({utype}).{tag} {payload})'
+
     def _convert_sub_task_list(self, tasks, indent):
-        """Convert a nested task list (block/always/rescue) using regular converter."""
-        return self._convert_list(tasks, indent)
+        """Convert a block/always/rescue list to match the shared block sub-type.
+
+        Runs in shared-emit mode so the local converter does not introduce
+        inline unions (the shared Task.dhall block sub-type is union-free).
+        """
+        prev = self._shared_emit
+        self._shared_emit = True
+        try:
+            return self._convert_list(tasks, indent)
+        finally:
+            self._shared_emit = prev
 
     def _emit_task_items(self, tasks, indent=0):
         """Emit `[ Task::{...} ]` for a task list (assumes Task is in scope)."""

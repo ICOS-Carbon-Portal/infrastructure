@@ -1,51 +1,27 @@
 -- Auto-generated from ../../../../devops/roles/icos.mailman/tasks/main.yml
 
-let Item =
-    { Type =
-        { name : Optional Text
-    , file : Optional ({ path : Text, state : Text })
-    , loop : Optional (List Text)
-    , template : Optional ({ dest : Text, src : Text, mode : Text })
-    , register : Optional Text
-    , `community.docker.docker_compose_v2` : Optional ({ project_src : Text, build : Text })
-    , uri : Optional ({ url : Text, user : Text, password : Text })
-    , failed_when : Optional (List Text)
-    , retries : Optional Natural
-    , delay : Optional Natural
-    , until : Optional Text
-    , postconf : Optional ({ param : Text, value : Text, append : Text })
-    , tags : Optional Text
-    , block : Optional (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) }))
-    , import_tasks : Optional Text
-  }
-    , default =
-        { name = None Text
-    , file = None ({ path : Text, state : Text })
-    , loop = None (List Text)
-    , template = None ({ dest : Text, src : Text, mode : Text })
-    , register = None Text
-    , `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text })
-    , uri = None ({ url : Text, user : Text, password : Text })
-    , failed_when = None (List Text)
-    , retries = None Natural
-    , delay = None Natural
-    , until = None Text
-    , postconf = None ({ param : Text, value : Text, append : Text })
-    , tags = None Text
-    , block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) }))
-    , import_tasks = None Text
-  }
-    }
-
-in  [
-    Item::{
+[
+    {
       name = Some "Create build directories",
       file = Some { path = "{{ mailman_home }}/build/mailman-{{ item }}", state = "directory" },
-      loop = Some [ "core", "web" ]
+      loop = Some ((< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >).Texts [ "core", "web" ]),
+      template = None ({ dest : Text, src : Text, mode : Text }),
+      register = None Text,
+      `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text }),
+      uri = None ({ url : Text, user : Text, password : Text }),
+      failed_when = None (List Text),
+      retries = None Natural,
+      delay = None Natural,
+      until = None Text,
+      postconf = None ({ param : Text, value : Text, append : Text }),
+      tags = None Text,
+      block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) })),
+      import_tasks = None Text
     }
-  , Item::{
+  , {
       name = Some "Copy mailman files",
-      loop = Some [
+      file = None ({ path : Text, state : Text }),
+      loop = Some ((< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >).Records [
         { src = "logrotate.conf", mode = None Text, dest = None Text }
       , { src = "bbclient-down-hook", mode = Some "+x", dest = None Text }
       , { src = "docker-compose.yml", mode = Some "0600", dest = None Text }
@@ -56,22 +32,49 @@ in  [
           src = "Dockerfile.core",
           mode = None Text,
           dest = Some "{{ mailman_home }}/build/mailman-core/Dockerfile"
-        }
-    ],
+      }
+    ]),
       template = Some {
         dest = "{{ item.dest | default(mailman_home) }}"
       , src = "{{ item.src }}"
       , mode = "{{ item.mode | default(omit) }}"
     },
-      register = Some "_files"
+      register = Some "_files",
+      `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text }),
+      uri = None ({ url : Text, user : Text, password : Text }),
+      failed_when = None (List Text),
+      retries = None Natural,
+      delay = None Natural,
+      until = None Text,
+      postconf = None ({ param : Text, value : Text, append : Text }),
+      tags = None Text,
+      block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) })),
+      import_tasks = None Text
     }
-  , Item::{
+  , {
       name = Some "Start containers",
-      `community.docker.docker_compose_v2` = Some { project_src = "{{ mailman_home }}", build = "always" }
+      file = None ({ path : Text, state : Text }),
+      loop = None (< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >),
+      template = None ({ dest : Text, src : Text, mode : Text }),
+      register = None Text,
+      `community.docker.docker_compose_v2` = Some { project_src = "{{ mailman_home }}", build = "always" },
+      uri = None ({ url : Text, user : Text, password : Text }),
+      failed_when = None (List Text),
+      retries = None Natural,
+      delay = None Natural,
+      until = None Text,
+      postconf = None ({ param : Text, value : Text, append : Text }),
+      tags = None Text,
+      block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) })),
+      import_tasks = None Text
     }
-  , Item::{
+  , {
       name = Some "Test the REST API",
+      file = None ({ path : Text, state : Text }),
+      loop = None (< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >),
+      template = None ({ dest : Text, src : Text, mode : Text }),
       register = Some "r",
+      `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text }),
       uri = Some {
         url = "https://{{ mailman_domains | first }}/rest/3.0/domains"
       , user = "{{ mailman_rest_user }}"
@@ -83,19 +86,46 @@ in  [
     ],
       retries = Some 10,
       delay = Some 20,
-      until = Some "not r.failed"
+      until = Some "not r.failed",
+      postconf = None ({ param : Text, value : Text, append : Text }),
+      tags = None Text,
+      block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) })),
+      import_tasks = None Text
     }
-  , Item::{
+  , {
       name = Some "Set postfix parameters",
-      loop = Some [ "{{ mailman_postfix_config }}" ],
+      file = None ({ path : Text, state : Text }),
+      loop = Some ((< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >).Str "{{ mailman_postfix_config }}"),
+      template = None ({ dest : Text, src : Text, mode : Text }),
+      register = None Text,
+      `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text }),
+      uri = None ({ url : Text, user : Text, password : Text }),
+      failed_when = None (List Text),
+      retries = None Natural,
+      delay = None Natural,
+      until = None Text,
       postconf = Some {
         param = "{{ item.param }}"
       , value = "{{ item.value }}"
       , append = "{{ item.append | default(omit) }}"
+    },
+      tags = None Text,
+      block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) })),
+      import_tasks = None Text
     }
-    }
-  , Item::{
+  , {
       name = Some "delete_spam tasks",
+      file = None ({ path : Text, state : Text }),
+      loop = None (< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >),
+      template = None ({ dest : Text, src : Text, mode : Text }),
+      register = None Text,
+      `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text }),
+      uri = None ({ url : Text, user : Text, password : Text }),
+      failed_when = None (List Text),
+      retries = None Natural,
+      delay = None Natural,
+      until = None Text,
+      postconf = None ({ param : Text, value : Text, append : Text }),
       tags = Some "mailman_delete_spam",
       block = Some [
         {
@@ -179,7 +209,24 @@ in  [
           ''
         }
         }
-    ]
+    ],
+      import_tasks = None Text
     }
-  , Item::{ tags = Some "mailman_just", import_tasks = Some "just.yml" }
+  , {
+      name = None Text,
+      file = None ({ path : Text, state : Text }),
+      loop = None (< Records : List ({ src : Text, mode : Optional Text, dest : Optional Text }) | Str : Text | Texts : List Text >),
+      template = None ({ dest : Text, src : Text, mode : Text }),
+      register = None Text,
+      `community.docker.docker_compose_v2` = None ({ project_src : Text, build : Text }),
+      uri = None ({ url : Text, user : Text, password : Text }),
+      failed_when = None (List Text),
+      retries = None Natural,
+      delay = None Natural,
+      until = None Text,
+      postconf = None ({ param : Text, value : Text, append : Text }),
+      tags = Some "mailman_just",
+      block = None (List ({ name : Text, template : Optional ({ dest : Text, src : Text, mode : Text }), loop : Optional (List ({ src : Text })), register : Optional Text, copy : Optional ({ dest : Text, mode : Natural, content : Text }), `ansible.builtin.pip` : Optional ({ virtualenv : Text, virtualenv_command : Text, requirements : Text }), include_role : Optional ({ name : Text }), vars : Optional ({ timer_user : Text, timer_home : Text, timer_name : Text, timer_conf : Text, timer_content : Text }) })),
+      import_tasks = Some "just.yml"
+    }
 ]

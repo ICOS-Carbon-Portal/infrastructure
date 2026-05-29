@@ -4,11 +4,11 @@ let Play =
     { Type =
         { hosts : Text
     , vars : { exploredata_ip : Optional Text, exploredata_password : Optional Text, exploredata_max_notebooks : Optional Natural }
-    , tasks : Optional (List ({ name : Optional Text, tags : List Text, include_role : Optional ({ name : Text, public : Optional Bool }), vars : Optional ({ zfsdocker_name : Optional Text, zfsdocker_size : Optional Text, lxd_forward_name : Optional Text, lxd_forward_ip : Optional Text, certbot_name : Optional Text, certbot_domains : Optional (List Text), nginxsite_name : Optional Text, nginxsite_file : Optional Text, exploredata_name : Optional Text, exploredata_port : Optional Natural, exploredata_host : Optional Text, exploredata_domains : Optional (List Text) }), lxd_container : Optional ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text } }, config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text, `limits.memory.enforce` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural }), register : Optional Text, when : Optional Text }))
+    , tasks : Optional (List ({ name : Optional Text, tags : List Text, include_role : Optional (< Record : { name : Text, public : Optional Bool } | Str : Text >), vars : Optional ({ zfsdocker_name : Optional Text, zfsdocker_size : Optional Text, lxd_forward_name : Optional Text, lxd_forward_ip : Optional Text, certbot_name : Optional Text, certbot_domains : Optional (List Text), nginxsite_name : Optional Text, nginxsite_file : Optional Text, exploredata_name : Optional Text, exploredata_port : Optional Natural, exploredata_host : Optional Text, exploredata_domains : Optional (List Text) }), lxd_container : Optional ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text } }, config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text, `limits.memory.enforce` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural }), register : Optional Text, when : Optional Text }))
     , roles : Optional (List ({ role : Text, tags : Text }))
   }
     , default =
-        { tasks = None (List ({ name : Optional Text, tags : List Text, include_role : Optional ({ name : Text, public : Optional Bool }), vars : Optional ({ zfsdocker_name : Optional Text, zfsdocker_size : Optional Text, lxd_forward_name : Optional Text, lxd_forward_ip : Optional Text, certbot_name : Optional Text, certbot_domains : Optional (List Text), nginxsite_name : Optional Text, nginxsite_file : Optional Text, exploredata_name : Optional Text, exploredata_port : Optional Natural, exploredata_host : Optional Text, exploredata_domains : Optional (List Text) }), lxd_container : Optional ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text } }, config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text, `limits.memory.enforce` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural }), register : Optional Text, when : Optional Text }))
+        { tasks = None (List ({ name : Optional Text, tags : List Text, include_role : Optional (< Record : { name : Text, public : Optional Bool } | Str : Text >), vars : Optional ({ zfsdocker_name : Optional Text, zfsdocker_size : Optional Text, lxd_forward_name : Optional Text, lxd_forward_ip : Optional Text, certbot_name : Optional Text, certbot_domains : Optional (List Text), nginxsite_name : Optional Text, nginxsite_file : Optional Text, exploredata_name : Optional Text, exploredata_port : Optional Natural, exploredata_host : Optional Text, exploredata_domains : Optional (List Text) }), lxd_container : Optional ({ name : Text, state : Text, profiles : List Text, source : { type : Text, mode : Text, server : Text, protocol : Text, alias : Text }, devices : { root : { path : Text, pool : Text, type : Text, size : Text }, docker : { path : Text, source : Text, type : Text, `raw.mount.options` : Text }, data : { path : Text, source : Text, type : Text, recursive : Text } }, config : { `security.nesting` : Text, `limits.cpu` : Text, `limits.memory` : Text, `limits.memory.enforce` : Text }, wait_for_ipv4_addresses : Bool, wait_for_ipv4_interfaces : Text, timeout : Natural }), register : Optional Text, when : Optional Text }))
     , roles = None (List ({ role : Text, tags : Text }))
   }
     }
@@ -25,7 +25,7 @@ in  [
         {
           name = Some "Create storage for docker",
           tags = [ "zfs", "lxd" ],
-          include_role = Some { name = "icos.zfsdocker", public = Some True },
+          include_role = Some ((< Record : { name : Text, public : Optional Bool } | Str : Text >).Record { name = "icos.zfsdocker", public = Some True }),
           vars = Some {
             zfsdocker_name = Some "exploredata"
           , zfsdocker_size = Some "50G"
@@ -47,7 +47,7 @@ in  [
       , {
           name = Some "Create the exploredata container",
           tags = [ "lxd", "nginx", "forward", "iptables" ],
-          include_role = None ({ name : Text, public : Optional Bool }),
+          include_role = None (< Record : { name : Text, public : Optional Bool } | Str : Text >),
           vars = None ({ zfsdocker_name : Optional Text, zfsdocker_size : Optional Text, lxd_forward_name : Optional Text, lxd_forward_ip : Optional Text, certbot_name : Optional Text, certbot_domains : Optional (List Text), nginxsite_name : Optional Text, nginxsite_file : Optional Text, exploredata_name : Optional Text, exploredata_port : Optional Natural, exploredata_host : Optional Text, exploredata_domains : Optional (List Text) }),
           lxd_container = Some {
             name = "exploredata"
@@ -96,7 +96,7 @@ in  [
       , {
           name = Some "Forward ssh port and create /etc/hosts entry",
           tags = [ "forward" ],
-          include_role = Some { name = "icos.lxd_forward", public = None Bool },
+          include_role = Some ((< Record : { name : Text, public : Optional Bool } | Str : Text >).Record { name = "icos.lxd_forward", public = None Bool }),
           vars = Some {
             zfsdocker_name = None Text
           , zfsdocker_size = None Text
@@ -118,7 +118,7 @@ in  [
       , {
           name = None Text,
           tags = [ "cert" ],
-          include_role = Some "name=icos.certbot2",
+          include_role = Some ((< Record : { name : Text, public : Optional Bool } | Str : Text >).Str "name=icos.certbot2"),
           vars = Some {
             zfsdocker_name = None Text
           , zfsdocker_size = None Text
@@ -140,7 +140,7 @@ in  [
       , {
           name = Some "Setup exploretest",
           tags = [ "nginx" ],
-          include_role = Some { name = "icos.nginxsite", public = None Bool },
+          include_role = Some ((< Record : { name : Text, public : Optional Bool } | Str : Text >).Record { name = "icos.nginxsite", public = None Bool }),
           vars = Some {
             zfsdocker_name = None Text
           , zfsdocker_size = None Text
@@ -162,7 +162,7 @@ in  [
       , {
           name = Some "Setup exploredata",
           tags = [ "nginx" ],
-          include_role = Some { name = "icos.nginxsite", public = None Bool },
+          include_role = Some ((< Record : { name : Text, public : Optional Bool } | Str : Text >).Record { name = "icos.nginxsite", public = None Bool }),
           vars = Some {
             zfsdocker_name = None Text
           , zfsdocker_size = None Text
