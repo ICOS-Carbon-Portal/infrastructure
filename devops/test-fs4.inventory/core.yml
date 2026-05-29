@@ -39,6 +39,10 @@ all:
       - "{{ restheart_sites_db_name }}"
       - "{{ restheart_cities_db_name }}"
 
+    showUnderConstruction: "true"
+    showCarbonBadge: "false"
+    environmentName: "test-fs4"
+
     activity_log_ignore_ips: []
 
   children:
