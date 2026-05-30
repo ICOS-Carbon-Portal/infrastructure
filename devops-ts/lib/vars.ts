@@ -53,17 +53,39 @@ export function tmpl(strings: TemplateStringsArray, ...refs: Ref[]): Tmpl {
   );
 }
 
-// --- when: expression helpers (bare name, no `{{ }}` wrapper) ----------------
+// --- when: expression builder (bare name, no `{{ }}` wrapper) ----------------
 
-/** `isDefined("cpauth_domains")` -> "cpauth_domains is defined" */
-export function isDefined(name: keyof Vars): string {
-  return `${name} is defined`;
+/**
+ * A Jinja expression over a variable, for use in `when:`. It renders as its
+ * text (via `toJSON`, so it survives `render()`'s JSON round-trip), and offers
+ * chainable filters:
+ *
+ *   isDefined("cpauth_domains")              // "cpauth_domains is defined"
+ *   isDefined("virtuoso_enable").default(false)  // "virtuoso_enable | default(False)"
+ */
+export class Expr {
+  constructor(
+    private readonly text: string,
+    private readonly name: keyof Vars,
+  ) {}
+
+  /** `| default(...)` filter; booleans render as Python `True`/`False`. */
+  default(fallback: Scalar): Expr {
+    const rendered = typeof fallback === "boolean"
+      ? fallback ? "True" : "False"
+      : String(fallback);
+    return new Expr(`${this.name} | default(${rendered})`, this.name);
+  }
+
+  toJSON(): string {
+    return this.text;
+  }
+  toString(): string {
+    return this.text;
+  }
 }
 
-/** `def("virtuoso_enable", false)` -> "virtuoso_enable | default(False)" */
-export function def(name: keyof Vars, fallback: Scalar): string {
-  const rendered = typeof fallback === "boolean"
-    ? fallback ? "True" : "False"
-    : String(fallback);
-  return `${name} | default(${rendered})`;
+/** Start a `when:` expression from a variable: `name is defined`. */
+export function isDefined(name: keyof Vars): Expr {
+  return new Expr(`${name} is defined`, name);
 }

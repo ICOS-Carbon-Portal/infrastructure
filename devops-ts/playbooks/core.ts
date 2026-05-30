@@ -1,4 +1,4 @@
-import { def, isDefined, type Playbook, role, V } from "../lib/ansible.ts";
+import { isDefined, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -66,7 +66,7 @@ export default [
       role("icos.doi"),
       role("icos.virtuoso").opt({
         tags: "virtuoso",
-        when: def("virtuoso_enable", false),
+        when: isDefined("virtuoso_enable").default(false),
       }),
     ],
   },

@@ -90,16 +90,17 @@ helpers instead of hand-written strings:
 ```ts
 V.nexus_home                       // "{{ nexus_home }}"  (value position)
 tmpl`${V.nexus_home}/bbclient`     // "{{ nexus_home }}/bbclient"  (composite)
-isDefined("cpauth_domains")        // "cpauth_domains is defined"  (when:)
-def("virtuoso_enable", false)      // "virtuoso_enable | default(False)"  (when:)
+isDefined("cpauth_domains")                  // "cpauth_domains is defined"  (when:)
+isDefined("virtuoso_enable").default(false)  // "virtuoso_enable | default(False)"  (when:)
 
 V.nexus_hom                        // error: did you mean nexus_home?
 tmpl`${"literal"}`                 // error: only checked refs may be interpolated
 isDefined("cpauth_domian")         // error: not a known variable
 ```
 
-`V` / `tmpl` cover value interpolation (with the `{{ }}` wrapper); `isDefined` /
-`def` cover `when:` expression context (bare name, no wrapper). Both check names
+`V` / `tmpl` cover value interpolation (with the `{{ }}` wrapper); `isDefined()`
+(chainable with `.default(...)`) covers `when:` expression context (bare name, no
+wrapper). Both check names
 against the same `Vars` registry. Because fields are still plain `string`, a raw
 `"{{ x }}"` also compiles — the helpers make checked references *available and
 ergonomic*; a lint rule banning literal `{{` would make them mandatory.

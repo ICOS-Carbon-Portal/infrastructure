@@ -10,13 +10,17 @@
 //     per-role parameter typing keyed off the role name.
 import type { Roles } from "./roles.ts";
 import type { Host } from "./hosts.ts";
+import type { Expr } from "./vars.ts";
 
 // Re-exported so playbooks reference variables/hosts from a single import.
-export { def, isDefined, type Ref, tmpl, V, type Vars } from "./vars.ts";
+export { Expr, isDefined, type Ref, tmpl, V, type Vars } from "./vars.ts";
 export type { Host } from "./hosts.ts";
 
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
 export type Tmpl = string;
+
+/** A `when:` condition: a raw expression string or a built `Expr`. */
+export type When = Tmpl | Expr;
 
 /**
  * The set of Ansible tags used across the playbooks. Keeping this a closed
@@ -56,7 +60,7 @@ export type Tags = Tag | Tag[];
 export interface Task {
   name?: string;
   tags?: Tags;
-  when?: Tmpl;
+  when?: When;
   become?: boolean;
   become_user?: string;
   register?: string;
@@ -78,7 +82,7 @@ export type Scalar = string | number | boolean;
 /** Ansible role-keyword options (siblings of `role:`, not role variables). */
 export interface RoleOpts {
   tags?: Tags;
-  when?: Tmpl;
+  when?: When;
 }
 
 /** A flattened role reference as Ansible expects it: role + opts + variables. */
