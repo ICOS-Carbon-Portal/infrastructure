@@ -16,7 +16,7 @@ lib/vars.ts         catalogue of available variables + V / tmpl / when-helpers
 lib/hosts.ts        closed union of valid `hosts:` targets (from the inventory)
 playbooks/*.ts      converted playbooks (one per original .yml)
 render.ts           render a playbook to YAML on stdout
-verify.sh           prove every playbook matches its original .yml
+verify.ts           prove every playbook matches its original .yml
 deno.json           `deno task check | verify | render`
 ```
 
@@ -40,10 +40,12 @@ deno task verify                     # render each playbook + diff vs ../devops/
 deno task render playbooks/core.ts   # print the YAML for one playbook
 ```
 
-`verify.sh` renders each `.ts` and compares it to the original `.yml` by parsing
-**both** sides and deep-comparing the data structures. Ansible is insensitive to
-key order and to scalar style (`yes` vs `true`, folded vs plain strings), so
-semantic equality — not byte equality — is the correct bar, and all seven pass.
+`verify.ts` renders each `.ts` and compares it to the original `.yml` by parsing
+**both** sides (with `npm:yaml`) and deep-comparing the data structures. Ansible
+is insensitive to key order and to scalar style (`yes` vs `true`, folded vs plain
+strings), so semantic equality — not byte equality — is the correct bar, and all
+seven pass. Both sides are parsed as YAML **1.1** to match Ansible's PyYAML
+(where `yes`/`no` are booleans, unlike YAML 1.2).
 
 ## How the typing works
 
@@ -177,4 +179,3 @@ the two can coexist exactly as the Dhall experiment does.
 ## Requirements
 
 - [deno](https://deno.com/) (runs the `.ts` directly; pulls `npm:yaml` on first run)
-- `python3` + `pyyaml` (used only by `verify.sh` for semantic comparison)
