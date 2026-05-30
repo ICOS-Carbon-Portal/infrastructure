@@ -13,6 +13,7 @@ take on the same idea.
 lib/ansible.ts      core types (Play, Task, RoleRef), the role() builder, render()
 lib/roles.ts        per-role parameter schemas — what each role accepts
 lib/vars.ts         catalogue of available variables + V / tmpl / when-helpers
+lib/builtins.ts     Ansible built-in vars / facts (e.g. ansible_check_mode)
 lib/hosts.ts        closed union of valid `hosts:` targets (from the inventory)
 playbooks/*.ts      converted playbooks (one per original .yml)
 render.ts           render a playbook to YAML on stdout
@@ -35,7 +36,7 @@ structural range:
 | `lxd`            | multi-host pattern (`hosts: ["a","b","c"]` -> `"a b c"`)         |
 | `cpmeta`, `restheart`, `stiltweb` | play-level `tags`, proxy/host two-play split   |
 | `server-fsicos2`, `server-icos1`  | long lists of tagged bootstrap roles           |
-| `server-fsicos3` | a raw `when` expression over a built-in fact                    |
+| `server-fsicos3` | a `when` over a built-in fact: `not("ansible_check_mode")`       |
 
 The rest (`drupal`, `typesense`, `plausible`, `sitesaquanetform`,
 `app-fairdatapoint`, `nebula`, `bbservers`, `server-all`) are further single- or
@@ -106,6 +107,7 @@ V.nexus_home                       // "{{ nexus_home }}"  (value position)
 tmpl`${V.nexus_home}/bbclient`     // "{{ nexus_home }}/bbclient"  (composite)
 isDefined("cpauth_domains")                  // "cpauth_domains is defined"  (when:)
 isDefined("virtuoso_enable").default(false)  // "virtuoso_enable | default(False)"  (when:)
+not("ansible_check_mode")                    // "not ansible_check_mode"  (when:, built-in)
 
 V.nexus_hom                        // error: did you mean nexus_home?
 tmpl`${"literal"}`                 // error: only checked refs may be interpolated
@@ -113,11 +115,17 @@ isDefined("cpauth_domian")         // error: not a known variable
 ```
 
 `V` / `tmpl` cover value interpolation (with the `{{ }}` wrapper); `isDefined()`
-(chainable with `.default(...)`) covers `when:` expression context (bare name, no
-wrapper). Both check names
-against the same `Vars` registry. Because fields are still plain `string`, a raw
-`"{{ x }}"` also compiles — the helpers make checked references *available and
-ergonomic*; a lint rule banning literal `{{` would make them mandatory.
+(chainable with `.default(...)`) and `not()` cover the `when:` expression context
+(bare name, no wrapper). `isDefined`/`default` check against the user `Vars`
+registry; `not` checks against the `Builtins` registry (`lib/builtins.ts`) of
+Ansible magic vars. A `when:` is typed `When = Expr`, with **no raw-string escape
+hatch** — every condition must be built from a checked helper, so a misspelled
+variable in a `when` can't slip through.
+
+For value interpolation, because role-param fields are still plain `string`, a
+raw `"{{ x }}"` also compiles — there `V`/`tmpl` make checked references
+*available and ergonomic* rather than mandatory; a lint rule banning literal
+`{{` would close that.
 
 A future extension is splitting `Vars` by provenance (role-provided vs vault vs
 `-e` extra-vars) to model which variables are actually in scope where.

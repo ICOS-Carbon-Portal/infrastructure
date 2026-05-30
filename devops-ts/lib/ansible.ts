@@ -13,14 +13,15 @@ import type { Host } from "./hosts.ts";
 import type { Expr } from "./vars.ts";
 
 // Re-exported so playbooks reference variables/hosts from a single import.
-export { Expr, isDefined, type Ref, tmpl, V, type Vars } from "./vars.ts";
+export { Expr, isDefined, not, type Ref, tmpl, V, type Vars } from "./vars.ts";
 export type { Host } from "./hosts.ts";
+export type { Builtins } from "./builtins.ts";
 
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
 export type Tmpl = string;
 
-/** A `when:` condition: a raw expression string or a built `Expr`. */
-export type When = Tmpl | Expr;
+/** A `when:` condition. Always a built `Expr` — build it with isDefined/not/etc. */
+export type When = Expr;
 
 /**
  * The set of Ansible tags used across the playbooks. Keeping this a closed

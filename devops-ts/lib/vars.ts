@@ -25,6 +25,7 @@ export interface Vars {
 }
 
 import type { Scalar, Tmpl } from "./ansible.ts";
+import type { Builtins } from "./builtins.ts";
 
 /** A checked variable reference. At runtime it is just the string "{{ name }}". */
 export type Ref = string & { readonly __ref: unique symbol };
@@ -66,7 +67,7 @@ export function tmpl(strings: TemplateStringsArray, ...refs: Ref[]): Tmpl {
 export class Expr {
   constructor(
     private readonly text: string,
-    private readonly name: keyof Vars,
+    private readonly name: string,
   ) {}
 
   /** `| default(...)` filter; booleans render as Python `True`/`False`. */
@@ -88,4 +89,9 @@ export class Expr {
 /** Start a `when:` expression from a variable: `name is defined`. */
 export function isDefined(name: keyof Vars): Expr {
   return new Expr(`${name} is defined`, name);
+}
+
+/** Negate a boolean built-in: `not("ansible_check_mode")` -> "not ansible_check_mode". */
+export function not(name: keyof Builtins): Expr {
+  return new Expr(`not ${name}`, name);
 }
