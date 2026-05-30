@@ -1,0 +1,49 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Copy {{ dovecot_cert_file }}",
+    template: {
+      src: "{{ dovecot_cert_file }}",
+      dest: "/etc/dovecot/conf.d/",
+    },
+  },
+  {
+    name: "Configure dovecot ssl",
+    lineinfile: {
+      path: "/etc/dovecot/conf.d/10-ssl.conf",
+      state: "present",
+      regex: "{{ item.regex | default(omit) }}",
+      line: "{{ item.line }}",
+    },
+    loop: [
+      {
+        line: "ssl = required",
+        regex: "(?:ssl = yes)|(?:ssl = required)",
+      },
+
+      // All of a sudden, this was required for dovecot to start.
+      { line: "ssl_dh = </usr/share/dovecot/dh.pem" },
+
+      // <2022-09-26> Thunderbird could no longer connect because of "TLS
+      // handshaking ... alert 42". Solution is to disabled old SSL versions.
+      {
+        line: "ssl_protocols = TLSv1.2 TLSv1.1 TLSv1 !SSLv3 !SSLv2",
+        regex: "^#?\\s*ssl_protocols.*",
+      },
+
+      // include our own certificates
+      { line: "!include {{ dovecot_cert_file }}" },
+    ],
+  },
+  {
+    name: "Add a dovecot deploy-hook for certbot",
+    copy: {
+      dest: "/etc/letsencrypt/renewal-hooks/deploy/dovecot.sh",
+      mode: "+x",
+      content: `#!/bin/bash
+service dovecot reload
+`,
+    },
+  },
+] satisfies TaskFile;

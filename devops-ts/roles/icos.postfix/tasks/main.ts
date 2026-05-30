@@ -1,0 +1,74 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Install postfix",
+    apt: {
+      name: "postfix",
+      state: "present",
+    },
+  },
+  {
+    name: "Start and enable postfix",
+    service: {
+      name: "postfix",
+      state: "started",
+      enabled: true,
+    },
+  },
+  {
+    name: "Set configuration parameters",
+    postconf: {
+      param: "{{ item.param }}",
+      value: "{{ item.value }}",
+      append: "{{ item.append | default(omit) }}",
+      reload: "{{ item.reload | default(omit) }}",
+      separator: "{{ item.separator | default(omit) }}",
+    },
+    loop: "{{ postfix_config_list }}",
+  },
+  {
+    name: "Allow SMTP through firewall",
+    iptables_raw: {
+      name: "allow_SMTP",
+      rules: "-A INPUT -p tcp --dport 25 -j ACCEPT -m comment --comment 'smtp'",
+    },
+  },
+  {
+    name: "Install fail2ban",
+    tags: "postfix_fail2ban",
+    include_role: {
+      name: "icos.fail2ban",
+      apply: { tags: "postfix_fail2ban" },
+    },
+    vars: {
+      fail2ban_config_files: [
+        {
+          dest: "/etc/fail2ban/jail.d/postfix.local",
+          content: `[postfix]
+enabled = true
+mode = aggressive
+`,
+        },
+        {
+          dest: "/etc/fail2ban/filter.d/postfix-auth.local",
+          content: `[Definition]
+# Stop stupid bots from filling logs.
+failregex = lost connection after AUTH from unknown\\[<HOST>\\]$
+`,
+        },
+        {
+          dest: "/etc/fail2ban/jail.d/postfix-auth.local",
+          content: `[postfix-auth]
+enabled = true
+port    = smtp
+filter  = postfix-auth
+logpath = /var/log/mail.log
+maxretry = 1
+bantime  = 1h
+`,
+        },
+      ],
+    },
+  },
+] satisfies TaskFile;

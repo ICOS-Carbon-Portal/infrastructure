@@ -1,0 +1,89 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "pip install pyzor",
+    pip: {
+      name: "pyzor",
+      state: "present",
+    },
+  },
+  {
+    name: 'Check that "pyzor check" works',
+    shell: "echo test | pyzor check",
+    changed_when: false,
+    register: "_r",
+    failed_when: [
+      'not "public.pyzor.org" in _r.stdout',
+      "not \"(200, 'OK')\" in _r.stdout",
+    ],
+  },
+  {
+    name: "Create pyzor.socket",
+    copy: {
+      dest: "/etc/systemd/system/pyzor.socket",
+      content: `[Unit]
+Description=Pyzor socket
+
+[Socket]
+ListenStream=127.0.0.1:5953
+Accept=yes
+
+[Install]
+WantedBy=sockets.target
+`,
+    },
+  },
+  {
+    name: "Create pyzor service",
+    copy: {
+      dest: "/etc/systemd/system/pyzor@.service",
+      content: `[Unit]
+Description=Pyzor Socket Service
+Requires=pyzor.socket
+
+[Service]
+Type=simple
+ExecStart=-/usr/local/bin/pyzor check
+StandardInput=socket
+StandardError=journal
+TimeoutStopSec=10
+
+User=_rspamd
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+PrivateUsers=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target
+`,
+    },
+  },
+  {
+    name: "Enable and start pyzor.socket",
+    systemd: {
+      name: "pyzor.socket",
+      state: "started",
+      enabled: true,
+      daemon_reload: true,
+    },
+  },
+  {
+    name: "Create rspamd config for pyzor",
+    copy: {
+      dest: "/etc/rspamd/local.d/external_services.conf",
+      content: `pyzor {
+  # default pyzor settings
+  servers = "127.0.0.1:5953"
+}
+`,
+    },
+    notify: "restart rspamd",
+  },
+] satisfies TaskFile;

@@ -1,0 +1,34 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+// Install pipx using ansible's python. This will allow us to use the ansible
+// pipx module to install utils written in python.
+export default [
+  {
+    name: "Install pipx",
+    pip: {
+      name: "pipx",
+      virtualenv: "{{ pipx_home }}/.venv",
+      state: "{{ 'latest' if pipx_upgrade else 'present' }}",
+    },
+  },
+  {
+    name: "Create pipx cli wrapper",
+    copy: {
+      dest: "/usr/local/bin/pipx",
+      mode: "+x",
+      content: `#!/usr/bin/bash
+{{ pipx_home }}/.venv/bin/pipx "$@"
+`,
+    },
+  },
+  {
+    name: 'Create "global" version of pipx cli wrapper',
+    copy: {
+      dest: "/usr/local/sbin/pipx-global",
+      mode: "+x",
+      content: `#!/usr/bin/bash
+PIPX_HOME={{ pipx_home }} PIPX_BIN_DIR=/usr/local/bin {{ pipx_home }}/.venv/bin/pipx "$@"
+`,
+    },
+  },
+] satisfies TaskFile;

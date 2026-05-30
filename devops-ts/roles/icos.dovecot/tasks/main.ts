@@ -1,0 +1,19 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  { import_tasks: "dovecot_install.yml" },
+  { import_tasks: "dovecot_listen.yml" },
+  { import_tasks: "dovecot_logging.yml", tags: "dovecot_logging" },
+  { import_tasks: "dovecot_auth.yml" },
+  { import_tasks: "dovecot_ssl.yml", tags: "dovecot_ssl" },
+  { import_tasks: "dovecot_postfix.yml" },
+  { import_tasks: "dovecot_fail2ban.yml", tags: "dovecot_fail2ban" },
+  // Instead of cluttering the role with 'notify: reload dovecot' we do
+  // it unconditionally - it's fast.
+  {
+    name: "Reload dovecot",
+    shell: `doveconf 1>/dev/null && doveadm reload
+`,
+    changed_when: false,
+  },
+] satisfies TaskFile;

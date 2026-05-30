@@ -1,4 +1,4 @@
-import { type Playbook, not, role } from "../lib/ansible.ts";
+import { not, type Playbook, role } from "../lib/ansible.ts";
 
 export default [
   {
@@ -79,7 +79,7 @@ export default [
       },
       {
         // deno-lint-ignore no-explicit-any
-        include_role: ("name=icos.certbot2" as any),
+        include_role: "name=icos.certbot2" as any,
         tags: ["cert"],
         vars: {
           certbot_name: "exploredata",

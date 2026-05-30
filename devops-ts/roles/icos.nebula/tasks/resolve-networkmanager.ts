@@ -1,0 +1,31 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+// https://wiki.archlinux.org/title/NetworkManager#DNS_management
+// NetworkManager can use either:
+//   1. systemd-networkd
+//   2. its own dnsmasq
+//   3. the system's resolvconf/dnsmasq
+//
+// We use option 3.
+export default [
+  {
+    name: "Query systemd for systemd-networkd",
+    systemd: { name: "systemd-networkd" },
+    register: "_networkd",
+  },
+  {
+    when: raw('_networkd.status.ActiveState == "active"'),
+    name: "Warn about NetworkManage+systemd-networkd",
+    fail: {
+      msg: `We're not setup for provisioning NetworkManager+systemd-networkd
+`,
+    },
+  },
+  // We could install dnsmasq, then disable the main dnsmasq instance and letting
+  // NetworkManager run its own. Instead we just install dnsmasq and openresolv
+  // and NetworkManager will interact with them.
+  {
+    import_tasks: "resolve-dnsmasq.yml",
+    notify: "restart NetworkManager",
+  },
+] satisfies TaskFile;

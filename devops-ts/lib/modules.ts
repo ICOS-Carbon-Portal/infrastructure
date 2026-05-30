@@ -103,7 +103,12 @@ export type FailArgs = { msg: string };
 export type StatArgs = { path: string };
 export type ShellArgs = string | { cmd?: string };
 export type SetFactArgs = string | Record<string, VarValue>;
-export type GetUrlArgs = { url: string; dest: string; mode?: Mode; force?: Flag };
+export type GetUrlArgs = {
+  url: string;
+  dest: string;
+  mode?: Mode;
+  force?: Flag;
+};
 export type UnarchiveArgs = {
   src: string;
   dest: string;

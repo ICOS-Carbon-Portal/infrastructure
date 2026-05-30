@@ -1,0 +1,33 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Backup rdflog db",
+    include_role: { name: "icos.bbclient2", public: true },
+    vars: {
+      bbclient_user: "root",
+      bbclient_name: "{{ rdflog_bbclient_name }}",
+      bbclient_home: "{{ rdflog_home }}/bbclient",
+      bbclient_timer_conf: "OnCalendar=00/6:11",
+      bbclient_timer_content: `#!/bin/bash
+set -eu
+
+while read repo; do
+    export BORG_REPO="$repo"
+    docker exec rdflog pg_dump -U rdflog -Cc --if-exists -d rdflog | {{ bbclient_wrapper }} create '::{now}' -;
+    {{ bbclient_wrapper }} prune --keep-within=7d --keep-daily=30 --keep-weekly=150
+done < "{{ bbclient_repo_file }}"
+`,
+    },
+    when: raw("rdflog_backup_enable | default(False)"),
+  },
+  {
+    name: "Install rdflog restore scripts",
+    template: {
+      dest: "/usr/local/bin/icos-rdflog-restore",
+      src: "icos-rdflog-restore.sh",
+      mode: "+x",
+    },
+    when: raw("rdflog_backup_enable | default(False)"),
+  },
+] satisfies TaskFile;

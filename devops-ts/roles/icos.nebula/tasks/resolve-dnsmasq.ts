@@ -1,0 +1,41 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+// openresolv / dhcpcd / dnsmasq are all integrated, even though it's tricky to
+// figure out exactly how.
+//
+// https://wiki.archlinux.org/title/Dhcpcd
+// "If resolvconf is available, DNS information will be sent to it"
+//
+// https://wiki.archlinux.org/title/dnsmasq#openresolv
+// https://wiki.archlinux.org/title/Openresolv
+export default [
+  {
+    name: "Install openresolv",
+    apt: {
+      name: [
+        "openresolv",
+        // installing dnsmasq is enough to trigger openresolve (or something!) to
+        // rewrite /etc/resolv.conf
+        "dnsmasq",
+      ],
+    },
+  },
+  {
+    name: "Add nebula nameserver to dnsmasq",
+    copy: {
+      dest: "/etc/dnsmasq.d/nebula.conf",
+      content: `{% for server in nebula_resolve_servers %}
+server=/nebula/{{server}}
+{% endfor %}
+`,
+    },
+    register: "_conf",
+  },
+  {
+    name: "Make sure dnsmasq is (re)started",
+    systemd: {
+      name: "dnsmasq",
+      state: "{{ 'restarted' if _conf.changed else 'started' }}",
+    },
+  },
+] satisfies TaskFile;

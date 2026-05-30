@@ -1,0 +1,19 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    block: [
+      {
+        import_tasks: "certbot_generate_live.yml",
+      },
+    ],
+  },
+  {
+    name: "Set nginx config variable",
+    set_fact: {
+      certbot_nginx_conf: `ssl_certificate {{ certbot_live_crt }};
+ssl_certificate_key {{ certbot_live_key }};
+`,
+    },
+  },
+] satisfies TaskFile;

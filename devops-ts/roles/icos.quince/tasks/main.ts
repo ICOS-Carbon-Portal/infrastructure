@@ -1,0 +1,21 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  { import_tasks: "quince-system.yml", tags: "quince-system" },
+  {
+    name: "Download specific version of tomcat",
+    tags: ["quince-setup", "quince-tomcat"],
+    import_tasks: "quince-tomcat.yml",
+  },
+  {
+    name: "Setup mysql database",
+    tags: ["quince-setup", "quince-mysql"],
+    import_tasks: "quince-mysql.yml",
+  },
+  {
+    name: "Install backup script",
+    tags: ["quince-backup", "quince-backup-script"],
+    import_tasks: "quince-backup.yml",
+  },
+  { import_tasks: "quince-logging.yml", tags: "quince-logging" },
+] satisfies TaskFile;

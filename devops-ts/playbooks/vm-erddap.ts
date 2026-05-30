@@ -80,8 +80,7 @@ export default [
         name: "Print ssh config",
         tags: "howto",
         debug: {
-          msg:
-            `# Put this in $HOME/.ssh/config,
+          msg: `# Put this in $HOME/.ssh/config,
 # then execute "ssh {{ inventory_hostname }}"
 Host {{ inventory_hostname }}
   HostName {{ ansible_host }}

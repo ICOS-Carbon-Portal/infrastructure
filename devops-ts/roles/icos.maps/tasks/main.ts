@@ -1,0 +1,14 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    include_role: {
+      name: "icos.nginxsite",
+    },
+    vars: {
+      nginxsite_name: "maps",
+      nginxsite_file: "maps-nginx.conf",
+      nginxsite_domains: "{{ maps_domains }}",
+    },
+  },
+] satisfies TaskFile;

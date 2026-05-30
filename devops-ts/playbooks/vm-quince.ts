@@ -43,7 +43,6 @@ export default [
     hosts: "quince3",
     roles: [
       role("icos.lxd_guest"),
-
       // This role was used to provision the quince application but since then
       // the installation has been continously tweaked by manual means, running
       // the role again might mess things up.

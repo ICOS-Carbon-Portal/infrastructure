@@ -1,0 +1,56 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    when: raw("dive_version is not defined"),
+    run_once: true,
+    check_mode: false,
+    delegate_to: "localhost",
+    delegate_facts: true,
+    block: [
+      {
+        name: "Find the latest release of dive",
+        github_release: {
+          user: "wagoodman",
+          repo: "dive",
+          action: "latest_release",
+        },
+        register: "gh",
+      },
+      {
+        name: "Set dive_version fact",
+        set_fact: {
+          dive_version: "{{ gh.tag.lstrip('v') }}",
+          cacheable: true,
+        },
+      },
+    ],
+  },
+  // FIXME: Remove in 2025
+  {
+    name: "Remove old install of /usr/local/sbin/dive",
+    file: {
+      name: "/usr/local/sbin/dive",
+      state: "absent",
+    },
+  },
+  {
+    name: "Install dive",
+    apt: {
+      deb: "{{ dive_url_map[dive_architecture] }}",
+    },
+  },
+  {
+    name: "Check that dive is executable and the correct version",
+    shell: "dive --version",
+    changed_when: false,
+    register: "_r",
+    failed_when: "not _r.stdout.endswith(dive_version)",
+  },
+  {
+    name: "Which version of dive was installed",
+    debug: {
+      msg: "Installed {{ dive_version }}",
+    },
+  },
+] satisfies TaskFile;

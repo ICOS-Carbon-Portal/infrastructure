@@ -1,0 +1,25 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Install public keys",
+    authorized_key: {
+      user: "root",
+      state: "present",
+      key: "{{ root_keys }}",
+      // Make sure to remove stale root keys
+      exclusive: true,
+    },
+    when: raw("root_keys is truthy"),
+  },
+  {
+    name: "Set timezone to Europe/Stockholm",
+    timezone: { name: "Europe/Stockholm" },
+    notify: "restart cron",
+  },
+  {
+    name: "Generate locale",
+    locale_gen: { name: "{{ item }}", state: "present" },
+    loop: ["en_US.UTF-8", "sv_SE.UTF-8"],
+  },
+] satisfies TaskFile;

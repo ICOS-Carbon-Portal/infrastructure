@@ -1,0 +1,29 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create auth directory",
+    file: {
+      path: "{{ registry_htpasswd_file | dirname }}",
+      state: "directory",
+    },
+  },
+  {
+    name: "Install the passlib library",
+    apt: {
+      name: "python3-passlib",
+    },
+  },
+  {
+    name: "Add basic auth users",
+    htpasswd: {
+      path: "{{ registry_htpasswd_file }}",
+      name: "{{ item.name }}",
+      password: "{{ item.password }}",
+      // We must force this encryption, otherwise 'docker login' will fail
+      // (unauthorized ...)
+      crypt_scheme: "bcrypt",
+    },
+    loop: "{{ registry_users }}",
+  },
+] satisfies TaskFile;

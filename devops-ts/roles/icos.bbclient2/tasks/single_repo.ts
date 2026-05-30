@@ -1,0 +1,71 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  // LOCAL
+  {
+    name: "Read the public key",
+    check_mode: false,
+    slurpfact: {
+      path: "{{ bbclient_ssh_key }}.pub",
+      fact: "bbclient_key_data",
+    },
+  },
+
+  // REMOTE
+  {
+    name: "Configure remote - bbserver - host",
+    delegate_to: "{{ bbclient_remote }}",
+    block: [
+      {
+        name: "Retrieve host keys",
+        check_mode: false,
+        shellfact: {
+          // The keys don't always appear in the same order, so sort them.
+          // Otherwise the known_hosts task on LOCAL will keep changing.
+          exec:
+            'ssh-keyscan -p {{ hostvars[bbclient_remote].bbserver_port }} localhost | sed "s/localhost/{{ hostvars[bbclient_remote].bbserver_host }}/" | sort -u',
+          fact: "bbclient_remote_keys",
+        },
+      },
+      {
+        name: "Install public key",
+        authorized_key: {
+          user: "{{ bbclient_remote_user }}",
+          state: "present",
+          key: "{{ bbclient_key_data }}",
+          key_options:
+            'command="/usr/local/bin/borg serve --restrict-to-path {{ bbclient_remote_repo }}",restrict',
+        },
+      },
+    ],
+  },
+
+  // LOCAL
+  {
+    name: "Configure local - bbclient - host",
+    become: true,
+    become_user: "{{ bbclient_user }}",
+    block: [
+      {
+        name: "Update known_hosts",
+        blockinfile: {
+          create: true,
+          path: "{{ bbclient_ssh_hosts }}",
+          marker: "# {mark} {{ bbclient_remote }}",
+          block: "{{ bbclient_remote_keys }}\n",
+        },
+      },
+      {
+        name: "Initialize repo",
+        command:
+          "{{ bbclient_wrapper }} init {{ bbclient_repo_url }} --encryption=none\n",
+        register: "r",
+        changed_when: ["r.rc == 0"],
+        failed_when: [
+          "r.rc != 0",
+          "not r.stderr.startswith('A repository already exists at')",
+        ],
+      },
+    ],
+  },
+] satisfies TaskFile;

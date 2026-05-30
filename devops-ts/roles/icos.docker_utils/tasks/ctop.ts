@@ -1,0 +1,13 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  // ctop is no longer maintained
+  // https://github.com/bcicen/ctop/issues/334
+  {
+    name: "Remove /usr/local/sbin/ctop",
+    file: {
+      name: "/usr/local/sbin/ctop",
+      state: "absent",
+    },
+  },
+] satisfies TaskFile;

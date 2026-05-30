@@ -1,0 +1,31 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Check that all parameters are defined",
+    fail: {
+      msg: "{{ item }} needs to be defined",
+    },
+    when: raw("vars[item] is undefined"),
+    loop: ["website"],
+    tags: ["drupal", "drupal_nginx"],
+  },
+  {
+    name: "Include {{ website }} vars",
+    include_vars: "{{ website }}-vars.yml",
+    tags: ["drupal", "drupal_nginx"],
+  },
+  {
+    name: "Include {{ website }} vault",
+    include_vars: "{{ website }}-vault.yml",
+    tags: ["drupal", "drupal_nginx"],
+  },
+  {
+    name: "Include vars",
+    include_vars: "drupal.yml",
+    tags: ["drupal", "drupal_nginx"],
+  },
+  { import_tasks: "nginx.yml", tags: "drupal_nginx" },
+  { import_tasks: "drupal.yml", tags: "drupal" },
+  { import_tasks: "backup.yml", tags: "drupal_backup" },
+] satisfies TaskFile;

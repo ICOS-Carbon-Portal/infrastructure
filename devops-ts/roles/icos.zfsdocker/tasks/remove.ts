@@ -1,0 +1,11 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Remove docker storage volume for {{ zfsdocker_name }}",
+    zfs: {
+      name: "pool/docker/{{ zfsdocker_name }}",
+      state: "absent",
+    },
+  },
+] satisfies TaskFile;

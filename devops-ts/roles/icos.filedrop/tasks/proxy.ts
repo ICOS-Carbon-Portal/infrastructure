@@ -1,0 +1,29 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Check that all parameters are defined",
+    fail: { msg: "{{ item }} needs to be defined" },
+    when: raw("vars[item] is undefined"),
+    loop: [
+      "nginxsite_name",
+      "filedrop_host",
+      "filedrop_domain",
+    ],
+  },
+  {
+    include_role: "name=icos.certbot2",
+    vars: {
+      certbot_name: "{{ filedrop_domain }}",
+      certbot_domains: [
+        "{{ filedrop_domain }}",
+      ],
+    },
+  },
+  {
+    include_role: "name=icos.nginxsite",
+    vars: {
+      nginxsite_file: "filedrop-nginx.conf",
+    },
+  },
+] satisfies TaskFile;

@@ -1,0 +1,46 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create directory",
+    file: { path: "{{ item }}", state: "directory" },
+    loop: ["/opt/cni/download", "/opt/cni/bin", "/etc/cni/net.d"],
+  },
+  {
+    name: "Find latest release of CNI networking plugins",
+    check_mode: false,
+    delegate_to: "localhost",
+    run_once: true,
+    github_release: {
+      user: "containernetworking",
+      repo: "plugins",
+      action: "latest_release",
+    },
+    register: "podman_release",
+  },
+  {
+    name: "Download cni plugins",
+    get_url: {
+      url: "{{ cni_plugin_url }}",
+      dest: "/opt/cni/download/plugins.tgz",
+    },
+  },
+  {
+    name: "Unarchive cni plugins",
+    unarchive: {
+      src: "/opt/cni/download/plugins.tgz",
+      dest: "/opt/cni/bin",
+      remote_src: true,
+    },
+    diff: false,
+  },
+  // https://www.redhat.com/sysadmin/container-networking-podman
+  // https://raw.githubusercontent.com/containers/podman/main/cni/87-podman-bridge.conflist
+  {
+    name: "Create default network configuration",
+    copy: {
+      src: "87-podman-bridge.conflist",
+      dest: "/etc/cni/net.d/",
+    },
+  },
+] satisfies TaskFile;

@@ -1,0 +1,16 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    import_tasks: "setup.yml",
+    tags: "stiltcluster_setup",
+  },
+  {
+    import_tasks: "config.yml",
+    tags: ["stiltcluster_config", "stiltcluster_deploy"],
+  },
+  {
+    import_tasks: "deploy.yml",
+    tags: "stiltcluster_deploy",
+  },
+] satisfies TaskFile;

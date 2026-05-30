@@ -1,0 +1,57 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create common aliases",
+    tags: "alias",
+    copy: {
+      dest: "/etc/profile.d/aliases.sh",
+      content: `alias sc=systemctl
+alias jc=journalctl
+alias df='df -h -x tmpfs -x overlay -x devtmpfs'
+alias dc='docker compose'
+alias psc='ps xawf -eo pid,user,cgroup,args'
+`,
+    },
+  },
+  {
+    name: "Copy utilities",
+    tags: "utils_copy",
+    template: {
+      src: "{{ item }}",
+      dest: "/usr/local/sbin/{{ item }}",
+      mode: 0o755,
+    },
+    loop: [
+      "retrieve-original",
+      "iptables-remove-duplicates",
+      "ss",
+      "ssh-merge-config",
+    ],
+  },
+  {
+    name: "Install utilities",
+    apt: {
+      update_cache: true,
+      name: [
+        "mg", // microemacs
+        "htop", // a better top(1)
+        "jq", // like sed for json
+        "make", // party like it's 1976
+        "netcat-openbsd", // nc(1)
+        "git", // useful
+        "tree", // directory overview
+        "tcpdump", // network troubleshooting
+        "mutt", // for reading said reports
+        "unzip", // required by ansible's unarchive
+      ],
+    },
+  },
+  { import_tasks: "ripgrep.yml", tags: "ripgrep" },
+  { import_tasks: "ncdu.yml", tags: "ncdu" },
+  { import_tasks: "fd.yml", tags: "fd" },
+  { import_tasks: "watchexec.yml", tags: "watchexec" },
+  { import_tasks: "btop.yml", tags: "btop" },
+  { import_tasks: "trippy.yml", tags: "trippy" },
+  { import_tasks: "lazygit.yml", tags: "lazygit" },
+] satisfies TaskFile;

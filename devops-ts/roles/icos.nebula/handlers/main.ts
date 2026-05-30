@@ -1,0 +1,55 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "reload nebula",
+    service: {
+      name: "nebula",
+      state: "reloaded",
+    },
+  },
+  {
+    name: "restart nebula",
+    service: {
+      name: "nebula",
+      state: "restarted",
+    },
+    // # When nebula is restarted, the nebula interface disappears and reappears,
+    // # which causes systemd-resolved to loose track of the extra dns servers
+    // # we've configured for nebula. Restarting systemd-networkd fixes it.
+    // notify: restart systemd-networkd
+  },
+  {
+    name: "restart systemd-networkd",
+    when: null as unknown as undefined,
+    service: {
+      name: "systemd-networkd",
+      state: "restarted",
+    },
+    // Restarting systemd-networkd however, causes systemd-resolved to gain the
+    // nebula nameservers, but loose the once configured by NetworkManager, so
+    // we'll restart that as well.
+    notify: "restart NetworkManager",
+  },
+  // NetworkManager might not be in use.
+  {
+    name: "restart NetworkManager",
+    systemd: {
+      name: "NetworkManager",
+      state: "restarted",
+    },
+  },
+  {
+    name: "reload NetworkManager",
+    systemd: {
+      name: "NetworkManager",
+      state: "reloaded",
+    },
+  },
+  {
+    name: "systemd reload",
+    systemd: {
+      daemon_reload: true,
+    },
+  },
+] satisfies TaskFile;

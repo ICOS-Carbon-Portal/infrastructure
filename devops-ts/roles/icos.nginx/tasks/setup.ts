@@ -1,0 +1,49 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Install nginx",
+    apt: {
+      name: [
+        "nginx",
+      ],
+    },
+  },
+  {
+    name: "Install nginx.conf",
+    template: {
+      src: "nginx.conf",
+      dest: "/etc/nginx/nginx.conf",
+      owner: "{{ nginx_user }}",
+      group: "{{ nginx_user }}",
+      backup: true,
+    },
+    tags: "nginx_conf",
+    notify: "reload nginx config",
+  },
+  {
+    name: "Remove nginx default site",
+    file: {
+      path: "/etc/nginx/sites-enabled/default",
+      state: "absent",
+    },
+    notify: "reload nginx config",
+  },
+  {
+    name: "Allow nginx through firewall",
+    iptables_raw: {
+      name: "allow_nginx",
+      rules: `-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+`,
+    },
+  },
+  {
+    name: "Start nginx",
+    service: {
+      name: "nginx",
+      state: "started",
+      enabled: true,
+    },
+  },
+] satisfies TaskFile;

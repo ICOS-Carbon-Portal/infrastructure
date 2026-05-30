@@ -1,0 +1,29 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "bbclient",
+    import_role: {
+      name: "icos.bbclient2",
+    },
+  },
+  {
+    name: "Copy quince-backup.sh",
+    template: {
+      src: "quince-backup.sh",
+      dest: "{{ quince_home }}/backup.sh",
+      mode: "+x",
+    },
+  },
+  {
+    name: "Install cron job for backups",
+    cron: {
+      user: "{{ quince_user }}",
+      name: "quince borg backup",
+      minute: "15",
+      hour: "*/3",
+      job: "{{ quince_home }}/backup.sh",
+    },
+    when: raw("quince_backup_enable"),
+  },
+] satisfies TaskFile;

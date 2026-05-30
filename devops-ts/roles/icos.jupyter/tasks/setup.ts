@@ -1,0 +1,62 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create jupyter home",
+    file: {
+      path: "{{ jupyter_home }}",
+      state: "directory",
+    },
+  },
+  {
+    name: "Create auth token",
+    // https://jupyter.readthedocs.io/en/stable/reference/separate-proxy.html#proxy-configuration
+    shell:
+      "openssl rand -hex 20 | awk '{ print \"CONFIGPROXY_AUTH_TOKEN=\" $1 }' > auth_token.env",
+    args: {
+      chdir: "{{ jupyter_home }}",
+      creates: "auth_token.env",
+    },
+  },
+  // We want the network to be external to docker-compose, so that it leaves it
+  // alone when it goes down, since the notebook containers need it.
+  {
+    name: "Create jupyter network",
+    docker_network: { name: "jupyter" },
+  },
+  {
+    name: "Copy files",
+    copy: {
+      dest: "{{ jupyter_home }}",
+      src: "{{ item }}",
+    },
+    loop: ["build.hub", "docker-compose.yml"],
+  },
+  {
+    name: "Copy jupyterhub_config.py",
+    template: {
+      src: "jupyterhub_config.py",
+      dest: "{{ jupyter_home }}/jupyterhub_home/",
+    },
+    vars: {
+      conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}",
+    },
+    register: "_config",
+  },
+  {
+    name: "Start proxy and hub",
+    "community.docker.docker_compose_v2": {
+      project_src: "{{ jupyter_home }}",
+    },
+  },
+  {
+    name: "Restart the hub",
+    "community.docker.docker_compose_v2": {
+      project_src: "{{ jupyter_home }}",
+      services: ["hub"],
+      state: "restarted",
+      build: "always",
+    },
+    changed_when: false,
+  },
+] satisfies TaskFile;

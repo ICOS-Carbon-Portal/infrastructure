@@ -1,0 +1,22 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Include vars",
+    include_vars: "vars.yml",
+    tags: "always",
+  },
+  {
+    name: "Include vault",
+    include_vars: "vault.yml",
+    tags: "always",
+  },
+  { import_tasks: "nginx.yml", tags: "nginx" },
+  {
+    name: "Create project directory",
+    file: { path: "{{ project_dir }}", state: "directory", recurse: true },
+    tags: ["repo", "pull"],
+  },
+  { import_tasks: "bitbucket.yml", tags: "repo" },
+  { import_tasks: "sitesaquanetform.yml", tags: "pull" },
+] satisfies TaskFile;

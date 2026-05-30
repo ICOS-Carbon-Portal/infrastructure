@@ -1,0 +1,32 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  // https://nginx.org/en/docs/http/ngx_http_stub_status_module.html#stub_status
+  {
+    name: "Enable stub_status for nginx",
+    copy: {
+      dest: "/etc/nginx/conf.d/stub_status.conf",
+      content: `server {
+  listen localhost:80;
+  server_name localhost;
+
+  location /metrics {
+      stub_status on;
+  }
+}
+`,
+    },
+  },
+  {
+    name: "reload nginx config",
+    shell: "nginx -t && systemctl reload nginx",
+    changed_when: false,
+  },
+  {
+    name: "Check that nginx /metrics respond",
+    uri: {
+      url: "{{ nginx_metrics_url }}",
+    },
+    retries: 10,
+  },
+] satisfies TaskFile;

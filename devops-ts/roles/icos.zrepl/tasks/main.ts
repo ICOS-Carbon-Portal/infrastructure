@@ -1,0 +1,7 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  { import_tasks: "install.yml", tags: "zrepl_install" },
+  { import_tasks: "just.yml", tags: "zrepl_just" },
+  { import_tasks: "config.yml", tags: "zrepl_config" },
+] satisfies TaskFile;

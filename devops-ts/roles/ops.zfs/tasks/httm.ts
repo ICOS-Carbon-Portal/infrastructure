@@ -1,0 +1,55 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Architecture is not supported",
+    fail: {
+      msg: "httm is not supported on {{ ansible_architecture }}",
+    },
+    when: raw('ansible_architecture != "x86_64"'),
+  },
+  {
+    when: raw("httm_version is not defined"),
+    run_once: true,
+    check_mode: false,
+    delegate_to: "localhost",
+    delegate_facts: true,
+    block: [
+      {
+        name: "Find the latest release of httm",
+        github_release: {
+          user: "kimono-koans",
+          repo: "httm",
+          action: "latest_release",
+        },
+        register: "gh",
+      },
+      {
+        name: "Set httm_version fact",
+        set_fact: {
+          httm_version: "{{ gh.tag.lstrip('v') }}",
+          cacheable: true,
+        },
+      },
+    ],
+  },
+  {
+    name: "Install httm",
+    apt: {
+      deb: "{{ httm_url_map[httm_architecture] }}",
+    },
+  },
+  {
+    name: "Check that httm is executable and the correct version",
+    shell: "httm --version",
+    changed_when: false,
+    register: "_r",
+    failed_when: "not _r.stdout.endswith(httm_version)",
+  },
+  {
+    name: "Which version of httm was installed",
+    debug: {
+      msg: "Installed {{ httm_version }}",
+    },
+  },
+] satisfies TaskFile;

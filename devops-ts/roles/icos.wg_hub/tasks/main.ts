@@ -1,0 +1,121 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Install iptables-persistent",
+    apt: {
+      name: "iptables-persistent",
+    },
+  },
+  {
+    name: "Retrieve server's private key",
+    shellfact: {
+      exec: "cat /etc/wireguard/privatekey",
+      fact: "_privatekey",
+    },
+  },
+  {
+    name: "Install wireguard hub config",
+    when: raw("wg_hub_ishub"),
+    register: "_hub_conf",
+    copy: {
+      dest: "/etc/wireguard/{{ wg_hub_intf }}.conf",
+      mode: 0o600,
+      content: `[Interface]
+Address = {{ wg_hub_self.addr }}
+ListenPort = {{ wg_hub_config.hub.port }}
+PrivateKey = {{ _privatekey }}
+
+{% for name, conf in wg_hub_config.peers.items() %}
+{% if name != inventory_hostname %}
+# {{ name }}
+[Peer]
+PublicKey = {{ conf.key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, name))) }}
+AllowedIPs = {{ conf.allowed_ips | default("%s/32" % conf.addr) }}
+PersistentKeepalive = 25
+{% endif %}
+
+{% endfor %}
+`,
+    },
+  },
+  {
+    name: "Install wireguard spoke config",
+    when: raw("not wg_hub_ishub"),
+    register: "_spoke_conf",
+    copy: {
+      dest: "/etc/wireguard/{{ wg_hub_intf }}.conf",
+      mode: 0o600,
+      content: `[Interface]
+Address = {{ wg_hub_self.addr }}
+{% if wg_hub_self.port is defined %}
+ListenPort =  {{ wg_hub_self.port }}
+{% endif %}
+PrivateKey = {{ _privatekey }}
+
+# {{ wg_hub_peer }}
+[Peer]
+PublicKey = {{ wg_hub_key }}
+Endpoint = {{ wg_hub_addr -}}:{{ wg_hub_config.hub.port }}
+AllowedIPs = {{ wg_hub_config.allowed_ips }}
+PersistentKeepalive = 25
+`,
+    },
+  },
+  {
+    name: "Add hosts",
+    blockinfile: {
+      marker: "# {mark} cloud.wg_hub {{ wg_hub_config.name }}",
+      path: "/etc/hosts",
+      block: `{% for name, conf in wg_hub_config.peers.items() %}
+{{ conf.addr }} {{ conf.name | default(name) }}.{{ wg_hub_intf }}
+{% if name == wg_hub_peer %}
+{{ conf.addr }} hub.{{ wg_hub_intf }}
+{% endif %}
+{% endfor %}
+`,
+    },
+  },
+  {
+    name: "Allow wireguard through firewall",
+    when: raw("wg_hub_ishub"),
+    iptables_raw: {
+      name: "wireguard_{{ wg_hub_config.name }}",
+      rules: `-A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
+-A FORWARD -i {{ wg_hub_intf }} -j ACCEPT
+`,
+    },
+  },
+  {
+    name: "Allow all inbound traffic on the wireguard interface",
+    iptables_raw: {
+      name: "wireguard_{{ wg_hub_config.name }}_allow_all",
+      state: "{{ 'present' if wg_hub_allow_all else 'absent' }}",
+      rules: `-A INPUT -i {{ wg_hub_intf }} -j ACCEPT
+`,
+    },
+  },
+  {
+    name: "Setup reresolve dependency",
+    when: raw("wg_hub_reresolve and not wg_hub_ishub"),
+    command:
+      "systemctl add-wants wg-quick@{{ wg_hub_intf }}.service wg-reresolve@{{ wg_hub_intf }}.timer",
+    register: "_reresolve",
+    changed_when: '_reresolve.stderr.startswith("Created symlink")',
+  },
+  {
+    name: "Start wg-quick service",
+    systemd: {
+      name: "wg-quick@{{ wg_hub_intf }}.service",
+      state:
+        "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed or _reresolve.changed else 'started' }}",
+      enabled: true,
+    },
+  },
+  {
+    name: "Ping hub",
+    command: 'ping -c 1 -w 10 "{{ wg_hub_config.hub.peer }}.{{ wg_hub_intf }}"',
+    tags: "wg_hub_ping",
+    changed_when: false,
+  },
+] satisfies TaskFile;

@@ -1,0 +1,20 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create doi certificate",
+    include_role: "name=icos.certbot2",
+    vars: {
+      certbot_name: "{{ doi_certbot_name }}",
+      certbot_domains: "{{ doi_domains }}",
+    },
+  },
+  {
+    name: "Add doi nginx config",
+    include_role: "name=icos.nginxsite",
+    vars: {
+      nginxsite_name: "{{ doi_nginxsite_name }}",
+      nginxsite_file: "doi.conf",
+    },
+  },
+] satisfies TaskFile;

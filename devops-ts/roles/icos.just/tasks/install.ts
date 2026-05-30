@@ -1,0 +1,49 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    when: raw("just_version is not defined"),
+    run_once: true,
+    check_mode: false,
+    delegate_to: "localhost",
+    delegate_facts: true,
+    block: [
+      {
+        name: "Find the latest release of just",
+        github_release: {
+          user: "casey",
+          repo: "just",
+          action: "latest_release",
+        },
+        register: "gh",
+      },
+      {
+        name: "Set just_version fact",
+        set_fact: {
+          just_version: "{{ gh.tag.lstrip('v') }}",
+          cacheable: true,
+        },
+      },
+    ],
+  },
+  {
+    name: "Install just",
+    unarchive: {
+      remote_src: true,
+      src: "{{ just_url_map[ansible_architecture] }}",
+      dest: "/usr/local/bin",
+      include: ["just"],
+    },
+  },
+  {
+    name: "Check that just is executable and the correct version",
+    shell: "just --version",
+    changed_when: false,
+    register: "_r",
+    failed_when: "not _r.stdout.endswith(just_version)",
+  },
+  {
+    name: "Which version of just was installed",
+    debug: { msg: "Installed {{ just_version }}" },
+  },
+] satisfies TaskFile;

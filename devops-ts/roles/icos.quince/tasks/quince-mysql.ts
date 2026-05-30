@@ -1,0 +1,30 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Install MySQL",
+    apt: {
+      name: "{{ item }}",
+      state: "present",
+    },
+    loop: ["mysql-server", "python3-pymysql"],
+  },
+  {
+    name: "Create quince database",
+    mysql_db: {
+      name: "quince",
+      state: "present",
+      login_unix_socket: "/var/run/mysqld/mysqld.sock",
+    },
+  },
+  {
+    name: "Create quince database user",
+    mysql_user: {
+      name: "quince",
+      password: "quince",
+      priv: "*.*:ALL",
+      state: "present",
+      login_unix_socket: "/var/run/mysqld/mysqld.sock",
+    },
+  },
+] satisfies TaskFile;

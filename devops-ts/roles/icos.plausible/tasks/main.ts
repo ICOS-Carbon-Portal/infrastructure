@@ -1,0 +1,58 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create home directory",
+    file: {
+      path: "{{ plausible_home }}",
+      state: "directory",
+    },
+  },
+  {
+    include_role: { name: "icos.nginxsite" },
+    vars: {
+      nginxsite_name: "plausible",
+      nginxsite_file: "plausible-nginx.conf",
+      nginxsite_domains: ["{{ plausible_domain }}"],
+    },
+  },
+  {
+    name: "Copy clickhouse-config.xml",
+    copy: {
+      src: "clickhouse-config.xml",
+      dest: "{{ plausible_home }}/clickhouse/",
+    },
+  },
+  {
+    name: "Copy clickhouse-user-config.xml",
+    copy: {
+      src: "clickhouse-user-config.xml",
+      dest: "{{ plausible_home }}/clickhouse/",
+    },
+  },
+  {
+    name: "Copy plausible-conf.env",
+    template: {
+      src: "plausible-conf.env",
+      dest: "{{ plausible_home }}",
+    },
+  },
+  {
+    name: "Copy docker-compose.yml",
+    template: {
+      src: "docker-compose.yml",
+      dest: "{{ plausible_home }}",
+    },
+  },
+  {
+    name: "Run plausible docker compose",
+    "community.docker.docker_compose_v2": {
+      project_src: "{{ plausible_home }}",
+      state: "present",
+    },
+  },
+  {
+    include_tasks: "backup.yml",
+    when: raw("plausible_backup_enabled"),
+  },
+] satisfies TaskFile;

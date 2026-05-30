@@ -15,7 +15,8 @@ export default [
         tags: "iptables",
         iptables_raw: {
           name: "host_ssh_and_mosh",
-          rules: `-A INPUT -p tcp --dport 22 -j ACCEPT -m comment --comment 'ssh'
+          rules:
+            `-A INPUT -p tcp --dport 22 -j ACCEPT -m comment --comment 'ssh'
 -A INPUT -p udp -m multiport --dports 60000:61000 -j ACCEPT -m comment --comment "mosh"
 `,
         },

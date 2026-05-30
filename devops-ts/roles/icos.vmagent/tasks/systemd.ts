@@ -1,0 +1,46 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create prometheus.yml",
+    copy: {
+      dest: "{{ vmagent_home }}/prometheus.yml",
+      content: "{{ vmagent_conf }}",
+    },
+    notify: "reload vmagent",
+  },
+  {
+    name: "Create vmagent environ file",
+    template: {
+      dest: "{{ vmagent_environ }}",
+      src: "vmagent.environ",
+      mode: "0600",
+      lstrip_blocks: true,
+    },
+    notify: "restart vmagent",
+  },
+  {
+    name: "Create vmagent service file",
+    template: {
+      dest: "{{ vmagent_home }}/vmagent.service",
+      lstrip_blocks: true,
+      src: "vmagent.service",
+    },
+    notify: "restart vmagent",
+  },
+  {
+    name: "Link service",
+    command: "systemctl link {{ vmagent_home }}/vmagent.service",
+    args: {
+      creates: "/etc/systemd/system/vmagent.service",
+    },
+  },
+  {
+    name: "Start vmagent service",
+    systemd: {
+      name: "vmagent",
+      state: "started",
+      enabled: true,
+    },
+  },
+] satisfies TaskFile;

@@ -1,0 +1,27 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  // This gets us htpasswd(1)
+  {
+    name: "Install apache2-utils",
+    apt: {
+      name: "apache2-utils",
+      state: "present",
+    },
+  },
+  {
+    name: "Install the passlib library",
+    apt: {
+      name: "python3-passlib",
+    },
+  },
+  {
+    name: "Add basic auth users",
+    htpasswd: {
+      path: "{{ nginxforward_user_file }}",
+      name: "{{ item.name }}",
+      password: "{{ item.password }}",
+    },
+    loop: "{{ nginxforward_users }}",
+  },
+] satisfies TaskFile;

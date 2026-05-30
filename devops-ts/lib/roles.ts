@@ -52,7 +52,7 @@ export interface Roles {
 
   "icos.certbot2": {
     certbot_name?: Tmpl;
-    certbot_domains?: Tmpl | string[]
+    certbot_domains?: Tmpl | string[];
   };
 
   "icos.cpauth": NoVars;
@@ -103,8 +103,15 @@ export interface Roles {
   "icos.rspamd": NoVars;
   "icos.dokku": NoVars;
   "icos.flexpart": { flexpart_install_run?: boolean };
-  "icos.flexextract": { flexextract_src_dir: string; flexextract_download_host: string };
-  "icos.eurocom": { eurocom_users: string; eurocom_web_root: string; eurocom_data_home: string };
+  "icos.flexextract": {
+    flexextract_src_dir: string;
+    flexextract_download_host: string;
+  };
+  "icos.eurocom": {
+    eurocom_users: string;
+    eurocom_web_root: string;
+    eurocom_data_home: string;
+  };
   "icos.filedrop": { filedrop_data_home: string };
   "icos.nextcloud": {
     nextcloud_admin_password: string;
@@ -147,7 +154,10 @@ export interface Roles {
 
   // server bootstrap roles
   "icos.server": NoVars;
-  "icos.docker": { docker_periodic_cleanup?: boolean; docker_prevent_upgrade?: boolean };
+  "icos.docker": {
+    docker_periodic_cleanup?: boolean;
+    docker_prevent_upgrade?: boolean;
+  };
   "icos.docker2": NoVars;
   "icos.nginx": NoVars;
   "icos.nfs4": NoVars;
@@ -160,9 +170,15 @@ export interface Roles {
   "icos.users": NoVars;
   "icos.rdflog": NoVars;
   "icos.pgrep": NoVars;
-  "icos.fail2ban": { fail2ban_config_files: { dest: string; content: string }[] };
+  "icos.fail2ban": {
+    fail2ban_config_files: { dest: string; content: string }[];
+  };
   "icos.dnsmasq": { dnsmasq_interface: string; dnsmasq_config: string };
-  "icos.rsyncd": { rsyncd_enable: boolean; rsyncd_users: { name: string }[]; rsyncd_conf: string };
+  "icos.rsyncd": {
+    rsyncd_enable: boolean;
+    rsyncd_users: { name: string }[];
+    rsyncd_conf: string;
+  };
   "icos.superuser": {
     superuser_disable_coredump?: boolean;
     superuser_list: { name: string; key: string }[];

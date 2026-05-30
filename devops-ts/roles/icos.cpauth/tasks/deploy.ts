@@ -3,7 +3,10 @@ import { type TaskFile } from "../../../lib/ansible.ts";
 export default [
   {
     name: "Add systemd service",
-    template: { src: "cpauth.service", dest: "/etc/systemd/system/cpauth.service" },
+    template: {
+      src: "cpauth.service",
+      dest: "/etc/systemd/system/cpauth.service",
+    },
     register: "_service",
   },
   {
@@ -30,7 +33,8 @@ export default [
   },
   {
     name: "Remove all but the five newest of jar file backups",
-    "ansible.builtin.shell": `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
+    "ansible.builtin.shell":
+      `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
     args: { chdir: "{{ cpauth_home }}" },
     register: "_r",
@@ -42,7 +46,8 @@ export default [
       name: "cpauth.service",
       enabled: true,
       "daemon-reload": "{{ 'yes' if _service.changed else 'no' }}",
-      state: "{{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}",
+      state:
+        "{{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}",
     },
   },
   {

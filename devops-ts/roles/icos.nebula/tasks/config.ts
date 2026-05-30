@@ -1,0 +1,55 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    block: [
+      {
+        name: "Copy nebula_config.yml",
+        template: {
+          src: "{{ nebula_config_file }}",
+          dest: "{{ nebula_etc_dir }}/config.yml",
+          lstrip_blocks: true,
+          backup: true,
+        },
+        register: "update",
+        notify: "restart nebula",
+      },
+      {
+        name: "Run validation",
+        command: "nebula -test -config {{ update.dest }}",
+        changed_when: false,
+      },
+    ],
+    rescue: [
+      {
+        name: "Slurp failed file and add line numbers",
+        command: 'cat -n "{{ nebula_etc_dir }}/config.yml"',
+        register: "_slurp",
+      },
+      {
+        name: "Restore config file",
+        copy: {
+          remote_src: true,
+          dest: "{{ nebula_etc_dir }}/config.yml",
+          src: "{{ update.backup_file }}",
+        },
+        when: raw("update['backup_file'] is defined"),
+      },
+      {
+        name: "Dump failed configuration",
+        debug: { msg: "{{ _slurp.stdout }}" },
+      },
+      {
+        name: "Fail",
+        fail: { msg: "Nebula config file is broken" },
+      },
+    ],
+    always: [
+      {
+        name: "Remove backup file",
+        file: { name: "{{ update.backup_file }}", state: "absent" },
+        when: raw("update['backup_file'] is defined"),
+      },
+    ],
+  },
+] satisfies TaskFile;

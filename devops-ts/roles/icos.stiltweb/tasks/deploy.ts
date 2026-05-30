@@ -1,0 +1,58 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Add systemd service",
+    template: {
+      src: "stiltweb.service",
+      dest: "/etc/systemd/system/stiltweb.service",
+    },
+    register: "_service",
+  },
+  {
+    name: "Create configuration file",
+    template: { dest: "{{ stiltweb_home }}/local.conf", src: "local.conf" },
+    register: "_config",
+  },
+  {
+    name: "Copy jarfile",
+    when: raw("stiltweb_jar_file is defined"),
+    copy: {
+      src: "{{ stiltweb_jar_file }}",
+      dest: "{{ stiltweb_home }}/stiltweb.jar",
+      backup: true,
+    },
+    register: "_jarfile",
+  },
+  {
+    name: "Remove all but the five newest of jar file backups",
+    "ansible.builtin.shell":
+      `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
+`,
+    args: { chdir: "{{ stiltweb_home }}" },
+    register: "_r",
+    changed_when: '_r.stdout.startswith("removed")',
+  },
+  {
+    name: "Start/restart service",
+    systemd: {
+      name: "stiltweb.service",
+      enabled: true,
+      "daemon-reload": "{{ 'yes' if _service.changed else 'no' }}",
+      state:
+        "{{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}",
+    },
+  },
+  {
+    name: "Check that the service responds",
+    uri: {
+      url: "https://{{ stiltweb_domains | first }}/buildInfo",
+      return_content: true,
+    },
+    register: "r",
+    failed_when: "r.failed",
+    retries: 30,
+    delay: 10,
+    until: "not r.failed",
+  },
+] satisfies TaskFile;

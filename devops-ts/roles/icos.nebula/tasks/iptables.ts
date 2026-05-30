@@ -1,0 +1,60 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    when: raw("nebula_fw_enable"),
+    block: [
+      {
+        name: "Install iptables",
+        apt: { name: ["iptables", "iptables-persistent"] },
+      },
+      {
+        name: "Allow nebula through firewall",
+        iptables: {
+          state: "absent",
+          chain: "INPUT",
+          protocol: "udp",
+          destination_port: "{{ nebula_port }}",
+          jump: "ACCEPT",
+        },
+      },
+      {
+        name: "Allow all traffic on nebula interface",
+        iptables: {
+          state: "absent",
+          chain: "INPUT",
+          // make sure it appears early
+          action: "insert",
+          in_interface: "{{ nebula_interface }}",
+          jump: "ACCEPT",
+        },
+      },
+      {
+        name: "Allow nebula through firewall",
+        iptables_raw: {
+          name: "allow_nebula",
+          rules: `{% if nebula_is_lighthouse %}
+# allow nebula through firewall
+-A INPUT -p udp --dport {{nebula_port}} -j ACCEPT
+{% endif -%}
+
+# allow all traffic on nebula interface
+-A INPUT -i {{ nebula_interface }} -j ACCEPT
+`,
+        },
+      },
+    ],
+  },
+  // i.e proxmox
+  {
+    when: raw("not nebula_fw_enable"),
+    name: "Display note about manual firewall rules",
+    debug: {
+      msg: `Please manually add the following firewall rules:
+
+  1. Incoming UDP on port {{nebula_port}}
+  2. All traffic on interface {{nebula_interface}}
+`,
+    },
+  },
+] satisfies TaskFile;

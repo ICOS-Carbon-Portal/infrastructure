@@ -1,0 +1,46 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Add dokku key",
+    "ansible.builtin.get_url": {
+      url: "https://packagecloud.io/dokku/dokku/gpgkey",
+      dest: "/etc/apt/trusted.gpg.d/dokku.asc",
+      mode: "0644",
+      force: true,
+    },
+    register: "_key",
+  },
+  {
+    name: "Add dokku apt repository",
+    apt_repository: {
+      filename: "dokku",
+      repo:
+        "deb [signed-by={{ _key.dest }}] https://packagecloud.io/dokku/dokku/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main",
+    },
+  },
+  {
+    name: "Set debconf values for dokku",
+    "ansible.builtin.debconf": {
+      name: "dokku",
+      question: "{{ item.question }}",
+      value: "{{ item.value }}",
+      vtype: "{{ item.vtype }}",
+    },
+    loop: [
+      { question: "dokku/vhost_enable", value: "true", vtype: "boolean" },
+      {
+        question: "dokku/hostname",
+        value: "dokku.fsicos3.icos-cp.eu",
+        vtype: "string",
+      },
+      { question: "dokku/nginx_enable", value: "true", vtype: "boolean" },
+    ],
+  },
+  {
+    name: "Install dokku",
+    apt: {
+      name: ["dokku"],
+    },
+  },
+] satisfies TaskFile;

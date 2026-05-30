@@ -1,0 +1,17 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  { import_tasks: "install.yml" },
+  { import_tasks: "vmagent.yml" },
+  // - import_tasks: dirsize.yml
+  //   tags: node_exporter_dirsize
+  //   when: dirsize_enable
+
+  // - import_tasks: docker.yml
+  //   tags: node_exporter_docker
+  //   when: dockermon_enable
+
+  // - import_tasks: lxd.yml
+  //   tags: node_exporter_lxd
+  //   when: lxdmon_enable
+] satisfies TaskFile;

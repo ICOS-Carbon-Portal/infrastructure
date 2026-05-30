@@ -1,0 +1,46 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Remove podman docker wrapper",
+    file: { name: "/usr/local/bin/docker", state: "absent" },
+  },
+  {
+    name: "Purge podman requirements",
+    apt: {
+      state: "absent",
+      purge: true,
+      name: ["containers-storage", "podman", "buildah"],
+    },
+  },
+  {
+    name: "Remove /etc/cni/net.d",
+    file: { name: "/etc/cni/net.d", state: "absent" },
+  },
+  {
+    name: "rmdir /etc/cni",
+    shell: "rmdir --ignore-fail-on-non-empty /etc/cni || :",
+    changed_when: false,
+  },
+  {
+    name: "Remove /opt/cni",
+    file: { name: "/opt/cni", state: "absent" },
+  },
+  {
+    name: "Remove /etc/containers",
+    file: { name: "/etc/containers", state: "absent" },
+  },
+  {
+    name: "Remove /etc/bash_completion.d/podman",
+    file: { name: "/etc/bash_completion.d/podman", state: "absent" },
+  },
+  {
+    name: "Remove /etc/apt/preferences.d/podman",
+    file: { name: "/etc/apt/preferences.d/podman", state: "absent" },
+  },
+  {
+    name: "Remove podman binaries",
+    file: { name: "{{ item }}", state: "absent" },
+    loop: ["/usr/local/bin/podman", "/usr/local/bin/podman-remote"],
+  },
+] satisfies TaskFile;

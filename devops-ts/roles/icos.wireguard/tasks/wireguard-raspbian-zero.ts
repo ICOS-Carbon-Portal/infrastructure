@@ -1,0 +1,73 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+// https://github.com/adrianmihalko/raspberrypiwireguard/wiki/Install-WireGuard-on-Raspberry-Pi-1,-2-(not-v1.2),-Zero,-Zero-W
+
+export default [
+  {
+    name: "Install build tools",
+    apt: {
+      name: [
+        "raspberrypi-kernel-headers",
+        "libmnl-dev",
+        "libelf-dev",
+        "build-essential",
+        "git",
+      ],
+    },
+  },
+  {
+    name: "Clone wireguard-linux-compat",
+    git: {
+      repo: "https://git.zx2c4.com/wireguard-linux-compat",
+      version: "master",
+      dest: "/root/wireguard-linux-compat",
+      update: "{{ wireguard_update }}",
+    },
+    diff: false,
+  },
+  {
+    name: "Clone wireguard-tools",
+    git: {
+      repo: "https://git.zx2c4.com/wireguard-tools",
+      version: "master",
+      dest: "/root/wireguard-tools",
+      update: "{{ wireguard_update }}",
+    },
+    diff: false,
+  },
+  {
+    name: "Compile and install wireguard-linux-compat",
+    command: "make all install",
+    args: {
+      chdir: "/root/wireguard-linux-compat/src",
+      creates: "/root/wireguard-linux-compat/src/wireguard.ko",
+    },
+    register: "_r",
+    failed_when: "_r.rc != 0",
+  },
+  {
+    name: "Compile and install wireguard-tools",
+    command: "make all install",
+    args: {
+      chdir: "/root/wireguard-tools/src",
+      creates: "/usr/bin/wg",
+    },
+    register: "_r",
+    failed_when: "_r.rc != 0",
+  },
+  {
+    name: "Create wireguard-reresolve-dns.sh symlink",
+    file: {
+      dest: "{{ wireguard_reresolve_script }}",
+      src: "/root/wireguard-tools/contrib/reresolve-dns/reresolve-dns.sh",
+      state: "link",
+    },
+  },
+  {
+    name: "Making a note that wireguard is installed",
+    set_fact: {
+      _wg_is_installed: 1,
+      cacheable: true,
+    },
+  },
+] satisfies TaskFile;

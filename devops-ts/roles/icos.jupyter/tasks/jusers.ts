@@ -1,0 +1,59 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  // After a do-release-upgrade, the python version will have changed and broken
+  // the virtual environments.
+  {
+    name: "Remove virtual env",
+    file: {
+      path: "{{ jusers_venv }}",
+      state: "absent",
+    },
+    when: raw("virtualenv_recreate | default(False) | bool"),
+  },
+  {
+    name: "Create virtual env",
+    pip: {
+      virtualenv: "{{ jusers_venv }}",
+      name: ["ruamel.yaml", "click", "pandas", "requests"],
+      state: "present",
+    },
+  },
+  {
+    name: "Copy jusers.py",
+    template: {
+      src: "jusers.py",
+      dest: "{{ jusers_home }}/jusers.py",
+      mode: "+x",
+      backup: true,
+    },
+  },
+  {
+    name: "Copy plugins",
+    copy: {
+      src: "plugins",
+      dest: "{{ jusers_home }}/",
+    },
+  },
+  {
+    name: "Copy readme_template.html",
+    copy: {
+      src: "readme_template.html",
+      dest: "/root/readme_template.html",
+      backup: true,
+    },
+  },
+  {
+    name: "Create /usr/local/sbin/jusers symlink",
+    file: {
+      dest: "/usr/local/sbin/jusers",
+      src: "{{ jusers_home }}/jusers.py",
+      state: "link",
+    },
+  },
+  {
+    name: "Check that jusers executes",
+    shell: "/usr/local/sbin/jusers",
+    changed_when: false,
+  },
+] satisfies TaskFile;

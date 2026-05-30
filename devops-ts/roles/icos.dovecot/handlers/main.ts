@@ -1,0 +1,14 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Reload postfix",
+    command: "postfix reload",
+  },
+  {
+    name: "Restart rsyslog",
+    command: `rsyslogd -N 1 && systemctl restart rsyslog
+`,
+    changed_when: false,
+  },
+] satisfies TaskFile;

@@ -1,0 +1,42 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Create volume directories",
+    file: {
+      path: "{{ item }}",
+      state: "directory",
+    },
+    loop: ["{{ restheart_home }}/volumes/mongo.db"],
+  },
+  {
+    name: "Copy restheart.yml",
+    template: {
+      src: "../templates/restheart.yml",
+      dest: "{{ restheart_home }}",
+    },
+  },
+  {
+    name: "Copy docker-compose.yml",
+    template: {
+      src: "docker-compose.yml",
+      dest: "{{ restheart_home }}",
+    },
+  },
+  {
+    name: "Build and start the images",
+    "community.docker.docker_compose_v2": {
+      project_src: "{{ restheart_home }}",
+      build: true,
+    },
+  },
+  {
+    name: "Install restore script",
+    tags: "restheart_restore_script",
+    template: {
+      src: "restore_restheart_db.py",
+      dest: "/usr/local/bin",
+      mode: "+x",
+    },
+  },
+] satisfies TaskFile;

@@ -1,0 +1,29 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Remove cron job",
+    cron: {
+      user: "{{ bbserver_user }}",
+      state: "absent",
+      name: "bbserver_borgmon",
+    },
+  },
+  {
+    name: "Create borgmon timer",
+    include_role: { name: "icos.timer" },
+    vars: {
+      timer_user: "bbserver",
+      timer_home: "{{ bbserver_monitor_home }}",
+      timer_name: "bbserver-borgmon",
+      timer_conf: "OnCalendar=*:0/5",
+      timer_envs: [
+        "PYTHONUNBUFFERED=1",
+        "BORG_RELOCATED_REPO_ACCESS_IS_OK=yes",
+        "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes",
+        "PATH=/usr/bin:/usr/local/bin",
+      ],
+      timer_content: "{{ lookup('template', 'borgmon.py') }}",
+    },
+  },
+] satisfies TaskFile;

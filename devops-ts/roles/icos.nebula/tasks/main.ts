@@ -1,0 +1,30 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  { import_tasks: "install.yml", tags: "nebula_install" },
+  {
+    when: [raw("nebula_ssh_enable"), raw("nebula_ssh_public is not defined")],
+    import_tasks: "ssh.yml",
+    tags: ["nebula_ssh", "nebula_config"],
+  },
+  { import_tasks: "just.yml", tags: "nebula_just" },
+  { import_tasks: "ca.yml", tags: "nebula_ca" },
+  { import_tasks: "cert.yml", tags: "nebula_cert" },
+  { import_tasks: "iptables.yml", tags: "nebula_iptables" },
+  { import_tasks: "config.yml", tags: "nebula_config" },
+  { import_tasks: "service.yml", tags: "nebula_service" },
+  { import_tasks: "hosts.yml", tags: "nebula_hosts" },
+  {
+    when: raw("nebula_resolve_enable"),
+    import_tasks: "resolve.yml",
+    tags: "nebula_resolve",
+  },
+  {
+    import_tasks: "test.yml",
+    tags: [
+      "nebula_test",
+      // always run tests when reconfiguring resolve
+      "nebula_resolve",
+    ],
+  },
+] satisfies TaskFile;

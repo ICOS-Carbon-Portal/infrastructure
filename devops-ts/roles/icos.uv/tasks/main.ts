@@ -1,0 +1,33 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Check whether uv is installed",
+    stat: {
+      path: "/usr/local/bin/uv",
+    },
+    register: "_r",
+  },
+  {
+    name: "Install/upgrade uv",
+    include_tasks: {
+      file: "install.yml",
+    },
+    when: raw("not _r.stat.exists or uv_upgrade or not ansible_check_mode"),
+  },
+  {
+    name: 'Create "global" version of uv',
+    copy: {
+      dest: "/usr/local/sbin/uv-global",
+      mode: "+x",
+      content: `#!/usr/bin/bash
+# This wrapper installs globally available tools using "uv tool"
+export UV_TOOL_DIR={{ uv_home }}/tools
+export UV_TOOL_BIN_DIR=/usr/local/bin
+export UV_CACHE_DIR={{ uv_home }}/cache
+export UV_PYTHON_INSTALL_DIR={{ uv_home }}/python
+exec /usr/local/bin/uv "$@"
+`,
+    },
+  },
+] satisfies TaskFile;

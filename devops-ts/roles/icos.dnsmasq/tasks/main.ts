@@ -1,0 +1,14 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  { import_tasks: "setup.yml", tags: "dnsmasq_setup" },
+  { import_tasks: "config.yml", tags: "dnsmasq_config" },
+  { import_tasks: "hosts.yml", tags: "dnsmasq_hosts" },
+  {
+    name: "Start and enable dnsmasq",
+    systemd: {
+      name: "{{ dnsmasq_service_name }}",
+      enabled: true,
+    },
+  },
+] satisfies TaskFile;

@@ -1,0 +1,68 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Retrieving latest tag for {{ dbin_repo }}",
+    run_once: true,
+    delegate_to: "localhost",
+    check_mode: false,
+    github_release: {
+      user: "{{ dbin_user }}",
+      repo: "{{ dbin_repo }}",
+      action: "latest_release",
+    },
+    register: "_release",
+  },
+  {
+    name: "Create download directory",
+    file: {
+      path: "{{ dbin_download_dest }}",
+      state: "directory",
+    },
+  },
+  {
+    name: "Download {{ dbin_repo }}",
+    get_url: {
+      url: "{{ _dbin_url }}",
+      dest: "{{ dbin_download_dest }}",
+    },
+    // This variable can be checked by our users to determine whether anything has
+    // changed.
+    register: "dbin_download",
+  },
+  {
+    name: "Unarchive {{ _dbin_name }} tarball",
+    when: raw("_dbin_unar"),
+    unarchive: {
+      src: "{{ dbin_download.dest }}",
+      dest: "{{ dbin_download_dest }}",
+      remote_src: true,
+      list_files: true,
+    },
+    diff: false,
+    register: "_unar",
+  },
+  {
+    name: "Create symlink for {{ _dbin_name }}",
+    file: {
+      dest: "{{ dbin_bin_dir }}/{{ _dbin_name }}",
+      src: "{{ _dbin_src }}",
+      state: "link",
+    },
+    register: "dbin_symlink",
+  },
+  {
+    name: "Make sure {{ _dbin_name }} is executable",
+    file: {
+      path: "{{ _dbin_src }}",
+      mode: "+x",
+    },
+  },
+  {
+    name: "State what we downloaded",
+    debug: {
+      msg: `Downloaded version {{ dbin__vers }} of {{ dbin_repo }}
+`,
+    },
+  },
+] satisfies TaskFile;

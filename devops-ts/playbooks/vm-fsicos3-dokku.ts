@@ -24,7 +24,8 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "dokku",
-        certbot_domains: "{{ (dokku_static_domains + dokku_redirect_domains) }}",
+        certbot_domains:
+          "{{ (dokku_static_domains + dokku_redirect_domains) }}",
       }).tags("cert"),
 
       role("icos.nginxsite", {

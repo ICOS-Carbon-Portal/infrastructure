@@ -1,0 +1,36 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Find the latest release of VictoriaMetrics",
+    run_once: true,
+    delegate_to: "localhost",
+    check_mode: false,
+    github_release: {
+      user: "VictoriaMetrics",
+      repo: "VictoriaMetrics",
+      action: "latest_release",
+    },
+    register: "release",
+  },
+  {
+    name: "Download vmagent release",
+    get_url: {
+      url:
+        "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/{{ release.tag }}/vmutils-linux-{{ vmagent_arch }}-{{ release.tag }}.tar.gz",
+      dest: "/tmp",
+    },
+    register: "url",
+  },
+  {
+    name: "Unarchive vmagent",
+    unarchive: {
+      src: "{{ url.dest }}",
+      dest: "{{ vmagent_bin }}",
+      remote_src: true,
+    },
+    diff: false,
+    register: "unar",
+    notify: "restart vmagent",
+  },
+] satisfies TaskFile;

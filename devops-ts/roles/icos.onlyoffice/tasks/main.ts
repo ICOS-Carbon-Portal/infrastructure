@@ -1,0 +1,43 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    import_tasks: "docker.yml",
+    tags: "onlyoffice_docker",
+  },
+  {
+    name: "Install nginx configuration for onlyoffice",
+    include_role: {
+      name: "icos.nginxsite",
+    },
+    vars: {
+      nginxsite_name: "onlyoffice",
+      nginxsite_file: "onlyoffice.conf",
+      nginxsite_domains: ["{{ onlyoffice_domain }}"],
+    },
+  },
+  {
+    import_tasks: "just.yml",
+    tags: "onlyoffice_just",
+  },
+  {
+    name: "Install onlyoffice fonts inside container",
+    block: [
+      {
+        name: "Copy fonts directory to docker host",
+        copy: {
+          src: "fonts/",
+          dest: "{{ onlyoffice_home }}/fonts/",
+        },
+      },
+      {
+        name: "Copy fonts into container and refresh font cache",
+        shell:
+          `docker cp {{ onlyoffice_home }}/fonts/. onlyoffice:/usr/share/fonts/truetype/custom/
+docker exec onlyoffice bash -lc 'fc-cache -f -v && /usr/bin/documentserver-generate-allfonts.sh'
+`,
+      },
+    ],
+    tags: ["onlyoffice_install_fonts", "onlyoffice_docker"],
+  },
+] satisfies TaskFile;

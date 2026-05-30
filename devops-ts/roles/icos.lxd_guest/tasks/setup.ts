@@ -1,0 +1,53 @@
+import { raw, type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "Install packages",
+    apt: {
+      update_cache: true,
+      name: [
+        "iptables-persistent",
+      ],
+    },
+  },
+  {
+    name: "Set timezone to Europe/Stockholm",
+    timezone: {
+      name: "Europe/Stockholm",
+    },
+    notify: "restart cron",
+  },
+  {
+    name: "Generate locale",
+    locale_gen: {
+      name: "{{ item }}",
+      state: "present",
+    },
+    loop: [
+      "en_US.UTF-8",
+      "sv_SE.UTF-8",
+    ],
+  },
+  {
+    name: "Install public keys",
+    authorized_key: {
+      user: "root",
+      state: "present",
+      key: "{{ lxd_guest_root_keys }}",
+      exclusive: true,
+    },
+    when: raw("lxd_guest_root_keys is truthy"),
+  },
+  {
+    name: "Add default gateway as host",
+    lineinfile: {
+      path: "/etc/hosts",
+      line: "{{ ansible_default_ipv4.gateway }} gateway.lxd",
+      regex: "gateway.lxd$",
+      state: "present",
+    },
+  },
+  {
+    import_role: "name=icos.fail2ban",
+  },
+] satisfies TaskFile;

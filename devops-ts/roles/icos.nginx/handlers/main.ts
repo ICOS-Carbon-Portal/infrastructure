@@ -1,0 +1,32 @@
+import { type TaskFile } from "../../../lib/ansible.ts";
+
+export default [
+  {
+    name: "reload nginx config",
+    // First syntax check the config. This gives us direct feedback when running
+    // ansible instead of just having 'systemctl reload' (sometimes!) failing.
+    command: "nginx -t",
+    notify: "really reload nginx config",
+  },
+  {
+    name: "really reload nginx config",
+    service: {
+      name: "nginx",
+      state: "reloaded",
+    },
+  },
+  {
+    name: "reload systemd config",
+    systemd: {
+      daemon_reload: true,
+    },
+  },
+  {
+    name: "restart nginx-prometheus-exporter",
+    systemd: {
+      "daemon-reload": true,
+      name: "nginx-prometheus-exporter",
+      state: "restarted",
+    },
+  },
+] satisfies TaskFile;
