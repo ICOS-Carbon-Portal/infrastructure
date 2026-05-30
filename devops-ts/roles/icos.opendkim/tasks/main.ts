@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -101,14 +101,8 @@ done`,
       group: "postfix",
     },
   },
-  {
-    name: "Configure postfix",
-    postconf: {
-      param: "{{ item.param }}",
-      value: "{{ item.value }}",
-      append: "{{ item.append | default(omit) }}",
-    },
-    loop: [
+  loopOver<{ param: string; value: string; append?: boolean }>(
+    [
       {
         param: "smtpd_milters",
         value: "local:opendkim/opendkim.sock",
@@ -119,8 +113,16 @@ done`,
         value: "$smtpd_milters",
       },
     ],
-    notify: "Restart postfix",
-  },
+    (item) => ({
+      name: "Configure postfix",
+      postconf: {
+        param: item.param,
+        value: item.value,
+        append: "{{ item.append | default(omit) }}",
+      },
+      notify: "Restart postfix",
+    }),
+  ),
   {
     name: "Add postfix to the opendkim group",
     user: {

@@ -109,9 +109,33 @@ So ~66% is statically knowable; ~34% is irreducibly dynamic. Design:
   `deno task check` clean, `deno task verify` **464/464**. A typo in a known var
   (`V.rdflog_hom`) is a compile error with a "Did you mean" hint.
 
+### Phase 3b — typed loops — **done**
+Loops were the densest "dynamic" tier. Measured 109 looped tasks: 52% inline
+scalar list, 20% inline list-of-dicts, 23% `loop: "{{ var }}"`, 5% filtered
+expression. The inline forms (72%) carry the element type in the array literal —
+the only thing missing was *binding* it to the `item` references (which were
+opaque `"{{ item.src }}"` strings).
+
+- `lib/loop.ts`: `loopOver(items, item => body)` (and `withItemsOver` for the
+  legacy `with_items:` key). `item` is a proxy typed `Item<T>` — element keys
+  exposed as refs (`item.src` -> "{{ item.src }}", `item.scr` is a compile
+  error), and a bare `item` for scalar loops.
+- Rolled out to **all 22 inline-list-of-dicts loop tasks** (18 files) — the
+  high-value set where `item.X` typo-checking bites. Scalar-list loops were left
+  as-is (a string `item` has no attributes to mistype, so no benefit).
+  `deno task check` clean, `deno task verify` 464/464.
+
+What's still dynamic in loops (by design): filtered item refs
+(`item.dest | default(...)`, 13% of item refs) stay raw; and `loop: "{{ var }}"`
+where the var's element type isn't known.
+
 Optional future work:
-- Typed handler names so `notify` is checked.
-- Per-role vault var sets (the 1% `vault_*` tier), if desired.
+- Carry element types for list-valued context vars so `loopOver(V.x, …)` types
+  `item` from the var (would recover much of the 23% `loop: "{{ var }}"` tier).
+- A value-position filter DSL (`item.dest.default(V.x)`) for the 13% filtered refs.
+- Typed `register` handles (`_r.stdout`) and `set_fact` outputs — the other
+  dynamic tiers, same binding idea applied to results.
+- Typed handler names so `notify` is checked; per-role vault var sets.
 
 ## Verification strategy
 Same as playbooks: `verify.ts` renders each `.ts` and deep-compares (YAML 1.1)

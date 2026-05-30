@@ -1,23 +1,16 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
-  {
+  loopOver(["core", "web"], (item) => ({
     name: "Create build directories",
     file: {
-      path: tmpl`${V.mailman_home}/build/mailman-${V.item}`,
+      path: tmpl`${V.mailman_home}/build/mailman-${item}`,
       state: "directory",
     },
-    loop: ["core", "web"],
-  },
-  {
-    name: "Copy mailman files",
-    template: {
-      dest: "{{ item.dest | default(mailman_home) }}",
-      src: "{{ item.src }}",
-      mode: "{{ item.mode | default(omit) }}",
-    },
-    loop: [
+  })),
+  loopOver<{ src: string; dest?: string; mode?: string }>(
+    [
       { src: "logrotate.conf" },
       { src: "bbclient-down-hook", mode: "+x" },
       { src: "docker-compose.yml", mode: "0600" },
@@ -29,8 +22,17 @@ export default [
         src: "Dockerfile.core",
       },
     ],
-    register: "_files",
-  },
+    (item) => ({
+      name: "Copy mailman files",
+      template: {
+        // item.src is typed (loop element key); the filtered forms stay raw.
+        dest: "{{ item.dest | default(mailman_home) }}",
+        src: item.src,
+        mode: "{{ item.mode | default(omit) }}",
+      },
+      register: "_files",
+    }),
+  ),
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": {
@@ -67,20 +69,22 @@ export default [
     name: "delete_spam tasks",
     tags: "mailman_delete_spam",
     block: [
-      {
-        name: "Copy mailman_delete_spam files",
-        template: {
-          dest: "{{ item.dest | default(mailman_home) }}",
-          src: "{{ item.src }}",
-          mode: "{{ item.mode | default(omit) }}",
-        },
-        loop: [
+      loopOver<{ src: string }>(
+        [
           { src: "delete_spam_hyperkitty.py" },
           { src: "get_spam_ids.py" },
           { src: "requirements.txt" },
         ],
-        register: "_files",
-      },
+        (item) => ({
+          name: "Copy mailman_delete_spam files",
+          template: {
+            dest: "{{ item.dest | default(mailman_home) }}",
+            src: item.src,
+            mode: "{{ item.mode | default(omit) }}",
+          },
+          register: "_files",
+        }),
+      ),
       {
         name: "Write config.ini file",
         copy: {

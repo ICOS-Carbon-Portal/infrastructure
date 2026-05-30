@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -10,14 +10,8 @@ export default [
       mode: "og-rw",
     },
   },
-  {
-    include_role: { name: "icos.password_env_file" },
-    vars: {
-      file: "{{ item.file }}",
-      set_fact: "{{ item.set_fact }}",
-      file_var: "{{ item.file_var }}",
-    },
-    loop: [
+  loopOver<{ file: string; set_fact: string; file_var: string }>(
+    [
       {
         file: tmpl`${V.nextcloud_home}/.pg-root-pass`,
         set_fact: "nextcloud_db_root_pass",
@@ -29,7 +23,15 @@ export default [
         file_var: "NEXTCLOUD_PASSWORD",
       },
     ],
-  },
+    (item) => ({
+      include_role: { name: "icos.password_env_file" },
+      vars: {
+        file: item.file,
+        set_fact: item.set_fact,
+        file_var: item.file_var,
+      },
+    }),
+  ),
   {
     name: "Copy files",
     template: {

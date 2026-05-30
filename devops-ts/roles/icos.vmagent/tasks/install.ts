@@ -1,21 +1,23 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
-  {
-    name: "Create vmagent directories",
-    file: {
-      path: "{{ item.path }}",
-      mode: "{{ item.mode | default(omit) }}",
-      state: "directory",
-    },
-    loop: [
+  loopOver<{ path: string; mode?: string }>(
+    [
       { path: V.vmagent_home, mode: "0700" },
       { path: V.vmagent_bin },
       { path: V.vmagent_fsd },
       { path: V.vmagent_configs },
     ],
-  },
+    (item) => ({
+      name: "Create vmagent directories",
+      file: {
+        path: item.path,
+        mode: "{{ item.mode | default(omit) }}",
+        state: "directory",
+      },
+    }),
+  ),
   {
     name: "Check whether vmagent is installed",
     stat: {

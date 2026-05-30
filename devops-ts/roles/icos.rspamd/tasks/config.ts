@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -84,15 +84,8 @@ greylist = 4;
     },
     notify: "restart rspamd",
   },
-  {
-    name:
-      "Remove NiXSpam (remove once rspamd is updated to remove this from core)",
-    "ansible.builtin.copy": {
-      dest: "{{ item.dest }}",
-      mode: "0644",
-      content: "{{ item.content }}",
-    },
-    loop: [
+  loopOver<{ dest: string; content: string }>(
+    [
       {
         dest: "/etc/rspamd/local.d/rbl.conf",
         content: `rbls {
@@ -112,6 +105,15 @@ greylist = 4;
 `,
       },
     ],
-    notify: "restart rspamd",
-  },
+    (item) => ({
+      name:
+        "Remove NiXSpam (remove once rspamd is updated to remove this from core)",
+      "ansible.builtin.copy": {
+        dest: item.dest,
+        mode: "0644",
+        content: item.content,
+      },
+      notify: "restart rspamd",
+    }),
+  ),
 ] satisfies TaskFile;

@@ -51,6 +51,7 @@ export {
 } from "./vars.ts";
 export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { Builtins } from "./builtins.ts";
+export { type Item, loopOver, withItemsOver } from "./loop.ts";
 
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
 export type Tmpl = string;

@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -15,14 +15,8 @@ export default [
     copy: { dest: tmpl`${V.rdflog_home}/initdb`, src: V.item },
     loop: ["server.crt", "server.key"],
   },
-  {
-    name: "Install templates",
-    template: {
-      dest: "{{ item.dest | default(rdflog_home) }}",
-      src: "{{ item.src }}",
-      mode: "{{ item.mode | default(omit) }}",
-    },
-    loop: [
+  loopOver<{ src: string; dest?: string; mode?: string }>(
+    [
       { src: "status.sql" },
       { src: "ctl.sql" },
       { src: "docker-compose.yml" },
@@ -30,7 +24,15 @@ export default [
       { src: "init.sh", dest: tmpl`${V.rdflog_home}/initdb` },
       { src: "psql.sh", mode: "+x" },
     ],
-  },
+    (item) => ({
+      name: "Install templates",
+      template: {
+        dest: "{{ item.dest | default(rdflog_home) }}",
+        src: item.src,
+        mode: "{{ item.mode | default(omit) }}",
+      },
+    }),
+  ),
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": { project_src: V.rdflog_home },

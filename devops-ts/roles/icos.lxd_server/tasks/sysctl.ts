@@ -1,14 +1,9 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 
 export default [
   // https://linuxcontainers.org/lxd/docs/master/production-setup/
-  {
-    name: "Set sysctl value",
-    sysctl: {
-      name: "{{ item.name }}",
-      value: "{{ item.value }}",
-    },
-    loop: [
+  loopOver<{ name: string; value: number }>(
+    [
       // "Maximum number of concurrent asynchronous I/O operations (you might need
       // to increase this limit further if you have a lot of workloads that use
       // the AIO subsystem, for example, MySQL)"
@@ -42,5 +37,12 @@ export default [
       // https://wiki.mikejung.biz/Sysctl_tweaks#net.core.netdev_max_backlog
       { name: "net.core.netdev_max_backlog", value: 300000 },
     ],
-  },
+    (item) => ({
+      name: "Set sysctl value",
+      sysctl: {
+        name: item.name,
+        value: item.value,
+      },
+    }),
+  ),
 ] satisfies TaskFile;

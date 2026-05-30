@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -9,22 +9,24 @@ export default [
       state: "directory",
     },
   },
-  {
-    name: "Copy files",
-    template: {
-      src: "{{ item.src }}",
-      dest: "{{ item.dest }}",
-      lstrip_blocks: true,
-    },
-    loop: [
+  loopOver<{ src: string; dest: string }>(
+    [
       {
         src: "docker-compose.yml",
         dest: tmpl`${V.kc_home}/docker-compose.yml`,
       },
       { src: "keycloak.conf", dest: tmpl`${V.kc_home}/conf/keycloak.conf` },
     ],
-    register: "_config",
-  },
+    (item) => ({
+      name: "Copy files",
+      template: {
+        src: item.src,
+        dest: item.dest,
+        lstrip_blocks: true,
+      },
+      register: "_config",
+    }),
+  ),
   {
     name: "Build and start keycloak",
     docker_compose: {

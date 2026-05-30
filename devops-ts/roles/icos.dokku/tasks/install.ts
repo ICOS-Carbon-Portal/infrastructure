@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -19,15 +19,8 @@ export default [
         "deb [signed-by={{ _key.dest }}] https://packagecloud.io/dokku/dokku/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main",
     },
   },
-  {
-    name: "Set debconf values for dokku",
-    "ansible.builtin.debconf": {
-      name: "dokku",
-      question: "{{ item.question }}",
-      value: "{{ item.value }}",
-      vtype: "{{ item.vtype }}",
-    },
-    loop: [
+  loopOver<{ question: string; value: string; vtype: string }>(
+    [
       { question: "dokku/vhost_enable", value: "true", vtype: "boolean" },
       {
         question: "dokku/hostname",
@@ -36,7 +29,16 @@ export default [
       },
       { question: "dokku/nginx_enable", value: "true", vtype: "boolean" },
     ],
-  },
+    (item) => ({
+      name: "Set debconf values for dokku",
+      "ansible.builtin.debconf": {
+        name: "dokku",
+        question: item.question,
+        value: item.value,
+        vtype: item.vtype,
+      },
+    }),
+  ),
   {
     name: "Install dokku",
     apt: {

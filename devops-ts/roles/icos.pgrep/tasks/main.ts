@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -17,14 +17,8 @@ export default [
       dest: tmpl`${V.pgrep_home}/peer.crt`,
     },
   },
-  {
-    name: "Install runtime files",
-    template: {
-      src: "{{ item.src }}",
-      dest: V.pgrep_home,
-      mode: "{{ item.mode | default(omit) }}",
-    },
-    loop: [
+  loopOver<{ src: string; mode?: string }>(
+    [
       { src: "docker-compose.yml" },
       { src: "pgpass" },
       { src: "status.sql" },
@@ -33,7 +27,15 @@ export default [
       { src: "psql", mode: "+x" },
       { src: "psql-peer", mode: "+x" },
     ],
-  },
+    (item) => ({
+      name: "Install runtime files",
+      template: {
+        src: item.src,
+        dest: V.pgrep_home,
+        mode: "{{ item.mode | default(omit) }}",
+      },
+    }),
+  ),
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": {

@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -22,20 +22,22 @@ export default [
     },
     changed_when: false,
   },
-  {
-    name: "Copy files",
-    template: {
-      src: "{{ item.src }}",
-      dest: tmpl`${V.vm_home}/{{ item.dest | default('') }}`,
-    },
-    loop: [
+  loopOver<{ src: string; dest?: string }>(
+    [
       { src: "docker-compose.yml" },
       {
         src: "grafana.ini",
         dest: "grafana",
       },
     ],
-  },
+    (item) => ({
+      name: "Copy files",
+      template: {
+        src: item.src,
+        dest: tmpl`${V.vm_home}/{{ item.dest | default('') }}`,
+      },
+    }),
+  ),
   {
     name: "Create victoriametrics scrape config",
     copy: {
@@ -54,16 +56,8 @@ export default [
     import_tasks: "grafana_datasource.yml",
     tags: "grafana_datasource",
   },
-  {
-    name: "Check that services responds on local ports",
-    uri: {
-      url: "http://localhost:{{ item.port }}",
-    },
-    retries: 10,
-    loop_control: {
-      label: "{{ item.name }}",
-    },
-    loop: [
+  loopOver<{ name: string; port: string }>(
+    [
       {
         name: "victoriametrics",
         port: V.vm_vm_port,
@@ -73,7 +67,17 @@ export default [
         port: V.vm_graf_port,
       },
     ],
-  },
+    (item) => ({
+      name: "Check that services responds on local ports",
+      uri: {
+        url: "http://localhost:{{ item.port }}",
+      },
+      retries: 10,
+      loop_control: {
+        label: item.name,
+      },
+    }),
+  ),
   {
     import_tasks: "just.yml",
     tags: "victoriametrics_just",

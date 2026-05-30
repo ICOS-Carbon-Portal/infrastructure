@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, withItemsOver } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -29,19 +29,23 @@ export default [
     },
   },
   {
-    name: "Install files",
-    template: {
-      src: "{{ item.src }}",
-      dest: "{{ item.dest }}",
-    },
-    with_items: [
-      { src: "README.md", dest: tmpl`${V.geoip_home}/README.md` },
-      { src: "Makefile", dest: tmpl`${V.geoip_home}/Makefile` },
-      { src: "Dockerfile", dest: tmpl`${V.geoip_build_dir}/Dockerfile` },
-      {
-        src: "docker-compose.yml",
-        dest: tmpl`${V.geoip_home}/docker-compose.yml`,
-      },
-    ],
+    ...withItemsOver<{ src: string; dest: string }>(
+      [
+        { src: "README.md", dest: tmpl`${V.geoip_home}/README.md` },
+        { src: "Makefile", dest: tmpl`${V.geoip_home}/Makefile` },
+        { src: "Dockerfile", dest: tmpl`${V.geoip_build_dir}/Dockerfile` },
+        {
+          src: "docker-compose.yml",
+          dest: tmpl`${V.geoip_home}/docker-compose.yml`,
+        },
+      ],
+      (item) => ({
+        name: "Install files",
+        template: {
+          src: item.src,
+          dest: item.dest,
+        },
+      }),
+    ),
   },
 ] satisfies TaskFile;

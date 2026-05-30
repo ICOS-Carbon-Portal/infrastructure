@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -37,14 +37,8 @@ export default [
       V.dovecot_domains_file,
     ],
   },
-  {
-    name: "Configure postfix to use database files",
-    postconf: {
-      param: "{{ item.param }}",
-      value: "{{ item.value }}",
-      append: "{{ item.append | default(True) }}",
-    },
-    loop: [
+  loopOver<{ append?: boolean; param: string; value: string }>(
+    [
       // Virtual alias domains is by default set to $virtual_alias_maps,
       // but it will conflict with relay_domains - "warning: do not list
       // domain test.icos-cp.eu in BOTH virtual_alias_domains and
@@ -54,5 +48,13 @@ export default [
       { param: "transport_maps", value: tmpl`hash:${V.dovecot_domains_file}` },
       { param: "relay_domains", value: tmpl`hash:${V.dovecot_domains_file}` },
     ],
-  },
+    (item) => ({
+      name: "Configure postfix to use database files",
+      postconf: {
+        param: item.param,
+        value: item.value,
+        append: "{{ item.append | default(True) }}",
+      },
+    }),
+  ),
 ] satisfies TaskFile;

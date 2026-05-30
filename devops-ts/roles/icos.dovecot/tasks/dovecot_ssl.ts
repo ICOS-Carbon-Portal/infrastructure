@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -9,15 +9,8 @@ export default [
       dest: "/etc/dovecot/conf.d/",
     },
   },
-  {
-    name: "Configure dovecot ssl",
-    lineinfile: {
-      path: "/etc/dovecot/conf.d/10-ssl.conf",
-      state: "present",
-      regex: "{{ item.regex | default(omit) }}",
-      line: "{{ item.line }}",
-    },
-    loop: [
+  loopOver<{ line: string; regex?: string }>(
+    [
       {
         line: "ssl = required",
         regex: "(?:ssl = yes)|(?:ssl = required)",
@@ -36,7 +29,16 @@ export default [
       // include our own certificates
       { line: tmpl`!include ${V.dovecot_cert_file}` },
     ],
-  },
+    (item) => ({
+      name: "Configure dovecot ssl",
+      lineinfile: {
+        path: "/etc/dovecot/conf.d/10-ssl.conf",
+        state: "present",
+        regex: "{{ item.regex | default(omit) }}",
+        line: item.line,
+      },
+    }),
+  ),
   {
     name: "Add a dovecot deploy-hook for certbot",
     copy: {

@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -133,14 +133,8 @@ export default [
           dest: "/etc/logrotate.d/typesense-{{ website }}",
         },
       },
-      {
-        name: "Copy python scripts and schema to {{ website }} directory",
-        "ansible.builtin.template": {
-          src: "{{ item.src }}",
-          dest: tmpl`${V.typesense_home}/{{ website }}`,
-          owner: V.typesense_user,
-        },
-        loop: [
+      loopOver<{ src: string }>(
+        [
           { src: "schema.yml" },
           { src: "init_collection.py" },
           { src: "init_documents.py" },
@@ -148,7 +142,15 @@ export default [
           { src: "update_stations.py" },
           { src: "utilities.py" },
         ],
-      },
+        (item) => ({
+          name: "Copy python scripts and schema to {{ website }} directory",
+          "ansible.builtin.template": {
+            src: item.src,
+            dest: tmpl`${V.typesense_home}/{{ website }}`,
+            owner: V.typesense_user,
+          },
+        }),
+      ),
       {
         name: "Install required modules into Python virtual environment",
         "ansible.builtin.pip": {
@@ -199,16 +201,18 @@ export default [
   {
     name: "Update synonyms",
     block: [
-      {
-        name:
-          "Copy update_synonyms required python scripts to {{ website }} directory",
-        "ansible.builtin.template": {
-          src: "{{ item.src }}",
-          dest: tmpl`${V.typesense_home}/{{ website }}`,
-          owner: V.typesense_user,
-        },
-        loop: [{ src: "update_synonyms.py" }, { src: "utilities.py" }],
-      },
+      loopOver<{ src: string }>(
+        [{ src: "update_synonyms.py" }, { src: "utilities.py" }],
+        (item) => ({
+          name:
+            "Copy update_synonyms required python scripts to {{ website }} directory",
+          "ansible.builtin.template": {
+            src: item.src,
+            dest: tmpl`${V.typesense_home}/{{ website }}`,
+            owner: V.typesense_user,
+          },
+        }),
+      ),
       {
         name: "Run update synonyms script",
         "ansible.builtin.shell":
@@ -221,19 +225,21 @@ export default [
   {
     name: "Update documents and stations without reinitializing collection",
     block: [
-      {
-        name: "Copy python scripts to {{ website }} directory",
-        "ansible.builtin.template": {
-          src: "{{ item.src }}",
-          dest: tmpl`${V.typesense_home}/{{ website }}`,
-          owner: V.typesense_user,
-        },
-        loop: [
+      loopOver<{ src: string }>(
+        [
           { src: "update_documents.py" },
           { src: "update_stations.py" },
           { src: "utilities.py" },
         ],
-      },
+        (item) => ({
+          name: "Copy python scripts to {{ website }} directory",
+          "ansible.builtin.template": {
+            src: item.src,
+            dest: tmpl`${V.typesense_home}/{{ website }}`,
+            owner: V.typesense_user,
+          },
+        }),
+      ),
       {
         name: "Run update documents script",
         "ansible.builtin.shell":

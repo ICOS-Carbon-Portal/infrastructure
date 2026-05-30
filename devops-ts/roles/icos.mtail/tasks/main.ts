@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,22 +8,24 @@ export default [
       name: "mtail",
     },
   },
-  {
-    name: "Configure mtail",
-    lineinfile: {
-      path: "/etc/default/mtail",
-      regexp: "^#?{{ item.key }}=",
-      line: "{{ item.key }}={{ item.val }}",
-      state: "present",
-      create: false,
-    },
-    loop: [
+  loopOver<{ key: string; val: string }>(
+    [
       { key: "LOGS", val: "{{ mtail_logs | join(',') }}" },
       { key: "PORT", val: V.mtail_port },
       { key: "HOST", val: V.mtail_host },
     ],
-    notify: "reload mtail",
-  },
+    (item) => ({
+      name: "Configure mtail",
+      lineinfile: {
+        path: "/etc/default/mtail",
+        regexp: "^#?{{ item.key }}=",
+        line: "{{ item.key }}={{ item.val }}",
+        state: "present",
+        create: false,
+      },
+      notify: "reload mtail",
+    }),
+  ),
   {
     name: "Install configure icos programs",
     copy: {

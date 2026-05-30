@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -88,18 +88,20 @@ export default [
       },
     ],
   },
-  {
-    name: "Install the flexpart shell scripts",
-    template: {
-      src: "{{ item.src }}",
-      dest: "{{ item.dest }}",
-      mode: 0o755,
-    },
-    loop: [
+  loopOver<{ dest: string; src: string }>(
+    [
       { src: "flexpart.sh.j2", dest: "/usr/local/bin/flexpart" },
       { src: "flexpart_run.sh.j2", dest: "/usr/local/bin/flexpart_run" },
     ],
-  },
+    (item) => ({
+      name: "Install the flexpart shell scripts",
+      template: {
+        src: item.src,
+        dest: item.dest,
+        mode: 0o755,
+      },
+    }),
+  ),
   {
     when: raw('flexpart_export_output_to != ""'),
     block: [

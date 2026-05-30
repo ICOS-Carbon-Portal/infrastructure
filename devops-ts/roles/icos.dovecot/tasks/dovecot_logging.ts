@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -29,20 +29,22 @@ export default [
 `,
     },
   },
-  {
-    name: "Enable more logging",
-    lineinfile: {
-      path: "{{ item.f }}",
-      // Only change commented-out lines, thus replacing the defaults.
-      regex: "(?:^#\\s*{{ item.s }}\\s*=)|(?:^{{ item.s }} = yes)",
-      line: "{{ item.s }} = yes",
-      state: "present",
-    },
-    loop: [
+  loopOver<{ f: string; s: string }>(
+    [
       { s: "auth_verbose", f: "/etc/dovecot/conf.d/10-logging.conf" },
       { s: "auth_debug", f: "/etc/dovecot/conf.d/10-logging.conf" },
       { s: "mail_debug", f: "/etc/dovecot/conf.d/10-logging.conf" },
       { s: "verbose_proctitle", f: "/etc/dovecot/dovecot.conf" },
     ],
-  },
+    (item) => ({
+      name: "Enable more logging",
+      lineinfile: {
+        path: item.f,
+        // Only change commented-out lines, thus replacing the defaults.
+        regex: "(?:^#\\s*{{ item.s }}\\s*=)|(?:^{{ item.s }} = yes)",
+        line: "{{ item.s }} = yes",
+        state: "present",
+      },
+    }),
+  ),
 ] satisfies TaskFile;
