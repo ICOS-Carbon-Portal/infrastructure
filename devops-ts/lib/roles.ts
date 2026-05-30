@@ -29,11 +29,13 @@ type LxdDevice = {
   readonly?: string;
 };
 
+type NoVars = Record<PropertyKey, never>;
+
 export interface Roles {
   "icos.keycloak": { kc_hostname: string };
-  "icos.matomo": {};
-  "icos.geoip": {};
-  "icos.nexus": {};
+  "icos.matomo": NoVars;
+  "icos.geoip": NoVars;
+  "icos.nexus": NoVars;
 
   // Used across many playbooks with different subsets of vars, so all optional.
   "icos.bbclient2": Common & {
@@ -53,7 +55,7 @@ export interface Roles {
     certbot_domains?: Tmpl | string[]
   };
 
-  "icos.cpauth": {};
+  "icos.cpauth": NoVars;
 
   "icos.postfix": {
     postfix_config_list: { param: string; value: string }[];
@@ -65,12 +67,12 @@ export interface Roles {
   };
 
   // core.yml
-  "icos.postgis": {};
-  "icos.restheart": {};
-  "icos.cpmeta": {};
+  "icos.postgis": NoVars;
+  "icos.restheart": NoVars;
+  "icos.cpmeta": NoVars;
   "icos.cpdata": { cpdata_netcdf_folder?: string };
-  "icos.doi": {};
-  "icos.virtuoso": {};
+  "icos.doi": NoVars;
+  "icos.virtuoso": NoVars;
   "icos.nginxsite": Common & {
     nginxsite_name?: string;
     nginxsite_file?: string;
@@ -84,22 +86,22 @@ export interface Roles {
     jupyter_cert_name?: string;
     jupyter_port?: number;
   };
-  "icos.dataold": {};
+  "icos.dataold": NoVars;
 
   // single-app playbooks (no role-level variables)
-  "icos.maps": {};
-  "icos.drupal": {};
-  "icos.typesense": {};
-  "icos.plausible": {};
-  "icos.sitesaquanetform": {};
-  "icos.fairdatapoint": {};
-  "icos.nebula": {};
-  "icos.stiltweb": {};
+  "icos.maps": NoVars;
+  "icos.drupal": NoVars;
+  "icos.typesense": NoVars;
+  "icos.plausible": NoVars;
+  "icos.sitesaquanetform": NoVars;
+  "icos.fairdatapoint": NoVars;
+  "icos.nebula": NoVars;
+  "icos.stiltweb": NoVars;
   "icos.telegraf": { telegraf_conf: string };
-  "icos.mailman": {};
-  "icos.exploredata": {};
-  "icos.rspamd": {};
-  "icos.dokku": {};
+  "icos.mailman": NoVars;
+  "icos.exploredata": NoVars;
+  "icos.rspamd": NoVars;
+  "icos.dokku": NoVars;
   "icos.flexpart": { flexpart_install_run?: boolean };
   "icos.flexextract": { flexextract_src_dir: string; flexextract_download_host: string };
   "icos.eurocom": { eurocom_users: string; eurocom_web_root: string; eurocom_data_home: string };
@@ -144,20 +146,20 @@ export interface Roles {
   };
 
   // server bootstrap roles
-  "icos.server": {};
+  "icos.server": NoVars;
   "icos.docker": { docker_periodic_cleanup?: boolean; docker_prevent_upgrade?: boolean };
-  "icos.docker2": {};
-  "icos.nginx": {};
-  "icos.nfs4": {};
-  "icos.lxd_server": {};
-  "icos.podman": {};
+  "icos.docker2": NoVars;
+  "icos.nginx": NoVars;
+  "icos.nfs4": NoVars;
+  "icos.lxd_server": NoVars;
+  "icos.podman": NoVars;
   "icos.caddy": { caddy_name?: string; caddy_conf?: string };
-  "icos.bbserver": {};
-  "icos.mosh": {};
-  "icos.pve_server": {};
-  "icos.users": {};
-  "icos.rdflog": {};
-  "icos.pgrep": {};
+  "icos.bbserver": NoVars;
+  "icos.mosh": NoVars;
+  "icos.pve_server": NoVars;
+  "icos.users": NoVars;
+  "icos.rdflog": NoVars;
+  "icos.pgrep": NoVars;
   "icos.fail2ban": { fail2ban_config_files: { dest: string; content: string }[] };
   "icos.dnsmasq": { dnsmasq_interface: string; dnsmasq_config: string };
   "icos.rsyncd": { rsyncd_enable: boolean; rsyncd_users: { name: string }[]; rsyncd_conf: string };
@@ -165,7 +167,7 @@ export interface Roles {
     superuser_disable_coredump?: boolean;
     superuser_list: { name: string; key: string }[];
   };
-  "ops.zfs": {};
+  "ops.zfs": NoVars;
 
   // lxd / vm provisioning
   "icos.lxd_vm": Common & {
@@ -203,14 +205,14 @@ export interface Roles {
   };
 
   // VM guest + utility roles
-  "icos.pve_guest": {};
-  "icos.utils": {};
-  "icos.python3": {};
-  "icos.stiltrun": {};
-  "icos.stiltcluster": {};
+  "icos.pve_guest": NoVars;
+  "icos.utils": NoVars;
+  "icos.python3": NoVars;
+  "icos.stiltrun": NoVars;
+  "icos.stiltcluster": NoVars;
 
   // monitoring / exporters
-  "icos.vmagent": {};
-  "icos.node_exporter": {};
+  "icos.vmagent": NoVars;
+  "icos.node_exporter": NoVars;
   "icos.script_exporter": { sexp_exporters: string[] };
 }
