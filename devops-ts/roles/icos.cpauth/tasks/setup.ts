@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create cpauth user",
     user: {
-      name: "{{ cpauth_user }}",
-      home: "{{ cpauth_home }}",
+      name: V.cpauth_user,
+      home: V.cpauth_home,
       shell: "/bin/bash",
     },
   },
@@ -13,8 +14,8 @@ export default [
     name: "Copy keys",
     copy: {
       src: "privateKeys",
-      dest: "{{ cpauth_home }}",
-      owner: "{{ cpauth_user }}",
+      dest: V.cpauth_home,
+      owner: V.cpauth_user,
     },
   },
 ] satisfies TaskFile;

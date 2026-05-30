@@ -67,9 +67,32 @@ expressions (~100 of 173 single-line `when`s use `==`, `!=`, `in`, `| bool`,
 - Caught in negative tests: missing required `copy.dest`, typo'd `template.dset`,
   wrong `fail.message` (vs `msg`).
 
-### Phase 3 — variables / handlers (large; opt-in per role)
-- Per-role variable contexts generated from `defaults/` + `vars/` (~632 vars),
-  modelling scope (own role vars + globals + registered + `item` + set_fact).
+### Phase 3 — variables / handlers (large; opt-in per role) — **started**
+Measured scope of variable references across role tasks (599 distinct):
+- 51% a role's own `defaults/` — statically enumerable, the typed target.
+- 24% caller params / `set_fact` / loop `item` — dynamic, not enumerable.
+- 11% registered results (`_x`) — dynamic.
+- 5% globals/inventory, 5% other-role defaults, 4% builtins, 1% vault.
+
+So ~66% is statically knowable; ~34% is irreducibly dynamic. Design:
+- `lib/context.ts`: a generic `context<Vars>()` factory → `{ V, tmpl, isDef,
+  notVar }` scoped to one role's variable interface (same machinery as the
+  global `V`/`tmpl`, but per-role).
+- `gen-contexts.ts` (`deno task gen-contexts`): reads each role's
+  `../devops/roles/<role>/{defaults,vars}/*.yml`, infers types, and writes
+  `roles/<role>/_ctx.ts` with a `Vars` interface + `context<Vars>()`. **All 104
+  generated and type-checking.**
+- A role task file opts in per-reference:
+    `import { V, tmpl, isDef } from "../_ctx.ts";`
+  Convert references the context knows (own-defaults); leave dynamic ones as raw
+  `"{{ }}"` strings / `raw()`. Proven on `icos.cpauth` (setup.ts, deploy.ts):
+  renders identically, type-checks, and a typo (`V.cpauth_hom`) is a compile
+  error with a "Did you mean" hint.
+
+Remaining Phase 3 work (incremental, optional):
+- Roll the per-reference conversion across the other role files (bulk, agent-able).
+- Optionally widen each role's context to also include globals/vault/builtins so
+  those tiers (≈10%) are checked too, not just own-defaults.
 - Typed handler names so `notify` is checked.
 
 ## Verification strategy
@@ -106,4 +129,7 @@ role-var names, handler names, and include targets.
     `when:`); the `Tag` union regenerated to the full ~299 tags actually used;
     `file?: FileArgs | string` (key=value shorthand); `become?: boolean | string`
     (templated); `VarValue` now allows `null`.
-- Phase 3 (per-role variable contexts) remains opt-in / future work.
+- **Phase 3 (per-role variable contexts): started.** Machinery built
+  (`lib/context.ts` + `gen-contexts.ts`), all 104 contexts generated and
+  type-checking, proven on `icos.cpauth`. Bulk per-reference rollout across the
+  remaining role files is the remaining (incremental) work.

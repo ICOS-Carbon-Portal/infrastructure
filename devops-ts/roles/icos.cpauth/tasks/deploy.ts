@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: "{{ cpauth_home }}/application.conf",
+      dest: tmpl`${V.cpauth_home}/application.conf`,
       content: `{% for item in cpauth_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}
@@ -26,7 +27,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: "{{ cpauth_jar_file }}",
-      dest: "{{ cpauth_home }}/cpauth.jar",
+      dest: tmpl`${V.cpauth_home}/cpauth.jar`,
       backup: true,
     },
     register: "_jarfile",
@@ -36,7 +37,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: "{{ cpauth_home }}" },
+    args: { chdir: V.cpauth_home },
     register: "_r",
     changed_when: '_r.stdout.startswith("removed")',
   },
