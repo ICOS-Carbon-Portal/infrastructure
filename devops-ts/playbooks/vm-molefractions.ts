@@ -1,0 +1,136 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    pre_tasks: [
+      {
+        name: "Create the molefractions container",
+        tags: "lxd",
+        lxd_container: {
+          name: "molefractions",
+          state: "started",
+          profiles: ["default", "ssh_root"],
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          devices: {
+            root: {
+              path: "/",
+              pool: "default",
+              type: "disk",
+              size: "20GB",
+            },
+            molefractions: {
+              path: "/data/molefractions/CTE_CO2_3D_molefractions",
+              source: "/data/common/netcdf/CTE_CO2_3D_molefractions",
+              type: "disk",
+              readonly: "true",
+            },
+            ct2018: {
+              path: "/data/flexpart/CT2018",
+              source: "/data/flexpart/CT2018",
+              type: "disk",
+              readonly: "true",
+            },
+            cams: {
+              path: "/data/common/CAMS",
+              source: "/data/common/CAMS",
+              type: "disk",
+              readonly: "true",
+            },
+          },
+          config: {
+            "limits.cpu": "1",
+            "limits.memory": "2GB",
+          },
+          wait_for_ipv4_addresses: true,
+          wait_for_ipv4_interfaces: "eth0",
+          timeout: 60,
+        },
+        register: "_lxd",
+      },
+    ],
+    roles: [
+      role("icos.lxd_forward", {
+        lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}",
+        lxd_forward_name: "molefractions",
+      }),
+    ],
+  },
+  {
+    hosts: "molefractions",
+    vars: {
+      username: "anonymous",
+    },
+    roles: [
+      role("icos.lxd_guest").tags("guest"),
+    ],
+    handlers: [
+      {
+        name: "reload sshd",
+        shell: "sshd -t && systemctl reload sshd",
+        changed_when: false,
+      },
+    ],
+    tasks: [
+      {
+        name: "add {{ username }} user",
+        user: {
+          name: "{{ username }}",
+          shell: "/sbin/nologin",
+          create_home: false,
+          password_lock: true,
+        },
+      },
+      {
+        name: "set sshd sftp chroot",
+        blockinfile: {
+          marker: "# {mark} ansible sftp chroot",
+          path: "/etc/ssh/sshd_config",
+          block: `Match User {{ username }}
+  ChrootDirectory /data
+  ForceCommand internal-sftp
+  DisableForwarding yes
+  PasswordAuthentication yes
+`,
+        },
+        notify: "reload sshd",
+      },
+      {
+        name: "Create pam_sftp",
+        copy: {
+          dest: "/usr/sbin/pam_sftp",
+          src: "files/pam_sftp",
+          mode: "+x",
+        },
+      },
+      {
+        name: "Add pam_sftp rule",
+        blockinfile: {
+          marker: "# {mark} ansible / molefractions",
+          insertbefore: "BOF",
+          path: "/etc/pam.d/sshd",
+          block:
+            `auth sufficient pam_exec.so expose_authtok debug log=/var/log/pam_sftp.log /usr/sbin/pam_sftp
+`,
+        },
+      },
+      {
+        name: "Print ssh config",
+        debug: {
+          msg: `Host {{ inventory_hostname }}
+  HostName {{ ansible_host }}
+  Port {{ ansible_port }}
+  User {{ username }}
+  PreferredAuthentications password
+`,
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

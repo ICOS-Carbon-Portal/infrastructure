@@ -1,0 +1,111 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    vars: {
+      amalthea_ip: "{{ _lxd.addresses.eth0 | first }}",
+    },
+    tasks: [
+      {
+        name: "Create storage for docker",
+        tags: ["zfs", "lxd"],
+        include_role: {
+          name: "icos.zfsdocker",
+          public: true,
+        },
+        vars: {
+          zfsdocker_name: "amalthea",
+          zfsdocker_size: "50G",
+        },
+      },
+      {
+        name: "Create the amalthea container",
+        tags: ["lxd", "iptables"],
+        lxd_container: {
+          name: "amalthea",
+          state: "started",
+          profiles: ["default", "ssh_root"],
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          devices: {
+            root: {
+              path: "/",
+              pool: "default",
+              type: "disk",
+              size: "100GB",
+            },
+            docker: {
+              path: "/var/lib/docker",
+              source: "{{ zfsdocker_zvol }}",
+              type: "disk",
+              "raw.mount.options": "user_subvol_rm_allowed",
+            },
+            flexextract: {
+              path: "/data/flexextract",
+              source: "/nfs/flexextract",
+              type: "disk",
+              readonly: "False",
+            },
+          },
+          config: {
+            "security.nesting": "true",
+            "limits.cpu": "32",
+            "limits.memory": "256GB",
+          },
+          wait_for_ipv4_addresses: true,
+          wait_for_ipv4_interfaces: "eth0",
+          timeout: 60,
+        },
+        register: "_lxd",
+      },
+      {
+        name: "SSH forward to amalthea",
+        tags: "iptables",
+        iptables_raw: {
+          name: "forward_ssh_to_amalthea",
+          table: "nat",
+          rules:
+            "-A PREROUTING -p tcp --dport {{ hostvars['amalthea'].ansible_port }} -j DNAT --to-destination {{ amalthea_ip }}:22",
+        },
+      },
+    ],
+  },
+  {
+    hosts: "amalthea",
+    roles: [
+      role("icos.lxd_guest").tags("guest"),
+      role("icos.superuser", {
+        superuser_disable_coredump: true,
+        superuser_list: [
+          {
+            name: "ubuntu",
+            key: "{{ vault_amalthea_ssh_keys }}",
+          },
+        ],
+      }).tags("superuser"),
+    ],
+    tasks: [
+      {
+        name: "Print ssh config",
+        debug: {
+          msg:
+            `# Put this in $HOME/.ssh/config,
+# then execute "ssh {{ inventory_hostname }}"
+Host {{ inventory_hostname }}
+  HostName {{ ansible_host }}
+  Port {{ ansible_port }}
+  User ubuntu
+# Or execute the following command:
+# ssh -p {{ ansible_port }} ubuntu@{{ ansible_host }}
+`,
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

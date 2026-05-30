@@ -1,0 +1,36 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos2",
+    vars: {
+      bbclient_home: "/opt/bbclient-nginx-static",
+      backup_script: "{{ bbclient_home }}/backup.sh",
+    },
+    roles: [
+      role("icos.nginxsite", {
+        vars: {
+          nginxsite_name: "static",
+          nginxsite_file: "files/domains/static.conf",
+        },
+      }).tags("static"),
+
+      role("icos.bbclient2", {
+        bbclient_name: "nginx-static",
+        bbclient_timer_content: `#!/bin/bash
+set -eu
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+echo "Creating"
+{{ bbclient_all}} create --stats --verbose "::{now}" /usr/share/nginx/static
+
+echo "Pruning"
+{{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
+
+echo "Compacting"
+{{ bbclient_all }} compact --verbose
+`,
+      }).tags("bbclient"),
+    ],
+  },
+] satisfies Playbook;

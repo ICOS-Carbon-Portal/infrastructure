@@ -1,0 +1,45 @@
+// Deploy nextcloud (copy files and compile images, but no restart!):
+//   icos play nextcloud nextcloud
+//
+// Install coldbackup script:
+//   icos play nextcloud bbclient_coldbackup
+//
+// Deploy new version of onlyoffic
+//   icos play nextcloud onlyoffice
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos2",
+    roles: [
+      role("icos.nextcloud", {
+        nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}",
+        nextcloud_domain: "fileshare.icos-cp.eu",
+        nextcloud_exporter_pass: "{{ vault_nextcloud_exporter_pass }}",
+        nextcloud_volumes: ["/share/with_nextcloud:/share"],
+      }).tags("nextcloud"),
+
+      role("icos.onlyoffice", {
+        onlyoffice_domain: "onlyoffice.icos-cp.eu",
+        onlyoffice_secret: "{{ vault_onlyoffice_secret }}",
+      }).tags("onlyoffice"),
+
+      // This will install a coldbackup script, i.e it will shut down nextcloud
+      // before taking the backup. The reason for this is that the nextcloud
+      // manual recommends putting nextcloud into "maintenance" mode before
+      // backup. Since maintenance mode prohibits anyone from actually using
+      // nextcloud, we might as well bring it down.
+      role("icos.bbclient2", {
+        bbclient_name: "nextcloud",
+        bbclient_home: "{{ nextcloud_home }}/bbclient",
+        bbclient_coldbackup_hour: 1,
+        bbclient_coldbackup_minute: 0,
+        bbclient_coldbackup: "{{ nextcloud_home }}",
+        bbclient_patterns: `R /disk/data/nextcloud
+R /docker/nextcloud/volumes
+`,
+        bbclient_remotes: ["fsicos2", "icos1"],
+      }).tags("bbclient"),
+    ],
+  },
+] satisfies Playbook;

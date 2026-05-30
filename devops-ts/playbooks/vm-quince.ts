@@ -1,0 +1,60 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos2",
+    vars: {
+      quince_host: "quince3.lxd",
+    },
+    roles: [
+      role("icos.lxd_vm", {
+        name: "Create the quince3 VM",
+        lxd_vm_name: "quince3",
+        lxd_vm_root_size: "200GB",
+        lxd_vm_config: {
+          "limits.cpu": "20",
+          "limits.memory": "128GB",
+        },
+      }).tags("lxd"),
+    ],
+    tasks: [
+      {
+        name: "Setup proxying for quince",
+        tags: "proxy",
+        include_role: {
+          name: "icos.quince",
+          apply: {
+            tags: "proxy",
+          },
+          tasks_from: "proxy.yml",
+        },
+        vars: {
+          quince_name: "quince",
+          quince_domains: [
+            "quince.icos-otc.org",
+            "icoslabelling.icos-otc.org",
+            "quince-training.icos-otc.org",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    hosts: "quince3",
+    roles: [
+      role("icos.lxd_guest"),
+
+      // This role was used to provision the quince application but since then
+      // the installation has been continously tweaked by manual means, running
+      // the role again might mess things up.
+      //
+      // To provision changes to the backups, uncomment this role and run:
+      //   $ icos play quince -lquince3 -tquince-backup -D
+      //
+      // - role: icos.quince
+      //   bbclient_remotes:
+      //     - fsicos2
+      //     - icos1
+    ],
+  },
+] satisfies Playbook;

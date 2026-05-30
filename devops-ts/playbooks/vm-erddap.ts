@@ -1,0 +1,97 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos2",
+    vars: {
+      certbot_name: "erddap",
+      certbot_domains: [
+        "erddap.icos-cp.eu",
+        "test-erddap.icos-cp.eu",
+        "bluecloud.icos-cp.eu",
+      ],
+    },
+    pre_tasks: [
+      {
+        name: "Create erddap storage pool",
+        tags: "pool",
+        shell:
+          "/snap/bin/lxc storage show erddap > /dev/null 2>&1 || /snap/bin/lxc storage create erddap btrfs size=50GB",
+        register: "_r",
+        changed_when: ['"Storage pool erddap created" in _r.stdout'],
+      },
+      {
+        name: "Create the erddap container",
+        lxd_container: {
+          name: "erddap",
+          state: "started",
+          profiles: ["default", "ssh_root"],
+          config: {
+            "security.nesting": "true",
+            "limits.cpu": "2",
+            "limits.memory": "20GB",
+          },
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          devices: {
+            root: {
+              path: "/",
+              type: "disk",
+              pool: "erddap",
+              size: "50GB",
+            },
+            dataAppStorage: {
+              path: "/data/dataAppStorage",
+              source: "/disk/data/dataAppStorage",
+              readonly: "1",
+              type: "disk",
+            },
+          },
+          wait_for_ipv4_addresses: true,
+          timeout: 600,
+        },
+        register: "_lxd",
+      },
+    ],
+    roles: [
+      role("icos.lxd_forward", {
+        lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}",
+        lxd_forward_name: "erddap",
+      }),
+      role("icos.certbot2").tags("cert"),
+      role("icos.nginxsite", {
+        nginxsite_name: "erddap",
+        nginxsite_file: "files/erddap.conf",
+      }).tags("nginx"),
+    ],
+  },
+  {
+    hosts: "erddap",
+    roles: [
+      role("icos.lxd_guest").tags("guest"),
+    ],
+    tasks: [
+      {
+        name: "Print ssh config",
+        tags: "howto",
+        debug: {
+          msg:
+            `# Put this in $HOME/.ssh/config,
+# then execute "ssh {{ inventory_hostname }}"
+Host {{ inventory_hostname }}
+  HostName {{ ansible_host }}
+  Port {{ ansible_port }}
+  User ubuntu
+# Or execute the following command:
+# ssh -p {{ ansible_port }} ubuntu@{{ ansible_host }}
+`,
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

@@ -1,0 +1,167 @@
+// Deploy everything except the jbuild.py and edctl.py scripts, useful when
+// developing.
+//   icos play ganymede jbuild -ejbuild_force=false
+//
+// Deploy new users, keys, edctl and rsync.
+//   icos play ganymede users jbuild_users jbuild_rsync
+//
+// Recreate virtual environments, i.e after do-release-upgrade:
+//   icos play ganymede jbuild -evirtualenv_recreate=True
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    vars: {
+      // These variable are prefixed with 'jupyter_' instead of 'ganymede_' so
+      // that we can reuse files/jupyter.conf without change.
+      jupyter_ip: "{{ _lxd.addresses.eth0 | first }}",
+      jupyter_domains: ["ganymede.icos-cp.eu"],
+      ganymede_domains: ["future.ganymede.icos-cp.eu"],
+    },
+    pre_tasks: [
+      {
+        include_role: {
+          name: "icos.zfsdocker",
+          public: true,
+        },
+        tags: ["zfs", "lxd"],
+        vars: {
+          zfsdocker_name: "ganymede",
+          zfsdocker_size: "100G",
+        },
+      },
+      {
+        name: "Create the ganymede container",
+        tags: ["lxd", "forward", "nginx", "icosdata"],
+        lxd_container: {
+          name: "ganymede",
+          state: "started",
+          profiles: ["default", "ssh_root"],
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          devices: {
+            root: {
+              path: "/",
+              pool: "default",
+              type: "disk",
+              size: "500GB",
+            },
+            docker: {
+              path: "/var/lib/docker",
+              source: "{{ zfsdocker_zvol }}",
+              type: "disk",
+              "raw.mount.options": "user_subvol_rm_allowed",
+            },
+            data: {
+              path: "/data",
+              source: "/data",
+              type: "disk",
+              recursive: "yes",
+            },
+          },
+          config: {
+            "limits.memory": "100GB",
+            "security.nesting": "true",
+          },
+          wait_for_ipv4_addresses: true,
+          wait_for_ipv4_interfaces: "eth0",
+          timeout: 60,
+        },
+        register: "_lxd",
+      },
+    ],
+    roles: [
+      role("icos.lxd_forward", {
+        lxd_forward_ip: "{{ jupyter_ip }}",
+        lxd_forward_name: "ganymede",
+      }).tags("forward"),
+
+      role("icos.certbot2", {
+        certbot_name: "ganymede",
+        certbot_domains: "{{ jupyter_domains + ganymede_domains }}",
+      }).tags("cert"),
+
+      role("icos.nginxsite", {
+        nginxsite_name: "ganymede",
+        nginxsite_file: "files/jupyter.conf",
+        jupyter_domain: "{{ jupyter_domains | first }}",
+        jupyter_cert_name: "ganymede",
+        jupyter_port: 8000,
+      }).tags("nginx"),
+
+      role("icos.nginxforward", {
+        nginxforward_name: "future_ganymede",
+        nginxforward_host: "ganymede.lxd",
+        nginxforward_port: 8081,
+        nginxforward_cert: "ganymede",
+        nginxforward_domains: ["future.ganymede.icos-cp.eu"],
+      }).tags("future"),
+    ],
+  },
+  {
+    hosts: "ganymede",
+    handlers: [
+      {
+        name: "reload sshd",
+        systemd: {
+          name: "sshd",
+          state: "reloaded",
+        },
+      },
+    ],
+    roles: [
+      role("icos.lxd_guest", {
+        user_conf: "{{ vault_ganymede_user_conf }}",
+      }).tags("guest"),
+
+      role("icos.docker", {
+        docker_periodic_cleanup: true,
+      }).tags("docker"),
+
+      role("icos.jupyter", {
+        jupyter_admins: "{{ vault_ganymede_jupyter_admins }}",
+        jupyter_backup_enable: false,
+      }).tags("jupyter"),
+
+      role("icos.jbuild", {
+        jbuild_users: "{{ vault_ganymede_jbuild_users }}",
+        jbuild_registry_pass: "{{ vault_registry_pass }}",
+        jbuild_edctl_host: "exploredata",
+        jbuild_edctl_host_name: "exploredata.lxd",
+        jbuild_edctl_host_port: 22,
+        jbuild_rsync_host: "jupyter",
+        jbuild_rsync_host_port: 22,
+        jbuild_rsync_host_name: "jupyter.lxd",
+        jbuild_jyctl_host: "jupyter",
+        jbuild_jyctl_host_port: 22,
+        jbuild_jyctl_host_name: "jupyter.lxd",
+      }).tags("jbuild"),
+    ],
+    tasks: [
+      {
+        tags: "sshlogin",
+        include_role: {
+          name: "icos.sshlogin",
+          apply: { tags: "sshlogin" },
+        },
+        vars: {
+          sshlogin_dst: "{{ login.dst }}",
+          sshlogin_src_user: "{{ login.src_user }}",
+          sshlogin_dst_user: "{{ login.dst_user }}",
+          sshlogin_src_dst_host: "{{ login.dst_host }}",
+          sshlogin_src_dst_port: "{{ login.dst_port }}",
+        },
+        loop: "{{ vault_ganymede_sshlogins }}",
+        loop_control: {
+          loop_var: "login",
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

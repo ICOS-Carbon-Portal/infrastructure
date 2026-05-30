@@ -1,0 +1,56 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos4",
+    roles: [
+      role("icos.caddy", {
+        caddy_name: "jupyter4",
+        caddy_conf: `jupyter4.icos-cp.eu {
+    reverse_proxy 10.10.10.227:8000
+}
+`,
+      }).tags("caddy"),
+    ],
+  },
+  {
+    hosts: "fsicos4-jupyter",
+    roles: [
+      role("icos.pve_guest").tags("guest"),
+
+      role("icos.utils").tags("utils"),
+
+      role("icos.python3").tags("python3"),
+
+      role("icos.docker2").tags("docker"),
+
+      role("icos.jupyter", {
+        jupyter_hub_config: {
+          admin_users: ["ida"],
+        },
+        jupyter_jusers_enable: true,
+        jupyter_backup_enable: false,
+        bbclient_name: "jupyter",
+      }).tags("jupyter"),
+    ],
+    tasks: [
+      {
+        name: "Install nfs-common",
+        tags: "nfs",
+        apt: {
+          name: ["nfs-common"],
+        },
+      },
+      {
+        name: "Mount 10.10.10.1/tank/data/ida_swift at /data/ida_swift",
+        tags: "nfs",
+        mount: {
+          src: "10.10.10.1:/tank/data/ida_swift",
+          path: "/data/ida_swift",
+          state: "mounted",
+          fstype: "nfs",
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

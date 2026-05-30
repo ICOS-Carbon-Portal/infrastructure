@@ -60,3 +60,15 @@ export type Host =
   | "test-fs4"
   | "vmagent_hosts"
   | "wordpress";
+
+/** A space-separated host pattern, e.g. `pattern("a", "b")` -> `"a b"`. */
+export type HostPattern = string & { readonly __hostPattern: unique symbol };
+
+/**
+ * Build a space-separated host pattern from several typed hosts. Use this when
+ * the original `hosts:` is a space/colon-joined string (`hosts: a b c`); a YAML
+ * *list* of hosts is instead just `Host[]` and renders as a YAML sequence.
+ */
+export function pattern(...names: Host[]): HostPattern {
+  return names.join(" ") as HostPattern;
+}

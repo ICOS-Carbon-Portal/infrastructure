@@ -21,6 +21,9 @@ export interface Vars {
   cpauth_envries: string; // list of "envri" items (cf. icos.cpauth template loop)
   virtuoso_enable: boolean;
   root_keys: string; // global: the ssh keys each host authorizes for root
+  icosdata_exports: string;
+  icosdata_nfs_mounts: string;
+  stilt_input_mount: boolean;
 
   // Defined in a play's `vars:` block (see core.ts, util-remove.ts).
   jre_apt_package: string;

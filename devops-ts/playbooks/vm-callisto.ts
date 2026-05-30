@@ -1,0 +1,240 @@
+// Deploy eurocom website
+//  icos play callisto eurocom
+//
+// Deploy a new filedrop jar file
+//  icos play callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
+//
+// Deploy filedrop website
+//  icos play callisto filedrop -lfsicos3
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    vars: {
+      callisto_ip: "{{ _lxd.addresses.eth0 | first }}",
+    },
+    pre_tasks: [
+      {
+        name: "Cre ate storage for docker",
+        tags: ["lxd"],
+        include_role: {
+          name: "icos.zfsdocker",
+          public: true,
+        },
+        vars: {
+          zfsdocker_name: "callisto",
+          zfsdocker_size: "50G",
+        },
+      },
+      {
+        name: "Create the callisto container",
+        tags: ["lxd", "forward"],
+        lxd_container: {
+          name: "callisto",
+          state: "started",
+          profiles: ["default", "ssh_root", "icosdata"],
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          devices: {
+            root: {
+              path: "/",
+              pool: "default",
+              type: "disk",
+              size: "500GB",
+            },
+            docker: {
+              path: "/var/lib/docker",
+              source: "{{ zfsdocker_zvol }}",
+              type: "disk",
+              "raw.mount.options": "user_subvol_rm_allowed",
+            },
+            data: {
+              path: "/data",
+              source: "/data",
+              type: "disk",
+              recursive: "yes",
+            },
+            fluxcom: {
+              path: "/ute/fluxcom",
+              source: "/pool/fluxcom",
+              type: "disk",
+            },
+            fluxcom_eo: {
+              path: "/ute/fluxcom_eo",
+              source: "/nfs/fluxcom_eo",
+              type: "disk",
+            },
+            stilt: {
+              path: "/ute/stilt",
+              source: "/pool/ute/stilt",
+              type: "disk",
+            },
+            eurocom: {
+              path: "/ute/eurocom",
+              source: "/data/project/eurocom",
+              type: "disk",
+            },
+            eurocom_web_root: {
+              path: "/ute/eurocom_web_root",
+              source: "/pool/ute/eurocom_web_root",
+              type: "disk",
+            },
+            filedrop: {
+              path: "/ute/filedrop",
+              source: "/pool/ute/filedrop",
+              type: "disk",
+            },
+            datademo: {
+              path: "/ute/dataDemo",
+              source: "/pool/ute/dataDemo",
+              type: "disk",
+            },
+            radonmap: {
+              path: "/ute/radon_map",
+              source: "/pool/ute/radon_map",
+              type: "disk",
+            },
+          },
+          config: {
+            "limits.memory": "256GB",
+            "security.nesting": "true",
+          },
+          wait_for_ipv4_addresses: true,
+          wait_for_ipv4_interfaces: "eth0",
+          timeout: 60,
+        },
+        register: "_lxd",
+      },
+    ],
+    roles: [
+      role("icos.lxd_forward", {
+        lxd_forward_name: "callisto",
+        lxd_forward_ip: "{{ callisto_ip }}",
+      }).tags("forward"),
+
+      role("icos.eurocom", {
+        eurocom_users: "{{ vault_eurocom_users }}",
+        eurocom_web_root: "/pool/ute/eurocom_web_root",
+        eurocom_data_home: "/data/project/eurocom",
+      }).tags("eurocom"),
+    ],
+    tasks: [
+      {
+        name: "Proxy filedrop",
+        tags: "filedrop",
+        include_role: {
+          name: "icos.filedrop",
+          tasks_from: "proxy",
+        },
+        vars: {
+          nginxsite_name: "filedrop",
+          filedrop_domain: "filedrop.icos-cp.eu",
+          filedrop_host: "callisto.lxd",
+        },
+      },
+      {
+        name: "Proxy jupyter",
+        tags: "jupyter",
+        include_role: {
+          name: "icos.jupyter",
+          tasks_from: "proxy",
+        },
+        vars: {
+          nginxsite_name: "callisto",
+          jupyter_domain: "callisto.icos-cp.eu",
+          jupyter_ip: "callisto.lxd",
+        },
+      },
+    ],
+  },
+
+  {
+    hosts: "callisto",
+    roles: [
+      role("icos.lxd_guest", {
+        user_conf: "{{ vault_callisto_user_conf }}",
+      }).tags("guest"),
+
+      role("icos.docker", {
+        docker_periodic_cleanup: true,
+        docker_prevent_upgrade: true,
+      }).tags("docker"),
+
+      role("icos.filedrop", {
+        filedrop_data_home: "/ute/filedrop",
+      }).tags("filedrop"),
+
+      role("icos.jupyter", {
+        jupyter_admins: "{{ vault_callisto_admins }}",
+        jupyter_user_volumes: "{{ vault_callisto_user_volumes }}",
+        jupyter_backup_enable: false,
+      }).tags("jupyter"),
+
+      // This sftp user will only be able to download.
+      role("icos.sftp_user", {
+        sftp_user_dir: "/ute/sftp_home/data",
+        sftp_user_login: "sftp",
+        sftp_user_owner: "ute",
+        sftp_user_password: "{{ vault_callisto_sftp_password }}",
+      }).tags("sftp"),
+
+      // This sftp user will be able to upload.
+      role("icos.sftp_user", {
+        sftp_user_dir: "/ute/fluxcom/upload",
+        sftp_user_login: "{{ vault_callisto_sftp_fluxcom_upload_username }}",
+        sftp_user_password: "{{ vault_callisto_sftp_fluxcom_upload_password }}",
+        sftp_user_hostdesc: "fluxcom-upload",
+      }).tags("sftp"),
+
+      role("icos.bbclient2", {
+        bbclient_name: "callisto_home_ute",
+        bbclient_remotes: ["fsicos2", "icos1"],
+        bbclient_timer_content: `#!/bin/bash
+set -eu
+echo "Creating"
+{{ bbclient_all }} create --stats --verbose "::{now}" /home/ute
+
+echo "Pruning"
+{{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
+
+echo "Compacting"
+{{ bbclient_all }} compact --verbose
+`,
+      }).tags("bbclient_ute"),
+
+      role("icos.bbclient2", {
+        bbclient_name: "radon_map",
+        bbclient_remotes: ["fsicos2", "icos1"],
+        bbclient_timer_content: `#!/bin/bash
+set -eu
+echo "Creating"
+{{ bbclient_all }} create --stats --verbose "::{now}" /data/radon_map
+
+echo "Pruning"
+{{ bbclient_all }} prune --stats --keep-within=100d --keep-weekly=-1
+
+echo "Compacting"
+{{ bbclient_all }} compact --verbose
+`,
+      }).tags("bbclient_radon"),
+    ],
+    tasks: [
+      {
+        name: "Port forward for filedrop",
+        tags: "iptables",
+        iptables_raw: {
+          name: "forward_filedrop",
+          table: "nat",
+          rules:
+            "-A PREROUTING -p tcp --dport {{ filedrop_port }} -j DNAT --to-destination 127.0.0.1:{{ filedrop_port }}",
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

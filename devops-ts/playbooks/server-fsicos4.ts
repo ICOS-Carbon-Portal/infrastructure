@@ -1,0 +1,72 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos4",
+    roles: [
+      role("icos.mosh").tags("mosh"),
+
+      role("icos.caddy").tags("caddy"),
+
+      role("icos.pve_server").tags("pve_server"),
+
+      role("icos.utils").tags("utils"),
+
+      role("icos.python3").tags("python"),
+
+      role("icos.fail2ban", {
+        fail2ban_config_files: [
+          {
+            dest: "/etc/fail2ban/jail.d/sshd-allports.local",
+            content: `[sshd]
+# fail2ban won't start out of the box on proxmox8/debian12(?)
+# since it's configured to use /var/log/auth.log (which doesn't exist).
+# https://forum.proxmox.com/threads/missing-auth-log-in-proxmox-ve-8-0-fail2ban-sshd.130271/
+backend = systemd
+# Since we're running ssh on different ports that fail2ban is used
+# to, block all ports.
+banaction = iptables-allports
+`,
+          },
+        ],
+      }).tags("fail2ban"),
+
+      role("icos.dnsmasq", {
+        dnsmasq_interface: "vmbr0",
+        dnsmasq_config: `# bind only to the interface given on the command line
+bind-interfaces
+
+# the range of addresses available for lease
+dhcp-range=10.10.10.50,10.10.10.250,12h
+
+# set default route
+dhcp-option={{ dnsmasq_interface }},3,10.10.10.1
+
+dhcp-leasefile=/var/lib/misc/dnsmasq.{{ dnsmasq_interface }}.leases
+`,
+      }).tags("dnsmasq"),
+
+      // rsync -x -avz --progress ./ rsync://fsicos4.nebula/data/flexpart/
+      role("icos.rsyncd", {
+        rsyncd_enable: true,
+        rsyncd_users: [
+          { name: "root" },
+        ],
+        rsyncd_conf: `# only accept rsync on nebula interface
+address = fsicos4.nebula
+
+[data]
+# run this module as root instead of nobody
+uid = root
+gid = *
+comment = /tank/data
+path = /tank/data
+auth users = root:rw
+numeric ids
+secrets file = /etc/rsyncd.secrets
+hosts allow = fsicos2.nebula,fsicos3.nebula,icos1.nebula
+`,
+      }).tags("rsyncd"),
+    ],
+  },
+] satisfies Playbook;

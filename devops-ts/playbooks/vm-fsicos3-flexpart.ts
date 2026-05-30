@@ -1,0 +1,185 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    vars: {
+      // These variable are prefixed with 'jupyter_' instead of 'flexpart_' so
+      // that we can reuse files/jupyter.conf without change.
+      jupyter_ip: "{{ _lxd.addresses.eth0 | first }}",
+      jupyter_domains: [
+        "flexpart.icos-cp.eu",
+      ],
+    },
+    pre_tasks: [
+      {
+        name: "Create flexpart docker storage volume",
+        tags: "pool",
+        shell: "/snap/bin/lxc storage volume create docker flexpart_docker",
+        register: "_r",
+        changed_when: [
+          '"Storage volume flexpart_docker created" in _r.stdout',
+        ],
+        failed_when: [
+          "_r.rc != 0",
+          '"Error: Volume by that name already exists" not in _r.stderr',
+        ],
+      },
+      {
+        name: "Create /data/flexpart/output directory",
+        tags: "mkdir",
+        file: {
+          path: "/data/flexpart/output",
+          state: "directory",
+          owner: "{{ 1001000 }}",
+          group: "{{ 1001000 }}",
+        },
+      },
+      {
+        name: "Create the flexpart container",
+        tags: [
+          "lxd",
+          "nginx",
+        ],
+        lxd_container: {
+          name: "flexpart",
+          state: "started",
+          profiles: [
+            "default",
+            "ssh_root",
+            "icosdata",
+          ],
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          config: {
+            "security.nesting": "true",
+            "limits.cpu": "50",
+            "limits.memory": "220GB",
+          },
+          devices: {
+            root: {
+              path: "/",
+              pool: "default",
+              type: "disk",
+              size: "50GB",
+            },
+            "1_docker": {
+              path: "/var/lib/docker",
+              pool: "docker",
+              source: "flexpart_docker",
+              type: "disk",
+            },
+            "2_flexextract": {
+              path: "/data/flexextract",
+              source: "/data/flexextract",
+              type: "disk",
+              recursive: "true",
+            },
+            "3_flexextract_meteo": {
+              path: "/data/flexextract/meteo",
+              source: "/nfs/flexextract_meteo",
+              type: "disk",
+            },
+            "4_output": {
+              path: "/data/flexpart/output",
+              source: "/data/flexpart/output",
+              type: "disk",
+              readonly: "False",
+            },
+            "5_meteo": {
+              path: "/data/flexpart/meteo",
+              source: "/data/flexpart/meteo",
+              type: "disk",
+              readonly: "True",
+            },
+            "6_ct2018": {
+              path: "/data/flexpart/CT2018",
+              source: "/data/flexpart/CT2018",
+              type: "disk",
+              readonly: "True",
+            },
+            "7_vprm": {
+              path: "/data/VPRM2007n",
+              source: "/pool/ute/stilt/VPRM/VPRM_ECMWF/VPRM2007n",
+              readonly: "True",
+              type: "disk",
+            },
+            "8_stiltweb": {
+              path: "/data/stiltweb",
+              source: "/data/stiltweb",
+              type: "disk",
+              readonly: "True",
+            },
+            "9_cupcake": {
+              path: "/data/cupcake",
+              source: "/data/cupcake",
+              type: "disk",
+              readonly: "False",
+            },
+          },
+          wait_for_ipv4_addresses: true,
+          wait_for_ipv4_interfaces: "eth0",
+          timeout: 60,
+        },
+        register: "_lxd",
+      },
+    ],
+    roles: [
+      role("icos.lxd_forward", {
+        lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}",
+        lxd_forward_name: "flexpart",
+      }),
+
+      role("icos.certbot2", {
+        certbot_name: "flexpart",
+        certbot_domains: "{{ jupyter_domains }}",
+      }).tags("cert"),
+
+      role("icos.nginxsite", {
+        nginxsite_name: "flexpart",
+        nginxsite_file: "files/jupyter.conf",
+        jupyter_domain: "{{ jupyter_domains | first }}",
+        jupyter_cert_name: "flexpart",
+        jupyter_port: 8000,
+      }).tags("nginx"),
+    ],
+  },
+  {
+    hosts: "flexpart",
+    roles: [
+      role("icos.lxd_guest", {
+        user_disable_coredump: true,
+        user_conf: "{{ vault_ganymede_user_conf }}",
+      }).tags("guest"),
+
+      role("icos.docker").tags("docker"),
+
+      role("icos.flexpart", {
+        flexpart_install_run: true,
+      }).tags("flexpart"),
+
+      role("icos.jupyter", {
+        jupyter_admins: "{{ vault_flexpart_admins }}",
+        jupyter_backup_enable: false,
+      }).tags("jupyter"),
+    ],
+    tasks: [
+      {
+        name: "Login to registry",
+        tags: "login",
+        become: true,
+        become_user: "root",
+        "community.general.docker_login": {
+          registry_url: "registry.icos-cp.eu",
+          username: "docker",
+          password: "{{ vault_registry_pass }}",
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

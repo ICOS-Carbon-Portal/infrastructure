@@ -1,0 +1,68 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    pre_tasks: [
+      {
+        name: "Create /pool/ctehires",
+        zfs: {
+          name: "pool/ctehires",
+          state: "present",
+          extra_zfs_properties: {
+            quota: "1T",
+          },
+        },
+      },
+      {
+        name: "Change owner of /pool/ctehires",
+        file: {
+          path: "/pool/ctehires",
+          owner: 1000000,
+          group: 1000000,
+        },
+      },
+    ],
+    roles: [
+      role("icos.lxd_vm", {
+        name: "Create the ctehires VM",
+        lxd_vm_name: "ctehires",
+        lxd_vm_docker: true,
+        lxd_vm_config: {
+          "security.nesting": "true",
+          "limits.cpu": "16",
+          "limits.memory": "64GB",
+        },
+        lxd_vm_devices: {
+          ctehires: {
+            path: "/ctehires",
+            source: "/pool/ctehires",
+            type: "disk",
+          },
+        },
+      }),
+    ],
+  },
+  {
+    hosts: "ctehires",
+    vars: {
+      user_conf: "{{ vault_ctehires_user_conf }}",
+      user_disable_coredump: true,
+    },
+    pre_tasks: [
+      {
+        name: "Create the ctehires group",
+        "ansible.builtin.group": {
+          name: "ctehires",
+        },
+      },
+    ],
+    roles: [
+      role("icos.lxd_guest").tags("guest"),
+
+      role("icos.docker").tags("docker"),
+
+      role("icos.users").tags("users"),
+    ],
+  },
+] satisfies Playbook;

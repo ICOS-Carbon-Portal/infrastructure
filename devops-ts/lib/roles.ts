@@ -13,22 +13,34 @@
 // self-documenting at call sites.
 export type Tmpl = string;
 
+import type { Value } from "./ansible.ts";
+
+// A role ref may carry a `vars:` block (a sibling of `role:`) and/or a display
+// `name:`; both are allowed on any role in addition to its own variables.
+type Common = { name?: string; vars?: Record<string, Value> };
+
 export interface Roles {
   "icos.keycloak": { kc_hostname: string };
   "icos.matomo": {};
   "icos.geoip": {};
   "icos.nexus": {};
 
-  "icos.bbclient2": {
-    bbclient_name: string;
-    bbclient_user: string;
-    bbclient_home: Tmpl;
-    bbclient_coldbackup: Tmpl;
+  // Used across many playbooks with different subsets of vars, so all optional.
+  "icos.bbclient2": Common & {
+    bbclient_name?: string;
+    bbclient_user?: string;
+    bbclient_home?: Tmpl;
+    bbclient_coldbackup?: Tmpl;
+    bbclient_coldbackup_hour?: number;
+    bbclient_coldbackup_minute?: number;
+    bbclient_remotes?: string[];
+    bbclient_timer_content?: string;
+    bbclient_patterns?: string;
   };
 
   "icos.certbot2": {
-    certbot_name: Tmpl;
-    certbot_domains: Tmpl;
+    certbot_name?: Tmpl;
+    certbot_domains?: Tmpl | string[]
   };
 
   "icos.cpauth": {};
@@ -49,7 +61,19 @@ export interface Roles {
   "icos.cpdata": { cpdata_netcdf_folder?: string };
   "icos.doi": {};
   "icos.virtuoso": {};
-  "icos.nginxsite": { nginxsite_name: string; nginxsite_file?: string };
+  "icos.nginxsite": Common & {
+    nginxsite_name?: string;
+    nginxsite_file?: string;
+    nginxsite_users?: { username: string; password: string }[];
+    registry_host?: string;
+    registry_cert?: string;
+    registry_allow?: string;
+    dokku_proxy_host?: string;
+    dokku_proxy_port?: number;
+    jupyter_domain?: string;
+    jupyter_cert_name?: string;
+    jupyter_port?: number;
+  };
   "icos.dataold": {};
 
   // single-app playbooks (no role-level variables)
@@ -61,10 +85,41 @@ export interface Roles {
   "icos.fairdatapoint": {};
   "icos.nebula": {};
   "icos.stiltweb": {};
+  "icos.telegraf": { telegraf_conf: string };
+  "icos.mailman": {};
+  "icos.exploredata": {};
+  "icos.rspamd": {};
+  "icos.dokku": {};
+  "icos.flexpart": { flexpart_install_run?: boolean };
+  "icos.flexextract": { flexextract_src_dir: string; flexextract_download_host: string };
+  "icos.eurocom": { eurocom_users: string; eurocom_web_root: string; eurocom_data_home: string };
+  "icos.filedrop": { filedrop_data_home: string };
+  "icos.nextcloud": {
+    nextcloud_admin_password: string;
+    nextcloud_domain: string;
+    nextcloud_exporter_pass: string;
+    nextcloud_volumes: string[];
+  };
+  "icos.onlyoffice": { onlyoffice_domain: string; onlyoffice_secret: string };
+  "icos.registry": { registry_users: string };
+  "icos.victoriametrics": {
+    vm_graf_domain: string;
+    vm_graf_pass: string;
+    vm_promlens_token: string;
+  };
+  "icos.jbuild": Record<string, Value>;
+  "icos.jupyter": Common & {
+    jupyter_admins?: string | null;
+    jupyter_user_volumes?: string;
+    jupyter_backup_enable?: boolean;
+    jupyter_jusers_enable?: boolean;
+    jupyter_hub_config?: Record<string, Value>;
+    bbclient_name?: string;
+  };
 
   // server bootstrap roles
   "icos.server": {};
-  "icos.docker": {};
+  "icos.docker": { docker_periodic_cleanup?: boolean; docker_prevent_upgrade?: boolean };
   "icos.docker2": {};
   "icos.nginx": {};
   "icos.nfs4": {};
@@ -72,7 +127,54 @@ export interface Roles {
   "icos.podman": {};
   "icos.caddy": { caddy_name?: string; caddy_conf?: string };
   "icos.bbserver": {};
+  "icos.mosh": {};
+  "icos.pve_server": {};
+  "icos.users": {};
+  "icos.rdflog": {};
+  "icos.pgrep": {};
+  "icos.fail2ban": { fail2ban_config_files: { dest: string; content: string }[] };
+  "icos.dnsmasq": { dnsmasq_interface: string; dnsmasq_config: string };
+  "icos.rsyncd": { rsyncd_enable: boolean; rsyncd_users: { name: string }[]; rsyncd_conf: string };
+  "icos.superuser": {
+    superuser_disable_coredump?: boolean;
+    superuser_list: { name: string; key: string }[];
+  };
   "ops.zfs": {};
+
+  // lxd / vm provisioning
+  "icos.lxd_vm": Common & {
+    lxd_vm_name?: string;
+    lxd_vm_docker?: boolean;
+    lxd_vm_docker_size?: string;
+    lxd_vm_root_size?: string;
+    lxd_vm_root_pool?: string;
+    lxd_vm_ubuntu_version?: string;
+    lxd_vm_config?: Record<string, string>;
+    lxd_vm_devices?: Record<string, Value>;
+    lxd_vm_profiles?: string[];
+  };
+  "icos.lxd_guest": { user_conf?: string; user_disable_coredump?: boolean };
+  "icos.lxd_forward": { lxd_forward_ip: string; lxd_forward_name: string };
+  "icos.nginxforward": {
+    nginxforward_name: string;
+    nginxforward_host: string;
+    nginxforward_port: number;
+    nginxforward_cert: string;
+    nginxforward_domains: string[];
+  };
+  "icos.sshlogin": {
+    sshlogin_dst?: string;
+    sshlogin_src_user: string;
+    sshlogin_dst_user: string;
+    sshlogin_src_dst_name?: string;
+  };
+  "icos.sftp_user": {
+    sftp_user_dir: string;
+    sftp_user_login: string;
+    sftp_user_password: string;
+    sftp_user_owner?: string;
+    sftp_user_hostdesc?: string;
+  };
 
   // VM guest + utility roles
   "icos.pve_guest": {};

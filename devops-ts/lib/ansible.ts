@@ -9,12 +9,12 @@
 //   * Only roles go through a builder (`role()`), because that is what unlocks
 //     per-role parameter typing keyed off the role name.
 import type { Roles } from "./roles.ts";
-import type { Host } from "./hosts.ts";
+import type { Host, HostPattern } from "./hosts.ts";
 import type { Expr } from "./vars.ts";
 
 // Re-exported so playbooks reference variables/hosts from a single import.
 export { Expr, isDefined, not, type Ref, tmpl, V, type Vars } from "./vars.ts";
-export type { Host } from "./hosts.ts";
+export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { Builtins } from "./builtins.ts";
 
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
@@ -28,54 +28,109 @@ export type When = Expr;
  * union catches typos at the type level; add a new tag here before using it.
  */
 export type Tag =
-  | "nexus"
+  | "adduser"
+  | "backup"
   | "bbclient"
+  | "bbclient_radon"
+  | "bbclient_ute"
+  | "bbserver"
+  | "caddy"
   | "cert"
   | "cpauth"
-  | "backup"
-  | "postfix"
-  | "dovecot"
-  | "opendkim"
-  | "postconf"
-  | "proxy"
-  | "cpmeta_proxy"
-  | "cpdata_proxy"
   | "cpauth_proxy"
-  | "restheart_proxy"
-  | "doi_proxy"
-  | "rdflog"
-  | "rdflog_backup"
-  | "postgis"
-  | "virtuoso"
-  | "server"
-  | "host"
+  | "cpdata"
+  | "cpdata_proxy"
+  | "cplog"
+  | "cpmeta_proxy"
+  | "dataold"
+  | "dnsmasq"
   | "docker"
-  | "nginx"
-  | "nfs"
+  | "doi_proxy"
+  | "dokku"
+  | "dokku_add_device"
+  | "dovecot"
+  | "eurocom"
+  | "exploredata"
+  | "export"
+  | "fail2ban"
+  | "fairdatapoint"
+  | "fdp"
+  | "filedrop"
+  | "flexextract"
+  | "flexpart"
+  | "forward"
+  | "future"
+  | "guest"
+  | "hba"
+  | "host"
+  | "howto"
+  | "icos-cities"
+  | "icos-ri"
+  | "icosdata"
+  | "incoming"
+  | "inputdata"
+  | "iptables"
+  | "jbuild"
+  | "jupyter"
+  | "login"
   | "lxd"
   | "lxd_server"
-  | "podman"
-  | "caddy"
-  | "zfs"
-  | "bbserver"
+  | "mailman"
+  | "mkdir"
+  | "mosh"
+  | "mount"
   | "nebula"
-  | "fdp"
-  | "stiltweb"
-  | "restheart"
-  | "guest"
-  | "utils"
-  | "python3"
   | "nextcloud"
-  | "root_keys"
-  | "fairdatapoint"
-  | "vmagent"
+  | "nexus"
+  | "nfs"
+  | "nginx"
   | "node"
+  | "node_exporter"
+  | "onlyoffice"
+  | "opendkim"
+  | "pgrep"
+  | "podman"
+  | "pool"
+  | "postconf"
+  | "postfix"
+  | "postgis"
+  | "postgresql"
+  | "profile"
+  | "project"
+  | "prom"
+  | "proxy"
+  | "pve_server"
+  | "python"
+  | "python3"
+  | "rdflog"
+  | "rdflog_backup"
+  | "registry"
+  | "replica"
+  | "restheart"
+  | "restheart_proxy"
+  | "root_keys"
+  | "rspamd"
+  | "rsyncd"
   | "script"
-  | "iptables"
-  | "cpdata"
-  | "dataold"
+  | "server"
+  | "setup"
+  | "sftp"
+  | "showauth"
+  | "ssh"
+  | "sshlogin"
+  | "sshlogin_exploredata"
+  | "static"
+  | "stiltcluster"
   | "stiltrun"
-  | "stiltcluster";
+  | "stiltweb"
+  | "superuser"
+  | "telegraf"
+  | "users"
+  | "utils"
+  | "virtuoso"
+  | "vm"
+  | "vmagent"
+  | "zfs";
 
 /** Ansible tags: a single tag or a list. */
 export type Tags = Tag | Tag[];
@@ -83,9 +138,12 @@ export type Tags = Tag | Tag[];
 // --- Tasks -----------------------------------------------------------------
 
 /**
- * A task. The keyword fields (name, tags, when, ...) are common to every task;
- * the module fields (import_role, apt, ...) are the ones used by the converted
- * playbooks. Extend this union of optional modules as more playbooks adopt TS.
+ * A task. The keyword fields (name, tags, when, ...) are typed precisely — so a
+ * raw-string `when`, a bad tag, or an unknown role name are caught. The action
+ * module itself (shell, copy, lxd_container, ...) is one extra key whose body is
+ * accepted as-is: Ansible has thousands of modules with ad-hoc argument shapes,
+ * so they fall through the index signature rather than being enumerated.
+ * `import_role`/`include_role` are typed because their `name` is a role.
  */
 export interface Task {
   name?: string;
@@ -97,27 +155,24 @@ export interface Task {
   notify?: string | string[];
   delegate_to?: string;
   run_once?: boolean;
-  vars?: Record<string, Scalar>;
+  ignore_errors?: boolean;
+  check_mode?: boolean;
+  changed_when?: boolean | string | string[];
+  failed_when?: boolean | string | string[];
+  loop?: string | Value[];
+  loop_control?: Record<string, Value>;
+  with_items?: string | Value[];
+  block?: Task[];
+  args?: Record<string, Value>;
+  vars?: Record<string, Value>;
 
-  // Modules
-  import_role?: { name: RoleName; tasks_from?: string };
-  include_role?: {
-    name: RoleName;
-    tasks_from?: string;
-    apply?: { tags?: Tags };
-    public?: boolean;
-  };
-  apt?: { name?: Tmpl | Tmpl[]; state?: string; update_cache?: boolean };
-  postconf?: { param: string; value: string; reload?: boolean };
-  authorized_key?: {
-    user: string;
-    key: Tmpl;
-    state?: string;
-    exclusive?: boolean;
-    key_options?: string;
-  };
-  iptables_raw?: { name: string; rules: string };
-  fetch?: { src: string; dest: string; flat?: boolean };
+  import_role?: string | { name: RoleName; tasks_from?: string };
+  include_role?:
+    | string
+    | { name: RoleName; tasks_from?: string; apply?: { tags?: Tags }; public?: boolean };
+
+  // Any other key is an action module; its argument shape is module-specific.
+  [module: string]: unknown;
 }
 
 /** A role name: a known role, or any string (for roles not yet typed). */
@@ -126,6 +181,9 @@ type RoleName = keyof Roles | (string & {});
 // --- Roles -----------------------------------------------------------------
 
 export type Scalar = string | number | boolean;
+
+/** Any YAML value: a scalar, a list, or a nested mapping. */
+export type Value = Scalar | null | Value[] | { [key: string]: Value };
 
 /** Ansible role-keyword options (siblings of `role:`, not role variables). */
 export interface RoleOpts {
@@ -196,15 +254,21 @@ export function role<K extends keyof Roles>(
 // --- Plays -----------------------------------------------------------------
 
 export interface Play {
-  /** A single host/group, or several (rendered as a space-separated pattern). */
-  hosts: Host | Host[];
+  /**
+   * A single host/group; a YAML list of them (`Host[]`, rendered as a
+   * sequence); or a space-separated `pattern(...)`.
+   */
+  hosts: Host | Host[] | HostPattern;
   tags?: Tags;
-  vars?: Record<string, Scalar>;
+  vars?: Record<string, Value>;
   pre_tasks?: Task[];
   roles?: RoleBuilder[];
   tasks?: Task[];
+  handlers?: Task[];
   become?: boolean;
+  become_user?: string;
   gather_facts?: boolean;
+  connection?: string;
 }
 
 /** A playbook is an ordered list of plays. */
@@ -220,11 +284,9 @@ export type Playbook = Play[];
  */
 export async function render(playbook: Playbook): Promise<string> {
   const { stringify } = await import("npm:yaml@2");
-  const clean = JSON.parse(JSON.stringify(playbook)) as Array<
-    { hosts: string | string[] }
-  >;
-  for (const play of clean) {
-    if (Array.isArray(play.hosts)) play.hosts = play.hosts.join(" ");
-  }
-  return stringify(clean, { lineWidth: 0 });
+  const clean = JSON.parse(JSON.stringify(playbook));
+  // Emit YAML 1.1 (like Ansible's PyYAML) so string scalars that look like 1.1
+  // booleans — "yes"/"no"/"on"/"off" — are quoted rather than emitted bare
+  // (which would reparse as booleans and diverge from the source).
+  return stringify(clean, { version: "1.1", lineWidth: 0 });
 }

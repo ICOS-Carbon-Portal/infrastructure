@@ -1,0 +1,139 @@
+import { type Playbook, not, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos3",
+    vars: {
+      exploredata_ip: "{{ _lxd.addresses.eth0 | first }}",
+    },
+    tasks: [
+      {
+        name: "Create storage for docker",
+        tags: ["zfs", "lxd"],
+        include_role: {
+          name: "icos.zfsdocker",
+          public: true,
+        },
+        vars: {
+          zfsdocker_name: "exploredata",
+          zfsdocker_size: "50G",
+        },
+      },
+      {
+        name: "Create the exploredata container",
+        tags: ["lxd", "nginx", "forward", "iptables"],
+        lxd_container: {
+          name: "exploredata",
+          state: "started",
+          profiles: ["default", "ssh_root", "icosdata"],
+          source: {
+            type: "image",
+            mode: "pull",
+            server: "https://cloud-images.ubuntu.com/releases",
+            protocol: "simplestreams",
+            alias: "20.04",
+          },
+          devices: {
+            root: {
+              path: "/",
+              pool: "default",
+              type: "disk",
+              size: "100GB",
+            },
+            docker: {
+              path: "/var/lib/docker",
+              source: "{{ zfsdocker_zvol }}",
+              type: "disk",
+              "raw.mount.options": "user_subvol_rm_allowed",
+            },
+            data: {
+              path: "/data",
+              source: "/data",
+              type: "disk",
+              recursive: "true",
+            },
+          },
+          config: {
+            "security.nesting": "true",
+            "limits.cpu": "10",
+            "limits.memory": "100GB",
+            "limits.memory.enforce": "soft",
+          },
+          wait_for_ipv4_addresses: true,
+          wait_for_ipv4_interfaces: "eth0",
+          timeout: 60,
+        },
+        register: "_lxd",
+        when: not("ansible_check_mode"),
+      },
+      {
+        name: "Forward ssh port and create /etc/hosts entry",
+        tags: "forward",
+        include_role: {
+          name: "icos.lxd_forward",
+        },
+        vars: {
+          lxd_forward_name: "exploredata",
+          lxd_forward_ip: "{{ exploredata_ip }}",
+        },
+      },
+      {
+        // deno-lint-ignore no-explicit-any
+        include_role: ("name=icos.certbot2" as any),
+        tags: ["cert"],
+        vars: {
+          certbot_name: "exploredata",
+          certbot_domains: [
+            "exploredata.icos-cp.eu",
+            "exploretest.icos-cp.eu",
+          ],
+        },
+      },
+      {
+        name: "Setup exploretest",
+        tags: "nginx",
+        include_role: {
+          name: "icos.nginxsite",
+        },
+        vars: {
+          nginxsite_name: "exploredata-test",
+          nginxsite_file:
+            "roles/icos.exploredata/templates/exploredata-nginx.conf",
+          exploredata_name: "test",
+          exploredata_port: 4567,
+          exploredata_host: "{{ exploredata_ip }}",
+          exploredata_domains: ["exploretest.icos-cp.eu"],
+        },
+      },
+      {
+        name: "Setup exploredata",
+        tags: "nginx",
+        include_role: {
+          name: "icos.nginxsite",
+        },
+        vars: {
+          nginxsite_name: "exploredata-prod",
+          nginxsite_file:
+            "roles/icos.exploredata/templates/exploredata-nginx.conf",
+          exploredata_name: "prod",
+          exploredata_port: 4566,
+          exploredata_host: "{{ exploredata_ip }}",
+          exploredata_domains: ["exploredata.icos-cp.eu"],
+        },
+      },
+    ],
+  },
+  {
+    hosts: "exploredata",
+    vars: {
+      exploredata_password: "{{ vault_exploredata_password }}",
+      exploredata_max_notebooks: 100,
+    },
+    roles: [
+      role("icos.lxd_guest").tags("guest"),
+      role("icos.docker").tags("docker"),
+      role("icos.exploredata").tags("exploredata"),
+      role("icos.node_exporter").tags("node_exporter"),
+    ],
+  },
+] satisfies Playbook;

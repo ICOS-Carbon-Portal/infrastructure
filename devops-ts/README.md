@@ -21,7 +21,8 @@ verify.ts           prove every playbook matches its original .yml
 deno.json           `deno task check | verify | render`
 ```
 
-33 playbooks are converted. A representative subset, covering the full
+All 67 `devops/*.yml` are converted (every top-level playbook, plus the
+`requirements.yml` galaxy file). A representative subset, covering the full
 structural range:
 
 | Playbook         | Exercises                                                       |
@@ -45,10 +46,20 @@ structural range:
 | `util-remove`    | play `vars` + task names templated with `tmpl`                  |
 | `vm-fsicos4-stiltcluster` | a `fetch` task + a guest-provisioning play             |
 | `cpdata`         | certbot + `nginxsite` + parameterized `cpdata` + `dataold`      |
+| `icosdata`       | list-form `hosts: [a, b]` (rendered as a YAML sequence)         |
+| `vm-callisto`, `vm-ganymede`, `vm-fsicos3-*` | large multi-play VMs: `lxd_container`, `handlers`, `block`, `loop` |
 
-The rest (`drupal`, `typesense`, `plausible`, `sitesaquanetform`,
-`app-fairdatapoint`, `nebula`, `bbservers`, `server-all`, `vm-fsicos4-pancake`,
-`vm-fsicos4-cupcake`) are further single- or few-role playbooks.
+The remaining ~45 are further single-/multi-role and VM-provisioning playbooks.
+
+### How the open-ended modules are typed
+
+Ansible has thousands of task modules with ad-hoc argument shapes, so `Task`
+does **not** try to enumerate them. Instead it types the **keyword** fields
+precisely (`when`, `tags`, `loop`, `register`, `changed_when`, `import_role`/
+`include_role` whose `name` is a role, …) and lets any other key — the action
+module (`shell`, `copy`, `lxd_container`, …) — through an index signature. The
+checks that matter for catching real mistakes — role names & their params, tags,
+hosts, and `when` variables — stay strict; the module bodies render verbatim.
 
 ## Usage
 
@@ -62,8 +73,9 @@ deno task render playbooks/core.ts   # print the YAML for one playbook
 **both** sides (with `npm:yaml`) and deep-comparing the data structures. Ansible
 is insensitive to key order and to scalar style (`yes` vs `true`, folded vs plain
 strings), so semantic equality — not byte equality — is the correct bar, and all
-23 pass. Both sides are parsed as YAML **1.1** to match Ansible's PyYAML
-(where `yes`/`no` are booleans, unlike YAML 1.2).
+67 pass. Both sides are parsed **and rendered** as YAML **1.1** to match
+Ansible's PyYAML (where `yes`/`no` are booleans, unlike YAML 1.2 — so the string
+`"yes"` is quoted rather than emitted bare).
 
 ## How the typing works
 

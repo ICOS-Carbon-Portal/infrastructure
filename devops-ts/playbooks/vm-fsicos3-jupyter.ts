@@ -1,0 +1,181 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+// Deploy the jusers script:
+//   icos play jupyter jupyter_jusers_deploy
+//
+// Redeploy/restart the hub:
+//   icos play jupyter jupyter
+//
+// Redeploy jusers:
+//   icos play jupyter jupyter_jusers -evirtualenv_recreate=True
+
+export default [
+  {
+    hosts: "fsicos3",
+    vars: {
+      jupyter_ip: "{{ _lxd.addresses.eth0 | first }}",
+      jupyter_domains: ["jupyter.icos-cp.eu"],
+    },
+    pre_tasks: [
+      {
+        name: "Create zfs filesystem for jupyter home directories",
+        tags: "zfs",
+        zfs: {
+          name: "pool/jupyter",
+          state: "present",
+          extra_zfs_properties: {
+            refquota: "5T",
+          },
+        },
+      },
+      {
+        name: "Create jupyter directories for home and project",
+        tags: "zfs",
+        file: {
+          name: "/pool/jupyter/{{ item }}",
+          state: "directory",
+          owner: "1000000",
+          group: "1000000",
+        },
+        loop: ["home", "project"],
+      },
+    ],
+    roles: [
+      role("icos.lxd_vm", {
+        lxd_vm_name: "jupyter",
+        lxd_vm_ubuntu_version: "22.04",
+        lxd_vm_docker: true,
+        lxd_vm_docker_size: "500G",
+        lxd_vm_root_pool: "default",
+        lxd_vm_root_size: "50GB",
+        lxd_vm_config: {
+          "limits.memory": "550GB",
+        },
+        lxd_vm_profiles: ["icosdata"],
+        lxd_vm_devices: {
+          ctehires: {
+            path: "/ctehires",
+            source: "/pool/ctehires",
+            type: "disk",
+          },
+          data: {
+            path: "/data",
+            source: "/data",
+            type: "disk",
+            recursive: "yes",
+          },
+          home: {
+            path: "/home",
+            source: "/pool/jupyter/home",
+            type: "disk",
+          },
+          jupyterproject: {
+            path: "/project",
+            source: "/pool/jupyter/project",
+            type: "disk",
+            recursive: "yes",
+          },
+        },
+      }).tags("lxd"),
+
+      role("icos.certbot2", {
+        certbot_name: "jupyter",
+        certbot_domains: "{{ jupyter_domains }}",
+      }).tags("cert"),
+
+      role("icos.nginxsite", {
+        nginxsite_name: "jupyter",
+        nginxsite_file: "files/jupyter.conf",
+        jupyter_domain: "{{ jupyter_domains | first }}",
+        jupyter_cert_name: "jupyter",
+        jupyter_port: 8000,
+      }).tags("nginx"),
+    ],
+  },
+  {
+    hosts: "jupyter",
+    handlers: [
+      {
+        name: "reload sshd",
+        systemd: {
+          name: "sshd",
+          state: "reloaded",
+        },
+      },
+    ],
+    roles: [
+      role("icos.lxd_guest").tags("guest"),
+
+      role("icos.docker2").tags("docker"),
+
+      role("icos.sshlogin", {
+        sshlogin_dst: "exploredata",
+        sshlogin_src_user: "root",
+        sshlogin_dst_user: "root",
+        sshlogin_src_dst_name: "exploredata",
+      }).tags("sshlogin_exploredata"),
+
+      role("icos.jupyter", {
+        jupyter_hub_config: {
+          admin_users: "{{ vault_jupyter_admins }}",
+          mem_limit: "100G",
+          cpu_limit: 40,
+        },
+        jupyter_admins: null,
+        jupyter_jusers_enable: true,
+      }).tags("jupyter"),
+
+      role("icos.bbclient2", {
+        bbclient_remotes: ["fsicos2", "icos1"],
+        bbclient_name: "jupyter",
+        bbclient_timer_content: `#!/bin/bash
+set -xeu
+
+# If the repos get moved to another disk - maybe because of storage
+# running out - we don't want the backup to fail.
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+{{ bbclient_all }} create --verbose --stats -x "::{now}" /home /project /root/jusers.yml
+{{ bbclient_all }} prune --stats --list --keep-daily=30 --keep-weekly=150
+
+# since borg 1.2, a separate compaction is needed
+{{ bbclient_all }} compact --verbose
+`,
+      }).tags("bbclient"),
+    ],
+    tasks: [
+      {
+        name: "Create project user",
+        tags: "project",
+        user: {
+          name: "project",
+          create_home: true,
+          // Even though the purpose of the project user is to own the files in
+          // /data/project, we want to store its authorized_keys somewhere else.
+          home: "/home/project",
+          shell: "/usr/bin/bash",
+          password: "*",
+        },
+      },
+      {
+        name: "Deny ssh login to most users",
+        tags: "ssh",
+        copy: {
+          dest: "/etc/ssh/sshd_config.d/jupyter_allow_users.conf",
+          content: `AllowUsers project {{ vault_jupyter_ssh_users | join(" ") }}
+`,
+        },
+        notify: "reload sshd",
+      },
+      {
+        name: "Change adduser.conf",
+        tags: "adduser",
+        replace: {
+          path: "/etc/adduser.conf",
+          regexp: "^(FIRST_UID|FIRST_GID)=\\d+",
+          replace: "\\1=2500",
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

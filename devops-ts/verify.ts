@@ -46,9 +46,15 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
+// Optional CLI args limit the run to specific playbooks (by base name), so a
+// single file can be checked without touching the others.
+const only = new Set(Deno.args.map((a) => a.replace(/\.ts$/, "")));
+
 const playbooks: string[] = [];
 for await (const entry of Deno.readDir(playbooksDir)) {
-  if (entry.isFile && entry.name.endsWith(".ts")) playbooks.push(entry.name);
+  if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
+  if (only.size && !only.has(entry.name.replace(/\.ts$/, ""))) continue;
+  playbooks.push(entry.name);
 }
 playbooks.sort();
 

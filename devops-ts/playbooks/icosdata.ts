@@ -1,0 +1,141 @@
+import { isDefined, type Playbook } from "../lib/ansible.ts";
+
+export default [
+  // ZFS
+  {
+    hosts: ["fsicos3"],
+    tags: ["zfs"],
+    tasks: [
+      {
+        name: "Create /incoming",
+        tags: "incoming",
+        zfs: {
+          name: "pool/incoming",
+          state: "present",
+          extra_zfs_properties: {
+            mountpoint: "/incoming",
+          },
+        },
+      },
+    ],
+  },
+
+  // NFS
+  {
+    hosts: ["fsicos2", "fsicos3", "icos1", "cupcake", "pancake"],
+    tags: ["nfs"],
+    handlers: [
+      {
+        name: "Reload NFS server",
+        service: {
+          name: "nfs-server",
+          state: "reloaded",
+        },
+      },
+    ],
+    tasks: [
+      {
+        when: isDefined("icosdata_exports"),
+        name: "Install packages",
+        apt: {
+          name: "nfs-kernel-server",
+          state: "present",
+        },
+      },
+      {
+        when: isDefined("icosdata_nfs_mounts"),
+        name: "Install nfs-client",
+        apt: {
+          name: ["nfs-client"],
+        },
+      },
+      {
+        name: "Create directories",
+        file: {
+          path: "{{ item }}",
+          state: "directory",
+        },
+        loop: "{{ icosdata_mkdirs | default([]) }}",
+      },
+      {
+        name: "Do bind-mount local data",
+        mount: {
+          fstype: "none",
+          state: "mounted",
+          path: "{{ item.path }}",
+          src: "{{ item.src }}",
+          opts: "bind{{ item.opts | default('') }}",
+        },
+        loop: "{{ icosdata_bind_mounts | default([]) }}",
+      },
+      {
+        when: isDefined("icosdata_exports"),
+        name: "Export data via nfs",
+        tags: "export",
+        blockinfile: {
+          path: "/etc/exports",
+          create: true,
+          marker: "# {mark} icosdata",
+          block: "{{ icosdata_exports }}",
+        },
+        notify: "Reload NFS server",
+      },
+      {
+        when: isDefined("icosdata_exports"),
+        name: "Export all directories listed in `/etc/exports`",
+        tags: "export",
+        command: "exportfs -rav",
+        changed_when: false,
+      },
+      {
+        when: isDefined("icosdata_nfs_mounts"),
+        name: "Mount nfs data",
+        tags: "mount",
+        mount: {
+          fstype: "nfs4",
+          state: "{{ item.state | default('mounted') }}",
+          // The next two default to omit so that they can be left out when state
+          // is "unmounted".
+          src: "{{ item.src | default(omit) }}",
+          path: "{{ item.path | default(omit) }}",
+          opts: "{{ item.opts | default('ro') }}",
+        },
+        loop: "{{ icosdata_nfs_mounts }}",
+      },
+    ],
+  },
+
+  // LXD
+  {
+    hosts: "fsicos3",
+    tasks: [
+      {
+        name: "Create icosdata LXD profile",
+        tags: "profile",
+        lxd_profile: {
+          name: "icosdata",
+          devices: {
+            radonmap: {
+              path: "/data/radon_map",
+              source: "/pool/ute/radon_map",
+              type: "disk",
+              readonly: "true",
+            },
+            stilt: {
+              path: "/data/stilt",
+              source: "/pool/ute/stilt/RINGO/T1.3/STILT",
+              type: "disk",
+              readonly: "true",
+            },
+            fluxcom_upload: {
+              path: "/data/fluxcom/pre_release",
+              source: "/pool/fluxcom/upload",
+              type: "disk",
+              readonly: "true",
+            },
+          },
+        },
+      },
+    ],
+  },
+] satisfies Playbook;
