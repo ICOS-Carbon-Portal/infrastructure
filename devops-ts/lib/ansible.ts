@@ -13,7 +13,7 @@ import type { Host, HostPattern } from "./hosts.ts";
 import type { Expr } from "./vars.ts";
 
 // Re-exported so playbooks reference variables/hosts from a single import.
-export { Expr, isDefined, not, type Ref, tmpl, V, type Vars } from "./vars.ts";
+export { and, Expr, isDefined, not, or, raw, type Ref, tmpl, V, type Vars } from "./vars.ts";
 export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { Builtins } from "./builtins.ts";
 
@@ -37,7 +37,10 @@ export type Tag =
   | "caddy"
   | "cert"
   | "cpauth"
+  | "cpauth_backup"
+  | "cpauth_deploy"
   | "cpauth_proxy"
+  | "cpauth_setup"
   | "cpdata"
   | "cpdata_proxy"
   | "cplog"
@@ -171,6 +174,10 @@ export interface Task {
     | string
     | { name: RoleName; tasks_from?: string; apply?: { tags?: Tags }; public?: boolean };
 
+  // Cross-file includes within a role: a sibling task file by name.
+  import_tasks?: string;
+  include_tasks?: string | { file: string; apply?: { tags?: Tags } };
+
   // Any other key is an action module; its argument shape is module-specific.
   [module: string]: unknown;
 }
@@ -276,17 +283,22 @@ export interface Play {
 /** A playbook is an ordered list of plays. */
 export type Playbook = Play[];
 
+/**
+ * A role task/handler file: a bare ordered list of tasks (no play wrapper),
+ * loaded by Ansible via `import_tasks`/`include_role`/a role's `main.yml`.
+ */
+export type TaskFile = Task[];
+
 // --- Rendering -------------------------------------------------------------
 
 /**
- * Render a playbook to YAML identical (semantically) to the hand-written
- * `.yml`. `undefined` fields are dropped by JSON round-tripping so optional
- * keys never appear as `null`. A `hosts` array is joined into Ansible's
- * space-separated host pattern (e.g. `["a", "b"]` -> `"a b"`).
+ * Render a playbook or a role task file to YAML identical (semantically) to the
+ * hand-written `.yml`. `undefined` fields are dropped by JSON round-tripping so
+ * optional keys never appear as `null`.
  */
-export async function render(playbook: Playbook): Promise<string> {
+export async function render(doc: Playbook | TaskFile): Promise<string> {
   const { stringify } = await import("npm:yaml@2");
-  const clean = JSON.parse(JSON.stringify(playbook));
+  const clean = JSON.parse(JSON.stringify(doc));
   // Emit YAML 1.1 (like Ansible's PyYAML) so string scalars that look like 1.1
   // booleans — "yes"/"no"/"on"/"off" — are quoted rather than emitted bare
   // (which would reparse as booleans and diverge from the source).

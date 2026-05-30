@@ -1,10 +1,10 @@
 {
   "tasks": {
-    "check": "deno check lib/*.ts playbooks/*.ts render.ts verify.ts",
+    "check": "deno check lib/*.ts playbooks/*.ts roles/*/tasks/*.ts roles/*/handlers/*.ts render.ts verify.ts",
     "verify": "deno run --allow-read --allow-env verify.ts",
     "render": "deno run --quiet --allow-all render.ts"
   },
   "fmt": {
-    "include": ["lib/", "playbooks/", "render.ts"]
+    "include": ["lib/", "playbooks/", "roles/", "render.ts"]
   }
 }

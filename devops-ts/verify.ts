@@ -16,6 +16,7 @@ import { render } from "./lib/ansible.ts";
 const parse = (text: string): unknown => parseYaml(text, { version: "1.1" });
 
 const playbooksDir = new URL("./playbooks/", import.meta.url);
+const rolesDir = new URL("./roles/", import.meta.url);
 const origDir = new URL("../devops/", import.meta.url);
 
 /** Recursively compare parsed YAML; returns the first differing path, or null. */
@@ -46,45 +47,91 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
-// Optional CLI args limit the run to specific playbooks (by base name), so a
-// single file can be checked without touching the others.
-const only = new Set(Deno.args.map((a) => a.replace(/\.ts$/, "")));
+// A unit to verify: a TS module and the original YAML it must reproduce.
+type Unit = { label: string; ts: URL; yml: URL };
 
-const playbooks: string[] = [];
-for await (const entry of Deno.readDir(playbooksDir)) {
-  if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
-  if (only.size && !only.has(entry.name.replace(/\.ts$/, ""))) continue;
-  playbooks.push(entry.name);
+/** Top-level playbooks: playbooks/<name>.ts  ↔  ../devops/<name>.yml */
+async function collectPlaybooks(): Promise<Unit[]> {
+  const units: Unit[] = [];
+  for await (const e of Deno.readDir(playbooksDir)) {
+    if (!e.isFile || !e.name.endsWith(".ts")) continue;
+    const base = e.name.replace(/\.ts$/, "");
+    units.push({
+      label: base,
+      ts: new URL(e.name, playbooksDir),
+      yml: new URL(`${base}.yml`, origDir),
+    });
+  }
+  return units;
 }
-playbooks.sort();
+
+/** Role files: roles/<role>/{tasks,handlers}/<f>.ts ↔ ../devops/roles/<role>/{tasks,handlers}/<f>.yml */
+async function collectRoles(): Promise<Unit[]> {
+  const units: Unit[] = [];
+  let roleEntries: Deno.DirEntry[];
+  try {
+    roleEntries = [];
+    for await (const e of Deno.readDir(rolesDir)) roleEntries.push(e);
+  } catch {
+    return units; // roles/ not created yet
+  }
+  for (const role of roleEntries) {
+    if (!role.isDirectory) continue;
+    for (const sub of ["tasks", "handlers"]) {
+      const subDir = new URL(`${role.name}/${sub}/`, rolesDir);
+      try {
+        for await (const f of Deno.readDir(subDir)) {
+          if (!f.isFile || !f.name.endsWith(".ts")) continue;
+          const base = f.name.replace(/\.ts$/, "");
+          units.push({
+            label: `${role.name}/${sub}/${base}`,
+            ts: new URL(f.name, subDir),
+            yml: new URL(`roles/${role.name}/${sub}/${base}.yml`, origDir),
+          });
+        }
+      } catch { /* no such subdir */ }
+    }
+  }
+  return units;
+}
+
+// Optional CLI args limit the run; an arg matches by full label, by basename, or
+// as a substring (so `icos.cpauth` selects all of that role's files).
+const args = Deno.args.map((a) => a.replace(/\.ts$/, ""));
+const selected = (label: string): boolean => {
+  if (args.length === 0) return true;
+  const base = label.split("/").pop()!;
+  return args.some((a) => label === a || base === a || label.includes(a));
+};
+
+const units = [...await collectPlaybooks(), ...await collectRoles()]
+  .filter((u) => selected(u.label))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 let pass = 0;
 let fail = 0;
-for (const file of playbooks) {
-  const base = file.replace(/\.ts$/, "");
-  const origPath = new URL(`${base}.yml`, origDir);
-
+for (const unit of units) {
   let original: unknown;
   try {
-    original = parse(await Deno.readTextFile(origPath));
+    original = parse(await Deno.readTextFile(unit.yml));
   } catch {
-    console.log(`SKIP ${base} (no original ${base}.yml)`);
+    console.log(`SKIP ${unit.label} (no original)`);
     continue;
   }
 
   try {
-    const mod = await import(new URL(file, playbooksDir).href);
+    const mod = await import(unit.ts.href);
     const rendered = parse(await render(mod.default));
     const d = diff(rendered, original);
     if (d) {
-      console.log(`FAIL ${base} (${d})`);
+      console.log(`FAIL ${unit.label} (${d})`);
       fail++;
     } else {
-      console.log(`OK   ${base}`);
+      console.log(`OK   ${unit.label}`);
       pass++;
     }
   } catch (e) {
-    console.log(`FAIL ${base} (${e instanceof Error ? e.message : e})`);
+    console.log(`FAIL ${unit.label} (${e instanceof Error ? e.message : e})`);
     fail++;
   }
 }
