@@ -20,17 +20,26 @@ verify.ts           prove every playbook matches its original .yml
 deno.json           `deno task check | verify | render`
 ```
 
-Seven playbooks are converted, chosen to cover the full structural range:
+23 playbooks are converted. A representative subset, covering the full
+structural range:
 
-| Playbook       | Exercises                                                      |
-| -------------- | ------------------------------------------------------------- |
-| `matomo`       | bare role, no params                                          |
-| `geoip`        | bare role + leading comments                                  |
-| `keycloak`     | role with one required param                                  |
-| `nexus`        | multiple roles, tags, templated (`{{ }}`) string params       |
-| `mail-postfix` | list params, nested-record params, a custom-module task       |
-| `cpauth`       | tagged roles, a `tasks:` section with `import_role`           |
-| `core`         | multiple plays, `vars`, `pre_tasks`, list-valued tags, `when` |
+| Playbook         | Exercises                                                       |
+| ---------------- | --------------------------------------------------------------- |
+| `matomo`, `maps` | bare role, no params                                            |
+| `geoip`          | bare role + leading comments                                    |
+| `keycloak`       | role with one required param                                    |
+| `nexus`          | multiple roles, tags, templated (`{{ }}`) string params         |
+| `mail-postfix`   | list params, nested-record params, a custom-module task         |
+| `cpauth`         | tagged roles, a `tasks:` section with `import_role`             |
+| `core`           | multiple plays, `vars`, `pre_tasks`, list-valued tags, `when`   |
+| `lxd`            | multi-host pattern (`hosts: ["a","b","c"]` -> `"a b c"`)         |
+| `cpmeta`, `restheart`, `stiltweb` | play-level `tags`, proxy/host two-play split   |
+| `server-fsicos2`, `server-icos1`  | long lists of tagged bootstrap roles           |
+| `server-fsicos3` | a raw `when` expression over a built-in fact                    |
+
+The rest (`drupal`, `typesense`, `plausible`, `sitesaquanetform`,
+`app-fairdatapoint`, `nebula`, `bbservers`, `server-all`) are further single- or
+few-role playbooks.
 
 ## Usage
 
@@ -44,7 +53,7 @@ deno task render playbooks/core.ts   # print the YAML for one playbook
 **both** sides (with `npm:yaml`) and deep-comparing the data structures. Ansible
 is insensitive to key order and to scalar style (`yes` vs `true`, folded vs plain
 strings), so semantic equality — not byte equality — is the correct bar, and all
-seven pass. Both sides are parsed as YAML **1.1** to match Ansible's PyYAML
+23 pass. Both sides are parsed as YAML **1.1** to match Ansible's PyYAML
 (where `yes`/`no` are booleans, unlike YAML 1.2).
 
 ## How the typing works

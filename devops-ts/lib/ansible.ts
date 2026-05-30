@@ -45,7 +45,22 @@ export type Tag =
   | "rdflog"
   | "rdflog_backup"
   | "postgis"
-  | "virtuoso";
+  | "virtuoso"
+  | "server"
+  | "host"
+  | "docker"
+  | "nginx"
+  | "nfs"
+  | "lxd"
+  | "lxd_server"
+  | "podman"
+  | "caddy"
+  | "zfs"
+  | "bbserver"
+  | "nebula"
+  | "fdp"
+  | "stiltweb"
+  | "restheart";
 
 /** Ansible tags: a single tag or a list. */
 export type Tags = Tag | Tag[];
@@ -148,7 +163,9 @@ export function role<K extends keyof Roles>(
 // --- Plays -----------------------------------------------------------------
 
 export interface Play {
-  hosts: Host;
+  /** A single host/group, or several (rendered as a space-separated pattern). */
+  hosts: Host | Host[];
+  tags?: Tags;
   vars?: Record<string, Scalar>;
   pre_tasks?: Task[];
   roles?: RoleBuilder[];
@@ -165,10 +182,16 @@ export type Playbook = Play[];
 /**
  * Render a playbook to YAML identical (semantically) to the hand-written
  * `.yml`. `undefined` fields are dropped by JSON round-tripping so optional
- * keys never appear as `null`.
+ * keys never appear as `null`. A `hosts` array is joined into Ansible's
+ * space-separated host pattern (e.g. `["a", "b"]` -> `"a b"`).
  */
 export async function render(playbook: Playbook): Promise<string> {
   const { stringify } = await import("npm:yaml@2");
-  const clean = JSON.parse(JSON.stringify(playbook));
+  const clean = JSON.parse(JSON.stringify(playbook)) as Array<
+    { hosts: string | string[] }
+  >;
+  for (const play of clean) {
+    if (Array.isArray(play.hosts)) play.hosts = play.hosts.join(" ");
+  }
   return stringify(clean, { lineWidth: 0 });
 }

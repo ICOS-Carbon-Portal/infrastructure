@@ -49,4 +49,26 @@ export interface Roles {
   "icos.cpdata": {};
   "icos.doi": {};
   "icos.virtuoso": {};
+
+  // single-app playbooks (no role-level variables)
+  "icos.maps": {};
+  "icos.drupal": {};
+  "icos.typesense": {};
+  "icos.plausible": {};
+  "icos.sitesaquanetform": {};
+  "icos.fairdatapoint": {};
+  "icos.nebula": {};
+  "icos.stiltweb": {};
+
+  // server bootstrap roles
+  "icos.server": {};
+  "icos.docker": {};
+  "icos.docker2": {};
+  "icos.nginx": {};
+  "icos.nfs4": {};
+  "icos.lxd_server": {};
+  "icos.podman": {};
+  "icos.caddy": {};
+  "icos.bbserver": {};
+  "ops.zfs": {};
 }
