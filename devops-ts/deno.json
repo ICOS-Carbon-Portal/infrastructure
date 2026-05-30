@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "check": "deno check lib/*.ts playbooks/*.ts render.ts",
+    "verify": "./verify.sh",
+    "render": "deno run --quiet --allow-all render.ts"
+  },
+  "fmt": {
+    "include": ["lib/", "playbooks/", "render.ts"]
+  }
+}

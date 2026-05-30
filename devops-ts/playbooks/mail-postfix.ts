@@ -1,0 +1,51 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos2",
+    roles: [
+      role("icos.postfix", {
+        postfix_config_list: [
+          {
+            param: "mynetworks",
+            // drupal
+            // 10.0.0.0/8
+            value: "127.0.0.0/8 172.16.0.0/12 172.19.199.2 172.19.199.3",
+          },
+        ],
+      }, { tags: "postfix" }),
+
+      role("icos.dovecot", {
+        dovecot_domains: ["otc-nrt.icos-cp.eu"],
+      }, { tags: "dovecot" }),
+
+      role("icos.opendkim", {
+        opendkim_domains: [
+          "lists.icos-ri.eu",
+          "lists.john-project.eu",
+          // "lists.eric-forum.eu",
+          // "lists.icos-cities.eu",
+          // "lists.kadi-project.eu",
+        ],
+        opendkim_domains_testkeys: [
+          "lists.icos-ri.eu",
+          "lists.john-project.eu",
+        ],
+      }, { tags: "opendkim" }),
+    ],
+    tasks: [
+      // The ships sends data to quince using attachments. These are sometimes
+      // larger than the postfix default of 10Mb.
+      {
+        name: "Configure postfix to accept a larger attachment size",
+        tags: "postconf",
+        postconf: {
+          param: "message_size_limit",
+          // default was 10240000
+          value: "20480000",
+          reload: true,
+        },
+      },
+    ],
+  },
+] satisfies Playbook;
