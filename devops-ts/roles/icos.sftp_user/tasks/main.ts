@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _parent = register("_parent");
 
 export default [
   {
@@ -11,7 +13,7 @@ export default [
     name: "Check whether sftp parent directory exists",
     stat: { path: V._sftp_parent_dir },
     check_mode: false,
-    register: "_parent",
+    register: _parent,
   },
   {
     name: "Create sftp parent directory",
@@ -21,7 +23,7 @@ export default [
       owner: "root",
       group: "root",
     },
-    when: raw("not _parent.stat.exists"),
+    when: not(_parent.stat.exists),
   },
   {
     name: "Create sftp user",
@@ -46,7 +48,7 @@ export default [
     name: "Stat parent directory again",
     stat: { path: V._sftp_parent_dir },
     check_mode: false,
-    register: "_parent",
+    register: _parent,
   },
   {
     name: "Fail if parent directory isn't owned by root",

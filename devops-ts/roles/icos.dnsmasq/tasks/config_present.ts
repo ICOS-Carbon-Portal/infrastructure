@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const config = register("config");
 
 export default [
   {
@@ -11,12 +13,12 @@ export default [
           dest: V.dnsmasq_config_file,
           backup: true,
         },
-        register: "config",
+        register: config,
       },
       {
         name: "Run validation",
         command: tmpl`dnsmasq --test --conf-dir ${V.dnsmasq_config_dir}`,
-        changed_when: "config.changed",
+        changed_when: config.changed,
         register: "check",
       },
     ],

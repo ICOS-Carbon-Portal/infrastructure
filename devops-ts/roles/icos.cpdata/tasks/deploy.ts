@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { not, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   {
@@ -35,10 +37,10 @@ export default [
       url: "https://{{ cpdata_domains | first }}/buildInfo",
       return_content: true,
     },
-    register: "r",
-    failed_when: "r.failed",
+    register: r,
+    failed_when: r.failed,
     retries: 30,
     delay: 10,
-    until: "not r.failed",
+    until: not(r.failed),
   },
 ] satisfies TaskFile;

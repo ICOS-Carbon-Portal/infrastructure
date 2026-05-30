@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _textfiles = register("_textfiles");
 
 export default [
   { import_tasks: "setup.yml", tags: "bbserver_setup" },
@@ -8,12 +10,12 @@ export default [
     name: tmpl`Check whether ${V.bbserver_textfiles} exists`,
     tags: "bbserver_monitor",
     stat: { path: V.bbserver_textfiles },
-    register: "_textfiles",
+    register: _textfiles,
   },
   {
     import_tasks: "monitor.yml",
     tags: "bbserver_monitor",
     // Only enable monitoring via node_exporter if its textfiles directory exist.
-    when: raw("_textfiles.stat.exists"),
+    when: _textfiles.stat.exists,
   },
 ] satisfies TaskFile;

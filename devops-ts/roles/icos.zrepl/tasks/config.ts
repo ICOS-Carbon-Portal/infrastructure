@@ -1,4 +1,6 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+
+const update = register("update");
 
 export default [
   {
@@ -10,12 +12,12 @@ export default [
           dest: "/etc/zrepl/zrepl.yml",
           backup: true,
         },
-        register: "update",
+        register: update,
       },
       {
         name: "Run validation",
         command: "zrepl configcheck",
-        changed_when: "update.changed",
+        changed_when: update.changed,
         notify: "restart zrepl",
       },
     ],

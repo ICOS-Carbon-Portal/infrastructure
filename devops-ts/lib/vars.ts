@@ -102,9 +102,16 @@ export function isDefined(name: VarName): Expr {
   return new Expr(`${name} is defined`, name as string);
 }
 
-/** Negate a boolean variable: `not("ansible_check_mode")` -> "not ansible_check_mode". */
-export function not(name: VarName): Expr {
-  return new Expr(`not ${name}`, name as string);
+/**
+ * Negate a boolean variable or expression:
+ *   not("ansible_check_mode")  -> "not ansible_check_mode"
+ *   not(r.failed)              -> "not r.failed"  (register result field)
+ */
+export function not(name: VarName): Expr;
+export function not(expr: Expr): Expr;
+export function not(arg: VarName | Expr): Expr {
+  const text = typeof arg === "string" ? arg : String(arg);
+  return new Expr(`not ${text}`, text);
 }
 
 /**

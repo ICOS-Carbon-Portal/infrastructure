@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   {
@@ -38,11 +40,11 @@ export default [
       url: "https://{{ cpmeta_domains | first }}/buildInfo",
       return_content: true,
     },
-    register: "r",
-    failed_when: "r.failed",
+    register: r,
+    failed_when: r.failed,
     retries: 30,
     delay: 10,
-    until: "not r.failed",
+    until: not(r.failed),
   },
   {
     name: "Leave cpmeta in readonly mode",
@@ -50,11 +52,11 @@ export default [
       method: "POST",
       url: tmpl`http://127.0.0.1:${V.cpmeta_port}/admin/switchToReadonlyMode`,
     },
-    register: "r",
-    failed_when: "r.failed",
+    register: r,
+    failed_when: r.failed,
     retries: 30,
     delay: 10,
-    until: "not r.failed",
+    until: not(r.failed),
     when: raw("cpmeta_readonly_mode"),
   },
 ] satisfies TaskFile;

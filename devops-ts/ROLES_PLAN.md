@@ -129,13 +129,33 @@ What's still dynamic in loops (by design): filtered item refs
 (`item.dest | default(...)`, 13% of item refs) stay raw; and `loop: "{{ var }}"`
 where the var's element type isn't known.
 
-Optional future work:
-- Carry element types for list-valued context vars so `loopOver(V.x, …)` types
-  `item` from the var (would recover much of the 23% `loop: "{{ var }}"` tier).
-- A value-position filter DSL (`item.dest.default(V.x)`) for the 13% filtered refs.
-- Typed `register` handles (`_r.stdout`) and `set_fact` outputs — the other
-  dynamic tiers, same binding idea applied to results.
-- Typed handler names so `notify` is checked; per-role vault var sets.
+### Phase 3c — typed register handles — **done**
+`register:`/result refs were the next dynamic tier: 95 registered names, 326
+`reg.field` references, concentrated in condition positions (failed_when 48,
+when 43, changed_when 34, until 12 = 137).
+
+- `lib/register.ts`: `register("_r")` returns a `Reg` handle — usable directly in
+  `register:` (renders the name) with typed result fields (`.changed`, `.failed`,
+  `.rc`, `.stdout`, `.stat.exists`, …) as `Expr`s. Declared once as a `const` and
+  shared across tasks, so an unregistered name is a "Cannot find name" error and
+  a misspelled field (`r.faild`) gets a "Did you mean" hint. `not()` overloaded
+  to negate an `Expr` (`not(r.failed)`); `changed_when`/`failed_when`/`until`
+  widened to accept `Expr`.
+- Rolled out across **25 files** to the simple whole-value condition refs
+  (`failed_when: r.failed`, `until: not(r.failed)`, `when: _x.changed`,
+  `when: not(_x.stat.exists)`). Complex expressions (`_r.stdout.startswith(...)`,
+  `"X in r.content"`, comparisons, value-position `{{ _r.backup_file }}`) stay
+  raw by design. `deno task check` clean, `deno task verify` 464/464.
+
+Note the var_ref-loop element-typing was investigated and skipped: only 2 of 24
+`loop: "{{ var }}"` tasks have a recoverable element type (the rest are
+caller/global lists or scalars), so the machinery wasn't worth it.
+
+Optional future work (diminishing returns):
+- A value-position filter DSL (`item.dest.default(V.x)`, `r.backup_file`) for the
+  filtered/value-position refs that currently stay raw.
+- `set_fact` outputs feeding later tasks' contexts; typed handler names for
+  `notify`; per-role vault var sets.
 
 ## Verification strategy
 Same as playbooks: `verify.ts` renders each `.ts` and deep-compares (YAML 1.1)

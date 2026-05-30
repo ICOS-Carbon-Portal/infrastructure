@@ -1,5 +1,12 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  loopOver,
+  not,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   loopOver(["core", "web"], (item) => ({
@@ -47,14 +54,14 @@ export default [
       user: V.mailman_rest_user,
       password: "{{ mailman_rest_pass }}",
     },
-    register: "r",
+    register: r,
     failed_when: [
       "r.status != 200",
       "r.json | json_query('entries[*].mail_host') | sort != mailman_domains | sort",
     ],
     retries: 10,
     delay: 20,
-    until: "not r.failed",
+    until: not(r.failed),
   },
   {
     name: "Set postfix parameters",

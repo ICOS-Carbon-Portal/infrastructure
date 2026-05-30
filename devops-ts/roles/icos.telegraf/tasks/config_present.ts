@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const update = register("update");
 
 export default [
   {
@@ -11,7 +13,7 @@ export default [
           content: V.telegraf_config,
           backup: true,
         },
-        register: "update",
+        register: update,
       },
       {
         name: "Run validation",
@@ -19,7 +21,7 @@ export default [
         // can be a lot of lines); stderr will contain the messages.
         shell: "telegraf --test --config {{ update.dest }} > /dev/null",
         register: "test",
-        changed_when: "update.changed",
+        changed_when: update.changed,
         failed_when: [
           "test.failed",
           // If we run test on a config file containing agent-only config, it'll

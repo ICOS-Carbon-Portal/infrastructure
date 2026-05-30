@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 // If caddy config validation fails, it's useful to see the full (failed)
 // config file with line numbers. But since the blockinfile module remove the
@@ -20,13 +22,13 @@ export default [
           insertafter: "{{ 'EOF' if where == 'EOF' else omit }}",
           insertbefore: "{{ 'BOF' if where == 'BOF' else omit }}",
         },
-        register: "_r",
+        register: _r,
       },
       {
         name: "Run validation",
         command: tmpl`${V.caddy_bin} validate`,
         args: { chdir: "/etc/caddy" },
-        changed_when: "_r.changed",
+        changed_when: _r.changed,
         notify: "reload caddy",
       },
     ],

@@ -1,5 +1,8 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { not, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _conf_file = register("_conf_file");
+const _write_conf = register("_write_conf");
 
 export default [
   {
@@ -7,7 +10,7 @@ export default [
     stat: {
       path: V.certbot_conf_path,
     },
-    register: "_conf_file",
+    register: _conf_file,
   },
   {
     name:
@@ -24,8 +27,8 @@ export default [
 }
 `,
     },
-    register: "_write_conf",
-    when: raw("not _conf_file.stat.exists"),
+    register: _write_conf,
+    when: not(_conf_file.stat.exists),
   },
   {
     name: "Reload nginx",
@@ -33,7 +36,7 @@ export default [
       name: "nginx",
       state: "reloaded",
     },
-    when: raw("_write_conf.changed"),
+    when: _write_conf.changed,
   },
   {
     name: "Install SSL certificate",

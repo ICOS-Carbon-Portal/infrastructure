@@ -1,5 +1,8 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
+
+const _rsync = register("_rsync");
+const _systemd = register("_systemd");
 
 export default [
   {
@@ -16,7 +19,7 @@ export default [
         "--delete-excluded",
       ],
     },
-    register: "_rsync",
+    register: _rsync,
   },
   {
     name: "Install icos-auto-dnat",
@@ -27,7 +30,7 @@ export default [
       force: true,
       name: "/opt/icos-auto-dnat/",
     },
-    when: raw("_rsync.changed"),
+    when: _rsync.changed,
     register: "_pipx",
     // pipx seems to always report changed when installing editable from file
     changed_when: [
@@ -48,12 +51,12 @@ export default [
       "icos-auto-dnat.timer",
       "icos-auto-dnat.service",
     ],
-    register: "_systemd",
+    register: _systemd,
   },
   {
     name: "Reload systemd",
     systemd: { "daemon-reload": true },
-    when: raw("_systemd.changed"),
+    when: _systemd.changed,
   },
   {
     name: "Start service",

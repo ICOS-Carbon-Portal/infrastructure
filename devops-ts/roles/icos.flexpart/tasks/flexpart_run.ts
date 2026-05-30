@@ -1,5 +1,12 @@
-import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  loopOver,
+  raw,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
+
+const _export = register("_export");
 
 export default [
   // Create a user which is used 1) to compile the docker image 2) to allow remote
@@ -122,12 +129,12 @@ export default [
             `{{ flexpart_output_directory }} {{ flexpart_export_output_to }}
 `,
         },
-        register: "_export",
+        register: _export,
       },
       {
         name: "Re-export filesystems",
         command: "/usr/sbin/exportfs -ra",
-        when: raw("_export.changed"),
+        when: _export.changed,
       },
     ],
   },

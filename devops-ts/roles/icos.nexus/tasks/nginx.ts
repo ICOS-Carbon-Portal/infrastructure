@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   {
@@ -15,13 +17,13 @@ export default [
       url: tmpl`http://127.0.0.1:${V.nexus_host_port}/service/local/status`,
       return_content: true,
     },
-    register: "r",
+    register: r,
     failed_when: [
       'not (("<version>%s</version>" % nexus_version) in r.content)',
     ],
     // Give nexus a chance to come online
     retries: 2,
     delay: 10,
-    until: raw("not r.failed"),
+    until: not(r.failed),
   },
 ] satisfies TaskFile;

@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _rsyslog = register("_rsyslog");
 
 export default [
   {
@@ -16,11 +18,11 @@ if $syslogtag == "dataold:" then {
 }
 `,
     },
-    register: "_rsyslog",
+    register: _rsyslog,
   },
   {
     name: tmpl`Restart ${V.item}`,
-    when: raw("_rsyslog.changed"),
+    when: _rsyslog.changed,
     systemd: {
       name: V.item,
       state: "restarted",

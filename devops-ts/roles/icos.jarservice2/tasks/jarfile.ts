@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _stat = register("_stat");
 
 export default [
   {
@@ -15,12 +17,12 @@ export default [
     become: false,
     local_action:
       'stat path="{{ jarservice_local }}" checksum_algorithm=sha256',
-    register: "_stat",
+    register: _stat,
   },
   {
     name: "To aid debugging, explicitly check that the local jar file exist.",
     fail: { msg: "{{ jarservice_local }} doesn't exist!" },
-    when: raw("not _stat.stat.exists"),
+    when: not(_stat.stat.exists),
   },
   {
     name: "Compute the destination filename, we'll be using it more than once.",

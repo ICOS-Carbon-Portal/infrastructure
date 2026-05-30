@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   {
@@ -38,11 +40,11 @@ export default [
       url: "http://{{ certbot_domains | first }}:/ip/8.8.8.8",
       return_content: true,
     },
-    register: "r",
+    register: r,
     failed_when: "r.failed or r.json | json_query('ip') != '8.8.8.8'",
     retries: 2,
     delay: 10,
-    until: raw("not r.failed"),
+    until: not(r.failed),
     tags: "geoip_check",
   },
 ] satisfies TaskFile;

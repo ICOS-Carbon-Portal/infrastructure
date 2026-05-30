@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _service = register("_service");
 
 export default [
   {
@@ -45,7 +47,7 @@ export default [
       src: "cpmeta.service",
       dest: "/etc/systemd/system/cpmeta.service",
     },
-    register: "_service",
+    register: _service,
   },
   {
     name: "Restart systemd service daemon",
@@ -54,6 +56,6 @@ export default [
       enabled: true,
       "daemon-reload": true,
     },
-    when: raw("_service.changed"),
+    when: _service.changed,
   },
 ] satisfies TaskFile;

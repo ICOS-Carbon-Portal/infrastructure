@@ -1,4 +1,6 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _conf = register("_conf");
 
 // https://wiki.archlinux.org/title/Getty#Automatic_login_to_virtual_console
 
@@ -20,14 +22,14 @@ ExecStart=
 ExecStart=-/sbin/agetty -o '-p -- \\\\u' --keep-baud 115200,57600,38400,9600 --autologin root - $TERM
 `,
     },
-    register: "_conf",
+    register: _conf,
   },
   {
     name: "systemd reload",
     systemd: {
       daemon_reload: true,
     },
-    when: raw("_conf.changed"),
+    when: _conf.changed,
   },
   {
     name: "Add securetty config to pam",

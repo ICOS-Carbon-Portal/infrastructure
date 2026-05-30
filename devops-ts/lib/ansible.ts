@@ -52,6 +52,7 @@ export {
 export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { Builtins } from "./builtins.ts";
 export { type Item, loopOver, withItemsOver } from "./loop.ts";
+export { type Reg, register, type Result } from "./register.ts";
 
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
 export type Tmpl = string;
@@ -393,8 +394,11 @@ export interface Task {
   run_once?: boolean;
   ignore_errors?: boolean;
   check_mode?: boolean;
-  changed_when?: boolean | string | string[];
-  failed_when?: boolean | string | string[];
+  // Condition fields accept an `Expr` too, so register-result fields
+  // (`r.failed`) and `not(...)` compose into them.
+  changed_when?: boolean | string | string[] | Expr;
+  failed_when?: boolean | string | string[] | Expr;
+  until?: string | Expr;
   loop?: string | VarValue[];
   loop_control?: Record<string, VarValue>;
   with_items?: string | VarValue[];
