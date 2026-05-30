@@ -20,9 +20,9 @@ export default [
       role("icos.certbot2", {
         certbot_name: V.cpauth_cert_name,
         certbot_domains: V.cpauth_domains,
-      }).opt({ tags: "cert" }),
+      }).tags("cert"),
 
-      role("icos.cpauth").opt({ tags: "cpauth" }),
+      role("icos.cpauth").tags("cpauth"),
     ],
     tasks: [
       {

@@ -89,14 +89,38 @@ export interface RoleOpts {
 export type RoleRef = { role: string } & RoleOpts & Record<string, unknown>;
 
 /**
- * A role reference that is also usable as-is, with a chainable `.opt()` for
- * attaching Ansible role-keyword options (tags, when). The `opt` method is a
- * function, so it is dropped by `render()`'s JSON round-trip and never appears
- * in the output.
+ * A chainable role reference. Variables are fixed at construction (typed per
+ * role); Ansible role-keyword options are attached fluently:
+ *
+ *   role("icos.nexus").tags("nexus")
+ *   role("icos.cpauth").when(isDefined("cpauth_envries"))
+ *   role("icos.virtuoso").tags("virtuoso").when(isDefined("virtuoso_enable").default(false))
+ *
+ * `toJSON()` emits the flat ref, so `render()`'s JSON round-trip drops the
+ * methods and produces exactly the YAML Ansible expects.
  */
-export type RoleBuilder = RoleRef & {
-  opt(opts: RoleOpts): RoleBuilder;
-};
+export class RoleBuilder {
+  constructor(private readonly ref: RoleRef) {}
+
+  /** Set `tags:` (a single tag or a list). */
+  tags(tags: Tags): RoleBuilder {
+    return new RoleBuilder({ ...this.ref, tags });
+  }
+
+  /** Set `when:` (a raw expression string or a built `Expr`). */
+  when(when: When): RoleBuilder {
+    return new RoleBuilder({ ...this.ref, when });
+  }
+
+  /** Set several role-keyword options at once. */
+  opt(opts: RoleOpts): RoleBuilder {
+    return new RoleBuilder({ ...this.ref, ...opts });
+  }
+
+  toJSON(): RoleRef {
+    return this.ref;
+  }
+}
 
 // When a role has no required variables, the vars argument is optional;
 // otherwise it is mandatory. This is what makes `role("icos.matomo")` legal
@@ -106,11 +130,11 @@ type RoleArgs<K extends keyof Roles> = {} extends Roles[K]
   : [vars: Roles[K]];
 
 /**
- * Build a typed role reference. Variables are typed per role; Ansible
- * role-keyword options (tags, when) are attached separately via `.opt()`.
+ * Build a typed role reference. Variables are typed per role; attach tags/when
+ * with the chainable `.tags()` / `.when()` helpers.
  *
  *   role("icos.keycloak", { kc_hostname: "keycloak.icos-cp.eu" })
- *   role("icos.nexus").opt({ tags: "nexus" })
+ *   role("icos.nexus").tags("nexus")
  *   role("icos.matomo")
  */
 export function role<K extends keyof Roles>(
@@ -118,16 +142,7 @@ export function role<K extends keyof Roles>(
   ...args: RoleArgs<K>
 ): RoleBuilder {
   const [vars] = args;
-  return build({ role: name, ...(vars ?? {}) });
-}
-
-function build(ref: RoleRef): RoleBuilder {
-  return {
-    ...ref,
-    opt(opts: RoleOpts): RoleBuilder {
-      return build({ ...ref, ...opts });
-    },
-  };
+  return new RoleBuilder({ role: name, ...(vars ?? {}) });
 }
 
 // --- Plays -----------------------------------------------------------------
@@ -136,7 +151,7 @@ export interface Play {
   hosts: Host;
   vars?: Record<string, Scalar>;
   pre_tasks?: Task[];
-  roles?: RoleRef[];
+  roles?: RoleBuilder[];
   tasks?: Task[];
   become?: boolean;
   gather_facts?: boolean;

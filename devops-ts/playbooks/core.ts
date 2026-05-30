@@ -58,16 +58,15 @@ export default [
       },
     ],
     roles: [
-      role("icos.postgis").opt({ tags: "postgis" }),
+      role("icos.postgis").tags("postgis"),
       role("icos.restheart"),
       role("icos.cpmeta"),
       role("icos.cpdata"),
-      role("icos.cpauth").opt({ when: isDefined("cpauth_envries") }),
+      role("icos.cpauth").when(isDefined("cpauth_envries")),
       role("icos.doi"),
-      role("icos.virtuoso").opt({
-        tags: "virtuoso",
-        when: isDefined("virtuoso_enable").default(false),
-      }),
+      role("icos.virtuoso").tags("virtuoso").when(
+        isDefined("virtuoso_enable").default(false),
+      ),
     ],
   },
 ] satisfies Playbook;

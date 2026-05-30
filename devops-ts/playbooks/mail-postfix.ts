@@ -13,11 +13,11 @@ export default [
             value: "127.0.0.0/8 172.16.0.0/12 172.19.199.2 172.19.199.3",
           },
         ],
-      }).opt({ tags: "postfix" }),
+      }).tags("postfix"),
 
       role("icos.dovecot", {
         dovecot_domains: ["otc-nrt.icos-cp.eu"],
-      }).opt({ tags: "dovecot" }),
+      }).tags("dovecot"),
 
       role("icos.opendkim", {
         opendkim_domains: [
@@ -31,7 +31,7 @@ export default [
           "lists.icos-ri.eu",
           "lists.john-project.eu",
         ],
-      }).opt({ tags: "opendkim" }),
+      }).tags("opendkim"),
     ],
     tasks: [
       // The ships sends data to quince using attachments. These are sometimes
