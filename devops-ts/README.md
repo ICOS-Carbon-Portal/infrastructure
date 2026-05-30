@@ -13,6 +13,7 @@ take on the same idea.
 lib/ansible.ts      core types (Play, Task, RoleRef), the role() builder, render()
 lib/roles.ts        per-role parameter schemas — what each role accepts
 lib/vars.ts         catalogue of available variables + V / tmpl / when-helpers
+lib/hosts.ts        closed union of valid `hosts:` targets (from the inventory)
 playbooks/*.ts      converted playbooks (one per original .yml)
 render.ts           render a playbook to YAML on stdout
 verify.sh           prove every playbook matches its original .yml
@@ -105,6 +106,44 @@ ergonomic*; a lint rule banning literal `{{` would make them mandatory.
 
 A future extension is splitting `Vars` by provenance (role-provided vs vault vs
 `-e` extra-vars) to model which variables are actually in scope where.
+
+### Hosts
+
+A play's `hosts:` is typed as a closed `Host` union (`lib/hosts.ts`) of the
+hosts and groups defined in `production.inventory`, plus the dynamic /
+cross-inventory groups the playbooks target. Ansible runs a typo'd target
+against zero hosts and exits successfully, so this catches a genuinely silent
+failure:
+
+```ts
+{ hosts: "fsico2", ... }   // error: Type '"fsico2"' is not assignable to type 'Host'. Did you mean '"fsicos2"'?
+```
+
+`lib/hosts.ts` is derived from the inventory; regenerate it with:
+
+```bash
+python3 - <<'PY'
+import glob, yaml, re
+groups, hosts = set(), set()
+def walk(d):
+    if not isinstance(d, dict): return
+    for g, body in d.items():
+        groups.add(g)
+        if isinstance(body, dict):
+            for h in (body.get('hosts') or {}): hosts.add(h)
+            walk(body.get('children') or {})
+for f in glob.glob('../devops/production.inventory/*.yml'):
+    try: data = yaml.safe_load(open(f))
+    except Exception: continue
+    if isinstance(data, dict): walk(data)
+referenced=set()
+for f in glob.glob('../devops/*.yml'):
+    for line in open(f):
+        m=re.match(r'\s*-?\s*hosts:\s*([A-Za-z0-9_,-]+)\s*$', line)
+        if m: referenced.update(t.strip() for t in m.group(1).split(','))
+for n in sorted(groups|hosts|referenced): print('  | "%s"' % n)
+PY
+```
 
 ## Why this is interesting next to the Dhall experiment
 

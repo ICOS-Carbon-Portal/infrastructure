@@ -9,9 +9,11 @@
 //   * Only roles go through a builder (`role()`), because that is what unlocks
 //     per-role parameter typing keyed off the role name.
 import type { Roles } from "./roles.ts";
+import type { Host } from "./hosts.ts";
 
-// Re-exported so playbooks reference variables from a single import.
+// Re-exported so playbooks reference variables/hosts from a single import.
 export { def, isDefined, type Ref, tmpl, V, type Vars } from "./vars.ts";
+export type { Host } from "./hosts.ts";
 
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
 export type Tmpl = string;
@@ -127,7 +129,7 @@ function build(ref: RoleRef): RoleBuilder {
 // --- Plays -----------------------------------------------------------------
 
 export interface Play {
-  hosts: string;
+  hosts: Host;
   vars?: Record<string, Scalar>;
   pre_tasks?: Task[];
   roles?: RoleRef[];

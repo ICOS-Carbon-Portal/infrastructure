@@ -1,0 +1,62 @@
+// Closed set of valid `hosts:` targets — the hosts and groups defined in
+// production.inventory, plus the few dynamic / cross-inventory groups the
+// playbooks target (e.g. focal_hosts from a group_by, postgis_host).
+//
+// This is derivable from the inventory; regenerate with:
+//   (see the snippet in README's "Hosts" section)
+//
+// Keeping it a closed union turns a typo'd or non-existent target — which
+// Ansible silently runs against zero hosts — into a compile error.
+export type Host =
+  | "all"
+  | "amalthea"
+  | "bbservers"
+  | "build"
+  | "callisto"
+  | "cdb"
+  | "cdb_vms"
+  | "cities"
+  | "core_host"
+  | "core_server"
+  | "ctehires"
+  | "cupcake"
+  | "dokku"
+  | "erddap"
+  | "exploredata"
+  | "fdp"
+  | "flexextract"
+  | "flexpart"
+  | "focal_hosts"
+  | "fsicos2"
+  | "fsicos2_vms"
+  | "fsicos3"
+  | "fsicos3_vms"
+  | "fsicos4"
+  | "fsicos4-jupyter"
+  | "fsicos4-stiltcluster"
+  | "fsicos4_vms"
+  | "ganymede"
+  | "icos1"
+  | "jammy_hosts"
+  | "jupyter"
+  | "molefractions"
+  | "nebula_hosts"
+  | "pancake"
+  | "pgrep1"
+  | "pgrep2"
+  | "pgrep_rdflog"
+  | "pgrep_rdflog_server"
+  | "physical_servers"
+  | "postgis"
+  | "postgis_host"
+  | "postgis_server"
+  | "quince3"
+  | "rdflog_server"
+  | "registry"
+  | "rspamd"
+  | "staging"
+  | "staging_server"
+  | "stiltcluster_hosts"
+  | "test-fs4"
+  | "vmagent_hosts"
+  | "wordpress";
