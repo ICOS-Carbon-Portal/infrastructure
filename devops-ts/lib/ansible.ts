@@ -11,6 +11,30 @@
 import type { Roles } from "./roles.ts";
 import type { Host, HostPattern } from "./hosts.ts";
 import type { Expr } from "./vars.ts";
+import type {
+  AptArgs,
+  AuthorizedKeyArgs,
+  BlockinfileArgs,
+  CopyArgs,
+  CronArgs,
+  DebugArgs,
+  FailArgs,
+  FileArgs,
+  GetUrlArgs,
+  GitArgs,
+  LineinfileArgs,
+  PackageArgs,
+  PipArgs,
+  ServiceArgs,
+  SetFactArgs,
+  ShellArgs,
+  StatArgs,
+  SystemdArgs,
+  TemplateArgs,
+  UnarchiveArgs,
+  UriArgs,
+  UserArgs,
+} from "./modules.ts";
 
 // Re-exported so playbooks reference variables/hosts from a single import.
 export { and, Expr, isDefined, not, or, raw, type Ref, tmpl, V, type Vars } from "./vars.ts";
@@ -177,6 +201,36 @@ export interface Task {
   // Cross-file includes within a role: a sibling task file by name.
   import_tasks?: string;
   include_tasks?: string | { file: string; apply?: { tags?: Tags } };
+
+  // Top modules: typed (a superset of real usage). FQCN aliases share the type.
+  file?: FileArgs;
+  copy?: CopyArgs;
+  "ansible.builtin.copy"?: CopyArgs;
+  template?: TemplateArgs;
+  "ansible.builtin.template"?: TemplateArgs;
+  systemd?: SystemdArgs;
+  service?: ServiceArgs;
+  apt?: AptArgs;
+  "ansible.builtin.package"?: PackageArgs;
+  command?: string;
+  shell?: ShellArgs;
+  "ansible.builtin.shell"?: ShellArgs;
+  debug?: DebugArgs;
+  set_fact?: SetFactArgs;
+  fail?: FailArgs;
+  user?: UserArgs;
+  uri?: UriArgs;
+  stat?: StatArgs;
+  get_url?: GetUrlArgs;
+  "ansible.builtin.get_url"?: GetUrlArgs;
+  unarchive?: UnarchiveArgs;
+  pip?: PipArgs;
+  "ansible.builtin.pip"?: PipArgs;
+  blockinfile?: BlockinfileArgs;
+  lineinfile?: LineinfileArgs;
+  cron?: CronArgs;
+  git?: GitArgs;
+  authorized_key?: AuthorizedKeyArgs;
 
   // Any other key is an action module; its argument shape is module-specific.
   [module: string]: unknown;
