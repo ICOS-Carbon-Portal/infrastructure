@@ -54,26 +54,46 @@ export interface RoleOpts {
 /** A flattened role reference as Ansible expects it: role + opts + variables. */
 export type RoleRef = { role: string } & RoleOpts & Record<string, unknown>;
 
+/**
+ * A role reference that is also usable as-is, with a chainable `.opt()` for
+ * attaching Ansible role-keyword options (tags, when). The `opt` method is a
+ * function, so it is dropped by `render()`'s JSON round-trip and never appears
+ * in the output.
+ */
+export type RoleBuilder = RoleRef & {
+  opt(opts: RoleOpts): RoleBuilder;
+};
+
 // When a role has no required variables, the vars argument is optional;
 // otherwise it is mandatory. This is what makes `role("icos.matomo")` legal
 // but `role("icos.keycloak")` a compile error (kc_hostname is required).
 type RoleArgs<K extends keyof Roles> = {} extends Roles[K]
-  ? [vars?: Roles[K], opts?: RoleOpts]
-  : [vars: Roles[K], opts?: RoleOpts];
+  ? [vars?: Roles[K]]
+  : [vars: Roles[K]];
 
 /**
- * Build a typed role reference.
+ * Build a typed role reference. Variables are typed per role; Ansible
+ * role-keyword options (tags, when) are attached separately via `.opt()`.
  *
  *   role("icos.keycloak", { kc_hostname: "keycloak.icos-cp.eu" })
- *   role("icos.nexus", {}, { tags: "nexus" })
+ *   role("icos.nexus").opt({ tags: "nexus" })
  *   role("icos.matomo")
  */
 export function role<K extends keyof Roles>(
   name: K,
   ...args: RoleArgs<K>
-): RoleRef {
-  const [vars, opts] = args;
-  return { role: name, ...(opts ?? {}), ...(vars ?? {}) } as RoleRef;
+): RoleBuilder {
+  const [vars] = args;
+  return build({ role: name, ...(vars ?? {}) });
+}
+
+function build(ref: RoleRef): RoleBuilder {
+  return {
+    ...ref,
+    opt(opts: RoleOpts): RoleBuilder {
+      return build({ ...ref, ...opts });
+    },
+  };
 }
 
 // --- Plays -----------------------------------------------------------------

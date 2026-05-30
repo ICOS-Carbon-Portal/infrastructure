@@ -58,13 +58,13 @@ export default [
       },
     ],
     roles: [
-      role("icos.postgis", {}, { tags: "postgis" }),
+      role("icos.postgis").opt({ tags: "postgis" }),
       role("icos.restheart"),
       role("icos.cpmeta"),
       role("icos.cpdata"),
-      role("icos.cpauth", {}, { when: "cpauth_envries is defined" }),
+      role("icos.cpauth").opt({ when: "cpauth_envries is defined" }),
       role("icos.doi"),
-      role("icos.virtuoso", {}, {
+      role("icos.virtuoso").opt({
         tags: "virtuoso",
         when: "virtuoso_enable | default(False)",
       }),

@@ -58,14 +58,17 @@ export default [
 ] satisfies Playbook;
 ```
 
-Roles go through one tiny builder, `role(name, vars?, opts?)`, because that is
-what lets each role's parameters be typed by its name. `lib/roles.ts` maps every
-role to its variable schema; the builder makes `vars` **required** when the role
-has required variables and **optional** when it doesn't:
+Roles go through one tiny builder, `role(name, vars?)`, because that is what lets
+each role's parameters be typed by its name. `lib/roles.ts` maps every role to
+its variable schema; the builder makes `vars` **required** when the role has
+required variables and **optional** when it doesn't. Ansible role-keyword options
+(tags, when) are attached separately with a chainable `.opt()`, keeping role
+*variables* and Ansible *keywords* visually distinct:
 
 ```ts
 role("icos.matomo")                                   // ok — no params
 role("icos.keycloak", { kc_hostname: "..." })         // ok
+role("icos.nexus").opt({ tags: "nexus" })             // tags/when via .opt()
 role("icos.keycloak")                                 // error: vars required
 role("icos.keycloak", { kc_hostnam: "..." })          // error: did you mean kc_hostname?
 role("icos.kraken")                                   // error: unknown role
