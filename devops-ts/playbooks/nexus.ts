@@ -1,4 +1,4 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -8,8 +8,8 @@ export default [
       role("icos.bbclient2", {
         bbclient_name: "nexus",
         bbclient_user: "root",
-        bbclient_home: "{{ nexus_home }}/bbclient",
-        bbclient_coldbackup: "{{ nexus_home }}",
+        bbclient_home: tmpl`${V.nexus_home}/bbclient`,
+        bbclient_coldbackup: V.nexus_home,
       }).opt({ tags: "bbclient" }),
     ],
   },

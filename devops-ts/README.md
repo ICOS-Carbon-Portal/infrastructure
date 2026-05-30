@@ -11,7 +11,8 @@ take on the same idea.
 
 ```
 lib/ansible.ts      core types (Play, Task, RoleRef), the role() builder, render()
-lib/roles.ts        per-role parameter schemas — the type-safety surface
+lib/roles.ts        per-role parameter schemas — what each role accepts
+lib/vars.ts         catalogue of available variables + V / tmpl / when-helpers
 playbooks/*.ts      converted playbooks (one per original .yml)
 render.ts           render a playbook to YAML on stdout
 verify.sh           prove every playbook matches its original .yml
@@ -77,6 +78,33 @@ role("icos.dovecot", { dovecot_domains: "x" })        // error: expected string[
 
 All five mistake classes above are caught at `deno check` time, with TypeScript's
 "Did you mean …?" suggestions.
+
+### Variable references
+
+Variables interpolated as `{{ ... }}` are the other silent-failure surface: a
+typo'd `{{ nexus_hom }}` expands to nothing in Ansible. `lib/vars.ts` catalogues
+the available variables and their types, and references go through checked
+helpers instead of hand-written strings:
+
+```ts
+V.nexus_home                       // "{{ nexus_home }}"  (value position)
+tmpl`${V.nexus_home}/bbclient`     // "{{ nexus_home }}/bbclient"  (composite)
+isDefined("cpauth_domains")        // "cpauth_domains is defined"  (when:)
+def("virtuoso_enable", false)      // "virtuoso_enable | default(False)"  (when:)
+
+V.nexus_hom                        // error: did you mean nexus_home?
+tmpl`${"literal"}`                 // error: only checked refs may be interpolated
+isDefined("cpauth_domian")         // error: not a known variable
+```
+
+`V` / `tmpl` cover value interpolation (with the `{{ }}` wrapper); `isDefined` /
+`def` cover `when:` expression context (bare name, no wrapper). Both check names
+against the same `Vars` registry. Because fields are still plain `string`, a raw
+`"{{ x }}"` also compiles — the helpers make checked references *available and
+ergonomic*; a lint rule banning literal `{{` would make them mandatory.
+
+A future extension is splitting `Vars` by provenance (role-provided vs vault vs
+`-e` extra-vars) to model which variables are actually in scope where.
 
 ## Why this is interesting next to the Dhall experiment
 

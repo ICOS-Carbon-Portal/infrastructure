@@ -1,4 +1,4 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { def, isDefined, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -18,7 +18,7 @@ export default [
         name: "Setup cpauth proxy",
         tags: ["proxy", "cpauth_proxy"],
         import_role: { name: "icos.cpauth", tasks_from: "proxy.yml" },
-        when: "cpauth_domains is defined",
+        when: isDefined("cpauth_domains"),
       },
       {
         name: "Setup restheart proxy",
@@ -29,7 +29,7 @@ export default [
         name: "Setup doi proxy",
         tags: ["proxy", "doi_proxy"],
         import_role: { name: "icos.doi", tasks_from: "proxy.yml" },
-        when: "doi_certbot_name is defined",
+        when: isDefined("doi_certbot_name"),
       },
     ],
   },
@@ -44,7 +44,7 @@ export default [
     pre_tasks: [
       {
         name: "Install jre",
-        apt: { name: "{{ jre_apt_package }}" },
+        apt: { name: V.jre_apt_package },
       },
       {
         name: "Setup rdflog",
@@ -62,11 +62,11 @@ export default [
       role("icos.restheart"),
       role("icos.cpmeta"),
       role("icos.cpdata"),
-      role("icos.cpauth").opt({ when: "cpauth_envries is defined" }),
+      role("icos.cpauth").opt({ when: isDefined("cpauth_envries") }),
       role("icos.doi"),
       role("icos.virtuoso").opt({
         tags: "virtuoso",
-        when: "virtuoso_enable | default(False)",
+        when: def("virtuoso_enable", false),
       }),
     ],
   },

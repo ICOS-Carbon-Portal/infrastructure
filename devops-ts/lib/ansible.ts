@@ -10,11 +10,39 @@
 //     per-role parameter typing keyed off the role name.
 import type { Roles } from "./roles.ts";
 
+// Re-exported so playbooks reference variables from a single import.
+export { def, isDefined, type Ref, tmpl, V, type Vars } from "./vars.ts";
+
 /** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
 export type Tmpl = string;
 
+/**
+ * The set of Ansible tags used across the playbooks. Keeping this a closed
+ * union catches typos at the type level; add a new tag here before using it.
+ */
+export type Tag =
+  | "nexus"
+  | "bbclient"
+  | "cert"
+  | "cpauth"
+  | "backup"
+  | "postfix"
+  | "dovecot"
+  | "opendkim"
+  | "postconf"
+  | "proxy"
+  | "cpmeta_proxy"
+  | "cpdata_proxy"
+  | "cpauth_proxy"
+  | "restheart_proxy"
+  | "doi_proxy"
+  | "rdflog"
+  | "rdflog_backup"
+  | "postgis"
+  | "virtuoso";
+
 /** Ansible tags: a single tag or a list. */
-export type Tags = string | string[];
+export type Tags = Tag | Tag[];
 
 // --- Tasks -----------------------------------------------------------------
 
