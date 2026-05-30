@@ -46,9 +46,11 @@ export interface Roles {
   "icos.postgis": {};
   "icos.restheart": {};
   "icos.cpmeta": {};
-  "icos.cpdata": {};
+  "icos.cpdata": { cpdata_netcdf_folder?: string };
   "icos.doi": {};
   "icos.virtuoso": {};
+  "icos.nginxsite": { nginxsite_name: string; nginxsite_file?: string };
+  "icos.dataold": {};
 
   // single-app playbooks (no role-level variables)
   "icos.maps": {};
@@ -68,7 +70,19 @@ export interface Roles {
   "icos.nfs4": {};
   "icos.lxd_server": {};
   "icos.podman": {};
-  "icos.caddy": {};
+  "icos.caddy": { caddy_name?: string; caddy_conf?: string };
   "icos.bbserver": {};
   "ops.zfs": {};
+
+  // VM guest + utility roles
+  "icos.pve_guest": {};
+  "icos.utils": {};
+  "icos.python3": {};
+  "icos.stiltrun": {};
+  "icos.stiltcluster": {};
+
+  // monitoring / exporters
+  "icos.vmagent": {};
+  "icos.node_exporter": {};
+  "icos.script_exporter": { sexp_exporters: string[] };
 }

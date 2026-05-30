@@ -1,0 +1,22 @@
+import { type Playbook } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "fsicos2",
+    tasks: [
+      {
+        name: "Add nextcloud to vmagent",
+        tags: "nextcloud",
+        include_role: {
+          apply: { tags: "nextcloud" },
+          name: "icos.vmagent",
+          tasks_from: "add_fsd",
+        },
+        vars: {
+          fsd_name: "nextcloud",
+          fsd_target: "localhost:9205",
+        },
+      },
+    ],
+  },
+] satisfies Playbook;

@@ -15,13 +15,18 @@ export interface Vars {
   // Supplied at runtime (`-e`), or from vault / inventory.
   cpauth_cert_name: string;
   cpauth_domains: string;
+  cpdata_cert_name: string;
+  cpdata_domains: string;
   doi_certbot_name: string;
   cpauth_envries: string; // list of "envri" items (cf. icos.cpauth template loop)
   virtuoso_enable: boolean;
+  root_keys: string; // global: the ssh keys each host authorizes for root
 
-  // Defined in a play's `vars:` block (see core.ts).
+  // Defined in a play's `vars:` block (see core.ts, util-remove.ts).
   jre_apt_package: string;
   java_path: string;
+  nginxsite_name: string;
+  lxd_vm_name: string;
 }
 
 import type { Scalar, Tmpl } from "./ansible.ts";

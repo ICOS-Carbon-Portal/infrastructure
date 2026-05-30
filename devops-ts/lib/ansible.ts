@@ -61,7 +61,21 @@ export type Tag =
   | "nebula"
   | "fdp"
   | "stiltweb"
-  | "restheart";
+  | "restheart"
+  | "guest"
+  | "utils"
+  | "python3"
+  | "nextcloud"
+  | "root_keys"
+  | "fairdatapoint"
+  | "vmagent"
+  | "node"
+  | "script"
+  | "iptables"
+  | "cpdata"
+  | "dataold"
+  | "stiltrun"
+  | "stiltcluster";
 
 /** Ansible tags: a single tag or a list. */
 export type Tags = Tag | Tag[];
@@ -86,10 +100,28 @@ export interface Task {
   vars?: Record<string, Scalar>;
 
   // Modules
-  import_role?: { name: keyof Roles | (string & {}); tasks_from?: string };
+  import_role?: { name: RoleName; tasks_from?: string };
+  include_role?: {
+    name: RoleName;
+    tasks_from?: string;
+    apply?: { tags?: Tags };
+    public?: boolean;
+  };
   apt?: { name?: Tmpl | Tmpl[]; state?: string; update_cache?: boolean };
   postconf?: { param: string; value: string; reload?: boolean };
+  authorized_key?: {
+    user: string;
+    key: Tmpl;
+    state?: string;
+    exclusive?: boolean;
+    key_options?: string;
+  };
+  iptables_raw?: { name: string; rules: string };
+  fetch?: { src: string; dest: string; flat?: boolean };
 }
+
+/** A role name: a known role, or any string (for roles not yet typed). */
+type RoleName = keyof Roles | (string & {});
 
 // --- Roles -----------------------------------------------------------------
 

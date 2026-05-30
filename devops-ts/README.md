@@ -21,7 +21,7 @@ verify.ts           prove every playbook matches its original .yml
 deno.json           `deno task check | verify | render`
 ```
 
-23 playbooks are converted. A representative subset, covering the full
+33 playbooks are converted. A representative subset, covering the full
 structural range:
 
 | Playbook         | Exercises                                                       |
@@ -37,10 +37,18 @@ structural range:
 | `cpmeta`, `restheart`, `stiltweb` | play-level `tags`, proxy/host two-play split   |
 | `server-fsicos2`, `server-icos1`  | long lists of tagged bootstrap roles           |
 | `server-fsicos3` | a `when` over a built-in fact: `not("ansible_check_mode")`       |
+| `all`            | `authorized_key` task referencing the `root_keys` var           |
+| `prom-nextcloud` | `include_role` with `apply.tags` + task-level `vars`            |
+| `prom-vmagent`   | role with a list param (`sexp_exporters`)                       |
+| `vm-fsicos4-fdp` | `caddy` with a multiline literal-block param (`caddy_conf`)     |
+| `server-cdb`     | `iptables_raw` task with a multiline `rules` block              |
+| `util-remove`    | play `vars` + task names templated with `tmpl`                  |
+| `vm-fsicos4-stiltcluster` | a `fetch` task + a guest-provisioning play             |
+| `cpdata`         | certbot + `nginxsite` + parameterized `cpdata` + `dataold`      |
 
 The rest (`drupal`, `typesense`, `plausible`, `sitesaquanetform`,
-`app-fairdatapoint`, `nebula`, `bbservers`, `server-all`) are further single- or
-few-role playbooks.
+`app-fairdatapoint`, `nebula`, `bbservers`, `server-all`, `vm-fsicos4-pancake`,
+`vm-fsicos4-cupcake`) are further single- or few-role playbooks.
 
 ## Usage
 

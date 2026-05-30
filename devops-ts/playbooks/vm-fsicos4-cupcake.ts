@@ -1,0 +1,13 @@
+import { type Playbook, role } from "../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "cupcake",
+    roles: [
+      role("icos.pve_guest").tags("guest"),
+      role("icos.utils").tags("utils"),
+      role("icos.python3").tags("python3"),
+      role("icos.docker2").tags("docker"),
+    ],
+  },
+] satisfies Playbook;
