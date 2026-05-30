@@ -159,12 +159,12 @@ export interface Task {
   check_mode?: boolean;
   changed_when?: boolean | string | string[];
   failed_when?: boolean | string | string[];
-  loop?: string | Value[];
-  loop_control?: Record<string, Value>;
-  with_items?: string | Value[];
+  loop?: string | VarValue[];
+  loop_control?: Record<string, VarValue>;
+  with_items?: string | VarValue[];
   block?: Task[];
-  args?: Record<string, Value>;
-  vars?: Record<string, Value>;
+  args?: Record<string, VarValue>;
+  vars?: Record<string, VarValue>;
 
   import_role?: string | { name: RoleName; tasks_from?: string };
   include_role?:
@@ -179,11 +179,6 @@ export interface Task {
 type RoleName = keyof Roles | (string & {});
 
 // --- Roles -----------------------------------------------------------------
-
-export type Scalar = string | number | boolean;
-
-/** Any YAML value: a scalar, a list, or a nested mapping. */
-export type Value = Scalar | null | Value[] | { [key: string]: Value };
 
 /** Ansible role-keyword options (siblings of `role:`, not role variables). */
 export interface RoleOpts {
@@ -253,6 +248,13 @@ export function role<K extends keyof Roles>(
 
 // --- Plays -----------------------------------------------------------------
 
+export type Scalar = string | number | boolean;
+
+export type VarValue =
+  Scalar
+  | VarValue[]
+  | { [key: string]: VarValue };
+
 export interface Play {
   /**
    * A single host/group; a YAML list of them (`Host[]`, rendered as a
@@ -260,7 +262,7 @@ export interface Play {
    */
   hosts: Host | Host[] | HostPattern;
   tags?: Tags;
-  vars?: Record<string, Value>;
+  vars?: Record<string, VarValue>;
   pre_tasks?: Task[];
   roles?: RoleBuilder[];
   tasks?: Task[];

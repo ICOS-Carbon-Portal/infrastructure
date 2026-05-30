@@ -13,11 +13,21 @@
 // self-documenting at call sites.
 export type Tmpl = string;
 
-import type { Value } from "./ansible.ts";
+import type { VarValue } from "./ansible.ts";
 
 // A role ref may carry a `vars:` block (a sibling of `role:`) and/or a display
 // `name:`; both are allowed on any role in addition to its own variables.
-type Common = { name?: string; vars?: Record<string, Value> };
+type Common = { name?: string; vars?: Record<string, VarValue> };
+
+// A disk device passed to icos.lxd_vm (`recursive`/`readonly` are LXC's stringy
+// "true"/"false"). Keyed by device name.
+type LxdDevice = {
+  path: string;
+  source: string;
+  type: string;
+  recursive?: string;
+  readonly?: string;
+};
 
 export interface Roles {
   "icos.keycloak": { kc_hostname: string };
@@ -107,13 +117,29 @@ export interface Roles {
     vm_graf_pass: string;
     vm_promlens_token: string;
   };
-  "icos.jbuild": Record<string, Value>;
+  "icos.jbuild": {
+    jbuild_users: string;
+    jbuild_registry_pass: string;
+    jbuild_edctl_host: string;
+    jbuild_edctl_host_name: string;
+    jbuild_edctl_host_port: number;
+    jbuild_rsync_host: string;
+    jbuild_rsync_host_port: number;
+    jbuild_rsync_host_name: string;
+    jbuild_jyctl_host: string;
+    jbuild_jyctl_host_port: number;
+    jbuild_jyctl_host_name: string;
+  };
   "icos.jupyter": Common & {
     jupyter_admins?: string | null;
     jupyter_user_volumes?: string;
     jupyter_backup_enable?: boolean;
     jupyter_jusers_enable?: boolean;
-    jupyter_hub_config?: Record<string, Value>;
+    jupyter_hub_config?: {
+      admin_users?: string | string[];
+      mem_limit?: string;
+      cpu_limit?: number;
+    };
     bbclient_name?: string;
   };
 
@@ -150,7 +176,7 @@ export interface Roles {
     lxd_vm_root_pool?: string;
     lxd_vm_ubuntu_version?: string;
     lxd_vm_config?: Record<string, string>;
-    lxd_vm_devices?: Record<string, Value>;
+    lxd_vm_devices?: Record<string, LxdDevice>;
     lxd_vm_profiles?: string[];
   };
   "icos.lxd_guest": { user_conf?: string; user_disable_coredump?: boolean };
