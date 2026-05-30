@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,7 +9,7 @@ export default [
       name: "forward_ssh_to_{{ lxd_forward_name }}",
       table: "nat",
       rules:
-        "-A PREROUTING -p tcp --dport {{ lxd_forward_port }} -j DNAT --to-destination {{ lxd_forward_ip }}:22",
+        tmpl`-A PREROUTING -p tcp --dport ${V.lxd_forward_port} -j DNAT --to-destination {{ lxd_forward_ip }}:22`,
     },
     when: raw("lxd_forward_port"),
   },

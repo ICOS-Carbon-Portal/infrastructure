@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // Used to be a symlink to /opt/download/watchexec.
@@ -48,6 +49,6 @@ export default [
   },
   {
     name: "Which version of watchexec was installed",
-    debug: { msg: "Installed {{ watchexec_version }}" },
+    debug: { msg: tmpl`Installed ${V.watchexec_version}` },
   },
 ] satisfies TaskFile;

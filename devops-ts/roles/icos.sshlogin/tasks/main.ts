@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -22,7 +23,7 @@ export default [
   {
     name: "Check that all parameters are defined",
     fail: {
-      msg: "{{ item }} needs to be defined",
+      msg: tmpl`${V.item} needs to be defined`,
     },
     when: raw("vars[item] is undefined"),
     loop: [
@@ -58,9 +59,9 @@ export default [
       {
         name: "Update known_hosts",
         known_hosts: {
-          path: "{{ sshlogin_src_known_hosts }}",
-          name: "{{ sshlogin_src_dst }}",
-          key: "{{ item }}",
+          path: V.sshlogin_src_known_hosts,
+          name: V.sshlogin_src_dst,
+          key: V.item,
         },
         loop: "{{ sshlogin_dst_host_keys.strip().split('\\n') }}",
       },
@@ -69,7 +70,7 @@ export default [
         blockinfile: {
           marker: "# {mark} ansible / sshlogin {{ sshlogin_dst }}",
           create: true,
-          path: "{{ sshlogin_src_ssh_config }}",
+          path: V.sshlogin_src_ssh_config,
           block: `Host {{ sshlogin_src_dst_name }}
   Hostname {{ sshlogin_src_dst_host }}
   Port {{ sshlogin_src_dst_port }}
@@ -97,7 +98,7 @@ export default [
           user: "{{ sshlogin_dst_user }}",
           state: "present",
           key: "{{ _src_user.ssh_public_key }}",
-          key_options: "{{ sshlogin_dst_key_options }}",
+          key_options: V.sshlogin_dst_key_options,
         },
       },
     ],

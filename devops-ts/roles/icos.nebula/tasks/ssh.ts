@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,11 +7,11 @@ export default [
     command: `ssh-keygen -q -t ed25519
   -f {{ nebula_ssh_key }}
   -C "nebula admin on {{ nebula_hostname }}" -N ""`,
-    args: { creates: "{{ nebula_etc_dir }}/admin" },
+    args: { creates: tmpl`${V.nebula_etc_dir}/admin` },
   },
   {
     name: "Slurp nebula_ssh_public",
-    slurp: { src: "{{ nebula_ssh_key }}.pub" },
+    slurp: { src: tmpl`${V.nebula_ssh_key}.pub` },
     register: "_slurp",
   },
   {

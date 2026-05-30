@@ -1,11 +1,12 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Add {{ username }} user",
     user: {
       name: "{{ username }}",
-      groups: "{{ extra_groups }}",
+      groups: V.extra_groups,
       append: true,
       shell: "/bin/bash",
     },
@@ -26,7 +27,7 @@ export default [
   {
     name: "Copy {{ servicename }} nginx config file(s) {{nginxconfig}}*",
     template: {
-      src: "{{ item }}",
+      src: V.item,
       dest: "/etc/nginx/conf.d/",
     },
     with_fileglob: ["{{nginxconfig}}*"],

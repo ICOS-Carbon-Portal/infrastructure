@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,7 +7,7 @@ export default [
     tags: "ncdu",
     unarchive: {
       remote_src: true,
-      src: "{{ ncdu_url }}",
+      src: V.ncdu_url,
       dest: "/usr/local/bin/",
     },
     register: "_ncdu",

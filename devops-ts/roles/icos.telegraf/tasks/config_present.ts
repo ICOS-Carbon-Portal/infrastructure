@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,8 +7,8 @@ export default [
       {
         name: "Create telegraf config file",
         copy: {
-          dest: "{{ telegraf_config_root }}/{{ telegraf_config_file }}",
-          content: "{{ telegraf_config }}",
+          dest: tmpl`${V.telegraf_config_root}/${V.telegraf_config_file}`,
+          content: V.telegraf_config,
           backup: true,
         },
         register: "update",

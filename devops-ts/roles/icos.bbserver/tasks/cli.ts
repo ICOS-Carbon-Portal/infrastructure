@@ -1,13 +1,14 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: "Create {{ bbserver_home }}/bin directory",
+    name: tmpl`Create ${V.bbserver_home}/bin directory`,
     file: {
-      path: "{{ bbserver_home }}/bin",
+      path: tmpl`${V.bbserver_home}/bin`,
       state: "directory",
-      owner: "{{ bbserver_user }}",
-      group: "{{ bbserver_user }}",
+      owner: V.bbserver_user,
+      group: V.bbserver_user,
     },
   },
   {
@@ -15,14 +16,14 @@ export default [
     template: {
       src: "bbserver.py",
       mode: "+x",
-      dest: "{{ bbserver_home }}/bin/bbserver",
+      dest: tmpl`${V.bbserver_home}/bin/bbserver`,
     },
   },
   {
     name: "Prime borg cache by running 'bbserver list' each night",
     cron: {
       user: "bbserver",
-      job: "{{ bbserver_home }}/bin/bbserver list > /dev/null 2>&1",
+      job: tmpl`${V.bbserver_home}/bin/bbserver list > /dev/null 2>&1`,
       hour: "{{ 4 | random(seed='bbserver') }}",
       minute: "{{ 60 | random(seed='bbserver') }}",
       name: "bbserver_prime_borg_cache",

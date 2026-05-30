@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,7 +10,7 @@ export default [
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: "{{ registry_home }}/",
+      dest: tmpl`${V.registry_home}/`,
     },
   },
   // Not sure yet what this is for, generate it mostly to silence warning about
@@ -19,14 +20,14 @@ export default [
     shell:
       `openssl rand -hex 20 | awk '{ print "REGISTRY_HTTP_SECRET=" $1 }' > .env`,
     args: {
-      chdir: "{{ registry_home }}",
+      chdir: V.registry_home,
       creates: ".env",
     },
   },
   {
     name: "Start Build and start containers",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ registry_home }}",
+      project_src: V.registry_home,
     },
   },
 ] satisfies TaskFile;

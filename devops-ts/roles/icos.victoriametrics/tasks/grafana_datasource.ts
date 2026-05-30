@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -29,7 +30,7 @@ export default [
   {
     name: "Create grafana plugin directory",
     file: {
-      path: "{{ vm_graf_plugins }}",
+      path: V.vm_graf_plugins,
       state: "directory",
     },
   },
@@ -38,7 +39,7 @@ export default [
     unarchive: {
       src:
         "https://github.com/VictoriaMetrics/victoriametrics-datasource/releases/download/v{{ hostvars.localhost.grafana_datasource_version }}/victoriametrics-metrics-datasource-v{{ hostvars.localhost.grafana_datasource_version }}.zip",
-      dest: "{{ vm_graf_plugins }}",
+      dest: V.vm_graf_plugins,
       remote_src: true,
       creates:
         "{{omit if vm_upgrade else vm_graf_plugins + '/victoriametrics-datasource'}}",

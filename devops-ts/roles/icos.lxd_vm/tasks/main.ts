@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,10 +22,10 @@ export default [
     lxd_container: {
       name: "{{ lxd_vm_name }}",
       state: "started",
-      profiles: "{{ __lxd_vm_profiles }}",
-      source: "{{ lxd_source }}",
-      config: "{{ __lxd_vm_config }}",
-      devices: "{{ __lxd_vm_devices }}",
+      profiles: V.__lxd_vm_profiles,
+      source: V.lxd_source,
+      config: V.__lxd_vm_config,
+      devices: V.__lxd_vm_devices,
       wait_for_ipv4_addresses: true,
       wait_for_ipv4_interfaces: "eth0",
       timeout: 600,
@@ -53,7 +54,7 @@ export default [
       `lxc exec {{ lxd_vm_name }} -- bash -c "[ -s '{{ file }}' ] || {\n           echo '{{ keys }}' >> {{ file }};\n           echo added;\n         }"`,
     vars: {
       file: "/root/.ssh/authorized_keys",
-      keys: "{{ lxd_vm_root_keys }}",
+      keys: V.lxd_vm_root_keys,
     },
     register: "_r",
     changed_when: '"added" in _r.stdout',

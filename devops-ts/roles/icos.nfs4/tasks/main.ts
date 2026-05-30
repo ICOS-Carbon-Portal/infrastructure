@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -20,9 +21,9 @@ export default [
     name: "Modify nfs-kernel parameters",
     lineinfile: {
       path: "/etc/default/nfs-kernel-server",
-      regex: "^{{ item }}=",
+      regex: tmpl`^${V.item}=`,
       line:
-        '{{ item }}="--no-nfs-version 2 --no-nfs-version 3 --nfs-version 4 --no-udp"\n',
+        tmpl`${V.item}="--no-nfs-version 2 --no-nfs-version 3 --nfs-version 4 --no-udp"\n`,
       state: "present",
     },
     loop: ["RPCNFSDOPTS", "RPCMOUNTDOPTS"],

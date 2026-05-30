@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,14 +8,14 @@ export default [
         name: "Copy dnsmasq config",
         copy: {
           content: "{{ dnsmasq_config }}",
-          dest: "{{ dnsmasq_config_file }}",
+          dest: V.dnsmasq_config_file,
           backup: true,
         },
         register: "config",
       },
       {
         name: "Run validation",
-        command: "dnsmasq --test --conf-dir {{ dnsmasq_config_dir }}",
+        command: tmpl`dnsmasq --test --conf-dir ${V.dnsmasq_config_dir}`,
         changed_when: "config.changed",
         register: "check",
       },
@@ -54,7 +55,7 @@ export default [
   {
     name: "Restart dnsmasq",
     systemd: {
-      name: "{{ dnsmasq_service_name }}",
+      name: V.dnsmasq_service_name,
       enabled: true,
       state: "{{ 'restarted' if check.changed else 'started' }}",
     },

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -11,7 +12,7 @@ export default [
   {
     name: "Create nebula user",
     user: {
-      name: "{{ nebula_user }}",
+      name: V.nebula_user,
       shell: "/usr/sbin/nologin",
       system: true,
       create_home: false,
@@ -20,16 +21,16 @@ export default [
   {
     name: "Create etc directory",
     file: {
-      path: "{{ nebula_etc_dir }}",
-      owner: "{{ nebula_user }}",
-      group: "{{ nebula_user }}",
+      path: V.nebula_etc_dir,
+      owner: V.nebula_user,
+      group: V.nebula_user,
       state: "directory",
       mode: 0o700,
     },
   },
   {
     name: "Check whether nebula is already installed",
-    stat: { path: "{{ nebula_bin_dir }}/nebula" },
+    stat: { path: tmpl`${V.nebula_bin_dir}/nebula` },
     register: "_r",
   },
   {
@@ -52,6 +53,6 @@ export default [
       msg: `We've installed nebula {{ version.results[0].stdout_lines[0] }}
 `,
     },
-    when: raw("not ansible_check_mode"),
+    when: notVar("ansible_check_mode"),
   },
 ] satisfies TaskFile;

@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 // https://github.com/adrianmihalko/raspberrypiwireguard#1-wireguard-installation-raspberry-pi-2-v12-and-above
 
@@ -45,7 +46,7 @@ Pin-Priority: 150
   {
     name: "Create wireguard-reresolve-dns.sh symlink",
     file: {
-      dest: "{{ wireguard_reresolve_script }}",
+      dest: V.wireguard_reresolve_script,
       src:
         "/usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh",
       state: "link",

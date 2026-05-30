@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,34 +19,34 @@ export default [
     },
     loop: [
       { key: "LOGS", val: "{{ mtail_logs | join(',') }}" },
-      { key: "PORT", val: "{{ mtail_port }}" },
-      { key: "HOST", val: "{{ mtail_host }}" },
+      { key: "PORT", val: V.mtail_port },
+      { key: "HOST", val: V.mtail_host },
     ],
     notify: "reload mtail",
   },
   {
     name: "Install configure icos programs",
     copy: {
-      src: "{{ item }}",
+      src: V.item,
       dest: "/etc/mtail",
       validate: "mtail --compile_only -port 0 --progs %s",
     },
     notify: "reload mtail",
-    loop: "{{ mtail_programs }}",
+    loop: V.mtail_programs,
   },
   {
     name: "Find unconfigured icos programs",
     find: {
       paths: "/etc/mtail",
       patterns: "icos-*.mtail",
-      excludes: "{{ mtail_programs }}",
+      excludes: V.mtail_programs,
     },
     register: "_find",
   },
   {
     name: "Remove unconfigured icos programs",
     file: {
-      name: "{{ item }}",
+      name: V.item,
       state: "absent",
     },
     notify: "reload mtail",
@@ -62,7 +63,7 @@ export default [
   {
     name: "Check that the mtail http server is responding",
     uri: {
-      url: "http://{{ mtail_host }}:{{ mtail_port }}",
+      url: tmpl`http://${V.mtail_host}:${V.mtail_port}`,
     },
     retries: 10,
   },

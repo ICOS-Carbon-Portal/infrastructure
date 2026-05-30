@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create bbserver user",
     user: {
-      name: "{{ bbserver_user }}",
+      name: V.bbserver_user,
       home: "{{ bbserver_home | default(omit) }}",
       create_home: true,
       shell: "/usr/bin/bash",
@@ -12,15 +13,15 @@ export default [
   },
   {
     name: "Change access rights on bbserver_home",
-    file: { path: "{{ bbserver_home }}", mode: 0o700 },
+    file: { path: V.bbserver_home, mode: 0o700 },
   },
   {
     name: "Create repo directory",
     file: {
-      path: "{{ bbserver_repo_home }}",
+      path: V.bbserver_repo_home,
       state: "directory",
-      owner: "{{ bbserver_user }}",
-      group: "{{ bbserver_user }}",
+      owner: V.bbserver_user,
+      group: V.bbserver_user,
     },
   },
   {
@@ -30,8 +31,8 @@ export default [
       apply: { tags: "bbserver_compact" },
     },
     vars: {
-      timer_user: "{{ bbserver_user }}",
-      timer_home: "{{ bbserver_home }}/bbserver-compact",
+      timer_user: V.bbserver_user,
+      timer_home: tmpl`${V.bbserver_home}/bbserver-compact`,
       timer_name: "bbserver-compact",
       timer_conf: `OnCalendar=weekly
 RandomizedDelaySec=3h

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,7 +9,7 @@ export default [
     become_user: "postgres",
     postgresql_user: {
       name: "postgres",
-      password: "{{ postgresql_postgres_password }}",
+      password: V.postgresql_postgres_password,
       login_unix_socket: "/var/run/postgresql",
     },
     when: [raw("postgresql_postgres_password")],
@@ -16,7 +17,7 @@ export default [
   {
     name: "Change with addresses postgresql listens to",
     copy: {
-      dest: "{{ postgresql_confd }}/listen.conf",
+      dest: tmpl`${V.postgresql_confd}/listen.conf`,
       content: `listen_addresses = {{ postgresql_listen_addresses }}
 `,
     },
@@ -29,7 +30,7 @@ export default [
     authorized_key: {
       user: "postgres",
       state: "present",
-      key: "{{ postgresql_ssh_keys }}",
+      key: V.postgresql_ssh_keys,
     },
     when: raw("postgresql_ssh_keys"),
   },

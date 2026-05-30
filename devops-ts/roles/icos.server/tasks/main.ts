@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,7 +7,7 @@ export default [
     authorized_key: {
       user: "root",
       state: "present",
-      key: "{{ root_keys }}",
+      key: V.root_keys,
       // Make sure to remove stale root keys
       exclusive: true,
     },
@@ -19,7 +20,7 @@ export default [
   },
   {
     name: "Generate locale",
-    locale_gen: { name: "{{ item }}", state: "present" },
+    locale_gen: { name: V.item, state: "present" },
     loop: ["en_US.UTF-8", "sv_SE.UTF-8"],
   },
 ] satisfies TaskFile;

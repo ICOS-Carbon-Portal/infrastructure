@@ -1,21 +1,22 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Ensure the postgis PostgreSQL container is present",
     "community.general.docker_container": {
-      name: "{{ postgis_container_name }}",
-      image: "postgres:{{ postgis_postgres_version }}",
+      name: V.postgis_container_name,
+      image: tmpl`postgres:${V.postgis_postgres_version}`,
       state: "started",
       recreate: false,
       shm_size: "500M",
       env: {
-        POSTGRES_USER: "{{ postgis_db_user }}",
-        POSTGRES_PASSWORD: "{{ postgis_db_pass }}",
-        POSTGRES_DB: "{{ postgis_db_name }}",
+        POSTGRES_USER: V.postgis_db_user,
+        POSTGRES_PASSWORD: V.postgis_db_pass,
+        POSTGRES_DB: V.postgis_db_name,
       },
-      published_ports: ["127.0.0.1:{{ postgis_db_port }}:5432"],
-      volumes: ["{{ postgis_container_name }}:/var/lib/postgresql/data"],
+      published_ports: [tmpl`127.0.0.1:${V.postgis_db_port}:5432`],
+      volumes: [tmpl`${V.postgis_container_name}:/var/lib/postgresql/data`],
       restart_policy: "always",
     },
   },
@@ -23,7 +24,7 @@ export default [
     name: "Wait for postgis PostgreSQL to become available",
     wait_for: {
       host: "127.0.0.1",
-      port: "{{ postgis_db_port }}",
+      port: V.postgis_db_port,
       delay: 5,
       timeout: 60,
     },
@@ -31,9 +32,9 @@ export default [
   {
     name: "Install postgis using apt-get",
     "community.docker.docker_container_exec": {
-      container: "{{ postgis_container_name }}",
+      container: V.postgis_container_name,
       command:
-        '/bin/bash -c "apt-get update && apt-get -y install {{ postgis_package }}"',
+        tmpl`/bin/bash -c "apt-get update && apt-get -y install ${V.postgis_package}"`,
       chdir: "/root",
     },
   },
@@ -46,19 +47,19 @@ export default [
   {
     name: "Create postgis databases",
     postgresql_db: {
-      name: "{{ item }}",
-      login_user: "{{ postgis_db_user }}",
-      login_password: "{{ postgis_db_pass }}",
+      name: V.item,
+      login_user: V.postgis_db_user,
+      login_password: V.postgis_db_pass,
       login_host: "127.0.0.1",
-      login_port: "{{ postgis_db_port }}",
-      maintenance_db: "{{ postgis_db_name }}",
+      login_port: V.postgis_db_port,
+      maintenance_db: V.postgis_db_name,
     },
-    loop: "{{ postgis_dbs }}",
+    loop: V.postgis_dbs,
   },
   {
     name: "Create users in each postgis database",
     include_tasks: "users.yml",
-    loop: "{{ postgis_dbs }}",
+    loop: V.postgis_dbs,
     loop_control: { loop_var: "db_name" },
   },
 ] satisfies TaskFile;

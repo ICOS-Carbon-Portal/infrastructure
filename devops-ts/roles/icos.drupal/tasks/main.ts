@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check that all parameters are defined",
     fail: {
-      msg: "{{ item }} needs to be defined",
+      msg: tmpl`${V.item} needs to be defined`,
     },
     when: raw("vars[item] is undefined"),
     loop: ["website"],

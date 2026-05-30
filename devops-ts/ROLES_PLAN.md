@@ -89,11 +89,29 @@ So ~66% is statically knowable; ~34% is irreducibly dynamic. Design:
   renders identically, type-checks, and a typo (`V.cpauth_hom`) is a compile
   error with a "Did you mean" hint.
 
-Remaining Phase 3 work (incremental, optional):
-- Roll the per-reference conversion across the other role files (bulk, agent-able).
-- Optionally widen each role's context to also include globals/vault/builtins so
-  those tiers (≈10%) are checked too, not just own-defaults.
+**Phase 3 rollout: done.**
+- Contexts widened: `lib/globals.ts` (143 group_vars/inventory vars) + an
+  expanded `lib/builtins.ts` are intersected into every role context
+  (`Vars & Globals & Builtins`), so globals/builtins references are checked too,
+  not just own-defaults. The generator excludes a role's own var when a
+  global/builtin already declares it (avoids a `boolean & string -> never`
+  intersection clash).
+- `codemod-contexts.ts` rewrote the role files mechanically (far more reliable
+  than agents for pure find/replace), with `verify.ts` as the oracle:
+    `"{{ var }}"`            -> `V.var`
+    `"{{ var }}/suffix"`     -> `tmpl`${V.var}/suffix``
+    `raw("var is defined")`  -> `isDef("var")`
+  It masks backtick template literals (never touches multi-line blocks), only
+  converts the exact `{{ var }}` spacing the renderer emits (byte-identical
+  round-trip), and leaves every out-of-context (dynamic) reference untouched.
+- Result: **237 role files** now use the typed context; **813 `V.` refs + 307
+  `tmpl` composites** typed; 118 genuinely-dynamic refs remain raw by design.
+  `deno task check` clean, `deno task verify` **464/464**. A typo in a known var
+  (`V.rdflog_hom`) is a compile error with a "Did you mean" hint.
+
+Optional future work:
 - Typed handler names so `notify` is checked.
+- Per-role vault var sets (the 1% `vault_*` tier), if desired.
 
 ## Verification strategy
 Same as playbooks: `verify.ts` renders each `.ts` and deep-compares (YAML 1.1)
@@ -129,7 +147,8 @@ role-var names, handler names, and include targets.
     `when:`); the `Tag` union regenerated to the full ~299 tags actually used;
     `file?: FileArgs | string` (key=value shorthand); `become?: boolean | string`
     (templated); `VarValue` now allows `null`.
-- **Phase 3 (per-role variable contexts): started.** Machinery built
-  (`lib/context.ts` + `gen-contexts.ts`), all 104 contexts generated and
-  type-checking, proven on `icos.cpauth`. Bulk per-reference rollout across the
-  remaining role files is the remaining (incremental) work.
+- **Phase 3 (per-role variable contexts): done.** Machinery
+  (`lib/context.ts`, `lib/globals.ts`, `gen-contexts.ts`, `codemod-contexts.ts`),
+  104 contexts generated, and the bulk per-reference rollout applied across 237
+  role files — 813 `V.` refs + 307 `tmpl` composites typed, dynamic refs left
+  raw. `deno task check` clean, `deno task verify` 464/464.

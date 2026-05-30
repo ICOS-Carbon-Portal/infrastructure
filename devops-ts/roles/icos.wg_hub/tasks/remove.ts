@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Stop and disable wg-quick",
     systemd: {
-      name: "wg-quick@{{ wg_hub_intf }}.service",
+      name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
       enabled: false,
       state: "stopped",
     },
@@ -35,7 +36,7 @@ export default [
   {
     name: "Remove wireguard config",
     file: {
-      path: "/etc/wireguard/{{ wg_hub_intf }}.conf",
+      path: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       state: "absent",
     },
   },

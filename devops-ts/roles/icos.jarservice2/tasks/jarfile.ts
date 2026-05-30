@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -40,7 +41,7 @@ export default [
     name: "Create the {{ jarservice_name}} jar symlink used by systemd",
     file: {
       src: "{{ destjarfile }}",
-      dest: "{{ jarservice_jar }}",
+      dest: V.jarservice_jar,
       state: "link",
     },
     notify: "restart {{ jarservice_name }}",
@@ -49,13 +50,13 @@ export default [
   {
     name: "Keep the jarfiles directory from filling up",
     shell:
-      "ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | sed '1,{{ jarservice_keep_n_old }}d'",
+      tmpl`ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | sed '1,${V.jarservice_keep_n_old}d'`,
     register: "_old",
     changed_when: false,
   },
   {
     name: "Remove old jarfiles",
-    file: "path={{ item }} state=absent",
+    file: tmpl`path=${V.item} state=absent`,
     with_items: ["{{ _old.stdout_lines }}"],
   },
 ] satisfies TaskFile;

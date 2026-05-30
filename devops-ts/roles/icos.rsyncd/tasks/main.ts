@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -27,7 +28,7 @@ export default [
     name: "Start rsync service",
     systemd: {
       name: "rsync",
-      enabled: "{{ rsyncd_enable }}",
+      enabled: V.rsyncd_enable,
       state: "{{ 'started' if rsyncd_enable else 'stopped' }}",
     },
   },

@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Remove Makefile",
     file: {
-      name: "{{ mailman_home }}/Makefile",
+      name: tmpl`${V.mailman_home}/Makefile`,
       state: "absent",
     },
   },
@@ -12,7 +13,7 @@ export default [
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: "{{ mailman_home }}/justfile",
+      dest: tmpl`${V.mailman_home}/justfile`,
       mode: "+x",
       variable_start_string: "((",
       variable_end_string: "))",

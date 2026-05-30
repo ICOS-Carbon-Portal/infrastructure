@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create keycloak directory",
     file: {
-      path: "{{ kc_home }}/conf",
+      path: tmpl`${V.kc_home}/conf`,
       state: "directory",
     },
   },
@@ -16,15 +17,18 @@ export default [
       lstrip_blocks: true,
     },
     loop: [
-      { src: "docker-compose.yml", dest: "{{ kc_home }}/docker-compose.yml" },
-      { src: "keycloak.conf", dest: "{{ kc_home }}/conf/keycloak.conf" },
+      {
+        src: "docker-compose.yml",
+        dest: tmpl`${V.kc_home}/docker-compose.yml`,
+      },
+      { src: "keycloak.conf", dest: tmpl`${V.kc_home}/conf/keycloak.conf` },
     ],
     register: "_config",
   },
   {
     name: "Build and start keycloak",
     docker_compose: {
-      project_src: "{{ kc_home }}",
+      project_src: V.kc_home,
       restarted: "{{ _config.changed }}",
     },
   },

@@ -1,27 +1,28 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Install jre",
     apt: {
-      name: "{{ cpdata_jre_package }}",
+      name: V.cpdata_jre_package,
     },
   },
   {
     name: "Create cpdata user",
     user: {
-      name: "{{ cpdata_user }}",
-      home: "{{ cpdata_home }}",
+      name: V.cpdata_user,
+      home: V.cpdata_home,
       shell: "/bin/bash",
     },
   },
   {
     name: "Create dataAppStorage directory (if not present), take ownership",
     file: {
-      path: "{{ cpdata_filestorage_target }}",
+      path: V.cpdata_filestorage_target,
       state: "directory",
-      owner: "{{ cpdata_user }}",
-      group: "{{ cpdata_user }}",
+      owner: V.cpdata_user,
+      group: V.cpdata_user,
     },
   },
   {

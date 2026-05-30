@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,6 +10,6 @@ export default [
     name: "Create docker storage for LXD",
     when: raw("lxd_vm_docker"),
     import_role: { name: "icos.zfsdocker" },
-    vars: { zfsdocker_size: "{{ lxd_vm_docker_size }}" },
+    vars: { zfsdocker_size: V.lxd_vm_docker_size },
   },
 ] satisfies TaskFile;

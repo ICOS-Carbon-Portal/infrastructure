@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "restic_server_setup" },
   {
     name: "Check whether restic-rest is installed",
-    stat: { path: "{{ restic_server_exec }}" },
+    stat: { path: V.restic_server_exec },
     register: "_r",
   },
   {

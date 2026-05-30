@@ -1,20 +1,21 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create dovecot vmail user",
     user: {
-      name: "{{ dovecot_vmail_name }}",
-      home: "{{ dovecot_vmail_home }}",
+      name: V.dovecot_vmail_name,
+      home: V.dovecot_vmail_home,
       create_home: true,
       shell: "/usr/sbin/nologin",
     },
     register: "dovecot_vmail_user",
   },
   {
-    name: "Copy {{ dovecot_auth_file }}",
+    name: tmpl`Copy ${V.dovecot_auth_file}`,
     template: {
-      src: "{{ dovecot_auth_file }}",
+      src: V.dovecot_auth_file,
       dest: "/etc/dovecot/conf.d",
     },
   },

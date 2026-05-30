@@ -1,12 +1,13 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "bbserver_setup" },
   { import_tasks: "cli.yml", tags: "bbserver_cli" },
   {
-    name: "Check whether {{ bbserver_textfiles }} exists",
+    name: tmpl`Check whether ${V.bbserver_textfiles} exists`,
     tags: "bbserver_monitor",
-    stat: { path: "{{ bbserver_textfiles }}" },
+    stat: { path: V.bbserver_textfiles },
     register: "_textfiles",
   },
   {

@@ -1,9 +1,10 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check that all parameters are defined",
-    fail: { msg: "{{ item }} needs to be defined" },
+    fail: { msg: tmpl`${V.item} needs to be defined` },
     when: raw("vars[item] is undefined"),
     loop: [
       "nginxsite_name",
@@ -12,13 +13,13 @@ export default [
   {
     name: "Remove config file",
     file: {
-      dest: "{{ item }}",
+      dest: V.item,
       state: "absent",
     },
     loop: [
-      "{{ nginxsite_path_enable }}",
-      "{{ nginxsite_path_available }}",
-      "{{ nginxsite_path_confd }}",
+      V.nginxsite_path_enable,
+      V.nginxsite_path_available,
+      V.nginxsite_path_confd,
     ],
   },
   {

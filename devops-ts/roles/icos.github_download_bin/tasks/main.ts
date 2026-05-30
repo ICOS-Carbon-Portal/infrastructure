@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -16,26 +17,26 @@ export default [
   {
     name: "Create download directory",
     file: {
-      path: "{{ dbin_download_dest }}",
+      path: V.dbin_download_dest,
       state: "directory",
     },
   },
   {
     name: "Download {{ dbin_repo }}",
     get_url: {
-      url: "{{ _dbin_url }}",
-      dest: "{{ dbin_download_dest }}",
+      url: V._dbin_url,
+      dest: V.dbin_download_dest,
     },
     // This variable can be checked by our users to determine whether anything has
     // changed.
     register: "dbin_download",
   },
   {
-    name: "Unarchive {{ _dbin_name }} tarball",
+    name: tmpl`Unarchive ${V._dbin_name} tarball`,
     when: raw("_dbin_unar"),
     unarchive: {
       src: "{{ dbin_download.dest }}",
-      dest: "{{ dbin_download_dest }}",
+      dest: V.dbin_download_dest,
       remote_src: true,
       list_files: true,
     },
@@ -43,18 +44,18 @@ export default [
     register: "_unar",
   },
   {
-    name: "Create symlink for {{ _dbin_name }}",
+    name: tmpl`Create symlink for ${V._dbin_name}`,
     file: {
-      dest: "{{ dbin_bin_dir }}/{{ _dbin_name }}",
-      src: "{{ _dbin_src }}",
+      dest: tmpl`${V.dbin_bin_dir}/${V._dbin_name}`,
+      src: V._dbin_src,
       state: "link",
     },
     register: "dbin_symlink",
   },
   {
-    name: "Make sure {{ _dbin_name }} is executable",
+    name: tmpl`Make sure ${V._dbin_name} is executable`,
     file: {
-      path: "{{ _dbin_src }}",
+      path: V._dbin_src,
       mode: "+x",
     },
   },

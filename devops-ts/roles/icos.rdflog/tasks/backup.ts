@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,8 +7,8 @@ export default [
     include_role: { name: "icos.bbclient2", public: true },
     vars: {
       bbclient_user: "root",
-      bbclient_name: "{{ rdflog_bbclient_name }}",
-      bbclient_home: "{{ rdflog_home }}/bbclient",
+      bbclient_name: V.rdflog_bbclient_name,
+      bbclient_home: tmpl`${V.rdflog_home}/bbclient`,
       bbclient_timer_conf: "OnCalendar=00/6:11",
       bbclient_timer_content: `#!/bin/bash
 set -eu

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +16,7 @@ export default [
     name: "Remove home directory",
     when: raw('timer_home != "/etc/systemd/systemd"'),
     file: {
-      path: "{{ timer_home }}",
+      path: V.timer_home,
       state: "absent",
     },
   },

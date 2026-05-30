@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     import_tasks: "config.yml",
     vars: {
-      block: "{{ caddy_global_conf }}",
+      block: V.caddy_global_conf,
       marker: "caddy_global_conf",
       where: "BOF",
     },

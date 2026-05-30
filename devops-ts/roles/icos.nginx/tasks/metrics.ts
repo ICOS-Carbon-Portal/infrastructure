@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // https://nginx.org/en/docs/http/ngx_http_stub_status_module.html#stub_status
@@ -25,7 +26,7 @@ export default [
   {
     name: "Check that nginx /metrics respond",
     uri: {
-      url: "{{ nginx_metrics_url }}",
+      url: V.nginx_metrics_url,
     },
     retries: 10,
   },

@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,7 +8,7 @@ export default [
       name: "pool/docker/{{ zfsdocker_name }}",
       state: "present",
       extra_zfs_properties: {
-        volsize: "{{ zfsdocker_size }}",
+        volsize: V.zfsdocker_size,
       },
     },
   },
@@ -15,7 +16,7 @@ export default [
     name: "Create a btrfs filesystem on {{ zfsdocker_name }}",
     tags: ["zfs", "zfsdocker"],
     filesystem: {
-      dev: "{{ zfsdocker_zvol }}",
+      dev: V.zfsdocker_zvol,
       fstype: "btrfs",
       // Label the filesystem, this makes the output from 'btrfs filesystem
       // show' easier to understand.
@@ -25,7 +26,7 @@ export default [
   {
     name: "Change owner of btrfs filesystem",
     command:
-      "unshare -m bash -c 'mount {{ zfsdocker_zvol }} /tmp; stat -c '%u:%g' /tmp; chown 1000000:1000000 /tmp'",
+      tmpl`unshare -m bash -c 'mount ${V.zfsdocker_zvol} /tmp; stat -c '%u:%g' /tmp; chown 1000000:1000000 /tmp'`,
     register: "r",
     changed_when: "r.stdout != '1000000:1000000'",
     failed_when: "r.rc != 0",

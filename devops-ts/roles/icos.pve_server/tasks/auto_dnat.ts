@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -38,7 +39,7 @@ export default [
   {
     name: "Copy auto-dnat service files",
     template: {
-      src: "{{ item }}",
+      src: V.item,
       dest: "/etc/systemd/system/",
       lstrip_blocks: true,
     },
@@ -57,7 +58,7 @@ export default [
   {
     name: "Start service",
     systemd: {
-      name: "{{ item }}",
+      name: V.item,
       enabled: true,
       state: "{{ 'restarted' if _systemd.changed else 'started' }}",
     },

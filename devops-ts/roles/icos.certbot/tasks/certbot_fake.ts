@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,9 +8,9 @@ export default [
   {
     name: "Create self-signed certificate",
     command:
-      "openssl req -x509 -nodes -subj '/CN={{ certbot_fake_cn }}' -days 365 -newkey rsa:4096 -sha256 -keyout {{ certbot_fake_key }} -out {{ certbot_fake_crt }}\n",
+      tmpl`openssl req -x509 -nodes -subj '/CN=${V.certbot_fake_cn}' -days 365 -newkey rsa:4096 -sha256 -keyout ${V.certbot_fake_key} -out ${V.certbot_fake_crt}\n`,
     args: {
-      creates: "{{ certbot_fake_crt }}",
+      creates: V.certbot_fake_crt,
     },
   },
   {

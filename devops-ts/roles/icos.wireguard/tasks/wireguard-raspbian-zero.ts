@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 // https://github.com/adrianmihalko/raspberrypiwireguard/wiki/Install-WireGuard-on-Raspberry-Pi-1,-2-(not-v1.2),-Zero,-Zero-W
 
@@ -21,7 +22,7 @@ export default [
       repo: "https://git.zx2c4.com/wireguard-linux-compat",
       version: "master",
       dest: "/root/wireguard-linux-compat",
-      update: "{{ wireguard_update }}",
+      update: V.wireguard_update,
     },
     diff: false,
   },
@@ -31,7 +32,7 @@ export default [
       repo: "https://git.zx2c4.com/wireguard-tools",
       version: "master",
       dest: "/root/wireguard-tools",
-      update: "{{ wireguard_update }}",
+      update: V.wireguard_update,
     },
     diff: false,
   },
@@ -58,7 +59,7 @@ export default [
   {
     name: "Create wireguard-reresolve-dns.sh symlink",
     file: {
-      dest: "{{ wireguard_reresolve_script }}",
+      dest: V.wireguard_reresolve_script,
       src: "/root/wireguard-tools/contrib/reresolve-dns/reresolve-dns.sh",
       state: "link",
     },

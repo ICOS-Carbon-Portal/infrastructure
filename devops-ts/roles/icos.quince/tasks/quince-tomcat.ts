@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Download tomcat binary",
     get_url: {
-      url: "{{ quince_tomcat_url }}",
+      url: V.quince_tomcat_url,
       dest: "/opt/tomcat.tgz",
     },
   },
@@ -14,8 +15,8 @@ export default [
       src: "/opt/tomcat.tgz",
       dest: "/opt",
       remote_src: true,
-      owner: "{{ quince_user }}",
-      group: "{{ quince_user }}",
+      owner: V.quince_user,
+      group: V.quince_user,
     },
     diff: false,
   },
@@ -39,7 +40,7 @@ export default [
   {
     name: "Create /opt/tomcat symlink",
     file: {
-      dest: "{{ quince_tomcat_home }}",
+      dest: V.quince_tomcat_home,
       src: "{{ quince_tomcat_dir }}",
       state: "link",
     },
@@ -48,7 +49,7 @@ export default [
     name: "Create /usr/bin/catalina.sh symlink",
     file: {
       dest: "/usr/bin/catalina.sh",
-      src: "{{ quince_tomcat_home }}/bin/catalina.sh",
+      src: tmpl`${V.quince_tomcat_home}/bin/catalina.sh`,
       state: "link",
     },
   },

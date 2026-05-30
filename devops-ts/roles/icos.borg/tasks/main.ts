@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check whether borg is installed",
     stat: {
-      path: "{{ borg_bin }}",
+      path: V.borg_bin,
     },
     register: "_r",
   },

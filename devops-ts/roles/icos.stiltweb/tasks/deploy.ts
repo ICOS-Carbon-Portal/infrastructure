@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -11,7 +12,7 @@ export default [
   },
   {
     name: "Create configuration file",
-    template: { dest: "{{ stiltweb_home }}/local.conf", src: "local.conf" },
+    template: { dest: tmpl`${V.stiltweb_home}/local.conf`, src: "local.conf" },
     register: "_config",
   },
   {
@@ -19,7 +20,7 @@ export default [
     when: raw("stiltweb_jar_file is defined"),
     copy: {
       src: "{{ stiltweb_jar_file }}",
-      dest: "{{ stiltweb_home }}/stiltweb.jar",
+      dest: tmpl`${V.stiltweb_home}/stiltweb.jar`,
       backup: true,
     },
     register: "_jarfile",
@@ -29,7 +30,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: "{{ stiltweb_home }}" },
+    args: { chdir: V.stiltweb_home },
     register: "_r",
     changed_when: '_r.stdout.startswith("removed")',
   },

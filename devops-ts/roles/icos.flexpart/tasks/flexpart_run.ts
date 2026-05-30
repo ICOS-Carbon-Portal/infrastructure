@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // Create a user which is used 1) to compile the docker image 2) to allow remote
@@ -6,7 +7,7 @@ export default [
   {
     name: "Create flexpart user",
     user: {
-      name: "{{ flexpart_user }}",
+      name: V.flexpart_user,
       state: "present",
       groups: "docker",
       append: true,
@@ -16,13 +17,13 @@ export default [
   {
     name: "Create the flexpart output directory",
     file: {
-      path: "{{ flexpart_output_directory }}",
+      path: V.flexpart_output_directory,
       state: "directory",
     },
   },
   {
     become: true,
-    become_user: "{{ flexpart_user }}",
+    become_user: V.flexpart_user,
     block: [
       {
         name: "Create flexpart build dir",
@@ -45,7 +46,7 @@ export default [
       {
         name: "Authorize our own ssh key",
         authorized_key: {
-          user: "{{ flexpart_user }}",
+          user: V.flexpart_user,
           state: "present",
           key: "{{ lookup('file', 'roles/icos.flexpart/files/flexpart.pub') }}",
           key_options: 'command="{{ _user.home }}/flexpart_ssh.sh"',
@@ -54,7 +55,7 @@ export default [
       {
         name: "Install Dockerfile and build resources",
         copy: {
-          src: "{{ item }}",
+          src: V.item,
           dest: "{{ _build.path }}",
         },
         loop: [
@@ -79,7 +80,7 @@ export default [
         name: "Build flexpart image",
         docker_image: {
           source: "build",
-          name: "{{ flexpart_image }}",
+          name: V.flexpart_image,
           build: {
             path: "{{ _build.path }}",
           },

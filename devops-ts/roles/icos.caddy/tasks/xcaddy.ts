@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // First install the xcaddy tool.
@@ -8,10 +9,10 @@ export default [
   {
     name: "Compile caddy using xcaddy",
     command:
-      "xcaddy build --output {{ caddy_via_xcaddy }} {% for module in caddy_modules %} --with {{ module }} {% endfor %}",
+      tmpl`xcaddy build --output ${V.caddy_via_xcaddy} {% for module in caddy_modules %} --with {{ module }} {% endfor %}`,
     args: {
       chdir: "/tmp",
-      creates: "{{ caddy_via_xcaddy }}",
+      creates: V.caddy_via_xcaddy,
     },
     notify: "restart caddy",
   },
@@ -25,7 +26,7 @@ export default [
   {
     name: "Create caddy systemd drop-in file",
     copy: {
-      dest: "{{ caddy_dropin_path }}",
+      dest: V.caddy_dropin_path,
       // These were copied from the standard caddy service
       content: `[Service]
 ExecStart=

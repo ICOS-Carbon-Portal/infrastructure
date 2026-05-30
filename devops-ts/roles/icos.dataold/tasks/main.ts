@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,15 +8,15 @@ export default [
   {
     name: "Create dataold home directory",
     file: {
-      path: "{{ dataold_home }}",
+      path: V.dataold_home,
       state: "directory",
     },
   },
   {
     name: "Copy templates",
     template: {
-      src: "{{ item }}",
-      dest: "{{ dataold_home }}",
+      src: V.item,
+      dest: V.dataold_home,
       lstrip_blocks: true,
     },
     loop: ["docker-compose.yml", "dataold.conf"],
@@ -23,23 +24,23 @@ export default [
   {
     name: "Copy files",
     copy: {
-      src: "{{ item }}",
-      dest: "{{ dataold_home }}",
+      src: V.item,
+      dest: V.dataold_home,
     },
     loop: ["openssl.cnf"],
   },
   {
     name: "Start dataold",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ dataold_home }}",
+      project_src: V.dataold_home,
     },
   },
   {
-    name: "Open firewall for port {{ dataold_ext_port }}",
+    name: tmpl`Open firewall for port ${V.dataold_ext_port}`,
     iptables_raw: {
-      name: "allow_{{ dataold_ext_port }}",
+      name: tmpl`allow_${V.dataold_ext_port}`,
       rules:
-        "-A INPUT -p tcp --dport {{ dataold_ext_port }} -j ACCEPT -m comment --comment 'dataold'",
+        tmpl`-A INPUT -p tcp --dport ${V.dataold_ext_port} -j ACCEPT -m comment --comment 'dataold'`,
     },
   },
 ] satisfies TaskFile;

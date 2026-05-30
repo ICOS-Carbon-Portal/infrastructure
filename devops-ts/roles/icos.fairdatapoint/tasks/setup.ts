@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // https://fairdatapoint.readthedocs.io
   {
     name: "Create fairdatapoint directory",
     file: {
-      path: "{{ fdp_home }}/",
+      path: tmpl`${V.fdp_home}/`,
       state: "directory",
     },
   },
@@ -13,7 +14,7 @@ export default [
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: "{{ fdp_home }}",
+      dest: V.fdp_home,
       lstrip_blocks: true,
     },
     register: "_compose",
@@ -22,7 +23,7 @@ export default [
     name: "Copy Dockerfile",
     template: {
       src: "Dockerfile",
-      dest: "{{ fdp_home }}",
+      dest: V.fdp_home,
     },
     register: "_dockerfile",
   },
@@ -31,7 +32,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: "{{ fdp_jar_file }}",
-      dest: "{{ fdp_home }}/fdp.jar",
+      dest: tmpl`${V.fdp_home}/fdp.jar`,
     },
     register: "_jarfile",
   },
@@ -39,7 +40,7 @@ export default [
     name: "Copy application.yml",
     template: {
       src: "application.yml",
-      dest: "{{ fdp_home }}/",
+      dest: tmpl`${V.fdp_home}/`,
       lstrip_blocks: true,
     },
     register: "_config",
@@ -47,15 +48,15 @@ export default [
   {
     name: "Copy files",
     copy: {
-      dest: "{{ fdp_home }}",
-      src: "{{ item }}",
+      dest: V.fdp_home,
+      src: V.item,
     },
     loop: ["eh-next_logo.png", "_variables.scss"],
   },
   {
     name: "Start fairdatapoint",
     icos_docker_compose: {
-      chdir: "{{ fdp_home }}",
+      chdir: V.fdp_home,
       force_recreate:
         "{{ _config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed }}",
     },

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,10 +19,10 @@ if $syslogtag == "dataold:" then {
     register: "_rsyslog",
   },
   {
-    name: "Restart {{ item }}",
+    name: tmpl`Restart ${V.item}`,
     when: raw("_rsyslog.changed"),
     systemd: {
-      name: "{{ item }}",
+      name: V.item,
       state: "restarted",
     },
     loop: [
@@ -89,18 +90,18 @@ systemctl reload dataold
     },
   },
   {
-    name: "Open firewall for port {{ dataold_ext_port }}",
+    name: tmpl`Open firewall for port ${V.dataold_ext_port}`,
     iptables_raw: {
-      name: "allow_{{ dataold_ext_port }}",
+      name: tmpl`allow_${V.dataold_ext_port}`,
       rules:
-        "-A INPUT -p tcp --dport {{ dataold_ext_port }} -j ACCEPT -m comment --comment 'dataold'",
+        tmpl`-A INPUT -p tcp --dport ${V.dataold_ext_port} -j ACCEPT -m comment --comment 'dataold'`,
     },
   },
   {
     name: "Test access to dataold from localhost",
     delegate_to: "localhost",
     uri: {
-      url: "https://{{ certbot_domains | first }}:{{ dataold_ext_port }}",
+      url: tmpl`https://{{ certbot_domains | first }}:${V.dataold_ext_port}`,
     },
     register: "_r",
     failed_when: [

@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // It used to be pip but these days letsencrypt recommends snap for Ubuntu.
@@ -13,7 +14,7 @@ export default [
     name: "Add job to renew certificates",
     cron: {
       name: "Certbot renewal",
-      job: "{{ nginx_certbot_bin }} renew -q",
+      job: tmpl`${V.nginx_certbot_bin} renew -q`,
       special_time: "daily",
     },
   },

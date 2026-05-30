@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create quince user",
     user: {
-      name: "{{ quince_user }}",
+      name: V.quince_user,
       home: "{{ quince_home | default(omit) }}",
       shell: "/bin/bash",
     },
@@ -12,17 +13,17 @@ export default [
   {
     name: "Create quince filestore directory",
     file: {
-      path: "{{ quince_filestore }}",
+      path: V.quince_filestore,
       state: "directory",
-      owner: "{{ quince_user }}",
-      group: "{{ quince_user }}",
+      owner: V.quince_user,
+      group: V.quince_user,
     },
   },
   {
     name: "Install packages",
     apt: {
-      name: "{{ item }}",
+      name: V.item,
     },
-    loop: ["mysql-server", "openjdk-{{ quince_jdk_version }}-jdk"],
+    loop: ["mysql-server", tmpl`openjdk-${V.quince_jdk_version}-jdk`],
   },
 ] satisfies TaskFile;

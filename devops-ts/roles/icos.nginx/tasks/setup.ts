@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -14,8 +15,8 @@ export default [
     template: {
       src: "nginx.conf",
       dest: "/etc/nginx/nginx.conf",
-      owner: "{{ nginx_user }}",
-      group: "{{ nginx_user }}",
+      owner: V.nginx_user,
+      group: V.nginx_user,
       backup: true,
     },
     tags: "nginx_conf",

@@ -1,12 +1,13 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Pull source",
     git: {
-      repo: "{{ geoip_git_repo }}",
-      version: "{{ geoip_git_version }}",
-      dest: "{{ geoip_repo_dir }}",
+      repo: V.geoip_git_repo,
+      version: V.geoip_git_version,
+      dest: V.geoip_repo_dir,
       force: true,
     },
     register: "_git",
@@ -18,7 +19,7 @@ export default [
 | tee -a build.log
 `,
     args: {
-      chdir: "{{ geoip_home }}",
+      chdir: V.geoip_home,
       executable: "/bin/bash",
     },
     register: "_output",
@@ -28,7 +29,7 @@ export default [
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ geoip_home }}",
+      project_src: V.geoip_home,
     },
   },
   {

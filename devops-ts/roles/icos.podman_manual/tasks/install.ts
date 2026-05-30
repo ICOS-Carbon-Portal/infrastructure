@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -38,11 +39,11 @@ export default [
   {
     name: "Assert that user namespaces are available",
     check_mode: false,
-    command: "grep -q CONFIG_USER_NS=y /boot/config-{{ ansible_kernel }}",
+    command: tmpl`grep -q CONFIG_USER_NS=y /boot/config-${V.ansible_kernel}`,
     args: {
       // When running in LXD, /boot/config-* won't exist and grep will fail.
       // Use "removes" as a way to avoid this check completely.
-      removes: "/boot/config-{{ ansible_kernel }}",
+      removes: tmpl`/boot/config-${V.ansible_kernel}`,
     },
     changed_when: false,
   },
@@ -50,15 +51,15 @@ export default [
     name: "Clone podman",
     git: {
       repo: "https://github.com/containers/podman",
-      version: "v{{ podman_version }}",
-      dest: "{{ podman_src_dir }}",
+      version: tmpl`v${V.podman_version}`,
+      dest: V.podman_src_dir,
     },
     diff: false,
   },
   {
     name: "Build podman",
     make: {
-      chdir: "{{ podman_src_dir }}",
+      chdir: V.podman_src_dir,
       target: "default",
       params: { BUILDTAGS: "seccomp selinux systemd" },
     },
@@ -66,7 +67,7 @@ export default [
   {
     name: "Install podman",
     make: {
-      chdir: "{{ podman_src_dir }}",
+      chdir: V.podman_src_dir,
       target: "install",
     },
   },

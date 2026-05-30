@@ -1,11 +1,12 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Make sure docker is upgraded if requested",
     when: raw("docker_upgrade | bool"),
     dpkg_selections: {
-      name: "{{ item }}",
+      name: V.item,
       selection: "install",
     },
     loop: ["docker.io", "containerd"],
@@ -21,7 +22,7 @@ export default [
   {
     name: "Make sure docker isn't upgraded",
     dpkg_selections: {
-      name: "{{ item }}",
+      name: V.item,
       selection: "{{ 'hold' if docker_prevent_upgrade else 'install' }}",
     },
     loop: ["docker.io", "containerd"],

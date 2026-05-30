@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create doi user",
     user: {
-      name: "{{ doi_user }}",
-      home: "{{ doi_home }}",
+      name: V.doi_user,
+      home: V.doi_home,
       shell: "/bin/bash",
     },
   },

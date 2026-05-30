@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,14 +14,14 @@ export default [
     name: "Create home directory",
     when: raw('timer_home != "/etc/systemd/systemd"'),
     file: {
-      path: "{{ timer_home }}",
+      path: V.timer_home,
       state: "directory",
     },
   },
   {
     name: "Create timer script",
     copy: {
-      dest: "{{ timer_dest }}",
+      dest: V.timer_dest,
       mode: "+x",
       content: "{{ timer_content }}",
     },
@@ -29,7 +30,7 @@ export default [
   {
     name: "Create systemd timer definition",
     copy: {
-      dest: "{{ _timer_sysd_timer }}",
+      dest: V._timer_sysd_timer,
       content: `[Unit]
 Description={{ timer_desc }}
 
@@ -45,7 +46,7 @@ WantedBy=timers.target
   {
     name: "Create systemd service",
     copy: {
-      dest: "{{ _timer_sysd_service }}",
+      dest: V._timer_sysd_service,
       content: `[Unit]
 Description={{ timer_desc }}
 
@@ -65,14 +66,15 @@ WorkingDirectory={{ timer_wdir }}
   {
     name: "Link systemd files",
     when: raw('timer_home != "/etc/systemd/system"'),
-    command: "systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}",
+    command:
+      tmpl`systemctl link ${V._timer_sysd_timer} ${V._timer_sysd_service}`,
     register: "_r",
     failed_when: "_r.rc != 0",
     changed_when: '"Created" in _r.stdout',
   },
   {
     name: "Start timer",
-    when: raw("not ansible_check_mode"),
+    when: notVar("ansible_check_mode"),
     systemd: {
       name: "{{ timer_name }}.timer",
       enabled: true,

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -55,6 +56,6 @@ export default [
   {
     name: "Which version of fd was installed",
     run_once: true,
-    debug: { msg: "Installed {{ fd_version }}\n" },
+    debug: { msg: tmpl`Installed ${V.fd_version}\n` },
   },
 ] satisfies TaskFile;

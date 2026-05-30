@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "List tables in the rdflog database",
     command: "./psql.sh -c '\\d' rdflog",
-    args: { chdir: "{{ rdflog_home }}", creates: "/some/file" },
+    args: { chdir: V.rdflog_home, creates: "/some/file" },
     register: "_r",
     changed_when: false,
   },
@@ -23,7 +24,7 @@ export default [
   {
     name: "Restore database from file",
     "ansible.builtin.shell": "zcat {{ rdflog_restore_file }} | ./psql.sh\n",
-    args: { chdir: "{{ rdflog_home }}" },
+    args: { chdir: V.rdflog_home },
     register: "_r",
     when: [
       raw("_r.stderr == 'Did not find any relations.'"),

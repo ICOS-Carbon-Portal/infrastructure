@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -10,15 +11,15 @@ export default [
       public: true,
     },
     vars: {
-      certbot_name: "{{ stiltweb_certbot_name }}",
-      certbot_domains: "{{ stiltweb_domains }}",
+      certbot_name: V.stiltweb_certbot_name,
+      certbot_domains: V.stiltweb_domains,
     },
   },
   {
     name: "Add stiltweb nginx config",
     include_role: { name: "icos.nginxsite" },
     vars: {
-      nginxsite_name: "{{ stiltweb_nginxsite_name }}",
+      nginxsite_name: V.stiltweb_nginxsite_name,
       nginxsite_file: "stiltweb-nginx.conf",
     },
   },

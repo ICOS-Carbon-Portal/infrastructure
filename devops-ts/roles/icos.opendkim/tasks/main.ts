@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,11 +14,11 @@ export default [
   {
     name: "Create keys directory",
     file: {
-      path: "{{ opendkim_keys }}",
+      path: V.opendkim_keys,
       mode: 0o700,
       state: "directory",
-      owner: "{{ opendkim_user }}",
-      group: "{{ opendkim_user }}",
+      owner: V.opendkim_user,
+      group: V.opendkim_user,
     },
   },
   {
@@ -33,7 +34,7 @@ export default [
     name: "Create config files",
     template: {
       dest: "/etc/opendkim",
-      src: "{{ item }}",
+      src: V.item,
       lstrip_blocks: true,
     },
     loop: [
@@ -46,21 +47,21 @@ export default [
   {
     name: "Create key directory for domain",
     file: {
-      path: "{{ opendkim_keys }}/{{ item }}",
+      path: tmpl`${V.opendkim_keys}/${V.item}`,
       state: "directory",
-      owner: "{{ opendkim_user }}",
-      group: "{{ opendkim_user }}",
+      owner: V.opendkim_user,
+      group: V.opendkim_user,
     },
     loop: "{{ opendkim_domains }}",
   },
   {
     name: "Create domain keys",
     become: true,
-    become_user: "{{ opendkim_user }}",
+    become_user: V.opendkim_user,
     command:
-      "opendkim-genkey -b 2048 -d {{ item }} -s default -v && chmod 600 default.private",
+      tmpl`opendkim-genkey -b 2048 -d ${V.item} -s default -v && chmod 600 default.private`,
     args: {
-      chdir: "{{ opendkim_keys }}/{{ item }}",
+      chdir: tmpl`${V.opendkim_keys}/${V.item}`,
       creates: "default.private",
     },
     loop: "{{ opendkim_domains }}",
@@ -87,9 +88,9 @@ done`,
   },
   {
     name: "Run opendkim-testkey on keys that have been added to DNS",
-    command: "opendkim-testkey -d {{ item }} -s default -vvv",
+    command: tmpl`opendkim-testkey -d ${V.item} -s default -vvv`,
     changed_when: false,
-    loop: "{{ opendkim_domains_testkeys }}",
+    loop: V.opendkim_domains_testkeys,
   },
   {
     name: "Create socket directory",

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_role: "name=icos.python3" },
@@ -15,7 +16,7 @@ export default [
   {
     name: "Change access rights on template directory",
     file: {
-      path: "{{ item }}",
+      path: V.item,
       owner: "{{ _user.uid }}",
       group: "{{ _user.group }}",
     },

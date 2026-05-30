@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -20,7 +21,7 @@ export default [
   {
     name: "Generate locale",
     locale_gen: {
-      name: "{{ item }}",
+      name: V.item,
       state: "present",
     },
     loop: [
@@ -33,7 +34,7 @@ export default [
     authorized_key: {
       user: "root",
       state: "present",
-      key: "{{ lxd_guest_root_keys }}",
+      key: V.lxd_guest_root_keys,
       exclusive: true,
     },
     when: raw("lxd_guest_root_keys is truthy"),

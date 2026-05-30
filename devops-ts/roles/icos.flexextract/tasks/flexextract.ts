@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,7 +7,7 @@ export default [
     tags: "flexextract_sync",
     synchronize: {
       src: "{{ flexextract_src_dir }}/",
-      dest: "{{ flexextract_home }}/build",
+      dest: tmpl`${V.flexextract_home}/build`,
     },
   },
   {
@@ -18,7 +19,7 @@ export default [
 | tee -a build.log
 `,
     args: {
-      chdir: "{{ flexextract_home }}",
+      chdir: V.flexextract_home,
       executable: "/bin/bash",
     },
     register: "_output",
@@ -30,17 +31,17 @@ export default [
     become: true,
     become_user: "root",
     file: {
-      path: "{{ flexextract_download_host }}",
+      path: V.flexextract_download_host,
       state: "directory",
-      owner: "{{ flexextract_user }}",
-      group: "{{ flexextract_user }}",
+      owner: V.flexextract_user,
+      group: V.flexextract_user,
     },
   },
   {
     name: "Create a link to the download directory in home directory",
     file: {
-      dest: "{{ flexextract_home }}/download",
-      src: "{{ flexextract_download_host }}",
+      dest: tmpl`${V.flexextract_home}/download`,
+      src: V.flexextract_download_host,
       state: "link",
     },
     when: raw('flexextract_download_host  != (flexextract_home+"/download")'),

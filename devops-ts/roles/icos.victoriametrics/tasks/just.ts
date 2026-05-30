@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: "{{ vm_home }}",
+      dest: V.vm_home,
       mode: "+x",
       variable_start_string: "((",
       variable_end_string: "))",

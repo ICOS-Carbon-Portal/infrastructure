@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create stiltcluster configuration file",
     template: {
-      dest: "{{ stiltcluster_home }}",
+      dest: V.stiltcluster_home,
       src: "local.conf",
     },
     notify: "restart stiltcluster",

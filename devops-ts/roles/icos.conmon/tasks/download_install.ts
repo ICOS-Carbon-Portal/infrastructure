@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // Never overwrite apt-installed conmon with downloaded version.
@@ -29,7 +30,7 @@ export default [
   {
     name: "Download conmon sources",
     get_url: {
-      url: "{{ conmon_url }}",
+      url: V.conmon_url,
       dest: "/tmp",
     },
     register: "_download",
@@ -46,7 +47,7 @@ export default [
   {
     name: "Build conmon",
     make: {
-      chdir: "/tmp/conmon-{{ conmon_version_install }}",
+      chdir: tmpl`/tmp/conmon-${V.conmon_version_install}`,
       target: "podman",
     },
   },

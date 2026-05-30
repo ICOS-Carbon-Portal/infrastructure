@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create victoriametrics directories",
     file: {
-      path: "{{ vm_home }}/{{ item }}",
+      path: tmpl`${V.vm_home}/${V.item}`,
       state: "directory",
     },
     loop: [
@@ -15,7 +16,7 @@ export default [
   {
     name: "Change owner of grafana directories",
     file: {
-      path: "{{ vm_home }}/grafana",
+      path: tmpl`${V.vm_home}/grafana`,
       owner: 472,
       recurse: true,
     },
@@ -25,7 +26,7 @@ export default [
     name: "Copy files",
     template: {
       src: "{{ item.src }}",
-      dest: "{{ vm_home }}/{{ item.dest | default('') }}",
+      dest: tmpl`${V.vm_home}/{{ item.dest | default('') }}`,
     },
     loop: [
       { src: "docker-compose.yml" },
@@ -38,14 +39,14 @@ export default [
   {
     name: "Create victoriametrics scrape config",
     copy: {
-      content: "{{ vm_scrape_conf }}",
-      dest: "{{ vm_home }}/victoriametrics/prometheus/prometheus.yml",
+      content: V.vm_scrape_conf,
+      dest: tmpl`${V.vm_home}/victoriametrics/prometheus/prometheus.yml`,
     },
   },
   {
     name: "Build and start",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ vm_home }}",
+      project_src: V.vm_home,
       pull: "{{ 'always' if vm_upgrade else omit }}",
     },
   },
@@ -65,11 +66,11 @@ export default [
     loop: [
       {
         name: "victoriametrics",
-        port: "{{ vm_vm_port }}",
+        port: V.vm_vm_port,
       },
       {
         name: "grafana",
-        port: "{{ vm_graf_port }}",
+        port: V.vm_graf_port,
       },
     ],
   },

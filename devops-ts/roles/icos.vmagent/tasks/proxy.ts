@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +16,7 @@ export default [
     check_mode: false,
     name: "Fail if we can't figure out which proxy server is used",
     fail: {
-      msg: 'Unknown proxy server "{{ vmagent_proxy }}".\n',
+      msg: tmpl`Unknown proxy server "${V.vmagent_proxy}".\n`,
     },
   },
   {
@@ -43,7 +44,7 @@ export default [
       {
         name: "Test that the vmagent UI is password protected",
         uri: {
-          url: "https://{{ inventory_hostname }}/vmagent/",
+          url: tmpl`https://${V.inventory_hostname}/vmagent/`,
         },
         retries: 10,
         register: "r",
@@ -52,7 +53,7 @@ export default [
       {
         name: "Test that the vmagent UI works with password",
         uri: {
-          url: "https://{{ inventory_hostname }}/vmagent/",
+          url: tmpl`https://${V.inventory_hostname}/vmagent/`,
           user: "{{ vmagent_auth.username }}",
           password: "{{ vmagent_auth.password }}",
         },

@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Copy docker-periodic-cleanup.timer",
     copy: {
-      src: "{{ item }}",
+      src: V.item,
       dest: "/etc/systemd/system",
     },
     loop: ["docker-periodic-cleanup.timer", "docker-periodic-cleanup.service"],

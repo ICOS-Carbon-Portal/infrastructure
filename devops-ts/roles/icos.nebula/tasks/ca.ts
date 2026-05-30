@@ -1,12 +1,13 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 // https://nebula.defined.net/docs/guides/rotating-certificate-authority/
 export default [
   {
     name: "Copy Certificate Authority",
     copy: {
-      src: "{{ nebula_cert_copy }}",
-      dest: "{{ nebula_etc_dir }}/ca.crt",
+      src: V.nebula_cert_copy,
+      dest: tmpl`${V.nebula_etc_dir}/ca.crt`,
     },
     notify: "reload nebula",
   },

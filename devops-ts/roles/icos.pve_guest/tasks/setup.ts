@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -22,7 +23,7 @@ export default [
   {
     name: "Generate locale",
     locale_gen: {
-      name: "{{ item }}",
+      name: V.item,
       state: "present",
     },
     loop: [

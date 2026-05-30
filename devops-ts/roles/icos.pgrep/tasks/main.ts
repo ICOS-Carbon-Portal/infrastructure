@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create pgrep directories",
     file: {
-      path: "{{ pgrep_home }}/volumes",
+      path: tmpl`${V.pgrep_home}/volumes`,
       state: "directory",
       mode: "0700",
     },
@@ -12,15 +13,15 @@ export default [
   {
     name: "Install peer certificate",
     copy: {
-      src: "{{ pgrep_peer_cert }}",
-      dest: "{{ pgrep_home }}/peer.crt",
+      src: V.pgrep_peer_cert,
+      dest: tmpl`${V.pgrep_home}/peer.crt`,
     },
   },
   {
     name: "Install runtime files",
     template: {
       src: "{{ item.src }}",
-      dest: "{{ pgrep_home }}",
+      dest: V.pgrep_home,
       mode: "{{ item.mode | default(omit) }}",
     },
     loop: [
@@ -36,12 +37,12 @@ export default [
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ pgrep_home }}",
+      project_src: V.pgrep_home,
     },
   },
   {
     name: "Check that psql wrappers works",
-    shell: "{{ pgrep_home }}/{{ item }} -c 'select version()'\n",
+    shell: tmpl`${V.pgrep_home}/${V.item} -c 'select version()'\n`,
     changed_when: false,
     register: "_r",
     failed_when: [

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDef, V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,8 +9,8 @@ export default [
     },
     vars: {
       nginxauth_name: "testing",
-      nginxauth_users: "{{ nginx_testing_users }}",
+      nginxauth_users: V.nginx_testing_users,
     },
-    when: raw("nginx_testing_users is defined"),
+    when: isDef("nginx_testing_users"),
   },
 ] satisfies TaskFile;

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -31,7 +32,7 @@ export default [
     unarchive: {
       remote_src: true,
       src: "{{ nebula_url_map[ansible_architecture] }}",
-      dest: "{{ nebula_bin_dir }}",
+      dest: V.nebula_bin_dir,
       extra_opts: ["--no-same-owner"],
     },
     notify: "restart nebula",

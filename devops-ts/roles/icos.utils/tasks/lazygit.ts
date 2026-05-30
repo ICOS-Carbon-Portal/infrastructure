@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -53,6 +54,6 @@ export default [
   },
   {
     name: "Which version of lazygit was installed",
-    debug: { msg: "Installed {{ lazygit_version }}" },
+    debug: { msg: tmpl`Installed ${V.lazygit_version}` },
   },
 ] satisfies TaskFile;

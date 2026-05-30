@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,7 +14,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: "{{ cpdata_jar_file }}",
-      dest: "{{ cpdata_home }}/cpdata.jar",
+      dest: tmpl`${V.cpdata_home}/cpdata.jar`,
       backup: true,
     },
     register: "_jarfile",
@@ -23,7 +24,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: "{{ cpdata_home }}" },
+    args: { chdir: V.cpdata_home },
     register: "_r",
     changed_when: '_r.stdout.startswith("removed")',
   },

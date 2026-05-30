@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -54,7 +55,7 @@ export default [
   {
     name: "Which version of lazydocker was installed",
     debug: {
-      msg: "Installed {{ lazydocker_version }}",
+      msg: tmpl`Installed ${V.lazydocker_version}`,
     },
   },
   {

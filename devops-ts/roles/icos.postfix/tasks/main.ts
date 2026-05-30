@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -25,7 +26,7 @@ export default [
       reload: "{{ item.reload | default(omit) }}",
       separator: "{{ item.separator | default(omit) }}",
     },
-    loop: "{{ postfix_config_list }}",
+    loop: V.postfix_config_list,
   },
   {
     name: "Allow SMTP through firewall",

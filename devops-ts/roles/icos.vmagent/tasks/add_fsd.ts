@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "assert_installed.yml" },
@@ -12,7 +13,7 @@ export default [
   {
     name: "Install scrape config",
     copy: {
-      dest: "{{ vmagent_fsd }}/{{ fsd_name }}.yaml",
+      dest: tmpl`${V.vmagent_fsd}/{{ fsd_name }}.yaml`,
       content: `# {{ fsd_name }}
 - targets:
   - {{ fsd_target }}

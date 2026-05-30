@@ -1,17 +1,22 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create ssh directory",
-    file: { path: "{{ project_dir }}/.ssh", state: "directory" },
+    file: { path: tmpl`${V.project_dir}/.ssh`, state: "directory" },
   },
   {
     name: "Copy SSH public key",
-    copy: { src: "id_rsa.pub", dest: "{{ project_dir }}/.ssh/", mode: 0o644 },
+    copy: {
+      src: "id_rsa.pub",
+      dest: tmpl`${V.project_dir}/.ssh/`,
+      mode: 0o644,
+    },
   },
   {
     name: "Copy SSH private key",
-    copy: { src: "id_rsa", dest: "{{ project_dir }}/.ssh/", mode: 0o600 },
+    copy: { src: "id_rsa", dest: tmpl`${V.project_dir}/.ssh/`, mode: 0o600 },
   },
   {
     name: "Check if known_hosts contains bitbucket",

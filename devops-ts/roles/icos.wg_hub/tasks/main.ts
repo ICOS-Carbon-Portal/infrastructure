@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -19,7 +20,7 @@ export default [
     when: raw("wg_hub_ishub"),
     register: "_hub_conf",
     copy: {
-      dest: "/etc/wireguard/{{ wg_hub_intf }}.conf",
+      dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       mode: 0o600,
       content: `[Interface]
 Address = {{ wg_hub_self.addr }}
@@ -41,10 +42,10 @@ PersistentKeepalive = 25
   },
   {
     name: "Install wireguard spoke config",
-    when: raw("not wg_hub_ishub"),
+    when: notVar("wg_hub_ishub"),
     register: "_spoke_conf",
     copy: {
-      dest: "/etc/wireguard/{{ wg_hub_intf }}.conf",
+      dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       mode: 0o600,
       content: `[Interface]
 Address = {{ wg_hub_self.addr }}
@@ -99,14 +100,14 @@ PersistentKeepalive = 25
     name: "Setup reresolve dependency",
     when: raw("wg_hub_reresolve and not wg_hub_ishub"),
     command:
-      "systemctl add-wants wg-quick@{{ wg_hub_intf }}.service wg-reresolve@{{ wg_hub_intf }}.timer",
+      tmpl`systemctl add-wants wg-quick@${V.wg_hub_intf}.service wg-reresolve@${V.wg_hub_intf}.timer`,
     register: "_reresolve",
     changed_when: '_reresolve.stderr.startswith("Created symlink")',
   },
   {
     name: "Start wg-quick service",
     systemd: {
-      name: "wg-quick@{{ wg_hub_intf }}.service",
+      name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
       state:
         "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed or _reresolve.changed else 'started' }}",
       enabled: true,
@@ -114,7 +115,8 @@ PersistentKeepalive = 25
   },
   {
     name: "Ping hub",
-    command: 'ping -c 1 -w 10 "{{ wg_hub_config.hub.peer }}.{{ wg_hub_intf }}"',
+    command:
+      tmpl`ping -c 1 -w 10 "{{ wg_hub_config.hub.peer }}.${V.wg_hub_intf}"`,
     tags: "wg_hub_ping",
     changed_when: false,
   },

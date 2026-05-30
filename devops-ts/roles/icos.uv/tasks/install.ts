@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -53,7 +54,7 @@ export default [
   {
     name: "Which version of uv was installed",
     debug: {
-      msg: "Installed {{ uv_version }}",
+      msg: tmpl`Installed ${V.uv_version}`,
     },
   },
 ] satisfies TaskFile;

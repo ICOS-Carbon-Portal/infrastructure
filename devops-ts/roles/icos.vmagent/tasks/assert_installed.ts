@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check whether vmagent is installed",
     stat: {
-      path: "{{ vmagent_configs }}",
+      path: V.vmagent_configs,
     },
     register: "_r",
   },

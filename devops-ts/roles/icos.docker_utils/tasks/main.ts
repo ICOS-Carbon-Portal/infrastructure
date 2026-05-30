@@ -1,11 +1,12 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     when: raw('dive_architecture in ("armv6l", "armv7l")'),
     name: "Architecture is not supported",
     debug: {
-      msg: "dive is not supported on {{ dive_architecture }}",
+      msg: tmpl`dive is not supported on ${V.dive_architecture}`,
     },
   },
   {

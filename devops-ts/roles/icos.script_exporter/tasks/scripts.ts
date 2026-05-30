@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,14 +8,14 @@ export default [
       repo:
         "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts",
       version: "master",
-      dest: "{{ sexp_scripts_repo }}",
+      dest: V.sexp_scripts_repo,
     },
     diff: false,
   },
   {
     name: "Create virtual env for scripts",
     pip: {
-      virtualenv: "{{ sexp_scripts_venv }}",
+      virtualenv: V.sexp_scripts_venv,
       name: [
         "prometheus_client",
         "{{ 'docker' if 'smartmon' in sexp_exporters else omit }}",

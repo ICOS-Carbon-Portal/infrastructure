@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // First install pip and venv for the system version of python. This is for the
@@ -32,7 +33,7 @@ export default [
       name: "python{{ _version }}-venv",
     },
     when: raw("_builtin_version != _version"),
-    loop: "{{ python3_version_list }}",
+    loop: V.python3_version_list,
     loop_control: {
       loop_var: "_version",
     },

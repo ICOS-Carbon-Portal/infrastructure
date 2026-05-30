@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: "Copy {{ dovecot_cert_file }}",
+    name: tmpl`Copy ${V.dovecot_cert_file}`,
     template: {
-      src: "{{ dovecot_cert_file }}",
+      src: V.dovecot_cert_file,
       dest: "/etc/dovecot/conf.d/",
     },
   },
@@ -33,7 +34,7 @@ export default [
       },
 
       // include our own certificates
-      { line: "!include {{ dovecot_cert_file }}" },
+      { line: tmpl`!include ${V.dovecot_cert_file}` },
     ],
   },
   {

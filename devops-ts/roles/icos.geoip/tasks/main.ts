@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "geoip_setup.yml", tags: "geoip_setup" },
@@ -8,7 +9,7 @@ export default [
     import_role: "name=icos.nginxsite",
     tags: "geoip_nginx",
     vars: {
-      nginxsite_domains: ["{{ geoip_domain }}"],
+      nginxsite_domains: [V.geoip_domain],
     },
   },
 ] satisfies TaskFile;

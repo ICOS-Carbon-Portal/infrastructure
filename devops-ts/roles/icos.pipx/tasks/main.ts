@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 // Install pipx using ansible's python. This will allow us to use the ansible
 // pipx module to install utils written in python.
@@ -7,7 +8,7 @@ export default [
     name: "Install pipx",
     pip: {
       name: "pipx",
-      virtualenv: "{{ pipx_home }}/.venv",
+      virtualenv: tmpl`${V.pipx_home}/.venv`,
       state: "{{ 'latest' if pipx_upgrade else 'present' }}",
     },
   },

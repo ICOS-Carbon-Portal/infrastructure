@@ -1,9 +1,10 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar } from "../_ctx.ts";
 
 export default [
   {
     import_tasks: "certbot_live.yml",
-    when: raw("not certbot_fake_certificate"),
+    when: notVar("certbot_fake_certificate"),
   },
   {
     import_tasks: "certbot_fake.yml",

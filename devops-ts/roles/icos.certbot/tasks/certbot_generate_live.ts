@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check if {{ certbot_conf_name }} exists",
     stat: {
-      path: "{{ certbot_conf_path }}",
+      path: V.certbot_conf_path,
     },
     register: "_conf_file",
   },
@@ -12,7 +13,7 @@ export default [
     name:
       "Create an initial nginx {{ certbot_conf_name }} for the certbot certification",
     copy: {
-      dest: "{{ certbot_conf_path }}",
+      dest: V.certbot_conf_path,
       content: `server {
   listen 80;
   server_name {% for domain in certbot_domains %} {{ domain }}{% endfor %};
@@ -37,7 +38,7 @@ export default [
   {
     name: "Install SSL certificate",
     command:
-      "{{ certbot_bin }} certonly --authenticator nginx --non-interactive {% for domain in certbot_domains %} --domain {{ domain }} {% endfor %} --email {{ certbot_email }} --agree-tos --expand\n",
+      tmpl`${V.certbot_bin} certonly --authenticator nginx --non-interactive {% for domain in certbot_domains %} --domain {{ domain }} {% endfor %} --email ${V.certbot_email} --agree-tos --expand\n`,
     register: "o",
     changed_when:
       '"Certificate not yet due for renewal; no action taken." not in o.stdout',

@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   {
     name: "reload caddy",
     shell:
-      "{{ caddy_bin }} reload --config /etc/caddy/Caddyfile --adapter caddyfile",
+      tmpl`${V.caddy_bin} reload --config /etc/caddy/Caddyfile --adapter caddyfile`,
     changed_when: false,
   },
 ] satisfies TaskFile;

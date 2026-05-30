@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -6,8 +7,8 @@ export default [
       {
         name: "Copy nebula_config.yml",
         template: {
-          src: "{{ nebula_config_file }}",
-          dest: "{{ nebula_etc_dir }}/config.yml",
+          src: V.nebula_config_file,
+          dest: tmpl`${V.nebula_etc_dir}/config.yml`,
           lstrip_blocks: true,
           backup: true,
         },
@@ -23,14 +24,14 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: 'cat -n "{{ nebula_etc_dir }}/config.yml"',
+        command: tmpl`cat -n "${V.nebula_etc_dir}/config.yml"`,
         register: "_slurp",
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: "{{ nebula_etc_dir }}/config.yml",
+          dest: tmpl`${V.nebula_etc_dir}/config.yml`,
           src: "{{ update.backup_file }}",
         },
         when: raw("update['backup_file'] is defined"),

@@ -1,9 +1,10 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create directory",
-    file: { path: "{{ item }}", state: "directory" },
+    file: { path: V.item, state: "directory" },
     loop: ["/opt/cni/download", "/opt/cni/bin", "/etc/cni/net.d"],
   },
   {
@@ -21,7 +22,7 @@ export default [
   {
     name: "Download cni plugins",
     get_url: {
-      url: "{{ cni_plugin_url }}",
+      url: V.cni_plugin_url,
       dest: "/opt/cni/download/plugins.tgz",
     },
   },

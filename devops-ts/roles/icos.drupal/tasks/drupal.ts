@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDef, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create project directory",
     file: {
-      path: "{{ project_dir }}",
+      path: V.project_dir,
       state: "directory",
     },
   },
@@ -13,46 +14,47 @@ export default [
     git: {
       repo: "https://github.com/ICOS-Carbon-Portal/drupal",
       version: "{{ git_version | default('master') }}",
-      dest: "{{ project_dir }}",
+      dest: V.project_dir,
       force: true,
     },
   },
   {
-    name: "Create {{ project_dir }}/config/ directory",
-    file: "path={{ project_dir }}/config/ state=directory recurse=yes",
+    name: tmpl`Create ${V.project_dir}/config/ directory`,
+    file: tmpl`path=${V.project_dir}/config/ state=directory recurse=yes`,
   },
   {
     name: "Copy uploads config",
     copy: {
       src: "uploads.ini",
-      dest: "{{ project_dir }}/config/uploads.ini",
+      dest: tmpl`${V.project_dir}/config/uploads.ini`,
     },
   },
   {
-    name: "Create {{ project_dir }}/files/private/ directory",
-    file: "path={{ project_dir }}/files/private/ state=directory recurse=yes",
+    name: tmpl`Create ${V.project_dir}/files/private/ directory`,
+    file:
+      tmpl`path=${V.project_dir}/files/private/ state=directory recurse=yes`,
   },
   {
-    name: "Create {{ project_dir }}/files/default/files/ directory",
+    name: tmpl`Create ${V.project_dir}/files/default/files/ directory`,
     file:
-      "path={{ project_dir }}/files/default/files/ state=directory recurse=yes",
+      tmpl`path=${V.project_dir}/files/default/files/ state=directory recurse=yes`,
   },
   {
     name: "Copy settings.php",
     template: {
       src: "settings.php.j2",
-      dest: "{{ project_dir }}/files/default/settings.php",
+      dest: tmpl`${V.project_dir}/files/default/settings.php`,
     },
   },
   {
-    name: "Create {{ project_dir }}/docker/ directory",
-    file: "path={{ project_dir }}/docker/ state=directory recurse=yes",
+    name: tmpl`Create ${V.project_dir}/docker/ directory`,
+    file: tmpl`path=${V.project_dir}/docker/ state=directory recurse=yes`,
   },
   {
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml.j2",
-      dest: "{{ project_dir }}/docker/docker-compose.yml",
+      dest: tmpl`${V.project_dir}/docker/docker-compose.yml`,
     },
     register: "docker_compose_yml",
   },
@@ -60,27 +62,27 @@ export default [
     name: "Copy environment file",
     template: {
       src: "env.j2",
-      dest: "{{ project_dir }}/docker/.env",
+      dest: tmpl`${V.project_dir}/docker/.env`,
     },
   },
   {
-    name: "Create {{ project_dir }}/composer/ directory",
-    file: "path={{ project_dir }}/composer/ state=directory recurse=yes",
+    name: tmpl`Create ${V.project_dir}/composer/ directory`,
+    file: tmpl`path=${V.project_dir}/composer/ state=directory recurse=yes`,
   },
   {
     name: "Copy composer.json",
     template: {
       src: "composer.json.j2",
-      dest: "{{ project_dir }}/composer/composer.json",
+      dest: tmpl`${V.project_dir}/composer/composer.json`,
     },
   },
   {
     name: "Copy robots.txt",
     copy: {
-      src: "{{ robots_txt }}",
-      dest: "{{ project_dir }}/composer/robots.txt.append",
+      src: V.robots_txt,
+      dest: tmpl`${V.project_dir}/composer/robots.txt.append`,
     },
-    when: raw("robots_txt is defined"),
+    when: isDef("robots_txt"),
   },
   {
     name: "Enable maintenance mode",
@@ -90,7 +92,7 @@ export default [
   {
     name: "(Re)start docker containers",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ project_dir }}/docker",
+      project_src: tmpl`${V.project_dir}/docker`,
       state: "present",
       pull: "always",
     },

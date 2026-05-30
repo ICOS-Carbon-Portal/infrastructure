@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "dnsmasq restart",
     systemd: {
-      name: "{{ dnsmasq_service_name }}",
+      name: V.dnsmasq_service_name,
       state: "restarted",
     },
   },

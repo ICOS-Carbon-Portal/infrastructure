@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // This gets us htpasswd(1)
@@ -18,7 +19,7 @@ export default [
   {
     name: "Add basic auth users",
     htpasswd: {
-      path: "{{ nginxforward_user_file }}",
+      path: V.nginxforward_user_file,
       name: "{{ item.name }}",
       password: "{{ item.password }}",
     },

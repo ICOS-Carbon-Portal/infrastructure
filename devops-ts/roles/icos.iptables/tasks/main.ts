@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // This package is required by the iptables_raw module.
@@ -64,7 +65,7 @@ export default [
     iptables_raw: {
       name: "allow_ssh",
       rules:
-        "-A INPUT -p tcp --dport {{ iptables_ssh_port }} -j ACCEPT -m comment --comment 'ssh'",
+        tmpl`-A INPUT -p tcp --dport ${V.iptables_ssh_port} -j ACCEPT -m comment --comment 'ssh'`,
     },
   },
 ] satisfies TaskFile;

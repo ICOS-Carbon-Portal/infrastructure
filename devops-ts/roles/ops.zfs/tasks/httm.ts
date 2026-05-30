@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Architecture is not supported",
     fail: {
-      msg: "httm is not supported on {{ ansible_architecture }}",
+      msg: tmpl`httm is not supported on ${V.ansible_architecture}`,
     },
     when: raw('ansible_architecture != "x86_64"'),
   },
@@ -49,7 +50,7 @@ export default [
   {
     name: "Which version of httm was installed",
     debug: {
-      msg: "Installed {{ httm_version }}",
+      msg: tmpl`Installed ${V.httm_version}`,
     },
   },
 ] satisfies TaskFile;

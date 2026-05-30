@@ -1,12 +1,13 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Generate keys for jbuild",
     openssh_keypair: {
-      path: "/home/{{ item }}/.ssh/jbuild",
-      owner: "{{ item }}",
-      group: "{{ item }}",
+      path: tmpl`/home/${V.item}/.ssh/jbuild`,
+      owner: V.item,
+      group: V.item,
     },
     loop: "{{ jbuild_users }}",
     register: "_jbuild_user_keys",
@@ -14,7 +15,7 @@ export default [
   {
     name: "Generate jbuild ssh config",
     blockinfile: {
-      path: "/home/{{ item }}/.ssh/config",
+      path: tmpl`/home/${V.item}/.ssh/config`,
       marker: "# {mark} ansible / jbuild",
       create: true,
       insertafter: "EOF",
@@ -42,17 +43,17 @@ Host projectcommon
   {
     name: "Create $HOME/bin directory",
     file: {
-      path: "/home/{{ item }}/bin",
+      path: tmpl`/home/${V.item}/bin`,
       state: "directory",
-      owner: "{{ item }}",
-      group: "{{ item }}",
+      owner: V.item,
+      group: V.item,
     },
     loop: "{{ jbuild_users }}",
   },
   {
     name: "Create wrappers for edctl",
     copy: {
-      dest: "/home/{{ item }}/bin/edctl",
+      dest: tmpl`/home/${V.item}/bin/edctl`,
       mode: "+x",
       content: `#!/bin/bash
 ssh edctl /opt/edctl/edctl.py "$@"
@@ -63,7 +64,7 @@ ssh edctl /opt/edctl/edctl.py "$@"
   {
     name: "Create wrappers for jyctl",
     copy: {
-      dest: "/home/{{ item }}/bin/jyctl",
+      dest: tmpl`/home/${V.item}/bin/jyctl`,
       mode: "+x",
       content: `#!/bin/bash
 ssh jyctl /opt/jyctl/jyctl.py "$@"
@@ -74,9 +75,9 @@ ssh jyctl /opt/jyctl/jyctl.py "$@"
   {
     name: "Login to registry",
     become: true,
-    become_user: "{{ item }}",
+    become_user: V.item,
     "community.general.docker_login": {
-      registry_url: "{{ registry_domain }}",
+      registry_url: V.registry_domain,
       username: "docker",
       password: "{{ jbuild_registry_pass }}",
     },

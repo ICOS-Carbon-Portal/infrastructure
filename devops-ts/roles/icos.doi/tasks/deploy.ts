@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   {
     name: "Create application.conf",
     template: {
-      dest: "{{ doi_home }}/application.conf",
+      dest: tmpl`${V.doi_home}/application.conf`,
       src: "application.conf",
     },
     register: "_config",
@@ -21,7 +22,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: "{{ doi_jar_file }}",
-      dest: "{{ doi_home }}/doi.jar",
+      dest: tmpl`${V.doi_home}/doi.jar`,
       backup: true,
     },
     register: "_jarfile",
@@ -31,7 +32,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: "{{ doi_home }}" },
+    args: { chdir: V.doi_home },
     register: "_r",
     changed_when: '_r.stdout.startswith("removed")',
   },

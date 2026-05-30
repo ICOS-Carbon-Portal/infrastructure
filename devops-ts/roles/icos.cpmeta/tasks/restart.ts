@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: "{{ cpmeta_home }}/application.conf",
+      dest: tmpl`${V.cpmeta_home}/application.conf`,
       content: `{% for item in cpmeta_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}
@@ -18,7 +19,7 @@ export default [
     name: "Temporarily switch cpmeta to readonly mode before restart",
     uri: {
       method: "POST",
-      url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode",
+      url: tmpl`http://127.0.0.1:${V.cpmeta_port}/admin/switchToReadonlyMode`,
     },
     failed_when: false,
     when: raw("_restart_needed"),
@@ -47,7 +48,7 @@ export default [
     name: "Leave cpmeta in readonly mode",
     uri: {
       method: "POST",
-      url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode",
+      url: tmpl`http://127.0.0.1:${V.cpmeta_port}/admin/switchToReadonlyMode`,
     },
     register: "r",
     failed_when: "r.failed",

@@ -1,9 +1,10 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Remove old stiltweb justfile",
-    file: { name: "{{ stiltweb_home }}/justfile", state: "absent" },
+    file: { name: tmpl`${V.stiltweb_home}/justfile`, state: "absent" },
   },
   {
     name: "Copy justfile",

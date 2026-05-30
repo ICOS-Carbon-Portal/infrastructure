@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,7 +8,7 @@ export default [
       dest: "{{ item.dest }}",
       content: "{{ item.content }}",
     },
-    loop: "{{ fail2ban_config_files }}",
+    loop: V.fail2ban_config_files,
     loop_control: {
       label: "{{ item.dest }}",
     },

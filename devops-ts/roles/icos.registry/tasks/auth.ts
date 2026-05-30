@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,13 +18,13 @@ export default [
   {
     name: "Add basic auth users",
     htpasswd: {
-      path: "{{ registry_htpasswd_file }}",
+      path: V.registry_htpasswd_file,
       name: "{{ item.name }}",
       password: "{{ item.password }}",
       // We must force this encryption, otherwise 'docker login' will fail
       // (unauthorized ...)
       crypt_scheme: "bcrypt",
     },
-    loop: "{{ registry_users }}",
+    loop: V.registry_users,
   },
 ] satisfies TaskFile;

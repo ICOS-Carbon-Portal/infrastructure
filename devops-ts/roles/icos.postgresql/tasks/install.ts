@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.
 // Debian/Ubuntu then allows multiple installed versions/clusters of postgresql,
@@ -44,9 +45,9 @@ export default [
   },
   // We'll keep various scripts in $HOME/bin
   {
-    name: "Create {{ postgresql_bin }} directory",
+    name: tmpl`Create ${V.postgresql_bin} directory`,
     file: {
-      path: "{{ postgresql_bin }}",
+      path: V.postgresql_bin,
       state: "directory",
       owner: "postgres",
       group: "postgres",
@@ -58,7 +59,7 @@ export default [
       owner: "postgres",
       group: "postgres",
       create: true,
-      path: "{{ postgresql_home }}/.profile",
+      path: tmpl`${V.postgresql_home}/.profile`,
       regex: "^PATH=",
       line: "PATH=$HOME/bin:$PATH",
       state: "present",

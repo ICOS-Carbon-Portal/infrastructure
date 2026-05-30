@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   {
     name: "Remove dnsmasq config file",
     file: {
-      name: "{{ dnsmasq_config_file }}",
+      name: V.dnsmasq_config_file,
       state: "absent",
     },
     notify: "dnsmasq restart",

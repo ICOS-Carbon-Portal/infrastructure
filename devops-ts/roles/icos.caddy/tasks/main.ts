@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   // First install standard version of caddy, this will create the caddy user and
@@ -9,7 +10,7 @@ export default [
   {
     name: "Install plain caddy",
     include_tasks: "plain.yml",
-    when: raw("not caddy_modules"),
+    when: notVar("caddy_modules"),
   },
   // If any modules are needed we need xcaddy instead.
   {
@@ -22,7 +23,7 @@ export default [
   },
   {
     name: "Check that caddy was properly installed",
-    "ansible.builtin.shell": "{{ caddy_bin }} version",
+    "ansible.builtin.shell": tmpl`${V.caddy_bin} version`,
     changed_when: false,
   },
   {

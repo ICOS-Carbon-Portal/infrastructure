@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // FIXME: Remove in 2024
   {
     name: "Remove old caddy config files",
     file: {
-      dest: "{{ item }}",
+      dest: V.item,
       state: "absent",
     },
     loop: [
@@ -18,7 +19,7 @@ export default [
     vars: {
       block: "{{ caddy_conf }}",
       marker: "{{ caddy_name }}",
-      state: "{{ caddy_site_state }}",
+      state: V.caddy_site_state,
       where: "EOF",
     },
   },

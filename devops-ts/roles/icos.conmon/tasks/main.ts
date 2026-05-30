@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar } from "../_ctx.ts";
 
 export default [
   {
@@ -28,14 +29,14 @@ done
   // Otherwise, attempt to install by using apt.
   {
     import_tasks: "apt_install.yml",
-    when: raw("not conmon_local_version_ok"),
+    when: notVar("conmon_local_version_ok"),
   },
   // Finally, fall back to downloading and installing.
   {
     import_tasks: "download_install.yml",
     when: [
-      raw("not conmon_local_version_ok"),
-      raw("not conmon_apt_version_ok"),
+      notVar("conmon_local_version_ok"),
+      notVar("conmon_apt_version_ok"),
     ],
   },
 ] satisfies TaskFile;

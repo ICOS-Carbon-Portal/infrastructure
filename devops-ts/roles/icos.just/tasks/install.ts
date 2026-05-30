@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -44,6 +45,6 @@ export default [
   },
   {
     name: "Which version of just was installed",
-    debug: { msg: "Installed {{ just_version }}" },
+    debug: { msg: tmpl`Installed ${V.just_version}` },
   },
 ] satisfies TaskFile;

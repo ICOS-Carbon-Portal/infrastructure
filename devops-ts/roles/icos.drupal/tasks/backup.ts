@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,7 +9,7 @@ export default [
     },
     vars: {
       bbclient_name: "drupal",
-      bbclient_home: "{{ drupal_home }}/.bbclient",
+      bbclient_home: tmpl`${V.drupal_home}/.bbclient`,
       bbclient_timer_conf: `OnCalendar=daily
 RandomizedDelaySec=1h
 `,

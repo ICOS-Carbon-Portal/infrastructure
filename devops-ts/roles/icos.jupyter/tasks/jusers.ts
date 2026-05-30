@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // After a do-release-upgrade, the python version will have changed and broken
@@ -6,7 +7,7 @@ export default [
   {
     name: "Remove virtual env",
     file: {
-      path: "{{ jusers_venv }}",
+      path: V.jusers_venv,
       state: "absent",
     },
     when: raw("virtualenv_recreate | default(False) | bool"),
@@ -14,7 +15,7 @@ export default [
   {
     name: "Create virtual env",
     pip: {
-      virtualenv: "{{ jusers_venv }}",
+      virtualenv: V.jusers_venv,
       name: ["ruamel.yaml", "click", "pandas", "requests"],
       state: "present",
     },
@@ -23,7 +24,7 @@ export default [
     name: "Copy jusers.py",
     template: {
       src: "jusers.py",
-      dest: "{{ jusers_home }}/jusers.py",
+      dest: tmpl`${V.jusers_home}/jusers.py`,
       mode: "+x",
       backup: true,
     },
@@ -32,7 +33,7 @@ export default [
     name: "Copy plugins",
     copy: {
       src: "plugins",
-      dest: "{{ jusers_home }}/",
+      dest: tmpl`${V.jusers_home}/`,
     },
   },
   {
@@ -47,7 +48,7 @@ export default [
     name: "Create /usr/local/sbin/jusers symlink",
     file: {
       dest: "/usr/local/sbin/jusers",
-      src: "{{ jusers_home }}/jusers.py",
+      src: tmpl`${V.jusers_home}/jusers.py`,
       state: "link",
     },
   },

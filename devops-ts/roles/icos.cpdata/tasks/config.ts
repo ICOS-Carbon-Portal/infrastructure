@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: "{{ cpdata_home }}/application.conf",
+      dest: tmpl`${V.cpdata_home}/application.conf`,
       content: `{% for item in cpdata_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}

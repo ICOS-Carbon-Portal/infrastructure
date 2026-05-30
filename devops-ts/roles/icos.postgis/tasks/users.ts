@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,11 +9,11 @@ export default [
       db: "{{ db_name }}",
       name: "{{ item.username }}",
       password: "{{ item.password }}",
-      login_user: "{{ postgis_db_user }}",
-      login_password: "{{ postgis_db_pass }}",
+      login_user: V.postgis_db_user,
+      login_password: V.postgis_db_pass,
       login_host: "127.0.0.1",
-      login_port: "{{ postgis_db_port }}",
+      login_port: V.postgis_db_port,
     },
-    loop: "{{ postgis_db_users }}",
+    loop: V.postgis_db_users,
   },
 ] satisfies TaskFile;

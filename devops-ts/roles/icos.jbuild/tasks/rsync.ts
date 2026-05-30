@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -10,8 +11,8 @@ export default [
   {
     name: "Add keys to authorized_keys",
     authorized_key: {
-      user: "{{ jbuild_rsync_user }}",
-      key_options: 'command="{{ jbuild_rrsync_bin }} /project/common"',
+      user: V.jbuild_rsync_user,
+      key_options: tmpl`command="${V.jbuild_rrsync_bin} /project/common"`,
       key: `{% for elt in _jbuild_user_keys.results -%}
 {{ elt.public_key }}
 {% endfor %}

@@ -1,9 +1,10 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check status of certificate",
-    command: "ops-nebula cert-check {{ nebula_cert_min_days }}",
+    command: tmpl`ops-nebula cert-check ${V.nebula_cert_min_days}`,
     changed_when: false,
     register: "status",
   },
@@ -50,7 +51,7 @@ export default [
       },
       {
         name: "Pick up new status",
-        command: "ops-nebula cert-check {{ nebula_cert_min_days }}",
+        command: tmpl`ops-nebula cert-check ${V.nebula_cert_min_days}`,
         register: "status",
         changed_when: 'status.stdout_lines[-1] == "need to restart"',
         notify: "restart nebula",

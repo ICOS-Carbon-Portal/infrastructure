@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,8 +19,8 @@ alias psc='ps xawf -eo pid,user,cgroup,args'
     name: "Copy utilities",
     tags: "utils_copy",
     template: {
-      src: "{{ item }}",
-      dest: "/usr/local/sbin/{{ item }}",
+      src: V.item,
+      dest: tmpl`/usr/local/sbin/${V.item}`,
       mode: 0o755,
     },
     loop: [

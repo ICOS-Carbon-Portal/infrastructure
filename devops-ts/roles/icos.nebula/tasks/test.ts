@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // restart nebula etc
@@ -19,14 +20,14 @@ export default [
       },
       {
         name: "Check that nebula dns resolution works",
-        shell: "dig {{ nebula_resolve_test }}",
+        shell: tmpl`dig ${V.nebula_resolve_test}`,
         changed_when: false,
       },
     ],
   },
   {
     name: "Check that nebula is working",
-    command: "ping -w 10 -c 1 {{ nebula_ping_host }}",
+    command: tmpl`ping -w 10 -c 1 ${V.nebula_ping_host}`,
     changed_when: false,
   },
   {

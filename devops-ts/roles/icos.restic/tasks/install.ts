@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -45,7 +46,7 @@ export default [
   {
     name: "Which version of restic was installed",
     debug: {
-      msg: "Installed {{ restic_version }}",
+      msg: tmpl`Installed ${V.restic_version}`,
     },
   },
 ] satisfies TaskFile;

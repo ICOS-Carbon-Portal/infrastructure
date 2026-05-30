@@ -1,9 +1,10 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check that all parameters are defined",
-    fail: { msg: "{{ item }} needs to be defined" },
+    fail: { msg: tmpl`${V.item} needs to be defined` },
     when: raw("vars[item] is undefined"),
     loop: ["lxd_vm_name"],
   },
@@ -20,7 +21,7 @@ export default [
     name: "Remove local known_host",
     local_action: {
       module: "known_hosts",
-      name: "[{{ inventory_hostname }}]:{{ lxd_vm_port }}",
+      name: tmpl`[${V.inventory_hostname}]:${V.lxd_vm_port}`,
       state: "absent",
     },
   },
@@ -38,7 +39,7 @@ export default [
     block: [
       {
         name: "Delete storage pool",
-        shell: "/snap/bin/lxc storage delete {{ lxd_vm_root_pool }} || :\n",
+        shell: tmpl`/snap/bin/lxc storage delete ${V.lxd_vm_root_pool} || :\n`,
         register: "_r",
         changed_when: "_r.stdout.endswith('deleted')",
       },

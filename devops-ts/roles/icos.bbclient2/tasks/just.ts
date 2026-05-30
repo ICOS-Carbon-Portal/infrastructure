@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: "{{ bbclient_home }}/",
+      dest: tmpl`${V.bbclient_home}/`,
       variable_start_string: "{{ '{{{{' }}",
       variable_end_string: "{{ '}}}}' }}",
       lstrip_blocks: true,

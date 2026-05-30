@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -24,7 +25,7 @@ DNSMASQ_EXCEPT="lo"
   {
     name: "Create /etc/dnsmasq.INSTANCE.d directory",
     file: {
-      path: "{{ dnsmasq_config_dir }}",
+      path: V.dnsmasq_config_dir,
       state: "directory",
     },
   },

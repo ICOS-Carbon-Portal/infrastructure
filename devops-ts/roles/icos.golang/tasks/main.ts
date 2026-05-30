@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar } from "../_ctx.ts";
 
 export default [
   {
@@ -23,15 +24,15 @@ export default [
   {
     name: "Installing golang from apt",
     import_tasks: "apt_install.yml",
-    when: raw("not golang_local_version_ok"),
+    when: notVar("golang_local_version_ok"),
   },
   // Finally, fall back to downloading and installing.
   {
     name: "Installing golang from source",
     import_tasks: "download_install.yml",
     when: [
-      raw("not golang_local_version_ok"),
-      raw("not golang_apt_version_ok"),
+      notVar("golang_local_version_ok"),
+      notVar("golang_apt_version_ok"),
     ],
   },
 ] satisfies TaskFile;

@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check that all parameters are defined",
     fail: {
-      msg: "{{ item }} needs to be defined",
+      msg: tmpl`${V.item} needs to be defined`,
     },
     when: raw("vars[item] is undefined"),
     loop: [
@@ -22,16 +23,16 @@ export default [
   {
     name: "Copy config for {{ nginxforward_name }}",
     template: {
-      src: "{{ nginxforward_file }}",
-      dest: "{{ nginxforward_path_available }}",
+      src: V.nginxforward_file,
+      dest: V.nginxforward_path_available,
     },
     notify: "reload nginx config",
   },
   {
     name: "Create symlink to sites-enabled",
     file: {
-      dest: "{{ nginxforward_path_enabled }}",
-      src: "{{ nginxforward_path_available }}",
+      dest: V.nginxforward_path_enabled,
+      src: V.nginxforward_path_available,
       state: "{% if nginxforward_enable %}link{% else %}absent{% endif %}",
     },
     when: raw("nginxforward_enable"),

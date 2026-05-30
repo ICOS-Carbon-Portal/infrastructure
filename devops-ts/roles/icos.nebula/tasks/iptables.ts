@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar, V } from "../_ctx.ts";
 
 export default [
   {
@@ -14,7 +15,7 @@ export default [
           state: "absent",
           chain: "INPUT",
           protocol: "udp",
-          destination_port: "{{ nebula_port }}",
+          destination_port: V.nebula_port,
           jump: "ACCEPT",
         },
       },
@@ -25,7 +26,7 @@ export default [
           chain: "INPUT",
           // make sure it appears early
           action: "insert",
-          in_interface: "{{ nebula_interface }}",
+          in_interface: V.nebula_interface,
           jump: "ACCEPT",
         },
       },
@@ -47,7 +48,7 @@ export default [
   },
   // i.e proxmox
   {
-    when: raw("not nebula_fw_enable"),
+    when: notVar("nebula_fw_enable"),
     name: "Display note about manual firewall rules",
     debug: {
       msg: `Please manually add the following firewall rules:

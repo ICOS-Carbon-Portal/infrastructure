@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,16 +10,16 @@ export default [
       state: "directory",
     },
     loop: [
-      { path: "{{ vmagent_home }}", mode: "0700" },
-      { path: "{{ vmagent_bin }}" },
-      { path: "{{ vmagent_fsd }}" },
-      { path: "{{ vmagent_configs }}" },
+      { path: V.vmagent_home, mode: "0700" },
+      { path: V.vmagent_bin },
+      { path: V.vmagent_fsd },
+      { path: V.vmagent_configs },
     ],
   },
   {
     name: "Check whether vmagent is installed",
     stat: {
-      path: "{{ vmagent_bin }}/vmagent-prod",
+      path: tmpl`${V.vmagent_bin}/vmagent-prod`,
     },
     register: "_vmagent",
   },

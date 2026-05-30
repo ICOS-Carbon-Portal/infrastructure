@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,8 +9,8 @@ export default [
   {
     name: "Create restic user",
     user: {
-      name: "{{ restic_server_user }}",
-      home: "{{ restic_server_data }}",
+      name: V.restic_server_user,
+      home: V.restic_server_data,
       shell: "/usr/sbin/nologin",
       system: true,
     },
@@ -17,10 +18,10 @@ export default [
   {
     name: "Create restic data directory",
     file: {
-      path: "{{ restic_server_data }}",
+      path: V.restic_server_data,
       state: "directory",
-      owner: "{{ restic_server_user }}",
-      group: "{{ restic_server_user }}",
+      owner: V.restic_server_user,
+      group: V.restic_server_user,
     },
   },
   {

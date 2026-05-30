@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +22,7 @@ export default [
   {
     name: "Change access rights on template directories",
     file: {
-      path: "{{ item }}",
+      path: V.item,
       owner: "{{ _user.uid }}",
       group: "{{ _user.group }}",
     },

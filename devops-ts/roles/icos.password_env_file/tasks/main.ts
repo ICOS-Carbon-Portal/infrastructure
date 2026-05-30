@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   {
     name: "Generate password file",
     shell:
-      "umask 0077; openssl rand -hex {{ length }} | awk '{ print \"{{ file_var }}=\" $1 }' > {{ file }}",
+      tmpl`umask 0077; openssl rand -hex ${V.length} | awk '{ print \"{{ file_var }}=\" $1 }' > {{ file }}`,
     args: {
       creates: "{{ file }}",
     },

@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -10,12 +11,12 @@ export default [
   {
     when: raw("stiltrun_image_id not in docker_images.stdout"),
     become: '{{ stiltrun_user != "root" }}',
-    become_user: "{{ stiltrun_user }}",
+    become_user: V.stiltrun_user,
     block: [
       {
         name: "Download stilt docker image",
         get_url: {
-          url: "{{ stiltrun_image_url }}",
+          url: V.stiltrun_image_url,
           dest: "/tmp",
         },
         register: "_get_url",
@@ -27,7 +28,7 @@ export default [
       },
       {
         name: "Check that stiltrun_image was properly loaded",
-        shell: "docker images -q | grep {{ stiltrun_image_id }} -q",
+        shell: tmpl`docker images -q | grep ${V.stiltrun_image_id} -q`,
         changed_when: false,
       },
       {

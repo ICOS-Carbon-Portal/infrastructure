@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // We set up a directory where we keep not only the current jar file but also
@@ -44,7 +45,7 @@ export default [
     name: "Create the {{ servicename}} jar symlink used by systemd",
     file: {
       src: "{{ destjarfile }}",
-      dest: "{{ jarservice_jar }}",
+      dest: V.jarservice_jar,
       state: "link",
     },
     notify: "restart {{ servicename }}",
@@ -58,7 +59,7 @@ export default [
   },
   {
     name: "Remove old jarfiles",
-    file: "path={{ item }} state=absent",
+    file: tmpl`path=${V.item} state=absent`,
     with_items: ["{{ oldjarfiles.stdout_lines }}"],
   },
 ] satisfies TaskFile;

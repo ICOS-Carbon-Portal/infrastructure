@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // FIXME: Remove in 2024
@@ -13,7 +14,7 @@ export default [
   {
     name: "Remove old backup script",
     file: {
-      path: "{{ cpmeta_home }}/backup.sh",
+      path: tmpl`${V.cpmeta_home}/backup.sh`,
       state: "absent",
     },
   },
@@ -23,8 +24,8 @@ export default [
       public: true,
     },
     vars: {
-      bbclient_name: "{{ cpmeta_bbclient_name }}",
-      bbclient_home: "{{ cpmeta_home }}/.bbclient",
+      bbclient_name: V.cpmeta_bbclient_name,
+      bbclient_home: tmpl`${V.cpmeta_home}/.bbclient`,
       bbclient_timer_conf: `OnCalendar=hourly
 RandomizedDelaySec=10m
 `,

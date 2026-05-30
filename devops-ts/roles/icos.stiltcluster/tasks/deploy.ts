@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // Stiltcluster can be deployed either:
@@ -27,10 +28,10 @@ export default [
     block: [
       {
         name: "Retrive stiltcluster.jar",
-        delegate_to: "{{ stiltcluster_fetch_host }}",
+        delegate_to: V.stiltcluster_fetch_host,
         run_once: true,
         fetch: {
-          src: "{{ stiltcluster_fetch_path }}",
+          src: V.stiltcluster_fetch_path,
           // the destination is relative to the playbook
           dest: "tmp/stiltcluster.jar",
           // don't append hostname/path/to/file
@@ -51,7 +52,7 @@ export default [
     when: raw("stiltcluster_jar_file is defined"),
     copy: {
       src: "{{ stiltcluster_jar_file }}",
-      dest: "{{ stiltcluster_home }}/stiltcluster.jar",
+      dest: tmpl`${V.stiltcluster_home}/stiltcluster.jar`,
       backup: true,
     },
     notify: "restart stiltcluster",
@@ -61,7 +62,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: "{{ stiltcluster_home }}" },
+    args: { chdir: V.stiltcluster_home },
     register: "_r",
     changed_when: '_r.stdout.startswith("removed")',
   },

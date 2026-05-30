@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -10,7 +11,7 @@ export default [
       dbin_user: "ricoberger",
       dbin_repo: "script_exporter",
       dbin_url:
-        "{{ dbin__down }}/v{{ dbin__vers }}/script_exporter-linux-{{ sexp_arch }}",
+        tmpl`{{ dbin__down }}/v{{ dbin__vers }}/script_exporter-linux-${V.sexp_arch}`,
       dbin_download_dest:
         "{{ dbin_download_base }}/script-exporter-{{ dbin__vers }}",
       dbin_unar: false,
@@ -19,7 +20,7 @@ export default [
   {
     name: "Create script_exporter home directory",
     file: {
-      path: "{{ sexp_home }}",
+      path: V.sexp_home,
       state: "directory",
     },
   },
@@ -29,7 +30,7 @@ export default [
       marker: "# {mark} base config",
       create: true,
       insertafter: "BOF",
-      path: "{{ sexp_config_file }}",
+      path: V.sexp_config_file,
       block: "{{ lookup('template', 'config.yaml') }}",
     },
     notify: "reload script-exporter",

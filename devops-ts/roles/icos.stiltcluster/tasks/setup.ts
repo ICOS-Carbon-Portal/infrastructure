@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create stiltcluster user",
     user: {
-      name: "{{ stiltcluster_username }}",
-      home: "{{ stiltcluster_home }}",
+      name: V.stiltcluster_username,
+      home: V.stiltcluster_home,
       state: "present",
       shell: "/bin/bash",
       groups: '{{ "docker" if stiltcluster_docker else omit }}',
@@ -21,7 +22,7 @@ export default [
   {
     name: "Create bin directory",
     file: {
-      path: "{{ stiltcluster_bindir }}",
+      path: V.stiltcluster_bindir,
       state: "directory",
     },
   },

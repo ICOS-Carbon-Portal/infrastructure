@@ -1,4 +1,5 @@
 import { raw, type TaskFile, type When } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,7 +10,7 @@ export default [
   {
     name: "Remove telegraf config file",
     file: {
-      name: "{{ telegraf_config_root }}/{{ telegraf_config_file }}",
+      name: tmpl`${V.telegraf_config_root}/${V.telegraf_config_file}`,
       state: "absent",
     },
     notify: "reload telegraf",

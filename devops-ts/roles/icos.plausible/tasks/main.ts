@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create home directory",
     file: {
-      path: "{{ plausible_home }}",
+      path: V.plausible_home,
       state: "directory",
     },
   },
@@ -13,41 +14,41 @@ export default [
     vars: {
       nginxsite_name: "plausible",
       nginxsite_file: "plausible-nginx.conf",
-      nginxsite_domains: ["{{ plausible_domain }}"],
+      nginxsite_domains: [V.plausible_domain],
     },
   },
   {
     name: "Copy clickhouse-config.xml",
     copy: {
       src: "clickhouse-config.xml",
-      dest: "{{ plausible_home }}/clickhouse/",
+      dest: tmpl`${V.plausible_home}/clickhouse/`,
     },
   },
   {
     name: "Copy clickhouse-user-config.xml",
     copy: {
       src: "clickhouse-user-config.xml",
-      dest: "{{ plausible_home }}/clickhouse/",
+      dest: tmpl`${V.plausible_home}/clickhouse/`,
     },
   },
   {
     name: "Copy plausible-conf.env",
     template: {
       src: "plausible-conf.env",
-      dest: "{{ plausible_home }}",
+      dest: V.plausible_home,
     },
   },
   {
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: "{{ plausible_home }}",
+      dest: V.plausible_home,
     },
   },
   {
     name: "Run plausible docker compose",
     "community.docker.docker_compose_v2": {
-      project_src: "{{ plausible_home }}",
+      project_src: V.plausible_home,
       state: "present",
     },
   },

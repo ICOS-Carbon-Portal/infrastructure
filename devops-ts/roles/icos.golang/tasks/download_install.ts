@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // https://www.digitalocean.com/community/tutorials/how-to-install-go-on-ubuntu-20-04
@@ -23,7 +24,7 @@ export default [
   {
     name: "Download go binary",
     get_url: {
-      url: "{{ golang_url }}",
+      url: V.golang_url,
       dest: "/tmp",
     },
     register: "_download",
@@ -31,7 +32,7 @@ export default [
   {
     name: "Create golang directory",
     file: {
-      path: "{{ golang_opt_dir }}",
+      path: V.golang_opt_dir,
       state: "directory",
     },
   },
@@ -39,7 +40,7 @@ export default [
     name: "Unarchive golang",
     unarchive: {
       src: "{{ _download.dest }}",
-      dest: "{{ golang_opt_dir }}",
+      dest: V.golang_opt_dir,
       remote_src: true,
     },
     diff: false,
@@ -47,8 +48,8 @@ export default [
   {
     name: "Create symlinks for go binaries",
     file: {
-      dest: "/usr/local/bin/{{ item }}",
-      src: "{{ golang_bin_dir }}/{{ item }}",
+      dest: tmpl`/usr/local/bin/${V.item}`,
+      src: tmpl`${V.golang_bin_dir}/${V.item}`,
       state: "link",
     },
     loop: ["go", "gofmt"],

@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create node_exporter user",
     user: {
-      name: "{{ node_exporter_user }}",
-      home: "{{ node_exporter_home }}",
+      name: V.node_exporter_user,
+      home: V.node_exporter_home,
       shell: "/usr/sbin/nologin",
     },
   },
@@ -15,17 +16,17 @@ export default [
       name: "icos.github_download_bin",
     },
     vars: {
-      dbin_download_dest: "{{ node_exporter_download }}",
+      dbin_download_dest: V.node_exporter_download,
       dbin_user: "prometheus",
       dbin_repo: "node_exporter",
       dbin_path: "node_exporter",
-      dbin_arch: "{{ node_exporter_arch }}",
+      dbin_arch: V.node_exporter_arch,
     },
   },
   {
     name: "Create the textfile collector directory",
     file: {
-      path: "{{ node_exporter_textfiles }}",
+      path: V.node_exporter_textfiles,
       // Setup this directory in the same way as /tmp, i.e anyone can write to it
       // but not remove other user's files.
       mode: "1777",
@@ -36,7 +37,7 @@ export default [
     name: "Copy node-exporter systemd files",
     template: {
       dest: "/etc/systemd/system/",
-      src: "{{ item }}",
+      src: V.item,
     },
     loop: [
       "node-exporter.service",
@@ -47,9 +48,9 @@ export default [
   {
     name: "Create the EnvironmentFile used by the systemd service",
     copy: {
-      dest: "{{ node_exporter_environ }}",
+      dest: V.node_exporter_environ,
       content:
-        "OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}\n",
+        tmpl`OPTIONS=--collector.textfile.directory=${V.node_exporter_textfiles}\n`,
     },
   },
   // node-exporter is socket activated, so enable and start the socket
@@ -67,7 +68,7 @@ export default [
     iptables_raw: {
       name: "allow_node_exporter",
       state: "{{ 'present' if node_exporter_allow else 'absent' }}",
-      rules: "-A INPUT -p tcp --dport {{ node_exporter_listen }} -j ACCEPT",
+      rules: tmpl`-A INPUT -p tcp --dport ${V.node_exporter_listen} -j ACCEPT`,
     },
   },
 ] satisfies TaskFile;
