@@ -116,11 +116,11 @@ isDefined("cpauth_domian")         // error: not a known variable
 
 `V` / `tmpl` cover value interpolation (with the `{{ }}` wrapper); `isDefined()`
 (chainable with `.default(...)`) and `not()` cover the `when:` expression context
-(bare name, no wrapper). `isDefined`/`default` check against the user `Vars`
-registry; `not` checks against the `Builtins` registry (`lib/builtins.ts`) of
-Ansible magic vars. A `when:` is typed `When = Expr`, with **no raw-string escape
-hatch** — every condition must be built from a checked helper, so a misspelled
-variable in a `when` can't slip through.
+(bare name, no wrapper). Both accept any `VarName` — a user `Vars` entry **or** an
+Ansible built-in from the `Builtins` registry (`lib/builtins.ts`). A `when:` is
+typed `When = Expr`, with **no raw-string escape hatch** — every condition must be
+built from a checked helper, so a misspelled variable in a `when` can't slip
+through.
 
 For value interpolation, because role-param fields are still plain `string`, a
 raw `"{{ x }}"` also compiles — there `V`/`tmpl` make checked references

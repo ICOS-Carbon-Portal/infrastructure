@@ -86,12 +86,15 @@ export class Expr {
   }
 }
 
+/** Any referenceable variable name: a user `Vars` entry or an Ansible built-in. */
+export type VarName = keyof Vars | keyof Builtins;
+
 /** Start a `when:` expression from a variable: `name is defined`. */
-export function isDefined(name: keyof Vars): Expr {
-  return new Expr(`${name} is defined`, name);
+export function isDefined(name: VarName): Expr {
+  return new Expr(`${name} is defined`, name as string);
 }
 
-/** Negate a boolean built-in: `not("ansible_check_mode")` -> "not ansible_check_mode". */
-export function not(name: keyof Builtins): Expr {
-  return new Expr(`not ${name}`, name);
+/** Negate a boolean variable: `not("ansible_check_mode")` -> "not ansible_check_mode". */
+export function not(name: VarName): Expr {
+  return new Expr(`not ${name}`, name as string);
 }
