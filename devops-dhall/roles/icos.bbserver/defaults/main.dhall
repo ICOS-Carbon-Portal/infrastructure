@@ -1,9 +1,0 @@
--- Auto-generated from ../../../../devops/roles/icos.bbserver/defaults/main.yml
-
-{
-    bbserver_user = "bbserver"
-  , bbserver_home = "/home/bbserver"
-  , bbserver_repo_home = "{{ bbserver_home }}/repos"
-  , bbserver_monitor_home = "{{ bbserver_home }}/monitor"
-  , bbserver_textfiles = "/opt/node_exporter/textfiles"
-}

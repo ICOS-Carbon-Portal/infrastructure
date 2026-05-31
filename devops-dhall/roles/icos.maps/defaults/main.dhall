@@ -1,8 +1,0 @@
--- Auto-generated from ../../../../devops/roles/icos.maps/defaults/main.yml
-
-{
-    maps_domains = [ "maps.icos-cp.eu", "maps.fieldsites.se" ]
-  , maps_lantmateriet_loc = "lm"
-  , maps_lantmateriet_url = "https://maps.lantmateriet.se/"
-  , maps_lantmateriet_auth = "{{ vault_maps_lantmateriet_auth }}"
-}

@@ -1,8 +1,0 @@
--- Auto-generated from ../../../../devops/cities.inventory/group_vars/core_host/vars.yml
-
-{
-    postgis_admin_pass = "{{ vault_postgis_admin_pass }}"
-  , postgis_writer_pass = "{{ vault_postgis_writer_pass }}"
-  , postgis_reader_pass = "{{ vault_postgis_reader_pass }}"
-  , rdflog_db_pass = "{{ vault_rdflog_db_pass }}"
-}
