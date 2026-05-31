@@ -2,11 +2,12 @@
 // devops/ layout. Each unit's devops-relative path (e.g. roles/icos.x/tasks/
 // main.yml) becomes <outdir>/<that path>.
 //
-// By default the output is a COMPLETE mirror of devops' YAML: TS-backed files
-// are rendered, and the .yml files with no TS counterpart (encrypted vaults,
-// app payloads under files/templates, empty task files) are copied verbatim so
-// the output has the same set of .yml files as devops. Pass --rendered-only to
-// emit just the rendered files.
+// Self-contained: does NOT need the devops/ source. By default the output is a
+// COMPLETE mirror — TS-backed files are rendered, and the un-portable .yml
+// (encrypted vaults, app payloads under files/templates, empty task files),
+// pre-vendored into assets/ by vendor-assets.ts, are copied verbatim so the
+// output has the same set of .yml files as devops. Pass --rendered-only to emit
+// just the rendered files (assets/ then not needed at all).
 //
 //   deno run --allow-read --allow-write render-all.ts [outdir] [--rendered-only]
 //   deno task render-all ../devops-rendered
@@ -23,7 +24,7 @@ const outDir = new URL(
   // resolve relative to the current working directory
   `file://${Deno.cwd()}/`,
 );
-const origDir = new URL("../devops/", import.meta.url);
+const assetsDir = new URL("./assets/", import.meta.url);
 
 /** Write text to <outDir>/<rel>, creating parent directories. */
 async function writeOut(rel: string, text: string) {
@@ -32,10 +33,12 @@ async function writeOut(rel: string, text: string) {
   await Deno.writeTextFile(dest, text);
 }
 
-// Fresh output dir (refuse to clobber the devops source itself).
-if (outDir.href === origDir.href) {
-  console.error("error: output dir must not be the devops source dir");
-  Deno.exit(2);
+// Refuse to clobber the project's own source dirs.
+for (const guard of [assetsDir, new URL("./", import.meta.url)]) {
+  if (outDir.href === guard.href) {
+    console.error("error: refusing to write output into a source directory");
+    Deno.exit(2);
+  }
 }
 try {
   await Deno.remove(outDir, { recursive: true });
@@ -43,7 +46,6 @@ try {
 await Deno.mkdir(outDir, { recursive: true });
 
 const units = await collectUnits();
-const renderedRels = new Set(units.map((u) => u.rel));
 
 let rendered = 0;
 const failures: string[] = [];
@@ -57,26 +59,31 @@ for (const unit of units) {
   }
 }
 
-// Copy every devops .yml that has no TS counterpart, so the mirror is complete.
+// Copy the vendored un-portable .yml (assets/) verbatim to complete the mirror.
+// Sourced from assets/, so no devops/ dependency.
 let copied = 0;
 if (!renderedOnly) {
   async function walk(dir: URL, rel: string) {
-    for await (const e of Deno.readDir(dir)) {
+    let entries: Deno.DirEntry[] = [];
+    try {
+      for await (const e of Deno.readDir(dir)) entries.push(e);
+    } catch {
+      return; // assets/ not vendored yet
+    }
+    for (const e of entries) {
       const childRel = rel ? `${rel}/${e.name}` : e.name;
       if (e.isDirectory) {
         await walk(new URL(`${e.name}/`, dir), childRel);
-      } else if (
-        e.isFile && e.name.endsWith(".yml") && !renderedRels.has(childRel)
-      ) {
+      } else if (e.isFile && e.name.endsWith(".yml")) {
         await writeOut(
           childRel,
-          await Deno.readTextFile(new URL(childRel, origDir)),
+          await Deno.readTextFile(new URL(childRel, assetsDir)),
         );
         copied++;
       }
     }
   }
-  await walk(origDir, "");
+  await walk(assetsDir, "");
 }
 
 console.log(`Rendered ${rendered} files to ${outArg}`);
