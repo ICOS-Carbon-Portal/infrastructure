@@ -157,7 +157,12 @@ for (const rel of await dataYmls()) {
 
   /** A templated string -> structured V/expr/tmpl/rawTmpl. */
   function strTemplate(v: string): string {
-    const pieces = parseJinja(v).map((seg) => {
+    // Annotate the callback's return type: without it, inference normalizes the
+    // union to `{ lit; interp?: undefined } | { interp; lit?: undefined }` (so
+    // the filter can read `p.lit` on both arms), and that shared `interp` key
+    // defeats the `"interp" in pieces[0]` discriminant below.
+    type Piece = { lit: string } | { interp: string };
+    const pieces = parseJinja(v).map((seg): Piece => {
       if (seg.kind === "lit") return { lit: bt(seg.text) };
       if (seg.canonical && seg.delim === "{{") {
         if (isBareIdent(seg.inner) && known.has(seg.inner)) {
