@@ -6,15 +6,16 @@ const _write_conf = register("_write_conf");
 
 export default [
   {
-    name: "Check if {{ certbot_conf_name }} exists",
+    name: tmpl("Check if {{ certbot_conf_name }} exists"),
     stat: {
       path: V.certbot_conf_path,
     },
     register: _conf_file,
   },
   {
-    name:
+    name: tmpl(
       "Create an initial nginx {{ certbot_conf_name }} for the certbot certification",
+    ),
     copy: {
       dest: V.certbot_conf_path,
       content: `server {

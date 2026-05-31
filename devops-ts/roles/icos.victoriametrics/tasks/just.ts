@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,14 +18,14 @@ export default [
     name: "Create executable symlink to justfile",
     file: {
       dest: "/usr/local/bin/ops-victoriametrics",
-      src: "{{ _justfile.dest }}",
+      src: tmpl("{{ _justfile.dest }}"),
       state: "link",
     },
     register: "_symlink",
   },
   {
     name: "Check that the justfile is executable",
-    shell: "{{ _symlink.dest }}",
+    shell: tmpl("{{ _symlink.dest }}"),
     changed_when: false,
   },
 ] satisfies TaskFile;

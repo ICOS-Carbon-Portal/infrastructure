@@ -19,7 +19,7 @@ export default [
   {
     name: "Create caddy systemd drop-in directory",
     file: {
-      path: "{{ caddy_dropin_path | dirname }}",
+      path: tmpl("{{ caddy_dropin_path | dirname }}"),
       state: "directory",
     },
   },

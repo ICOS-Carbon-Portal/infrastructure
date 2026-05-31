@@ -17,7 +17,7 @@ export default [
   },
   {
     include_tasks: "single_repo.yml",
-    loop: "{{ bbclient_remotes }}",
+    loop: tmpl("{{ bbclient_remotes }}"),
     loop_control: { loop_var: "bbclient_remote" },
   },
   {

@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,9 +8,9 @@ export default [
       name: "mtail",
     },
   },
-  loopOver<{ key: string; val: string }>(
+  loopOver<{ key: Tmpl; val: Tmpl }>(
     [
-      { key: "LOGS", val: "{{ mtail_logs | join(',') }}" },
+      { key: "LOGS", val: tmpl("{{ mtail_logs | join(',') }}") },
       { key: "PORT", val: V.mtail_port },
       { key: "HOST", val: V.mtail_host },
     ],
@@ -18,8 +18,8 @@ export default [
       name: "Configure mtail",
       lineinfile: {
         path: "/etc/default/mtail",
-        regexp: "^#?{{ item.key }}=",
-        line: "{{ item.key }}={{ item.val }}",
+        regexp: tmpl("^#?{{ item.key }}="),
+        line: tmpl("{{ item.key }}={{ item.val }}"),
         state: "present",
         create: false,
       },
@@ -52,7 +52,7 @@ export default [
       state: "absent",
     },
     notify: "reload mtail",
-    loop: "{{ _find.files | map(attribute='path') }}",
+    loop: tmpl("{{ _find.files | map(attribute='path') }}"),
   },
   {
     name: "Start mtail service",

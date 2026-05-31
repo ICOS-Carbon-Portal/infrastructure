@@ -1,4 +1,5 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -29,7 +30,7 @@ export default [
 `,
     },
   },
-  loopOver<{ f: string; s: string }>(
+  loopOver<{ f: Tmpl; s: Tmpl }>(
     [
       { s: "auth_verbose", f: "/etc/dovecot/conf.d/10-logging.conf" },
       { s: "auth_debug", f: "/etc/dovecot/conf.d/10-logging.conf" },
@@ -41,8 +42,8 @@ export default [
       lineinfile: {
         path: item.f,
         // Only change commented-out lines, thus replacing the defaults.
-        regex: "(?:^#\\s*{{ item.s }}\\s*=)|(?:^{{ item.s }} = yes)",
-        line: "{{ item.s }} = yes",
+        regex: tmpl("(?:^#\\s*{{ item.s }}\\s*=)|(?:^{{ item.s }} = yes)"),
+        line: tmpl("{{ item.s }} = yes"),
         state: "present",
       },
     }),

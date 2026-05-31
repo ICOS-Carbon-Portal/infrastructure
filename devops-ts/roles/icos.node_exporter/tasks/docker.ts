@@ -23,7 +23,7 @@ export default [
         "PYTHONUNBUFFERED=1",
         "PATH=/usr/bin:/usr/local/bin",
       ],
-      timer_content: "{{ lookup('template', 'dockermon.py') }}",
+      timer_content: tmpl("{{ lookup('template', 'dockermon.py') }}"),
       timer_exec:
         tmpl`/bin/bash -c 'set -o pipefail && {{ timer_dest }} | uniq | sponge ${V.dockermon_prom}'`,
     },

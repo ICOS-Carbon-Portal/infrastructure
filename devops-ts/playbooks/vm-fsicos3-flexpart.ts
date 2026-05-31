@@ -1,4 +1,4 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -6,7 +6,7 @@ export default [
     vars: {
       // These variable are prefixed with 'jupyter_' instead of 'flexpart_' so
       // that we can reuse files/jupyter.conf without change.
-      jupyter_ip: "{{ _lxd.addresses.eth0 | first }}",
+      jupyter_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
       jupyter_domains: [
         "flexpart.icos-cp.eu",
       ],
@@ -31,8 +31,8 @@ export default [
         file: {
           path: "/data/flexpart/output",
           state: "directory",
-          owner: "{{ 1001000 }}",
-          group: "{{ 1001000 }}",
+          owner: tmpl("{{ 1001000 }}"),
+          group: tmpl("{{ 1001000 }}"),
         },
       },
       {
@@ -131,19 +131,19 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}",
+        lxd_forward_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
         lxd_forward_name: "flexpart",
       }),
 
       role("icos.certbot2", {
         certbot_name: "flexpart",
-        certbot_domains: "{{ jupyter_domains }}",
+        certbot_domains: tmpl("{{ jupyter_domains }}"),
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "flexpart",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: "{{ jupyter_domains | first }}",
+        jupyter_domain: tmpl("{{ jupyter_domains | first }}"),
         jupyter_cert_name: "flexpart",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -154,7 +154,7 @@ export default [
     roles: [
       role("icos.lxd_guest", {
         user_disable_coredump: true,
-        user_conf: "{{ vault_ganymede_user_conf }}",
+        user_conf: tmpl("{{ vault_ganymede_user_conf }}"),
       }).tags("guest"),
 
       role("icos.docker").tags("docker"),
@@ -164,7 +164,7 @@ export default [
       }).tags("flexpart"),
 
       role("icos.jupyter", {
-        jupyter_admins: "{{ vault_flexpart_admins }}",
+        jupyter_admins: tmpl("{{ vault_flexpart_admins }}"),
         jupyter_backup_enable: false,
       }).tags("jupyter"),
     ],
@@ -177,7 +177,7 @@ export default [
         "community.general.docker_login": {
           registry_url: "registry.icos-cp.eu",
           username: "docker",
-          password: "{{ vault_registry_pass }}",
+          password: tmpl("{{ vault_registry_pass }}"),
         },
       },
     ],

@@ -33,15 +33,16 @@ export default [
   {
     name: "Extract the version-specific directory of tomcat",
     set_fact: {
-      quince_tomcat_dir:
+      quince_tomcat_dir: tmpl(
         "{{ (_fs.files | sort(attribute='path') | last).path  }}",
+      ),
     },
   },
   {
     name: "Create /opt/tomcat symlink",
     file: {
       dest: V.quince_tomcat_home,
-      src: "{{ quince_tomcat_dir }}",
+      src: tmpl("{{ quince_tomcat_dir }}"),
       state: "link",
     },
   },

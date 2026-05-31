@@ -1,14 +1,14 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create postgres db users",
     become: true,
     postgresql_user: {
-      db: "{{ db_name }}",
-      name: "{{ item.username }}",
-      password: "{{ item.password }}",
+      db: tmpl("{{ db_name }}"),
+      name: tmpl("{{ item.username }}"),
+      password: tmpl("{{ item.password }}"),
       login_user: V.postgis_db_user,
       login_password: V.postgis_db_pass,
       login_host: "127.0.0.1",

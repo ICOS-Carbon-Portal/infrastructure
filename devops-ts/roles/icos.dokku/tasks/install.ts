@@ -1,4 +1,5 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -15,11 +16,12 @@ export default [
     name: "Add dokku apt repository",
     apt_repository: {
       filename: "dokku",
-      repo:
+      repo: tmpl(
         "deb [signed-by={{ _key.dest }}] https://packagecloud.io/dokku/dokku/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main",
+      ),
     },
   },
-  loopOver<{ question: string; value: string; vtype: string }>(
+  loopOver<{ question: Tmpl; value: Tmpl; vtype: Tmpl }>(
     [
       { question: "dokku/vhost_enable", value: "true", vtype: "boolean" },
       {

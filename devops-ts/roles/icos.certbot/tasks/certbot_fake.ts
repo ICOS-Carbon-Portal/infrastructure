@@ -3,7 +3,7 @@ import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    include_vars: "vars/{{ ansible_distribution | lower }}.yml",
+    include_vars: tmpl("vars/{{ ansible_distribution | lower }}.yml"),
   },
   {
     name: "Create self-signed certificate",

@@ -16,8 +16,8 @@ export default [
     name: "Use sshlogin_user to derive sshlogin_{src,dst}_user",
     when: raw("sshlogin_user is defined"),
     set_fact: {
-      sshlogin_src_user: "{{ sshlogin_user }}",
-      sshlogin_dst_user: "{{ sshlogin_user }}",
+      sshlogin_src_user: tmpl("{{ sshlogin_user }}"),
+      sshlogin_dst_user: tmpl("{{ sshlogin_user }}"),
     },
   },
   {
@@ -34,27 +34,29 @@ export default [
   },
   // SRC - Create user and directories
   {
-    name: "Create {{ sshlogin_src_user }} user",
+    name: tmpl("Create {{ sshlogin_src_user }} user"),
     user: {
-      name: "{{ sshlogin_src_user }}",
-      home: "{{ sshlogin_src_home | default(omit) }}",
+      name: tmpl("{{ sshlogin_src_user }}"),
+      home: tmpl("{{ sshlogin_src_home | default(omit) }}"),
       generate_ssh_key: true,
     },
     register: "_src_user",
   },
   // DST - Retrieve IP and host keys
   {
-    delegate_to: "{{ sshlogin_dst }}",
+    delegate_to: tmpl("{{ sshlogin_dst }}"),
     name: "Retrieve destination host keys",
     shellfact: {
-      exec: 'ssh-keyscan localhost | sed "s/^localhost/{{ sshlogin_dst }}/"',
+      exec: tmpl(
+        'ssh-keyscan localhost | sed "s/^localhost/{{ sshlogin_dst }}/"',
+      ),
       fact: "sshlogin_dst_host_keys",
     },
   },
   // SRC - Add known_hosts and generate key
   {
     become: true,
-    become_user: "{{ sshlogin_src_user }}",
+    become_user: tmpl("{{ sshlogin_src_user }}"),
     block: [
       {
         name: "Update known_hosts",
@@ -63,12 +65,12 @@ export default [
           name: V.sshlogin_src_dst,
           key: V.item,
         },
-        loop: "{{ sshlogin_dst_host_keys.strip().split('\\n') }}",
+        loop: tmpl("{{ sshlogin_dst_host_keys.strip().split('\\n') }}"),
       },
       {
         name: "Add ssh config",
         blockinfile: {
-          marker: "# {mark} ansible / sshlogin {{ sshlogin_dst }}",
+          marker: tmpl("# {mark} ansible / sshlogin {{ sshlogin_dst }}"),
           create: true,
           path: V.sshlogin_src_ssh_config,
           block: `Host {{ sshlogin_src_dst_name }}
@@ -82,22 +84,22 @@ export default [
   },
   // DST - Add key
   {
-    delegate_to: "{{ sshlogin_dst }}",
+    delegate_to: tmpl("{{ sshlogin_dst }}"),
     block: [
       {
         name: "Create destination user",
         user: {
-          name: "{{ sshlogin_dst_user }}",
-          home: "{{ sshlogin_dst_home | default(omit) }}",
+          name: tmpl("{{ sshlogin_dst_user }}"),
+          home: tmpl("{{ sshlogin_dst_home | default(omit) }}"),
         },
         register: "_dst_user",
       },
       {
         name: "Install public key",
         authorized_key: {
-          user: "{{ sshlogin_dst_user }}",
+          user: tmpl("{{ sshlogin_dst_user }}"),
           state: "present",
-          key: "{{ _src_user.ssh_public_key }}",
+          key: tmpl("{{ _src_user.ssh_public_key }}"),
           key_options: V.sshlogin_dst_key_options,
         },
       },

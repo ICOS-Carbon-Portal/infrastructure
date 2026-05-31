@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -10,7 +10,7 @@ export default [
       mode: "og-rw",
     },
   },
-  loopOver<{ file: string; set_fact: string; file_var: string }>(
+  loopOver<{ file: Tmpl; set_fact: Tmpl; file_var: Tmpl }>(
     [
       {
         file: tmpl`${V.nextcloud_home}/.pg-root-pass`,

@@ -5,175 +5,176 @@
 // wrong-typed module arg is caught; the long tail of rarer modules falls
 // through Task's index signature instead of being enumerated here.
 import type { VarValue } from "./ansible.ts";
+import type { Tmpl } from "./template.ts";
 
 /** A boolean that may be written as a Jinja template (`"{{ x }}"`). */
-export type Flag = boolean | string;
+export type Flag = boolean | Tmpl;
 /** A file mode: `"0644"` or `0644`. */
-export type Mode = string | number;
+export type Mode = Tmpl | number;
 /** A package/name field that may be one name or a list. */
-export type Names = string | string[];
+export type Names = Tmpl | Tmpl[];
 
 export type FileArgs = {
-  state?: string;
-  path?: string;
-  name?: string;
-  dest?: string;
-  src?: string;
-  owner?: string | number;
-  group?: string | number;
+  state?: Tmpl;
+  path?: Tmpl;
+  name?: Tmpl;
+  dest?: Tmpl;
+  src?: Tmpl;
+  owner?: Tmpl | number;
+  group?: Tmpl | number;
   mode?: Mode;
   recurse?: Flag;
-  modification_time?: string;
-  access_time?: string;
+  modification_time?: Tmpl;
+  access_time?: Tmpl;
 };
 export type CopyArgs = {
-  dest: string;
-  src?: string;
-  content?: string;
+  dest: Tmpl;
+  src?: Tmpl;
+  content?: Tmpl;
   mode?: Mode;
-  owner?: string;
-  group?: string;
+  owner?: Tmpl;
+  group?: Tmpl;
   backup?: Flag;
   remote_src?: Flag;
   force?: Flag;
-  validate?: string;
+  validate?: Tmpl;
 };
 export type TemplateArgs = {
-  src: string;
-  dest: string;
+  src: Tmpl;
+  dest: Tmpl;
   mode?: Mode;
-  owner?: string;
-  group?: string;
+  owner?: Tmpl;
+  group?: Tmpl;
   backup?: Flag;
   lstrip_blocks?: Flag;
-  validate?: string;
-  variable_start_string?: string;
-  variable_end_string?: string;
+  validate?: Tmpl;
+  variable_start_string?: Tmpl;
+  variable_end_string?: Tmpl;
 };
 export type SystemdArgs = {
-  name?: string;
-  state?: string;
+  name?: Tmpl;
+  state?: Tmpl;
   enabled?: Flag;
-  status?: string;
+  status?: Tmpl;
   daemon_reload?: Flag;
   "daemon-reload"?: Flag;
 };
 export type ServiceArgs =
-  | string
-  | { name?: string; state?: string; enabled?: Flag };
+  | Tmpl
+  | { name?: Tmpl; state?: Tmpl; enabled?: Flag };
 export type AptArgs = {
   name?: Names;
-  state?: string;
+  state?: Tmpl;
   update_cache?: Flag;
-  deb?: string;
-  cache_valid_time?: string | number;
+  deb?: Tmpl;
+  cache_valid_time?: Tmpl | number;
   upgrade?: Flag;
   purge?: Flag;
   autoclean?: Flag;
   autoremove?: Flag;
   install_recommends?: Flag;
 };
-export type PackageArgs = string | { name?: Names; state?: string };
+export type PackageArgs = Tmpl | { name?: Names; state?: Tmpl };
 export type UserArgs = {
-  name: string;
-  home?: string;
-  shell?: string;
+  name: Tmpl;
+  home?: Tmpl;
+  shell?: Tmpl;
   groups?: Names;
-  group?: string;
+  group?: Tmpl;
   append?: Flag;
   create_home?: Flag;
-  state?: string;
-  password?: string;
+  state?: Tmpl;
+  password?: Tmpl;
   system?: Flag;
   generate_ssh_key?: Flag;
-  remove?: string;
-  uid?: string | number;
+  remove?: Tmpl;
+  uid?: Tmpl | number;
   non_unique?: Flag;
   password_lock?: Flag;
 };
 export type UriArgs = {
-  url: string;
+  url: Tmpl;
   return_content?: Flag;
-  method?: string;
-  user?: string;
-  password?: string;
+  method?: Tmpl;
+  user?: Tmpl;
+  password?: Tmpl;
 };
-export type DebugArgs = string | { msg?: string; var?: string };
-export type FailArgs = { msg: string };
-export type StatArgs = { path: string };
-export type ShellArgs = string | { cmd?: string };
-export type SetFactArgs = string | Record<string, VarValue>;
+export type DebugArgs = Tmpl | { msg?: Tmpl; var?: Tmpl };
+export type FailArgs = { msg: Tmpl };
+export type StatArgs = { path: Tmpl };
+export type ShellArgs = Tmpl | { cmd?: Tmpl };
+export type SetFactArgs = Tmpl | Record<string, VarValue>;
 export type GetUrlArgs = {
-  url: string;
-  dest: string;
+  url: Tmpl;
+  dest: Tmpl;
   mode?: Mode;
   force?: Flag;
 };
 export type UnarchiveArgs = {
-  src: string;
-  dest: string;
+  src: Tmpl;
+  dest: Tmpl;
   remote_src?: Flag;
-  extra_opts?: string[];
-  include?: string[];
-  owner?: string;
-  group?: string;
+  extra_opts?: Tmpl[];
+  include?: Tmpl[];
+  owner?: Tmpl;
+  group?: Tmpl;
   mode?: Mode;
-  creates?: string;
+  creates?: Tmpl;
   list_files?: Flag;
 };
-export type PipArgs = string | {
+export type PipArgs = Tmpl | {
   name?: Names;
-  virtualenv?: string;
-  state?: string;
-  virtualenv_command?: string;
-  requirements?: string;
+  virtualenv?: Tmpl;
+  state?: Tmpl;
+  virtualenv_command?: Tmpl;
+  requirements?: Tmpl;
 };
 export type BlockinfileArgs = {
-  path: string;
-  marker?: string;
-  block?: string;
+  path: Tmpl;
+  marker?: Tmpl;
+  block?: Tmpl;
   create?: Flag;
-  insertafter?: string;
-  insertbefore?: string;
-  state?: string;
+  insertafter?: Tmpl;
+  insertbefore?: Tmpl;
+  state?: Tmpl;
   backup?: Flag;
   mode?: Mode;
 };
 export type LineinfileArgs = {
-  path: string;
-  line?: string;
-  state?: string;
-  regex?: string;
-  regexp?: string;
+  path: Tmpl;
+  line?: Tmpl;
+  state?: Tmpl;
+  regex?: Tmpl;
+  regexp?: Tmpl;
   backrefs?: Flag;
   create?: Flag;
-  insertafter?: string;
-  insertbefore?: string;
-  owner?: string;
-  group?: string;
+  insertafter?: Tmpl;
+  insertbefore?: Tmpl;
+  owner?: Tmpl;
+  group?: Tmpl;
   mode?: Mode;
 };
 export type CronArgs = {
-  name: string;
-  job?: string;
-  user?: string;
-  hour?: string;
-  minute?: string;
-  state?: string;
-  special_time?: string;
+  name: Tmpl;
+  job?: Tmpl;
+  user?: Tmpl;
+  hour?: Tmpl;
+  minute?: Tmpl;
+  state?: Tmpl;
+  special_time?: Tmpl;
 };
 export type GitArgs = {
-  repo: string;
-  dest: string;
-  version?: string;
+  repo: Tmpl;
+  dest: Tmpl;
+  version?: Tmpl;
   update?: Flag;
   force?: Flag;
-  key_file?: string;
+  key_file?: Tmpl;
 };
 export type AuthorizedKeyArgs = {
-  user: string;
-  key: string;
-  state?: string;
-  key_options?: string;
+  user: Tmpl;
+  key: Tmpl;
+  state?: Tmpl;
+  key_options?: Tmpl;
   exclusive?: Flag;
 };

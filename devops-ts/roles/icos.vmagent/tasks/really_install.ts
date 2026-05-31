@@ -26,7 +26,7 @@ export default [
   {
     name: "Unarchive vmagent",
     unarchive: {
-      src: "{{ url.dest }}",
+      src: tmpl("{{ url.dest }}"),
       dest: V.vmagent_bin,
       remote_src: true,
     },

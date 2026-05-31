@@ -17,7 +17,7 @@ export default [
   {
     name: "Decode nebula_ssh_public",
     set_fact: {
-      nebula_ssh_public: "{{ _slurp.content | b64decode }}",
+      nebula_ssh_public: tmpl("{{ _slurp.content | b64decode }}"),
     },
   },
 ] satisfies TaskFile;

@@ -1,11 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: "Add {{ username }} user",
+    name: tmpl("Add {{ username }} user"),
     user: {
-      name: "{{ username }}",
+      name: tmpl("{{ username }}"),
       groups: V.extra_groups,
       append: true,
       shell: "/bin/bash",
@@ -17,20 +17,20 @@ export default [
     when: raw("not (jarservice_conf_only | default(False) | bool)"),
   },
   {
-    name: "Copy {{ servicename }} config file {{ configfile }}",
+    name: tmpl("Copy {{ servicename }} config file {{ configfile }}"),
     template: {
-      src: "{{ configfile }}",
-      dest: "{{ _user.home}}/",
+      src: tmpl("{{ configfile }}"),
+      dest: tmpl("{{ _user.home}}/"),
     },
-    notify: "restart {{ servicename }}",
+    notify: tmpl("restart {{ servicename }}"),
   },
   {
-    name: "Copy {{ servicename }} nginx config file(s) {{nginxconfig}}*",
+    name: tmpl("Copy {{ servicename }} nginx config file(s) {{nginxconfig}}*"),
     template: {
       src: V.item,
       dest: "/etc/nginx/conf.d/",
     },
-    with_fileglob: ["{{nginxconfig}}*"],
+    with_fileglob: [tmpl("{{nginxconfig}}*")],
     // Our nginx config template is dependent on a variable set by
     // certbot. This means that if the certbot role is disabled, we
     // cannot deploy the config.
@@ -38,15 +38,15 @@ export default [
     notify: "reload nginx config",
   },
   {
-    name: "Add systemd {{ servicename }} servicefile",
+    name: tmpl("Add systemd {{ servicename }} servicefile"),
     template: {
-      src: "{{ servicetemplate }}",
-      dest: "/etc/systemd/system/{{ servicename }}.service",
+      src: tmpl("{{ servicetemplate }}"),
+      dest: tmpl("/etc/systemd/system/{{ servicename }}.service"),
     },
     notify: ["reload systemd config"],
   },
   {
-    name: "Enable systemd {{ servicename }}",
-    service: "name={{ servicename }} enabled=yes state=started",
+    name: tmpl("Enable systemd {{ servicename }}"),
+    service: tmpl("name={{ servicename }} enabled=yes state=started"),
   },
 ] satisfies TaskFile;

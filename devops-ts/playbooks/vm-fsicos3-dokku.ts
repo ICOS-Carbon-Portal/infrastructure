@@ -1,4 +1,4 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -24,8 +24,9 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "dokku",
-        certbot_domains:
+        certbot_domains: tmpl(
           "{{ (dokku_static_domains + dokku_redirect_domains) }}",
+        ),
       }).tags("cert"),
 
       role("icos.nginxsite", {

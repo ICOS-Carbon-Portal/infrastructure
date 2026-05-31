@@ -1,4 +1,9 @@
-import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  loopOver,
+  raw,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -52,7 +57,7 @@ export default [
       owner: V.opendkim_user,
       group: V.opendkim_user,
     },
-    loop: "{{ opendkim_domains }}",
+    loop: tmpl("{{ opendkim_domains }}"),
   },
   {
     name: "Create domain keys",
@@ -64,7 +69,7 @@ export default [
       chdir: tmpl`${V.opendkim_keys}/${V.item}`,
       creates: "default.private",
     },
-    loop: "{{ opendkim_domains }}",
+    loop: tmpl("{{ opendkim_domains }}"),
   },
   {
     name: "Find domain keys that needs to be added to DNS",
@@ -95,13 +100,13 @@ done`,
   {
     name: "Create socket directory",
     file: {
-      path: "{{ opendkim_sock | dirname }}",
+      path: tmpl("{{ opendkim_sock | dirname }}"),
       state: "directory",
       owner: "opendkim",
       group: "postfix",
     },
   },
-  loopOver<{ param: string; value: string; append?: boolean }>(
+  loopOver<{ param: Tmpl; value: Tmpl; append?: boolean }>(
     [
       {
         param: "smtpd_milters",
@@ -118,7 +123,7 @@ done`,
       postconf: {
         param: item.param,
         value: item.value,
-        append: "{{ item.append | default(omit) }}",
+        append: tmpl("{{ item.append | default(omit) }}"),
       },
       notify: "Restart postfix",
     }),

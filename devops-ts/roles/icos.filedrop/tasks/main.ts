@@ -1,4 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -19,16 +20,16 @@ export default [
     include_role: { name: "icos.jarservice2" },
     vars: {
       jarservice_name: "filedrop",
-      jarservice_home: "{{ _user.home }}",
-      jarservice_local: "{{ filedrop_jar_file }}",
-      jarservice_unit: "{{ lookup('template', 'filedrop.service') }}",
+      jarservice_home: tmpl("{{ _user.home }}"),
+      jarservice_local: tmpl("{{ filedrop_jar_file }}"),
+      jarservice_unit: tmpl("{{ lookup('template', 'filedrop.service') }}"),
     },
     when: raw("filedrop_jar_file is defined"),
   },
   {
     name: "Create filedrop config file",
     copy: {
-      dest: "{{ _user.home }}/application.conf",
+      dest: tmpl("{{ _user.home }}/application.conf"),
       content: `cpfiledrop{
         folder = "{{ filedrop_data_home }}"
 }

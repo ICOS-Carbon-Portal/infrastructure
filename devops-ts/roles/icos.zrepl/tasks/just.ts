@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -7,15 +8,15 @@ export default [
       src: "ops-zrepl",
       dest: "/usr/local/sbin/",
       mode: "+x",
-      variable_start_string: "{{ '{{{' }}",
-      variable_end_string: "{{ '}}}' }}",
+      variable_start_string: tmpl("{{ '{{{' }}"),
+      variable_end_string: tmpl("{{ '}}}' }}"),
       lstrip_blocks: true,
     },
     register: "_justfile",
   },
   {
     name: "Check that the justfile is executable",
-    shell: "{{ _justfile.dest }}",
+    shell: tmpl("{{ _justfile.dest }}"),
     changed_when: false,
   },
 ] satisfies TaskFile;

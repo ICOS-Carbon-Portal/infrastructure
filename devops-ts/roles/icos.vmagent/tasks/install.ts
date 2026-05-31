@@ -1,8 +1,13 @@
-import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  loopOver,
+  raw,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
-  loopOver<{ path: string; mode?: string }>(
+  loopOver<{ path: Tmpl; mode?: Tmpl }>(
     [
       { path: V.vmagent_home, mode: "0700" },
       { path: V.vmagent_bin },
@@ -13,7 +18,7 @@ export default [
       name: "Create vmagent directories",
       file: {
         path: item.path,
-        mode: "{{ item.mode | default(omit) }}",
+        mode: tmpl("{{ item.mode | default(omit) }}"),
         state: "directory",
       },
     }),

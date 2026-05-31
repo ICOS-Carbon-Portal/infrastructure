@@ -1,4 +1,4 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -60,7 +60,7 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}",
+        lxd_forward_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
         lxd_forward_name: "erddap",
       }),
       role("icos.certbot2").tags("cert"),

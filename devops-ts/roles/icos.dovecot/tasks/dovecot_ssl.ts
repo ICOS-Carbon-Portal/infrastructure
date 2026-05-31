@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -9,7 +9,7 @@ export default [
       dest: "/etc/dovecot/conf.d/",
     },
   },
-  loopOver<{ line: string; regex?: string }>(
+  loopOver<{ line: Tmpl; regex?: Tmpl }>(
     [
       {
         line: "ssl = required",
@@ -34,7 +34,7 @@ export default [
       lineinfile: {
         path: "/etc/dovecot/conf.d/10-ssl.conf",
         state: "present",
-        regex: "{{ item.regex | default(omit) }}",
+        regex: tmpl("{{ item.regex | default(omit) }}"),
         line: item.line,
       },
     }),

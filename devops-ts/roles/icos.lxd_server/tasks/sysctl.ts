@@ -1,8 +1,8 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 
 export default [
   // https://linuxcontainers.org/lxd/docs/master/production-setup/
-  loopOver<{ name: string; value: number }>(
+  loopOver<{ name: Tmpl; value: number }>(
     [
       // "Maximum number of concurrent asynchronous I/O operations (you might need
       // to increase this limit further if you have a lot of workloads that use

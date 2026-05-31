@@ -21,7 +21,7 @@ export default [
       {
         name: "Set borg_version fact",
         set_fact: {
-          borg_version: "{{ gh.tag.lstrip('v') }}",
+          borg_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -37,7 +37,7 @@ export default [
   {
     name: "Download borg",
     get_url: {
-      url: "{{ borg_url_map[ansible_architecture] }}",
+      url: tmpl("{{ borg_url_map[ansible_architecture] }}"),
       dest: V.borg_bin,
       force: V.borg_upgrade,
       mode: "+x",

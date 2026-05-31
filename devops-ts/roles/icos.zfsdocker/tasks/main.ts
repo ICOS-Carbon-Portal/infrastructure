@@ -3,9 +3,9 @@ import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: "Create docker storage volume for {{ zfsdocker_name }}",
+    name: tmpl("Create docker storage volume for {{ zfsdocker_name }}"),
     zfs: {
-      name: "pool/docker/{{ zfsdocker_name }}",
+      name: tmpl("pool/docker/{{ zfsdocker_name }}"),
       state: "present",
       extra_zfs_properties: {
         volsize: V.zfsdocker_size,
@@ -13,14 +13,14 @@ export default [
     },
   },
   {
-    name: "Create a btrfs filesystem on {{ zfsdocker_name }}",
+    name: tmpl("Create a btrfs filesystem on {{ zfsdocker_name }}"),
     tags: ["zfs", "zfsdocker"],
     filesystem: {
       dev: V.zfsdocker_zvol,
       fstype: "btrfs",
       // Label the filesystem, this makes the output from 'btrfs filesystem
       // show' easier to understand.
-      opts: "-L docker_{{ zfsdocker_name }}",
+      opts: tmpl("-L docker_{{ zfsdocker_name }}"),
     },
   },
   {

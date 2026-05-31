@@ -23,7 +23,7 @@ export default [
     name: "Add passwd-file authentication to dovecot",
     lineinfile: {
       path: "/etc/dovecot/conf.d/10-auth.conf",
-      line: "!include {{ dovecot_auth_file | basename }}",
+      line: tmpl("!include {{ dovecot_auth_file | basename }}"),
       state: "present",
     },
   },

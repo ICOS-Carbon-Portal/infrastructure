@@ -21,7 +21,7 @@ export default [
       {
         name: "Set just_version fact",
         set_fact: {
-          just_version: "{{ gh.tag.lstrip('v') }}",
+          just_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -31,7 +31,7 @@ export default [
     name: "Install just",
     unarchive: {
       remote_src: true,
-      src: "{{ just_url_map[ansible_architecture] }}",
+      src: tmpl("{{ just_url_map[ansible_architecture] }}"),
       dest: "/usr/local/bin",
       include: ["just"],
     },

@@ -31,13 +31,13 @@ export default [
     systemd: {
       name: "cpmeta.service",
       enabled: true,
-      state: "{{ 'restarted' if _restart_needed else 'started' }}",
+      state: tmpl("{{ 'restarted' if _restart_needed else 'started' }}"),
     },
   },
   {
     name: "Check that the service responds",
     uri: {
-      url: "https://{{ cpmeta_domains | first }}/buildInfo",
+      url: tmpl("https://{{ cpmeta_domains | first }}/buildInfo"),
       return_content: true,
     },
     register: r,

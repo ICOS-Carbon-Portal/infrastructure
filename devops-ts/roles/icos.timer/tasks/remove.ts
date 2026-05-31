@@ -1,10 +1,10 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Stop and disable timer",
-    command: "systemctl disable --now {{ timer_name }}.timer",
+    command: tmpl("systemctl disable --now {{ timer_name }}.timer"),
     register: "r",
     changed_when: false,
     failed_when: [

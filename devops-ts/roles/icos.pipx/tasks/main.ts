@@ -9,7 +9,7 @@ export default [
     pip: {
       name: "pipx",
       virtualenv: tmpl`${V.pipx_home}/.venv`,
-      state: "{{ 'latest' if pipx_upgrade else 'present' }}",
+      state: tmpl("{{ 'latest' if pipx_upgrade else 'present' }}"),
     },
   },
   {

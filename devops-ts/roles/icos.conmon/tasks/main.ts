@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { notVar } from "../_ctx.ts";
+import { notVar, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -22,7 +22,7 @@ done
   {
     name: "Is installed version of conmon sufficient?",
     debug: {
-      msg: "Version ({{ conmon_local_version }}) is sufficient",
+      msg: tmpl("Version ({{ conmon_local_version }}) is sufficient"),
     },
     when: raw("conmon_local_version_ok"),
   },

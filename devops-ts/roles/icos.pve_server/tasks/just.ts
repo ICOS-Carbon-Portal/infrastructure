@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   },
   {
     name: "Check that the justfile is executable",
-    shell: "{{ _ops.dest }}",
+    shell: tmpl("{{ _ops.dest }}"),
     changed_when: false,
   },
   {

@@ -1,4 +1,8 @@
-import { type TaskFile, withItemsOver } from "../../../lib/ansible.ts";
+import {
+  type TaskFile,
+  type Tmpl,
+  withItemsOver,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -24,12 +28,12 @@ export default [
     file: {
       path: V.geoip_db_dir,
       state: "directory",
-      owner: "{{ _user.uid }}",
-      group: "{{ _user.group }}",
+      owner: tmpl("{{ _user.uid }}"),
+      group: tmpl("{{ _user.group }}"),
     },
   },
   {
-    ...withItemsOver<{ src: string; dest: string }>(
+    ...withItemsOver<{ src: Tmpl; dest: Tmpl }>(
       [
         { src: "README.md", dest: tmpl`${V.geoip_home}/README.md` },
         { src: "Makefile", dest: tmpl`${V.geoip_home}/Makefile` },

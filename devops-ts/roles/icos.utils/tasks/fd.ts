@@ -21,7 +21,7 @@ export default [
       {
         name: "Set fd_version fact",
         set_fact: {
-          fd_version: "{{ gh.tag.lstrip('v') }}",
+          fd_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -32,7 +32,7 @@ export default [
   {
     when: raw("fd_architecture == 'x86_64'"),
     name: "Install fd",
-    apt: { deb: "{{ fd_url_map[fd_architecture] }}" },
+    apt: { deb: tmpl("{{ fd_url_map[fd_architecture] }}") },
   },
   // For other architecture we'll just extract the fd binary.
   {
@@ -40,7 +40,7 @@ export default [
     name: "Unarchive fd",
     unarchive: {
       remote_src: true,
-      src: "{{ fd_url_map[fd_architecture] }}",
+      src: tmpl("{{ fd_url_map[fd_architecture] }}"),
       dest: "/usr/local/bin",
       include: ["fd-*/fd"],
       extra_opts: ["--strip-components=1", "--wildcards"],

@@ -13,7 +13,7 @@ export default [
       bbclient_timer_conf: `OnCalendar=daily
 RandomizedDelaySec=1h
 `,
-      bbclient_timer_content: "{{ lookup('template', 'borgbackup.sh') }}",
+      bbclient_timer_content: tmpl("{{ lookup('template', 'borgbackup.sh') }}"),
     },
   },
 ] satisfies TaskFile;

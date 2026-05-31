@@ -21,7 +21,7 @@ export default [
       {
         name: "Set lazydocker_version fact",
         set_fact: {
-          lazydocker_version: "{{ gh.tag.lstrip('v') }}",
+          lazydocker_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -41,7 +41,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: "{{ lazydocker_url_map[lazydocker_architecture] }}",
+      src: tmpl("{{ lazydocker_url_map[lazydocker_architecture] }}"),
       dest: "/usr/local/bin",
       include: [
         // extract only the binary (skip the readme etc)

@@ -77,7 +77,9 @@ if $syslogtag == "dataold:" then {
     systemd: {
       "daemon-reload": true,
       enabled: true,
-      state: "{{ 'restarted' if _cf.changed or _sr.changed else 'started' }}",
+      state: tmpl(
+        "{{ 'restarted' if _cf.changed or _sr.changed else 'started' }}",
+      ),
       name: "dataold.service",
     },
   },

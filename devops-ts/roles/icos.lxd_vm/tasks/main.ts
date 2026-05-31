@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -14,13 +14,13 @@ export default [
   },
   {
     name: "Retrieve static IP devices",
-    lxd_static_ip_info: { name: "{{ lxd_vm_name }}" },
+    lxd_static_ip_info: { name: tmpl("{{ lxd_vm_name }}") },
     register: "_static_ip_info",
   },
   {
     name: "Create container",
     lxd_container: {
-      name: "{{ lxd_vm_name }}",
+      name: tmpl("{{ lxd_vm_name }}"),
       state: "started",
       profiles: V.__lxd_vm_profiles,
       source: V.lxd_source,
@@ -34,14 +34,15 @@ export default [
   },
   {
     name: "Set static lxd IP",
-    lxd_static_ip: { name: "{{ lxd_vm_name }}" },
+    lxd_static_ip: { name: tmpl("{{ lxd_vm_name }}") },
     register: "_lxd_static_ip",
   },
   {
     name: "Extract host_ecdsa_key from the VM",
     check_mode: false,
-    command:
+    command: tmpl(
       "lxc exec {{ lxd_vm_name }} awk '{print $1, $2}' /etc/ssh/ssh_host_ecdsa_key.pub",
+    ),
     register: "_key",
     changed_when: false,
     retries: 10,
@@ -51,7 +52,7 @@ export default [
   {
     name: "Inject ssh root keys into the VM",
     command:
-      `lxc exec {{ lxd_vm_name }} -- bash -c "[ -s '{{ file }}' ] || {\n           echo '{{ keys }}' >> {{ file }};\n           echo added;\n         }"`,
+      tmpl`lxc exec {{ lxd_vm_name }} -- bash -c "[ -s '{{ file }}' ] || {\n           echo '{{ keys }}' >> {{ file }};\n           echo added;\n         }"`,
     vars: {
       file: "/root/.ssh/authorized_keys",
       keys: V.lxd_vm_root_keys,

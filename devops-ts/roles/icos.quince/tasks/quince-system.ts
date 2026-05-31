@@ -6,7 +6,7 @@ export default [
     name: "Create quince user",
     user: {
       name: V.quince_user,
-      home: "{{ quince_home | default(omit) }}",
+      home: tmpl("{{ quince_home | default(omit) }}"),
       shell: "/bin/bash",
     },
   },

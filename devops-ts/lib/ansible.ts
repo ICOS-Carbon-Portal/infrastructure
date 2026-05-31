@@ -10,7 +10,9 @@
 //     per-role parameter typing keyed off the role name.
 import type { Roles } from "./roles.ts";
 import type { Host, HostPattern } from "./hosts.ts";
-import type { Expr } from "./vars.ts";
+import { Expr } from "./vars.ts";
+import { Template } from "./template.ts";
+import type { Tmpl } from "./template.ts";
 import type {
   AptArgs,
   AuthorizedKeyArgs,
@@ -53,9 +55,13 @@ export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { BuiltinVars } from "./builtins.ts";
 export { type Item, loopOver, withItemsOver } from "./loop.ts";
 export { type Reg, register, type Result } from "./register.ts";
+export { Template } from "./template.ts";
 
-/** A value that may carry a Jinja2 template, e.g. "{{ jre_apt_package }}". */
-export type Tmpl = string;
+/**
+ * A value that may be a plain string or a Jinja template (`V.x`, `tmpl(...)`).
+ * Template-typed values render as quoted YAML scalars.
+ */
+export type { Tmpl } from "./template.ts";
 
 /**
  * A `when:` condition. A built `Expr` (never a raw string — build it with
@@ -376,8 +382,7 @@ export type Tag =
   | "zfsdocker"
   | "zrepl_config"
   | "zrepl_install"
-  | "zrepl_just"
-;
+  | "zrepl_just";
 
 /** Ansible tags: a single tag or a list. */
 export type Tags = Tag | Tag[];
@@ -393,14 +398,14 @@ export type Tags = Tag | Tag[];
  * `import_role`/`include_role` are typed because their `name` is a role.
  */
 export interface Task {
-  name?: string;
+  name?: Tmpl;
   tags?: Tags;
   when?: When;
-  become?: boolean | string;
-  become_user?: string;
+  become?: boolean | Tmpl;
+  become_user?: Tmpl;
   register?: string;
-  notify?: string | string[];
-  delegate_to?: string;
+  notify?: Tmpl | Tmpl[];
+  delegate_to?: Tmpl;
   run_once?: boolean;
   ignore_errors?: boolean;
   check_mode?: boolean;
@@ -409,9 +414,9 @@ export interface Task {
   changed_when?: boolean | string | string[] | Expr;
   failed_when?: boolean | string | string[] | Expr;
   until?: string | Expr;
-  loop?: string | VarValue[];
+  loop?: Tmpl | VarValue[];
   loop_control?: Record<string, VarValue>;
-  with_items?: string | VarValue[];
+  with_items?: Tmpl | VarValue[];
   block?: Task[];
   args?: Record<string, VarValue>;
   vars?: Record<string, VarValue>;
@@ -432,7 +437,7 @@ export interface Task {
 
   // Top modules: typed (a superset of real usage). FQCN aliases share the type.
   // Some accept Ansible's `key=value` string shorthand in addition to a mapping.
-  file?: FileArgs | string;
+  file?: FileArgs | Tmpl;
   copy?: CopyArgs;
   "ansible.builtin.copy"?: CopyArgs;
   template?: TemplateArgs;
@@ -441,7 +446,7 @@ export interface Task {
   service?: ServiceArgs;
   apt?: AptArgs;
   "ansible.builtin.package"?: PackageArgs;
-  command?: string;
+  command?: Tmpl;
   shell?: ShellArgs;
   "ansible.builtin.shell"?: ShellArgs;
   debug?: DebugArgs;
@@ -516,7 +521,8 @@ export class RoleBuilder {
 // When a role has no required variables, the vars argument is optional;
 // otherwise it is mandatory. This is what makes `role("icos.matomo")` legal
 // but `role("icos.keycloak")` a compile error (kc_hostname is required).
-type RoleArgs<K extends keyof Roles> = Record<PropertyKey, never> extends Roles[K] ? [vars?: Roles[K]]
+type RoleArgs<K extends keyof Roles> = Record<PropertyKey, never> extends
+  Roles[K] ? [vars?: Roles[K]]
   : [vars: Roles[K]];
 
 /**
@@ -541,6 +547,7 @@ export type Scalar = string | number | boolean;
 
 export type VarValue =
   | Scalar
+  | Template
   | null
   | VarValue[]
   | { [key: string]: VarValue };
@@ -558,10 +565,10 @@ export interface Play {
   roles?: RoleBuilder[];
   tasks?: Task[];
   handlers?: Task[];
-  become?: boolean | string;
-  become_user?: string;
+  become?: boolean | Tmpl;
+  become_user?: Tmpl;
   gather_facts?: boolean;
-  connection?: string;
+  connection?: Tmpl;
 }
 
 /** A playbook is an ordered list of plays. */
@@ -577,14 +584,44 @@ export type TaskFile = Task[];
 
 /**
  * Render a playbook or a role task file to YAML identical (semantically) to the
- * hand-written `.yml`. `undefined` fields are dropped by JSON round-tripping so
- * optional keys never appear as `null`.
+ * hand-written `.yml`.
+ *
+ * Rather than JSON-flattening (which would erase the Template/Expr wrappers),
+ * it walks the object graph: `Template` values become double-quoted scalars
+ * (that's the type-driven quoting — a value is quoted because it IS a template,
+ * not because its text contains `{{`), `Expr` (when-conditions) and builders
+ * with `toJSON` collapse to their plain form, and `undefined` keys are dropped.
  */
 export async function render(doc: Playbook | TaskFile): Promise<string> {
-  const { stringify } = await import("yaml");
-  const clean = JSON.parse(JSON.stringify(doc));
+  const { Document, Scalar } = await import("yaml");
+
+  // deno-lint-ignore no-explicit-any
+  function clean(v: any): unknown {
+    if (v === null || v === undefined) return v;
+    if (v instanceof Template) {
+      const s = new Scalar(v.toString());
+      s.type = "QUOTE_DOUBLE"; // type-driven quoting
+      return s;
+    }
+    if (v instanceof Expr) return v.toString(); // when-conditions render bare
+    if (Array.isArray(v)) {
+      return v.map(clean).filter((x) => x !== undefined);
+    }
+    if (typeof v === "object") {
+      // RoleBuilder and similar expose their YAML shape via toJSON().
+      if (typeof v.toJSON === "function") return clean(v.toJSON());
+      const out: Record<string, unknown> = {};
+      for (const [k, val] of Object.entries(v)) {
+        const c = clean(val);
+        if (c !== undefined) out[k] = c;
+      }
+      return out;
+    }
+    return v;
+  }
+
   // Emit YAML 1.1 (like Ansible's PyYAML) so string scalars that look like 1.1
-  // booleans — "yes"/"no"/"on"/"off" — are quoted rather than emitted bare
-  // (which would reparse as booleans and diverge from the source).
-  return stringify(clean, { version: "1.1", lineWidth: 0 });
+  // booleans — "yes"/"no"/"on"/"off" — are quoted rather than emitted bare.
+  const document = new Document(clean(doc), { version: "1.1" });
+  return document.toString({ lineWidth: 0 });
 }

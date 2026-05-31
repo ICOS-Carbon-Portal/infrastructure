@@ -1,4 +1,4 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -6,7 +6,7 @@ export default [
     vars: {
       rspamd_domain: "rspamd.icos-cp.eu",
       rspamd_user_file: "/etc/nginx/auth/rspamd",
-      rspamd_admin_password: "{{ vault_rspamd_admin_password }}",
+      rspamd_admin_password: tmpl("{{ vault_rspamd_admin_password }}"),
     },
     pre_tasks: [
       {
@@ -46,12 +46,12 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}",
+        lxd_forward_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
         lxd_forward_name: "rspamd",
       }),
       role("icos.certbot2", {
         certbot_name: "rspamd",
-        certbot_domains: ["{{ rspamd_domain }}"],
+        certbot_domains: [tmpl("{{ rspamd_domain }}")],
       }).tags("cert"),
       role("icos.nginxsite", {
         nginxsite_name: "rspamd",
@@ -59,7 +59,7 @@ export default [
         nginxsite_users: [
           {
             username: "secret",
-            password: "{{ rspamd_admin_password }}",
+            password: tmpl("{{ rspamd_admin_password }}"),
           },
         ],
       }).tags("nginx"),
@@ -80,7 +80,9 @@ export default [
   {
     hosts: "rspamd",
     vars: {
-      rspamd_admin_password_hashed: "{{ vault_rspamd_admin_password_hashed }}",
+      rspamd_admin_password_hashed: tmpl(
+        "{{ vault_rspamd_admin_password_hashed }}",
+      ),
     },
     roles: [
       role("icos.lxd_guest").tags("guest"),

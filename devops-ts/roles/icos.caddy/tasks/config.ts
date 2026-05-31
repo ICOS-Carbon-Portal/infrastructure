@@ -14,13 +14,13 @@ export default [
         name: "Add caddy configuration block",
         blockinfile: {
           path: "/etc/caddy/Caddyfile",
-          block: "{{ block }}",
-          marker: "# {mark} {{ marker }}",
-          state: "{{ state | default(omit) }}",
+          block: tmpl("{{ block }}"),
+          marker: tmpl("# {mark} {{ marker }}"),
+          state: tmpl("{{ state | default(omit) }}"),
           backup: true,
           create: true,
-          insertafter: "{{ 'EOF' if where == 'EOF' else omit }}",
-          insertbefore: "{{ 'BOF' if where == 'BOF' else omit }}",
+          insertafter: tmpl("{{ 'EOF' if where == 'EOF' else omit }}"),
+          insertbefore: tmpl("{{ 'BOF' if where == 'BOF' else omit }}"),
         },
         register: _r,
       },
@@ -40,14 +40,14 @@ export default [
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: "{{ _slurp.stdout }}" },
+        debug: { msg: tmpl("{{ _slurp.stdout }}") },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: "/etc/caddy/Caddyfile",
-          src: "{{ _r.backup_file }}",
+          src: tmpl("{{ _r.backup_file }}"),
         },
         // backup_file won't be set if templating failed
         when: raw("_r['backup_file'] is defined"),
@@ -57,7 +57,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: "{{ _r.backup_file }}",
+          name: tmpl("{{ _r.backup_file }}"),
           state: "absent",
         },
         changed_when: false,

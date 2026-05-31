@@ -7,8 +7,8 @@ export default [
     template: {
       src: "justfile",
       dest: tmpl`${V.bbclient_home}/`,
-      variable_start_string: "{{ '{{{{' }}",
-      variable_end_string: "{{ '}}}}' }}",
+      variable_start_string: tmpl("{{ '{{{{' }}"),
+      variable_end_string: tmpl("{{ '}}}}' }}"),
       lstrip_blocks: true,
     },
   },

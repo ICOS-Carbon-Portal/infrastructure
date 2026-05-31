@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,9 +7,9 @@ export default [
     htpasswd: {
       path: V.restic_server_htpasswd,
       crypt_scheme: "bcrypt",
-      name: "{{ item.name }}",
-      password: "{{ item.password }}",
-      state: "{{ item.state | default(omit) }}",
+      name: tmpl("{{ item.name }}"),
+      password: tmpl("{{ item.password }}"),
+      state: tmpl("{{ item.state | default(omit) }}"),
     },
     loop: V.restic_server_users,
   },

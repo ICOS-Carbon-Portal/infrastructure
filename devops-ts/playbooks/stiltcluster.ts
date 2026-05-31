@@ -2,7 +2,7 @@
 //  Each host having been installed with docker etc.
 //  Each host being part of the nebula network.
 
-import { isDefined, type Playbook, role } from "../lib/ansible.ts";
+import { isDefined, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -42,7 +42,7 @@ export default [
           {
             name: "Create stilt input dir",
             file: {
-              path: "{{ stilt_input_dir }}",
+              path: tmpl("{{ stilt_input_dir }}"),
               state: "directory",
             },
           },
@@ -50,7 +50,7 @@ export default [
             name: "Mount stilt input data",
             mount: {
               src: "fsicos2.nebula:/disk/data/stilt/Input",
-              path: "{{ stilt_input_dir }}",
+              path: tmpl("{{ stilt_input_dir }}"),
               state: "mounted",
               fstype: "nfs4",
             },

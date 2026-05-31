@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,7 +9,7 @@ export default [
   {
     name: "Create /etc/default/dnsmasq.INSTANCE",
     copy: {
-      dest: "/etc/default/dnsmasq.{{ dnsmasq_instance }}",
+      dest: tmpl("/etc/default/dnsmasq.{{ dnsmasq_instance }}"),
       content:
         `# We set this here so that'll be picked up by the etc/init.d/dnsmasq
 # script (which is used by the systemd service)

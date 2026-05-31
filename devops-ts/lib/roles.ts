@@ -8,86 +8,84 @@
 // listed here, add its schema. Roles with no parameters map to `{}` and can be
 // referenced as a bare `role("icos.matomo")`.
 //
-// `Tmpl` documents that a value may be (or contain) a Jinja2 template string
-// like "{{ nexus_home }}/bbclient" — still just a string at the type level, but
-// self-documenting at call sites.
-export type Tmpl = string;
-
+// `Tmpl` (= string | Template) documents that a value may be a plain string or
+// a Jinja template like tmpl`${V.nexus_home}/bbclient`.
 import type { VarValue } from "./ansible.ts";
+import type { Tmpl } from "./template.ts";
 
 // A role ref may carry a `vars:` block (a sibling of `role:`) and/or a display
 // `name:`; both are allowed on any role in addition to its own variables.
-type Common = { name?: string; vars?: Record<string, VarValue> };
+type Common = { name?: Tmpl; vars?: Record<string, VarValue> };
 
 // A disk device passed to icos.lxd_vm (`recursive`/`readonly` are LXC's stringy
 // "true"/"false"). Keyed by device name.
 type LxdDevice = {
-  path: string;
-  source: string;
-  type: string;
-  recursive?: string;
-  readonly?: string;
+  path: Tmpl;
+  source: Tmpl;
+  type: Tmpl;
+  recursive?: Tmpl;
+  readonly?: Tmpl;
 };
 
 type NoVars = Record<PropertyKey, never>;
 
 export interface Roles {
-  "icos.keycloak": { kc_hostname: string };
+  "icos.keycloak": { kc_hostname: Tmpl };
   "icos.matomo": NoVars;
   "icos.geoip": NoVars;
   "icos.nexus": NoVars;
 
   // Used across many playbooks with different subsets of vars, so all optional.
   "icos.bbclient2": Common & {
-    bbclient_name?: string;
-    bbclient_user?: string;
+    bbclient_name?: Tmpl;
+    bbclient_user?: Tmpl;
     bbclient_home?: Tmpl;
     bbclient_coldbackup?: Tmpl;
     bbclient_coldbackup_hour?: number;
     bbclient_coldbackup_minute?: number;
-    bbclient_remotes?: string[];
-    bbclient_timer_content?: string;
-    bbclient_patterns?: string;
+    bbclient_remotes?: Tmpl[];
+    bbclient_timer_content?: Tmpl;
+    bbclient_patterns?: Tmpl;
   };
 
   "icos.certbot2": {
     certbot_name?: Tmpl;
-    certbot_domains?: Tmpl | string[];
+    certbot_domains?: Tmpl | Tmpl[];
   };
 
   "icos.cpauth": NoVars;
 
   "icos.postfix": {
-    postfix_config_list: { param: string; value: string }[];
+    postfix_config_list: { param: Tmpl; value: Tmpl }[];
   };
-  "icos.dovecot": { dovecot_domains: string[] };
+  "icos.dovecot": { dovecot_domains: Tmpl[] };
   "icos.opendkim": {
-    opendkim_domains: string[];
-    opendkim_domains_testkeys?: string[];
+    opendkim_domains: Tmpl[];
+    opendkim_domains_testkeys?: Tmpl[];
   };
 
   // core.yml
   "icos.postgis": NoVars;
   "icos.restheart": NoVars;
   "icos.cpmeta": Common & {
-    cpmeta_filestorage_target?: string;
-    cpmeta_jar_file?: string;
-    cpmeta_config_files?: string[];
+    cpmeta_filestorage_target?: Tmpl;
+    cpmeta_jar_file?: Tmpl;
+    cpmeta_config_files?: Tmpl[];
   };
-  "icos.cpdata": { cpdata_netcdf_folder?: string };
+  "icos.cpdata": { cpdata_netcdf_folder?: Tmpl };
   "icos.doi": NoVars;
   "icos.virtuoso": NoVars;
   "icos.nginxsite": Common & {
-    nginxsite_name?: string;
-    nginxsite_file?: string;
-    nginxsite_users?: { username: string; password: string }[];
-    registry_host?: string;
-    registry_cert?: string;
-    registry_allow?: string;
-    dokku_proxy_host?: string;
+    nginxsite_name?: Tmpl;
+    nginxsite_file?: Tmpl;
+    nginxsite_users?: { username: Tmpl; password: Tmpl }[];
+    registry_host?: Tmpl;
+    registry_cert?: Tmpl;
+    registry_allow?: Tmpl;
+    dokku_proxy_host?: Tmpl;
     dokku_proxy_port?: number;
-    jupyter_domain?: string;
-    jupyter_cert_name?: string;
+    jupyter_domain?: Tmpl;
+    jupyter_cert_name?: Tmpl;
     jupyter_port?: number;
   };
   "icos.dataold": NoVars;
@@ -101,59 +99,59 @@ export interface Roles {
   "icos.fairdatapoint": NoVars;
   "icos.nebula": NoVars;
   "icos.stiltweb": NoVars;
-  "icos.telegraf": { telegraf_conf: string };
+  "icos.telegraf": { telegraf_conf: Tmpl };
   "icos.mailman": NoVars;
   "icos.exploredata": NoVars;
   "icos.rspamd": NoVars;
   "icos.dokku": NoVars;
   "icos.flexpart": { flexpart_install_run?: boolean };
   "icos.flexextract": {
-    flexextract_src_dir: string;
-    flexextract_download_host: string;
+    flexextract_src_dir: Tmpl;
+    flexextract_download_host: Tmpl;
   };
   "icos.eurocom": {
-    eurocom_users: string;
-    eurocom_web_root: string;
-    eurocom_data_home: string;
+    eurocom_users: Tmpl;
+    eurocom_web_root: Tmpl;
+    eurocom_data_home: Tmpl;
   };
-  "icos.filedrop": { filedrop_data_home: string };
+  "icos.filedrop": { filedrop_data_home: Tmpl };
   "icos.nextcloud": {
-    nextcloud_admin_password: string;
-    nextcloud_domain: string;
-    nextcloud_exporter_pass: string;
-    nextcloud_volumes: string[];
+    nextcloud_admin_password: Tmpl;
+    nextcloud_domain: Tmpl;
+    nextcloud_exporter_pass: Tmpl;
+    nextcloud_volumes: Tmpl[];
   };
-  "icos.onlyoffice": { onlyoffice_domain: string; onlyoffice_secret: string };
-  "icos.registry": { registry_users: string };
+  "icos.onlyoffice": { onlyoffice_domain: Tmpl; onlyoffice_secret: Tmpl };
+  "icos.registry": { registry_users: Tmpl };
   "icos.victoriametrics": {
-    vm_graf_domain: string;
-    vm_graf_pass: string;
-    vm_promlens_token: string;
+    vm_graf_domain: Tmpl;
+    vm_graf_pass: Tmpl;
+    vm_promlens_token: Tmpl;
   };
   "icos.jbuild": {
-    jbuild_users: string;
-    jbuild_registry_pass: string;
-    jbuild_edctl_host: string;
-    jbuild_edctl_host_name: string;
+    jbuild_users: Tmpl;
+    jbuild_registry_pass: Tmpl;
+    jbuild_edctl_host: Tmpl;
+    jbuild_edctl_host_name: Tmpl;
     jbuild_edctl_host_port: number;
-    jbuild_rsync_host: string;
+    jbuild_rsync_host: Tmpl;
     jbuild_rsync_host_port: number;
-    jbuild_rsync_host_name: string;
-    jbuild_jyctl_host: string;
+    jbuild_rsync_host_name: Tmpl;
+    jbuild_jyctl_host: Tmpl;
     jbuild_jyctl_host_port: number;
-    jbuild_jyctl_host_name: string;
+    jbuild_jyctl_host_name: Tmpl;
   };
   "icos.jupyter": Common & {
-    jupyter_admins?: string | null;
-    jupyter_user_volumes?: string;
+    jupyter_admins?: Tmpl | null;
+    jupyter_user_volumes?: Tmpl;
     jupyter_backup_enable?: boolean;
     jupyter_jusers_enable?: boolean;
     jupyter_hub_config?: {
-      admin_users?: string | string[];
-      mem_limit?: string;
+      admin_users?: Tmpl | Tmpl[];
+      mem_limit?: Tmpl;
       cpu_limit?: number;
     };
-    bbclient_name?: string;
+    bbclient_name?: Tmpl;
   };
 
   // server bootstrap roles
@@ -167,65 +165,65 @@ export interface Roles {
   "icos.nfs4": NoVars;
   "icos.lxd_server": NoVars;
   "icos.podman": NoVars;
-  "icos.caddy": { caddy_name?: string; caddy_conf?: string };
+  "icos.caddy": { caddy_name?: Tmpl; caddy_conf?: Tmpl };
   "icos.bbserver": NoVars;
   "icos.mosh": NoVars;
   "icos.pve_server": NoVars;
   "icos.users": NoVars;
   "icos.rdflog": Common & {
     rdflog_postgres_version?: number;
-    rdflog_rep_pass?: string;
-    rdflog_restore_file?: string;
+    rdflog_rep_pass?: Tmpl;
+    rdflog_restore_file?: Tmpl;
   };
   "icos.pgrep": NoVars;
   "icos.fail2ban": {
-    fail2ban_config_files: { dest: string; content: string }[];
+    fail2ban_config_files: { dest: Tmpl; content: Tmpl }[];
   };
-  "icos.dnsmasq": { dnsmasq_interface: string; dnsmasq_config: string };
+  "icos.dnsmasq": { dnsmasq_interface: Tmpl; dnsmasq_config: Tmpl };
   "icos.rsyncd": {
     rsyncd_enable: boolean;
-    rsyncd_users: { name: string }[];
-    rsyncd_conf: string;
+    rsyncd_users: { name: Tmpl }[];
+    rsyncd_conf: Tmpl;
   };
   "icos.superuser": {
     superuser_disable_coredump?: boolean;
-    superuser_list: { name: string; key: string }[];
+    superuser_list: { name: Tmpl; key: Tmpl }[];
   };
   "ops.zfs": NoVars;
 
   // lxd / vm provisioning
   "icos.lxd_vm": Common & {
-    lxd_vm_name?: string;
+    lxd_vm_name?: Tmpl;
     lxd_vm_docker?: boolean;
-    lxd_vm_docker_size?: string;
-    lxd_vm_root_size?: string;
-    lxd_vm_root_pool?: string;
-    lxd_vm_ubuntu_version?: string;
-    lxd_vm_config?: Record<string, string>;
+    lxd_vm_docker_size?: Tmpl;
+    lxd_vm_root_size?: Tmpl;
+    lxd_vm_root_pool?: Tmpl;
+    lxd_vm_ubuntu_version?: Tmpl;
+    lxd_vm_config?: Record<string, Tmpl>;
     lxd_vm_devices?: Record<string, LxdDevice>;
-    lxd_vm_profiles?: string[];
+    lxd_vm_profiles?: Tmpl[];
   };
-  "icos.lxd_guest": { user_conf?: string; user_disable_coredump?: boolean };
-  "icos.lxd_forward": { lxd_forward_ip: string; lxd_forward_name: string };
+  "icos.lxd_guest": { user_conf?: Tmpl; user_disable_coredump?: boolean };
+  "icos.lxd_forward": { lxd_forward_ip: Tmpl; lxd_forward_name: Tmpl };
   "icos.nginxforward": {
-    nginxforward_name: string;
-    nginxforward_host: string;
+    nginxforward_name: Tmpl;
+    nginxforward_host: Tmpl;
     nginxforward_port: number;
-    nginxforward_cert: string;
-    nginxforward_domains: string[];
+    nginxforward_cert: Tmpl;
+    nginxforward_domains: Tmpl[];
   };
   "icos.sshlogin": {
-    sshlogin_dst?: string;
-    sshlogin_src_user: string;
-    sshlogin_dst_user: string;
-    sshlogin_src_dst_name?: string;
+    sshlogin_dst?: Tmpl;
+    sshlogin_src_user: Tmpl;
+    sshlogin_dst_user: Tmpl;
+    sshlogin_src_dst_name?: Tmpl;
   };
   "icos.sftp_user": {
-    sftp_user_dir: string;
-    sftp_user_login: string;
-    sftp_user_password: string;
-    sftp_user_owner?: string;
-    sftp_user_hostdesc?: string;
+    sftp_user_dir: Tmpl;
+    sftp_user_login: Tmpl;
+    sftp_user_password: Tmpl;
+    sftp_user_owner?: Tmpl;
+    sftp_user_hostdesc?: Tmpl;
   };
 
   // VM guest + utility roles
@@ -261,5 +259,5 @@ export interface Roles {
   // monitoring / exporters
   "icos.vmagent": NoVars;
   "icos.node_exporter": NoVars;
-  "icos.script_exporter": { sexp_exporters: string[] };
+  "icos.script_exporter": { sexp_exporters: Tmpl[] };
 }

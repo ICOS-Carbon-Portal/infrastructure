@@ -1,10 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
-    name: "restart {{ jarservice_name }}",
+    name: tmpl("restart {{ jarservice_name }}"),
     service: {
-      name: "{{ jarservice_name }}",
+      name: tmpl("{{ jarservice_name }}"),
       state: "restarted",
     },
     when: raw("jarservice_state | default('started') == 'started'"),

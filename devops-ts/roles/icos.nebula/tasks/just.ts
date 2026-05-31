@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -7,8 +8,8 @@ export default [
       src: "ops-nebula.justfile",
       dest: "/usr/local/bin/ops-nebula",
       mode: "+x",
-      variable_start_string: "{{ '{{{' }}",
-      variable_end_string: "{{ '}}}' }}",
+      variable_start_string: tmpl("{{ '{{{' }}"),
+      variable_end_string: tmpl("{{ '}}}' }}"),
       lstrip_blocks: true,
     },
   },

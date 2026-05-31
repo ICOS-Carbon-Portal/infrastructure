@@ -11,7 +11,7 @@ export default [
     name: "Set IP forwarding",
     sysctl: {
       name: "net.ipv4.ip_forward",
-      value: "{{ iptables_forward | int }}",
+      value: tmpl("{{ iptables_forward | int }}"),
     },
   },
   // These are mostly copied from the default ufw rules.

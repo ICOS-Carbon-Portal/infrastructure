@@ -1,10 +1,10 @@
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
     hosts: "fsicos3",
     vars: {
-      amalthea_ip: "{{ _lxd.addresses.eth0 | first }}",
+      amalthea_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
     },
     tasks: [
       {
@@ -42,7 +42,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: "{{ zfsdocker_zvol }}",
+              source: tmpl("{{ zfsdocker_zvol }}"),
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -70,8 +70,9 @@ export default [
         iptables_raw: {
           name: "forward_ssh_to_amalthea",
           table: "nat",
-          rules:
+          rules: tmpl(
             "-A PREROUTING -p tcp --dport {{ hostvars['amalthea'].ansible_port }} -j DNAT --to-destination {{ amalthea_ip }}:22",
+          ),
         },
       },
     ],
@@ -85,7 +86,7 @@ export default [
         superuser_list: [
           {
             name: "ubuntu",
-            key: "{{ vault_amalthea_ssh_keys }}",
+            key: tmpl("{{ vault_amalthea_ssh_keys }}"),
           },
         ],
       }).tags("superuser"),

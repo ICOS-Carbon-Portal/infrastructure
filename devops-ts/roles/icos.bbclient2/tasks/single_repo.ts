@@ -15,7 +15,7 @@ export default [
   // REMOTE
   {
     name: "Configure remote - bbserver - host",
-    delegate_to: "{{ bbclient_remote }}",
+    delegate_to: tmpl("{{ bbclient_remote }}"),
     block: [
       {
         name: "Retrieve host keys",
@@ -23,8 +23,9 @@ export default [
         shellfact: {
           // The keys don't always appear in the same order, so sort them.
           // Otherwise the known_hosts task on LOCAL will keep changing.
-          exec:
+          exec: tmpl(
             'ssh-keyscan -p {{ hostvars[bbclient_remote].bbserver_port }} localhost | sed "s/localhost/{{ hostvars[bbclient_remote].bbserver_host }}/" | sort -u',
+          ),
           fact: "bbclient_remote_keys",
         },
       },
@@ -33,7 +34,7 @@ export default [
         authorized_key: {
           user: V.bbclient_remote_user,
           state: "present",
-          key: "{{ bbclient_key_data }}",
+          key: tmpl("{{ bbclient_key_data }}"),
           key_options:
             tmpl`command="/usr/local/bin/borg serve --restrict-to-path ${V.bbclient_remote_repo}",restrict`,
         },
@@ -52,8 +53,8 @@ export default [
         blockinfile: {
           create: true,
           path: V.bbclient_ssh_hosts,
-          marker: "# {mark} {{ bbclient_remote }}",
-          block: "{{ bbclient_remote_keys }}\n",
+          marker: tmpl("# {mark} {{ bbclient_remote }}"),
+          block: tmpl("{{ bbclient_remote_keys }}\n"),
         },
       },
       {

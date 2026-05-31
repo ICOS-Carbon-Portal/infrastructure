@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,7 +18,7 @@ export default [
       virtualenv: V.sexp_scripts_venv,
       name: [
         "prometheus_client",
-        "{{ 'docker' if 'smartmon' in sexp_exporters else omit }}",
+        tmpl("{{ 'docker' if 'smartmon' in sexp_exporters else omit }}"),
       ],
     },
   },
@@ -27,7 +27,7 @@ export default [
     apt: {
       name: [
         "moreutils",
-        "{{ 'smartmontools' if 'smartmon' in sexp_exporters else omit }}",
+        tmpl("{{ 'smartmontools' if 'smartmon' in sexp_exporters else omit }}"),
       ],
     },
   },

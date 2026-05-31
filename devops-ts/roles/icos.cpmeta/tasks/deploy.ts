@@ -5,7 +5,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: "{{ cpmeta_jar_file }}",
+      src: tmpl("{{ cpmeta_jar_file }}"),
       dest: tmpl`${V.cpmeta_home}/cpmeta.jar`,
       backup: true,
     },
@@ -23,7 +23,7 @@ export default [
   {
     include_tasks: "restart.yml",
     vars: {
-      _restart_needed: "{{ _config.changed or _jarfile.changed }}",
+      _restart_needed: tmpl("{{ _config.changed or _jarfile.changed }}"),
     },
   },
 ] satisfies TaskFile;

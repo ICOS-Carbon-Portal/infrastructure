@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -37,7 +37,7 @@ export default [
       V.dovecot_domains_file,
     ],
   },
-  loopOver<{ append?: boolean; param: string; value: string }>(
+  loopOver<{ append?: boolean; param: Tmpl; value: Tmpl }>(
     [
       // Virtual alias domains is by default set to $virtual_alias_maps,
       // but it will conflict with relay_domains - "warning: do not list
@@ -53,7 +53,7 @@ export default [
       postconf: {
         param: item.param,
         value: item.value,
-        append: "{{ item.append | default(True) }}",
+        append: tmpl("{{ item.append | default(True) }}"),
       },
     }),
   ),

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,12 +15,12 @@ export default [
   },
   {
     name: "Check that ncdu is executable",
-    command: "{{ _ncdu.dest }}/ncdu --version",
+    command: tmpl("{{ _ncdu.dest }}/ncdu --version"),
     changed_when: false,
     register: "_version",
   },
   {
     name: "Which version of ncdu was installed",
-    debug: { msg: "Installed {{ _version.stdout }}" },
+    debug: { msg: tmpl("Installed {{ _version.stdout }}") },
   },
 ] satisfies TaskFile;

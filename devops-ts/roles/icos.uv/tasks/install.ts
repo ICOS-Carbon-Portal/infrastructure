@@ -21,7 +21,7 @@ export default [
       {
         name: "Set uv_version fact",
         set_fact: {
-          uv_version: "{{ gh.tag.lstrip('v') }}",
+          uv_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -33,7 +33,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: "{{ uv_url_map[uv_architecture] }}",
+      src: tmpl("{{ uv_url_map[uv_architecture] }}"),
       // Only two binaries, uv and uvx
       dest: "/usr/local/bin",
       extra_opts: [

@@ -1,10 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
-    name: "Remove docker storage volume for {{ zfsdocker_name }}",
+    name: tmpl("Remove docker storage volume for {{ zfsdocker_name }}"),
     zfs: {
-      name: "pool/docker/{{ zfsdocker_name }}",
+      name: tmpl("pool/docker/{{ zfsdocker_name }}"),
       state: "absent",
     },
   },

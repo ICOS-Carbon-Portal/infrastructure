@@ -1,4 +1,9 @@
-import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  loopOver,
+  raw,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -15,7 +20,7 @@ export default [
     copy: { dest: tmpl`${V.rdflog_home}/initdb`, src: V.item },
     loop: ["server.crt", "server.key"],
   },
-  loopOver<{ src: string; dest?: string; mode?: string }>(
+  loopOver<{ src: Tmpl; dest?: Tmpl; mode?: Tmpl }>(
     [
       { src: "status.sql" },
       { src: "ctl.sql" },
@@ -27,9 +32,9 @@ export default [
     (item) => ({
       name: "Install templates",
       template: {
-        dest: "{{ item.dest | default(rdflog_home) }}",
+        dest: tmpl("{{ item.dest | default(rdflog_home) }}"),
         src: item.src,
-        mode: "{{ item.mode | default(omit) }}",
+        mode: tmpl("{{ item.mode | default(omit) }}"),
       },
     }),
   ),

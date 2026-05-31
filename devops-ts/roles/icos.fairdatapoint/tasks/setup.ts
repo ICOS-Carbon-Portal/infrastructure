@@ -31,7 +31,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: "{{ fdp_jar_file }}",
+      src: tmpl("{{ fdp_jar_file }}"),
       dest: tmpl`${V.fdp_home}/fdp.jar`,
     },
     register: "_jarfile",
@@ -57,8 +57,9 @@ export default [
     name: "Start fairdatapoint",
     icos_docker_compose: {
       chdir: V.fdp_home,
-      force_recreate:
+      force_recreate: tmpl(
         "{{ _config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed }}",
+      ),
     },
   },
 ] satisfies TaskFile;

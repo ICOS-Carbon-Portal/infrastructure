@@ -3,8 +3,9 @@ import {
   raw,
   register,
   type TaskFile,
+  type Tmpl,
 } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _export = register("_export");
 
@@ -35,7 +36,7 @@ export default [
       {
         name: "Create flexpart build dir",
         file: {
-          path: "{{ _user.home }}/build",
+          path: tmpl("{{ _user.home }}/build"),
           state: "directory",
         },
         register: "_build",
@@ -46,7 +47,7 @@ export default [
         name: "Install the flexpart ssh script",
         copy: {
           src: "flexpart_ssh.sh",
-          dest: "{{ _user.home }}/flexpart_ssh.sh",
+          dest: tmpl("{{ _user.home }}/flexpart_ssh.sh"),
           mode: 0o755,
         },
       },
@@ -55,15 +56,17 @@ export default [
         authorized_key: {
           user: V.flexpart_user,
           state: "present",
-          key: "{{ lookup('file', 'roles/icos.flexpart/files/flexpart.pub') }}",
-          key_options: 'command="{{ _user.home }}/flexpart_ssh.sh"',
+          key: tmpl(
+            "{{ lookup('file', 'roles/icos.flexpart/files/flexpart.pub') }}",
+          ),
+          key_options: tmpl('command="{{ _user.home }}/flexpart_ssh.sh"'),
         },
       },
       {
         name: "Install Dockerfile and build resources",
         copy: {
           src: V.item,
-          dest: "{{ _build.path }}",
+          dest: tmpl("{{ _build.path }}"),
         },
         loop: [
           "Dockerfile",
@@ -89,13 +92,13 @@ export default [
           source: "build",
           name: V.flexpart_image,
           build: {
-            path: "{{ _build.path }}",
+            path: tmpl("{{ _build.path }}"),
           },
         },
       },
     ],
   },
-  loopOver<{ dest: string; src: string }>(
+  loopOver<{ dest: Tmpl; src: Tmpl }>(
     [
       { src: "flexpart.sh.j2", dest: "/usr/local/bin/flexpart" },
       { src: "flexpart_run.sh.j2", dest: "/usr/local/bin/flexpart_run" },

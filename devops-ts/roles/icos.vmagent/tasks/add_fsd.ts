@@ -6,7 +6,7 @@ export default [
   {
     name: "Check that the metrics endpoint responds",
     uri: {
-      url: "http://{{ fsd_target }}/{{ fsd_path | default('/metrics') }}",
+      url: tmpl("http://{{ fsd_target }}/{{ fsd_path | default('/metrics') }}"),
     },
     retries: 3,
   },

@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
     name: "Modify /etc/hosts to remove lxd_forward_name.lxd",
     lineinfile: {
       path: "/etc/hosts",
-      regex: "(?:.*{{ lxd_forward_name }})\\.lxd$",
+      regex: tmpl("(?:.*{{ lxd_forward_name }})\\.lxd$"),
       state: "absent",
     },
   },
@@ -13,7 +14,7 @@ export default [
     name: "Remove iptables rule",
     tags: "iptables",
     iptables_raw: {
-      name: "forward_ssh_to_{{ lxd_forward_name }}",
+      name: tmpl("forward_ssh_to_{{ lxd_forward_name }}"),
       table: "nat",
       state: "absent",
     },

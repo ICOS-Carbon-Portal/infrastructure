@@ -3,10 +3,10 @@ import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: "Copy {{ flexextract_src_dir }} directory",
+    name: tmpl("Copy {{ flexextract_src_dir }} directory"),
     tags: "flexextract_sync",
     synchronize: {
-      src: "{{ flexextract_src_dir }}/",
+      src: tmpl("{{ flexextract_src_dir }}/"),
       dest: tmpl`${V.flexextract_home}/build`,
     },
   },

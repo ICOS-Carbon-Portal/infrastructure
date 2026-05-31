@@ -30,7 +30,7 @@ export default [
       {
         name: "Set watchexec_version fact",
         set_fact: {
-          watchexec_version: "{{ gr.tag.lstrip('v') }}",
+          watchexec_version: tmpl("{{ gr.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -38,7 +38,7 @@ export default [
   },
   {
     name: "Install watchexec",
-    apt: { deb: "{{ watchexec_url_map[watchexec_architecture] }}" },
+    apt: { deb: tmpl("{{ watchexec_url_map[watchexec_architecture] }}") },
   },
   {
     name: "Check that watchexec is executable and the correct version",

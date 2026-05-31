@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -84,7 +84,7 @@ greylist = 4;
     },
     notify: "restart rspamd",
   },
-  loopOver<{ dest: string; content: string }>(
+  loopOver<{ dest: Tmpl; content: Tmpl }>(
     [
       {
         dest: "/etc/rspamd/local.d/rbl.conf",

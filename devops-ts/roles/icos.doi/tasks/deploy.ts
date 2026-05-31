@@ -23,7 +23,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: "{{ doi_jar_file }}",
+      src: tmpl("{{ doi_jar_file }}"),
       dest: tmpl`${V.doi_home}/doi.jar`,
       backup: true,
     },
@@ -43,15 +43,16 @@ export default [
     systemd: {
       name: "doi.service",
       enabled: true,
-      "daemon-reload": "{{ 'yes' if _service.changed else 'no' }}",
-      state:
+      "daemon-reload": tmpl("{{ 'yes' if _service.changed else 'no' }}"),
+      state: tmpl(
         "{{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}",
+      ),
     },
   },
   {
     name: "Check that the service responds",
     uri: {
-      url: "https://{{ doi_domains | first }}/buildInfo",
+      url: tmpl("https://{{ doi_domains | first }}/buildInfo"),
       return_content: true,
     },
     register: r,

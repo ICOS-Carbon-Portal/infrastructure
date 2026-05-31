@@ -18,14 +18,14 @@ export default [
     name: "Create executable symlink to justfile",
     file: {
       dest: "/usr/local/bin/ops-postgis",
-      src: "{{ _justfile.dest }}",
+      src: tmpl("{{ _justfile.dest }}"),
       state: "link",
     },
     register: "_symlink",
   },
   {
     name: "Check that the justfile is executable",
-    shell: "{{ _symlink.dest }}",
+    shell: tmpl("{{ _symlink.dest }}"),
     changed_when: false,
   },
 ] satisfies TaskFile;

@@ -28,7 +28,7 @@ export default [
       executable: "pipx",
       python: "python3.12",
       editable: true,
-      force: "{{ _rsync.changed }}",
+      force: tmpl("{{ _rsync.changed }}"),
       name: tmpl`${V.stiltweb_home}/stilt-utils`,
     },
     register: "_pipx",

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -10,7 +10,7 @@ export default [
     name: "Add config block to /etc/rsyncd.conf",
     copy: {
       dest: "/etc/rsyncd.conf",
-      content: "{{ rsyncd_conf }}",
+      content: tmpl("{{ rsyncd_conf }}"),
     },
     notify: "restart rsync",
   },
@@ -29,7 +29,7 @@ export default [
     systemd: {
       name: "rsync",
       enabled: V.rsyncd_enable,
-      state: "{{ 'started' if rsyncd_enable else 'stopped' }}",
+      state: tmpl("{{ 'started' if rsyncd_enable else 'stopped' }}"),
     },
   },
   {
@@ -46,7 +46,7 @@ export default [
   },
   {
     name: "Check that the justfile is executable",
-    shell: "{{ _justfile.dest }}",
+    shell: tmpl("{{ _justfile.dest }}"),
     changed_when: false,
   },
 ] satisfies TaskFile;

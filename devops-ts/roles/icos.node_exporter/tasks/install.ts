@@ -67,7 +67,7 @@ export default [
     name: "Allow node_exporter through firewall",
     iptables_raw: {
       name: "allow_node_exporter",
-      state: "{{ 'present' if node_exporter_allow else 'absent' }}",
+      state: tmpl("{{ 'present' if node_exporter_allow else 'absent' }}"),
       rules: tmpl`-A INPUT -p tcp --dport ${V.node_exporter_listen} -j ACCEPT`,
     },
   },

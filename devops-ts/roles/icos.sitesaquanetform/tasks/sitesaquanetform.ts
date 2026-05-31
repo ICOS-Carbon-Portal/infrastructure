@@ -5,7 +5,7 @@ export default [
   {
     name: "Pull source from git",
     git: {
-      repo: "{{ vault_aquanet_form_git_repo }}",
+      repo: tmpl("{{ vault_aquanet_form_git_repo }}"),
       dest: tmpl`${V.project_dir}/repo`,
       key_file: tmpl`${V.project_dir}/.ssh/id_rsa`,
     },

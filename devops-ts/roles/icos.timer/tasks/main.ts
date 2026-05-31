@@ -23,7 +23,7 @@ export default [
     copy: {
       dest: V.timer_dest,
       mode: "+x",
-      content: "{{ timer_content }}",
+      content: tmpl("{{ timer_content }}"),
     },
     when: raw("timer_content is defined"),
   },
@@ -76,7 +76,7 @@ WorkingDirectory={{ timer_wdir }}
     name: "Start timer",
     when: notVar("ansible_check_mode"),
     systemd: {
-      name: "{{ timer_name }}.timer",
+      name: tmpl("{{ timer_name }}.timer"),
       enabled: true,
       state: "started",
       daemon_reload: true,

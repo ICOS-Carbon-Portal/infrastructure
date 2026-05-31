@@ -6,7 +6,7 @@ export default [
     name: "Create bbserver user",
     user: {
       name: V.bbserver_user,
-      home: "{{ bbserver_home | default(omit) }}",
+      home: tmpl("{{ bbserver_home | default(omit) }}"),
       create_home: true,
       shell: "/usr/bin/bash",
     },

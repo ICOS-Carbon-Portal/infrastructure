@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -27,7 +27,7 @@ export default [
       {
         name: "Copy config",
         template: {
-          src: "{{ nginxsite_file }}",
+          src: tmpl("{{ nginxsite_file }}"),
           dest: V.nginxsite_path_confd,
           backup: true,
         },
@@ -67,15 +67,15 @@ export default [
         name: "Restore old config",
         copy: {
           remote_src: true,
-          dest: "{{ update.dest }}",
-          src: "{{ update.backup_file }}",
+          dest: tmpl("{{ update.dest }}"),
+          src: tmpl("{{ update.backup_file }}"),
         },
         when: raw("update.backup_file is defined"),
       },
       {
         name: "Remove broken config",
         file: {
-          path: "{{ update.dest }}",
+          path: tmpl("{{ update.dest }}"),
           state: "absent",
         },
         when: raw("update.backup_file is not defined"),
@@ -85,7 +85,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          path: "{{ update.backup_file }}",
+          path: tmpl("{{ update.backup_file }}"),
           state: "absent",
         },
         changed_when: false,

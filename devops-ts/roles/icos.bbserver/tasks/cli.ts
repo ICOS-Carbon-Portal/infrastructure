@@ -24,8 +24,8 @@ export default [
     cron: {
       user: "bbserver",
       job: tmpl`${V.bbserver_home}/bin/bbserver list > /dev/null 2>&1`,
-      hour: "{{ 4 | random(seed='bbserver') }}",
-      minute: "{{ 60 | random(seed='bbserver') }}",
+      hour: tmpl("{{ 4 | random(seed='bbserver') }}"),
+      minute: tmpl("{{ 60 | random(seed='bbserver') }}"),
       name: "bbserver_prime_borg_cache",
     },
   },

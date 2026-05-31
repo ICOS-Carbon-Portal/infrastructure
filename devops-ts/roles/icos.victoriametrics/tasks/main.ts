@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -22,7 +22,7 @@ export default [
     },
     changed_when: false,
   },
-  loopOver<{ src: string; dest?: string }>(
+  loopOver<{ src: Tmpl; dest?: Tmpl }>(
     [
       { src: "docker-compose.yml" },
       {
@@ -49,14 +49,14 @@ export default [
     name: "Build and start",
     "community.docker.docker_compose_v2": {
       project_src: V.vm_home,
-      pull: "{{ 'always' if vm_upgrade else omit }}",
+      pull: tmpl("{{ 'always' if vm_upgrade else omit }}"),
     },
   },
   {
     import_tasks: "grafana_datasource.yml",
     tags: "grafana_datasource",
   },
-  loopOver<{ name: string; port: string }>(
+  loopOver<{ name: Tmpl; port: Tmpl }>(
     [
       {
         name: "victoriametrics",
@@ -70,7 +70,7 @@ export default [
     (item) => ({
       name: "Check that services responds on local ports",
       uri: {
-        url: "http://localhost:{{ item.port }}",
+        url: tmpl("http://localhost:{{ item.port }}"),
       },
       retries: 10,
       loop_control: {

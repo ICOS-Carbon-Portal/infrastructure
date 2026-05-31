@@ -21,7 +21,7 @@ export default [
       {
         name: "Set dive_version fact",
         set_fact: {
-          dive_version: "{{ gh.tag.lstrip('v') }}",
+          dive_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -38,7 +38,7 @@ export default [
   {
     name: "Install dive",
     apt: {
-      deb: "{{ dive_url_map[dive_architecture] }}",
+      deb: tmpl("{{ dive_url_map[dive_architecture] }}"),
     },
   },
   {

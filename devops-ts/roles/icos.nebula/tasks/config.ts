@@ -17,7 +17,7 @@ export default [
       },
       {
         name: "Run validation",
-        command: "nebula -test -config {{ update.dest }}",
+        command: tmpl("nebula -test -config {{ update.dest }}"),
         changed_when: false,
       },
     ],
@@ -32,13 +32,13 @@ export default [
         copy: {
           remote_src: true,
           dest: tmpl`${V.nebula_etc_dir}/config.yml`,
-          src: "{{ update.backup_file }}",
+          src: tmpl("{{ update.backup_file }}"),
         },
         when: raw("update['backup_file'] is defined"),
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: "{{ _slurp.stdout }}" },
+        debug: { msg: tmpl("{{ _slurp.stdout }}") },
       },
       {
         name: "Fail",
@@ -48,7 +48,7 @@ export default [
     always: [
       {
         name: "Remove backup file",
-        file: { name: "{{ update.backup_file }}", state: "absent" },
+        file: { name: tmpl("{{ update.backup_file }}"), state: "absent" },
         when: raw("update['backup_file'] is defined"),
       },
     ],

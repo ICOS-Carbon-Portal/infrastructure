@@ -19,7 +19,7 @@ export default [
   {
     name: "Create directory for auth file",
     file: {
-      path: "{{ nginxauth_file | dirname }}",
+      path: tmpl("{{ nginxauth_file | dirname }}"),
       state: "directory",
     },
   },
@@ -27,9 +27,9 @@ export default [
     name: "Add basic auth users",
     htpasswd: {
       path: V.nginxauth_file,
-      name: "{{ item.username }}",
-      password: "{{ item.password }}",
+      name: tmpl("{{ item.username }}"),
+      password: tmpl("{{ item.password }}"),
     },
-    loop: "{{ nginxauth_users }}",
+    loop: tmpl("{{ nginxauth_users }}"),
   },
 ] satisfies TaskFile;

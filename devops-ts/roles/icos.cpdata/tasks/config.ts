@@ -20,10 +20,12 @@ export default [
     systemd: {
       name: "cpdata.service",
       enabled: true,
-      "daemon-reload":
+      "daemon-reload": tmpl(
         "{{ 'yes' if _service.changed | default(false) else 'no' }}",
-      state:
+      ),
+      state: tmpl(
         "{{ 'restarted' if _jarfile.changed | default(false) or _config.changed else 'started' }}",
+      ),
     },
   },
 ] satisfies TaskFile;

@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -9,17 +10,19 @@ export default [
     "community.general.docker_login": {
       registry_url: "registry.icos-cp.eu",
       username: "docker",
-      password: "{{ vault_registry_pass }}",
+      password: tmpl("{{ vault_registry_pass }}"),
     },
   },
   {
     name: "Pull the notebook image from registry",
     docker_image: {
-      name: "{{ conf.image }}",
+      name: tmpl("{{ conf.image }}"),
       source: "pull",
     },
     vars: {
-      conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}",
+      conf: tmpl(
+        "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}",
+      ),
     },
   },
 ] satisfies TaskFile;

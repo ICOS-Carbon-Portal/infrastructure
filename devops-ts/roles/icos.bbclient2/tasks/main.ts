@@ -36,9 +36,9 @@ export default [
     include_role: "name=icos.timer",
     vars: {
       timer_home: tmpl`${V.bbclient_home}/timer`,
-      timer_name: "bbclient-{{ bbclient_name }}",
+      timer_name: tmpl("bbclient-{{ bbclient_name }}"),
       timer_conf: V.bbclient_timer_conf,
-      timer_content: "{{ bbclient_timer_content }}",
+      timer_content: tmpl("{{ bbclient_timer_content }}"),
     },
     tags: "bbclient_timer",
     when: [raw("bbclient_timer_content is defined")],

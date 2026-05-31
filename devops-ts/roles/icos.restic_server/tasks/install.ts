@@ -21,7 +21,7 @@ export default [
       {
         name: "Set restic_server_version fact",
         set_fact: {
-          restic_server_version: "{{ gh.tag.lstrip('v') }}",
+          restic_server_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -31,7 +31,7 @@ export default [
     name: "Install restic_server",
     unarchive: {
       remote_src: true,
-      src: "{{ restic_server_url_map[restic_server_architecture] }}",
+      src: tmpl("{{ restic_server_url_map[restic_server_architecture] }}"),
       dest: tmpl`${V.restic_server_home}/bin/`,
       mode: "+x",
       include: ["*/rest-server"],

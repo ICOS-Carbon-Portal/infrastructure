@@ -46,7 +46,7 @@ PASSWORD={{ exploredata_password[exploredata_type] }}
     "community.general.docker_login": {
       registry_url: V.registry_domain,
       username: "docker",
-      password: "{{ vault_registry_pass }}",
+      password: tmpl("{{ vault_registry_pass }}"),
     },
   },
   {

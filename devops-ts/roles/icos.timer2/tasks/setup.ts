@@ -22,7 +22,7 @@ export default [
     copy: {
       dest: V.timer_dest,
       mode: "+x",
-      content: "{{ timer_content }}",
+      content: tmpl("{{ timer_content }}"),
     },
     when: raw("timer_content is defined"),
   },
@@ -30,7 +30,7 @@ export default [
     name: "Create systemd timer",
     copy: {
       dest: V._timer_sysd_timer,
-      content: "{{ timer_config }}",
+      content: tmpl("{{ timer_config }}"),
     },
     notify: "restart icos timer",
   },
@@ -38,7 +38,7 @@ export default [
     name: "Create systemd service",
     copy: {
       dest: V._timer_sysd_service,
-      content: "{{ timer_service }}",
+      content: tmpl("{{ timer_service }}"),
     },
   },
   {
@@ -54,7 +54,7 @@ export default [
   {
     name: "Start timer",
     systemd: {
-      name: "{{ timer_name }}.timer",
+      name: tmpl("{{ timer_name }}.timer"),
       enabled: true,
       state: V.timer_state,
       daemon_reload: true,

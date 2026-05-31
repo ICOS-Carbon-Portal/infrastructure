@@ -6,7 +6,7 @@ export default [
     name: "Populate /etc/hosts",
     blockinfile: {
       marker: tmpl`# {mark} ansible / dnsmasq / ${V.dnsmasq_config_name}`,
-      state: "{{ 'present' if dnsmasq_hosts else 'absent' }}",
+      state: tmpl("{{ 'present' if dnsmasq_hosts else 'absent' }}"),
       create: false,
       insertafter: "EOF",
       path: "/etc/hosts",

@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -17,7 +17,7 @@ export default [
       dest: tmpl`${V.pgrep_home}/peer.crt`,
     },
   },
-  loopOver<{ src: string; mode?: string }>(
+  loopOver<{ src: Tmpl; mode?: Tmpl }>(
     [
       { src: "docker-compose.yml" },
       { src: "pgpass" },
@@ -32,7 +32,7 @@ export default [
       template: {
         src: item.src,
         dest: V.pgrep_home,
-        mode: "{{ item.mode | default(omit) }}",
+        mode: tmpl("{{ item.mode | default(omit) }}"),
       },
     }),
   ),

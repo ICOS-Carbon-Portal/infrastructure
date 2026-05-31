@@ -28,7 +28,7 @@ export default [
       {
         name: "Set httm_version fact",
         set_fact: {
-          httm_version: "{{ gh.tag.lstrip('v') }}",
+          httm_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -37,7 +37,7 @@ export default [
   {
     name: "Install httm",
     apt: {
-      deb: "{{ httm_url_map[httm_architecture] }}",
+      deb: tmpl("{{ httm_url_map[httm_architecture] }}"),
     },
   },
   {

@@ -6,7 +6,7 @@ export default [
     name: "Forward ssh port and create /etc/hosts entry",
     include_role: { name: "icos.lxd_forward" },
     vars: {
-      lxd_forward_name: "{{ lxd_vm_name }}",
+      lxd_forward_name: tmpl("{{ lxd_vm_name }}"),
       lxd_forward_ip: V.lxd_vm_ip,
       lxd_forward_port: V.lxd_vm_port,
     },
@@ -23,10 +23,10 @@ export default [
     name: "Add vm to local ssh config",
     local_action: {
       module: "community.general.ssh_config",
-      ssh_config_file: "~{{ lookup('env', 'USER') }}/.ssh/config.icos",
+      ssh_config_file: tmpl("~{{ lookup('env', 'USER') }}/.ssh/config.icos"),
       hostname: V.inventory_hostname,
       remote_user: "root",
-      host: "{{ lxd_vm_name }}",
+      host: tmpl("{{ lxd_vm_name }}"),
       port: V.lxd_vm_port,
       state: "present",
     },

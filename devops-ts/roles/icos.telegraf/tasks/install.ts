@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -15,18 +16,19 @@ export default [
     name: "Add influxdata apt repository",
     apt_repository: {
       filename: "influxdata",
-      repo:
+      repo: tmpl(
         "deb [signed-by={{ _key.dest }}] https://repos.influxdata.com/debian stable main",
+      ),
     },
   },
   {
     name: "Install telegraf",
     apt: {
       name: "telegraf",
-      state: "{{ 'latest' if telegraf_upgrade else 'present' }}",
+      state: tmpl("{{ 'latest' if telegraf_upgrade else 'present' }}"),
       // Setting this will also set update_cache. It's time consuming on slow
       // devices so set it to an hour.
-      cache_valid_time: "{{ 3600 if telegraf_upgrade else omit}}",
+      cache_valid_time: tmpl("{{ 3600 if telegraf_upgrade else omit}}"),
     },
     notify: "restart telegraf",
   },

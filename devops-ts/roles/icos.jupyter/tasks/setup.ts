@@ -40,7 +40,9 @@ export default [
       dest: tmpl`${V.jupyter_home}/jupyterhub_home/`,
     },
     vars: {
-      conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}",
+      conf: tmpl(
+        "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}",
+      ),
     },
     register: "_config",
   },

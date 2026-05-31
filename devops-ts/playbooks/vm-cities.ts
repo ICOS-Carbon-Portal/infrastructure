@@ -1,6 +1,6 @@
 // Create the ICOS Cities VM.
 
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -16,28 +16,29 @@ export default [
       {
         name: "Create cities storage_pool directory",
         file: {
-          path: "{{ pool_path }}",
+          path: tmpl("{{ pool_path }}"),
           state: "directory",
         },
       },
       {
         name: "Create cities directories",
         file: {
-          path: "{{ item }}",
+          path: tmpl("{{ item }}"),
           state: "directory",
           owner: 1000000,
           group: 1000000,
         },
         loop: [
-          "{{ data_path }}",
-          "{{ docker_path }}",
-          "{{ data_fast_path }}",
+          tmpl("{{ data_path }}"),
+          tmpl("{{ docker_path }}"),
+          tmpl("{{ data_fast_path }}"),
         ],
       },
       {
         name: "Create cities storage pool",
-        shell:
+        shell: tmpl(
           '/snap/bin/lxc storage show {{ pool_name }} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create {{ pool_name }} dir source="{{ pool_path}}"\n',
+        ),
         register: "_r",
         changed_when: ['("Storage pool %s created" % pool_name) in _r.stdout'],
       },
@@ -57,17 +58,17 @@ export default [
           lxd_vm_devices: {
             data: {
               path: "/data",
-              source: "{{ data_path }}",
+              source: tmpl("{{ data_path }}"),
               type: "disk",
             },
             data_fast: {
-              path: "{{ cities_datafast_path }}",
-              source: "{{ data_fast_path }}",
+              path: tmpl("{{ cities_datafast_path }}"),
+              source: tmpl("{{ data_fast_path }}"),
               type: "disk",
             },
             docker: {
               path: "/var/lib/docker",
-              source: "{{ docker_path }}",
+              source: tmpl("{{ docker_path }}"),
               type: "disk",
             },
           },

@@ -3,13 +3,13 @@ import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: "Retrieving latest tag for {{ dbin_repo }}",
+    name: tmpl("Retrieving latest tag for {{ dbin_repo }}"),
     run_once: true,
     delegate_to: "localhost",
     check_mode: false,
     github_release: {
-      user: "{{ dbin_user }}",
-      repo: "{{ dbin_repo }}",
+      user: tmpl("{{ dbin_user }}"),
+      repo: tmpl("{{ dbin_repo }}"),
       action: "latest_release",
     },
     register: "_release",
@@ -22,7 +22,7 @@ export default [
     },
   },
   {
-    name: "Download {{ dbin_repo }}",
+    name: tmpl("Download {{ dbin_repo }}"),
     get_url: {
       url: V._dbin_url,
       dest: V.dbin_download_dest,
@@ -35,7 +35,7 @@ export default [
     name: tmpl`Unarchive ${V._dbin_name} tarball`,
     when: raw("_dbin_unar"),
     unarchive: {
-      src: "{{ dbin_download.dest }}",
+      src: tmpl("{{ dbin_download.dest }}"),
       dest: V.dbin_download_dest,
       remote_src: true,
       list_files: true,

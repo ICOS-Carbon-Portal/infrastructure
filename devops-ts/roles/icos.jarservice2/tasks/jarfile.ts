@@ -7,7 +7,7 @@ export default [
   {
     name: "Create directory for jar files",
     file: {
-      path: "{{ jarservice_home }}/jarfiles",
+      path: tmpl("{{ jarservice_home }}/jarfiles"),
       state: "directory",
     },
     register: "jardir",
@@ -15,38 +15,40 @@ export default [
   {
     name: "Get checksum of local jar file.",
     become: false,
-    local_action:
+    local_action: tmpl(
       'stat path="{{ jarservice_local }}" checksum_algorithm=sha256',
+    ),
     register: _stat,
   },
   {
     name: "To aid debugging, explicitly check that the local jar file exist.",
-    fail: { msg: "{{ jarservice_local }} doesn't exist!" },
+    fail: { msg: tmpl("{{ jarservice_local }} doesn't exist!") },
     when: not(_stat.stat.exists),
   },
   {
     name: "Compute the destination filename, we'll be using it more than once.",
     set_fact: {
-      destjarfile:
+      destjarfile: tmpl(
         "{{ jardir.path }}/{{ jarservice_local | basename }}-{{ _stat.stat.checksum }}",
+      ),
     },
   },
   {
-    name: "Copy {{ jarservice_name }} jar file",
+    name: tmpl("Copy {{ jarservice_name }} jar file"),
     copy: {
-      src: "{{ jarservice_local }}",
-      dest: "{{ destjarfile }}",
+      src: tmpl("{{ jarservice_local }}"),
+      dest: tmpl("{{ destjarfile }}"),
     },
     register: "jarservice_copy",
   },
   {
-    name: "Create the {{ jarservice_name}} jar symlink used by systemd",
+    name: tmpl("Create the {{ jarservice_name}} jar symlink used by systemd"),
     file: {
-      src: "{{ destjarfile }}",
+      src: tmpl("{{ destjarfile }}"),
       dest: V.jarservice_jar,
       state: "link",
     },
-    notify: "restart {{ jarservice_name }}",
+    notify: tmpl("restart {{ jarservice_name }}"),
     when: raw("jarservice_restart"),
   },
   {
@@ -59,6 +61,6 @@ export default [
   {
     name: "Remove old jarfiles",
     file: tmpl`path=${V.item} state=absent`,
-    with_items: ["{{ _old.stdout_lines }}"],
+    with_items: [tmpl("{{ _old.stdout_lines }}")],
   },
 ] satisfies TaskFile;

@@ -11,7 +11,7 @@
 //
 // Remove keys
 //  icos play user_cleanup remove
-import { pattern, type Playbook } from "../../lib/ansible.ts";
+import { pattern, type Playbook, tmpl } from "../../lib/ansible.ts";
 
 export default [
   {
@@ -34,15 +34,15 @@ export default [
         tags: "remove",
         authorized_key: {
           user: "root",
-          key: "{{ item }}",
+          key: tmpl("{{ item }}"),
           state: "absent",
         },
-        loop: "{{ remove_keys }}",
+        loop: tmpl("{{ remove_keys }}"),
       },
       {
         tags: "lockuser",
         user: {
-          name: "{{ lockuser }}",
+          name: tmpl("{{ lockuser }}"),
           password_lock: true,
           shell: "/usr/sbin/nologin",
         },

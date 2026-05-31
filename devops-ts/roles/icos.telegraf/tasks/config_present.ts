@@ -19,7 +19,7 @@ export default [
         name: "Run validation",
         // redirect stdout to /dev/null since it will contain the metrics (which
         // can be a lot of lines); stderr will contain the messages.
-        shell: "telegraf --test --config {{ update.dest }} > /dev/null",
+        shell: tmpl("telegraf --test --config {{ update.dest }} > /dev/null"),
         register: "test",
         changed_when: update.changed,
         failed_when: [
@@ -34,7 +34,7 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: "cat -n {{ update.dest }}",
+        command: tmpl("cat -n {{ update.dest }}"),
         changed_when: false,
         register: "_slurp",
       },
@@ -42,13 +42,13 @@ export default [
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: "{{ update.dest }}",
-          src: "{{ update.backup_file }}",
+          dest: tmpl("{{ update.dest }}"),
+          src: tmpl("{{ update.backup_file }}"),
         },
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: "{{ _slurp.stdout }}" },
+        debug: { msg: tmpl("{{ _slurp.stdout }}") },
       },
       {
         name: "Fail",
@@ -58,7 +58,7 @@ export default [
     always: [
       {
         name: "Remove backup file",
-        file: { name: "{{ update.backup_file }}", state: "absent" },
+        file: { name: tmpl("{{ update.backup_file }}"), state: "absent" },
         when: raw("update['backup_file'] is defined"),
       },
     ],

@@ -21,7 +21,7 @@ export default [
       {
         name: "Set restic_version fact",
         set_fact: {
-          restic_version: "{{ gh.tag.lstrip('v') }}",
+          restic_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -29,10 +29,13 @@ export default [
   },
   {
     name: "Download restic",
-    "ansible.builtin.shell":
+    "ansible.builtin.shell": tmpl(
       "curl -L --silent {{ restic_url_map[restic_architecture] }} | bunzip2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic",
+    ),
     args: {
-      creates: "{{ omit if restic_upgrade else '/usr/local/bin/restic' }}",
+      creates: tmpl(
+        "{{ omit if restic_upgrade else '/usr/local/bin/restic' }}",
+      ),
       executable: "/bin/bash",
     },
   },

@@ -32,35 +32,24 @@ export interface Vars {
   lxd_vm_name: string;
 }
 
-import type { Scalar, Tmpl } from "./ansible.ts";
+import type { Scalar } from "./ansible.ts";
 import type { BuiltinVars } from "./builtins.ts";
+import { type Ref, Template } from "./template.ts";
 
-/** A checked variable reference. At runtime it is just the string "{{ name }}". */
-export type Ref = string & { readonly __ref: unique symbol };
+// Re-exported for convenience (the canonical definitions live in template.ts).
+export { type Ref, type Tmpl, tmpl } from "./template.ts";
 
 /**
- * Typed accessor for variable references in value position.
+ * Typed accessor for variable references in value position. Each access yields a
+ * `Template` (rendered quoted), so unknown names are a compile error.
  *
- *   V.nexus_home            // "{{ nexus_home }}"
+ *   V.nexus_home            // Template "{{ nexus_home }}"
  *   V.nope                  // compile error: not in Vars
  */
 export const V: { readonly [K in keyof Vars]: Ref } = new Proxy(
   {},
-  { get: (_t, name: string) => `{{ ${name} }}` },
+  { get: (_t, name: string) => new Template(`{{ ${name} }}`) },
 ) as { readonly [K in keyof Vars]: Ref };
-
-/**
- * Build a composite templated string. Only known refs may be interpolated, so
- * `tmpl`${V.foo}/x`` is checked but `tmpl`${"foo"}`` is rejected.
- *
- *   tmpl`${V.nexus_home}/bbclient`   // "{{ nexus_home }}/bbclient"
- */
-export function tmpl(strings: TemplateStringsArray, ...refs: Ref[]): Tmpl {
-  return strings.reduce(
-    (acc, part, i) => acc + part + (i < refs.length ? refs[i] : ""),
-    "",
-  );
-}
 
 // --- when: expression builder (bare name, no `{{ }}` wrapper) ----------------
 

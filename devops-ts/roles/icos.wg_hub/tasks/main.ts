@@ -66,7 +66,7 @@ PersistentKeepalive = 25
   {
     name: "Add hosts",
     blockinfile: {
-      marker: "# {mark} cloud.wg_hub {{ wg_hub_config.name }}",
+      marker: tmpl("# {mark} cloud.wg_hub {{ wg_hub_config.name }}"),
       path: "/etc/hosts",
       block: `{% for name, conf in wg_hub_config.peers.items() %}
 {{ conf.addr }} {{ conf.name | default(name) }}.{{ wg_hub_intf }}
@@ -81,7 +81,7 @@ PersistentKeepalive = 25
     name: "Allow wireguard through firewall",
     when: raw("wg_hub_ishub"),
     iptables_raw: {
-      name: "wireguard_{{ wg_hub_config.name }}",
+      name: tmpl("wireguard_{{ wg_hub_config.name }}"),
       rules: `-A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
 -A FORWARD -i {{ wg_hub_intf }} -j ACCEPT
 `,
@@ -90,8 +90,8 @@ PersistentKeepalive = 25
   {
     name: "Allow all inbound traffic on the wireguard interface",
     iptables_raw: {
-      name: "wireguard_{{ wg_hub_config.name }}_allow_all",
-      state: "{{ 'present' if wg_hub_allow_all else 'absent' }}",
+      name: tmpl("wireguard_{{ wg_hub_config.name }}_allow_all"),
+      state: tmpl("{{ 'present' if wg_hub_allow_all else 'absent' }}"),
       rules: `-A INPUT -i {{ wg_hub_intf }} -j ACCEPT
 `,
     },
@@ -108,8 +108,9 @@ PersistentKeepalive = 25
     name: "Start wg-quick service",
     systemd: {
       name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
-      state:
+      state: tmpl(
         "{{ 'restarted' if _hub_conf.changed or _spoke_conf.changed or _reresolve.changed else 'started' }}",
+      ),
       enabled: true,
     },
   },

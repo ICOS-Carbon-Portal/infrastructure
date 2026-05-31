@@ -16,15 +16,18 @@
 //
 // Adoption is incremental and per-reference: convert the references whose names
 // the context knows; leave the dynamic ones as raw strings.
-import type { Tmpl } from "./ansible.ts";
-import { Expr, type Ref } from "./vars.ts";
+import { type Ref, Template, tmpl } from "./template.ts";
+import { Expr } from "./vars.ts";
 
 /** The accessor bundle a role context exposes, scoped to that role's vars `V`. */
 export interface Context<V> {
-  /** Typed reference accessor: `V.foo` -> "{{ foo }}". Unknown names error. */
+  /** Typed reference accessor: `V.foo` -> Template "{{ foo }}". Unknown names error. */
   V: { readonly [K in keyof V]: Ref };
-  /** Composite template; only this role's refs may be interpolated. */
-  tmpl: (strings: TemplateStringsArray, ...refs: Ref[]) => Tmpl;
+  /** Composite template (tagged form) or a wrapped raw template string. */
+  tmpl: (
+    strings: TemplateStringsArray | string,
+    ...refs: Array<Ref | string>
+  ) => Template;
   /** `when:` builder over a known var name: `isDef("foo")` -> "foo is defined". */
   isDef: (name: keyof V & string) => Expr;
   /** `when:` builder: `notVar("foo")` -> "not foo". */
@@ -38,14 +41,8 @@ export interface Context<V> {
  */
 export function context<V>(): Context<V> {
   const Vproxy = new Proxy({}, {
-    get: (_t, name: string) => `{{ ${name} }}`,
+    get: (_t, name: string) => new Template(`{{ ${name} }}`),
   }) as { readonly [K in keyof V]: Ref };
-
-  const tmpl = (strings: TemplateStringsArray, ...refs: Ref[]): Tmpl =>
-    strings.reduce(
-      (acc, part, i) => acc + part + (i < refs.length ? refs[i] : ""),
-      "",
-    );
 
   const isDef = (name: keyof V & string): Expr =>
     new Expr(`${name} is defined`, name);

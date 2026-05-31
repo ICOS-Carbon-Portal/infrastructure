@@ -21,7 +21,7 @@ export default [
       {
         name: "Set lazygit_version fact",
         set_fact: {
-          lazygit_version: "{{ gh.tag.lstrip('v') }}",
+          lazygit_version: tmpl("{{ gh.tag.lstrip('v') }}"),
           cacheable: true,
         },
       },
@@ -33,7 +33,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: "{{ lazygit_url_map[lazygit_architecture] }}",
+      src: tmpl("{{ lazygit_url_map[lazygit_architecture] }}"),
       dest: "/usr/local/bin/",
       // extract only this
       include: ["lazygit"],

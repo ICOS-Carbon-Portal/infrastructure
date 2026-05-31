@@ -38,7 +38,7 @@ export default [
   {
     name: "Unarchive sources",
     unarchive: {
-      src: "{{ _download.dest }}",
+      src: tmpl("{{ _download.dest }}"),
       dest: "/tmp",
       remote_src: true,
     },

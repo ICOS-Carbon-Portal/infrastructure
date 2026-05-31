@@ -1,7 +1,7 @@
 // This playbook can be used to:
 //   1. Find out which hosts run a specific distribution of ubuntu.
 //   2. Dist-upgrade those hosts.
-import { type Playbook } from "../lib/ansible.ts";
+import { type Playbook, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -9,7 +9,7 @@ export default [
     tasks: [
       {
         group_by: {
-          key: "{{ ansible_distribution_release }}_hosts",
+          key: tmpl("{{ ansible_distribution_release }}_hosts"),
         },
       },
     ],
@@ -32,7 +32,7 @@ export default [
       {
         name: "Make sure docker is upgraded",
         dpkg_selections: {
-          name: "{{ item }}",
+          name: tmpl("{{ item }}"),
           selection: "install",
         },
         loop: ["docker.io", "containerd"],
@@ -72,9 +72,10 @@ export default [
       {
         name: "Make sure docker isn't upgraded",
         dpkg_selections: {
-          name: "{{ item }}",
-          selection:
+          name: tmpl("{{ item }}"),
+          selection: tmpl(
             "{{ 'hold' if docker_prevent_upgrade | default(false) else 'install' }}",
+          ),
         },
         loop: ["docker.io", "containerd"],
       },

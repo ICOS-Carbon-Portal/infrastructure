@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 // openresolv / dhcpcd / dnsmasq are all integrated, even though it's tricky to
 // figure out exactly how.
@@ -35,7 +36,7 @@ server=/nebula/{{server}}
     name: "Make sure dnsmasq is (re)started",
     systemd: {
       name: "dnsmasq",
-      state: "{{ 'restarted' if _conf.changed else 'started' }}",
+      state: tmpl("{{ 'restarted' if _conf.changed else 'started' }}"),
     },
   },
 ] satisfies TaskFile;

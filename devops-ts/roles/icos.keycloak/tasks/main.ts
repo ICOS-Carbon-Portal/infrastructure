@@ -1,4 +1,4 @@
-import { loopOver, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -9,7 +9,7 @@ export default [
       state: "directory",
     },
   },
-  loopOver<{ src: string; dest: string }>(
+  loopOver<{ src: Tmpl; dest: Tmpl }>(
     [
       {
         src: "docker-compose.yml",
@@ -31,7 +31,7 @@ export default [
     name: "Build and start keycloak",
     docker_compose: {
       project_src: V.kc_home,
-      restarted: "{{ _config.changed }}",
+      restarted: tmpl("{{ _config.changed }}"),
     },
   },
   {
@@ -41,7 +41,7 @@ export default [
     vars: {
       nginxsite_name: "keycloak",
       nginxsite_file: "keycloak-nginx.conf",
-      nginxsite_domains: ["{{ kc_hostname }}"],
+      nginxsite_domains: [tmpl("{{ kc_hostname }}")],
     },
   },
 ] satisfies TaskFile;

@@ -39,7 +39,7 @@ export default [
   {
     name: "Unarchive golang",
     unarchive: {
-      src: "{{ _download.dest }}",
+      src: tmpl("{{ _download.dest }}"),
       dest: V.golang_opt_dir,
       remote_src: true,
     },

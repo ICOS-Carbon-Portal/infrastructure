@@ -17,21 +17,22 @@ export default [
   {
     name: "Adding the postgresql repo",
     apt_repository: {
-      repo:
+      repo: tmpl(
         "deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main",
+      ),
       filename: "pgdg",
     },
   },
   {
     name: "Install postgresql",
     apt: {
-      name: "{{ 'postgresql-%s' % postgresql_version }}",
+      name: tmpl("{{ 'postgresql-%s' % postgresql_version }}"),
     },
   },
   {
     name: "Install postgis",
     apt: {
-      name: "{{ 'postgresql-%s-postgis-3' % postgresql_version }}",
+      name: tmpl("{{ 'postgresql-%s-postgis-3' % postgresql_version }}"),
     },
     when: raw("postgresql_postgis_enable"),
   },

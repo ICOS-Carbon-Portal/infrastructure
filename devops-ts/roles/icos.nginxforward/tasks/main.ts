@@ -21,7 +21,7 @@ export default [
     tags: "nginxforward_auth",
   },
   {
-    name: "Copy config for {{ nginxforward_name }}",
+    name: tmpl("Copy config for {{ nginxforward_name }}"),
     template: {
       src: V.nginxforward_file,
       dest: V.nginxforward_path_available,
@@ -33,7 +33,9 @@ export default [
     file: {
       dest: V.nginxforward_path_enabled,
       src: V.nginxforward_path_available,
-      state: "{% if nginxforward_enable %}link{% else %}absent{% endif %}",
+      state: tmpl(
+        "{% if nginxforward_enable %}link{% else %}absent{% endif %}",
+      ),
     },
     when: raw("nginxforward_enable"),
     notify: "reload nginx config",

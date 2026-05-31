@@ -29,8 +29,9 @@ export default [
     name: "Update bitbucket known hosts",
     known_hosts: {
       name: "bitbucket.org",
-      key:
+      key: tmpl(
         "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}",
+      ),
     },
     when: raw('bitbucket_known_hosts.stdout == ""'),
   },

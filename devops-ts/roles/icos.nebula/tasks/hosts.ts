@@ -1,4 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -8,8 +9,8 @@ export default [
       create: false,
       insertafter: "EOF",
       path: "/etc/hosts",
-      block: "{{ nebula_hosts_block if nebula_hosts_enable else omit }}",
-      state: "{{ 'present' if nebula_hosts_enable else 'absent' }}",
+      block: tmpl("{{ nebula_hosts_block if nebula_hosts_enable else omit }}"),
+      state: tmpl("{{ 'present' if nebula_hosts_enable else 'absent' }}"),
     },
   },
 ] satisfies TaskFile;

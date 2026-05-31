@@ -13,7 +13,7 @@ export default [
   {
     name: 'Remove - "Allow all inbound traffic on the wireguard interface"',
     iptables_raw: {
-      name: "wireguard_{{ wg_hub_config.name }}_allow_all",
+      name: tmpl("wireguard_{{ wg_hub_config.name }}_allow_all"),
       state: "absent",
     },
   },
@@ -21,14 +21,14 @@ export default [
     name: "Remove - Allow wireguard through firewall",
     when: raw("wg_hub_ishub"),
     iptables_raw: {
-      name: "wireguard_{{ wg_hub_config.name }}",
+      name: tmpl("wireguard_{{ wg_hub_config.name }}"),
       state: "absent",
     },
   },
   {
     name: "Remove hosts",
     blockinfile: {
-      marker: "# {mark} cloud.wg_hub {{ wg_hub_config.name }}",
+      marker: tmpl("# {mark} cloud.wg_hub {{ wg_hub_config.name }}"),
       path: "/etc/hosts",
       state: "absent",
     },

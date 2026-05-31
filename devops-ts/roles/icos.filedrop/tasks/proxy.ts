@@ -15,9 +15,9 @@ export default [
   {
     include_role: "name=icos.certbot2",
     vars: {
-      certbot_name: "{{ filedrop_domain }}",
+      certbot_name: tmpl("{{ filedrop_domain }}"),
       certbot_domains: [
-        "{{ filedrop_domain }}",
+        tmpl("{{ filedrop_domain }}"),
       ],
     },
   },

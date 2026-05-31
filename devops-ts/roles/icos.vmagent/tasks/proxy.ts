@@ -54,8 +54,8 @@ export default [
         name: "Test that the vmagent UI works with password",
         uri: {
           url: tmpl`https://${V.inventory_hostname}/vmagent/`,
-          user: "{{ vmagent_auth.username }}",
-          password: "{{ vmagent_auth.password }}",
+          user: tmpl("{{ vmagent_auth.username }}"),
+          password: tmpl("{{ vmagent_auth.password }}"),
         },
         retries: 10,
         register: "r",

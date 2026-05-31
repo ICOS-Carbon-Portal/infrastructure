@@ -51,7 +51,7 @@ export default [
     name: "Copy jarfile",
     when: raw("stiltcluster_jar_file is defined"),
     copy: {
-      src: "{{ stiltcluster_jar_file }}",
+      src: tmpl("{{ stiltcluster_jar_file }}"),
       dest: tmpl`${V.stiltcluster_home}/stiltcluster.jar`,
       backup: true,
     },

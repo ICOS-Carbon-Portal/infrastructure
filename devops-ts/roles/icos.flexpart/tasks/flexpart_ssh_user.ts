@@ -1,21 +1,22 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
-    name: "Run block as {{ _ssh_user }}",
+    name: tmpl("Run block as {{ _ssh_user }}"),
     become: true,
-    become_user: "{{ _ssh_user }}",
+    become_user: tmpl("{{ _ssh_user }}"),
     block: [
       {
-        name: "Get home directory of {{ _ssh_user }}",
-        shell: "getent passwd {{ _ssh_user }} | cut -d: -f6",
+        name: tmpl("Get home directory of {{ _ssh_user }}"),
+        shell: tmpl("getent passwd {{ _ssh_user }} | cut -d: -f6"),
         register: "_home_dir",
         changed_when: false,
       },
       {
         name: "Make sure user .ssh directory is present",
         file: {
-          path: "{{ _home_dir.stdout }}/.ssh",
+          path: tmpl("{{ _home_dir.stdout }}/.ssh"),
           state: "directory",
           mode: 0o700,
         },
@@ -25,7 +26,7 @@ export default [
         name: "Install the rsa private key",
         copy: {
           src: "roles/icos.flexpart/files/flexpart.rsa",
-          dest: "{{ _ssh_dir.path}}/flexpart.rsa",
+          dest: tmpl("{{ _ssh_dir.path}}/flexpart.rsa"),
           mode: 0o600,
         },
         register: "_rsa_file",
@@ -33,17 +34,18 @@ export default [
       {
         name: "Add flexpart run host to each users known_hosts file",
         known_hosts: {
-          path: "{{ _ssh_dir.path }}/known_hosts",
-          name: "{{ flexpart_ssh_remote_host }}",
-          key:
+          path: tmpl("{{ _ssh_dir.path }}/known_hosts"),
+          name: tmpl("{{ flexpart_ssh_remote_host }}"),
+          key: tmpl(
             "{{ flexpart_ssh_remote_host }},{{ flexpart_ssh_remote_ip }} ecdsa-sha2-nistp256 {{ hostvars[flexpart_ssh_remote_host].ansible_ssh_host_key_ecdsa_public }}",
+          ),
         },
       },
       {
         name: "Add flexpart users ssh config file",
         blockinfile: {
           create: true,
-          path: "{{ _ssh_dir.path }}/config",
+          path: tmpl("{{ _ssh_dir.path }}/config"),
           mode: 0o600,
           marker: "# {mark} ansible config for flexpart",
           block: `Host flexpart

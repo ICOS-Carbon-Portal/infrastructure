@@ -7,7 +7,7 @@ export default [
     name: "Add a vmagent scrape config",
     copy: {
       dest: tmpl`${V.vmagent_configs}/{{ vmagent_config_dest }}`,
-      content: "{{ vmagent_config_content }}",
+      content: tmpl("{{ vmagent_config_content }}"),
     },
     notify: "reload vmagent",
   },

@@ -12,13 +12,13 @@ export default [
     tags: ["drupal", "drupal_nginx"],
   },
   {
-    name: "Include {{ website }} vars",
-    include_vars: "{{ website }}-vars.yml",
+    name: tmpl("Include {{ website }} vars"),
+    include_vars: tmpl("{{ website }}-vars.yml"),
     tags: ["drupal", "drupal_nginx"],
   },
   {
-    name: "Include {{ website }} vault",
-    include_vars: "{{ website }}-vault.yml",
+    name: tmpl("Include {{ website }} vault"),
+    include_vars: tmpl("{{ website }}-vault.yml"),
     tags: ["drupal", "drupal_nginx"],
   },
   {

@@ -1,4 +1,9 @@
-import { loopOver, raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  loopOver,
+  raw,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -99,7 +104,7 @@ export default [
     name: "Create and initialize collection",
     block: [
       {
-        name: "Create {{ website }} directory",
+        name: tmpl("Create {{ website }} directory"),
         file: {
           path: tmpl`${V.typesense_home}/{{ website }}/`,
           state: "directory",
@@ -127,13 +132,13 @@ export default [
         },
       },
       {
-        name: "Set up logrotate for typesense website {{ website }}",
+        name: tmpl("Set up logrotate for typesense website {{ website }}"),
         "ansible.builtin.template": {
           src: "logrotate",
-          dest: "/etc/logrotate.d/typesense-{{ website }}",
+          dest: tmpl("/etc/logrotate.d/typesense-{{ website }}"),
         },
       },
-      loopOver<{ src: string }>(
+      loopOver<{ src: Tmpl }>(
         [
           { src: "schema.yml" },
           { src: "init_collection.py" },
@@ -143,7 +148,9 @@ export default [
           { src: "utilities.py" },
         ],
         (item) => ({
-          name: "Copy python scripts and schema to {{ website }} directory",
+          name: tmpl(
+            "Copy python scripts and schema to {{ website }} directory",
+          ),
           "ansible.builtin.template": {
             src: item.src,
             dest: tmpl`${V.typesense_home}/{{ website }}`,
@@ -184,12 +191,12 @@ export default [
     name: "Add timer for updating documents and stations",
     block: [
       {
-        name: "Install typesense-update-{{ website }} timer",
+        name: tmpl("Install typesense-update-{{ website }} timer"),
         include_role: { name: "icos.timer" },
         vars: {
           timer_user: V.typesense_user,
           timer_home: V.typesense_home,
-          timer_name: "typesense-update-{{ website }}",
+          timer_name: tmpl("typesense-update-{{ website }}"),
           timer_conf: "OnCalendar=*-*-* 1/4:17:00\n",
           timer_content:
             tmpl`#!/bin/bash\ncd ${V.typesense_home}/{{ website }}\n${V.typesense_home}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1\n${V.typesense_home}/typesense-venv/bin/python3 update_stations.py >> collection.log 2>&1\n`,
@@ -201,11 +208,12 @@ export default [
   {
     name: "Update synonyms",
     block: [
-      loopOver<{ src: string }>(
+      loopOver<{ src: Tmpl }>(
         [{ src: "update_synonyms.py" }, { src: "utilities.py" }],
         (item) => ({
-          name:
+          name: tmpl(
             "Copy update_synonyms required python scripts to {{ website }} directory",
+          ),
           "ansible.builtin.template": {
             src: item.src,
             dest: tmpl`${V.typesense_home}/{{ website }}`,
@@ -225,14 +233,14 @@ export default [
   {
     name: "Update documents and stations without reinitializing collection",
     block: [
-      loopOver<{ src: string }>(
+      loopOver<{ src: Tmpl }>(
         [
           { src: "update_documents.py" },
           { src: "update_stations.py" },
           { src: "utilities.py" },
         ],
         (item) => ({
-          name: "Copy python scripts to {{ website }} directory",
+          name: tmpl("Copy python scripts to {{ website }} directory"),
           "ansible.builtin.template": {
             src: item.src,
             dest: tmpl`${V.typesense_home}/{{ website }}`,

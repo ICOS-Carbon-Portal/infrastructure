@@ -1,4 +1,5 @@
 import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -9,26 +10,26 @@ export default [
     when: raw("jarservice_jar_enable | bool"),
   },
   {
-    name: "Add systemd {{ jarservice_name }} servicefile",
+    name: tmpl("Add systemd {{ jarservice_name }} servicefile"),
     copy: {
-      content: "{{ jarservice_unit }}",
-      dest: "/etc/systemd/system/{{ jarservice_name }}.service",
+      content: tmpl("{{ jarservice_unit }}"),
+      dest: tmpl("/etc/systemd/system/{{ jarservice_name }}.service"),
     },
     notify: ["reload systemd config"],
   },
   {
-    name: "Enable systemd {{ jarservice_name }}",
+    name: tmpl("Enable systemd {{ jarservice_name }}"),
     service: {
-      name: "{{ jarservice_name }}",
+      name: tmpl("{{ jarservice_name }}"),
       enabled: true,
-      state: "{{ jarservice_state | default('started') }}",
+      state: tmpl("{{ jarservice_state | default('started') }}"),
     },
   },
   {
     name: "Check that the service responds",
     when: raw("jarservice_check is defined"),
     uri: {
-      url: "{{ jarservice_check }}",
+      url: tmpl("{{ jarservice_check }}"),
       return_content: true,
     },
     register: r,
