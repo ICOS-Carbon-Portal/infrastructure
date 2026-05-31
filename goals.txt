@@ -1,0 +1,6 @@
+Short term:
+  Statically type as much as possible of devops and subest of Ansible in TS
+  so that it generates identical yaml, but with statically known variables etc.
+
+Long term:
+  Rework the definitions so that they follow a more normal flow, with variables being introduced in scopes etc.
