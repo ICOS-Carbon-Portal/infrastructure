@@ -516,7 +516,7 @@ export class RoleBuilder {
 // When a role has no required variables, the vars argument is optional;
 // otherwise it is mandatory. This is what makes `role("icos.matomo")` legal
 // but `role("icos.keycloak")` a compile error (kc_hostname is required).
-type RoleArgs<K extends keyof Roles> = {} extends Roles[K] ? [vars?: Roles[K]]
+type RoleArgs<K extends keyof Roles> = Record<PropertyKey, never> extends Roles[K] ? [vars?: Roles[K]]
   : [vars: Roles[K]];
 
 /**
@@ -581,7 +581,7 @@ export type TaskFile = Task[];
  * optional keys never appear as `null`.
  */
 export async function render(doc: Playbook | TaskFile): Promise<string> {
-  const { stringify } = await import("npm:yaml@2");
+  const { stringify } = await import("yaml");
   const clean = JSON.parse(JSON.stringify(doc));
   // Emit YAML 1.1 (like Ansible's PyYAML) so string scalars that look like 1.1
   // booleans — "yes"/"no"/"on"/"off" — are quoted rather than emitted bare

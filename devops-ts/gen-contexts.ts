@@ -5,7 +5,7 @@
 // a `context<Vars>()` accessor. Idempotent; re-run after editing role defaults.
 //
 //   deno run --allow-read --allow-write gen-contexts.ts
-import { parse } from "npm:yaml@2";
+import { parse } from "yaml";
 
 const devopsRoles = new URL("../devops/roles/", import.meta.url);
 const tsRoles = new URL("./roles/", import.meta.url);

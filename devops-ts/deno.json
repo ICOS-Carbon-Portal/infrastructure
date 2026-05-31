@@ -6,6 +6,9 @@
     "gen-contexts": "deno run --allow-read --allow-write --allow-env gen-contexts.ts",
     "gen-data": "deno run --allow-read --allow-write --allow-env gen-data.ts"
   },
+  "imports": {
+    "yaml": "npm:yaml@2"
+  },
   "fmt": {
     "include": ["lib/", "playbooks/", "roles/", "data/", "render.ts"]
   }

@@ -12,7 +12,7 @@
 // tags are skipped — they are ciphertext, not data, and must stay as .yml.
 //
 //   deno run --allow-read --allow-write --allow-env gen-data.ts
-import { parse } from "npm:yaml@2";
+import { parse } from "yaml";
 
 const devops = new URL("../devops/", import.meta.url);
 const dataOut = new URL("./data/", import.meta.url);
