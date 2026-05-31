@@ -69,7 +69,11 @@ export interface Roles {
   // core.yml
   "icos.postgis": NoVars;
   "icos.restheart": NoVars;
-  "icos.cpmeta": NoVars;
+  "icos.cpmeta": Common & {
+    cpmeta_filestorage_target?: string;
+    cpmeta_jar_file?: string;
+    cpmeta_config_files?: string[];
+  };
   "icos.cpdata": { cpdata_netcdf_folder?: string };
   "icos.doi": NoVars;
   "icos.virtuoso": NoVars;
@@ -168,7 +172,11 @@ export interface Roles {
   "icos.mosh": NoVars;
   "icos.pve_server": NoVars;
   "icos.users": NoVars;
-  "icos.rdflog": NoVars;
+  "icos.rdflog": Common & {
+    rdflog_postgres_version?: number;
+    rdflog_rep_pass?: string;
+    rdflog_restore_file?: string;
+  };
   "icos.pgrep": NoVars;
   "icos.fail2ban": {
     fail2ban_config_files: { dest: string; content: string }[];

@@ -145,6 +145,7 @@ export type LineinfileArgs = {
   state?: string;
   regex?: string;
   regexp?: string;
+  backrefs?: Flag;
   create?: Flag;
   insertafter?: string;
   insertbefore?: string;

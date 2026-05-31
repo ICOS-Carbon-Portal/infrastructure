@@ -1,0 +1,15 @@
+import { type Playbook } from "../../lib/ansible.ts";
+
+export default [
+  {
+    hosts: "all",
+    tasks: [
+      {
+        name: "Remove files from /opt/downloads",
+        "ansible.builtin.shell": `find . -maxdepth 1 -type f -exec rm '{}' ';'
+`,
+        args: { executable: "/bin/bash", chdir: "/opt/downloads" },
+      },
+    ],
+  },
+] satisfies Playbook;

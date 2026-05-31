@@ -88,6 +88,7 @@ export type Tag =
   | "bbserver_compact"
   | "bbserver_monitor"
   | "bbserver_setup"
+  | "borg"
   | "borg_just"
   | "btop"
   | "caddy"
@@ -110,6 +111,7 @@ export type Tag =
   | "cpdata_proxy"
   | "cpdata_setup"
   | "cplog"
+  | "cpmeta"
   | "cpmeta_backup"
   | "cpmeta_deploy"
   | "cpmeta_proxy"
@@ -153,6 +155,7 @@ export type Tag =
   | "fairdatapoint_setup"
   | "fd"
   | "fdp"
+  | "fetch"
   | "filedrop"
   | "flexextract"
   | "flexextract_build"
@@ -176,8 +179,8 @@ export type Tag =
   | "howto"
   | "httm"
   | "icos-cities"
-  | "icosdata"
   | "icos-ri"
+  | "icosdata"
   | "incoming"
   | "initialize_collection"
   | "inputdata"
@@ -194,9 +197,11 @@ export type Tag =
   | "jupyter_just"
   | "jupyter_registry"
   | "jupyter_setup"
+  | "just"
   | "keys"
   | "lazydocker"
   | "lazygit"
+  | "lockuser"
   | "login"
   | "lxd"
   | "lxd_guest_setup"
@@ -237,12 +242,12 @@ export type Tag =
   | "nginx"
   | "nginx_certbot"
   | "nginx_conf"
-  | "nginxforward_auth"
   | "nginx_metrics"
   | "nginx_setup"
+  | "nginx_testing"
+  | "nginxforward_auth"
   | "nginxsite_cert"
   | "nginxsite_users"
-  | "nginx_testing"
   | "node"
   | "node_exporter"
   | "onlyoffice"
@@ -296,6 +301,7 @@ export type Tag =
   | "rdflog_setup"
   | "registry"
   | "registry_auth"
+  | "remove"
   | "replica"
   | "repo"
   | "restheart"
@@ -303,6 +309,7 @@ export type Tag =
   | "restheart_proxy"
   | "restheart_restore_script"
   | "restheart_setup"
+  | "restic"
   | "restic_install"
   | "restic_server_auth"
   | "restic_server_just"
@@ -340,6 +347,7 @@ export type Tag =
   | "stiltweb_sync"
   | "stiltweb_utils"
   | "superuser"
+  | "sysstat"
   | "telegraf"
   | "telegraf_config"
   | "telegraf_install"
@@ -352,6 +360,7 @@ export type Tag =
   | "users"
   | "utils"
   | "utils_copy"
+  | "uv"
   | "victoriametrics_just"
   | "virtuoso"
   | "vm"
@@ -363,11 +372,12 @@ export type Tag =
   | "watchexec"
   | "wg_hub_ping"
   | "zfs"
-  | "zfsdocker"
   | "zfs_just"
+  | "zfsdocker"
   | "zrepl_config"
   | "zrepl_install"
-  | "zrepl_just";
+  | "zrepl_just"
+;
 
 /** Ansible tags: a single tag or a list. */
 export type Tags = Tag | Tag[];
@@ -543,11 +553,12 @@ export interface Play {
   hosts: Host | Host[] | HostPattern;
   tags?: Tags;
   vars?: Record<string, VarValue>;
+  vars_files?: string | string[];
   pre_tasks?: Task[];
   roles?: RoleBuilder[];
   tasks?: Task[];
   handlers?: Task[];
-  become?: boolean;
+  become?: boolean | string;
   become_user?: string;
   gather_facts?: boolean;
   connection?: string;

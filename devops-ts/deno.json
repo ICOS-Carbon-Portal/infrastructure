@@ -1,11 +1,12 @@
 {
   "tasks": {
-    "check": "deno check lib/*.ts playbooks/*.ts roles/*/_ctx.ts roles/*/tasks/*.ts roles/*/handlers/*.ts render.ts verify.ts",
+    "check": "deno check lib/*.ts playbooks/**/*.ts roles/*/_ctx.ts roles/*/tasks/*.ts roles/*/handlers/*.ts data/**/*.ts render.ts verify.ts",
     "verify": "deno run --allow-read --allow-env verify.ts",
     "render": "deno run --quiet --allow-all render.ts",
-    "gen-contexts": "deno run --allow-read --allow-write --allow-env gen-contexts.ts"
+    "gen-contexts": "deno run --allow-read --allow-write --allow-env gen-contexts.ts",
+    "gen-data": "deno run --allow-read --allow-write --allow-env gen-data.ts"
   },
   "fmt": {
-    "include": ["lib/", "playbooks/", "roles/", "render.ts"]
+    "include": ["lib/", "playbooks/", "roles/", "data/", "render.ts"]
   }
 }

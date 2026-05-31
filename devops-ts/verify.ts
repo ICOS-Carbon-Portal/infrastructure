@@ -23,7 +23,9 @@ const origDir = new URL("../devops/", import.meta.url);
 function diff(a: unknown, b: unknown, path = "$"): string | null {
   if (a === b) return null;
   if (Array.isArray(a) && Array.isArray(b)) {
-    if (a.length !== b.length) return `${path}: array length ${a.length} ≠ ${b.length}`;
+    if (a.length !== b.length) {
+      return `${path}: array length ${a.length} ≠ ${b.length}`;
+    }
     for (let i = 0; i < a.length; i++) {
       const d = diff(a[i], b[i], `${path}[${i}]`);
       if (d) return d;
@@ -50,18 +52,28 @@ function isObject(v: unknown): v is Record<string, unknown> {
 // A unit to verify: a TS module and the original YAML it must reproduce.
 type Unit = { label: string; ts: URL; yml: URL };
 
-/** Top-level playbooks: playbooks/<name>.ts  ↔  ../devops/<name>.yml */
+/**
+ * Playbooks: playbooks/<rel>.ts ↔ ../devops/<rel>.yml. Recurses, so
+ * playbooks/fixes/<n>.ts maps to ../devops/fixes/<n>.yml.
+ */
 async function collectPlaybooks(): Promise<Unit[]> {
   const units: Unit[] = [];
-  for await (const e of Deno.readDir(playbooksDir)) {
-    if (!e.isFile || !e.name.endsWith(".ts")) continue;
-    const base = e.name.replace(/\.ts$/, "");
-    units.push({
-      label: base,
-      ts: new URL(e.name, playbooksDir),
-      yml: new URL(`${base}.yml`, origDir),
-    });
+  async function walk(dir: URL, rel: string) {
+    for await (const e of Deno.readDir(dir)) {
+      const childRel = rel ? `${rel}/${e.name}` : e.name;
+      if (e.isDirectory) {
+        await walk(new URL(`${e.name}/`, dir), childRel);
+      } else if (e.isFile && e.name.endsWith(".ts")) {
+        const base = childRel.replace(/\.ts$/, "");
+        units.push({
+          label: base,
+          ts: new URL(e.name, dir),
+          yml: new URL(`${base}.yml`, origDir),
+        });
+      }
+    }
   }
+  await walk(playbooksDir, "");
   return units;
 }
 
@@ -95,6 +107,39 @@ async function collectRoles(): Promise<Unit[]> {
   return units;
 }
 
+/**
+ * Data files: data/<relpath>.ts ↔ ../devops/<relpath>.yml. The `data/` tree
+ * mirrors the devops layout (roles/<r>/{meta,defaults,vars}, *.inventory,
+ * host_vars, group_vars). Walked generically.
+ */
+async function collectData(): Promise<Unit[]> {
+  const dataDir = new URL("./data/", import.meta.url);
+  const units: Unit[] = [];
+  async function walk(dir: URL, rel: string) {
+    let entries: Deno.DirEntry[] = [];
+    try {
+      for await (const e of Deno.readDir(dir)) entries.push(e);
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      const childRel = rel ? `${rel}/${e.name}` : e.name;
+      if (e.isDirectory) {
+        await walk(new URL(`${e.name}/`, dir), childRel);
+      } else if (e.isFile && e.name.endsWith(".ts")) {
+        const base = childRel.replace(/\.ts$/, "");
+        units.push({
+          label: `data/${base}`,
+          ts: new URL(e.name, dir),
+          yml: new URL(`${base}.yml`, origDir),
+        });
+      }
+    }
+  }
+  await walk(dataDir, "");
+  return units;
+}
+
 // Optional CLI args limit the run; an arg matches by full label, by basename, or
 // as a substring (so `icos.cpauth` selects all of that role's files).
 const args = Deno.args.map((a) => a.replace(/\.ts$/, ""));
@@ -104,7 +149,11 @@ const selected = (label: string): boolean => {
   return args.some((a) => label === a || base === a || label.includes(a));
 };
 
-const units = [...await collectPlaybooks(), ...await collectRoles()]
+const units = [
+  ...await collectPlaybooks(),
+  ...await collectRoles(),
+  ...await collectData(),
+]
   .filter((u) => selected(u.label))
   .sort((a, b) => a.label.localeCompare(b.label));
 
