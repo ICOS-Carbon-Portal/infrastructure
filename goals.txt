@@ -3,4 +3,8 @@ Short term:
   so that it generates identical yaml, but with statically known variables etc.
 
 Long term:
-  Rework the definitions so that they follow a more normal flow, with variables being introduced in scopes etc.
+  - Rework the definitions so that they follow a more normal flow, with variables being introduced in scopes etc.
+
+Followup:
+  Implement a new orchestrator, like ansible, in typescript, using Ansible tasks and modules for actual execution.
+  Instead of jinja templates etc. we will have actual TS.

@@ -5,7 +5,7 @@ import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 type Self = Record<never, never>;
-const { V, expr, tmpl, rawTmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl, rawTmpl } = context<Self & Globals & BuiltinVars>();
 
 export default {
   "nebula_hosts": {
@@ -41,16 +41,12 @@ export default {
           "cdb.nateko.lu.se:60422",
         ],
       },
-      "nebula_hosts_block": tmpl`${
-        rawTmpl(
-          "{% for host in query('hosts', 'nebula_hosts',\n                     var='nebula_ip', how='version') %}",
-        )
-      }
-${expr("hostvars[host]['nebula_ip']")}	${
-        expr("hostvars[host]['inventory_hostname_short']")
-      }.nebula
-${rawTmpl("{% endfor %}")}
-`,
+      "nebula_hosts_block": rawTmpl(
+        "{% for host in query('hosts', 'nebula_hosts',\n" +
+        "                     var='nebula_ip', how='version') %}\n" +
+        "{{ hostvars[host]['nebula_ip'] }}\t{{ hostvars[host]['inventory_hostname_short'] }}.nebula\n" +
+        "{% endfor %}\n",
+      ),
     },
     "hosts": {
       "icos1": {
