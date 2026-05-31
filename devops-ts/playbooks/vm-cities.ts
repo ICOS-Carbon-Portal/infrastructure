@@ -1,6 +1,6 @@
 // Create the ICOS Cities VM.
 
-import { type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, rawTmpl, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -16,29 +16,32 @@ export default [
       {
         name: "Create cities storage_pool directory",
         file: {
-          path: tmpl("{{ pool_path }}"),
+          path: expr("pool_path"),
           state: "directory",
         },
       },
       {
         name: "Create cities directories",
         file: {
-          path: tmpl("{{ item }}"),
+          path: expr("item"),
           state: "directory",
           owner: 1000000,
           group: 1000000,
         },
         loop: [
-          tmpl("{{ data_path }}"),
-          tmpl("{{ docker_path }}"),
-          tmpl("{{ data_fast_path }}"),
+          expr("data_path"),
+          expr("docker_path"),
+          expr("data_fast_path"),
         ],
       },
       {
         name: "Create cities storage pool",
-        shell: tmpl(
-          '/snap/bin/lxc storage show {{ pool_name }} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create {{ pool_name }} dir source="{{ pool_path}}"\n',
-        ),
+        shell: tmpl`/snap/bin/lxc storage show ${
+          expr("pool_name")
+        } > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${
+          expr("pool_name")
+        } dir source="${rawTmpl("{{ pool_path}}")}"
+`,
         register: "_r",
         changed_when: ['("Storage pool %s created" % pool_name) in _r.stdout'],
       },
@@ -58,17 +61,17 @@ export default [
           lxd_vm_devices: {
             data: {
               path: "/data",
-              source: tmpl("{{ data_path }}"),
+              source: expr("data_path"),
               type: "disk",
             },
             data_fast: {
-              path: tmpl("{{ cities_datafast_path }}"),
-              source: tmpl("{{ data_fast_path }}"),
+              path: expr("cities_datafast_path"),
+              source: expr("data_fast_path"),
               type: "disk",
             },
             docker: {
               path: "/var/lib/docker",
-              source: tmpl("{{ docker_path }}"),
+              source: expr("docker_path"),
               type: "disk",
             },
           },

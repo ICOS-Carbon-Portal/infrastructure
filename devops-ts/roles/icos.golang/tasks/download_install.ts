@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   // https://www.digitalocean.com/community/tutorials/how-to-install-go-on-ubuntu-20-04
@@ -39,7 +39,7 @@ export default [
   {
     name: "Unarchive golang",
     unarchive: {
-      src: tmpl("{{ _download.dest }}"),
+      src: expr("_download.dest"),
       dest: V.golang_opt_dir,
       remote_src: true,
     },

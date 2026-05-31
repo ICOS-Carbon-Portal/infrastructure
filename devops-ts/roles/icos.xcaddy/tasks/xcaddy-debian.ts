@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -16,16 +16,16 @@ export default [
     name: "Add xcaddy apt repository",
     apt_repository: {
       filename: "xcaddy",
-      repo: tmpl(
-        "deb [signed-by={{ _key.dest }}] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main",
-      ),
+      repo: tmpl`deb [signed-by=${
+        expr("_key.dest")
+      }] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main`,
     },
   },
   {
     name: "Install xcaddy",
     apt: {
       name: "xcaddy",
-      state: tmpl("{{ 'latest' if xcaddy_upgrade else 'present' }}"),
+      state: expr("'latest' if xcaddy_upgrade else 'present'"),
     },
   },
   {

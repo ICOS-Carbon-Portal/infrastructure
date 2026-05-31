@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -30,16 +30,19 @@ export default [
         expect: {
           // Use fileglob to search for the nebula certificate directory, then
           // switch to that directory.
-          chdir: tmpl("{{ nebula_cert_sign | fileglob | first | dirname }}"),
+          chdir: expr("nebula_cert_sign | fileglob | first | dirname"),
           // Create new certificate with a duration 1 second less than the CA's.
-          command:
-            tmpl`/bin/bash -c 'nebula-cert sign -ca-crt {{nebula_cert_sign | basename}} -ca-key {{nebula_cert_sign | basename | splitext | first}}.key -in-pub <(echo "{{ newpub.content | b64decode }}") -ip {{ nebula_ip }}{{ nebula_netmask }} -name {{ nebula_hostname }} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
+          command: tmpl`/bin/bash -c 'nebula-cert sign -ca-crt ${
+            rawTmpl("{{nebula_cert_sign | basename}}")
+          } -ca-key ${
+            rawTmpl("{{nebula_cert_sign | basename | splitext | first}}")
+          }.key -in-pub <(echo "${expr("newpub.content | b64decode")}") -ip ${
+            expr("nebula_ip")
+          }${V.nebula_netmask} -name ${V.nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
           // We default to an empty passphrase, so it'll work by default for keys
           // with no password.
           responses: {
-            "Enter passphrase: ": tmpl(
-              "{{ nebula_passphrase | default ('') }}",
-            ),
+            "Enter passphrase: ": expr("nebula_passphrase | default ('')"),
           },
         },
         register: "signedcert",
@@ -48,7 +51,7 @@ export default [
         name: "Write signed certificate",
         copy: {
           dest: "/etc/nebula/new.crt",
-          content: tmpl("{{ signedcert.stdout }}"),
+          content: expr("signedcert.stdout"),
         },
       },
       {

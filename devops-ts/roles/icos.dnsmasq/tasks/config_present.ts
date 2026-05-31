@@ -1,5 +1,5 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const config = register("config");
 
@@ -9,7 +9,7 @@ export default [
       {
         name: "Copy dnsmasq config",
         copy: {
-          content: tmpl("{{ dnsmasq_config }}"),
+          content: expr("dnsmasq_config"),
           dest: V.dnsmasq_config_file,
           backup: true,
         },
@@ -25,21 +25,21 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: tmpl("cat -n {{ dnsmasq_config }}"),
+        command: tmpl`cat -n ${expr("dnsmasq_config")}`,
         register: "_slurp",
       },
       {
         name: "Dump failed configuration",
         debug: {
-          msg: tmpl("{{ _slurp.stdout }}"),
+          msg: expr("_slurp.stdout"),
         },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: tmpl("{{ dnsmasq_config }}"),
-          src: tmpl("{{ config.backup_file }}"),
+          dest: expr("dnsmasq_config"),
+          src: expr("config.backup_file"),
         },
       },
     ],
@@ -47,7 +47,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: tmpl("{{ config.backup_file }}"),
+          name: expr("config.backup_file"),
           state: "absent",
         },
         when: raw("config['backup_file'] is defined"),
@@ -59,7 +59,7 @@ export default [
     systemd: {
       name: V.dnsmasq_service_name,
       enabled: true,
-      state: tmpl("{{ 'restarted' if check.changed else 'started' }}"),
+      state: expr("'restarted' if check.changed else 'started'"),
     },
   },
 ] satisfies TaskFile;

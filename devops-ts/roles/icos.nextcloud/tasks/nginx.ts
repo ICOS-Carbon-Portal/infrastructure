@@ -1,5 +1,5 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 const update = register("update");
 
@@ -34,14 +34,14 @@ export default [
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: tmpl("{{ _slurp.stdout }}") },
+        debug: { msg: expr("_slurp.stdout") },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: "/etc/nginx/conf.d/nextcloud.conf",
-          src: tmpl("{{ update.backup_file }}"),
+          src: expr("update.backup_file"),
         },
       },
     ],
@@ -49,7 +49,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: tmpl("{{ _r.backup_file }}"),
+          name: expr("_r.backup_file"),
           state: "absent",
         },
         when: raw("_r['backup_file'] is defined"),

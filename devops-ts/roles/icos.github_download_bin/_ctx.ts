@@ -21,6 +21,6 @@ export interface Vars {
   dbin_download_dest: string;
 }
 
-export const { V, tmpl, isDef, notVar } = context<
+export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
   Vars & Globals & BuiltinVars
 >();

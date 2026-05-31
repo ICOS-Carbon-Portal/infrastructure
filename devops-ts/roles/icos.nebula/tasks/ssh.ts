@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,7 +17,7 @@ export default [
   {
     name: "Decode nebula_ssh_public",
     set_fact: {
-      nebula_ssh_public: tmpl("{{ _slurp.content | b64decode }}"),
+      nebula_ssh_public: expr("_slurp.content | b64decode"),
     },
   },
 ] satisfies TaskFile;

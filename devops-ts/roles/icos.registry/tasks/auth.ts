@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create auth directory",
     file: {
-      path: tmpl("{{ registry_htpasswd_file | dirname }}"),
+      path: expr("registry_htpasswd_file | dirname"),
       state: "directory",
     },
   },
@@ -19,8 +19,8 @@ export default [
     name: "Add basic auth users",
     htpasswd: {
       path: V.registry_htpasswd_file,
-      name: tmpl("{{ item.name }}"),
-      password: tmpl("{{ item.password }}"),
+      name: expr("item.name"),
+      password: expr("item.password"),
       // We must force this encryption, otherwise 'docker login' will fail
       // (unauthorized ...)
       crypt_scheme: "bcrypt",

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -33,7 +33,7 @@ export default [
   {
     name: "Extract the version-specific directory of tomcat",
     set_fact: {
-      quince_tomcat_dir: tmpl(
+      quince_tomcat_dir: rawTmpl(
         "{{ (_fs.files | sort(attribute='path') | last).path  }}",
       ),
     },
@@ -42,7 +42,7 @@ export default [
     name: "Create /opt/tomcat symlink",
     file: {
       dest: V.quince_tomcat_home,
-      src: tmpl("{{ quince_tomcat_dir }}"),
+      src: expr("quince_tomcat_dir"),
       state: "link",
     },
   },

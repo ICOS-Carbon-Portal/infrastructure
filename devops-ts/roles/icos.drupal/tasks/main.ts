@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,13 +12,13 @@ export default [
     tags: ["drupal", "drupal_nginx"],
   },
   {
-    name: tmpl("Include {{ website }} vars"),
-    include_vars: tmpl("{{ website }}-vars.yml"),
+    name: tmpl`Include ${expr("website")} vars`,
+    include_vars: tmpl`${expr("website")}-vars.yml`,
     tags: ["drupal", "drupal_nginx"],
   },
   {
-    name: tmpl("Include {{ website }} vault"),
-    include_vars: tmpl("{{ website }}-vault.yml"),
+    name: tmpl`Include ${expr("website")} vault`,
+    include_vars: tmpl`${expr("website")}-vault.yml`,
     tags: ["drupal", "drupal_nginx"],
   },
   {

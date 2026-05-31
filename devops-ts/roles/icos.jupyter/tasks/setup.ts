@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -40,9 +40,7 @@ export default [
       dest: tmpl`${V.jupyter_home}/jupyterhub_home/`,
     },
     vars: {
-      conf: tmpl(
-        "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}",
-      ),
+      conf: expr("jupyter_hub_config_defaults | combine(jupyter_hub_config)"),
     },
     register: "_config",
   },

@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set lazygit_version fact",
         set_fact: {
-          lazygit_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          lazygit_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -33,7 +33,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: tmpl("{{ lazygit_url_map[lazygit_architecture] }}"),
+      src: expr("lazygit_url_map[lazygit_architecture]"),
       dest: "/usr/local/bin/",
       // extract only this
       include: ["lazygit"],

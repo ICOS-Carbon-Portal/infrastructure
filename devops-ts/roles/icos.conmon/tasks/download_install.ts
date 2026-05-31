@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   // Never overwrite apt-installed conmon with downloaded version.
@@ -38,7 +38,7 @@ export default [
   {
     name: "Unarchive sources",
     unarchive: {
-      src: tmpl("{{ _download.dest }}"),
+      src: expr("_download.dest"),
       dest: "/tmp",
       remote_src: true,
     },

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -24,9 +24,11 @@ export default [
     name: "Add docker apt repository",
     apt_repository: {
       filename: "docker",
-      repo: tmpl(
-        "deb [arch={{ deb_arch }} signed-by={{ _key.dest }}] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable",
-      ),
+      repo: tmpl`deb [arch=${expr("deb_arch")} signed-by=${
+        expr("_key.dest")
+      }] https://download.docker.com/linux/ubuntu ${
+        expr("ansible_lsb.codename")
+      } stable`,
     },
   },
 ] satisfies TaskFile;

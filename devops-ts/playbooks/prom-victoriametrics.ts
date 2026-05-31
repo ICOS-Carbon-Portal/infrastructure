@@ -1,4 +1,4 @@
-import { type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -7,8 +7,8 @@ export default [
       role("icos.docker2").tags("docker"),
       role("icos.victoriametrics", {
         vm_graf_domain: "graf.icos-cp.eu",
-        vm_graf_pass: tmpl("{{ vault_vm_graf_pass }}"),
-        vm_promlens_token: tmpl("{{ vault_prometheus_promlens_token }}"),
+        vm_graf_pass: expr("vault_vm_graf_pass"),
+        vm_promlens_token: expr("vault_prometheus_promlens_token"),
       }).tags("prom"),
       role("icos.caddy", {
         caddy_name: "prometheus",
@@ -65,9 +65,9 @@ prom.icos-cp.eu {
         name: "Show basic auth for prometheus",
         tags: "showauth",
         debug: {
-          msg: tmpl(
-            "Basic auth for prometheus is {{ vault_vmagent_auth.username }}/{{ vault_vmagent_auth.password }}",
-          ),
+          msg: tmpl`Basic auth for prometheus is ${
+            expr("vault_vmagent_auth.username")
+          }/${expr("vault_vmagent_auth.password")}`,
         },
       },
     ],

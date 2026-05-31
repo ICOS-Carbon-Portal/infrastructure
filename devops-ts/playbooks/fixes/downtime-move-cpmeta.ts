@@ -1,4 +1,4 @@
-import { type Playbook, role, tmpl } from "../../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl } from "../../lib/ansible.ts";
 
 export default [
   // ### FSICOS2 ###
@@ -12,8 +12,8 @@ export default [
         tags: "nginx",
         delegate_to: "localhost",
         become: false,
-        file: { path: tmpl("{{ item }}"), state: "directory" },
-        loop: [tmpl("{{ local_cert_dir }}"), tmpl("{{ local_conf_dir }}")],
+        file: { path: expr("item"), state: "directory" },
+        loop: [expr("local_cert_dir"), expr("local_conf_dir")],
       },
       {
         name: "Pull certificates",
@@ -23,7 +23,7 @@ export default [
           copy_links: true,
           src: `/etc/letsencrypt/live/{{ "{" + ",".join(certificates) + "}" }}
 `,
-          dest: tmpl("{{ local_cert_dir }}/"),
+          dest: tmpl`${expr("local_cert_dir")}/`,
         },
       },
       {
@@ -38,7 +38,7 @@ export default [
           ],
           src: `/etc/nginx/{{ "{" + ",".join(configurations) + "}" }}
 `,
-          dest: tmpl("{{ local_conf_dir }}"),
+          dest: expr("local_conf_dir"),
         },
       },
       // CPMETA
@@ -49,7 +49,7 @@ export default [
           mode: "pull",
           copy_links: true,
           src: "/home/cpmeta/cpmeta.jar",
-          dest: tmpl("{{ local_tmp }}/"),
+          dest: tmpl`${expr("local_tmp")}/`,
         },
       },
       {
@@ -59,7 +59,7 @@ export default [
           owner: false,
           group: false,
           src: "/disk/data/metaAppStorage",
-          dest: tmpl("{{ local_tmp }}/"),
+          dest: tmpl`${expr("local_tmp")}/`,
         },
       },
       // RDFLOG
@@ -83,7 +83,7 @@ export default [
           owner: false,
           group: false,
           src: "/tmp/rdflog_dump.gz",
-          dest: tmpl("{{ local_tmp }}/"),
+          dest: tmpl`${expr("local_tmp")}/`,
         },
       },
     ],
@@ -112,7 +112,7 @@ export default [
         tags: "nginx",
         "ansible.posix.synchronize": {
           mode: "push",
-          src: tmpl("{{ local_cert_dir }}/"),
+          src: tmpl`${expr("local_cert_dir")}/`,
           dest: "/etc/letsencrypt/live/",
           owner: false,
           group: false,
@@ -132,7 +132,7 @@ export default [
         tags: "nginx",
         "ansible.posix.synchronize": {
           mode: "push",
-          src: tmpl("{{ local_conf_dir }}/"),
+          src: tmpl`${expr("local_conf_dir")}/`,
           dest: "/etc/nginx/conf.d",
           owner: false,
           group: false,
@@ -146,7 +146,7 @@ export default [
         "ansible.posix.synchronize": {
           owner: false,
           group: false,
-          src: tmpl("{{ local_tmp }}/rdflog_dump.gz"),
+          src: tmpl`${expr("local_tmp")}/rdflog_dump.gz`,
           dest: "/tmp/",
         },
       },
@@ -155,7 +155,7 @@ export default [
       {
         name: "Push metaAppStorage",
         "ansible.posix.synchronize": {
-          src: tmpl("{{ local_tmp }}/metaAppStorage"),
+          src: tmpl`${expr("local_tmp")}/metaAppStorage`,
           dest: "/home/cpmeta/",
           // Create local directories below dest directory
           rsync_opts: ["--mkpath"],
@@ -171,14 +171,14 @@ export default [
       // RDFLOG
       role("icos.rdflog", {
         rdflog_postgres_version: 10,
-        rdflog_rep_pass: tmpl("{{ vault_rdflog_rep_pass }}"),
-        rdflog_restore_file: tmpl("{{ local_tmp }}/rdflog_dump.gz"),
+        rdflog_rep_pass: expr("vault_rdflog_rep_pass"),
+        rdflog_restore_file: tmpl`${expr("local_tmp")}/rdflog_dump.gz`,
       }).tags("rdflog"),
 
       // CPMETA
       role("icos.cpmeta", {
-        cpmeta_filestorage_target: tmpl("{{ cpmeta_home }}/metaAppStorage"),
-        cpmeta_jar_file: tmpl("{{ local_tmp }}/cpmeta.jar"),
+        cpmeta_filestorage_target: tmpl`${expr("cpmeta_home")}/metaAppStorage`,
+        cpmeta_jar_file: tmpl`${expr("local_tmp")}/cpmeta.jar`,
         cpmeta_config_files: [
           "application_production.conf",
           "application_production_sensitive.conf",

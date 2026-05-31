@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -22,7 +22,7 @@ exec ssh -q flexpart "$@"
   },
   {
     include_tasks: "flexpart_ssh_user.yml",
-    loop: tmpl("{{ flexpart_ssh_users }}"),
+    loop: expr("flexpart_ssh_users"),
     loop_control: {
       loop_var: "_ssh_user",
     },

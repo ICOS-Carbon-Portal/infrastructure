@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { notVar, tmpl } from "../_ctx.ts";
+import { expr, notVar, rawTmpl, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -13,8 +13,8 @@ export default [
   // The certbot_nginx_conf variable is set by either the live or fake path.
   {
     name: "Export certbot nginx config variable with prefix name",
-    set_fact: tmpl(
-      '{{ certbot_conf_name }}_certbot_nginx_conf="{{certbot_nginx_conf}}"',
-    ),
+    set_fact: tmpl`${expr("certbot_conf_name")}_certbot_nginx_conf="${
+      rawTmpl("{{certbot_nginx_conf}}")
+    }"`,
   },
 ] satisfies TaskFile;

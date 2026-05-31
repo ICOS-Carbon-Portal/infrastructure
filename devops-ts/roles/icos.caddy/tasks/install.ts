@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 // https://caddyserver.com/docs/install#debian-ubuntu-raspbian
 export default [
@@ -24,7 +24,7 @@ export default [
     name: "Install caddy",
     apt: {
       name: "caddy",
-      state: tmpl("{{ 'latest' if caddy_upgrade else 'present' }}"),
+      state: expr("'latest' if caddy_upgrade else 'present'"),
     },
     notify: "restart caddy",
   },

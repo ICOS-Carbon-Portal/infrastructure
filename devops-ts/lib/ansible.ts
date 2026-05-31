@@ -55,7 +55,7 @@ export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { BuiltinVars } from "./builtins.ts";
 export { type Item, loopOver, withItemsOver } from "./loop.ts";
 export { type Reg, register, type Result } from "./register.ts";
-export { Template } from "./template.ts";
+export { expr, RawTemplate, rawTmpl, Template } from "./template.ts";
 
 /**
  * A value that may be a plain string or a Jinja template (`V.x`, `tmpl(...)`).
@@ -599,7 +599,7 @@ export async function render(doc: Playbook | TaskFile): Promise<string> {
   function clean(v: any): unknown {
     if (v === null || v === undefined) return v;
     if (v instanceof Template) {
-      const s = new Scalar(v.toString());
+      const s = new Scalar(v.toText()); // join structured parts (refs -> {{ }})
       s.type = "QUOTE_DOUBLE"; // type-driven quoting
       return s;
     }

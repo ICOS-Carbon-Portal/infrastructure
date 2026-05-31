@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create restic_server directory",
     file: {
-      path: tmpl("{{ restic_server_exec | dirname }}"),
+      path: expr("restic_server_exec | dirname"),
       state: "directory",
     },
   },

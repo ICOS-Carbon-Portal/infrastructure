@@ -1,10 +1,10 @@
-import { not, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, not, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
     hosts: "fsicos3",
     vars: {
-      exploredata_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
+      exploredata_ip: expr("_lxd.addresses.eth0 | first"),
     },
     tasks: [
       {
@@ -42,7 +42,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: tmpl("{{ zfsdocker_zvol }}"),
+              source: expr("zfsdocker_zvol"),
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -74,7 +74,7 @@ export default [
         },
         vars: {
           lxd_forward_name: "exploredata",
-          lxd_forward_ip: tmpl("{{ exploredata_ip }}"),
+          lxd_forward_ip: expr("exploredata_ip"),
         },
       },
       {
@@ -101,7 +101,7 @@ export default [
             "roles/icos.exploredata/templates/exploredata-nginx.conf",
           exploredata_name: "test",
           exploredata_port: 4567,
-          exploredata_host: tmpl("{{ exploredata_ip }}"),
+          exploredata_host: expr("exploredata_ip"),
           exploredata_domains: ["exploretest.icos-cp.eu"],
         },
       },
@@ -117,7 +117,7 @@ export default [
             "roles/icos.exploredata/templates/exploredata-nginx.conf",
           exploredata_name: "prod",
           exploredata_port: 4566,
-          exploredata_host: tmpl("{{ exploredata_ip }}"),
+          exploredata_host: expr("exploredata_ip"),
           exploredata_domains: ["exploredata.icos-cp.eu"],
         },
       },
@@ -126,7 +126,7 @@ export default [
   {
     hosts: "exploredata",
     vars: {
-      exploredata_password: tmpl("{{ vault_exploredata_password }}"),
+      exploredata_password: expr("vault_exploredata_password"),
       exploredata_max_notebooks: 100,
     },
     roles: [

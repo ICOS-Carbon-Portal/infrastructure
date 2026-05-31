@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -28,9 +28,9 @@ export default [
       dbin_repo: "lazydocker",
       dbin_src: "lazydocker",
       // https://github.com/jesseduffield/lazydocker/releases
-      dbin_url: tmpl(
-        "{{ dbin__down }}/v{{ dbin__vers }}/{{ dbin_repo }}_{{ dbin__vers }}_Linux_{{ lazydocker_arch }}.tar.gz",
-      ),
+      dbin_url: tmpl`${expr("dbin__down")}/v${expr("dbin__vers")}/${
+        expr("dbin_repo")
+      }_${expr("dbin__vers")}_Linux_${expr("lazydocker_arch")}.tar.gz`,
     },
   },
 ] satisfies TaskFile;

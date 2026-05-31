@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -20,11 +20,11 @@ export default [
   {
     name: "Set configuration parameters",
     postconf: {
-      param: tmpl("{{ item.param }}"),
-      value: tmpl("{{ item.value }}"),
-      append: tmpl("{{ item.append | default(omit) }}"),
-      reload: tmpl("{{ item.reload | default(omit) }}"),
-      separator: tmpl("{{ item.separator | default(omit) }}"),
+      param: expr("item.param"),
+      value: expr("item.value"),
+      append: expr("item.append | default(omit)"),
+      reload: expr("item.reload | default(omit)"),
+      separator: expr("item.separator | default(omit)"),
     },
     loop: V.postfix_config_list,
   },

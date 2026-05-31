@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -16,8 +16,8 @@ export default [
     name: "Use sshlogin_user to derive sshlogin_{src,dst}_user",
     when: raw("sshlogin_user is defined"),
     set_fact: {
-      sshlogin_src_user: tmpl("{{ sshlogin_user }}"),
-      sshlogin_dst_user: tmpl("{{ sshlogin_user }}"),
+      sshlogin_src_user: expr("sshlogin_user"),
+      sshlogin_dst_user: expr("sshlogin_user"),
     },
   },
   {
@@ -34,29 +34,29 @@ export default [
   },
   // SRC - Create user and directories
   {
-    name: tmpl("Create {{ sshlogin_src_user }} user"),
+    name: tmpl`Create ${expr("sshlogin_src_user")} user`,
     user: {
-      name: tmpl("{{ sshlogin_src_user }}"),
-      home: tmpl("{{ sshlogin_src_home | default(omit) }}"),
+      name: expr("sshlogin_src_user"),
+      home: expr("sshlogin_src_home | default(omit)"),
       generate_ssh_key: true,
     },
     register: "_src_user",
   },
   // DST - Retrieve IP and host keys
   {
-    delegate_to: tmpl("{{ sshlogin_dst }}"),
+    delegate_to: expr("sshlogin_dst"),
     name: "Retrieve destination host keys",
     shellfact: {
-      exec: tmpl(
-        'ssh-keyscan localhost | sed "s/^localhost/{{ sshlogin_dst }}/"',
-      ),
+      exec: tmpl`ssh-keyscan localhost | sed "s/^localhost/${
+        expr("sshlogin_dst")
+      }/"`,
       fact: "sshlogin_dst_host_keys",
     },
   },
   // SRC - Add known_hosts and generate key
   {
     become: true,
-    become_user: tmpl("{{ sshlogin_src_user }}"),
+    become_user: expr("sshlogin_src_user"),
     block: [
       {
         name: "Update known_hosts",
@@ -65,12 +65,12 @@ export default [
           name: V.sshlogin_src_dst,
           key: V.item,
         },
-        loop: tmpl("{{ sshlogin_dst_host_keys.strip().split('\\n') }}"),
+        loop: expr("sshlogin_dst_host_keys.strip().split('\\n')"),
       },
       {
         name: "Add ssh config",
         blockinfile: {
-          marker: tmpl("# {mark} ansible / sshlogin {{ sshlogin_dst }}"),
+          marker: tmpl`# {mark} ansible / sshlogin ${expr("sshlogin_dst")}`,
           create: true,
           path: V.sshlogin_src_ssh_config,
           block: `Host {{ sshlogin_src_dst_name }}
@@ -84,22 +84,22 @@ export default [
   },
   // DST - Add key
   {
-    delegate_to: tmpl("{{ sshlogin_dst }}"),
+    delegate_to: expr("sshlogin_dst"),
     block: [
       {
         name: "Create destination user",
         user: {
-          name: tmpl("{{ sshlogin_dst_user }}"),
-          home: tmpl("{{ sshlogin_dst_home | default(omit) }}"),
+          name: expr("sshlogin_dst_user"),
+          home: expr("sshlogin_dst_home | default(omit)"),
         },
         register: "_dst_user",
       },
       {
         name: "Install public key",
         authorized_key: {
-          user: tmpl("{{ sshlogin_dst_user }}"),
+          user: expr("sshlogin_dst_user"),
           state: "present",
-          key: tmpl("{{ _src_user.ssh_public_key }}"),
+          key: expr("_src_user.ssh_public_key"),
           key_options: V.sshlogin_dst_key_options,
         },
       },

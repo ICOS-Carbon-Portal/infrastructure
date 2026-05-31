@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -14,7 +14,9 @@ export default [
     name: "Generate RSA keys",
     args: { creates: V.bbclient_ssh_key },
     command:
-      tmpl`ssh-keygen -q -t rsa -f ${V.bbclient_ssh_key} -N ""\n  -C "bbclient_{{ bbclient_name }}@${V.inventory_hostname}"`,
+      tmpl`ssh-keygen -q -t rsa -f ${V.bbclient_ssh_key} -N ""\n  -C "bbclient_${
+        expr("bbclient_name")
+      }@${V.inventory_hostname}"`,
   },
   {
     name: "Create ssh config",

@@ -1,5 +1,5 @@
 import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -42,8 +42,10 @@ export default [
       lineinfile: {
         path: item.f,
         // Only change commented-out lines, thus replacing the defaults.
-        regex: tmpl("(?:^#\\s*{{ item.s }}\\s*=)|(?:^{{ item.s }} = yes)"),
-        line: tmpl("{{ item.s }} = yes"),
+        regex: tmpl`(?:^#\\s*${expr("item.s")}\\s*=)|(?:^${
+          expr("item.s")
+        } = yes)`,
+        line: tmpl`${expr("item.s")} = yes`,
         state: "present",
       },
     }),

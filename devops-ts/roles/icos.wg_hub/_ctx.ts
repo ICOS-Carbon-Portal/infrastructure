@@ -18,6 +18,6 @@ export interface Vars {
   wg_hub_self: string;
 }
 
-export const { V, tmpl, isDef, notVar } = context<
+export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
   Vars & Globals & BuiltinVars
 >();

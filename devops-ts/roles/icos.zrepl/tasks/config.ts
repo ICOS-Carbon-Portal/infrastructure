@@ -1,5 +1,5 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 const update = register("update");
 
@@ -9,7 +9,7 @@ export default [
       {
         name: "Create zrepl.yaml",
         copy: {
-          content: tmpl("{{ zrepl_config }}"),
+          content: expr("zrepl_config"),
           dest: "/etc/zrepl/zrepl.yml",
           backup: true,
         },
@@ -33,12 +33,12 @@ export default [
         copy: {
           remote_src: true,
           dest: "/etc/zrepl/zrepl.yml",
-          src: tmpl("{{ update.backup_file }}"),
+          src: expr("update.backup_file"),
         },
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: tmpl("{{ _slurp.stdout }}") },
+        debug: { msg: expr("_slurp.stdout") },
       },
       {
         name: "Validation failed",
@@ -49,7 +49,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: tmpl("{{ _r.backup_file }}"),
+          name: expr("_r.backup_file"),
           state: "absent",
         },
         when: raw("_r['backup_file'] is defined"),

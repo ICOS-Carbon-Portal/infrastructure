@@ -1,4 +1,4 @@
-import { isDefined, type Playbook, tmpl } from "../lib/ansible.ts";
+import { expr, isDefined, type Playbook, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   // ZFS
@@ -52,21 +52,21 @@ export default [
       {
         name: "Create directories",
         file: {
-          path: tmpl("{{ item }}"),
+          path: expr("item"),
           state: "directory",
         },
-        loop: tmpl("{{ icosdata_mkdirs | default([]) }}"),
+        loop: expr("icosdata_mkdirs | default([])"),
       },
       {
         name: "Do bind-mount local data",
         mount: {
           fstype: "none",
           state: "mounted",
-          path: tmpl("{{ item.path }}"),
-          src: tmpl("{{ item.src }}"),
-          opts: tmpl("bind{{ item.opts | default('') }}"),
+          path: expr("item.path"),
+          src: expr("item.src"),
+          opts: tmpl`bind${expr("item.opts | default('')")}`,
         },
-        loop: tmpl("{{ icosdata_bind_mounts | default([]) }}"),
+        loop: expr("icosdata_bind_mounts | default([])"),
       },
       {
         when: isDefined("icosdata_exports"),
@@ -76,7 +76,7 @@ export default [
           path: "/etc/exports",
           create: true,
           marker: "# {mark} icosdata",
-          block: tmpl("{{ icosdata_exports }}"),
+          block: V.icosdata_exports,
         },
         notify: "Reload NFS server",
       },
@@ -93,14 +93,14 @@ export default [
         tags: "mount",
         mount: {
           fstype: "nfs4",
-          state: tmpl("{{ item.state | default('mounted') }}"),
+          state: expr("item.state | default('mounted')"),
           // The next two default to omit so that they can be left out when state
           // is "unmounted".
-          src: tmpl("{{ item.src | default(omit) }}"),
-          path: tmpl("{{ item.path | default(omit) }}"),
-          opts: tmpl("{{ item.opts | default('ro') }}"),
+          src: expr("item.src | default(omit)"),
+          path: expr("item.path | default(omit)"),
+          opts: expr("item.opts | default('ro')"),
         },
-        loop: tmpl("{{ icosdata_nfs_mounts }}"),
+        loop: V.icosdata_nfs_mounts,
       },
     ],
   },

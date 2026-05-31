@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -67,7 +67,7 @@ export default [
     name: "Allow node_exporter through firewall",
     iptables_raw: {
       name: "allow_node_exporter",
-      state: tmpl("{{ 'present' if node_exporter_allow else 'absent' }}"),
+      state: expr("'present' if node_exporter_allow else 'absent'"),
       rules: tmpl`-A INPUT -p tcp --dport ${V.node_exporter_listen} -j ACCEPT`,
     },
   },

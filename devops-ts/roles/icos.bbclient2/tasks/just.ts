@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,8 +7,8 @@ export default [
     template: {
       src: "justfile",
       dest: tmpl`${V.bbclient_home}/`,
-      variable_start_string: tmpl("{{ '{{{{' }}"),
-      variable_end_string: tmpl("{{ '}}}}' }}"),
+      variable_start_string: rawTmpl("{{ '{{{{' }}"),
+      variable_end_string: rawTmpl("{{ '}}}}' }}"),
       lstrip_blocks: true,
     },
   },

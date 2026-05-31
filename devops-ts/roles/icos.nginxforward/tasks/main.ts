@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
     tags: "nginxforward_auth",
   },
   {
-    name: tmpl("Copy config for {{ nginxforward_name }}"),
+    name: tmpl`Copy config for ${expr("nginxforward_name")}`,
     template: {
       src: V.nginxforward_file,
       dest: V.nginxforward_path_available,
@@ -33,9 +33,9 @@ export default [
     file: {
       dest: V.nginxforward_path_enabled,
       src: V.nginxforward_path_available,
-      state: tmpl(
-        "{% if nginxforward_enable %}link{% else %}absent{% endif %}",
-      ),
+      state: tmpl`${rawTmpl("{% if nginxforward_enable %}")}link${
+        rawTmpl("{% else %}")
+      }absent${rawTmpl("{% endif %}")}`,
     },
     when: raw("nginxforward_enable"),
     notify: "reload nginx config",

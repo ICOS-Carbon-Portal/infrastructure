@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -19,7 +19,7 @@ export default [
   {
     name: "Create directory for auth file",
     file: {
-      path: tmpl("{{ nginxauth_file | dirname }}"),
+      path: expr("nginxauth_file | dirname"),
       state: "directory",
     },
   },
@@ -27,9 +27,9 @@ export default [
     name: "Add basic auth users",
     htpasswd: {
       path: V.nginxauth_file,
-      name: tmpl("{{ item.username }}"),
-      password: tmpl("{{ item.password }}"),
+      name: expr("item.username"),
+      password: expr("item.password"),
     },
-    loop: tmpl("{{ nginxauth_users }}"),
+    loop: expr("nginxauth_users"),
   },
 ] satisfies TaskFile;

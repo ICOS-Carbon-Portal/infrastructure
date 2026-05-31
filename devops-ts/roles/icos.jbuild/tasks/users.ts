@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,7 +9,7 @@ export default [
       owner: V.item,
       group: V.item,
     },
-    loop: tmpl("{{ jbuild_users }}"),
+    loop: expr("jbuild_users"),
     register: "_jbuild_user_keys",
   },
   {
@@ -38,7 +38,7 @@ Host projectcommon
   IdentityFile ~/.ssh/jbuild
 `,
     },
-    loop: tmpl("{{ jbuild_users }}"),
+    loop: expr("jbuild_users"),
   },
   {
     name: "Create $HOME/bin directory",
@@ -48,7 +48,7 @@ Host projectcommon
       owner: V.item,
       group: V.item,
     },
-    loop: tmpl("{{ jbuild_users }}"),
+    loop: expr("jbuild_users"),
   },
   {
     name: "Create wrappers for edctl",
@@ -59,7 +59,7 @@ Host projectcommon
 ssh edctl /opt/edctl/edctl.py "$@"
 `,
     },
-    loop: tmpl("{{ jbuild_users }}"),
+    loop: expr("jbuild_users"),
   },
   {
     name: "Create wrappers for jyctl",
@@ -70,7 +70,7 @@ ssh edctl /opt/edctl/edctl.py "$@"
 ssh jyctl /opt/jyctl/jyctl.py "$@"
 `,
     },
-    loop: tmpl("{{ jbuild_users }}"),
+    loop: expr("jbuild_users"),
   },
   {
     name: "Login to registry",
@@ -79,8 +79,8 @@ ssh jyctl /opt/jyctl/jyctl.py "$@"
     "community.general.docker_login": {
       registry_url: V.registry_domain,
       username: "docker",
-      password: tmpl("{{ jbuild_registry_pass }}"),
+      password: expr("jbuild_registry_pass"),
     },
-    loop: tmpl("{{ jbuild_users }}"),
+    loop: expr("jbuild_users"),
   },
 ] satisfies TaskFile;

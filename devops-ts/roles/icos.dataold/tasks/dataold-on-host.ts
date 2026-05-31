@@ -1,5 +1,5 @@
 import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const _rsyslog = register("_rsyslog");
 
@@ -77,9 +77,7 @@ if $syslogtag == "dataold:" then {
     systemd: {
       "daemon-reload": true,
       enabled: true,
-      state: tmpl(
-        "{{ 'restarted' if _cf.changed or _sr.changed else 'started' }}",
-      ),
+      state: expr("'restarted' if _cf.changed or _sr.changed else 'started'"),
       name: "dataold.service",
     },
   },
@@ -105,7 +103,9 @@ systemctl reload dataold
     name: "Test access to dataold from localhost",
     delegate_to: "localhost",
     uri: {
-      url: tmpl`https://{{ certbot_domains | first }}:${V.dataold_ext_port}`,
+      url: tmpl`https://${
+        expr("certbot_domains | first")
+      }:${V.dataold_ext_port}`,
     },
     register: "_r",
     failed_when: [

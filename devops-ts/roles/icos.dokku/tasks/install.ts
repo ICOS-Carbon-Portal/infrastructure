@@ -1,5 +1,5 @@
 import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -16,9 +16,11 @@ export default [
     name: "Add dokku apt repository",
     apt_repository: {
       filename: "dokku",
-      repo: tmpl(
-        "deb [signed-by={{ _key.dest }}] https://packagecloud.io/dokku/dokku/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main",
-      ),
+      repo: tmpl`deb [signed-by=${
+        expr("_key.dest")
+      }] https://packagecloud.io/dokku/dokku/${
+        expr("ansible_lsb.id | lower")
+      }/ ${expr("ansible_lsb.codename")} main`,
     },
   },
   loopOver<{ question: Tmpl; value: Tmpl; vtype: Tmpl }>(

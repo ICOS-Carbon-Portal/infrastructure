@@ -1,12 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Populate /etc/hosts",
     blockinfile: {
       marker: tmpl`# {mark} ansible / dnsmasq / ${V.dnsmasq_config_name}`,
-      state: tmpl("{{ 'present' if dnsmasq_hosts else 'absent' }}"),
+      state: expr("'present' if dnsmasq_hosts else 'absent'"),
       create: false,
       insertafter: "EOF",
       path: "/etc/hosts",

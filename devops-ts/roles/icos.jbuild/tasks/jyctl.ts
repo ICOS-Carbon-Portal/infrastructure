@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   { import_role: "name=icos.python3" },
@@ -17,8 +17,8 @@ export default [
     name: "Change access rights on template directory",
     file: {
       path: V.item,
-      owner: tmpl("{{ _user.uid }}"),
-      group: tmpl("{{ _user.group }}"),
+      owner: expr("_user.uid"),
+      group: expr("_user.group"),
     },
     loop: ["/docker/jupyter/jupyterhub_home/templates"],
   },
@@ -34,9 +34,9 @@ export default [
     become: true,
     become_user: "jyctl",
     "community.general.docker_login": {
-      registry_url: tmpl("{{ jbuild_registry.url }}"),
-      username: tmpl("{{ jbuild_registry.username }}"),
-      password: tmpl("{{ jbuild_registry.password }}"),
+      registry_url: expr("jbuild_registry.url"),
+      username: expr("jbuild_registry.username"),
+      password: expr("jbuild_registry.password"),
     },
   },
   {
@@ -61,7 +61,7 @@ export default [
       src: "jyctl.py",
       dest: "/opt/jyctl/jyctl.py",
       mode: "+x",
-      force: tmpl("{{ jbuild_force | default(True) | bool }}"),
+      force: expr("jbuild_force | default(True) | bool"),
     },
   },
   {

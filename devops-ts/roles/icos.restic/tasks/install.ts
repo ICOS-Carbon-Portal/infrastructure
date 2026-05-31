@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set restic_version fact",
         set_fact: {
-          restic_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          restic_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -29,13 +29,11 @@ export default [
   },
   {
     name: "Download restic",
-    "ansible.builtin.shell": tmpl(
-      "curl -L --silent {{ restic_url_map[restic_architecture] }} | bunzip2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic",
-    ),
+    "ansible.builtin.shell": tmpl`curl -L --silent ${
+      expr("restic_url_map[restic_architecture]")
+    } | bunzip2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic`,
     args: {
-      creates: tmpl(
-        "{{ omit if restic_upgrade else '/usr/local/bin/restic' }}",
-      ),
+      creates: expr("omit if restic_upgrade else '/usr/local/bin/restic'"),
       executable: "/bin/bash",
     },
   },

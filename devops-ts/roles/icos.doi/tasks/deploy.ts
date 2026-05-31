@@ -1,5 +1,5 @@
 import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -23,7 +23,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: tmpl("{{ doi_jar_file }}"),
+      src: expr("doi_jar_file"),
       dest: tmpl`${V.doi_home}/doi.jar`,
       backup: true,
     },
@@ -43,16 +43,16 @@ export default [
     systemd: {
       name: "doi.service",
       enabled: true,
-      "daemon-reload": tmpl("{{ 'yes' if _service.changed else 'no' }}"),
-      state: tmpl(
-        "{{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}",
+      "daemon-reload": expr("'yes' if _service.changed else 'no'"),
+      state: expr(
+        "'restarted' if _jarfile.changed or _config.changed else 'started'",
       ),
     },
   },
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl("https://{{ doi_domains | first }}/buildInfo"),
+      url: tmpl`https://${expr("doi_domains | first")}/buildInfo`,
       return_content: true,
     },
     register: r,

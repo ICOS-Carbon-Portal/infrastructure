@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,14 +18,14 @@ export default [
     name: "Create executable symlink to justfile",
     file: {
       dest: "/usr/local/bin/ops-nextcloud",
-      src: tmpl("{{ _justfile.dest }}"),
+      src: expr("_justfile.dest"),
       state: "link",
     },
     register: "_symlink",
   },
   {
     name: "Check that the justfile is executable",
-    shell: tmpl("{{ _symlink.dest }}"),
+    shell: expr("_symlink.dest"),
     changed_when: false,
   },
 ] satisfies TaskFile;

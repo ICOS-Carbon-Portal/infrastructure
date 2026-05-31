@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -22,7 +22,7 @@ export default [
     copy: {
       dest: V.timer_dest,
       mode: "+x",
-      content: tmpl("{{ timer_content }}"),
+      content: expr("timer_content"),
     },
     when: raw("timer_content is defined"),
   },
@@ -30,7 +30,7 @@ export default [
     name: "Create systemd timer",
     copy: {
       dest: V._timer_sysd_timer,
-      content: tmpl("{{ timer_config }}"),
+      content: expr("timer_config"),
     },
     notify: "restart icos timer",
   },
@@ -38,7 +38,7 @@ export default [
     name: "Create systemd service",
     copy: {
       dest: V._timer_sysd_service,
-      content: tmpl("{{ timer_service }}"),
+      content: expr("timer_service"),
     },
   },
   {
@@ -54,7 +54,7 @@ export default [
   {
     name: "Start timer",
     systemd: {
-      name: tmpl("{{ timer_name }}.timer"),
+      name: tmpl`${expr("timer_name")}.timer`,
       enabled: true,
       state: V.timer_state,
       daemon_reload: true,

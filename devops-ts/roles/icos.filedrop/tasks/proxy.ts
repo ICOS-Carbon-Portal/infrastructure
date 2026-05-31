@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,9 +15,9 @@ export default [
   {
     include_role: "name=icos.certbot2",
     vars: {
-      certbot_name: tmpl("{{ filedrop_domain }}"),
+      certbot_name: expr("filedrop_domain"),
       certbot_domains: [
-        tmpl("{{ filedrop_domain }}"),
+        expr("filedrop_domain"),
       ],
     },
   },

@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
     name: "Install/upgrade docker",
     apt: {
       name: ["docker.io", "containerd"],
-      state: tmpl('{{ "latest" if docker_upgrade | bool else "present" }}'),
+      state: expr('"latest" if docker_upgrade | bool else "present"'),
       update_cache: true,
     },
   },
@@ -23,7 +23,7 @@ export default [
     name: "Make sure docker isn't upgraded",
     dpkg_selections: {
       name: V.item,
-      selection: tmpl("{{ 'hold' if docker_prevent_upgrade else 'install' }}"),
+      selection: expr("'hold' if docker_prevent_upgrade else 'install'"),
     },
     loop: ["docker.io", "containerd"],
   },

@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -28,7 +28,7 @@ export default [
       {
         name: "Set httm_version fact",
         set_fact: {
-          httm_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          httm_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -37,7 +37,7 @@ export default [
   {
     name: "Install httm",
     apt: {
-      deb: tmpl("{{ httm_url_map[httm_architecture] }}"),
+      deb: expr("httm_url_map[httm_architecture]"),
     },
   },
   {

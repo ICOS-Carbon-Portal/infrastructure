@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { isDef, tmpl, V } from "../_ctx.ts";
+import { expr, isDef, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,7 +13,7 @@ export default [
     name: "Pull source code from git",
     git: {
       repo: "https://github.com/ICOS-Carbon-Portal/drupal",
-      version: tmpl("{{ git_version | default('master') }}"),
+      version: expr("git_version | default('master')"),
       dest: V.project_dir,
       force: true,
     },
@@ -86,7 +86,9 @@ export default [
   },
   {
     name: "Enable maintenance mode",
-    command: tmpl("docker exec {{website}}_drupal_1 drush maint:set 1"),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 drush maint:set 1`,
     when: raw("update | bool"),
   },
   {
@@ -99,53 +101,57 @@ export default [
   },
   {
     name: "Check private directory owner",
-    command: tmpl(
-      "docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/",
-    ),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 stat -c '%U' /var/www/private/`,
     register: "private_directory_owner",
     changed_when: false,
   },
   {
     name: "Change private directory owner",
-    command: tmpl(
-      "docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/private/",
-    ),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 chown -R www-data:www-data /var/www/private/`,
     when: raw('private_directory_owner.stdout != "www-data"'),
   },
   {
     name: "Check files directory owner",
-    command: tmpl(
-      "docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/",
-    ),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 stat -c '%U' /var/www/private/`,
     register: "files_directory_owner",
     changed_when: false,
   },
   {
     name: "Change files directory owner",
-    command: tmpl(
-      "docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files",
-    ),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files`,
     when: raw('files_directory_owner.stdout != "www-data"'),
   },
   {
     name: "Composer update",
-    command: tmpl("docker exec {{website}}_drupal_1 composer update"),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 composer update`,
     when: raw("update | bool"),
     register: "result",
     changed_when: '"Package operations" in result.stderr',
   },
   {
     name: "Update database",
-    command: tmpl("docker exec {{website}}_drupal_1 drush updb"),
+    command: tmpl`docker exec ${rawTmpl("{{website}}")}_drupal_1 drush updb`,
     when: raw("update | bool"),
   },
   {
     name: "Disable maintenance mode",
-    command: tmpl("docker exec {{website}}_drupal_1 drush maint:set 0"),
+    command: tmpl`docker exec ${
+      rawTmpl("{{website}}")
+    }_drupal_1 drush maint:set 0`,
     when: raw("update | bool"),
   },
   {
     name: "Clear caches",
-    command: tmpl("docker exec {{website}}_drupal_1 drush cr"),
+    command: tmpl`docker exec ${rawTmpl("{{website}}")}_drupal_1 drush cr`,
   },
 ] satisfies TaskFile;

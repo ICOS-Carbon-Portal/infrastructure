@@ -5,7 +5,7 @@ import {
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -34,9 +34,9 @@ export default [
       name: "Copy mailman files",
       template: {
         // item.src is typed (loop element key); the filtered forms stay raw.
-        dest: tmpl("{{ item.dest | default(mailman_home) }}"),
+        dest: expr("item.dest | default(mailman_home)"),
         src: item.src,
-        mode: tmpl("{{ item.mode | default(omit) }}"),
+        mode: expr("item.mode | default(omit)"),
       },
       register: "_files",
     }),
@@ -51,9 +51,9 @@ export default [
   {
     name: "Test the REST API",
     uri: {
-      url: tmpl("https://{{ mailman_domains | first }}/rest/3.0/domains"),
+      url: tmpl`https://${expr("mailman_domains | first")}/rest/3.0/domains`,
       user: V.mailman_rest_user,
-      password: tmpl("{{ mailman_rest_pass }}"),
+      password: expr("mailman_rest_pass"),
     },
     register: r,
     failed_when: [
@@ -67,9 +67,9 @@ export default [
   {
     name: "Set postfix parameters",
     postconf: {
-      param: tmpl("{{ item.param }}"),
-      value: tmpl("{{ item.value }}"),
-      append: tmpl("{{ item.append | default(omit) }}"),
+      param: expr("item.param"),
+      value: expr("item.value"),
+      append: expr("item.append | default(omit)"),
     },
     loop: V.mailman_postfix_config,
   },
@@ -86,9 +86,9 @@ export default [
         (item) => ({
           name: "Copy mailman_delete_spam files",
           template: {
-            dest: tmpl("{{ item.dest | default(mailman_home) }}"),
+            dest: expr("item.dest | default(mailman_home)"),
             src: item.src,
-            mode: tmpl("{{ item.mode | default(omit) }}"),
+            mode: expr("item.mode | default(omit)"),
           },
           register: "_files",
         }),

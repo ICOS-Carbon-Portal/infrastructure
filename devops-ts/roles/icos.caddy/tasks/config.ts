@@ -1,5 +1,5 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const _r = register("_r");
 
@@ -14,13 +14,13 @@ export default [
         name: "Add caddy configuration block",
         blockinfile: {
           path: "/etc/caddy/Caddyfile",
-          block: tmpl("{{ block }}"),
-          marker: tmpl("# {mark} {{ marker }}"),
-          state: tmpl("{{ state | default(omit) }}"),
+          block: expr("block"),
+          marker: tmpl`# {mark} ${expr("marker")}`,
+          state: expr("state | default(omit)"),
           backup: true,
           create: true,
-          insertafter: tmpl("{{ 'EOF' if where == 'EOF' else omit }}"),
-          insertbefore: tmpl("{{ 'BOF' if where == 'BOF' else omit }}"),
+          insertafter: expr("'EOF' if where == 'EOF' else omit"),
+          insertbefore: expr("'BOF' if where == 'BOF' else omit"),
         },
         register: _r,
       },
@@ -40,14 +40,14 @@ export default [
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: tmpl("{{ _slurp.stdout }}") },
+        debug: { msg: expr("_slurp.stdout") },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: "/etc/caddy/Caddyfile",
-          src: tmpl("{{ _r.backup_file }}"),
+          src: expr("_r.backup_file"),
         },
         // backup_file won't be set if templating failed
         when: raw("_r['backup_file'] is defined"),
@@ -57,7 +57,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: tmpl("{{ _r.backup_file }}"),
+          name: expr("_r.backup_file"),
           state: "absent",
         },
         changed_when: false,

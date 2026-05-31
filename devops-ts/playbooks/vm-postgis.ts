@@ -4,7 +4,7 @@
 // Redeploy backup script and bbclient
 //   icos play postgis backup
 
-import { type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -34,7 +34,7 @@ export default [
         tags: "postgresql",
         vars: {
           postgresql_postgis_enable: true,
-          postgresql_postgres_password: tmpl("{{ postgis_admin_pass }}"),
+          postgresql_postgres_password: expr("postgis_admin_pass"),
           postgresql_listen_addresses: "'*'",
           postgresql_pg_stat_enable: true,
         },
@@ -55,7 +55,7 @@ export default [
         name: "Allow postgres user to connect from same subnet",
         tags: "hba",
         postgresql_pg_hba: {
-          dest: tmpl("{{ postgresql_hba_file }}"),
+          dest: expr("postgresql_hba_file"),
           users: "postgres",
           source: "samenet",
           method: "md5",
@@ -72,21 +72,21 @@ export default [
             name: "Create postgres cplog users",
             postgresql_user: {
               db: "cplog",
-              name: tmpl("{{ item.username }}"),
-              password: tmpl("{{ item.password }}"),
+              name: expr("item.username"),
+              password: expr("item.password"),
             },
-            loop: tmpl("{{ postgis_cplog_users }}"),
+            loop: expr("postgis_cplog_users"),
           },
           {
             name: "Allow users to connect from same subnet",
             postgresql_pg_hba: {
-              dest: tmpl("{{ postgresql_hba_file }}"),
-              users: tmpl("{{ item.username }}"),
+              dest: expr("postgresql_hba_file"),
+              users: expr("item.username"),
               source: "samenet",
               method: "md5",
               contype: "hostssl",
             },
-            loop: tmpl("{{ postgis_cplog_users }}"),
+            loop: expr("postgis_cplog_users"),
           },
           {
             name: "Add the pg_stat_statements extension",

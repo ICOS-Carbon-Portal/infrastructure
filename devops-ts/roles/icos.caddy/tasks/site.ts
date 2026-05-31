@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   // FIXME: Remove in 2024
@@ -10,15 +10,15 @@ export default [
       state: "absent",
     },
     loop: [
-      tmpl("/etc/caddy/sites/Caddyfile.{{ caddy_name }}"),
-      tmpl("/etc/caddy/{{ caddy_name }}.caddy"),
+      tmpl`/etc/caddy/sites/Caddyfile.${expr("caddy_name")}`,
+      tmpl`/etc/caddy/${expr("caddy_name")}.caddy`,
     ],
   },
   {
     import_tasks: "config.yml",
     vars: {
-      block: tmpl("{{ caddy_conf }}"),
-      marker: tmpl("{{ caddy_name }}"),
+      block: expr("caddy_conf"),
+      marker: expr("caddy_name"),
       state: V.caddy_site_state,
       where: "EOF",
     },

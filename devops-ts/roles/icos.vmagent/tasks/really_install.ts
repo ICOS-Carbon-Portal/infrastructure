@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,7 +18,9 @@ export default [
     name: "Download vmagent release",
     get_url: {
       url:
-        tmpl`https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/{{ release.tag }}/vmutils-linux-${V.vmagent_arch}-{{ release.tag }}.tar.gz`,
+        tmpl`https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/${
+          expr("release.tag")
+        }/vmutils-linux-${V.vmagent_arch}-${expr("release.tag")}.tar.gz`,
       dest: "/tmp",
     },
     register: "url",
@@ -26,7 +28,7 @@ export default [
   {
     name: "Unarchive vmagent",
     unarchive: {
-      src: tmpl("{{ url.dest }}"),
+      src: expr("url.dest"),
       dest: V.vmagent_bin,
       remote_src: true,
     },

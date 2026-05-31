@@ -1,5 +1,5 @@
 import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -31,13 +31,13 @@ export default [
     systemd: {
       name: "cpmeta.service",
       enabled: true,
-      state: tmpl("{{ 'restarted' if _restart_needed else 'started' }}"),
+      state: expr("'restarted' if _restart_needed else 'started'"),
     },
   },
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl("https://{{ cpmeta_domains | first }}/buildInfo"),
+      url: tmpl`https://${expr("cpmeta_domains | first")}/buildInfo`,
       return_content: true,
     },
     register: r,

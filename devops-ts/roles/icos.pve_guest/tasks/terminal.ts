@@ -1,5 +1,5 @@
 import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 const _conf = register("_conf");
 
@@ -17,7 +17,7 @@ export default [
   {
     name: "Create ttyS0 override",
     copy: {
-      dest: tmpl("{{ _mkdir.path }}/autologin.conf"),
+      dest: tmpl`${expr("_mkdir.path")}/autologin.conf`,
       content: `[Service]
 ExecStart=
 ExecStart=-/sbin/agetty -o '-p -- \\\\u' --keep-baud 115200,57600,38400,9600 --autologin root - $TERM

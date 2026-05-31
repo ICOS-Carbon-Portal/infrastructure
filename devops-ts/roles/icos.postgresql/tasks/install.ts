@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.
 // Debian/Ubuntu then allows multiple installed versions/clusters of postgresql,
@@ -17,22 +17,22 @@ export default [
   {
     name: "Adding the postgresql repo",
     apt_repository: {
-      repo: tmpl(
-        "deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main",
-      ),
+      repo: tmpl`deb http://apt.postgresql.org/pub/repos/apt/ ${
+        rawTmpl("{{ansible_distribution_release}}")
+      }-pgdg main`,
       filename: "pgdg",
     },
   },
   {
     name: "Install postgresql",
     apt: {
-      name: tmpl("{{ 'postgresql-%s' % postgresql_version }}"),
+      name: expr("'postgresql-%s' % postgresql_version"),
     },
   },
   {
     name: "Install postgis",
     apt: {
-      name: tmpl("{{ 'postgresql-%s-postgis-3' % postgresql_version }}"),
+      name: expr("'postgresql-%s-postgis-3' % postgresql_version"),
     },
     when: raw("postgresql_postgis_enable"),
   },

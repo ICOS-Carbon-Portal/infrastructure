@@ -1,4 +1,4 @@
-import { type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -57,7 +57,7 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
+        lxd_forward_ip: expr("_lxd.addresses.eth0 | first"),
         lxd_forward_name: "molefractions",
       }),
     ],
@@ -79,9 +79,9 @@ export default [
     ],
     tasks: [
       {
-        name: tmpl("add {{ username }} user"),
+        name: tmpl`add ${expr("username")} user`,
         user: {
-          name: tmpl("{{ username }}"),
+          name: expr("username"),
           shell: "/sbin/nologin",
           create_home: false,
           password_lock: true,

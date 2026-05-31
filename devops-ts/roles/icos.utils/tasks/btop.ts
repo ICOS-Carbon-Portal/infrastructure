@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set btop_version fact",
         set_fact: {
-          btop_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          btop_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -31,7 +31,7 @@ export default [
     name: "Unarchive btop",
     unarchive: {
       remote_src: true,
-      src: tmpl("{{ btop_url_map[ansible_architecture] }}"),
+      src: expr("btop_url_map[ansible_architecture]"),
       dest: "/opt",
     },
     register: "unarchive",
@@ -40,7 +40,7 @@ export default [
     name: "Create /usr/local/bin/btop symlink",
     file: {
       dest: "/usr/local/bin/btop",
-      src: tmpl("{{ unarchive.dest }}/btop/bin/btop"),
+      src: tmpl`${expr("unarchive.dest")}/btop/bin/btop`,
       state: "link",
     },
   },
@@ -52,6 +52,6 @@ export default [
   },
   {
     name: "Which version of btop was installed",
-    debug: { msg: tmpl("Installed {{ _r.stdout }}") },
+    debug: { msg: tmpl`Installed ${expr("_r.stdout")}` },
   },
 ] satisfies TaskFile;

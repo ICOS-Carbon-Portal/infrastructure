@@ -16,18 +16,29 @@
 //
 // Adoption is incremental and per-reference: convert the references whose names
 // the context knows; leave the dynamic ones as raw strings.
-import { type Ref, Template, tmpl } from "./template.ts";
+import {
+  expr,
+  type RawTemplate,
+  rawTmpl,
+  type Ref,
+  type Template,
+  tmpl,
+} from "./template.ts";
 import { Expr } from "./vars.ts";
 
 /** The accessor bundle a role context exposes, scoped to that role's vars `V`. */
 export interface Context<V> {
   /** Typed reference accessor: `V.foo` -> Template "{{ foo }}". Unknown names error. */
   V: { readonly [K in keyof V]: Ref };
-  /** Composite template (tagged form) or a wrapped raw template string. */
+  /** Composite template (tagged form): tmpl`${V.x}/y`. */
   tmpl: (
-    strings: TemplateStringsArray | string,
-    ...refs: Array<Ref | string>
+    strings: TemplateStringsArray,
+    ...refs: Array<Template | string>
   ) => Template;
+  /** Escape hatch: reference a dynamic var / Jinja value expression -> `{{ jinja }}`. */
+  expr: (jinja: string) => Template;
+  /** Verbatim template escape for awkward cases (exact bytes). */
+  rawTmpl: (text: string) => RawTemplate;
   /** `when:` builder over a known var name: `isDef("foo")` -> "foo is defined". */
   isDef: (name: keyof V & string) => Expr;
   /** `when:` builder: `notVar("foo")` -> "not foo". */
@@ -37,11 +48,11 @@ export interface Context<V> {
 /**
  * Build a role-scoped variable context from a role's variable interface.
  *
- *   const { V, tmpl, isDef } = context<CpauthVars>();
+ *   const { V, tmpl, isDef, expr } = context<CpauthVars>();
  */
 export function context<V>(): Context<V> {
   const Vproxy = new Proxy({}, {
-    get: (_t, name: string) => new Template(`{{ ${name} }}`),
+    get: (_t, name: string) => expr(name),
   }) as { readonly [K in keyof V]: Ref };
 
   const isDef = (name: keyof V & string): Expr =>
@@ -50,5 +61,5 @@ export function context<V>(): Context<V> {
   const notVar = (name: keyof V & string): Expr =>
     new Expr(`not ${name}`, name);
 
-  return { V: Vproxy, tmpl, isDef, notVar };
+  return { V: Vproxy, tmpl, expr, rawTmpl, isDef, notVar };
 }

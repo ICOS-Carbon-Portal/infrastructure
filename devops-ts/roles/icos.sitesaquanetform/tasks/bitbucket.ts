@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -29,8 +29,8 @@ export default [
     name: "Update bitbucket known hosts",
     known_hosts: {
       name: "bitbucket.org",
-      key: tmpl(
-        "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}",
+      key: expr(
+        "lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`')",
       ),
     },
     when: raw('bitbucket_known_hosts.stdout == ""'),

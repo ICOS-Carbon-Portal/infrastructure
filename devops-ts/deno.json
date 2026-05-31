@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "check": "deno check lib/*.ts playbooks/**/*.ts roles/*/_ctx.ts roles/*/tasks/*.ts roles/*/handlers/*.ts data/**/*.ts render.ts render-all.ts verify.ts",
+    "check": "deno check lib/*.ts playbooks/**/*.ts roles/*/_ctx.ts roles/*/tasks/*.ts roles/*/handlers/*.ts data/**/*.ts render.ts render-all.ts verify.ts check-braces.ts",
+    "check-braces": "deno run --allow-read check-braces.ts",
     "verify": "deno run --allow-read --allow-env verify.ts",
     "render": "deno run --quiet --allow-all render.ts",
     "render-all": "deno run --allow-read --allow-write --allow-env render-all.ts",
@@ -20,7 +21,11 @@
       "render.ts",
       "render-all.ts",
       "verify.ts",
-      "vendor-assets.ts"
+      "vendor-assets.ts",
+      "check-braces.ts",
+      "codemod-structured.ts",
+      "gen-data.ts",
+      "gen-contexts.ts"
     ]
   }
 }

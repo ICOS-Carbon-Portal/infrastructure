@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set dive_version fact",
         set_fact: {
-          dive_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          dive_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -38,7 +38,7 @@ export default [
   {
     name: "Install dive",
     apt: {
-      deb: tmpl("{{ dive_url_map[dive_architecture] }}"),
+      deb: expr("dive_url_map[dive_architecture]"),
     },
   },
   {

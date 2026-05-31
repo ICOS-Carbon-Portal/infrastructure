@@ -1,12 +1,12 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl("Copy {{ flexextract_src_dir }} directory"),
+    name: tmpl`Copy ${expr("flexextract_src_dir")} directory`,
     tags: "flexextract_sync",
     synchronize: {
-      src: tmpl("{{ flexextract_src_dir }}/"),
+      src: tmpl`${expr("flexextract_src_dir")}/`,
       dest: tmpl`${V.flexextract_home}/build`,
     },
   },

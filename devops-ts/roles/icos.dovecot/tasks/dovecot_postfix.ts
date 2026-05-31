@@ -1,5 +1,5 @@
 import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -53,7 +53,7 @@ export default [
       postconf: {
         param: item.param,
         value: item.value,
-        append: tmpl("{{ item.append | default(True) }}"),
+        append: expr("item.append | default(True)"),
       },
     }),
   ),

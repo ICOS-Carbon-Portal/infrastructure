@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, rawTmpl, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -12,15 +12,15 @@ export default [
       src: "ops-telegraf",
       dest: "/usr/local/bin",
       mode: "+x",
-      variable_start_string: tmpl("{{ '{{{' }}"),
-      variable_end_string: tmpl("{{ '}}}' }}"),
+      variable_start_string: rawTmpl("{{ '{{{' }}"),
+      variable_end_string: rawTmpl("{{ '}}}' }}"),
       lstrip_blocks: true,
     },
     register: "_justfile",
   },
   {
     name: "Check that the justfile is executable",
-    shell: tmpl("{{ _justfile.dest }}"),
+    shell: expr("_justfile.dest"),
     changed_when: false,
   },
 ] satisfies TaskFile;

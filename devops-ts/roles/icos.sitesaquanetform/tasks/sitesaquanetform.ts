@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Pull source from git",
     git: {
-      repo: tmpl("{{ vault_aquanet_form_git_repo }}"),
+      repo: expr("vault_aquanet_form_git_repo"),
       dest: tmpl`${V.project_dir}/repo`,
       key_file: tmpl`${V.project_dir}/.ssh/id_rsa`,
     },

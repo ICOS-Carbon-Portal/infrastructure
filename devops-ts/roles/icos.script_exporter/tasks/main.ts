@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -10,11 +10,12 @@ export default [
     vars: {
       dbin_user: "ricoberger",
       dbin_repo: "script_exporter",
-      dbin_url:
-        tmpl`{{ dbin__down }}/v{{ dbin__vers }}/script_exporter-linux-${V.sexp_arch}`,
-      dbin_download_dest: tmpl(
-        "{{ dbin_download_base }}/script-exporter-{{ dbin__vers }}",
-      ),
+      dbin_url: tmpl`${expr("dbin__down")}/v${
+        expr("dbin__vers")
+      }/script_exporter-linux-${V.sexp_arch}`,
+      dbin_download_dest: tmpl`${expr("dbin_download_base")}/script-exporter-${
+        expr("dbin__vers")
+      }`,
       dbin_unar: false,
     },
   },
@@ -32,7 +33,7 @@ export default [
       create: true,
       insertafter: "BOF",
       path: V.sexp_config_file,
-      block: tmpl("{{ lookup('template', 'config.yaml') }}"),
+      block: expr("lookup('template', 'config.yaml')"),
     },
     notify: "reload script-exporter",
   },
@@ -48,7 +49,7 @@ export default [
   {
     name: "Start/restart script-exporter.service",
     systemd: {
-      "daemon-reload": tmpl("{{ 'yes' if _sysd.changed else 'no' }}"),
+      "daemon-reload": expr("'yes' if _sysd.changed else 'no'"),
       name: "script-exporter.service",
       enabled: true,
       state: "started",

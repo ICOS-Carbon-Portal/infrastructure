@@ -1,16 +1,16 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "List docker images matching the stiltrun image",
-    command: tmpl("docker images -qa {{stiltrun_image_name}}"),
+    command: tmpl`docker images -qa ${rawTmpl("{{stiltrun_image_name}}")}`,
     register: "docker_images",
     changed_when: false,
   },
   {
     when: raw("stiltrun_image_id not in docker_images.stdout"),
-    become: tmpl('{{ stiltrun_user != "root" }}'),
+    become: expr('stiltrun_user != "root"'),
     become_user: V.stiltrun_user,
     block: [
       {
@@ -23,7 +23,7 @@ export default [
       },
       {
         name: "Load stilt image into docker",
-        command: tmpl('docker load -i "{{ _get_url.dest }}"'),
+        command: tmpl`docker load -i "${expr("_get_url.dest")}"`,
         changed_when: false,
       },
       {
@@ -33,7 +33,9 @@ export default [
       },
       {
         name: "Tag the stiltrun image",
-        shell: tmpl("docker tag {{stiltrun_image_id}} {{stiltrun_image_name}}"),
+        shell: tmpl`docker tag ${rawTmpl("{{stiltrun_image_id}}")} ${
+          rawTmpl("{{stiltrun_image_name}}")
+        }`,
         changed_when: false,
       },
     ],
@@ -49,12 +51,12 @@ export default [
   },
   {
     name: "Test stiltrun by running listmetfiles",
-    command: tmpl("{{ _stilt_py.dest }} listmetfiles"),
+    command: tmpl`${expr("_stilt_py.dest")} listmetfiles`,
     changed_when: false,
   },
   {
     name: "Test stiltrun by running calcslots",
-    command: tmpl("{{ _stilt_py.dest }} calcslots 2012010100 2012010106"),
+    command: tmpl`${expr("_stilt_py.dest")} calcslots 2012010100 2012010106`,
     register: "stilt_output",
     changed_when: false,
     failed_when: false,

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 // https://zrepl.github.io/installation/apt-repos.html
 
@@ -19,9 +19,11 @@ export default [
     name: "Add zrepl apt repository",
     apt_repository: {
       filename: "zrepl",
-      repo: tmpl(
-        "deb [arch=amd64 signed-by={{ _key.dest }}] https://zrepl.cschwarz.com/apt/{{ ansible_lsb.id | lower }} {{ ansible_lsb.codename }} main",
-      ),
+      repo: tmpl`deb [arch=amd64 signed-by=${
+        expr("_key.dest")
+      }] https://zrepl.cschwarz.com/apt/${expr("ansible_lsb.id | lower")} ${
+        expr("ansible_lsb.codename")
+      } main`,
     },
   },
   {

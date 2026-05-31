@@ -100,7 +100,7 @@ for await (const role of Deno.readDir(devopsRoles)) {
     `import type { Globals } from "../../lib/globals.ts";\n` +
     `import type { BuiltinVars } from "../../lib/builtins.ts";\n\n` +
     `${body}\n\n` +
-    `export const { V, tmpl, isDef, notVar } = context<\n` +
+    `export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<\n` +
     `  Vars & Globals & BuiltinVars\n` +
     `>();\n`;
 

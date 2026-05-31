@@ -1,15 +1,15 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl("Retrieving latest tag for {{ dbin_repo }}"),
+    name: tmpl`Retrieving latest tag for ${expr("dbin_repo")}`,
     run_once: true,
     delegate_to: "localhost",
     check_mode: false,
     github_release: {
-      user: tmpl("{{ dbin_user }}"),
-      repo: tmpl("{{ dbin_repo }}"),
+      user: expr("dbin_user"),
+      repo: expr("dbin_repo"),
       action: "latest_release",
     },
     register: "_release",
@@ -22,7 +22,7 @@ export default [
     },
   },
   {
-    name: tmpl("Download {{ dbin_repo }}"),
+    name: tmpl`Download ${expr("dbin_repo")}`,
     get_url: {
       url: V._dbin_url,
       dest: V.dbin_download_dest,
@@ -35,7 +35,7 @@ export default [
     name: tmpl`Unarchive ${V._dbin_name} tarball`,
     when: raw("_dbin_unar"),
     unarchive: {
-      src: tmpl("{{ dbin_download.dest }}"),
+      src: expr("dbin_download.dest"),
       dest: V.dbin_download_dest,
       remote_src: true,
       list_files: true,

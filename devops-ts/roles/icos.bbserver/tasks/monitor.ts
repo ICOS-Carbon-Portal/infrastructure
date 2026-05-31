@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -24,7 +24,7 @@ export default [
         "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes",
         "PATH=/usr/bin:/usr/local/bin",
       ],
-      timer_content: tmpl("{{ lookup('template', 'borgmon.py') }}"),
+      timer_content: expr("lookup('template', 'borgmon.py')"),
     },
   },
 ] satisfies TaskFile;

@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { notVar, tmpl } from "../_ctx.ts";
+import { expr, notVar, tmpl } from "../_ctx.ts";
 
 export default [
   {
@@ -16,7 +16,7 @@ export default [
   {
     name: "Is the installed version of golang sufficent?",
     debug: {
-      msg: tmpl("{{ golang_local_version }} is sufficient."),
+      msg: tmpl`${expr("golang_local_version")} is sufficient.`,
     },
     when: raw("golang_local_version_ok"),
   },

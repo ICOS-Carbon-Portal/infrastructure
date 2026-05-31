@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set nebula_version fact",
         set_fact: {
-          nebula_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          nebula_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -31,7 +31,7 @@ export default [
     name: "Install nebula",
     unarchive: {
       remote_src: true,
-      src: tmpl("{{ nebula_url_map[ansible_architecture] }}"),
+      src: expr("nebula_url_map[ansible_architecture]"),
       dest: V.nebula_bin_dir,
       extra_opts: ["--no-same-owner"],
     },

@@ -7,7 +7,7 @@
 //
 // Recreate virtual environments, i.e after do-release-upgrade:
 //   icos play ganymede jbuild -evirtualenv_recreate=True
-import { type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
     vars: {
       // These variable are prefixed with 'jupyter_' instead of 'ganymede_' so
       // that we can reuse files/jupyter.conf without change.
-      jupyter_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
+      jupyter_ip: expr("_lxd.addresses.eth0 | first"),
       jupyter_domains: ["ganymede.icos-cp.eu"],
       ganymede_domains: ["future.ganymede.icos-cp.eu"],
     },
@@ -54,7 +54,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: tmpl("{{ zfsdocker_zvol }}"),
+              source: expr("zfsdocker_zvol"),
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -78,19 +78,19 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: tmpl("{{ jupyter_ip }}"),
+        lxd_forward_ip: expr("jupyter_ip"),
         lxd_forward_name: "ganymede",
       }).tags("forward"),
 
       role("icos.certbot2", {
         certbot_name: "ganymede",
-        certbot_domains: tmpl("{{ jupyter_domains + ganymede_domains }}"),
+        certbot_domains: expr("jupyter_domains + ganymede_domains"),
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "ganymede",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: tmpl("{{ jupyter_domains | first }}"),
+        jupyter_domain: expr("jupyter_domains | first"),
         jupyter_cert_name: "ganymede",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -117,7 +117,7 @@ export default [
     ],
     roles: [
       role("icos.lxd_guest", {
-        user_conf: tmpl("{{ vault_ganymede_user_conf }}"),
+        user_conf: expr("vault_ganymede_user_conf"),
       }).tags("guest"),
 
       role("icos.docker", {
@@ -125,13 +125,13 @@ export default [
       }).tags("docker"),
 
       role("icos.jupyter", {
-        jupyter_admins: tmpl("{{ vault_ganymede_jupyter_admins }}"),
+        jupyter_admins: expr("vault_ganymede_jupyter_admins"),
         jupyter_backup_enable: false,
       }).tags("jupyter"),
 
       role("icos.jbuild", {
-        jbuild_users: tmpl("{{ vault_ganymede_jbuild_users }}"),
-        jbuild_registry_pass: tmpl("{{ vault_registry_pass }}"),
+        jbuild_users: expr("vault_ganymede_jbuild_users"),
+        jbuild_registry_pass: expr("vault_registry_pass"),
         jbuild_edctl_host: "exploredata",
         jbuild_edctl_host_name: "exploredata.lxd",
         jbuild_edctl_host_port: 22,
@@ -151,13 +151,13 @@ export default [
           apply: { tags: "sshlogin" },
         },
         vars: {
-          sshlogin_dst: tmpl("{{ login.dst }}"),
-          sshlogin_src_user: tmpl("{{ login.src_user }}"),
-          sshlogin_dst_user: tmpl("{{ login.dst_user }}"),
-          sshlogin_src_dst_host: tmpl("{{ login.dst_host }}"),
-          sshlogin_src_dst_port: tmpl("{{ login.dst_port }}"),
+          sshlogin_dst: expr("login.dst"),
+          sshlogin_src_user: expr("login.src_user"),
+          sshlogin_dst_user: expr("login.dst_user"),
+          sshlogin_src_dst_host: expr("login.dst_host"),
+          sshlogin_src_dst_port: expr("login.dst_port"),
         },
-        loop: tmpl("{{ vault_ganymede_sshlogins }}"),
+        loop: expr("vault_ganymede_sshlogins"),
         loop_control: {
           loop_var: "login",
         },

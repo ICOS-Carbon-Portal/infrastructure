@@ -11,6 +11,6 @@ export interface Vars {
   iptables_upnp: boolean;
 }
 
-export const { V, tmpl, isDef, notVar } = context<
+export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
   Vars & Globals & BuiltinVars
 >();

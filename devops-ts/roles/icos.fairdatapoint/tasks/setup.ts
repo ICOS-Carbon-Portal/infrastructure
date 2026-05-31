@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   // https://fairdatapoint.readthedocs.io
@@ -31,7 +31,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: tmpl("{{ fdp_jar_file }}"),
+      src: expr("fdp_jar_file"),
       dest: tmpl`${V.fdp_home}/fdp.jar`,
     },
     register: "_jarfile",
@@ -57,8 +57,8 @@ export default [
     name: "Start fairdatapoint",
     icos_docker_compose: {
       chdir: V.fdp_home,
-      force_recreate: tmpl(
-        "{{ _config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed }}",
+      force_recreate: expr(
+        "_config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed",
       ),
     },
   },

@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 // Configuring client DNS resolution is much harder than setting up the DNS
 // server.
@@ -87,8 +87,9 @@ export default [
   {
     name: "Inform about the client dns resolution setup",
     debug: {
-      msg:
-        tmpl`nebula_resolve_type == ${V.nebula_resolve_type} for {{ ansible_lsb.id }}/{{ ansible_lsb.major_release }}`,
+      msg: tmpl`nebula_resolve_type == ${V.nebula_resolve_type} for ${
+        expr("ansible_lsb.id")
+      }/${expr("ansible_lsb.major_release")}`,
     },
   },
 ] satisfies TaskFile;

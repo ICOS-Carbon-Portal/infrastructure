@@ -1,5 +1,5 @@
 import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
 const _systemd = register("_systemd");
@@ -63,7 +63,7 @@ export default [
     systemd: {
       name: V.item,
       enabled: true,
-      state: tmpl("{{ 'restarted' if _systemd.changed else 'started' }}"),
+      state: expr("'restarted' if _systemd.changed else 'started'"),
     },
     loop: ["icos-auto-dnat.path", "icos-auto-dnat.timer"],
   },

@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,8 +12,8 @@ export default [
     name: "Remove vm from local ssh config",
     local_action: {
       module: "community.general.ssh_config",
-      ssh_config_file: tmpl("~{{ lookup('env', 'USER') }}/.ssh/config.icos"),
-      host: tmpl("{{ lxd_vm_name }}"),
+      ssh_config_file: tmpl`~${expr("lookup('env', 'USER')")}/.ssh/config.icos`,
+      host: expr("lxd_vm_name"),
       state: "absent",
     },
   },
@@ -28,11 +28,11 @@ export default [
   {
     name: "Remove ssh port forward and /etc/hosts entry",
     include_role: { name: "icos.lxd_forward", tasks_from: "remove.yml" },
-    vars: { lxd_forward_name: tmpl("{{ lxd_vm_name }}") },
+    vars: { lxd_forward_name: expr("lxd_vm_name") },
   },
   {
     name: "Remove lxd container",
-    lxd_container: { name: tmpl("{{ lxd_vm_name }}"), state: "absent" },
+    lxd_container: { name: expr("lxd_vm_name"), state: "absent" },
   },
   {
     when: raw("lxd_vm_variant == 'ext4'"),

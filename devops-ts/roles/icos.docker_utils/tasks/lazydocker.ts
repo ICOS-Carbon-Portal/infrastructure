@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set lazydocker_version fact",
         set_fact: {
-          lazydocker_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          lazydocker_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -41,7 +41,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: tmpl("{{ lazydocker_url_map[lazydocker_architecture] }}"),
+      src: expr("lazydocker_url_map[lazydocker_architecture]"),
       dest: "/usr/local/bin",
       include: [
         // extract only the binary (skip the readme etc)

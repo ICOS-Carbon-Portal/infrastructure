@@ -1,12 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { expr, tmpl } from "../_ctx.ts";
 
 export default [
   {
     name: "Install xcaddy",
     command: "go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest",
     args: {
-      creates: tmpl("{{ omit if xcaddy_upgrade else '/opt/xcaddy' }}"),
+      creates: expr("omit if xcaddy_upgrade else '/opt/xcaddy'"),
     },
     environment: {
       GOPATH: "/opt/xcaddy",

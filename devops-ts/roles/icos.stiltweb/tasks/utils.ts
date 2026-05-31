@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 // PYTHON UTILS
 export default [
@@ -28,7 +28,7 @@ export default [
       executable: "pipx",
       python: "python3.12",
       editable: true,
-      force: tmpl("{{ _rsync.changed }}"),
+      force: expr("_rsync.changed"),
       name: tmpl`${V.stiltweb_home}/stilt-utils`,
     },
     register: "_pipx",

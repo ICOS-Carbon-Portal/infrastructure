@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -54,8 +54,8 @@ export default [
         name: "Test that the vmagent UI works with password",
         uri: {
           url: tmpl`https://${V.inventory_hostname}/vmagent/`,
-          user: tmpl("{{ vmagent_auth.username }}"),
-          password: tmpl("{{ vmagent_auth.password }}"),
+          user: expr("vmagent_auth.username"),
+          password: expr("vmagent_auth.password"),
         },
         retries: 10,
         register: "r",

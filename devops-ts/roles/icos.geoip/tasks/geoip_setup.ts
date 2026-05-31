@@ -3,7 +3,7 @@ import {
   type Tmpl,
   withItemsOver,
 } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -28,8 +28,8 @@ export default [
     file: {
       path: V.geoip_db_dir,
       state: "directory",
-      owner: tmpl("{{ _user.uid }}"),
-      group: tmpl("{{ _user.group }}"),
+      owner: expr("_user.uid"),
+      group: expr("_user.group"),
     },
   },
   {

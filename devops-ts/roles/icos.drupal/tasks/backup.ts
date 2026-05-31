@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,7 +13,7 @@ export default [
       bbclient_timer_conf: `OnCalendar=daily
 RandomizedDelaySec=1h
 `,
-      bbclient_timer_content: tmpl("{{ lookup('template', 'borgbackup.sh') }}"),
+      bbclient_timer_content: expr("lookup('template', 'borgbackup.sh')"),
     },
   },
 ] satisfies TaskFile;

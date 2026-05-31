@@ -34,10 +34,18 @@ export interface Vars {
 
 import type { Scalar } from "./ansible.ts";
 import type { BuiltinVars } from "./builtins.ts";
-import { type Ref, Template } from "./template.ts";
+import { expr, type Ref } from "./template.ts";
 
 // Re-exported for convenience (the canonical definitions live in template.ts).
-export { type Ref, type Tmpl, tmpl } from "./template.ts";
+export {
+  expr,
+  RawTemplate,
+  rawTmpl,
+  type Ref,
+  Template,
+  type Tmpl,
+  tmpl,
+} from "./template.ts";
 
 /**
  * Typed accessor for variable references in value position. Each access yields a
@@ -48,7 +56,7 @@ export { type Ref, type Tmpl, tmpl } from "./template.ts";
  */
 export const V: { readonly [K in keyof Vars]: Ref } = new Proxy(
   {},
-  { get: (_t, name: string) => new Template(`{{ ${name} }}`) },
+  { get: (_t, name: string) => expr(name) },
 ) as { readonly [K in keyof Vars]: Ref };
 
 // --- when: expression builder (bare name, no `{{ }}` wrapper) ----------------

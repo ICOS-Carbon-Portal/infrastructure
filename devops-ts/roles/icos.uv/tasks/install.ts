@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
       {
         name: "Set uv_version fact",
         set_fact: {
-          uv_version: tmpl("{{ gh.tag.lstrip('v') }}"),
+          uv_version: expr("gh.tag.lstrip('v')"),
           cacheable: true,
         },
       },
@@ -33,7 +33,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: tmpl("{{ uv_url_map[uv_architecture] }}"),
+      src: expr("uv_url_map[uv_architecture]"),
       // Only two binaries, uv and uvx
       dest: "/usr/local/bin",
       extra_opts: [

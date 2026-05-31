@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,7 +17,7 @@ export default [
       },
       {
         name: "Run validation",
-        command: tmpl("nebula -test -config {{ update.dest }}"),
+        command: tmpl`nebula -test -config ${expr("update.dest")}`,
         changed_when: false,
       },
     ],
@@ -32,13 +32,13 @@ export default [
         copy: {
           remote_src: true,
           dest: tmpl`${V.nebula_etc_dir}/config.yml`,
-          src: tmpl("{{ update.backup_file }}"),
+          src: expr("update.backup_file"),
         },
         when: raw("update['backup_file'] is defined"),
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: tmpl("{{ _slurp.stdout }}") },
+        debug: { msg: expr("_slurp.stdout") },
       },
       {
         name: "Fail",
@@ -48,7 +48,7 @@ export default [
     always: [
       {
         name: "Remove backup file",
-        file: { name: tmpl("{{ update.backup_file }}"), state: "absent" },
+        file: { name: expr("update.backup_file"), state: "absent" },
         when: raw("update['backup_file'] is defined"),
       },
     ],

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -20,11 +20,11 @@ export default [
     systemd: {
       name: "cpdata.service",
       enabled: true,
-      "daemon-reload": tmpl(
-        "{{ 'yes' if _service.changed | default(false) else 'no' }}",
+      "daemon-reload": expr(
+        "'yes' if _service.changed | default(false) else 'no'",
       ),
-      state: tmpl(
-        "{{ 'restarted' if _jarfile.changed | default(false) or _config.changed else 'started' }}",
+      state: expr(
+        "'restarted' if _jarfile.changed | default(false) or _config.changed else 'started'",
       ),
     },
   },

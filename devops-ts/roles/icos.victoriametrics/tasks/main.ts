@@ -1,5 +1,5 @@
 import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -34,7 +34,7 @@ export default [
       name: "Copy files",
       template: {
         src: item.src,
-        dest: tmpl`${V.vm_home}/{{ item.dest | default('') }}`,
+        dest: tmpl`${V.vm_home}/${expr("item.dest | default('')")}`,
       },
     }),
   ),
@@ -49,7 +49,7 @@ export default [
     name: "Build and start",
     "community.docker.docker_compose_v2": {
       project_src: V.vm_home,
-      pull: tmpl("{{ 'always' if vm_upgrade else omit }}"),
+      pull: expr("'always' if vm_upgrade else omit"),
     },
   },
   {
@@ -70,7 +70,7 @@ export default [
     (item) => ({
       name: "Check that services responds on local ports",
       uri: {
-        url: tmpl("http://localhost:{{ item.port }}"),
+        url: tmpl`http://localhost:${expr("item.port")}`,
       },
       retries: 10,
       loop_control: {

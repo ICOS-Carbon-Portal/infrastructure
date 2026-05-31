@@ -1,6 +1,6 @@
 // display instructions
 //   run nextcloud_sftp.yml howto
-import { type Playbook, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, rawTmpl, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -8,19 +8,31 @@ export default [
     vars: {
       groupfolder_name: "PAUL",
       groupfolder_id: 27,
-      groupfolder_dir: tmpl(
-        "/disk/data/nextcloud/data/__groupfolders/{{ groupfolder_id}}",
-      ),
+      groupfolder_dir: tmpl`/disk/data/nextcloud/data/__groupfolders/${
+        rawTmpl("{{ groupfolder_id}}")
+      }`,
       host_uid: 33,
       host_user: "www-data",
       sftp_image: "docker.io/atmoz/sftp:debian",
       sftp_user: "nc_paul_upload",
-      sftp_exec: tmpl("/usr/libexec/sftp-only-{{ sftp_user }}"),
+      sftp_exec: tmpl`/usr/libexec/sftp-only-${expr("sftp_user")}`,
       sftp_dirs: [
-        { src: tmpl("{{ groupfolder_dir}}/WP1/Data"), dst: "WP1_Data" },
-        { src: tmpl("{{ groupfolder_dir}}/WP2/Data"), dst: "WP2_Data" },
-        { src: tmpl("{{ groupfolder_dir}}/WP3/Data"), dst: "WP3_Data" },
-        { src: tmpl("{{ groupfolder_dir}}/WP4/Data"), dst: "WP4_Data" },
+        {
+          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP1/Data`,
+          dst: "WP1_Data",
+        },
+        {
+          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP2/Data`,
+          dst: "WP2_Data",
+        },
+        {
+          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP3/Data`,
+          dst: "WP3_Data",
+        },
+        {
+          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP4/Data`,
+          dst: "WP4_Data",
+        },
       ],
       sftp_port: 60022,
     },
@@ -40,9 +52,10 @@ export default [
         name: "Retrieve groupfolder id",
         check_mode: false,
         shellfact: {
-          exec: tmpl(
-            "occ groupfolder:list --output json | jq  '.[] | select(.mount_point == \"{{ groupfolder_name }}\") | .id'",
-          ),
+          exec:
+            tmpl`occ groupfolder:list --output json | jq  '.[] | select(.mount_point == "${
+              expr("groupfolder_name")
+            }") | .id'`,
           fact: "_gfid",
         },
       },
@@ -55,11 +68,11 @@ export default [
       {
         name: "Check that all the src directories exists",
         stat: {
-          path: tmpl("{{ item.src }}"),
+          path: expr("item.src"),
         },
         register: "r",
         failed_when: "not r.stat.exists",
-        loop: tmpl("{{ sftp_dirs }}"),
+        loop: expr("sftp_dirs"),
       },
       {
         name: "Retrieve passwd data for www-data user",
@@ -79,11 +92,11 @@ export default [
       {
         name: "Create sftp user",
         user: {
-          name: tmpl("{{ sftp_user }}"),
-          uid: tmpl("{{ host_uid }}"),
-          group: tmpl("{{ host_uid }}"),
-          password: tmpl(
-            "{{ vault_nc_paul_upload_password |\n   password_hash('sha512', vault_pw_salt) }}",
+          name: expr("sftp_user"),
+          uid: expr("host_uid"),
+          group: expr("host_uid"),
+          password: expr(
+            "vault_nc_paul_upload_password |\n   password_hash('sha512', vault_pw_salt)",
           ),
           non_unique: true,
           create_home: true,
@@ -92,18 +105,18 @@ export default [
       {
         name: "Create passwd file",
         become: true,
-        become_user: tmpl("{{ sftp_user }}"),
+        become_user: expr("sftp_user"),
         args: {
-          chdir: tmpl("/home/{{sftp_user}}"),
-          creates: tmpl("/home/{{sftp_user}}/passwd"),
+          chdir: tmpl`/home/${rawTmpl("{{sftp_user}}")}`,
+          creates: tmpl`/home/${rawTmpl("{{sftp_user}}")}/passwd`,
         },
-        shell: tmpl("grep {{sftp_user}} /etc/passwd > passwd"),
+        shell: tmpl`grep ${rawTmpl("{{sftp_user}}")} /etc/passwd > passwd`,
       },
       {
         name: "Create sftp command script",
         tags: "script",
         copy: {
-          dest: tmpl("{{ sftp_exec }}"),
+          dest: expr("sftp_exec"),
           mode: "+x",
           content: `#!/bin/bash
 
@@ -187,11 +200,11 @@ WantedBy=user@{{ host_uid }}.service
         tags: "login",
         delegate_to: "localhost",
         expect: {
-          command: tmpl(
-            "sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-cp.eu",
-          ),
+          command: tmpl`sftp -P 60022 -oPreferredAuthentications=password ${
+            expr("sftp_user")
+          }@fsicos2.icos-cp.eu`,
           responses: {
-            "password:": tmpl("{{ vault_nc_paul_upload_password }}"),
+            "password:": expr("vault_nc_paul_upload_password"),
             "sftp>": [
               "ls -1",
               "quit",

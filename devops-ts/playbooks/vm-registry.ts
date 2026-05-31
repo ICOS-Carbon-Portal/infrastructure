@@ -1,4 +1,4 @@
-import { type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
 
 export default [
   {
@@ -64,13 +64,13 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: tmpl("{{ _lxd.addresses.eth0 | first }}"),
+        lxd_forward_ip: expr("_lxd.addresses.eth0 | first"),
         lxd_forward_name: "registry",
       }),
 
       role("icos.certbot2", {
         certbot_name: "registry",
-        certbot_domains: [tmpl("{{ registry_domain }}")],
+        certbot_domains: [expr("registry_domain")],
       }).tags(["cert", "registry"]),
 
       role("icos.nginxsite", {
@@ -78,7 +78,7 @@ export default [
         nginxsite_file: "roles/icos.registry/templates/registry-nginx.conf",
         registry_host: "registry.lxd",
         registry_cert: "registry",
-        registry_allow: tmpl("{{ vault_nginx_allow_internal_only }}"),
+        registry_allow: expr("vault_nginx_allow_internal_only"),
       }).tags(["registry", "nginx"]),
     ],
   },
@@ -93,16 +93,16 @@ export default [
       role("icos.docker2").tags("docker"),
 
       role("icos.registry", {
-        registry_users: tmpl("{{ vault_registry_users }}"),
+        registry_users: expr("vault_registry_users"),
       }).tags("registry"),
     ],
     tasks: [
       {
         name: "Login to registry",
         "community.general.docker_login": {
-          registry_url: tmpl("{{ registry_domain }}"),
+          registry_url: expr("registry_domain"),
           username: "docker",
-          password: tmpl("{{ vault_registry_pass }}"),
+          password: expr("vault_registry_pass"),
         },
       },
     ],
