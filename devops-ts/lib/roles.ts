@@ -243,6 +243,21 @@ export interface Roles {
   "icos.sysstat": NoVars;
   "icos.uv": NoVars;
 
+  // roles referenced only via import_tasks/include_role (no role() call site)
+  "icos.cni_plugins": NoVars;
+  "icos.conmon": NoVars;
+  "icos.docker_utils": NoVars;
+  "icos.github_download_bin": NoVars;
+  "icos.golang": NoVars;
+  "icos.jarservice2": NoVars;
+  "icos.nginxauth": NoVars;
+  "icos.postgresql": NoVars;
+  "icos.python_util": NoVars;
+  "icos.quince": NoVars;
+  "icos.timer": NoVars;
+  "icos.timer2": NoVars;
+  "icos.zfsdocker": NoVars;
+
   // monitoring / exporters
   "icos.vmagent": NoVars;
   "icos.node_exporter": NoVars;

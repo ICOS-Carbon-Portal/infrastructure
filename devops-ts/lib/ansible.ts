@@ -466,7 +466,7 @@ export interface Task {
 }
 
 /** A role name: a known role, or any string (for roles not yet typed). */
-type RoleName = keyof Roles | (string & {});
+type RoleName = keyof Roles;
 
 // --- Roles -----------------------------------------------------------------
 
