@@ -235,6 +235,14 @@ export interface Roles {
   "icos.stiltrun": NoVars;
   "icos.stiltcluster": NoVars;
 
+  // dependency-only / tool roles (referenced from meta deps and includes)
+  "icos.borg": NoVars;
+  "icos.iptables": NoVars;
+  "icos.just": NoVars;
+  "icos.restic": NoVars;
+  "icos.sysstat": NoVars;
+  "icos.uv": NoVars;
+
   // monitoring / exporters
   "icos.vmagent": NoVars;
   "icos.node_exporter": NoVars;

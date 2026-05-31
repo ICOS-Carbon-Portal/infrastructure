@@ -10,9 +10,9 @@ import type { Roles } from "./roles.ts";
 import type { Tags } from "./ansible.ts";
 import type { VarValue } from "./ansible.ts";
 
-/** A role dependency in `meta/main.yml`. */
+/** A role dependency in `meta/main.yml`. The role must be a known role. */
 export interface RoleDep {
-  role: keyof Roles | (string & {});
+  role: keyof Roles;
   tags?: Tags;
   when?: string;
   vars?: Record<string, VarValue>;
