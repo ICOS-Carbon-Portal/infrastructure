@@ -21,7 +21,7 @@ async function declaredNames(path: string): Promise<Set<string>> {
 }
 
 // A role's own var that is also a global/builtin would make `Vars & Globals &
-// Builtins` collide (e.g. boolean & string -> never), so own vars exclude them;
+// BuiltinVars` collide (e.g. boolean & string -> never), so own vars exclude them;
 // they remain reachable through the widening with the global/builtin type.
 const reserved = new Set([
   ...await declaredNames("./lib/globals.ts"),
@@ -64,7 +64,7 @@ for await (const role of Deno.readDir(devopsRoles)) {
       }
       if (doc && typeof doc === "object" && !Array.isArray(doc)) {
         for (const [k, v] of Object.entries(doc as Record<string, unknown>)) {
-          if (reserved.has(k)) continue; // covered by Globals/Builtins widening
+          if (reserved.has(k)) continue; // covered by Globals/BuiltinVars widening
           // defaults win over vars only if vars hasn't set a non-unknown type
           if (!vars.has(k) || vars.get(k) === "unknown") {
             vars.set(k, tsType(v));
@@ -98,10 +98,10 @@ for await (const role of Deno.readDir(devopsRoles)) {
     `// Per-role variable context: ${vars.size} own variables (+ globals + builtins).\n` +
     `import { context } from "../../lib/context.ts";\n` +
     `import type { Globals } from "../../lib/globals.ts";\n` +
-    `import type { Builtins } from "../../lib/builtins.ts";\n\n` +
+    `import type { BuiltinVars } from "../../lib/builtins.ts";\n\n` +
     `${body}\n\n` +
     `export const { V, tmpl, isDef, notVar } = context<\n` +
-    `  Vars & Globals & Builtins\n` +
+    `  Vars & Globals & BuiltinVars\n` +
     `>();\n`;
 
   await Deno.writeTextFile(new URL("_ctx.ts", outDir), out);

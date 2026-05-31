@@ -50,7 +50,7 @@ export {
   type Vars,
 } from "./vars.ts";
 export { type Host, type HostPattern, pattern } from "./hosts.ts";
-export type { Builtins } from "./builtins.ts";
+export type { BuiltinVars } from "./builtins.ts";
 export { type Item, loopOver, withItemsOver } from "./loop.ts";
 export { type Reg, register, type Result } from "./register.ts";
 

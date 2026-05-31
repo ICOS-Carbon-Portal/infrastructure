@@ -3,7 +3,7 @@
 // Per-role variable context: 26 own variables (+ globals + builtins).
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
-import type { Builtins } from "../../lib/builtins.ts";
+import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
   mailman_admin_email: string;
@@ -35,5 +35,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, isDef, notVar } = context<
-  Vars & Globals & Builtins
+  Vars & Globals & BuiltinVars
 >();

@@ -33,7 +33,7 @@ export interface Vars {
 }
 
 import type { Scalar, Tmpl } from "./ansible.ts";
-import type { Builtins } from "./builtins.ts";
+import type { BuiltinVars } from "./builtins.ts";
 
 /** A checked variable reference. At runtime it is just the string "{{ name }}". */
 export type Ref = string & { readonly __ref: unique symbol };
@@ -95,7 +95,7 @@ export class Expr {
 }
 
 /** Any referenceable variable name: a user `Vars` entry or an Ansible built-in. */
-export type VarName = keyof Vars | keyof Builtins;
+export type VarName = keyof Vars | keyof BuiltinVars;
 
 /** Start a `when:` expression from a variable: `name is defined`. */
 export function isDefined(name: VarName): Expr {

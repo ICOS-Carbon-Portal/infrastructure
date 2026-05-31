@@ -4,7 +4,7 @@
 // is still a compile error.
 //
 // Add a builtin here when a converted playbook first references one.
-export interface Builtins {
+export interface BuiltinVars {
   /** True when the play is running in check mode (`--check`). */
   ansible_check_mode: boolean;
 
