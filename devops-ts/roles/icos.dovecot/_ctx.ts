@@ -4,19 +4,20 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   dovecot_auth_file: string;
   dovecot_cert_file: string;
-  dovecot_domains: unknown[];
+  dovecot_domains: string;
   dovecot_domains_file: string;
   dovecot_lmtp: string;
   dovecot_log_file: string;
-  dovecot_port: number;
+  dovecot_port: string;
   dovecot_vmail_home: string;
   dovecot_vmail_name: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

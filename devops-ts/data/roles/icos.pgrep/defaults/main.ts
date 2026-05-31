@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   pgrep_home: string;
@@ -10,7 +11,7 @@ interface Self {
   pgrep_metric_port: string;
   pgrep_image: string;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "pgrep_home": tmpl`/docker/pgrep_${V.pgrep_name}`,

@@ -6,7 +6,7 @@
 //
 // Deploy filedrop website
 //  icos play callisto filedrop -lfsicos3
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -50,7 +50,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: expr("zfsdocker_zvol"),
+              source: V.zfsdocker_zvol,
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -231,9 +231,8 @@ echo "Compacting"
         iptables_raw: {
           name: "forward_filedrop",
           table: "nat",
-          rules: tmpl`-A PREROUTING -p tcp --dport ${
-            expr("filedrop_port")
-          } -j DNAT --to-destination 127.0.0.1:${expr("filedrop_port")}`,
+          rules:
+            tmpl`-A PREROUTING -p tcp --dport ${V.filedrop_port} -j DNAT --to-destination 127.0.0.1:${V.filedrop_port}`,
         },
       },
     ],

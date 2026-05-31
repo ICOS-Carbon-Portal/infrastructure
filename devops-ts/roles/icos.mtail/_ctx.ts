@@ -4,14 +4,15 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   mtail_host: string;
-  mtail_logs: unknown[];
-  mtail_port: number;
-  mtail_programs: unknown[];
+  mtail_logs: string;
+  mtail_port: string;
+  mtail_programs: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

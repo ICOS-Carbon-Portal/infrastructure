@@ -4,15 +4,16 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  _sshlogin_opt_list: unknown[];
-  sshlogin_dst_command: unknown;
-  sshlogin_dst_from: unknown;
+  _sshlogin_opt_list: string;
+  sshlogin_dst_command: string;
+  sshlogin_dst_from: string;
   sshlogin_dst_key_file: string;
   sshlogin_dst_key_options: string;
   sshlogin_dst_known_hosts: string;
-  sshlogin_dst_restrict: unknown;
+  sshlogin_dst_restrict: string;
   sshlogin_dst_ssh_dir: string;
   sshlogin_src_dst: string;
   sshlogin_src_dst_host: string;
@@ -25,5 +26,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

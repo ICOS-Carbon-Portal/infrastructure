@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   doi_user: string;
@@ -13,7 +14,7 @@ interface Self {
   doi_host: string;
   doi_meta_domain: string;
 }
-const { V } = context<Self & Globals & BuiltinVars>();
+const { V } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "doi_user": "doi",

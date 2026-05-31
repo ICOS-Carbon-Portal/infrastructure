@@ -4,16 +4,17 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   telegraf_config: string;
   telegraf_config_file: string;
   telegraf_config_root: string;
   telegraf_config_state: string;
-  telegraf_smart_enable: boolean;
+  telegraf_smart_enable: string;
   telegraf_upgrade: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

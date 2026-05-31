@@ -1,6 +1,6 @@
 // Create the ICOS Cities VM.
 
-import { expr, type Playbook, rawTmpl, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, rawTmpl, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -23,7 +23,7 @@ export default [
       {
         name: "Create cities directories",
         file: {
-          path: expr("item"),
+          path: V.item,
           state: "directory",
           owner: 1000000,
           group: 1000000,
@@ -65,7 +65,7 @@ export default [
               type: "disk",
             },
             data_fast: {
-              path: expr("cities_datafast_path"),
+              path: V.cities_datafast_path,
               source: expr("data_fast_path"),
               type: "disk",
             },

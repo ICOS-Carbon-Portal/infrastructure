@@ -6,7 +6,7 @@
 //
 // Deploy new version of onlyoffic
 //   icos play nextcloud onlyoffice
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -31,10 +31,10 @@ export default [
       // nextcloud, we might as well bring it down.
       role("icos.bbclient2", {
         bbclient_name: "nextcloud",
-        bbclient_home: tmpl`${expr("nextcloud_home")}/bbclient`,
+        bbclient_home: tmpl`${V.nextcloud_home}/bbclient`,
         bbclient_coldbackup_hour: 1,
         bbclient_coldbackup_minute: 0,
-        bbclient_coldbackup: expr("nextcloud_home"),
+        bbclient_coldbackup: V.nextcloud_home,
         bbclient_patterns: `R /disk/data/nextcloud
 R /docker/nextcloud/volumes
 `,

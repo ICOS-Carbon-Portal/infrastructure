@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   caddy_global_conf: string;
@@ -14,7 +15,7 @@ interface Self {
   caddy_upgrade: string;
   xcaddy_upgrade: string;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars>();
+const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "caddy_global_conf": ':80 {\n  respond "Not found." 404\n}\n',

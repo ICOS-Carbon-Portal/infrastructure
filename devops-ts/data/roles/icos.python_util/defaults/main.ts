@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   python_util_bin_dir: string;
@@ -10,7 +11,7 @@ interface Self {
   python_util_install_prefix: string;
   python_util_install_dir: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "python_util_bin_dir": "/usr/local/bin",

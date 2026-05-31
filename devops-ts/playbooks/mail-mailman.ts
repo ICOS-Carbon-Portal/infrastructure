@@ -10,7 +10,7 @@
 // Redeploy proxy configuration
 //   icos play mailman proxy
 
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -32,8 +32,8 @@ export default [
         vars: {
           bbclient_name: "mailman",
           bbclient_user: "root",
-          bbclient_home: tmpl`${expr("mailman_home")}/bbclient`,
-          bbclient_coldbackup: expr("mailman_home"),
+          bbclient_home: tmpl`${V.mailman_home}/bbclient`,
+          bbclient_coldbackup: V.mailman_home,
           bbclient_remotes: [
             "fsicos2",
             "icos1",

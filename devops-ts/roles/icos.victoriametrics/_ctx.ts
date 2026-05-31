@@ -4,19 +4,20 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   vm_graf_image: string;
   vm_graf_plugins: string;
-  vm_graf_port: number;
+  vm_graf_port: string;
   vm_graf_url: string;
   vm_home: string;
-  vm_promlens_port: number;
+  vm_promlens_port: string;
   vm_scrape_conf: string;
   vm_upgrade: string;
-  vm_vm_port: number;
+  vm_vm_port: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

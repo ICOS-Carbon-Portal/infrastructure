@@ -7,7 +7,7 @@
 //
 // Recreate virtual environments, i.e after do-release-upgrade:
 //   icos play ganymede jbuild -evirtualenv_recreate=True
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -54,7 +54,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: expr("zfsdocker_zvol"),
+              source: V.zfsdocker_zvol,
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },

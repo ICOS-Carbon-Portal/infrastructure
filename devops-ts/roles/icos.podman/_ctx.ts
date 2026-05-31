@@ -4,16 +4,17 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   conmon_min_version: string;
-  golang_min_version: number;
-  podman_arch: Record<string, unknown>;
-  podman_docker: boolean;
+  golang_min_version: string;
+  podman_arch: string;
+  podman_docker: string;
   podman_src_dir: string;
   podman_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -3,13 +3,14 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   registry_home: string;
   registry_htpasswd_file: string;
   registry_users: string;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "registry_home": "/docker/registry",

@@ -52,7 +52,7 @@ export default [
       {
         name: "Create directories",
         file: {
-          path: expr("item"),
+          path: V.item,
           state: "directory",
         },
         loop: expr("icosdata_mkdirs | default([])"),

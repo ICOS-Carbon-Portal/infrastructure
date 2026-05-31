@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   nexus_home: string;
@@ -14,7 +15,7 @@ interface Self {
   nginxsite_name: string;
   nginxsite_file: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "nexus_home": tmpl`${expr("docker_compose_home | default('/docker')")}/nexus`,

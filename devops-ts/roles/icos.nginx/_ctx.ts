@@ -4,15 +4,16 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   nginx_certbot_bin: string;
   nginx_metrics_addr: string;
-  nginx_metrics_enable: boolean;
+  nginx_metrics_enable: string;
   nginx_metrics_url: string;
   nginx_user: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -4,18 +4,19 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   sexp_arch: string;
-  sexp_arch_map: Record<string, unknown>;
+  sexp_arch_map: string;
   sexp_config_file: string;
   sexp_home: string;
   sexp_listen: string;
-  sexp_scripts_enable: unknown[];
+  sexp_scripts_enable: string;
   sexp_scripts_repo: string;
   sexp_scripts_venv: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

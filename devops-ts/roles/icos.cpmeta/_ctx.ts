@@ -4,22 +4,23 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   cpmeta_bind_addr: string;
   cpmeta_db_name: string;
   cpmeta_db_pass: string;
-  cpmeta_db_port: number;
+  cpmeta_db_port: string;
   cpmeta_db_user: string;
   cpmeta_home: string;
   cpmeta_host: string;
-  cpmeta_port: number;
-  cpmeta_readonly_mode: boolean;
+  cpmeta_port: string;
+  cpmeta_readonly_mode: string;
   cpmeta_servicename: string;
   cpmeta_user: string;
   doi_password_icos: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

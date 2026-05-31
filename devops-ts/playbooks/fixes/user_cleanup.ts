@@ -11,7 +11,7 @@
 //
 // Remove keys
 //  icos play user_cleanup remove
-import { expr, pattern, type Playbook, tmpl } from "../../lib/ansible.ts";
+import { expr, pattern, type Playbook, V } from "../../lib/ansible.ts";
 
 export default [
   {
@@ -34,7 +34,7 @@ export default [
         tags: "remove",
         authorized_key: {
           user: "root",
-          key: expr("item"),
+          key: V.item,
           state: "absent",
         },
         loop: expr("remove_keys"),

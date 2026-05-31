@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   dbin_download_base: string;
@@ -19,7 +20,9 @@ interface Self {
   dbin__vers: string;
   dbin__plat: string;
 }
-const { V, expr, tmpl, rawTmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars
+>();
 
 export default {
   "dbin_download_base": "/opt/downloads",

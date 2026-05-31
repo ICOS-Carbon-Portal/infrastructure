@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   node_exporter_user: string;
@@ -26,7 +27,7 @@ interface Self {
   dockermon_prom: string;
   lxdmon_enable: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "node_exporter_user": "node_exporter",

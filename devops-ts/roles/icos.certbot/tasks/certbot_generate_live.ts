@@ -1,21 +1,20 @@
 import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 const _conf_file = register("_conf_file");
 const _write_conf = register("_write_conf");
 
 export default [
   {
-    name: tmpl`Check if ${expr("certbot_conf_name")} exists`,
+    name: tmpl`Check if ${V.certbot_conf_name} exists`,
     stat: {
       path: V.certbot_conf_path,
     },
     register: _conf_file,
   },
   {
-    name: tmpl`Create an initial nginx ${
-      expr("certbot_conf_name")
-    } for the certbot certification`,
+    name:
+      tmpl`Create an initial nginx ${V.certbot_conf_name} for the certbot certification`,
     copy: {
       dest: V.certbot_conf_path,
       content: `server {
@@ -44,7 +43,7 @@ export default [
     command:
       tmpl`${V.certbot_bin} certonly --authenticator nginx --non-interactive ${
         rawTmpl("{% for domain in certbot_domains %}")
-      } --domain ${expr("domain")} ${
+      } --domain ${V.domain} ${
         rawTmpl("{% endfor %}")
       } --email ${V.certbot_email} --agree-tos --expand\n`,
     register: "o",

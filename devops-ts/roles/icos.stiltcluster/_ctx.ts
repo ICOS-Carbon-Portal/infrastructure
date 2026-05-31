@@ -4,18 +4,19 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   stiltcluster_bindir: string;
-  stiltcluster_docker: boolean;
+  stiltcluster_docker: string;
   stiltcluster_home: string;
-  stiltcluster_maxcores: number;
-  stiltcluster_port: number;
+  stiltcluster_maxcores: string;
+  stiltcluster_port: string;
   stiltcluster_servicename: string;
-  stiltcluster_stiltweb_port: number;
+  stiltcluster_stiltweb_port: string;
   stiltcluster_username: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

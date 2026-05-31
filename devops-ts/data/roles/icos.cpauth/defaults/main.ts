@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   cpauth_user: string;
@@ -16,7 +17,7 @@ interface Self {
   cpauth_bind_addr: string;
   cpauth_host: string;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars>();
+const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "cpauth_user": "cpauth",

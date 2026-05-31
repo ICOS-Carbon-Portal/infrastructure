@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   timer_home: string;
@@ -11,7 +12,7 @@ interface Self {
   _timer_sysd_service: string;
   timer_state: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "timer_home": "/etc/systemd/system",

@@ -4,12 +4,13 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   caddy_bin: string;
   caddy_dropin_path: string;
   caddy_global_conf: string;
-  caddy_modules: unknown[];
+  caddy_modules: string;
   caddy_site_state: string;
   caddy_upgrade: string;
   caddy_via_xcaddy: string;
@@ -17,5 +18,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

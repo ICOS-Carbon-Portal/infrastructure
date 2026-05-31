@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   golang_version_install: string;
@@ -13,7 +14,7 @@ interface Self {
   golang_opt_dir: string;
   golang_bin_dir: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "golang_version_install": "1.21.1",

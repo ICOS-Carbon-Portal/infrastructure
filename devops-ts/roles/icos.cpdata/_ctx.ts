@@ -4,6 +4,7 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   cpdata_bind_addr: string;
@@ -15,16 +16,16 @@ export interface Vars {
   cpdata_irods_pass: string;
   cpdata_jre_package: string;
   cpdata_meta_addr: string;
-  cpdata_meta_port: number;
-  cpdata_netcdf_folder: unknown;
+  cpdata_meta_port: string;
+  cpdata_netcdf_folder: string;
   cpdata_pgreslog_admin_pass: string;
   cpdata_pgreslog_reader_pass: string;
   cpdata_pgreslog_writer_pass: string;
-  cpdata_port: number;
+  cpdata_port: string;
   cpdata_service: string;
   cpdata_user: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -4,31 +4,32 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   nebula_bin_dir: string;
   nebula_ca_path: string;
-  nebula_cert_min_days: number;
+  nebula_cert_min_days: string;
   nebula_domain: string;
   nebula_etc_dir: string;
-  nebula_fw_enable: boolean;
+  nebula_fw_enable: string;
   nebula_hostname: string;
-  nebula_hosts_enable: boolean;
-  nebula_is_lighthouse: boolean;
-  nebula_resolve_enable: boolean;
-  nebula_resolve_servers: unknown;
-  nebula_resolve_test: unknown;
+  nebula_hosts_enable: string;
+  nebula_is_lighthouse: string;
+  nebula_resolve_enable: string;
+  nebula_resolve_servers: string;
+  nebula_resolve_test: string;
   nebula_resolve_type: string;
   nebula_ssh_key: string;
-  nebula_ssh_port: number;
-  nebula_stats_enable: boolean;
-  nebula_stats_port: number;
+  nebula_ssh_port: string;
+  nebula_stats_enable: string;
+  nebula_stats_port: string;
   nebula_upgrade: string;
-  nebula_url_map: Record<string, unknown>;
+  nebula_url_map: string;
   nebula_user: string;
   nebula_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

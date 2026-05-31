@@ -4,30 +4,31 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   dirsize_dirnames: string;
   dirsize_home: string;
-  dirsize_initial: unknown[];
+  dirsize_initial: string;
   dirsize_prom: string;
   dirsize_sh: string;
-  dockermon_enable: boolean;
+  dockermon_enable: string;
   dockermon_home: string;
   dockermon_prom: string;
-  lxdmon_enable: boolean;
-  node_exporter_allow: boolean;
+  lxdmon_enable: string;
+  node_exporter_allow: string;
   node_exporter_arch: string;
-  node_exporter_arch_map: Record<string, unknown>;
+  node_exporter_arch_map: string;
   node_exporter_bin: string;
   node_exporter_bindto: string;
   node_exporter_download: string;
   node_exporter_environ: string;
   node_exporter_home: string;
-  node_exporter_listen: number;
+  node_exporter_listen: string;
   node_exporter_textfiles: string;
   node_exporter_user: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

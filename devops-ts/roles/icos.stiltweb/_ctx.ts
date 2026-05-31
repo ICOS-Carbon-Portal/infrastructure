@@ -4,10 +4,11 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   stiltweb_akka_hostname: string;
-  stiltweb_akka_port: number;
+  stiltweb_akka_port: string;
   stiltweb_bindir: string;
   stiltweb_certbot_name: string;
   stiltweb_home: string;
@@ -18,5 +19,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

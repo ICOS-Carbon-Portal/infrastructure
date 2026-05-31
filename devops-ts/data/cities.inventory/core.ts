@@ -3,9 +3,10 @@ import type { Inventory } from "../../lib/data.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 type Self = Record<never, never>;
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "all": {
@@ -47,7 +48,7 @@ export default {
           "restheart_backup_enable": true,
           "rdflog_backup_enable": true,
           "rdflog_postgres_version": 15,
-          "cpmeta_filestorage_target": tmpl`${expr("cpmeta_home")}/filestorage`,
+          "cpmeta_filestorage_target": tmpl`${V.cpmeta_home}/filestorage`,
           "cpmeta_backup_enable": true,
           "cpmeta_config_files": [
             "application_production.conf",
@@ -65,9 +66,8 @@ export default {
           "data_envries": [
             {
               "name": "ICOSCities",
-              "restheart_url": tmpl`http://127.0.0.1:${
-                expr("restheart_bind_port")
-              }/${V.restheart_cities_db_name}`,
+              "restheart_url":
+                tmpl`http://127.0.0.1:${V.restheart_bind_port}/${V.restheart_cities_db_name}`,
               "postgis_db_name": V.postgis_cities_db_name,
             },
           ],

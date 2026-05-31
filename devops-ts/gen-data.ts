@@ -33,6 +33,9 @@ const ifaceNames = (path: string) =>
   );
 const GLOBALS = ifaceNames("./lib/globals.ts");
 const BUILTINS = ifaceNames("./lib/builtins.ts");
+// Role-defined variable names (system-wide flat namespace; see lib/allvars.ts).
+// A data file referencing one becomes a checked `V.x`, not an `expr("x")`.
+const ALLVARS = ifaceNames("./lib/allvars.ts");
 
 /** Pick the `satisfies` type + its export name for a given relative path. */
 function typeFor(rel: string): { name: string } {
@@ -115,7 +118,7 @@ for (const rel of await dataYmls()) {
       !Array.isArray(doc)
     ? Object.keys(doc as Record<string, unknown>).filter(isBareIdent)
     : [];
-  const known = new Set([...ownKeys, ...GLOBALS, ...BUILTINS]);
+  const known = new Set([...ownKeys, ...GLOBALS, ...BUILTINS, ...ALLVARS]);
   // Self excludes names already in Globals/BuiltinVars (avoid intersection
   // collapsing to `never`); they remain reachable via the widening.
   const selfKeys = ownKeys.filter((k) => !GLOBALS.has(k) && !BUILTINS.has(k));
@@ -139,11 +142,12 @@ for (const rel of await dataYmls()) {
       : `type Self = Record<never, never>;\n`;
     header += `import { context } from "${ups}lib/context.ts";\n` +
       `import type { Globals } from "${ups}lib/globals.ts";\n` +
-      `import type { BuiltinVars } from "${ups}lib/builtins.ts";\n\n` +
+      `import type { BuiltinVars } from "${ups}lib/builtins.ts";\n` +
+      `import type { AllVars } from "${ups}lib/allvars.ts";\n\n` +
       self +
       `const { ${
         helpers.join(", ")
-      } } = context<Self & Globals & BuiltinVars>();\n`;
+      } } = context<Self & Globals & BuiltinVars & AllVars>();\n`;
   } else if (used.size) {
     header += `import { ${
       [...used].sort().join(", ")

@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   mailman_user: string;
@@ -32,7 +33,9 @@ interface Self {
   mailman_nginxsite_name: string;
   mailman_nginxsite_file: string;
 }
-const { V, expr, tmpl, rawTmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars
+>();
 
 export default {
   "mailman_user": "mailman",

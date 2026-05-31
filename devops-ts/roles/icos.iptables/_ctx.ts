@@ -4,13 +4,14 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  iptables_mdns: boolean;
-  iptables_ssh_port: number;
-  iptables_upnp: boolean;
+  iptables_mdns: string;
+  iptables_ssh_port: string;
+  iptables_upnp: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

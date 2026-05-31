@@ -4,9 +4,10 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  matomo_backup_enable: boolean;
+  matomo_backup_enable: string;
   matomo_domain: string;
   matomo_home: string;
   matomo_mysql_database_password: string;
@@ -14,9 +15,9 @@ export interface Vars {
   matomo_mysql_password: string;
   matomo_mysql_root_password: string;
   matomo_mysql_user: string;
-  matomo_port: number;
+  matomo_port: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

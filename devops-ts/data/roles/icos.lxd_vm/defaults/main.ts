@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   lxd_vm_ip: string;
@@ -23,7 +24,7 @@ interface Self {
   lxd_source: string;
   zfsdocker_name: string;
 }
-const { V, expr, rawTmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, rawTmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "lxd_vm_ip": expr("_lxd_static_ip.ip"),

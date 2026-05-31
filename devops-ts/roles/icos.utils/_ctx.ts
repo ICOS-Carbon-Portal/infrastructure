@@ -4,30 +4,31 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   btop_home: string;
-  btop_url_map: Record<string, unknown>;
+  btop_url_map: string;
   btop_version: string;
   fd_architecture: string;
-  fd_url_map: Record<string, unknown>;
+  fd_url_map: string;
   fd_version: string;
   lazygit_architecture: string;
   lazygit_upgrade: string;
-  lazygit_url_map: Record<string, unknown>;
+  lazygit_url_map: string;
   lazygit_version: string;
-  ncdu_arch_map: Record<string, unknown>;
+  ncdu_arch_map: string;
   ncdu_url: string;
-  ncdu_version: number;
-  ripgrep_url_map: Record<string, unknown>;
+  ncdu_version: string;
+  ripgrep_url_map: string;
   ripgrep_version: string;
-  trippy_url_map: Record<string, unknown>;
+  trippy_url_map: string;
   trippy_version: string;
   watchexec_architecture: string;
-  watchexec_url_map: Record<string, unknown>;
+  watchexec_url_map: string;
   watchexec_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

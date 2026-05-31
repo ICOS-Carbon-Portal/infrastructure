@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`Create docker storage volume for ${expr("zfsdocker_name")}`,
+    name: tmpl`Create docker storage volume for ${V.zfsdocker_name}`,
     zfs: {
-      name: tmpl`pool/docker/${expr("zfsdocker_name")}`,
+      name: tmpl`pool/docker/${V.zfsdocker_name}`,
       state: "present",
       extra_zfs_properties: {
         volsize: V.zfsdocker_size,
@@ -13,14 +13,14 @@ export default [
     },
   },
   {
-    name: tmpl`Create a btrfs filesystem on ${expr("zfsdocker_name")}`,
+    name: tmpl`Create a btrfs filesystem on ${V.zfsdocker_name}`,
     tags: ["zfs", "zfsdocker"],
     filesystem: {
       dev: V.zfsdocker_zvol,
       fstype: "btrfs",
       // Label the filesystem, this makes the output from 'btrfs filesystem
       // show' easier to understand.
-      opts: tmpl`-L docker_${expr("zfsdocker_name")}`,
+      opts: tmpl`-L docker_${V.zfsdocker_name}`,
     },
   },
   {

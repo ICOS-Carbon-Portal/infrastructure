@@ -4,14 +4,15 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   jarservice_jar: string;
-  jarservice_jar_enable: boolean;
-  jarservice_keep_n_old: number;
-  jarservice_restart: boolean;
+  jarservice_jar_enable: string;
+  jarservice_keep_n_old: string;
+  jarservice_restart: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -4,16 +4,17 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   dnsmasq_config_dir: string;
   dnsmasq_config_file: string;
   dnsmasq_config_name: string;
   dnsmasq_config_state: string;
-  dnsmasq_hosts: unknown;
+  dnsmasq_hosts: string;
   dnsmasq_service_name: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

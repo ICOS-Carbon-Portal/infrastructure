@@ -4,11 +4,12 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   nginxforward_cert_conf: string;
   nginxforward_cert_path: string;
-  nginxforward_enable: boolean;
+  nginxforward_enable: string;
   nginxforward_file: string;
   nginxforward_host: string;
   nginxforward_key_path: string;
@@ -19,5 +20,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

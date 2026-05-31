@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 // Deploy the jusers script:
 //   icos play jupyter jupyter_jusers_deploy
@@ -32,7 +32,7 @@ export default [
         name: "Create jupyter directories for home and project",
         tags: "zfs",
         file: {
-          name: tmpl`/pool/jupyter/${expr("item")}`,
+          name: tmpl`/pool/jupyter/${V.item}`,
           state: "directory",
           owner: "1000000",
           group: "1000000",

@@ -24,9 +24,8 @@ export default [
         "PATH=/usr/bin:/usr/local/bin",
       ],
       timer_content: expr("lookup('template', 'dockermon.py')"),
-      timer_exec: tmpl`/bin/bash -c 'set -o pipefail && ${
-        expr("timer_dest")
-      } | uniq | sponge ${V.dockermon_prom}'`,
+      timer_exec:
+        tmpl`/bin/bash -c 'set -o pipefail && ${V.timer_dest} | uniq | sponge ${V.dockermon_prom}'`,
     },
   },
 ] satisfies TaskFile;

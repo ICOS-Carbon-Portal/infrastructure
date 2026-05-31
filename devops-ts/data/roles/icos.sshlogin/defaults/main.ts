@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   sshlogin_dst_from: string;
@@ -22,7 +23,9 @@ interface Self {
   sshlogin_src_dst_host: string;
   sshlogin_src_dst_port: string;
 }
-const { V, expr, tmpl, rawTmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars
+>();
 
 export default {
   "sshlogin_dst_from": null,

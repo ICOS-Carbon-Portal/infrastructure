@@ -4,17 +4,18 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   jupyter_home: string;
-  jupyter_hub_config: Record<string, unknown>;
-  jupyter_hub_config_defaults: Record<string, unknown>;
-  jupyter_jusers_enable: boolean;
-  jupyter_port: number;
+  jupyter_hub_config: string;
+  jupyter_hub_config_defaults: string;
+  jupyter_jusers_enable: string;
+  jupyter_port: string;
   jusers_home: string;
   jusers_venv: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

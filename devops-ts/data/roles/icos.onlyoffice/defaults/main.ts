@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   onlyoffice_version: string;
@@ -11,7 +12,7 @@ interface Self {
   onlyoffice_build_dir: string;
   onlyoffice_domain: string;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "onlyoffice_version": "9.0.4",

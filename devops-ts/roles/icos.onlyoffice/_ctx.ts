@@ -4,15 +4,16 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   onlyoffice_build_dir: string;
   onlyoffice_domain: string;
   onlyoffice_home: string;
-  onlyoffice_port: number;
+  onlyoffice_port: string;
   onlyoffice_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

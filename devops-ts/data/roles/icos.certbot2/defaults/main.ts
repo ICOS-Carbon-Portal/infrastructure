@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   certbot_bin: string;
@@ -12,12 +13,12 @@ interface Self {
   certbot_key_path: string;
   certbot_nginx_conf: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "certbot_bin": "certbot",
   "certbot_email": "carbon.admin@nateko.lu.se",
-  "certbot_site_path": tmpl`/etc/letsencrypt/live/${expr("certbot_name")}`,
+  "certbot_site_path": tmpl`/etc/letsencrypt/live/${V.certbot_name}`,
   "certbot_cert_path": tmpl`${V.certbot_site_path}/fullchain.pem`,
   "certbot_key_path": tmpl`${V.certbot_site_path}/privkey.pem`,
   "certbot_nginx_conf": tmpl`ssl_certificate ${V.certbot_cert_path};

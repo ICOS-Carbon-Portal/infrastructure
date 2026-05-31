@@ -4,6 +4,7 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   _sftp_create_home: string;
@@ -11,10 +12,10 @@ export interface Vars {
   sftp_user_group: string;
   sftp_user_hostdesc: string;
   sftp_user_owner: string;
-  sftp_user_password: unknown;
-  sftp_user_pubkey: unknown;
+  sftp_user_password: string;
+  sftp_user_pubkey: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

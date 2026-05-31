@@ -3,17 +3,18 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   nginxauth_title: string;
   nginxauth_file: string;
   nginxauth_conf: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "nginxauth_title": "Login required",
-  "nginxauth_file": tmpl`/etc/nginx/auth/${expr("nginxauth_name")}`,
+  "nginxauth_file": tmpl`/etc/nginx/auth/${V.nginxauth_name}`,
   "nginxauth_conf": tmpl`auth_basic "${V.nginxauth_title}";
 auth_basic_user_file ${V.nginxauth_file};
 `,

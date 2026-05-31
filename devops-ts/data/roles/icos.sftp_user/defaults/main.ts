@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   sftp_user_owner: string;
@@ -13,7 +14,7 @@ interface Self {
   _sftp_parent_dir: string;
   _sftp_create_home: string;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars>();
+const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "sftp_user_owner": expr("sftp_user_login"),

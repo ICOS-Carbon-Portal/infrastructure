@@ -4,14 +4,15 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   bbclient_name: string;
   bbclient_user: string;
-  quince_backup_enable: boolean;
+  quince_backup_enable: string;
   quince_filestore: string;
   quince_home: string;
-  quince_jdk_version: number;
+  quince_jdk_version: string;
   quince_log_file: string;
   quince_slack_url: string;
   quince_tomcat_home: string;
@@ -20,5 +21,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   nextcloud_nextcloud_version: string;
@@ -24,7 +25,7 @@ interface Self {
   nextcloud_exporter_port: string;
   nextcloud_volumes: string;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "nextcloud_nextcloud_version": "29.0.11",

@@ -30,6 +30,6 @@ export default [
       name: expr("item.username"),
       password: expr("item.password"),
     },
-    loop: expr("nginxauth_users"),
+    loop: V.nginxauth_users,
   },
 ] satisfies TaskFile;

@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../../lib/ansible.ts";
+import { expr, type Playbook, role, tmpl, V } from "../../lib/ansible.ts";
 
 export default [
   // ### FSICOS2 ###
@@ -12,7 +12,7 @@ export default [
         tags: "nginx",
         delegate_to: "localhost",
         become: false,
-        file: { path: expr("item"), state: "directory" },
+        file: { path: V.item, state: "directory" },
         loop: [expr("local_cert_dir"), expr("local_conf_dir")],
       },
       {
@@ -177,7 +177,7 @@ export default [
 
       // CPMETA
       role("icos.cpmeta", {
-        cpmeta_filestorage_target: tmpl`${expr("cpmeta_home")}/metaAppStorage`,
+        cpmeta_filestorage_target: tmpl`${V.cpmeta_home}/metaAppStorage`,
         cpmeta_jar_file: tmpl`${expr("local_tmp")}/cpmeta.jar`,
         cpmeta_config_files: [
           "application_production.conf",

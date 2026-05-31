@@ -4,15 +4,16 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  borg_libc_map: Record<string, unknown>;
+  borg_libc_map: string;
   borg_libc_version: string;
   borg_upgrade: string;
-  borg_url_map: Record<string, unknown>;
+  borg_url_map: string;
   borg_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

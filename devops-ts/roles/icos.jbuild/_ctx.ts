@@ -4,13 +4,14 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   jbuild_edctl_host_name: string;
   jbuild_edctl_host_port: string;
   jbuild_jyctl_host_name: string;
   jbuild_jyctl_host_port: string;
-  jbuild_registry: Record<string, unknown>;
+  jbuild_registry: string;
   jbuild_rrsync_bin: string;
   jbuild_rsync_host_name: string;
   jbuild_rsync_host_port: string;
@@ -18,5 +19,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

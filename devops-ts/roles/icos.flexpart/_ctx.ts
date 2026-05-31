@@ -4,16 +4,17 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   flexpart_container_prefix: string;
-  flexpart_export_output_to: unknown;
+  flexpart_export_output_to: string;
   flexpart_image: string;
-  flexpart_max_parallel: number;
+  flexpart_max_parallel: string;
   flexpart_output_directory: string;
   flexpart_user: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

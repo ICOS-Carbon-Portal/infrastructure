@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   bbclient_user: string;
@@ -26,11 +27,11 @@ interface Self {
   bbclient_coldbackup_minute: string;
   bbclient_patterns_path: string;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "bbclient_user": "root",
-  "bbclient_home": tmpl`/opt/bbclient-${expr("bbclient_name")}`,
+  "bbclient_home": tmpl`/opt/bbclient-${V.bbclient_name}`,
   "bbclient_timer_conf": "OnCalendar=daily\nRandomizedDelaySec=2h\n",
   "bbclient_patterns": "R volumes\n",
   "bbclient_ssh_dir": tmpl`${V.bbclient_home}/ssh`,
@@ -40,9 +41,9 @@ export default {
   "bbclient_ssh_config": tmpl`${V.bbclient_ssh_dir}/config`,
   "bbclient_ssh_hosts": tmpl`${V.bbclient_ssh_dir}/known_hosts`,
   "bbclient_ssh_key": tmpl`${V.bbclient_ssh_dir}/bbclient.rsa`,
-  "bbclient_repo_url": tmpl`${expr("bbclient_remote")}:repos/${
-    expr("bbclient_name")
-  }.repo`,
+  "bbclient_repo_url": tmpl`${
+    expr("bbclient_remote")
+  }:repos/${V.bbclient_name}.repo`,
   "bbclient_repo_file": tmpl`${V.bbclient_home}/repos`,
   "bbclient_wrapper": tmpl`${V.bbclient_bin_dir}/borg`,
   "bbclient_one": tmpl`${V.bbclient_bin_dir}/bbclient`,
@@ -50,7 +51,7 @@ export default {
   "bbclient_remote_user": expr("hostvars[bbclient_remote].bbserver_user"),
   "bbclient_remote_repo": tmpl`${
     expr("hostvars[bbclient_remote].bbserver_home")
-  }/repos/${expr("bbclient_name")}.repo`,
+  }/repos/${V.bbclient_name}.repo`,
   "bbclient_coldbackup_hour": expr("4 | random(seed=bbclient_name)"),
   "bbclient_coldbackup_minute": expr("60 | random(seed=bbclient_name)"),
   "bbclient_patterns_path": tmpl`${V.bbclient_home}/patterns.lst`,

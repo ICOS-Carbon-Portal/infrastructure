@@ -4,6 +4,7 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   _timer_sysd_service: string;
@@ -13,9 +14,9 @@ export interface Vars {
   timer_exec: string;
   timer_home: string;
   timer_user: string;
-  timer_wdir: unknown;
+  timer_wdir: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -4,16 +4,17 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   dive_architecture: string;
-  dive_url_map: Record<string, unknown>;
+  dive_url_map: string;
   dive_version: string;
   lazydocker_architecture: string;
-  lazydocker_url_map: Record<string, unknown>;
+  lazydocker_url_map: string;
   lazydocker_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

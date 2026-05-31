@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   cpmeta_user: string;
@@ -18,7 +19,7 @@ interface Self {
   cpmeta_host: string;
   cpmeta_port: string;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars>();
+const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "cpmeta_user": "cpmeta",

@@ -4,7 +4,7 @@
 // Redeploy backup script and bbclient
 //   icos play postgis backup
 
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -34,7 +34,7 @@ export default [
         tags: "postgresql",
         vars: {
           postgresql_postgis_enable: true,
-          postgresql_postgres_password: expr("postgis_admin_pass"),
+          postgresql_postgres_password: V.postgis_admin_pass,
           postgresql_listen_addresses: "'*'",
           postgresql_pg_stat_enable: true,
         },

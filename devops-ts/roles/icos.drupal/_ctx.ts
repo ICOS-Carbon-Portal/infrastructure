@@ -4,6 +4,7 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   certbot_conf_name: string;
@@ -11,20 +12,20 @@ export interface Vars {
   database_name: string;
   database_user: string;
   domain: string;
-  drupal_docker_port: number;
+  drupal_docker_port: string;
   drupal_home: string;
-  drupal_modules: unknown[];
-  drupal_version: number;
-  drupal_websites: unknown[];
-  mysql_docker_port: number;
+  drupal_modules: string;
+  drupal_version: string;
+  drupal_websites: string;
+  mysql_docker_port: string;
   nginx_conf_name: string;
   project_dir: string;
   robots_txt: string;
-  ssl_domains: unknown[];
+  ssl_domains: string;
   trusted_host: string;
-  update: boolean;
+  update: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

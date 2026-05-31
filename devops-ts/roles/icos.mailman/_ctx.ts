@@ -4,6 +4,7 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   mailman_admin_email: string;
@@ -18,10 +19,10 @@ export interface Vars {
   mailman_hyperkitty_api_key: string;
   mailman_nginxsite_file: string;
   mailman_nginxsite_name: string;
-  mailman_postfix_config: unknown[];
+  mailman_postfix_config: string;
   mailman_postgres_password: string;
-  mailman_rest_allow_deny: unknown;
-  mailman_rest_port: number;
+  mailman_rest_allow_deny: string;
+  mailman_rest_port: string;
   mailman_rest_user: string;
   mailman_serve_from_domain: string;
   mailman_subnet: string;
@@ -35,5 +36,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

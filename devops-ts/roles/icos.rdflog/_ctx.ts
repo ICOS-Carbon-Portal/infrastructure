@@ -4,10 +4,11 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   rdflog_db_name: string;
-  rdflog_db_port: number;
+  rdflog_db_port: string;
   rdflog_db_user: string;
   rdflog_home: string;
   rdflog_rep_pass: string;
@@ -15,5 +16,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

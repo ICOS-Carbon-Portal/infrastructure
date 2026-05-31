@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   nebula_is_lighthouse: string;
@@ -27,7 +28,9 @@ interface Self {
   nebula_version: string;
   nebula_url_map: string;
 }
-const { V, expr, tmpl, rawTmpl } = context<Self & Globals & BuiltinVars>();
+const { V, expr, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars
+>();
 
 export default {
   "nebula_is_lighthouse": false,

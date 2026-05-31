@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { expr, V } from "../_ctx.ts";
 
 export default [
   {
@@ -27,7 +27,7 @@ export default [
       {
         name: "Copy config",
         template: {
-          src: expr("nginxsite_file"),
+          src: V.nginxsite_file,
           dest: V.nginxsite_path_confd,
           backup: true,
         },

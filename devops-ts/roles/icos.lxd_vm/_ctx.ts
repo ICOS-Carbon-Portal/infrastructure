@@ -4,28 +4,29 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  __base_config: Record<string, unknown>;
+  __base_config: string;
   __docker_config: string;
   __docker_device: string;
   __lxd_vm_config: string;
   __lxd_vm_devices: string;
   __lxd_vm_profiles: string;
-  __root_device: Record<string, unknown>;
-  lxd_source: Record<string, unknown>;
-  lxd_vm_config: Record<string, unknown>;
+  __root_device: string;
+  lxd_source: string;
+  lxd_vm_config: string;
   lxd_vm_default_config: string;
-  lxd_vm_default_devices: Record<string, unknown>;
-  lxd_vm_default_profiles: unknown[];
-  lxd_vm_devices: Record<string, unknown>;
-  lxd_vm_docker: boolean;
+  lxd_vm_default_devices: string;
+  lxd_vm_default_profiles: string;
+  lxd_vm_devices: string;
+  lxd_vm_docker: string;
   lxd_vm_docker_size: string;
-  lxd_vm_forward: boolean;
+  lxd_vm_forward: string;
   lxd_vm_inventory_hostname: string;
   lxd_vm_ip: string;
   lxd_vm_port: string;
-  lxd_vm_profiles: unknown[];
+  lxd_vm_profiles: string;
   lxd_vm_root_pool: string;
   lxd_vm_root_size: string;
   lxd_vm_ubuntu_version: string;
@@ -33,5 +34,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -70,7 +70,7 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "registry",
-        certbot_domains: [expr("registry_domain")],
+        certbot_domains: [V.registry_domain],
       }).tags(["cert", "registry"]),
 
       role("icos.nginxsite", {
@@ -100,7 +100,7 @@ export default [
       {
         name: "Login to registry",
         "community.general.docker_login": {
-          registry_url: expr("registry_domain"),
+          registry_url: V.registry_domain,
           username: "docker",
           password: expr("vault_registry_pass"),
         },

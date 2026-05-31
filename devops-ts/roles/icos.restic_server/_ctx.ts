@@ -4,21 +4,22 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   restic_server_architecture: string;
-  restic_server_data: unknown;
+  restic_server_data: string;
   restic_server_exec: string;
   restic_server_home: string;
   restic_server_htpasswd: string;
-  restic_server_listen: number;
+  restic_server_listen: string;
   restic_server_upgrade: string;
-  restic_server_url_map: Record<string, unknown>;
+  restic_server_url_map: string;
   restic_server_user: string;
-  restic_server_users: unknown[];
+  restic_server_users: string;
   restic_server_version: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -3,6 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
+import type { AllVars } from "../../../../lib/allvars.ts";
 
 interface Self {
   cpdata_user: string;
@@ -23,7 +24,7 @@ interface Self {
   cpdata_netcdf_folder: string;
   cpdata_jre_package: string;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars>();
+const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
 
 export default {
   "cpdata_user": "cpdata",

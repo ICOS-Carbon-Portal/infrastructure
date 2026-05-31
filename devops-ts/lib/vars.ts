@@ -34,7 +34,19 @@ export interface Vars {
 
 import type { Scalar } from "./ansible.ts";
 import type { BuiltinVars } from "./builtins.ts";
+import type { Globals } from "./globals.ts";
+import type { AllVars } from "./allvars.ts";
 import { expr, type Ref } from "./template.ts";
+
+// The full set of statically-known variable names a playbook may reference: the
+// hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins, and
+// every role-defined var (lib/allvars.ts). Ansible variable names are a single
+// flat namespace, so a name defined anywhere is the same variable everywhere —
+// referencing it through a checked `V.x` (not `expr("x")`) catches typos.
+// A UNION of keyofs (not an intersection of the interfaces) is used so a name
+// declared with different types in different sources can't intersect to a
+// `never`-valued property, which would collapse the whole mapped accessor.
+type KnownName = keyof Vars | keyof Globals | keyof BuiltinVars | keyof AllVars;
 
 // Re-exported for convenience (the canonical definitions live in template.ts).
 export {
@@ -54,10 +66,10 @@ export {
  *   V.nexus_home            // Template "{{ nexus_home }}"
  *   V.nope                  // compile error: not in Vars
  */
-export const V: { readonly [K in keyof Vars]: Ref } = new Proxy(
+export const V: { readonly [K in KnownName]: Ref } = new Proxy(
   {},
   { get: (_t, name: string) => expr(name) },
-) as { readonly [K in keyof Vars]: Ref };
+) as { readonly [K in KnownName]: Ref };
 
 // --- when: expression builder (bare name, no `{{ }}` wrapper) ----------------
 
@@ -91,8 +103,8 @@ export class Expr {
   }
 }
 
-/** Any referenceable variable name: a user `Vars` entry or an Ansible built-in. */
-export type VarName = keyof Vars | keyof BuiltinVars;
+/** Any referenceable variable name: user `Vars`, globals, built-ins, or any role var. */
+export type VarName = KnownName;
 
 /** Start a `when:` expression from a variable: `name is defined`. */
 export function isDefined(name: VarName): Expr {

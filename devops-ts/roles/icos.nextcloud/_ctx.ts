@@ -4,28 +4,29 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  certbot_domains: unknown[];
+  certbot_domains: string;
   certbot_name: string;
-  nextcloud_certbot_enable: boolean;
+  nextcloud_certbot_enable: string;
   nextcloud_db_host: string;
   nextcloud_db_name: string;
   nextcloud_db_user: string;
   nextcloud_domain: string;
   nextcloud_exporter_conf_host: string;
-  nextcloud_exporter_port: number;
+  nextcloud_exporter_port: string;
   nextcloud_exporter_user: string;
   nextcloud_home: string;
   nextcloud_nextcloud_version: string;
-  nextcloud_port: number;
-  nextcloud_postgres_version: number;
+  nextcloud_port: string;
+  nextcloud_postgres_version: string;
   nextcloud_user: string;
   nextcloud_volume_nextcloud: string;
   nextcloud_volume_postgres: string;
-  nextcloud_volumes: unknown[];
+  nextcloud_volumes: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

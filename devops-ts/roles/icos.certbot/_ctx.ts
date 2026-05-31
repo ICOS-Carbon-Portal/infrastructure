@@ -4,13 +4,14 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   certbot_bin: string;
   certbot_conf_path: string;
-  certbot_disabled: boolean;
+  certbot_disabled: string;
   certbot_email: string;
-  certbot_fake_certificate: boolean;
+  certbot_fake_certificate: string;
   certbot_fake_cn: string;
   certbot_fake_crt: string;
   certbot_fake_key: string;
@@ -19,5 +20,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

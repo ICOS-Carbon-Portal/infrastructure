@@ -4,9 +4,10 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  certbot_domains: unknown[];
+  certbot_domains: string;
   certbot_name: string;
   geoip_build_dir: string;
   geoip_db_dir: string;
@@ -14,7 +15,7 @@ export interface Vars {
   geoip_git_repo: string;
   geoip_git_version: string;
   geoip_home: string;
-  geoip_host_port: number;
+  geoip_host_port: string;
   geoip_nginx_allow_deny: string;
   geoip_python_version: string;
   geoip_repo_dir: string;
@@ -24,5 +25,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();

@@ -10,12 +10,10 @@ export default [
     vars: {
       dbin_user: "ricoberger",
       dbin_repo: "script_exporter",
-      dbin_url: tmpl`${expr("dbin__down")}/v${
-        expr("dbin__vers")
-      }/script_exporter-linux-${V.sexp_arch}`,
-      dbin_download_dest: tmpl`${expr("dbin_download_base")}/script-exporter-${
-        expr("dbin__vers")
-      }`,
+      dbin_url:
+        tmpl`${V.dbin__down}/v${V.dbin__vers}/script_exporter-linux-${V.sexp_arch}`,
+      dbin_download_dest:
+        tmpl`${V.dbin_download_base}/script-exporter-${V.dbin__vers}`,
       dbin_unar: false,
     },
   },

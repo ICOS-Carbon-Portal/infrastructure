@@ -4,17 +4,18 @@
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
   doi_bind_addr: string;
   doi_home: string;
   doi_host: string;
   doi_meta_domain: string;
-  doi_port: number;
+  doi_port: string;
   doi_servicename: string;
   doi_user: string;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars
+  Vars & Globals & BuiltinVars & AllVars
 >();
