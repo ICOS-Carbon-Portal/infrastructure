@@ -623,5 +623,8 @@ export async function render(doc: Playbook | TaskFile): Promise<string> {
   // Emit YAML 1.1 (like Ansible's PyYAML) so string scalars that look like 1.1
   // booleans — "yes"/"no"/"on"/"off" — are quoted rather than emitted bare.
   const document = new Document(clean(doc), { version: "1.1" });
-  return document.toString({ lineWidth: 0 });
+  // Ansible's hand-written YAML leaves null mapping values empty (`key:`) rather
+  // than spelling out `key: null`; match that so the rendered output is
+  // byte-faithful to the originals (both parse to null either way).
+  return document.toString({ lineWidth: 0, nullStr: "" });
 }
