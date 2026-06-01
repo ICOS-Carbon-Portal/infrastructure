@@ -27,10 +27,20 @@
   set_fact:
     wordpress_site_configs: >-
       {{ wordpress_site_configs + [item | combine({
-        'db_name': item.db_name | default(item.name ~ '_wordpress'),
-        'db_user': item.db_user | default(item.name ~ '_wordpress'),
-        'db_host': item.name ~ '-db'
+        'db_name': _db_name,
+        'db_user': _db_user,
+        'db_host': _db_host,
+        'wp_db_config': [
+          {'name': 'DB_NAME', 'value': _db_name},
+          {'name': 'DB_USER', 'value': _db_user},
+          {'name': 'DB_HOST', 'value': _db_host},
+          {'name': 'DB_PASSWORD', 'value': item.db_password}
+        ]
       })] }}
+  vars:
+    _db_name: "{{ item.db_name | default(item.name ~ '_wordpress') }}"
+    _db_user: "{{ item.db_user | default(item.name ~ '_wordpress') }}"
+    _db_host: "{{ item.name }}-db"
   loop: "{{ wordpress_sites }}"
   loop_control:
     label: "{{ item.name }}"
@@ -118,45 +128,14 @@
     label: "{{ item.item.name }}"
   when: item.stat.exists
 
-- name: Configure restored WordPress database name
+- name: Configure restored WordPress database settings
   replace:
-    path: "{{ item.stat.path }}"
-    regexp: "define\\(\\s*'DB_NAME'\\s*,\\s*'[^']*'\\s*\\);"
-    replace: "define('DB_NAME', '{{ item.item.db_name }}');"
-  loop: "{{ _wordpress_wp_configs.results }}"
+    path: "{{ item.0.stat.path }}"
+    regexp: "define\\(\\s*['\"]{{ item.1.name }}['\"]\\s*,\\s*['\"][^'\"]*['\"]\\s*\\);"
+    replace: 'define(''{{ item.1.name }}'', {{ item.1.value | to_json | replace(''$'', ''\$'') }});'
+  loop: "{{ query('subelements', _wordpress_wp_configs.results | selectattr('stat.exists') | list, 'item.wp_db_config') }}"
   loop_control:
-    label: "{{ item.item.name }} DB_NAME"
-  when: item.stat.exists
-
-- name: Configure restored WordPress database user
-  replace:
-    path: "{{ item.stat.path }}"
-    regexp: "define\\(\\s*'DB_USER'\\s*,\\s*'[^']*'\\s*\\);"
-    replace: "define('DB_USER', '{{ item.item.db_user }}');"
-  loop: "{{ _wordpress_wp_configs.results }}"
-  loop_control:
-    label: "{{ item.item.name }} DB_USER"
-  when: item.stat.exists
-
-- name: Configure restored WordPress database host
-  replace:
-    path: "{{ item.stat.path }}"
-    regexp: "define\\(\\s*'DB_HOST'\\s*,\\s*'[^']*'\\s*\\);"
-    replace: "define('DB_HOST', '{{ item.item.db_host }}');"
-  loop: "{{ _wordpress_wp_configs.results }}"
-  loop_control:
-    label: "{{ item.item.name }} DB_HOST"
-  when: item.stat.exists
-
-- name: Configure restored WordPress database password
-  replace:
-    path: "{{ item.stat.path }}"
-    regexp: "define\\(\\s*'DB_PASSWORD'\\s*,\\s*'[^']*'\\s*\\);"
-    replace: "define('DB_PASSWORD', '{{ item.item.db_password }}');"
-  loop: "{{ _wordpress_wp_configs.results }}"
-  loop_control:
-    label: "{{ item.item.name }} DB_PASSWORD"
-  when: item.stat.exists
+    label: "{{ item.0.item.name }} {{ item.1.name }}"
   no_log: true
 
 - name: Copy Caddyfile
@@ -203,6 +182,23 @@
     - "{{ wordpress_home }}/docker-compose.yml"
     - "{{ wordpress_home }}/Caddyfile"
 
+- name: Check wordpress proxy Caddyfile mount
+  command: >-
+    docker inspect -f {% raw %}'{{ range .Mounts }}{{ if eq .Destination "/etc/caddy/Caddyfile" }}{{ .Source }}{{ end }}{{ end }}'{% endraw %} wordpress_proxy
+  register: _wordpress_proxy_caddyfile_mount
+  failed_when: false
+  changed_when: false
+
+- name: Check wordpress proxy Caddyfile content
+  shell: |
+    set -Euo pipefail
+    docker exec wordpress_proxy cat /etc/caddy/Caddyfile | cmp -s "{{ wordpress_home }}/proxy/Caddyfile" -
+  args:
+    executable: /bin/bash
+  register: _wordpress_proxy_caddyfile_content
+  failed_when: false
+  changed_when: false
+
 - name: Start wordpress site containers
   community.docker.docker_compose_v2:
     project_src: "{{ wordpress_home }}/sites/{{ item.name }}"
@@ -212,13 +208,39 @@
   loop_control:
     label: "{{ item.name }}"
 
+- name: Wait for wordpress database containers
+  shell: |
+    set -Eueo pipefail
+    root_password=$(docker exec wordpress_{{ item.name }}_db printenv MARIADB_ROOT_PASSWORD)
+    docker exec -e MYSQL_PWD="$root_password" wordpress_{{ item.name }}_db mariadb-admin ping -uroot --silent
+  args:
+    executable: /bin/bash
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: _wordpress_db_ready
+  until: _wordpress_db_ready.rc == 0
+  retries: 30
+  delay: 5
+  changed_when: false
+  no_log: true
+
 - name: Enforce wordpress database users and grants
   shell: |
     set -Eueo pipefail
+    app_password=$(docker exec wordpress_{{ item.name }}_db printenv MARIADB_PASSWORD)
+    app_password_sql=$(printf '%s' "$app_password" | sed "s/\\\\/\\\\\\\\/g; s/'/''/g")
+
     docker exec -i -e MYSQL_PWD="$MYSQL_PWD" wordpress_{{ item.name }}_db mariadb -uroot <<'SQL'
     CREATE DATABASE IF NOT EXISTS `{{ item.db_name }}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    CREATE USER IF NOT EXISTS '{{ item.db_user }}'@'%' IDENTIFIED BY '{{ item.db_password | replace("'", "''") }}';
-    ALTER USER '{{ item.db_user }}'@'%' IDENTIFIED BY '{{ item.db_password | replace("'", "''") }}';
+    SQL
+
+    docker exec -i -e MYSQL_PWD="$MYSQL_PWD" wordpress_{{ item.name }}_db mariadb -uroot <<SQL
+    CREATE USER IF NOT EXISTS '{{ item.db_user }}'@'%' IDENTIFIED BY '$app_password_sql';
+    ALTER USER '{{ item.db_user }}'@'%' IDENTIFIED BY '$app_password_sql';
+    SQL
+
+    docker exec -i -e MYSQL_PWD="$MYSQL_PWD" wordpress_{{ item.name }}_db mariadb -uroot <<'SQL'
     GRANT ALL PRIVILEGES ON `{{ item.db_name }}`.* TO '{{ item.db_user }}'@'%';
     FLUSH PRIVILEGES;
     SQL
@@ -254,4 +276,8 @@
     project_src: "{{ wordpress_home }}/proxy"
     state: present
     pull: always
-    recreate: "{{ 'always' if _wordpress_caddyfile.changed or _wordpress_proxy_compose.changed else 'auto' }}"
+    recreate: "{{ 'always' if _wordpress_caddyfile.changed or _wordpress_proxy_compose.changed or _wordpress_proxy_caddyfile_mount.stdout != wordpress_home ~ '/proxy/Caddyfile' or _wordpress_proxy_caddyfile_content.rc != 0 else 'auto' }}"
+
+- name: Reload wordpress proxy configuration
+  command: docker exec wordpress_proxy caddy reload --config /etc/caddy/Caddyfile
+  changed_when: _wordpress_caddyfile.changed

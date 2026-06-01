@@ -2,6 +2,7 @@
   vars:
     wordpress_domains:
       - envri.eu
+      - preview.st4ris.eu
     wordpress_enable_production_domains: true
   roles:
     - role: icos.pve_server
@@ -45,6 +46,13 @@
         db_user: envri
         db_password: "{{ vault_wordpress_envri_db_password }}"
         db_root_password: "{{ vault_wordpress_envri_db_root_password }}"
+      - name: st4ris
+        domains:
+          - preview.st4ris.eu
+        db_name: st4ris
+        db_user: st4ris
+        db_password: "{{ vault_wordpress_st4ris_db_password }}"
+        db_root_password: "{{ vault_wordpress_st4ris_db_root_password }}"
   roles:
     - role: icos.pve_guest
       tags: guest
