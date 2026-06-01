@@ -26,7 +26,10 @@
         caddy_conf: |
           {% if wordpress_enable_production_domains %}
           {{ wordpress_domains | join(', ') }} {
-              reverse_proxy {{ hostvars['fsicos4-wordpress'].nebula_ip }}:80
+              reverse_proxy {{ hostvars['fsicos4-wordpress'].nebula_ip }}:80 {
+                  header_up X-Forwarded-For {remote_host}
+                  header_up X-Real-IP {remote_host}
+              }
           }
           {% endif %}
 
