@@ -60,6 +60,7 @@ all:
           - application_production.conf
           - application_production_sensitive.conf
           - application_staging_amendment.conf
+          - application_virtuoso_amendment.conf
 
         # cpdata - application
         cpdata_filestorage_target: "/data/dataAppStorage"
