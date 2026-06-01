@@ -30,6 +30,7 @@
         'db_name': _db_name,
         'db_user': _db_user,
         'db_host': _db_host,
+        'static_files': item.static_files | default([]),
         'wp_db_config': [
           {'name': 'DB_NAME', 'value': _db_name},
           {'name': 'DB_USER', 'value': _db_user},
@@ -44,6 +45,18 @@
   loop: "{{ wordpress_sites }}"
   loop_control:
     label: "{{ item.name }}"
+  no_log: true
+
+- name: Check wordpress static file definitions
+  assert:
+    that:
+      - item.1.path is match('^[^/].*')
+      - item.1.path is not search('(^|/)\.\.(/|$)')
+      - item.1.content is defined
+    fail_msg: "WordPress static file paths must be relative, stay inside the site root, and define content"
+  loop: "{{ query('subelements', wordpress_site_configs, 'static_files') }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1.path | default('') }}"
   no_log: true
 
 - name: Create wordpress home
@@ -70,6 +83,24 @@
 - name: Create shared wordpress network
   community.docker.docker_network:
     name: "{{ wordpress_network_name }}"
+
+- name: Create wordpress static file directories
+  file:
+    path: "{{ wordpress_home }}/sites/{{ item.0.name }}/html/{{ item.1.path | dirname }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ query('subelements', wordpress_site_configs, 'static_files') }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1.path | dirname }}"
+
+- name: Copy wordpress static files
+  copy:
+    dest: "{{ wordpress_home }}/sites/{{ item.0.name }}/html/{{ item.1.path }}"
+    content: "{{ item.1.content }}"
+    mode: "{{ item.1.mode | default('0644') }}"
+  loop: "{{ query('subelements', wordpress_site_configs, 'static_files') }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1.path }}"
 
 - name: Check for existing wp-config.php
   stat:
