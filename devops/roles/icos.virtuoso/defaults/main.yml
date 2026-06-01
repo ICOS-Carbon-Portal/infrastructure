@@ -1,6 +1,6 @@
 virtuoso_home: "{{ docker_compose_home | default('/docker') }}/virtuoso"
 
-virtuoso_bind_host: 127.0.0.1
+virtuoso_bind_host: http://127.0.0.1
 virtuoso_http_port: 8890
 
 # We are currently using 'dba' user for access from `cpmeta`.
