@@ -8,3 +8,8 @@ Long term:
 Followup:
   Implement a new orchestrator, like ansible, in typescript, using Ansible tasks and modules for actual execution.
   Instead of jinja templates etc. we will have actual TS.
+
+
+Possible design:
+  - Make playbooks into executable units
+  - Playbooks include roles to define logic for plays, and inventories configurations to instantiate those roles.
