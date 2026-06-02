@@ -1,0 +1,28 @@
+- hosts: fsicos4
+  roles:
+    - role: icos.caddy
+      tags: caddy
+      caddy_name: flexpart4
+      caddy_conf: |
+        flexpart4.icos-cp.eu {
+            reverse_proxy 10.10.10.100:8000
+        }
+
+
+- hosts: fsicos4-flexpart
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.jupyter
+      tags: jupyter
+      jupyter_hub_config:
+        image: registry.icos-cp.eu/stratos.icosbase:0.1.1
+        admin_users: "{{ vault_flexpart_admins }}"
+      jupyter_backup_enable: false
