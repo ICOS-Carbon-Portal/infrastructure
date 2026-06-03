@@ -5,25 +5,28 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  certbot_domains: string;
-  certbot_name: string;
-  geoip_build_dir: string;
-  geoip_db_dir: string;
-  geoip_domain: string;
-  geoip_git_repo: string;
-  geoip_git_version: string;
-  geoip_home: string;
-  geoip_host_port: string;
-  geoip_nginx_allow_deny: string;
-  geoip_python_version: string;
-  geoip_repo_dir: string;
-  geoip_user: string;
-  nginxsite_file: string;
-  nginxsite_name: string;
+  certbot_domains: unknown;
+  certbot_name: unknown;
+  geoip_build_dir: unknown;
+  geoip_db_dir: unknown;
+  geoip_domain: unknown;
+  geoip_git_repo: unknown;
+  geoip_git_version: unknown;
+  geoip_home: unknown;
+  geoip_host_port: unknown;
+  geoip_nginx_allow_deny: unknown;
+  geoip_python_version: unknown;
+  geoip_repo_dir: unknown;
+  geoip_user: unknown;
+  nginxsite_file: unknown;
+  nginxsite_name: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

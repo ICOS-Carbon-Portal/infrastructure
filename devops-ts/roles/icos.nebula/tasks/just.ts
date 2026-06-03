@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl } from "../_ctx.ts";
+import { rawTmpl } from "../_ctx.ts";
 
 export default [
   {

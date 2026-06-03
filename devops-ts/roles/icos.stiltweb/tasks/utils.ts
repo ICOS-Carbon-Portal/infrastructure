@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _rsync = register("_rsync");
 
 // PYTHON UTILS
 export default [
@@ -18,7 +20,7 @@ export default [
         "--delete-excluded",
       ],
     },
-    register: "_rsync",
+    register: _rsync,
   },
   {
     name: "Install stilt-utils",
@@ -28,7 +30,7 @@ export default [
       executable: "pipx",
       python: "python3.12",
       editable: true,
-      force: expr("_rsync.changed"),
+      force: _rsync.changed.ref,
       name: tmpl`${V.stiltweb_home}/stilt-utils`,
     },
     register: "_pipx",

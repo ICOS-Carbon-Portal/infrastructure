@@ -1,5 +1,7 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import { expr } from "../_ctx.ts";
+
+const _slurp = register("_slurp");
 
 const update = register("update");
 
@@ -9,7 +11,7 @@ export default [
       {
         name: "Create zrepl.yaml",
         copy: {
-          content: expr("zrepl_config"),
+          content: V.zrepl_config,
           dest: "/etc/zrepl/zrepl.yml",
           backup: true,
         },
@@ -26,19 +28,19 @@ export default [
       {
         name: "Slurp failed file and add line numbers",
         command: "cat -n /etc/zrepl/zrepl.yml",
-        register: "_slurp",
+        register: _slurp,
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: "/etc/zrepl/zrepl.yml",
-          src: expr("update.backup_file"),
+          src: update.backup_file.ref,
         },
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: expr("_slurp.stdout") },
+        debug: { msg: _slurp.stdout.ref },
       },
       {
         name: "Validation failed",

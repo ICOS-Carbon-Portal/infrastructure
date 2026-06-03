@@ -5,18 +5,21 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  sexp_arch: string;
-  sexp_arch_map: string;
-  sexp_config_file: string;
-  sexp_home: string;
-  sexp_listen: string;
-  sexp_scripts_enable: string;
-  sexp_scripts_repo: string;
-  sexp_scripts_venv: string;
+  sexp_arch: unknown;
+  sexp_arch_map: unknown;
+  sexp_config_file: unknown;
+  sexp_home: unknown;
+  sexp_listen: unknown;
+  sexp_scripts_enable: unknown;
+  sexp_scripts_repo: unknown;
+  sexp_scripts_venv: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

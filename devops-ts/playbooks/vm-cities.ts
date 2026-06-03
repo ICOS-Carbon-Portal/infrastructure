@@ -1,6 +1,6 @@
 // Create the ICOS Cities VM.
 
-import { expr, type Playbook, rawTmpl, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook, rawTmpl, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -16,7 +16,7 @@ export default [
       {
         name: "Create cities storage_pool directory",
         file: {
-          path: expr("pool_path"),
+          path: V.pool_path,
           state: "directory",
         },
       },
@@ -29,18 +29,17 @@ export default [
           group: 1000000,
         },
         loop: [
-          expr("data_path"),
-          expr("docker_path"),
-          expr("data_fast_path"),
+          V.data_path,
+          V.docker_path,
+          V.data_fast_path,
         ],
       },
       {
         name: "Create cities storage pool",
-        shell: tmpl`/snap/bin/lxc storage show ${
-          expr("pool_name")
-        } > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${
-          expr("pool_name")
-        } dir source="${rawTmpl("{{ pool_path}}")}"
+        shell:
+          tmpl`/snap/bin/lxc storage show ${V.pool_name} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${V.pool_name} dir source="${
+            rawTmpl("{{ pool_path}}")
+          }"
 `,
         register: "_r",
         changed_when: ['("Storage pool %s created" % pool_name) in _r.stdout'],
@@ -61,17 +60,17 @@ export default [
           lxd_vm_devices: {
             data: {
               path: "/data",
-              source: expr("data_path"),
+              source: V.data_path,
               type: "disk",
             },
             data_fast: {
               path: V.cities_datafast_path,
-              source: expr("data_fast_path"),
+              source: V.data_fast_path,
               type: "disk",
             },
             docker: {
               path: "/var/lib/docker",
-              source: expr("docker_path"),
+              source: V.docker_path,
               type: "disk",
             },
           },

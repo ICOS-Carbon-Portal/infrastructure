@@ -4,18 +4,23 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  certbot_disabled: string;
-  certbot_fake_certificate: string;
-  certbot_conf_path: string;
-  certbot_email: string;
-  certbot_bin: string;
-  certbot_live_crt: string;
-  certbot_live_key: string;
-  certbot_fake_cn: string;
+  certbot_disabled: unknown;
+  certbot_fake_certificate: unknown;
+  certbot_conf_path: unknown;
+  certbot_email: unknown;
+  certbot_bin: unknown;
+  certbot_live_crt: unknown;
+  certbot_live_key: unknown;
+  certbot_fake_cn: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "certbot_disabled": false,
@@ -23,11 +28,9 @@ export default {
   "certbot_conf_path": tmpl`/etc/nginx/conf.d/${V.certbot_conf_name}.conf`,
   "certbot_email": "carbon.admin@nateko.lu.se",
   "certbot_bin": "certbot",
-  "certbot_live_crt": tmpl`/etc/letsencrypt/live/${
-    expr("certbot_domains | first")
-  }/fullchain.pem`,
-  "certbot_live_key": tmpl`/etc/letsencrypt/live/${
-    expr("certbot_domains | first")
-  }/privkey.pem`,
+  "certbot_live_crt":
+    tmpl`/etc/letsencrypt/live/${V.certbot_domains.first()}/fullchain.pem`,
+  "certbot_live_key":
+    tmpl`/etc/letsencrypt/live/${V.certbot_domains.first()}/privkey.pem`,
   "certbot_fake_cn": V.certbot_conf_name,
 } satisfies VarsFile;

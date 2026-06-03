@@ -5,15 +5,18 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  onlyoffice_build_dir: string;
-  onlyoffice_domain: string;
-  onlyoffice_home: string;
-  onlyoffice_port: string;
-  onlyoffice_version: string;
+  onlyoffice_build_dir: unknown;
+  onlyoffice_domain: unknown;
+  onlyoffice_home: unknown;
+  onlyoffice_port: unknown;
+  onlyoffice_version: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

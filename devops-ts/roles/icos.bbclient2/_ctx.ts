@@ -5,30 +5,33 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  bbclient_all: string;
-  bbclient_bin_dir: string;
-  bbclient_borg_dir: string;
-  bbclient_coldbackup_hour: string;
-  bbclient_coldbackup_minute: string;
-  bbclient_one: string;
-  bbclient_patterns: string;
-  bbclient_patterns_path: string;
-  bbclient_remote_repo: string;
-  bbclient_remote_user: string;
-  bbclient_repo_file: string;
-  bbclient_repo_url: string;
-  bbclient_ssh_bin: string;
-  bbclient_ssh_config: string;
-  bbclient_ssh_dir: string;
-  bbclient_ssh_hosts: string;
-  bbclient_ssh_key: string;
-  bbclient_timer_conf: string;
-  bbclient_user: string;
-  bbclient_wrapper: string;
+  bbclient_all: unknown;
+  bbclient_bin_dir: unknown;
+  bbclient_borg_dir: unknown;
+  bbclient_coldbackup_hour: unknown;
+  bbclient_coldbackup_minute: unknown;
+  bbclient_one: unknown;
+  bbclient_patterns: unknown;
+  bbclient_patterns_path: unknown;
+  bbclient_remote_repo: unknown;
+  bbclient_remote_user: unknown;
+  bbclient_repo_file: unknown;
+  bbclient_repo_url: unknown;
+  bbclient_ssh_bin: unknown;
+  bbclient_ssh_config: unknown;
+  bbclient_ssh_dir: unknown;
+  bbclient_ssh_hosts: unknown;
+  bbclient_ssh_key: unknown;
+  bbclient_timer_conf: unknown;
+  bbclient_user: unknown;
+  bbclient_wrapper: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

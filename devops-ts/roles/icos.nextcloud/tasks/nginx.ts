@@ -1,5 +1,7 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { expr } from "../_ctx.ts";
+
+const _slurp = register("_slurp");
 
 const update = register("update");
 
@@ -30,18 +32,18 @@ export default [
       {
         name: "Slurp failed file and add line numbers",
         command: "cat -n /etc/nginx/conf.d/nextcloud.conf",
-        register: "_slurp",
+        register: _slurp,
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: expr("_slurp.stdout") },
+        debug: { msg: _slurp.stdout.ref },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: "/etc/nginx/conf.d/nextcloud.conf",
-          src: expr("update.backup_file"),
+          src: update.backup_file.ref,
         },
       },
     ],

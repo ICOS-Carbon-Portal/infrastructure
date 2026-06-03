@@ -5,28 +5,31 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  certbot_domains: string;
-  certbot_name: string;
-  nextcloud_certbot_enable: string;
-  nextcloud_db_host: string;
-  nextcloud_db_name: string;
-  nextcloud_db_user: string;
-  nextcloud_domain: string;
-  nextcloud_exporter_conf_host: string;
-  nextcloud_exporter_port: string;
-  nextcloud_exporter_user: string;
-  nextcloud_home: string;
-  nextcloud_nextcloud_version: string;
-  nextcloud_port: string;
-  nextcloud_postgres_version: string;
-  nextcloud_user: string;
-  nextcloud_volume_nextcloud: string;
-  nextcloud_volume_postgres: string;
-  nextcloud_volumes: string;
+  certbot_domains: unknown;
+  certbot_name: unknown;
+  nextcloud_certbot_enable: unknown;
+  nextcloud_db_host: unknown;
+  nextcloud_db_name: unknown;
+  nextcloud_db_user: unknown;
+  nextcloud_domain: unknown;
+  nextcloud_exporter_conf_host: unknown;
+  nextcloud_exporter_port: unknown;
+  nextcloud_exporter_user: unknown;
+  nextcloud_home: unknown;
+  nextcloud_nextcloud_version: unknown;
+  nextcloud_port: unknown;
+  nextcloud_postgres_version: unknown;
+  nextcloud_user: unknown;
+  nextcloud_volume_nextcloud: unknown;
+  nextcloud_volume_postgres: unknown;
+  nextcloud_volumes: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

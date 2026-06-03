@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -11,15 +11,15 @@ export default [
   {
     include_role: "name=icos.certbot2",
     vars: {
-      certbot_name: expr("jupyter_domain"),
-      certbot_domains: [expr("jupyter_domain")],
+      certbot_name: V.jupyter_domain,
+      certbot_domains: [V.jupyter_domain],
     },
   },
   {
     include_role: "name=icos.nginxsite",
     vars: {
       nginxsite_file: "jupyter-nginx.conf",
-      jupyter_cert_name: expr("jupyter_domain"),
+      jupyter_cert_name: V.jupyter_domain,
     },
   },
 ] satisfies TaskFile;

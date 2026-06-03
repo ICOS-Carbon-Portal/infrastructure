@@ -5,20 +5,23 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  cpauth_bind_addr: string;
-  cpauth_home: string;
-  cpauth_host: string;
-  cpauth_mailing_pass: string;
-  cpauth_mailing_smtp: string;
-  cpauth_masteradmin_pass: string;
-  cpauth_oauth_conf: string;
-  cpauth_port: string;
-  cpauth_user: string;
-  cpauth_user_secret_salt: string;
+  cpauth_bind_addr: unknown;
+  cpauth_home: unknown;
+  cpauth_host: unknown;
+  cpauth_mailing_pass: unknown;
+  cpauth_mailing_smtp: unknown;
+  cpauth_masteradmin_pass: unknown;
+  cpauth_oauth_conf: unknown;
+  cpauth_port: unknown;
+  cpauth_user: unknown;
+  cpauth_user_secret_salt: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

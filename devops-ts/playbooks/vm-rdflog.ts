@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { type Playbook, role, V } from "../lib/ansible.ts";
 
 // Deploy the postgres replication containers
 //   icos play rdflog pgrep
@@ -18,7 +18,7 @@ export default [
     tags: "vm",
     roles: [
       role("icos.lxd_vm", {
-        lxd_vm_name: expr("rdflog_vm_name"),
+        lxd_vm_name: V.rdflog_vm_name,
         lxd_vm_docker: true,
       }),
     ],

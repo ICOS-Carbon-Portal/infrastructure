@@ -20,7 +20,7 @@ export default [
   {
     name: "Create caddy systemd drop-in directory",
     file: {
-      path: expr("caddy_dropin_path | dirname"),
+      path: V.caddy_dropin_path.dirname(),
       state: "directory",
     },
   },

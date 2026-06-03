@@ -5,18 +5,21 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  stiltcluster_bindir: string;
-  stiltcluster_docker: string;
-  stiltcluster_home: string;
-  stiltcluster_maxcores: string;
-  stiltcluster_port: string;
-  stiltcluster_servicename: string;
-  stiltcluster_stiltweb_port: string;
-  stiltcluster_username: string;
+  stiltcluster_bindir: unknown;
+  stiltcluster_docker: unknown;
+  stiltcluster_home: unknown;
+  stiltcluster_maxcores: unknown;
+  stiltcluster_port: unknown;
+  stiltcluster_servicename: unknown;
+  stiltcluster_stiltweb_port: unknown;
+  stiltcluster_username: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

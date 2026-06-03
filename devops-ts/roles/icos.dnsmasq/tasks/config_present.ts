@@ -1,6 +1,8 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
+const _slurp = register("_slurp");
+
 const config = register("config");
 
 export default [
@@ -9,7 +11,7 @@ export default [
       {
         name: "Copy dnsmasq config",
         copy: {
-          content: expr("dnsmasq_config"),
+          content: V.dnsmasq_config,
           dest: V.dnsmasq_config_file,
           backup: true,
         },
@@ -25,21 +27,21 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: tmpl`cat -n ${expr("dnsmasq_config")}`,
-        register: "_slurp",
+        command: tmpl`cat -n ${V.dnsmasq_config}`,
+        register: _slurp,
       },
       {
         name: "Dump failed configuration",
         debug: {
-          msg: expr("_slurp.stdout"),
+          msg: _slurp.stdout.ref,
         },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: expr("dnsmasq_config"),
-          src: expr("config.backup_file"),
+          dest: V.dnsmasq_config,
+          src: config.backup_file.ref,
         },
       },
     ],
@@ -47,7 +49,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: expr("config.backup_file"),
+          name: config.backup_file.ref,
           state: "absent",
         },
         when: raw("config['backup_file'] is defined"),

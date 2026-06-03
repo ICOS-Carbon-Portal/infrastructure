@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -21,7 +21,7 @@ export default [
     tags: "nginxforward_auth",
   },
   {
-    name: tmpl`Copy config for ${expr("nginxforward_name")}`,
+    name: tmpl`Copy config for ${V.nginxforward_name}`,
     template: {
       src: V.nginxforward_file,
       dest: V.nginxforward_path_available,

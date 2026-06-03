@@ -5,21 +5,24 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  bbclient_name: string;
-  bbclient_user: string;
-  quince_backup_enable: string;
-  quince_filestore: string;
-  quince_home: string;
-  quince_jdk_version: string;
-  quince_log_file: string;
-  quince_slack_url: string;
-  quince_tomcat_home: string;
-  quince_tomcat_url: string;
-  quince_user: string;
+  bbclient_name: unknown;
+  bbclient_user: unknown;
+  quince_backup_enable: unknown;
+  quince_filestore: unknown;
+  quince_home: unknown;
+  quince_jdk_version: unknown;
+  quince_log_file: unknown;
+  quince_slack_url: unknown;
+  quince_tomcat_home: unknown;
+  quince_tomcat_url: unknown;
+  quince_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

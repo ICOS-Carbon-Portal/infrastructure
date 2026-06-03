@@ -37,7 +37,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${expr("cpmeta_domains | first")}/buildInfo`,
+      url: tmpl`https://${V.cpmeta_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

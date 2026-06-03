@@ -1,5 +1,8 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+
+const newpub = register("newpub");
+const signedcert = register("signedcert");
 
 export default [
   {
@@ -22,7 +25,7 @@ export default [
       {
         name: "Retrieve public key",
         slurp: { src: "/etc/nebula/new.pub" },
-        register: "newpub",
+        register: newpub,
       },
       {
         delegate_to: "localhost",
@@ -36,22 +39,20 @@ export default [
             rawTmpl("{{nebula_cert_sign | basename}}")
           } -ca-key ${
             rawTmpl("{{nebula_cert_sign | basename | splitext | first}}")
-          }.key -in-pub <(echo "${expr("newpub.content | b64decode")}") -ip ${
-            expr("nebula_ip")
-          }${V.nebula_netmask} -name ${V.nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
+          }.key -in-pub <(echo "${newpub.content.ref.b64decode()}") -ip ${V.nebula_ip}${V.nebula_netmask} -name ${V.nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
           // We default to an empty passphrase, so it'll work by default for keys
           // with no password.
           responses: {
             "Enter passphrase: ": expr("nebula_passphrase | default ('')"),
           },
         },
-        register: "signedcert",
+        register: signedcert,
       },
       {
         name: "Write signed certificate",
         copy: {
           dest: "/etc/nebula/new.crt",
-          content: expr("signedcert.stdout"),
+          content: signedcert.stdout.ref,
         },
       },
       {

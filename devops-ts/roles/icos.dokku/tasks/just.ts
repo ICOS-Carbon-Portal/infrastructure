@@ -1,5 +1,6 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _justfile = register("_justfile");
 
 export default [
   {
@@ -9,11 +10,11 @@ export default [
       dest: "/usr/local/bin/ops-dokku",
       mode: "+x",
     },
-    register: "_justfile",
+    register: _justfile,
   },
   {
     name: "Check that the justfile is executable",
-    shell: expr("_justfile.dest"),
+    shell: _justfile.dest.ref,
     changed_when: false,
   },
 ] satisfies TaskFile;

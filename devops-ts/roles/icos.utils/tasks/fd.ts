@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "fd",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set fd_version fact",
         set_fact: {
-          fd_version: expr("gh.tag.lstrip('v')"),
+          fd_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -32,7 +34,7 @@ export default [
   {
     when: raw("fd_architecture == 'x86_64'"),
     name: "Install fd",
-    apt: { deb: expr("fd_url_map[fd_architecture]") },
+    apt: { deb: V.fd_url_map.at(V.fd_architecture) },
   },
   // For other architecture we'll just extract the fd binary.
   {
@@ -40,7 +42,7 @@ export default [
     name: "Unarchive fd",
     unarchive: {
       remote_src: true,
-      src: expr("fd_url_map[fd_architecture]"),
+      src: V.fd_url_map.at(V.fd_architecture),
       dest: "/usr/local/bin",
       include: ["fd-*/fd"],
       extra_opts: ["--strip-components=1", "--wildcards"],

@@ -1,5 +1,5 @@
 import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -32,7 +32,7 @@ export default [
       template: {
         src: item.src,
         dest: V.pgrep_home,
-        mode: expr("item.mode | default(omit)"),
+        mode: item.mode.default(V.omit),
       },
     }),
   ),

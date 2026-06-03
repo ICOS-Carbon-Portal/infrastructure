@@ -6,13 +6,15 @@
 //
 // Deploy filedrop website
 //  icos play callisto filedrop -lfsicos3
-import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook, register, role, tmpl, V } from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
     hosts: "fsicos3",
     vars: {
-      callisto_ip: expr("_lxd.addresses.eth0 | first"),
+      callisto_ip: _lxd.addresses.eth0.ref.first(),
     },
     pre_tasks: [
       {
@@ -109,17 +111,17 @@ export default [
           wait_for_ipv4_interfaces: "eth0",
           timeout: 60,
         },
-        register: "_lxd",
+        register: _lxd,
       },
     ],
     roles: [
       role("icos.lxd_forward", {
         lxd_forward_name: "callisto",
-        lxd_forward_ip: expr("callisto_ip"),
+        lxd_forward_ip: V.callisto_ip,
       }).tags("forward"),
 
       role("icos.eurocom", {
-        eurocom_users: expr("vault_eurocom_users"),
+        eurocom_users: V.vault_eurocom_users,
         eurocom_web_root: "/pool/ute/eurocom_web_root",
         eurocom_data_home: "/data/project/eurocom",
       }).tags("eurocom"),
@@ -158,7 +160,7 @@ export default [
     hosts: "callisto",
     roles: [
       role("icos.lxd_guest", {
-        user_conf: expr("vault_callisto_user_conf"),
+        user_conf: V.vault_callisto_user_conf,
       }).tags("guest"),
 
       role("icos.docker", {
@@ -171,8 +173,8 @@ export default [
       }).tags("filedrop"),
 
       role("icos.jupyter", {
-        jupyter_admins: expr("vault_callisto_admins"),
-        jupyter_user_volumes: expr("vault_callisto_user_volumes"),
+        jupyter_admins: V.vault_callisto_admins,
+        jupyter_user_volumes: V.vault_callisto_user_volumes,
         jupyter_backup_enable: false,
       }).tags("jupyter"),
 
@@ -181,14 +183,14 @@ export default [
         sftp_user_dir: "/ute/sftp_home/data",
         sftp_user_login: "sftp",
         sftp_user_owner: "ute",
-        sftp_user_password: expr("vault_callisto_sftp_password"),
+        sftp_user_password: V.vault_callisto_sftp_password,
       }).tags("sftp"),
 
       // This sftp user will be able to upload.
       role("icos.sftp_user", {
         sftp_user_dir: "/ute/fluxcom/upload",
-        sftp_user_login: expr("vault_callisto_sftp_fluxcom_upload_username"),
-        sftp_user_password: expr("vault_callisto_sftp_fluxcom_upload_password"),
+        sftp_user_login: V.vault_callisto_sftp_fluxcom_upload_username,
+        sftp_user_password: V.vault_callisto_sftp_fluxcom_upload_password,
         sftp_user_hostdesc: "fluxcom-upload",
       }).tags("sftp"),
 

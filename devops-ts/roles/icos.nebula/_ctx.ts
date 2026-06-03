@@ -5,31 +5,34 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  nebula_bin_dir: string;
-  nebula_ca_path: string;
-  nebula_cert_min_days: string;
-  nebula_domain: string;
-  nebula_etc_dir: string;
-  nebula_fw_enable: string;
-  nebula_hostname: string;
-  nebula_hosts_enable: string;
-  nebula_is_lighthouse: string;
-  nebula_resolve_enable: string;
-  nebula_resolve_servers: string;
-  nebula_resolve_test: string;
-  nebula_resolve_type: string;
-  nebula_ssh_key: string;
-  nebula_ssh_port: string;
-  nebula_stats_enable: string;
-  nebula_stats_port: string;
-  nebula_upgrade: string;
-  nebula_url_map: string;
-  nebula_user: string;
-  nebula_version: string;
+  nebula_bin_dir: unknown;
+  nebula_ca_path: unknown;
+  nebula_cert_min_days: unknown;
+  nebula_domain: unknown;
+  nebula_etc_dir: unknown;
+  nebula_fw_enable: unknown;
+  nebula_hostname: unknown;
+  nebula_hosts_enable: unknown;
+  nebula_is_lighthouse: unknown;
+  nebula_resolve_enable: unknown;
+  nebula_resolve_servers: unknown;
+  nebula_resolve_test: unknown;
+  nebula_resolve_type: unknown;
+  nebula_ssh_key: unknown;
+  nebula_ssh_port: unknown;
+  nebula_stats_enable: unknown;
+  nebula_stats_port: unknown;
+  nebula_upgrade: unknown;
+  nebula_url_map: unknown;
+  nebula_user: unknown;
+  nebula_version: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

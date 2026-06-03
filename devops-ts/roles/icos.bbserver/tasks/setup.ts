@@ -1,12 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create bbserver user",
     user: {
       name: V.bbserver_user,
-      home: expr("bbserver_home | default(omit)"),
+      home: V.bbserver_home.default(V.omit),
       create_home: true,
       shell: "/usr/bin/bash",
     },

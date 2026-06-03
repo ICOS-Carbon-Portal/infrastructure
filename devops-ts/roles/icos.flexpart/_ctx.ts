@@ -5,16 +5,19 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  flexpart_container_prefix: string;
-  flexpart_export_output_to: string;
-  flexpart_image: string;
-  flexpart_max_parallel: string;
-  flexpart_output_directory: string;
-  flexpart_user: string;
+  flexpart_container_prefix: unknown;
+  flexpart_export_output_to: unknown;
+  flexpart_image: unknown;
+  flexpart_max_parallel: unknown;
+  flexpart_output_directory: unknown;
+  flexpart_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

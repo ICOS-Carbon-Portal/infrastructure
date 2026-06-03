@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
     include_role: "name=icos.nginxauth",
     vars: {
       nginxauth_file: V.eurocom_auth_file,
-      nginxauth_users: expr("eurocom_users"),
+      nginxauth_users: V.eurocom_users,
     },
     when: raw("eurocom_users is defined"),
   },

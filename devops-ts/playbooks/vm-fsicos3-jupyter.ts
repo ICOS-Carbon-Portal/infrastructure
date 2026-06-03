@@ -1,4 +1,7 @@
-import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook, register, role, tmpl, V } from "../lib/ansible.ts";
+
+// Registered by the icos.lxd_vm role (runs on the host play before this one).
+const _lxd = register("_lxd");
 
 // Deploy the jusers script:
 //   icos play jupyter jupyter_jusers_deploy
@@ -13,7 +16,7 @@ export default [
   {
     hosts: "fsicos3",
     vars: {
-      jupyter_ip: expr("_lxd.addresses.eth0 | first"),
+      jupyter_ip: _lxd.addresses.eth0.ref.first(),
       jupyter_domains: ["jupyter.icos-cp.eu"],
     },
     pre_tasks: [
@@ -80,13 +83,13 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "jupyter",
-        certbot_domains: expr("jupyter_domains"),
+        certbot_domains: V.jupyter_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "jupyter",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: expr("jupyter_domains | first"),
+        jupyter_domain: V.jupyter_domains.first(),
         jupyter_cert_name: "jupyter",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -117,7 +120,7 @@ export default [
 
       role("icos.jupyter", {
         jupyter_hub_config: {
-          admin_users: expr("vault_jupyter_admins"),
+          admin_users: V.vault_jupyter_admins,
           mem_limit: "100G",
           cpu_limit: 40,
         },

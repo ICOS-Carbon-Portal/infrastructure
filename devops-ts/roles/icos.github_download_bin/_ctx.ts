@@ -5,23 +5,26 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  _dbin_name: string;
-  _dbin_path: string;
-  _dbin_src: string;
-  _dbin_unar: string;
-  _dbin_url: string;
-  dbin__down: string;
-  dbin__plat: string;
-  dbin__vers: string;
-  dbin_arch: string;
-  dbin_bin_dir: string;
-  dbin_default_url: string;
-  dbin_download_base: string;
-  dbin_download_dest: string;
+  _dbin_name: unknown;
+  _dbin_path: unknown;
+  _dbin_src: unknown;
+  _dbin_unar: unknown;
+  _dbin_url: unknown;
+  dbin__down: unknown;
+  dbin__plat: unknown;
+  dbin__vers: unknown;
+  dbin_arch: unknown;
+  dbin_bin_dir: unknown;
+  dbin_default_url: unknown;
+  dbin_download_base: unknown;
+  dbin_download_dest: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

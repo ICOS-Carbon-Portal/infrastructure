@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "dive",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set dive_version fact",
         set_fact: {
-          dive_version: expr("gh.tag.lstrip('v')"),
+          dive_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -38,7 +40,7 @@ export default [
   {
     name: "Install dive",
     apt: {
-      deb: expr("dive_url_map[dive_architecture]"),
+      deb: V.dive_url_map.at(V.dive_architecture),
     },
   },
   {

@@ -1,26 +1,29 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile, V } from "../../../lib/ansible.ts";
 import { expr, rawTmpl, tmpl } from "../_ctx.ts";
+
+const _home_dir = register("_home_dir");
+const _ssh_dir = register("_ssh_dir");
 
 export default [
   {
-    name: tmpl`Run block as ${expr("_ssh_user")}`,
+    name: tmpl`Run block as ${V._ssh_user}`,
     become: true,
-    become_user: expr("_ssh_user"),
+    become_user: V._ssh_user,
     block: [
       {
-        name: tmpl`Get home directory of ${expr("_ssh_user")}`,
-        shell: tmpl`getent passwd ${expr("_ssh_user")} | cut -d: -f6`,
-        register: "_home_dir",
+        name: tmpl`Get home directory of ${V._ssh_user}`,
+        shell: tmpl`getent passwd ${V._ssh_user} | cut -d: -f6`,
+        register: _home_dir,
         changed_when: false,
       },
       {
         name: "Make sure user .ssh directory is present",
         file: {
-          path: tmpl`${expr("_home_dir.stdout")}/.ssh`,
+          path: tmpl`${_home_dir.stdout.ref}/.ssh`,
           state: "directory",
           mode: 0o700,
         },
-        register: "_ssh_dir",
+        register: _ssh_dir,
       },
       {
         name: "Install the rsa private key",
@@ -34,22 +37,21 @@ export default [
       {
         name: "Add flexpart run host to each users known_hosts file",
         known_hosts: {
-          path: tmpl`${expr("_ssh_dir.path")}/known_hosts`,
-          name: expr("flexpart_ssh_remote_host"),
-          key: tmpl`${expr("flexpart_ssh_remote_host")},${
-            expr("flexpart_ssh_remote_ip")
-          } ecdsa-sha2-nistp256 ${
-            expr(
-              "hostvars[flexpart_ssh_remote_host].ansible_ssh_host_key_ecdsa_public",
-            )
-          }`,
+          path: tmpl`${_ssh_dir.path.ref}/known_hosts`,
+          name: V.flexpart_ssh_remote_host,
+          key:
+            tmpl`${V.flexpart_ssh_remote_host},${V.flexpart_ssh_remote_ip} ecdsa-sha2-nistp256 ${
+              expr(
+                "hostvars[flexpart_ssh_remote_host].ansible_ssh_host_key_ecdsa_public",
+              )
+            }`,
         },
       },
       {
         name: "Add flexpart users ssh config file",
         blockinfile: {
           create: true,
-          path: tmpl`${expr("_ssh_dir.path")}/config`,
+          path: tmpl`${_ssh_dir.path.ref}/config`,
           mode: 0o600,
           marker: "# {mark} ansible config for flexpart",
           block: `Host flexpart

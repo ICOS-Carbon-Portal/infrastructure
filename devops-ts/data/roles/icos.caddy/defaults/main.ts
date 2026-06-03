@@ -4,18 +4,23 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  caddy_global_conf: string;
-  caddy_site_state: string;
-  caddy_modules: string;
-  caddy_dropin_path: string;
-  caddy_via_xcaddy: string;
-  caddy_bin: string;
-  caddy_upgrade: string;
-  xcaddy_upgrade: string;
+  caddy_global_conf: unknown;
+  caddy_site_state: unknown;
+  caddy_modules: unknown;
+  caddy_dropin_path: unknown;
+  caddy_via_xcaddy: unknown;
+  caddy_bin: unknown;
+  caddy_upgrade: unknown;
+  xcaddy_upgrade: unknown;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "caddy_global_conf": ':80 {\n  respond "Not found." 404\n}\n',
@@ -24,6 +29,6 @@ export default {
   "caddy_dropin_path": "/etc/systemd/system/caddy.service.d/usr_local_bin.conf",
   "caddy_via_xcaddy": "/usr/local/bin/caddy",
   "caddy_bin": expr("caddy_via_xcaddy if caddy_modules else '/usr/bin/caddy'"),
-  "caddy_upgrade": expr("upgrade_everything | default(False) | bool"),
+  "caddy_upgrade": V.upgrade_everything.default(false).bool(),
   "xcaddy_upgrade": V.caddy_upgrade,
 } satisfies VarsFile;

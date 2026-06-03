@@ -5,18 +5,21 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  exploredata_home: string;
-  exploredata_hub_container: string;
-  exploredata_hub_image: string;
-  exploredata_max_notebooks: string;
-  exploredata_name: string;
-  exploredata_network: string;
-  exploredata_notebook_image: string;
-  exploredata_port: string;
+  exploredata_home: unknown;
+  exploredata_hub_container: unknown;
+  exploredata_hub_image: unknown;
+  exploredata_max_notebooks: unknown;
+  exploredata_name: unknown;
+  exploredata_network: unknown;
+  exploredata_notebook_image: unknown;
+  exploredata_port: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

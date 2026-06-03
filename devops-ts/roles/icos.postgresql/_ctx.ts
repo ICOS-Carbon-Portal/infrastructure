@@ -5,20 +5,23 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  postgresql_bin: string;
-  postgresql_confd: string;
-  postgresql_etc: string;
-  postgresql_home: string;
-  postgresql_listen_addresses: string;
-  postgresql_pg_hba: string;
-  postgresql_pg_stat_enable: string;
-  postgresql_postgis_enable: string;
-  postgresql_postgres_password: string;
-  postgresql_ssh_keys: string;
+  postgresql_bin: unknown;
+  postgresql_confd: unknown;
+  postgresql_etc: unknown;
+  postgresql_home: unknown;
+  postgresql_listen_addresses: unknown;
+  postgresql_pg_hba: unknown;
+  postgresql_pg_stat_enable: unknown;
+  postgresql_postgis_enable: unknown;
+  postgresql_postgres_password: unknown;
+  postgresql_ssh_keys: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

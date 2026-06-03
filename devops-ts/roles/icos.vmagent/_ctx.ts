@@ -5,28 +5,31 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  caddy_conf: string;
-  caddy_name: string;
-  fsd_host: string;
-  nginxsite_domains: string;
-  nginxsite_file: string;
-  nginxsite_name: string;
-  nginxsite_users: string;
-  vmagent_arch: string;
-  vmagent_arch_map: string;
-  vmagent_bin: string;
-  vmagent_conf: string;
-  vmagent_configs: string;
-  vmagent_environ: string;
-  vmagent_fsd: string;
-  vmagent_home: string;
-  vmagent_listen: string;
-  vmagent_proxy: string;
-  vmagent_upgrade: string;
+  caddy_conf: unknown;
+  caddy_name: unknown;
+  fsd_host: unknown;
+  nginxsite_domains: unknown;
+  nginxsite_file: unknown;
+  nginxsite_name: unknown;
+  nginxsite_users: unknown;
+  vmagent_arch: unknown;
+  vmagent_arch_map: unknown;
+  vmagent_bin: unknown;
+  vmagent_conf: unknown;
+  vmagent_configs: unknown;
+  vmagent_environ: unknown;
+  vmagent_fsd: unknown;
+  vmagent_home: unknown;
+  vmagent_listen: unknown;
+  vmagent_proxy: unknown;
+  vmagent_upgrade: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

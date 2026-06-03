@@ -4,17 +4,22 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  doi_user: string;
-  doi_home: string;
-  doi_servicename: string;
-  doi_port: string;
-  doi_bind_addr: string;
-  doi_host: string;
-  doi_meta_domain: string;
+  doi_user: unknown;
+  doi_home: unknown;
+  doi_servicename: unknown;
+  doi_port: unknown;
+  doi_bind_addr: unknown;
+  doi_host: unknown;
+  doi_meta_domain: unknown;
 }
-const { V } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "doi_user": "doi",

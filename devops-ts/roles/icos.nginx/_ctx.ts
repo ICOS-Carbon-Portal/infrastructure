@@ -5,15 +5,18 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  nginx_certbot_bin: string;
-  nginx_metrics_addr: string;
-  nginx_metrics_enable: string;
-  nginx_metrics_url: string;
-  nginx_user: string;
+  nginx_certbot_bin: unknown;
+  nginx_metrics_addr: unknown;
+  nginx_metrics_enable: unknown;
+  nginx_metrics_url: unknown;
+  nginx_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

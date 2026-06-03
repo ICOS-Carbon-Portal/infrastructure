@@ -5,18 +5,21 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  caddy_bin: string;
-  caddy_dropin_path: string;
-  caddy_global_conf: string;
-  caddy_modules: string;
-  caddy_site_state: string;
-  caddy_upgrade: string;
-  caddy_via_xcaddy: string;
-  xcaddy_upgrade: string;
+  caddy_bin: unknown;
+  caddy_dropin_path: unknown;
+  caddy_global_conf: unknown;
+  caddy_modules: unknown;
+  caddy_site_state: unknown;
+  caddy_upgrade: unknown;
+  caddy_via_xcaddy: unknown;
+  xcaddy_upgrade: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

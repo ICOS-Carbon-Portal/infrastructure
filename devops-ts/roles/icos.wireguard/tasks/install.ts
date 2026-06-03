@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, notVar, tmpl, V } from "../_ctx.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -38,9 +38,8 @@ export default [
   {
     name: "Fail if wireguard wasn't installed",
     fail: {
-      msg: tmpl`Couldn't install wireguard for ${V.ansible_distribution}/${
-        expr("ansible_lsb.id")
-      }`,
+      msg:
+        tmpl`Couldn't install wireguard for ${V.ansible_distribution}/${V.ansible_lsb.id}`,
     },
     when: notVar("_wg_is_installed"),
   },

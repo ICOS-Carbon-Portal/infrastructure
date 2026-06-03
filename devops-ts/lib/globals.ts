@@ -14,7 +14,6 @@ export interface Globals {
   cdb_ip: string;
   cities_datafast_path: string;
   cities_lxd_ip: string;
-  city_restheart_basic_auth: string;
   coreapp_bind_addr: string;
   coreapp_host_ip: string;
   coreapp_httpproxy_host: string;
@@ -142,7 +141,7 @@ export interface Globals {
   virtuoso_dba_pass: string;
   virtuoso_enable: string;
   vm_fsicos4_test: string;
-  vmagent_auth: string;
+  vmagent_auth: { username: string; password: string };
   vmagent_pathprefix: string;
   vmagent_remote: string;
 }

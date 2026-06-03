@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,7 +17,7 @@ export default [
   },
   {
     include_tasks: "single_repo.yml",
-    loop: expr("bbclient_remotes"),
+    loop: V.bbclient_remotes,
     loop_control: { loop_var: "bbclient_remote" },
   },
   {

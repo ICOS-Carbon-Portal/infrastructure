@@ -4,20 +4,23 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  restheart_user: string;
-  restheart_home: string;
-  restheart_bind_port: string;
-  restheart_port: string;
+  restheart_user: unknown;
+  restheart_home: unknown;
+  restheart_bind_port: unknown;
+  restheart_port: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "restheart_user": "restheart",
-  "restheart_home": tmpl`${
-    expr("docker_compose_home | default('/docker')")
-  }/restheart`,
+  "restheart_home": tmpl`${V.docker_compose_home.default("/docker")}/restheart`,
   "restheart_bind_host": "127.0.0.1",
   "restheart_bind_port": 8088,
   "restheart_host": V.restheart_bind_host,

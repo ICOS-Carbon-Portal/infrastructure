@@ -4,17 +4,22 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  golang_version_install: string;
-  golang_min_version: string;
-  golang_local_version_ok: string;
-  golang_apt_version_ok: string;
-  golang_url: string;
-  golang_opt_dir: string;
-  golang_bin_dir: string;
+  golang_version_install: unknown;
+  golang_min_version: unknown;
+  golang_local_version_ok: unknown;
+  golang_apt_version_ok: unknown;
+  golang_url: unknown;
+  golang_opt_dir: unknown;
+  golang_bin_dir: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "golang_version_install": "1.21.1",

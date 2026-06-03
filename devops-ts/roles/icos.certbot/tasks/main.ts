@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible.ts";
 import { notVar } from "../_ctx.ts";
 
 export default [

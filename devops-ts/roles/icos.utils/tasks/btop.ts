@@ -1,5 +1,10 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
+
+const gh = register("gh");
+
+const _r = register("_r");
+const unarchive = register("unarchive");
 
 export default [
   {
@@ -16,12 +21,12 @@ export default [
           repo: "btop",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set btop_version fact",
         set_fact: {
-          btop_version: expr("gh.tag.lstrip('v')"),
+          btop_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -31,16 +36,16 @@ export default [
     name: "Unarchive btop",
     unarchive: {
       remote_src: true,
-      src: expr("btop_url_map[ansible_architecture]"),
+      src: V.btop_url_map.at(V.ansible_architecture),
       dest: "/opt",
     },
-    register: "unarchive",
+    register: unarchive,
   },
   {
     name: "Create /usr/local/bin/btop symlink",
     file: {
       dest: "/usr/local/bin/btop",
-      src: tmpl`${expr("unarchive.dest")}/btop/bin/btop`,
+      src: tmpl`${unarchive.dest.ref}/btop/bin/btop`,
       state: "link",
     },
   },
@@ -48,10 +53,10 @@ export default [
     name: "Check that btop is executable",
     shell: "btop --version",
     changed_when: false,
-    register: "_r",
+    register: _r,
   },
   {
     name: "Which version of btop was installed",
-    debug: { msg: tmpl`Installed ${expr("_r.stdout")}` },
+    debug: { msg: tmpl`Installed ${_r.stdout.ref}` },
   },
 ] satisfies TaskFile;

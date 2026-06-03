@@ -1,5 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { type TaskFile, V } from "../../../lib/ansible.ts";
 
 // If we've been running xcaddy before this then we might have installed our
 // overrides - see xcaddy.yml for details.
@@ -7,7 +6,7 @@ export default [
   {
     name: "Remove caddy dropin directory",
     file: {
-      name: expr("caddy_dropin_path | dirname"),
+      name: V.caddy_dropin_path.dirname(),
       state: "absent",
     },
     notify: "restart caddy",

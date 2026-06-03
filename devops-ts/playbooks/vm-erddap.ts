@@ -1,4 +1,6 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { type Playbook, register, role } from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
@@ -55,12 +57,12 @@ export default [
           wait_for_ipv4_addresses: true,
           timeout: 600,
         },
-        register: "_lxd",
+        register: _lxd,
       },
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: expr("_lxd.addresses.eth0 | first"),
+        lxd_forward_ip: _lxd.addresses.eth0.ref.first(),
         lxd_forward_name: "erddap",
       }),
       role("icos.certbot2").tags("cert"),

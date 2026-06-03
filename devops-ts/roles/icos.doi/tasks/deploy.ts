@@ -23,7 +23,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: expr("doi_jar_file"),
+      src: V.doi_jar_file,
       dest: tmpl`${V.doi_home}/doi.jar`,
       backup: true,
     },
@@ -52,7 +52,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${expr("doi_domains | first")}/buildInfo`,
+      url: tmpl`https://${V.doi_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

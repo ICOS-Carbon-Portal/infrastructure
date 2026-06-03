@@ -4,16 +4,21 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  flexextract_user: string;
-  flexextract_home: string;
-  flexextract_tag: string;
-  flexextract_download_host: string;
-  flexextract_download_cont: string;
-  flexextract_bin_dir: string;
+  flexextract_user: unknown;
+  flexextract_home: unknown;
+  flexextract_tag: unknown;
+  flexextract_download_host: unknown;
+  flexextract_download_cont: unknown;
+  flexextract_bin_dir: unknown;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "flexextract_user": "flexextract",

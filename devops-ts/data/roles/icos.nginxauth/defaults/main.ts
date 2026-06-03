@@ -4,13 +4,18 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  nginxauth_title: string;
-  nginxauth_file: string;
-  nginxauth_conf: string;
+  nginxauth_title: unknown;
+  nginxauth_file: unknown;
+  nginxauth_conf: unknown;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "nginxauth_title": "Login required",

@@ -4,15 +4,20 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  podman_version: string;
-  podman_src_dir: string;
-  conmon_min_version: string;
-  golang_min_version: string;
-  podman_docker: string;
+  podman_version: unknown;
+  podman_src_dir: unknown;
+  conmon_min_version: unknown;
+  golang_min_version: unknown;
+  podman_docker: unknown;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "podman_version": "4.3.1",

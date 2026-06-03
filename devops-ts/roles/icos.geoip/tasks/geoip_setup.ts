@@ -1,9 +1,12 @@
 import {
+  register,
   type TaskFile,
   type Tmpl,
   withItemsOver,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _user = register("_user");
 
 export default [
   {
@@ -14,7 +17,7 @@ export default [
       create_home: false,
       home: V.geoip_home,
     },
-    register: "_user",
+    register: _user,
   },
   {
     name: "Create build directory",
@@ -28,8 +31,8 @@ export default [
     file: {
       path: V.geoip_db_dir,
       state: "directory",
-      owner: expr("_user.uid"),
-      group: expr("_user.group"),
+      owner: _user.uid.ref,
+      group: _user.group.ref,
     },
   },
   {

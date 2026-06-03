@@ -5,16 +5,19 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  flexextract_bin_dir: string;
-  flexextract_download_cont: string;
-  flexextract_download_host: string;
-  flexextract_home: string;
-  flexextract_tag: string;
-  flexextract_user: string;
+  flexextract_bin_dir: unknown;
+  flexextract_download_cont: unknown;
+  flexextract_download_host: unknown;
+  flexextract_home: unknown;
+  flexextract_tag: unknown;
+  flexextract_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

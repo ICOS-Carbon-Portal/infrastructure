@@ -4,20 +4,25 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  timer_home: string;
-  timer_dest: string;
-  _timer_sysd_timer: string;
-  _timer_sysd_service: string;
-  timer_state: string;
+  timer_home: unknown;
+  timer_dest: unknown;
+  _timer_sysd_timer: unknown;
+  _timer_sysd_service: unknown;
+  timer_state: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "timer_home": "/etc/systemd/system",
-  "timer_dest": tmpl`${V.timer_home}/${expr("timer_name")}`,
-  "_timer_sysd_timer": tmpl`${V.timer_home}/${expr("timer_name")}.timer`,
-  "_timer_sysd_service": tmpl`${V.timer_home}/${expr("timer_name")}.service`,
+  "timer_dest": tmpl`${V.timer_home}/${V.timer_name}`,
+  "_timer_sysd_timer": tmpl`${V.timer_home}/${V.timer_name}.timer`,
+  "_timer_sysd_service": tmpl`${V.timer_home}/${V.timer_name}.service`,
   "timer_state": "started",
 } satisfies VarsFile;

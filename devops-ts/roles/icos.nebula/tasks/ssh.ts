@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _slurp = register("_slurp");
 
 export default [
   {
@@ -12,12 +14,12 @@ export default [
   {
     name: "Slurp nebula_ssh_public",
     slurp: { src: tmpl`${V.nebula_ssh_key}.pub` },
-    register: "_slurp",
+    register: _slurp,
   },
   {
     name: "Decode nebula_ssh_public",
     set_fact: {
-      nebula_ssh_public: expr("_slurp.content | b64decode"),
+      nebula_ssh_public: _slurp.content.ref.b64decode(),
     },
   },
 ] satisfies TaskFile;

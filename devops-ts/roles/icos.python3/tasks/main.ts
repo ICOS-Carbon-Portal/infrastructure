@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // First install pip and venv for the system version of python. This is for the
@@ -30,7 +30,7 @@ export default [
   {
     name: "Install extra version of python",
     apt: {
-      name: tmpl`python${expr("_version")}-venv`,
+      name: tmpl`python${V._version}-venv`,
     },
     when: raw("_builtin_version != _version"),
     loop: V.python3_version_list,
@@ -38,9 +38,8 @@ export default [
       loop_var: "_version",
     },
     vars: {
-      _builtin_version: tmpl`${expr("ansible_python.version.major")}.${
-        expr("ansible_python.version.minor")
-      }`,
+      _builtin_version:
+        tmpl`${V.ansible_python.version.major}.${V.ansible_python.version.minor}`,
     },
   },
 ] satisfies TaskFile;

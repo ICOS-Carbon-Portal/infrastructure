@@ -6,22 +6,22 @@
 //
 // Deploy new version of onlyoffic
 //   icos play nextcloud onlyoffice
-import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
     hosts: "fsicos2",
     roles: [
       role("icos.nextcloud", {
-        nextcloud_admin_password: expr("vault_nextcloud_admin_password"),
+        nextcloud_admin_password: V.vault_nextcloud_admin_password,
         nextcloud_domain: "fileshare.icos-cp.eu",
-        nextcloud_exporter_pass: expr("vault_nextcloud_exporter_pass"),
+        nextcloud_exporter_pass: V.vault_nextcloud_exporter_pass,
         nextcloud_volumes: ["/share/with_nextcloud:/share"],
       }).tags("nextcloud"),
 
       role("icos.onlyoffice", {
         onlyoffice_domain: "onlyoffice.icos-cp.eu",
-        onlyoffice_secret: expr("vault_onlyoffice_secret"),
+        onlyoffice_secret: V.vault_onlyoffice_secret,
       }).tags("onlyoffice"),
 
       // This will install a coldbackup script, i.e it will shut down nextcloud

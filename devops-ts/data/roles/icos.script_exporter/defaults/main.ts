@@ -4,18 +4,23 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  sexp_home: string;
-  sexp_config_file: string;
-  sexp_listen: string;
-  sexp_arch: string;
-  sexp_arch_map: string;
-  sexp_scripts_venv: string;
-  sexp_scripts_repo: string;
-  sexp_scripts_enable: string;
+  sexp_home: unknown;
+  sexp_config_file: unknown;
+  sexp_listen: unknown;
+  sexp_arch: unknown;
+  sexp_arch_map: unknown;
+  sexp_scripts_venv: unknown;
+  sexp_scripts_repo: unknown;
+  sexp_scripts_enable: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "sexp_home": "/opt/script_exporter",

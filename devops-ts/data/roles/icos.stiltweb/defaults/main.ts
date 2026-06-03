@@ -4,19 +4,24 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  stiltweb_username: string;
-  stiltweb_home: string;
-  stiltweb_bindir: string;
-  stiltweb_akka_port: string;
-  stiltweb_akka_hostname: string;
-  stiltweb_java: string;
-  stiltweb_jre_package: string;
-  stiltweb_certbot_name: string;
-  stiltweb_nginxsite_name: string;
+  stiltweb_username: unknown;
+  stiltweb_home: unknown;
+  stiltweb_bindir: unknown;
+  stiltweb_akka_port: unknown;
+  stiltweb_akka_hostname: unknown;
+  stiltweb_java: unknown;
+  stiltweb_jre_package: unknown;
+  stiltweb_certbot_name: unknown;
+  stiltweb_nginxsite_name: unknown;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "stiltweb_username": "stiltweb",

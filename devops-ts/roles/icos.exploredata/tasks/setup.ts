@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -46,7 +46,7 @@ PASSWORD={{ exploredata_password[exploredata_type] }}
     "community.general.docker_login": {
       registry_url: V.registry_domain,
       username: "docker",
-      password: expr("vault_registry_pass"),
+      password: V.vault_registry_pass,
     },
   },
   {

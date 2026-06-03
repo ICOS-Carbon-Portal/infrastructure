@@ -5,36 +5,39 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  mailman_admin_email: string;
-  mailman_build_core: string;
-  mailman_build_web: string;
-  mailman_certbot_name: string;
-  mailman_core_ipv4: string;
-  mailman_database_ipv4: string;
-  mailman_django_settings: string;
-  mailman_home: string;
-  mailman_host_ipv4: string;
-  mailman_hyperkitty_api_key: string;
-  mailman_nginxsite_file: string;
-  mailman_nginxsite_name: string;
-  mailman_postfix_config: string;
-  mailman_postgres_password: string;
-  mailman_rest_allow_deny: string;
-  mailman_rest_port: string;
-  mailman_rest_user: string;
-  mailman_serve_from_domain: string;
-  mailman_subnet: string;
-  mailman_user: string;
-  mailman_version: string;
-  mailman_volume_core: string;
-  mailman_volume_database: string;
-  mailman_volume_web: string;
-  mailman_web_ipv4: string;
-  mailman_web_secret_key: string;
+  mailman_admin_email: unknown;
+  mailman_build_core: unknown;
+  mailman_build_web: unknown;
+  mailman_certbot_name: unknown;
+  mailman_core_ipv4: unknown;
+  mailman_database_ipv4: unknown;
+  mailman_django_settings: unknown;
+  mailman_home: unknown;
+  mailman_host_ipv4: unknown;
+  mailman_hyperkitty_api_key: unknown;
+  mailman_nginxsite_file: unknown;
+  mailman_nginxsite_name: unknown;
+  mailman_postfix_config: unknown;
+  mailman_postgres_password: unknown;
+  mailman_rest_allow_deny: unknown;
+  mailman_rest_port: unknown;
+  mailman_rest_user: unknown;
+  mailman_serve_from_domain: unknown;
+  mailman_subnet: unknown;
+  mailman_user: unknown;
+  mailman_version: unknown;
+  mailman_volume_core: unknown;
+  mailman_volume_database: unknown;
+  mailman_volume_web: unknown;
+  mailman_web_ipv4: unknown;
+  mailman_web_secret_key: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

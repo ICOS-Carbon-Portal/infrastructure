@@ -1,15 +1,17 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const dbin_download = register("dbin_download");
 
 export default [
   {
-    name: tmpl`Retrieving latest tag for ${expr("dbin_repo")}`,
+    name: tmpl`Retrieving latest tag for ${V.dbin_repo}`,
     run_once: true,
     delegate_to: "localhost",
     check_mode: false,
     github_release: {
-      user: expr("dbin_user"),
-      repo: expr("dbin_repo"),
+      user: V.dbin_user,
+      repo: V.dbin_repo,
       action: "latest_release",
     },
     register: "_release",
@@ -22,20 +24,20 @@ export default [
     },
   },
   {
-    name: tmpl`Download ${expr("dbin_repo")}`,
+    name: tmpl`Download ${V.dbin_repo}`,
     get_url: {
       url: V._dbin_url,
       dest: V.dbin_download_dest,
     },
     // This variable can be checked by our users to determine whether anything has
     // changed.
-    register: "dbin_download",
+    register: dbin_download,
   },
   {
     name: tmpl`Unarchive ${V._dbin_name} tarball`,
     when: raw("_dbin_unar"),
     unarchive: {
-      src: expr("dbin_download.dest"),
+      src: dbin_download.dest.ref,
       dest: V.dbin_download_dest,
       remote_src: true,
       list_files: true,

@@ -1,11 +1,11 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { type TaskFile, V } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   // Variable is not always expanded - https://github.com/ansible/ansible/issues/15505
   {
-    name: tmpl`restart ${expr("servicename")}`,
-    command: tmpl`systemctl restart ${expr("servicename")}`,
+    name: tmpl`restart ${V.servicename}`,
+    command: tmpl`systemctl restart ${V.servicename}`,
   },
   {
     name: "reload systemd config",

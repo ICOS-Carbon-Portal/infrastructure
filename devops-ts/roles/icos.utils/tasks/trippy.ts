@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "trippy",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set trippy_version fact",
         set_fact: {
-          trippy_version: expr("gh.tag.lstrip('v')"),
+          trippy_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -31,7 +33,7 @@ export default [
     name: "Install trippy",
     unarchive: {
       remote_src: true,
-      src: expr("trippy_url_map[ansible_architecture]"),
+      src: V.trippy_url_map.at(V.ansible_architecture),
       dest: "/usr/local/bin",
       extra_opts: ["--strip-components=1"],
     },

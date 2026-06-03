@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "just",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set just_version fact",
         set_fact: {
-          just_version: expr("gh.tag.lstrip('v')"),
+          just_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -31,7 +33,7 @@ export default [
     name: "Install just",
     unarchive: {
       remote_src: true,
-      src: expr("just_url_map[ansible_architecture]"),
+      src: V.just_url_map.at(V.ansible_architecture),
       dest: "/usr/local/bin",
       include: ["just"],
     },

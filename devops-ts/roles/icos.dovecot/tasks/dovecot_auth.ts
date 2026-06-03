@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -23,7 +23,7 @@ export default [
     name: "Add passwd-file authentication to dovecot",
     lineinfile: {
       path: "/etc/dovecot/conf.d/10-auth.conf",
-      line: tmpl`!include ${expr("dovecot_auth_file | basename")}`,
+      line: tmpl`!include ${V.dovecot_auth_file.basename()}`,
       state: "present",
     },
   },

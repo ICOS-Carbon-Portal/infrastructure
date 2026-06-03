@@ -4,22 +4,27 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  cpmeta_user: string;
-  cpmeta_home: string;
-  cpmeta_servicename: string;
-  cpmeta_readonly_mode: string;
-  cpmeta_db_name: string;
-  cpmeta_db_user: string;
-  cpmeta_db_port: string;
-  cpmeta_db_pass: string;
-  doi_password_icos: string;
-  cpmeta_bind_addr: string;
-  cpmeta_host: string;
-  cpmeta_port: string;
+  cpmeta_user: unknown;
+  cpmeta_home: unknown;
+  cpmeta_servicename: unknown;
+  cpmeta_readonly_mode: unknown;
+  cpmeta_db_name: unknown;
+  cpmeta_db_user: unknown;
+  cpmeta_db_port: unknown;
+  cpmeta_db_pass: unknown;
+  doi_password_icos: unknown;
+  cpmeta_bind_addr: unknown;
+  cpmeta_host: unknown;
+  cpmeta_port: unknown;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "cpmeta_user": "cpmeta",
@@ -31,7 +36,7 @@ export default {
   "cpmeta_db_user": "rdflog",
   "cpmeta_db_port": 2345,
   "cpmeta_db_pass": V.rdflog_db_pass,
-  "doi_password_icos": expr("vault_doi_password"),
+  "doi_password_icos": V.vault_doi_password,
   "cpmeta_backup_enable": true,
   "cpmeta_bind_addr": V.coreapp_bind_addr,
   "cpmeta_host": V.coreapp_httpproxy_host,

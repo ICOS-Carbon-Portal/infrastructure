@@ -5,17 +5,20 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  golang_apt_version_ok: string;
-  golang_bin_dir: string;
-  golang_local_version_ok: string;
-  golang_min_version: string;
-  golang_opt_dir: string;
-  golang_url: string;
-  golang_version_install: string;
+  golang_apt_version_ok: unknown;
+  golang_bin_dir: unknown;
+  golang_local_version_ok: unknown;
+  golang_min_version: unknown;
+  golang_opt_dir: unknown;
+  golang_url: unknown;
+  golang_version_install: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

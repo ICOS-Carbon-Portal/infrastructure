@@ -4,28 +4,33 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  vmagent_home: string;
-  vmagent_fsd: string;
-  vmagent_bin: string;
-  vmagent_configs: string;
-  vmagent_environ: string;
-  vmagent_conf: string;
-  vmagent_listen: string;
-  vmagent_upgrade: string;
-  vmagent_arch: string;
-  vmagent_arch_map: string;
-  fsd_host: string;
-  vmagent_proxy: string;
-  nginxsite_name: string;
-  nginxsite_file: string;
-  nginxsite_users: string;
-  nginxsite_domains: string;
-  caddy_name: string;
-  caddy_conf: string;
+  vmagent_home: unknown;
+  vmagent_fsd: unknown;
+  vmagent_bin: unknown;
+  vmagent_configs: unknown;
+  vmagent_environ: unknown;
+  vmagent_conf: unknown;
+  vmagent_listen: unknown;
+  vmagent_upgrade: unknown;
+  vmagent_arch: unknown;
+  vmagent_arch_map: unknown;
+  fsd_host: unknown;
+  vmagent_proxy: unknown;
+  nginxsite_name: unknown;
+  nginxsite_file: unknown;
+  nginxsite_users: unknown;
+  nginxsite_domains: unknown;
+  caddy_name: unknown;
+  caddy_conf: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "vmagent_home": "/opt/vmagent",
@@ -50,19 +55,19 @@ scrape_configs:
   "vmagent_auth": null,
   "vmagent_pathprefix": null,
   "vmagent_listen": "127.0.0.1:8429",
-  "vmagent_upgrade": expr("upgrade_everything | default(False) | bool"),
-  "vmagent_arch": expr("vmagent_arch_map[ansible_architecture]"),
+  "vmagent_upgrade": V.upgrade_everything.default(false).bool(),
+  "vmagent_arch": V.vmagent_arch_map.at(V.ansible_architecture),
   "vmagent_arch_map": {
     "armv7l": "arm",
     "armv6l": "arm",
     "x86_64": "amd64",
   },
-  "fsd_host": expr("ansible_hostname | splitext | first"),
+  "fsd_host": V.ansible_hostname.splitext().first(),
   "vmagent_proxy": "disabled",
   "nginxsite_name": "vmagent",
   "nginxsite_file": "vmagent-nginx.conf",
   "nginxsite_users": [
-    expr("vault_vmagent_auth"),
+    V.vault_vmagent_auth,
   ],
   "nginxsite_domains": [
     V.inventory_hostname,

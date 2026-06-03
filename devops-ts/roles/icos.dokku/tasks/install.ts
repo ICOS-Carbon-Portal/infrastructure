@@ -1,5 +1,12 @@
-import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import {
+  loopOver,
+  register,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _key = register("_key");
 
 export default [
   {
@@ -10,17 +17,14 @@ export default [
       mode: "0644",
       force: true,
     },
-    register: "_key",
+    register: _key,
   },
   {
     name: "Add dokku apt repository",
     apt_repository: {
       filename: "dokku",
-      repo: tmpl`deb [signed-by=${
-        expr("_key.dest")
-      }] https://packagecloud.io/dokku/dokku/${
-        expr("ansible_lsb.id | lower")
-      }/ ${expr("ansible_lsb.codename")} main`,
+      repo:
+        tmpl`deb [signed-by=${_key.dest.ref}] https://packagecloud.io/dokku/dokku/${V.ansible_lsb.id.lower()}/ ${V.ansible_lsb.codename} main`,
     },
   },
   loopOver<{ question: Tmpl; value: Tmpl; vtype: Tmpl }>(

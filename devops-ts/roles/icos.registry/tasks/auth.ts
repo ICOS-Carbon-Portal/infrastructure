@@ -1,11 +1,11 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { loopOverVar, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create auth directory",
     file: {
-      path: expr("registry_htpasswd_file | dirname"),
+      path: V.registry_htpasswd_file.dirname(),
       state: "directory",
     },
   },
@@ -15,16 +15,15 @@ export default [
       name: "python3-passlib",
     },
   },
-  {
+  loopOverVar<{ name: string; password: string }>(V.registry_users, (item) => ({
     name: "Add basic auth users",
     htpasswd: {
       path: V.registry_htpasswd_file,
-      name: expr("item.name"),
-      password: expr("item.password"),
+      name: item.name,
+      password: item.password,
       // We must force this encryption, otherwise 'docker login' will fail
       // (unauthorized ...)
       crypt_scheme: "bcrypt",
     },
-    loop: V.registry_users,
-  },
+  })),
 ] satisfies TaskFile;

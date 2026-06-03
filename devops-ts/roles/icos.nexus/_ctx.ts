@@ -5,18 +5,21 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  certbot_domains: string;
-  certbot_name: string;
-  nexus_domains: string;
-  nexus_home: string;
-  nexus_host_port: string;
-  nexus_version: string;
-  nginxsite_file: string;
-  nginxsite_name: string;
+  certbot_domains: unknown;
+  certbot_name: unknown;
+  nexus_domains: unknown;
+  nexus_home: unknown;
+  nexus_host_port: unknown;
+  nexus_version: unknown;
+  nginxsite_file: unknown;
+  nginxsite_name: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

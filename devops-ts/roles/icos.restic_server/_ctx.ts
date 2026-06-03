@@ -5,21 +5,24 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  restic_server_architecture: string;
-  restic_server_data: string;
-  restic_server_exec: string;
-  restic_server_home: string;
-  restic_server_htpasswd: string;
-  restic_server_listen: string;
-  restic_server_upgrade: string;
-  restic_server_url_map: string;
-  restic_server_user: string;
-  restic_server_users: string;
-  restic_server_version: string;
+  restic_server_architecture: unknown;
+  restic_server_data: unknown;
+  restic_server_exec: unknown;
+  restic_server_home: unknown;
+  restic_server_htpasswd: unknown;
+  restic_server_listen: unknown;
+  restic_server_upgrade: unknown;
+  restic_server_url_map: unknown;
+  restic_server_user: unknown;
+  restic_server_users: unknown;
+  restic_server_version: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

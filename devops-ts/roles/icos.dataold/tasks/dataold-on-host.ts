@@ -103,9 +103,7 @@ systemctl reload dataold
     name: "Test access to dataold from localhost",
     delegate_to: "localhost",
     uri: {
-      url: tmpl`https://${
-        expr("certbot_domains | first")
-      }:${V.dataold_ext_port}`,
+      url: tmpl`https://${V.certbot_domains.first()}:${V.dataold_ext_port}`,
     },
     register: "_r",
     failed_when: [

@@ -4,18 +4,23 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  stiltcluster_username: string;
-  stiltcluster_servicename: string;
-  stiltcluster_home: string;
-  stiltcluster_bindir: string;
-  stiltcluster_stiltweb_port: string;
-  stiltcluster_port: string;
-  stiltcluster_maxcores: string;
-  stiltcluster_docker: string;
+  stiltcluster_username: unknown;
+  stiltcluster_servicename: unknown;
+  stiltcluster_home: unknown;
+  stiltcluster_bindir: unknown;
+  stiltcluster_stiltweb_port: unknown;
+  stiltcluster_port: unknown;
+  stiltcluster_maxcores: unknown;
+  stiltcluster_docker: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "stiltcluster_username": "stiltcluster",

@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "lazydocker",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set lazydocker_version fact",
         set_fact: {
-          lazydocker_version: expr("gh.tag.lstrip('v')"),
+          lazydocker_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -41,7 +43,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: expr("lazydocker_url_map[lazydocker_architecture]"),
+      src: V.lazydocker_url_map.at(V.lazydocker_architecture),
       dest: "/usr/local/bin",
       include: [
         // extract only the binary (skip the readme etc)

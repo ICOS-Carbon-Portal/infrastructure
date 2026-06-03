@@ -4,7 +4,7 @@ import {
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -57,7 +57,7 @@ export default [
       owner: V.opendkim_user,
       group: V.opendkim_user,
     },
-    loop: expr("opendkim_domains"),
+    loop: V.opendkim_domains,
   },
   {
     name: "Create domain keys",
@@ -69,7 +69,7 @@ export default [
       chdir: tmpl`${V.opendkim_keys}/${V.item}`,
       creates: "default.private",
     },
-    loop: expr("opendkim_domains"),
+    loop: V.opendkim_domains,
   },
   {
     name: "Find domain keys that needs to be added to DNS",
@@ -100,7 +100,7 @@ done`,
   {
     name: "Create socket directory",
     file: {
-      path: expr("opendkim_sock | dirname"),
+      path: V.opendkim_sock.dirname(),
       state: "directory",
       owner: "opendkim",
       group: "postfix",
@@ -123,7 +123,7 @@ done`,
       postconf: {
         param: item.param,
         value: item.value,
-        append: expr("item.append | default(omit)"),
+        append: item.append.default(V.omit),
       },
       notify: "Restart postfix",
     }),

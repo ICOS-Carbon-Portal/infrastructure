@@ -1,10 +1,12 @@
-import { expr, not, type Playbook, role, V } from "../lib/ansible.ts";
+import { not, type Playbook, register, role, V } from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
     hosts: "fsicos3",
     vars: {
-      exploredata_ip: expr("_lxd.addresses.eth0 | first"),
+      exploredata_ip: _lxd.addresses.eth0.ref.first(),
     },
     tasks: [
       {
@@ -63,7 +65,7 @@ export default [
           wait_for_ipv4_interfaces: "eth0",
           timeout: 60,
         },
-        register: "_lxd",
+        register: _lxd,
         when: not("ansible_check_mode"),
       },
       {
@@ -74,7 +76,7 @@ export default [
         },
         vars: {
           lxd_forward_name: "exploredata",
-          lxd_forward_ip: expr("exploredata_ip"),
+          lxd_forward_ip: V.exploredata_ip,
         },
       },
       {
@@ -101,7 +103,7 @@ export default [
             "roles/icos.exploredata/templates/exploredata-nginx.conf",
           exploredata_name: "test",
           exploredata_port: 4567,
-          exploredata_host: expr("exploredata_ip"),
+          exploredata_host: V.exploredata_ip,
           exploredata_domains: ["exploretest.icos-cp.eu"],
         },
       },
@@ -117,7 +119,7 @@ export default [
             "roles/icos.exploredata/templates/exploredata-nginx.conf",
           exploredata_name: "prod",
           exploredata_port: 4566,
-          exploredata_host: expr("exploredata_ip"),
+          exploredata_host: V.exploredata_ip,
           exploredata_domains: ["exploredata.icos-cp.eu"],
         },
       },
@@ -126,7 +128,7 @@ export default [
   {
     hosts: "exploredata",
     vars: {
-      exploredata_password: expr("vault_exploredata_password"),
+      exploredata_password: V.vault_exploredata_password,
       exploredata_max_notebooks: 100,
     },
     roles: [

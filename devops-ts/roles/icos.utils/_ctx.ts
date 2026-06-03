@@ -5,30 +5,33 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  btop_home: string;
-  btop_url_map: string;
-  btop_version: string;
-  fd_architecture: string;
-  fd_url_map: string;
-  fd_version: string;
-  lazygit_architecture: string;
-  lazygit_upgrade: string;
-  lazygit_url_map: string;
-  lazygit_version: string;
-  ncdu_arch_map: string;
-  ncdu_url: string;
-  ncdu_version: string;
-  ripgrep_url_map: string;
-  ripgrep_version: string;
-  trippy_url_map: string;
-  trippy_version: string;
-  watchexec_architecture: string;
-  watchexec_url_map: string;
-  watchexec_version: string;
+  btop_home: unknown;
+  btop_url_map: unknown;
+  btop_version: unknown;
+  fd_architecture: unknown;
+  fd_url_map: unknown;
+  fd_version: unknown;
+  lazygit_architecture: unknown;
+  lazygit_upgrade: unknown;
+  lazygit_url_map: unknown;
+  lazygit_version: unknown;
+  ncdu_arch_map: unknown;
+  ncdu_url: unknown;
+  ncdu_version: unknown;
+  ripgrep_url_map: unknown;
+  ripgrep_version: unknown;
+  trippy_url_map: unknown;
+  trippy_version: unknown;
+  watchexec_architecture: unknown;
+  watchexec_url_map: unknown;
+  watchexec_version: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

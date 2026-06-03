@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -23,9 +23,7 @@ export default [
   },
   {
     name: "Restore database from file",
-    "ansible.builtin.shell": tmpl`zcat ${
-      expr("rdflog_restore_file")
-    } | ./psql.sh
+    "ansible.builtin.shell": tmpl`zcat ${V.rdflog_restore_file} | ./psql.sh
 `,
     args: { chdir: V.rdflog_home },
     register: "_r",

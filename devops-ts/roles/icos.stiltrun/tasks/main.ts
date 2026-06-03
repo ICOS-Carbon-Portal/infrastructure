@@ -1,5 +1,8 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+
+const _get_url = register("_get_url");
+const _stilt_py = register("_stilt_py");
 
 export default [
   {
@@ -19,11 +22,11 @@ export default [
           url: V.stiltrun_image_url,
           dest: "/tmp",
         },
-        register: "_get_url",
+        register: _get_url,
       },
       {
         name: "Load stilt image into docker",
-        command: tmpl`docker load -i "${expr("_get_url.dest")}"`,
+        command: tmpl`docker load -i "${_get_url.dest.ref}"`,
         changed_when: false,
       },
       {
@@ -47,16 +50,16 @@ export default [
       dest: "/usr/local/bin/stilt",
       mode: 0o755,
     },
-    register: "_stilt_py",
+    register: _stilt_py,
   },
   {
     name: "Test stiltrun by running listmetfiles",
-    command: tmpl`${expr("_stilt_py.dest")} listmetfiles`,
+    command: tmpl`${_stilt_py.dest.ref} listmetfiles`,
     changed_when: false,
   },
   {
     name: "Test stiltrun by running calcslots",
-    command: tmpl`${expr("_stilt_py.dest")} calcslots 2012010100 2012010106`,
+    command: tmpl`${_stilt_py.dest.ref} calcslots 2012010100 2012010106`,
     register: "stilt_output",
     changed_when: false,
     failed_when: false,

@@ -1,11 +1,11 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { raw, type TaskFile, V } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`restart ${expr("jarservice_name")}`,
+    name: tmpl`restart ${V.jarservice_name}`,
     service: {
-      name: expr("jarservice_name"),
+      name: V.jarservice_name,
       state: "restarted",
     },
     when: raw("jarservice_state | default('started') == 'started'"),

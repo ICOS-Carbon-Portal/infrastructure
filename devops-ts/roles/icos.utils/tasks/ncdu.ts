@@ -1,5 +1,8 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _ncdu = register("_ncdu");
+const _version = register("_version");
 
 export default [
   {
@@ -10,17 +13,17 @@ export default [
       src: V.ncdu_url,
       dest: "/usr/local/bin/",
     },
-    register: "_ncdu",
+    register: _ncdu,
     diff: false,
   },
   {
     name: "Check that ncdu is executable",
-    command: tmpl`${expr("_ncdu.dest")}/ncdu --version`,
+    command: tmpl`${_ncdu.dest.ref}/ncdu --version`,
     changed_when: false,
-    register: "_version",
+    register: _version,
   },
   {
     name: "Which version of ncdu was installed",
-    debug: { msg: tmpl`Installed ${expr("_version.stdout")}` },
+    debug: { msg: tmpl`Installed ${_version.stdout.ref}` },
   },
 ] satisfies TaskFile;

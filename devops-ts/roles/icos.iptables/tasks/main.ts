@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // This package is required by the iptables_raw module.
@@ -11,7 +11,7 @@ export default [
     name: "Set IP forwarding",
     sysctl: {
       name: "net.ipv4.ip_forward",
-      value: expr("iptables_forward | int"),
+      value: V.iptables_forward.int(),
     },
   },
   // These are mostly copied from the default ufw rules.

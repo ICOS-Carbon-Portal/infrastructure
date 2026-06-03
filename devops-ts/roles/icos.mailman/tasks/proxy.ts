@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,7 +7,7 @@ export default [
     include_role: { name: "icos.certbot2", public: true },
     vars: {
       certbot_name: V.mailman_certbot_name,
-      certbot_domains: expr("mailman_domains"),
+      certbot_domains: V.mailman_domains,
     },
   },
   {

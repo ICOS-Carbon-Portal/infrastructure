@@ -4,36 +4,41 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  geoip_user: string;
-  geoip_home: string;
-  geoip_build_dir: string;
-  geoip_repo_dir: string;
-  geoip_db_dir: string;
-  geoip_git_repo: string;
-  geoip_git_version: string;
-  geoip_host_port: string;
-  geoip_nginx_allow_deny: string;
-  geoip_python_version: string;
-  certbot_domains: string;
-  certbot_name: string;
-  nginxsite_name: string;
-  nginxsite_file: string;
-  geoip_domain: string;
+  geoip_user: unknown;
+  geoip_home: unknown;
+  geoip_build_dir: unknown;
+  geoip_repo_dir: unknown;
+  geoip_db_dir: unknown;
+  geoip_git_repo: unknown;
+  geoip_git_version: unknown;
+  geoip_host_port: unknown;
+  geoip_nginx_allow_deny: unknown;
+  geoip_python_version: unknown;
+  certbot_domains: unknown;
+  certbot_name: unknown;
+  nginxsite_name: unknown;
+  nginxsite_file: unknown;
+  geoip_domain: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "geoip_user": "geoip",
-  "geoip_home": tmpl`${expr("docker_compose_home | default('/docker')")}/geoip`,
+  "geoip_home": tmpl`${V.docker_compose_home.default("/docker")}/geoip`,
   "geoip_build_dir": tmpl`${V.geoip_home}/build`,
   "geoip_repo_dir": tmpl`${V.geoip_build_dir}/repo`,
   "geoip_db_dir": tmpl`${V.geoip_home}/volumes/db`,
   "geoip_git_repo": "https://github.com/ICOS-Carbon-Portal/data",
   "geoip_git_version": "master",
   "geoip_host_port": 8447,
-  "geoip_nginx_allow_deny": expr("vault_geoip_nginx_allow_deny"),
+  "geoip_nginx_allow_deny": V.vault_geoip_nginx_allow_deny,
   "geoip_python_version": "3.10",
   "certbot_domains": [
     "geoip.icos-cp.eu",

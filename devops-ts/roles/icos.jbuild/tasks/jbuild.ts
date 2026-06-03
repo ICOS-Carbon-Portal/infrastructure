@@ -1,5 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { raw, type TaskFile, V } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -24,7 +23,7 @@ export default [
       src: "jbuild.py",
       dest: "/opt/jbuild/jbuild.py",
       mode: "+x",
-      force: expr("jbuild_force | default(True) | bool"),
+      force: V.jbuild_force.default(true).bool(),
     },
   },
   {

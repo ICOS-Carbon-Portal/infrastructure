@@ -5,7 +5,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: expr("cpmeta_jar_file"),
+      src: V.cpmeta_jar_file,
       dest: tmpl`${V.cpmeta_home}/cpmeta.jar`,
       backup: true,
     },

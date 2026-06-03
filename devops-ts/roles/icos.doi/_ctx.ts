@@ -5,17 +5,20 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  doi_bind_addr: string;
-  doi_home: string;
-  doi_host: string;
-  doi_meta_domain: string;
-  doi_port: string;
-  doi_servicename: string;
-  doi_user: string;
+  doi_bind_addr: unknown;
+  doi_home: unknown;
+  doi_host: unknown;
+  doi_meta_domain: unknown;
+  doi_port: unknown;
+  doi_servicename: unknown;
+  doi_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

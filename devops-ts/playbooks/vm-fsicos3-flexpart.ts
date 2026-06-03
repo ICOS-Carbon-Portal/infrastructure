@@ -1,4 +1,6 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, register, role, V } from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
@@ -6,7 +8,7 @@ export default [
     vars: {
       // These variable are prefixed with 'jupyter_' instead of 'flexpart_' so
       // that we can reuse files/jupyter.conf without change.
-      jupyter_ip: expr("_lxd.addresses.eth0 | first"),
+      jupyter_ip: _lxd.addresses.eth0.ref.first(),
       jupyter_domains: [
         "flexpart.icos-cp.eu",
       ],
@@ -126,24 +128,24 @@ export default [
           wait_for_ipv4_interfaces: "eth0",
           timeout: 60,
         },
-        register: "_lxd",
+        register: _lxd,
       },
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: expr("_lxd.addresses.eth0 | first"),
+        lxd_forward_ip: _lxd.addresses.eth0.ref.first(),
         lxd_forward_name: "flexpart",
       }),
 
       role("icos.certbot2", {
         certbot_name: "flexpart",
-        certbot_domains: expr("jupyter_domains"),
+        certbot_domains: V.jupyter_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "flexpart",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: expr("jupyter_domains | first"),
+        jupyter_domain: V.jupyter_domains.first(),
         jupyter_cert_name: "flexpart",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -154,7 +156,7 @@ export default [
     roles: [
       role("icos.lxd_guest", {
         user_disable_coredump: true,
-        user_conf: expr("vault_ganymede_user_conf"),
+        user_conf: V.vault_ganymede_user_conf,
       }).tags("guest"),
 
       role("icos.docker").tags("docker"),
@@ -164,7 +166,7 @@ export default [
       }).tags("flexpart"),
 
       role("icos.jupyter", {
-        jupyter_admins: expr("vault_flexpart_admins"),
+        jupyter_admins: V.vault_flexpart_admins,
         jupyter_backup_enable: false,
       }).tags("jupyter"),
     ],
@@ -177,7 +179,7 @@ export default [
         "community.general.docker_login": {
           registry_url: "registry.icos-cp.eu",
           username: "docker",
-          password: expr("vault_registry_pass"),
+          password: V.vault_registry_pass,
         },
       },
     ],

@@ -5,20 +5,23 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  plausible_backup_enabled: string;
-  plausible_domain: string;
-  plausible_google_client_id: string;
-  plausible_google_client_secret: string;
-  plausible_home: string;
-  plausible_mailer_email: string;
-  plausible_port: string;
-  plausible_postgres_password: string;
-  plausible_secret: string;
-  plausible_totp_key: string;
+  plausible_backup_enabled: unknown;
+  plausible_domain: unknown;
+  plausible_google_client_id: unknown;
+  plausible_google_client_secret: unknown;
+  plausible_home: unknown;
+  plausible_mailer_email: unknown;
+  plausible_port: unknown;
+  plausible_postgres_password: unknown;
+  plausible_secret: unknown;
+  plausible_totp_key: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

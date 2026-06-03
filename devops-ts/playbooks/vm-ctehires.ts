@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -46,7 +46,7 @@ export default [
   {
     hosts: "ctehires",
     vars: {
-      user_conf: expr("vault_ctehires_user_conf"),
+      user_conf: V.vault_ctehires_user_conf,
       user_disable_coredump: true,
     },
     pre_tasks: [

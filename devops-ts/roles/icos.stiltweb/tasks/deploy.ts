@@ -21,7 +21,7 @@ export default [
     name: "Copy jarfile",
     when: raw("stiltweb_jar_file is defined"),
     copy: {
-      src: expr("stiltweb_jar_file"),
+      src: V.stiltweb_jar_file,
       dest: tmpl`${V.stiltweb_home}/stiltweb.jar`,
       backup: true,
     },
@@ -50,7 +50,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${expr("stiltweb_domains | first")}/buildInfo`,
+      url: tmpl`https://${V.stiltweb_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

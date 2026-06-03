@@ -5,27 +5,30 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  certbot_conf_name: string;
-  certbot_domains: string;
-  database_name: string;
-  database_user: string;
-  domain: string;
-  drupal_docker_port: string;
-  drupal_home: string;
-  drupal_modules: string;
-  drupal_version: string;
-  drupal_websites: string;
-  mysql_docker_port: string;
-  nginx_conf_name: string;
-  project_dir: string;
-  robots_txt: string;
-  ssl_domains: string;
-  trusted_host: string;
-  update: string;
+  certbot_conf_name: unknown;
+  certbot_domains: unknown;
+  database_name: unknown;
+  database_user: unknown;
+  domain: unknown;
+  drupal_docker_port: unknown;
+  drupal_home: unknown;
+  drupal_modules: unknown;
+  drupal_version: unknown;
+  drupal_websites: unknown;
+  mysql_docker_port: unknown;
+  nginx_conf_name: unknown;
+  project_dir: unknown;
+  robots_txt: unknown;
+  ssl_domains: unknown;
+  trusted_host: unknown;
+  update: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

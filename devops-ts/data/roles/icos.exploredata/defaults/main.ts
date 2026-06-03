@@ -4,22 +4,27 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  exploredata_port: string;
-  exploredata_name: string;
-  exploredata_home: string;
-  exploredata_network: string;
-  exploredata_hub_image: string;
-  exploredata_hub_container: string;
-  exploredata_notebook_image: string;
-  exploredata_max_notebooks: string;
+  exploredata_port: unknown;
+  exploredata_name: unknown;
+  exploredata_home: unknown;
+  exploredata_network: unknown;
+  exploredata_hub_image: unknown;
+  exploredata_hub_container: unknown;
+  exploredata_notebook_image: unknown;
+  exploredata_max_notebooks: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "exploredata_port": expr("4567 if exploredata_type == 'test' else 4566"),
-  "exploredata_name": tmpl`exploredata.${expr("exploredata_type")}`,
+  "exploredata_name": tmpl`exploredata.${V.exploredata_type}`,
   "exploredata_home": tmpl`/docker/${V.exploredata_name}`,
   "exploredata_network": V.exploredata_name,
   "exploredata_hub_image": tmpl`${V.exploredata_name}.hub`,

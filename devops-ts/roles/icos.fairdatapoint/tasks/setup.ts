@@ -31,7 +31,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: expr("fdp_jar_file"),
+      src: V.fdp_jar_file,
       dest: tmpl`${V.fdp_home}/fdp.jar`,
     },
     register: "_jarfile",

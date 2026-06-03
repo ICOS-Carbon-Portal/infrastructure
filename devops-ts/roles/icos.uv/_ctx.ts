@@ -5,15 +5,18 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  uv_architecture: string;
-  uv_home: string;
-  uv_upgrade: string;
-  uv_url_map: string;
-  uv_version: string;
+  uv_architecture: unknown;
+  uv_home: unknown;
+  uv_upgrade: unknown;
+  uv_url_map: unknown;
+  uv_version: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

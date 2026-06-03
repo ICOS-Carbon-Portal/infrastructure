@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { loopOverVar, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,17 +17,24 @@ export default [
       enabled: true,
     },
   },
-  {
+  loopOverVar<
+    {
+      append: string;
+      param: string;
+      reload: string;
+      separator: string;
+      value: string;
+    }
+  >(V.postfix_config_list, (item) => ({
     name: "Set configuration parameters",
     postconf: {
-      param: expr("item.param"),
-      value: expr("item.value"),
-      append: expr("item.append | default(omit)"),
-      reload: expr("item.reload | default(omit)"),
-      separator: expr("item.separator | default(omit)"),
+      param: item.param,
+      value: item.value,
+      append: item.append.default(V.omit),
+      reload: item.reload.default(V.omit),
+      separator: item.separator.default(V.omit),
     },
-    loop: V.postfix_config_list,
-  },
+  })),
   {
     name: "Allow SMTP through firewall",
     iptables_raw: {

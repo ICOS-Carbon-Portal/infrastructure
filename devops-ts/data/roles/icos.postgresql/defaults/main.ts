@@ -4,20 +4,25 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  postgresql_postgis_enable: string;
-  postgresql_pg_stat_enable: string;
-  postgresql_postgres_password: string;
-  postgresql_listen_addresses: string;
-  postgresql_ssh_keys: string;
-  postgresql_etc: string;
-  postgresql_confd: string;
-  postgresql_pg_hba: string;
-  postgresql_home: string;
-  postgresql_bin: string;
+  postgresql_postgis_enable: unknown;
+  postgresql_pg_stat_enable: unknown;
+  postgresql_postgres_password: unknown;
+  postgresql_listen_addresses: unknown;
+  postgresql_ssh_keys: unknown;
+  postgresql_etc: unknown;
+  postgresql_confd: unknown;
+  postgresql_pg_hba: unknown;
+  postgresql_home: unknown;
+  postgresql_bin: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "postgresql_postgis_enable": false,
@@ -25,7 +30,7 @@ export default {
   "postgresql_postgres_password": null,
   "postgresql_listen_addresses": null,
   "postgresql_ssh_keys": null,
-  "postgresql_etc": tmpl`/etc/postgresql/${expr("postgresql_version")}/main`,
+  "postgresql_etc": tmpl`/etc/postgresql/${V.postgresql_version}/main`,
   "postgresql_confd": tmpl`${V.postgresql_etc}/conf.d`,
   "postgresql_pg_hba": tmpl`${V.postgresql_etc}/pg_hba.conf`,
   "postgresql_home": "/var/lib/postgresql",

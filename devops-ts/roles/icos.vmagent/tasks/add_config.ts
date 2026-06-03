@@ -1,13 +1,13 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "assert_installed.yml" },
   {
     name: "Add a vmagent scrape config",
     copy: {
-      dest: tmpl`${V.vmagent_configs}/${expr("vmagent_config_dest")}`,
-      content: expr("vmagent_config_content"),
+      dest: tmpl`${V.vmagent_configs}/${V.vmagent_config_dest}`,
+      content: V.vmagent_config_content,
     },
     notify: "reload vmagent",
   },

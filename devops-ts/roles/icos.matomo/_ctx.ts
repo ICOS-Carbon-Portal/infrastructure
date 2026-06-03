@@ -5,19 +5,22 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  matomo_backup_enable: string;
-  matomo_domain: string;
-  matomo_home: string;
-  matomo_mysql_database_password: string;
-  matomo_mysql_database_user: string;
-  matomo_mysql_password: string;
-  matomo_mysql_root_password: string;
-  matomo_mysql_user: string;
-  matomo_port: string;
+  matomo_backup_enable: unknown;
+  matomo_domain: unknown;
+  matomo_home: unknown;
+  matomo_mysql_database_password: unknown;
+  matomo_mysql_database_user: unknown;
+  matomo_mysql_password: unknown;
+  matomo_mysql_root_password: unknown;
+  matomo_mysql_user: unknown;
+  matomo_port: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

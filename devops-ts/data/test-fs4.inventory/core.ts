@@ -4,10 +4,13 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 type Self = Record<never, never>;
-const { V, expr, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars
+const { V, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();
 
 export default {
@@ -92,8 +95,8 @@ export default {
               "name": "ICOSCities",
               "restheart_url":
                 tmpl`http://127.0.0.1:${V.restheart_bind_port}/${V.restheart_cities_db_name}`,
-              "restheart_username": expr("city_restheart_basic_auth.username"),
-              "restheart_password": expr("city_restheart_basic_auth.password"),
+              "restheart_username": V.city_restheart_basic_auth.username,
+              "restheart_password": V.city_restheart_basic_auth.password,
             },
           ],
           "data_envries": [

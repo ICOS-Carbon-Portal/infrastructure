@@ -4,29 +4,34 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  cpauth_user: string;
-  cpauth_home: string;
-  cpauth_oauth_conf: string;
-  cpauth_mailing_smtp: string;
-  cpauth_mailing_pass: string;
-  cpauth_masteradmin_pass: string;
-  cpauth_user_secret_salt: string;
-  cpauth_port: string;
-  cpauth_bind_addr: string;
-  cpauth_host: string;
+  cpauth_user: unknown;
+  cpauth_home: unknown;
+  cpauth_oauth_conf: unknown;
+  cpauth_mailing_smtp: unknown;
+  cpauth_mailing_pass: unknown;
+  cpauth_masteradmin_pass: unknown;
+  cpauth_user_secret_salt: unknown;
+  cpauth_port: unknown;
+  cpauth_bind_addr: unknown;
+  cpauth_host: unknown;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "cpauth_user": "cpauth",
   "cpauth_home": "/home/cpauth",
-  "cpauth_oauth_conf": expr("vault_cpauth_oauth_conf"),
-  "cpauth_mailing_smtp": expr("vault_cpauth_mailing_smtp"),
-  "cpauth_mailing_pass": expr("vault_cpauth_mailing_pass"),
-  "cpauth_masteradmin_pass": expr("vault_cpauth_masteradmin_pass"),
-  "cpauth_user_secret_salt": expr("vault_cpauth_user_secret_salt"),
+  "cpauth_oauth_conf": V.vault_cpauth_oauth_conf,
+  "cpauth_mailing_smtp": V.vault_cpauth_mailing_smtp,
+  "cpauth_mailing_pass": V.vault_cpauth_mailing_pass,
+  "cpauth_masteradmin_pass": V.vault_cpauth_masteradmin_pass,
+  "cpauth_user_secret_salt": V.vault_cpauth_user_secret_salt,
   "cpauth_port": 8080,
   "cpauth_bind_addr": V.coreapp_bind_addr,
   "cpauth_host": V.coreapp_httpproxy_host,

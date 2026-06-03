@@ -1,5 +1,11 @@
 import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
+
+// Registered by tasks/main.ts (this file is included after it).
+const _user = register("_user");
+
+const jardir = register("jardir");
+const oldjarfiles = register("oldjarfiles");
 
 const _stat = register("_stat");
 
@@ -10,10 +16,10 @@ export default [
   {
     name: "Create directory for jar files",
     file: {
-      path: tmpl`${expr("_user.home")}/jarfiles`,
+      path: tmpl`${_user.home.ref}/jarfiles`,
       state: "directory",
     },
-    register: "jardir",
+    register: jardir,
   },
   // Since we keep multiple versions of the jar files around, we need to
   // distinguish their file names by appending their checksum.
@@ -28,7 +34,7 @@ export default [
   },
   {
     name: "To aid debugging, explicitly check that the local jar file exist.",
-    fail: { msg: tmpl`${expr("jarfile")} doesn't exist!` },
+    fail: { msg: tmpl`${V.jarfile} doesn't exist!` },
     when: not(_stat.stat.exists),
   },
   {
@@ -40,10 +46,10 @@ export default [
     },
   },
   {
-    name: tmpl`Copy ${expr("servicename")} jar file`,
+    name: tmpl`Copy ${V.servicename} jar file`,
     copy: {
-      src: expr("jarfile"),
-      dest: expr("destjarfile"),
+      src: V.jarfile,
+      dest: V.destjarfile,
     },
   },
   {
@@ -51,23 +57,23 @@ export default [
       rawTmpl("{{ servicename}}")
     } jar symlink used by systemd`,
     file: {
-      src: expr("destjarfile"),
+      src: V.destjarfile,
       dest: V.jarservice_jar,
       state: "link",
     },
-    notify: tmpl`restart ${expr("servicename")}`,
+    notify: tmpl`restart ${V.servicename}`,
   },
   {
     name: "Keep the jarfiles directory from filling up",
-    shell: tmpl`ls -1t ${expr("jardir.path")}/*.jar-* 2>/dev/null | sed '1,${
+    shell: tmpl`ls -1t ${jardir.path.ref}/*.jar-* 2>/dev/null | sed '1,${
       rawTmpl("{{jarservice_keep_n_old}}")
     }d'`,
-    register: "oldjarfiles",
+    register: oldjarfiles,
     changed_when: false,
   },
   {
     name: "Remove old jarfiles",
     file: tmpl`path=${V.item} state=absent`,
-    with_items: [expr("oldjarfiles.stdout_lines")],
+    with_items: [oldjarfiles.stdout_lines.ref],
   },
 ] satisfies TaskFile;

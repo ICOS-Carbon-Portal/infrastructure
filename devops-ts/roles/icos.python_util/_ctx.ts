@@ -5,14 +5,17 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  python_util_bin_dir: string;
-  python_util_install_dir: string;
-  python_util_install_prefix: string;
-  python_util_python_executable: string;
+  python_util_bin_dir: unknown;
+  python_util_install_dir: unknown;
+  python_util_install_prefix: unknown;
+  python_util_python_executable: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

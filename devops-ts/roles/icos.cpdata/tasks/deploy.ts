@@ -1,5 +1,5 @@
 import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -15,7 +15,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: expr("cpdata_jar_file"),
+      src: V.cpdata_jar_file,
       dest: tmpl`${V.cpdata_home}/cpdata.jar`,
       backup: true,
     },
@@ -34,7 +34,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${expr("cpdata_domains | first")}/buildInfo`,
+      url: tmpl`https://${V.cpdata_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

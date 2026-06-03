@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { expr, type Playbook, role } from "../lib/ansible.ts";
 
 export default [
   {

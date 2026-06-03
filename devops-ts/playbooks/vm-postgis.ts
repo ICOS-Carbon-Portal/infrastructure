@@ -4,7 +4,7 @@
 // Redeploy backup script and bbclient
 //   icos play postgis backup
 
-import { expr, type Playbook, role, V } from "../lib/ansible.ts";
+import { loopOverVar, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -55,7 +55,7 @@ export default [
         name: "Allow postgres user to connect from same subnet",
         tags: "hba",
         postgresql_pg_hba: {
-          dest: expr("postgresql_hba_file"),
+          dest: V.postgresql_hba_file,
           users: "postgres",
           source: "samenet",
           method: "md5",
@@ -68,26 +68,27 @@ export default [
         become_user: "postgres",
         tags: "cplog",
         block: [
-          {
-            name: "Create postgres cplog users",
-            postgresql_user: {
-              db: "cplog",
-              name: expr("item.username"),
-              password: expr("item.password"),
-            },
-            loop: expr("postgis_cplog_users"),
-          },
-          {
+          loopOverVar<{ password: string; username: string }>(
+            V.postgis_cplog_users,
+            (item) => ({
+              name: "Create postgres cplog users",
+              postgresql_user: {
+                db: "cplog",
+                name: item.username,
+                password: item.password,
+              },
+            }),
+          ),
+          loopOverVar<{ username: string }>(V.postgis_cplog_users, (item) => ({
             name: "Allow users to connect from same subnet",
             postgresql_pg_hba: {
-              dest: expr("postgresql_hba_file"),
-              users: expr("item.username"),
+              dest: V.postgresql_hba_file,
+              users: item.username,
               source: "samenet",
               method: "md5",
               contype: "hostssl",
             },
-            loop: expr("postgis_cplog_users"),
-          },
+          })),
           {
             name: "Add the pg_stat_statements extension",
             "community.postgresql.postgresql_ext": {

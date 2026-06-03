@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "nebula",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set nebula_version fact",
         set_fact: {
-          nebula_version: expr("gh.tag.lstrip('v')"),
+          nebula_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -31,7 +33,7 @@ export default [
     name: "Install nebula",
     unarchive: {
       remote_src: true,
-      src: expr("nebula_url_map[ansible_architecture]"),
+      src: V.nebula_url_map.at(V.ansible_architecture),
       dest: V.nebula_bin_dir,
       extra_opts: ["--no-same-owner"],
     },

@@ -4,15 +4,20 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 type Self = Record<never, never>;
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "all": {
     "vars": {
-      "nginx_testing_users": expr("vault_nginx_testing_users"),
-      "root_keys": expr("vault_root_keys"),
+      "nginx_testing_users": V.vault_nginx_testing_users,
+      "root_keys": V.vault_root_keys,
       "lxd_guest_root_keys": V.root_keys,
       "lxd_vm_root_keys": V.root_keys,
       "ansible_user": "root",
@@ -23,7 +28,7 @@ export default {
       "fsicos3_ip": "194.47.223.137",
       "fsicos4_ip": "130.235.98.147",
       "cdb_ip": "130.235.99.237",
-      "rdflog_db_pass": expr("vault_rdflog_db_pass"),
+      "rdflog_db_pass": V.vault_rdflog_db_pass,
       "registry_domain": "registry.icos-cp.eu",
     },
     "hosts": {
@@ -51,13 +56,13 @@ export default {
             "firewall_enabled": false,
           },
           "cdb": {
-            "root_keys": expr("vault_cdb_root_keys"),
+            "root_keys": V.vault_cdb_root_keys,
           },
           "icos1": {
             "ansible_port": 60022,
           },
           "fsicos2": {
-            "root_keys": expr("vault_fsicos2_root_keys"),
+            "root_keys": V.vault_fsicos2_root_keys,
             "ansible_port": 60022,
           },
           "fsicos3": null,
@@ -68,17 +73,17 @@ export default {
           "ansible_user": "debian",
           "ansible_become": true,
           "ansible_host": "fsicos4",
-          "root_keys": expr("vault_fsicos4_vms_root_keys"),
+          "root_keys": V.vault_fsicos4_vms_root_keys,
         },
         "hosts": {
           "cupcake": {
             "ansible_port": 60603,
-            "user_conf": expr("vault_cupcake_user_conf"),
+            "user_conf": V.vault_cupcake_user_conf,
           },
           "pancake": {
             "ansible_port": 60605,
             "ansible_user": "root",
-            "user_conf": expr("vault_pancake_user_conf"),
+            "user_conf": V.vault_pancake_user_conf,
           },
           "fsicos4-stiltcluster": {
             "ansible_port": 60601,
@@ -115,20 +120,20 @@ export default {
           },
           "erddap": {
             "ansible_port": 60580,
-            "root_keys": expr("vault_erddap_root_keys"),
+            "root_keys": V.vault_erddap_root_keys,
           },
           "flexextract": {
             "ansible_port": 60526,
-            "user_conf": expr("vault_flexextract_user_conf"),
+            "user_conf": V.vault_flexextract_user_conf,
           },
           "postgis": {
             "ansible_port": 60590,
-            "user_conf": expr("vault_postgis_user_conf"),
+            "user_conf": V.vault_postgis_user_conf,
           },
           "quince3": {
             "ansible_port": 60600,
             "quince_jdk_version": 17,
-            "user_conf": expr("vault_quince3_user_conf"),
+            "user_conf": V.vault_quince3_user_conf,
           },
           "rspamd": {
             "ansible_port": 60585,
@@ -156,7 +161,7 @@ export default {
           "exploredata": {
             "ansible_port": 60555,
             "docker_prevent_upgrade": true,
-            "root_keys": expr("vault_exploredata_root_keys"),
+            "root_keys": V.vault_exploredata_root_keys,
           },
           "flexpart": {
             "ansible_port": 60530,
@@ -171,7 +176,7 @@ export default {
             ],
           },
           "jupyter": {
-            "root_keys": expr("vault_jupyter_root_keys"),
+            "root_keys": V.vault_jupyter_root_keys,
             "ansible_port": 60535,
             "docker_prevent_upgrade": true,
             "bbclient_name": "jupyter",
@@ -194,7 +199,7 @@ export default {
             "ansible_port": 60575,
           },
           "dokku": {
-            "root_keys": expr("vault_dokku_root_keys"),
+            "root_keys": V.vault_dokku_root_keys,
             "ansible_port": 60595,
           },
         },

@@ -10,14 +10,14 @@
 // Redeploy proxy configuration
 //   icos play mailman proxy
 
-import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
     hosts: "fsicos2",
     vars: {
-      mailman_rest_pass: expr("vault_mailman_rest_pass"),
-      mailman_rest_allow_deny: expr("vault_mailman_rest_allow_deny"),
+      mailman_rest_pass: V.vault_mailman_rest_pass,
+      mailman_rest_allow_deny: V.vault_mailman_rest_allow_deny,
       mailman_domains: [
         "lists.icos-ri.eu",
         "lists.eric-forum.eu",

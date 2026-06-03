@@ -4,17 +4,22 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  jupyter_home: string;
-  jupyter_port: string;
-  jupyter_jusers_enable: string;
-  jupyter_hub_config_defaults: string;
-  jupyter_hub_config: string;
-  jusers_home: string;
-  jusers_venv: string;
+  jupyter_home: unknown;
+  jupyter_port: unknown;
+  jupyter_jusers_enable: unknown;
+  jupyter_hub_config_defaults: unknown;
+  jupyter_hub_config: unknown;
+  jusers_home: unknown;
+  jusers_venv: unknown;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "jupyter_home": "/docker/jupyter",

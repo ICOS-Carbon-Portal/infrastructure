@@ -5,26 +5,29 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  _sshlogin_opt_list: string;
-  sshlogin_dst_command: string;
-  sshlogin_dst_from: string;
-  sshlogin_dst_key_file: string;
-  sshlogin_dst_key_options: string;
-  sshlogin_dst_known_hosts: string;
-  sshlogin_dst_restrict: string;
-  sshlogin_dst_ssh_dir: string;
-  sshlogin_src_dst: string;
-  sshlogin_src_dst_host: string;
-  sshlogin_src_dst_name: string;
-  sshlogin_src_dst_port: string;
-  sshlogin_src_key_file: string;
-  sshlogin_src_known_hosts: string;
-  sshlogin_src_ssh_config: string;
-  sshlogin_src_ssh_dir: string;
+  _sshlogin_opt_list: unknown;
+  sshlogin_dst_command: unknown;
+  sshlogin_dst_from: unknown;
+  sshlogin_dst_key_file: unknown;
+  sshlogin_dst_key_options: unknown;
+  sshlogin_dst_known_hosts: unknown;
+  sshlogin_dst_restrict: unknown;
+  sshlogin_dst_ssh_dir: unknown;
+  sshlogin_src_dst: unknown;
+  sshlogin_src_dst_host: unknown;
+  sshlogin_src_dst_name: unknown;
+  sshlogin_src_dst_port: unknown;
+  sshlogin_src_key_file: unknown;
+  sshlogin_src_known_hosts: unknown;
+  sshlogin_src_ssh_config: unknown;
+  sshlogin_src_ssh_dir: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

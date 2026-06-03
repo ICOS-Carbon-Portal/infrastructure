@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, notVar, tmpl, V } from "../_ctx.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -23,7 +23,7 @@ export default [
     copy: {
       dest: V.timer_dest,
       mode: "+x",
-      content: expr("timer_content"),
+      content: V.timer_content,
     },
     when: raw("timer_content is defined"),
   },
@@ -76,7 +76,7 @@ WorkingDirectory={{ timer_wdir }}
     name: "Start timer",
     when: notVar("ansible_check_mode"),
     systemd: {
-      name: tmpl`${expr("timer_name")}.timer`,
+      name: tmpl`${V.timer_name}.timer`,
       enabled: true,
       state: "started",
       daemon_reload: true,

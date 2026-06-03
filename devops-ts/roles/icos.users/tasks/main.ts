@@ -1,45 +1,53 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { loopOverVar, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
-  {
-    name: "Create user",
-    user: {
-      name: expr("item.name"),
-      password: expr("item.password | default(omit)"),
-      home: expr("item.home | default(omit)"),
-      groups: expr("item.groups | default(omit)"),
-      append: expr("item.groups | default(false) | bool"),
-    },
-    loop: expr("user_conf.create_users | default([])"),
-  },
-  {
-    name: "Install public key",
-    authorized_key: {
-      user: expr("item.name"),
-      key: expr("item.key"),
-      state: "present",
-      exclusive: true,
-    },
-    loop: expr("user_conf.create_users | default([])"),
-  },
-  {
-    name: "Install password-less sudo rule",
-    copy: {
-      dest: tmpl`/etc/sudoers.d/${expr("item.name")}`,
-      content: `{{ item.name }} ALL=(ALL) NOPASSWD: ALL
+  loopOverVar<{ groups: string; home: string; name: string; password: string }>(
+    V.user_conf.create_users.default([]),
+    (item) => ({
+      name: "Create user",
+      user: {
+        name: item.name,
+        password: item.password.default(V.omit),
+        home: item.home.default(V.omit),
+        groups: item.groups.default(V.omit),
+        append: expr("item.groups | default(false) | bool"),
+      },
+    }),
+  ),
+  loopOverVar<{ key: string; name: string }>(
+    V.user_conf.create_users.default([]),
+    (item) => ({
+      name: "Install public key",
+      authorized_key: {
+        user: item.name,
+        key: item.key,
+        state: "present",
+        exclusive: true,
+      },
+    }),
+  ),
+  loopOverVar<{ name: string }>(
+    V.user_conf.create_users.default([]),
+    (item) => ({
+      name: "Install password-less sudo rule",
+      copy: {
+        dest: tmpl`/etc/sudoers.d/${item.name}`,
+        content: `{{ item.name }} ALL=(ALL) NOPASSWD: ALL
 `,
-    },
-    when: raw("item.sudopwless | default(false)"),
-    loop: expr("user_conf.create_users | default([])"),
-  },
-  {
-    name: "Remove user",
-    user: {
-      name: expr("item.name"),
-      remove: expr("item.remove | default(omit)"),
-      state: "absent",
-    },
-    loop: expr("user_conf.remove_users | default([])"),
-  },
+      },
+      when: raw("item.sudopwless | default(false)"),
+    }),
+  ),
+  loopOverVar<{ name: string; remove: string }>(
+    V.user_conf.remove_users.default([]),
+    (item) => ({
+      name: "Remove user",
+      user: {
+        name: item.name,
+        remove: item.remove.default(V.omit),
+        state: "absent",
+      },
+    }),
+  ),
 ] satisfies TaskFile;

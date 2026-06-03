@@ -5,16 +5,19 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  dive_architecture: string;
-  dive_url_map: string;
-  dive_version: string;
-  lazydocker_architecture: string;
-  lazydocker_url_map: string;
-  lazydocker_version: string;
+  dive_architecture: unknown;
+  dive_url_map: unknown;
+  dive_version: unknown;
+  lazydocker_architecture: unknown;
+  lazydocker_url_map: unknown;
+  lazydocker_version: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

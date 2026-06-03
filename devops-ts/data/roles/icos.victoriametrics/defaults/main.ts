@@ -4,25 +4,30 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  vm_home: string;
-  vm_scrape_conf: string;
-  vm_vm_port: string;
-  vm_upgrade: string;
-  vm_graf_port: string;
-  vm_graf_url: string;
-  vm_graf_plugins: string;
-  vm_graf_image: string;
-  vm_promlens_port: string;
+  vm_home: unknown;
+  vm_scrape_conf: unknown;
+  vm_vm_port: unknown;
+  vm_upgrade: unknown;
+  vm_graf_port: unknown;
+  vm_graf_url: unknown;
+  vm_graf_plugins: unknown;
+  vm_graf_image: unknown;
+  vm_promlens_port: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "vm_home": "/opt/victoriametrics",
   "vm_scrape_conf": "",
   "vm_vm_port": 8428,
-  "vm_upgrade": expr("upgrade_everything | default(False) | bool"),
+  "vm_upgrade": V.upgrade_everything.default(false).bool(),
   "vm_graf_port": 3000,
   "vm_graf_url": "http://grafana.local",
   "vm_graf_plugins": tmpl`${V.vm_home}/grafana/data/plugins`,

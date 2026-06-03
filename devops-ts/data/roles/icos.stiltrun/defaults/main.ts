@@ -4,21 +4,26 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  stiltrun_image_id: string;
-  stiltrun_image_name: string;
-  stiltrun_image_url: string;
-  stiltrun_input_dir: string;
-  stiltrun_user: string;
+  stiltrun_image_id: unknown;
+  stiltrun_image_name: unknown;
+  stiltrun_image_url: unknown;
+  stiltrun_input_dir: unknown;
+  stiltrun_user: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "stiltrun_image_id": "721eb2cdb9b5",
   "stiltrun_image_name": "stiltcustom",
   "stiltrun_image_url":
     tmpl`https://static.icos-cp.eu/share/docker/stilt/stiltcustom-${V.stiltrun_image_id}.tgz`,
-  "stiltrun_input_dir": expr("stilt_input_dir"),
+  "stiltrun_input_dir": V.stilt_input_dir,
   "stiltrun_user": "stiltcluster",
 } satisfies VarsFile;

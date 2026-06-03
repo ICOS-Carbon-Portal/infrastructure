@@ -18,6 +18,33 @@ export type Part =
   | { kind: "ref"; jinja: string } // rendered as `{{ <jinja> }}` (canonical spacing)
   | { kind: "raw"; text: string }; // rendered EXACTLY as `text` (verbatim)
 
+/**
+ * A value usable as a Jinja filter argument (see `Template.default` etc.):
+ * a single-ref Template renders as its bare expression (`V.x` -> `x`), a
+ * boolean as Python `True`/`False`, a string as a `'...'` literal, an array
+ * element-wise as `[...]`.
+ */
+export type FilterArg =
+  | string
+  | number
+  | boolean
+  | Template
+  | ReadonlyArray<string | number | Template>;
+
+function filterArgText(a: FilterArg): string {
+  if (a instanceof Template) {
+    const p = a.parts;
+    if (p.length !== 1 || p[0].kind === "lit") {
+      throw new Error(`composite template as a filter argument: "${a}"`);
+    }
+    return p[0].kind === "ref" ? p[0].jinja : p[0].text;
+  }
+  if (typeof a === "boolean") return a ? "True" : "False";
+  if (typeof a === "number") return String(a);
+  if (Array.isArray(a)) return `[${a.map(filterArgText).join(", ")}]`;
+  return `'${a}'`;
+}
+
 /** A structured Jinja template value. */
 export class Template {
   constructor(readonly parts: Part[]) {}
@@ -37,7 +64,115 @@ export class Template {
   toString(): string {
     return this.toText();
   }
+
+  // --- Jinja filters ----------------------------------------------------------
+  // Chainable, each appending `| <filter>` (canonical spacing) to a single-ref
+  // template: V.x.default(false).bool() -> {{ x | default(False) | bool }}.
+  // Only the common filters are modelled; anything else stays an expr() escape.
+
+  /** Append `| <text>`; valid only on a single-ref template (V.x, expr(...)). */
+  private filter(text: string): Template {
+    const p = this.parts;
+    if (p.length !== 1 || p[0].kind !== "ref") {
+      throw new Error(`Jinja filter applied to a non-ref template: "${this}"`);
+    }
+    return new Template([{ kind: "ref", jinja: `${p[0].jinja} | ${text}` }]);
+  }
+
+  /** `| default(...)`; pass `V.omit` for `default(omit)`, a ref for a var. */
+  default(fallback: FilterArg): Template {
+    return this.filter(`default(${filterArgText(fallback)})`);
+  }
+  bool(): Template {
+    return this.filter("bool");
+  }
+  int(): Template {
+    return this.filter("int");
+  }
+  lower(): Template {
+    return this.filter("lower");
+  }
+  first(): Template {
+    return this.filter("first");
+  }
+  dirname(): Template {
+    return this.filter("dirname");
+  }
+  basename(): Template {
+    return this.filter("basename");
+  }
+  splitext(): Template {
+    return this.filter("splitext");
+  }
+  b64decode(): Template {
+    return this.filter("b64decode");
+  }
+  /** `| combine(other)` — merge two dict-valued variables. */
+  combine(other: Template): Template {
+    return this.filter(`combine(${filterArgText(other)})`);
+  }
+
+  /**
+   * Python string methods usable in Jinja value expressions:
+   *   gh.tag.ref.lstrip("v")   // {{ gh.tag.lstrip('v') }}
+   */
+  lstrip(chars: string): Template {
+    return this.method(`lstrip('${chars}')`);
+  }
+  rstrip(chars: string): Template {
+    return this.method(`rstrip('${chars}')`);
+  }
+  private method(call: string): Template {
+    const p = this.parts;
+    if (p.length !== 1 || p[0].kind !== "ref") {
+      throw new Error(`Jinja method call on a non-ref template: "${this}"`);
+    }
+    return new Template([{ kind: "ref", jinja: `${p[0].jinja}.${call}` }]);
+  }
+
+  /**
+   * Checked `[key]` index access on a map-valued variable:
+   *   V.borg_url_map.at(V.ansible_architecture)  // {{ borg_url_map[ansible_architecture] }}
+   */
+  at(key: Template | string | number): Template {
+    const p = this.parts;
+    if (p.length !== 1 || p[0].kind !== "ref") {
+      throw new Error(`index access on a non-ref template: "${this}"`);
+    }
+    return new Template([
+      { kind: "ref", jinja: `${p[0].jinja}[${filterArgText(key)}]` },
+    ]);
+  }
 }
+
+/**
+ * A nested variable reference: a single-ref `Template` whose property access
+ * yields a deeper reference (`varProxy("a").b` -> `{{ a.b }}`). This is the
+ * runtime behind `V.x.y` for object-shaped variables (lib/shapes.ts) — the
+ * TYPE (`VarRef`) decides which fields exist; the proxy serves any of them.
+ * `Template`'s own members (parts, filters, `at`) pass through to the base.
+ */
+export function varProxy(path: string): Ref {
+  const base = new Template([{ kind: "ref", jinja: path }]);
+  return new Proxy(base, {
+    get(target, key, receiver) {
+      if (typeof key === "symbol" || key in target) {
+        return Reflect.get(target, key, receiver);
+      }
+      return varProxy(`${path}.${String(key)}`);
+    },
+  });
+}
+
+/**
+ * The reference type for a variable declared as `T`: a plain `Ref` for scalar
+ * variables, a `Ref` that also exposes per-field refs for object-shaped ones
+ * (see lib/shapes.ts). `[T] extends [object]` (no distribution) so unions and
+ * `unknown` stay plain `Ref`s.
+ */
+export type VarRef<T> = [T] extends [object]
+  ? Ref & { readonly [K in keyof T]-?: VarRef<T[K]> }
+  : Ref;
 
 /**
  * A verbatim template escape: renders its exact text (incl. braces/spacing).

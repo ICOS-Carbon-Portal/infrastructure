@@ -1,4 +1,4 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -32,7 +32,7 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "wordpress",
-        certbot_domains: expr("wordpress_domains"),
+        certbot_domains: V.wordpress_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {

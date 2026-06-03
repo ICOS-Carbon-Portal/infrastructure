@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "borg",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set borg_version fact",
         set_fact: {
-          borg_version: expr("gh.tag.lstrip('v')"),
+          borg_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -37,7 +39,7 @@ export default [
   {
     name: "Download borg",
     get_url: {
-      url: expr("borg_url_map[ansible_architecture]"),
+      url: V.borg_url_map.at(V.ansible_architecture),
       dest: V.borg_bin,
       force: V.borg_upgrade,
       mode: "+x",

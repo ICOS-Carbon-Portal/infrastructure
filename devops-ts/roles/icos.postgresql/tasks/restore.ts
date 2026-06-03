@@ -1,15 +1,12 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { type TaskFile, V } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`Extract "${expr("postgresql_container_name")}" backup`,
+    name: tmpl`Extract "${V.postgresql_container_name}" backup`,
     "ansible.builtin.shell": {
-      cmd: tmpl`/usr/local/bin/restore_${
-        expr("postgresql_container_name")
-      }_db.py --host=${expr("postgresql_backup_host")} --location=${
-        expr("postgresql_backup_location")
-      }`,
+      cmd:
+        tmpl`/usr/local/bin/restore_${V.postgresql_container_name}_db.py --host=${V.postgresql_backup_host} --location=${V.postgresql_backup_location}`,
       // executable: /usr/bin/python3
     },
   },

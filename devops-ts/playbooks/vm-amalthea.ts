@@ -1,10 +1,19 @@
-import { expr, type Playbook, role, tmpl, V } from "../lib/ansible.ts";
+import {
+  expr,
+  type Playbook,
+  register,
+  role,
+  tmpl,
+  V,
+} from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
     hosts: "fsicos3",
     vars: {
-      amalthea_ip: expr("_lxd.addresses.eth0 | first"),
+      amalthea_ip: _lxd.addresses.eth0.ref.first(),
     },
     tasks: [
       {
@@ -62,7 +71,7 @@ export default [
           wait_for_ipv4_interfaces: "eth0",
           timeout: 60,
         },
-        register: "_lxd",
+        register: _lxd,
       },
       {
         name: "SSH forward to amalthea",
@@ -72,7 +81,7 @@ export default [
           table: "nat",
           rules: tmpl`-A PREROUTING -p tcp --dport ${
             expr("hostvars['amalthea'].ansible_port")
-          } -j DNAT --to-destination ${expr("amalthea_ip")}:22`,
+          } -j DNAT --to-destination ${V.amalthea_ip}:22`,
         },
       },
     ],
@@ -86,7 +95,7 @@ export default [
         superuser_list: [
           {
             name: "ubuntu",
-            key: expr("vault_amalthea_ssh_keys"),
+            key: V.vault_amalthea_ssh_keys,
           },
         ],
       }).tags("superuser"),

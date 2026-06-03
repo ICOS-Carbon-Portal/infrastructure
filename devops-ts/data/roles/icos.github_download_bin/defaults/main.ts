@@ -4,38 +4,40 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  dbin_download_base: string;
-  dbin_download_dest: string;
-  dbin_bin_dir: string;
-  dbin_default_url: string;
-  dbin_arch: string;
-  _dbin_url: string;
-  _dbin_unar: string;
-  _dbin_path: string;
-  _dbin_name: string;
-  _dbin_src: string;
-  dbin__down: string;
-  dbin__vers: string;
-  dbin__plat: string;
+  dbin_download_base: unknown;
+  dbin_download_dest: unknown;
+  dbin_bin_dir: unknown;
+  dbin_default_url: unknown;
+  dbin_arch: unknown;
+  _dbin_url: unknown;
+  _dbin_unar: unknown;
+  _dbin_path: unknown;
+  _dbin_name: unknown;
+  _dbin_src: unknown;
+  dbin__down: unknown;
+  dbin__vers: unknown;
+  dbin__plat: unknown;
 }
 const { V, expr, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();
 
 export default {
   "dbin_download_base": "/opt/downloads",
   "dbin_download_dest": tmpl`${V.dbin_download_base}/${V._dbin_name}`,
   "dbin_bin_dir": "/usr/local/bin",
-  "dbin_default_url": tmpl`${V.dbin__down}/v${V.dbin__vers}/${
-    expr("dbin_repo")
-  }-${V.dbin__vers}.${V.dbin__plat}.tar.gz`,
+  "dbin_default_url":
+    tmpl`${V.dbin__down}/v${V.dbin__vers}/${V.dbin_repo}-${V.dbin__vers}.${V.dbin__plat}.tar.gz`,
   "dbin_arch": "amd64",
-  "_dbin_url": expr("dbin_url | default(dbin_default_url)"),
-  "_dbin_unar": expr("dbin_unar | default(True)"),
-  "_dbin_path": expr("dbin_path | default(dbin_repo)"),
-  "_dbin_name": expr("_dbin_path | basename"),
+  "_dbin_url": V.dbin_url.default(V.dbin_default_url),
+  "_dbin_unar": V.dbin_unar.default(true),
+  "_dbin_path": V.dbin_path.default(V.dbin_repo),
+  "_dbin_name": V._dbin_path.basename(),
   "_dbin_src": tmpl`${rawTmpl("{% if dbin_src is defined -%}")}
 ${V.dbin_download_dest}/${rawTmpl("{{ dbin_src -}}")}
 ${rawTmpl("{% elif _dbin_unar -%}")}
@@ -45,9 +47,8 @@ ${V.dbin_download_dest}/${expr("_unar.files[0].rstrip('/')")}/${
 ${rawTmpl("{%- else %}")}
 ${rawTmpl("{{- dbin_download.dest }}")}
 ${rawTmpl("{%- endif %}")}`,
-  "dbin__down": tmpl`https://github.com/${expr("dbin_user")}/${
-    expr("dbin_repo")
-  }/releases/download`,
+  "dbin__down":
+    tmpl`https://github.com/${V.dbin_user}/${V.dbin_repo}/releases/download`,
   "dbin__vers": expr("_release.tag.lstrip('v')"),
   "dbin__plat": tmpl`linux-${V.dbin_arch}`,
 } satisfies VarsFile;

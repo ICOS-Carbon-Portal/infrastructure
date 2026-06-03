@@ -5,27 +5,30 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  cpdata_bind_addr: string;
-  cpdata_cpuser_secret_salt: string;
-  cpdata_dlreporter_pass: string;
-  cpdata_etcfacade_secret: string;
-  cpdata_home: string;
-  cpdata_host: string;
-  cpdata_irods_pass: string;
-  cpdata_jre_package: string;
-  cpdata_meta_addr: string;
-  cpdata_meta_port: string;
-  cpdata_netcdf_folder: string;
-  cpdata_pgreslog_admin_pass: string;
-  cpdata_pgreslog_reader_pass: string;
-  cpdata_pgreslog_writer_pass: string;
-  cpdata_port: string;
-  cpdata_service: string;
-  cpdata_user: string;
+  cpdata_bind_addr: unknown;
+  cpdata_cpuser_secret_salt: unknown;
+  cpdata_dlreporter_pass: unknown;
+  cpdata_etcfacade_secret: unknown;
+  cpdata_home: unknown;
+  cpdata_host: unknown;
+  cpdata_irods_pass: unknown;
+  cpdata_jre_package: unknown;
+  cpdata_meta_addr: unknown;
+  cpdata_meta_port: unknown;
+  cpdata_netcdf_folder: unknown;
+  cpdata_pgreslog_admin_pass: unknown;
+  cpdata_pgreslog_reader_pass: unknown;
+  cpdata_pgreslog_writer_pass: unknown;
+  cpdata_port: unknown;
+  cpdata_service: unknown;
+  cpdata_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

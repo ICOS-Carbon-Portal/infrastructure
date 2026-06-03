@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -38,7 +38,7 @@ export default [
       timer_home: tmpl`${V.bbclient_home}/timer`,
       timer_name: tmpl`bbclient-${V.bbclient_name}`,
       timer_conf: V.bbclient_timer_conf,
-      timer_content: expr("bbclient_timer_content"),
+      timer_content: V.bbclient_timer_content,
     },
     tags: "bbclient_timer",
     when: [raw("bbclient_timer_content is defined")],

@@ -5,16 +5,19 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  rdflog_db_name: string;
-  rdflog_db_port: string;
-  rdflog_db_user: string;
-  rdflog_home: string;
-  rdflog_rep_pass: string;
-  rdflog_rep_user: string;
+  rdflog_db_name: unknown;
+  rdflog_db_port: unknown;
+  rdflog_db_user: unknown;
+  rdflog_home: unknown;
+  rdflog_rep_pass: unknown;
+  rdflog_rep_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

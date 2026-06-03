@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _justfile = register("_justfile");
+const _symlink = register("_symlink");
 
 export default [
   {
@@ -12,20 +14,20 @@ export default [
       variable_end_string: "))",
       lstrip_blocks: true,
     },
-    register: "_justfile",
+    register: _justfile,
   },
   {
     name: "Create executable symlink to justfile",
     file: {
       dest: "/usr/local/bin/icos-rspamd",
-      src: expr("_justfile.dest"),
+      src: _justfile.dest.ref,
       state: "link",
     },
-    register: "_symlink",
+    register: _symlink,
   },
   {
     name: "Check that the mailman justfile is executable",
-    shell: expr("_symlink.dest"),
+    shell: _symlink.dest.ref,
     changed_when: false,
   },
 ] satisfies TaskFile;

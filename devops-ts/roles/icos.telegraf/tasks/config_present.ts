@@ -1,5 +1,7 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _slurp = register("_slurp");
 
 const update = register("update");
 
@@ -19,9 +21,7 @@ export default [
         name: "Run validation",
         // redirect stdout to /dev/null since it will contain the metrics (which
         // can be a lot of lines); stderr will contain the messages.
-        shell: tmpl`telegraf --test --config ${
-          expr("update.dest")
-        } > /dev/null`,
+        shell: tmpl`telegraf --test --config ${update.dest.ref} > /dev/null`,
         register: "test",
         changed_when: update.changed,
         failed_when: [
@@ -36,21 +36,21 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: tmpl`cat -n ${expr("update.dest")}`,
+        command: tmpl`cat -n ${update.dest.ref}`,
         changed_when: false,
-        register: "_slurp",
+        register: _slurp,
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: expr("update.dest"),
-          src: expr("update.backup_file"),
+          dest: update.dest.ref,
+          src: update.backup_file.ref,
         },
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: expr("_slurp.stdout") },
+        debug: { msg: _slurp.stdout.ref },
       },
       {
         name: "Fail",
@@ -60,7 +60,7 @@ export default [
     always: [
       {
         name: "Remove backup file",
-        file: { name: expr("update.backup_file"), state: "absent" },
+        file: { name: update.backup_file.ref, state: "absent" },
         when: raw("update['backup_file'] is defined"),
       },
     ],

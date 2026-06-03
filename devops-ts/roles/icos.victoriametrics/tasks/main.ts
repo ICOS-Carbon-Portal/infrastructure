@@ -34,7 +34,7 @@ export default [
       name: "Copy files",
       template: {
         src: item.src,
-        dest: tmpl`${V.vm_home}/${expr("item.dest | default('')")}`,
+        dest: tmpl`${V.vm_home}/${item.dest.default("")}`,
       },
     }),
   ),

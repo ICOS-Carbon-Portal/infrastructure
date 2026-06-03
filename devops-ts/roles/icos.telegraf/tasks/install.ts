@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, rawTmpl, tmpl } from "../_ctx.ts";
+
+const _key = register("_key");
 
 export default [
   {
@@ -10,15 +12,14 @@ export default [
       mode: "0644",
       force: true,
     },
-    register: "_key",
+    register: _key,
   },
   {
     name: "Add influxdata apt repository",
     apt_repository: {
       filename: "influxdata",
-      repo: tmpl`deb [signed-by=${
-        expr("_key.dest")
-      }] https://repos.influxdata.com/debian stable main`,
+      repo:
+        tmpl`deb [signed-by=${_key.dest.ref}] https://repos.influxdata.com/debian stable main`,
     },
   },
   {

@@ -5,30 +5,33 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  dirsize_dirnames: string;
-  dirsize_home: string;
-  dirsize_initial: string;
-  dirsize_prom: string;
-  dirsize_sh: string;
-  dockermon_enable: string;
-  dockermon_home: string;
-  dockermon_prom: string;
-  lxdmon_enable: string;
-  node_exporter_allow: string;
-  node_exporter_arch: string;
-  node_exporter_arch_map: string;
-  node_exporter_bin: string;
-  node_exporter_bindto: string;
-  node_exporter_download: string;
-  node_exporter_environ: string;
-  node_exporter_home: string;
-  node_exporter_listen: string;
-  node_exporter_textfiles: string;
-  node_exporter_user: string;
+  dirsize_dirnames: unknown;
+  dirsize_home: unknown;
+  dirsize_initial: unknown;
+  dirsize_prom: unknown;
+  dirsize_sh: unknown;
+  dockermon_enable: unknown;
+  dockermon_home: unknown;
+  dockermon_prom: unknown;
+  lxdmon_enable: unknown;
+  node_exporter_allow: unknown;
+  node_exporter_arch: unknown;
+  node_exporter_arch_map: unknown;
+  node_exporter_bin: unknown;
+  node_exporter_bindto: unknown;
+  node_exporter_download: unknown;
+  node_exporter_environ: unknown;
+  node_exporter_home: unknown;
+  node_exporter_listen: unknown;
+  node_exporter_textfiles: unknown;
+  node_exporter_user: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

@@ -1,6 +1,8 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
+const _slurp = register("_slurp");
+
 const _r = register("_r");
 
 // If caddy config validation fails, it's useful to see the full (failed)
@@ -14,9 +16,9 @@ export default [
         name: "Add caddy configuration block",
         blockinfile: {
           path: "/etc/caddy/Caddyfile",
-          block: expr("block"),
-          marker: tmpl`# {mark} ${expr("marker")}`,
-          state: expr("state | default(omit)"),
+          block: V.block,
+          marker: tmpl`# {mark} ${V.marker}`,
+          state: V.state.default(V.omit),
           backup: true,
           create: true,
           insertafter: expr("'EOF' if where == 'EOF' else omit"),
@@ -36,18 +38,18 @@ export default [
       {
         name: "Slurp failed file and add line numbers",
         command: "cat -n /etc/caddy/Caddyfile",
-        register: "_slurp",
+        register: _slurp,
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: expr("_slurp.stdout") },
+        debug: { msg: _slurp.stdout.ref },
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: "/etc/caddy/Caddyfile",
-          src: expr("_r.backup_file"),
+          src: _r.backup_file.ref,
         },
         // backup_file won't be set if templating failed
         when: raw("_r['backup_file'] is defined"),
@@ -57,7 +59,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          name: expr("_r.backup_file"),
+          name: _r.backup_file.ref,
           state: "absent",
         },
         changed_when: false,

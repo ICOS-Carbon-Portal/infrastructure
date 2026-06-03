@@ -4,14 +4,19 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  conmon_version_install: string;
-  conmon_local_version_ok: string;
-  conmon_apt_version_ok: string;
-  conmon_url: string;
+  conmon_version_install: unknown;
+  conmon_local_version_ok: unknown;
+  conmon_apt_version_ok: unknown;
+  conmon_url: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "conmon_version_install": "2.1.4",

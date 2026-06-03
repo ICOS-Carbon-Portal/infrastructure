@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+import { rawTmpl } from "../_ctx.ts";
+
+const _justfile = register("_justfile");
 
 export default [
   {
@@ -12,11 +14,11 @@ export default [
       variable_end_string: rawTmpl("{{ '}}}' }}"),
       lstrip_blocks: true,
     },
-    register: "_justfile",
+    register: _justfile,
   },
   {
     name: "Check that the justfile is executable",
-    shell: expr("_justfile.dest"),
+    shell: _justfile.dest.ref,
     changed_when: false,
   },
 ] satisfies TaskFile;

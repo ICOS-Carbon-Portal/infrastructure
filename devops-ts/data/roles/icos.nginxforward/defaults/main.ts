@@ -4,40 +4,40 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  nginxforward_host: string;
-  nginxforward_enable: string;
-  nginxforward_file: string;
-  nginxforward_path_available: string;
-  nginxforward_path_enabled: string;
-  nginxforward_site_path: string;
-  nginxforward_cert_path: string;
-  nginxforward_key_path: string;
-  nginxforward_cert_conf: string;
-  nginxforward_user_file: string;
+  nginxforward_host: unknown;
+  nginxforward_enable: unknown;
+  nginxforward_file: unknown;
+  nginxforward_path_available: unknown;
+  nginxforward_path_enabled: unknown;
+  nginxforward_site_path: unknown;
+  nginxforward_cert_path: unknown;
+  nginxforward_key_path: unknown;
+  nginxforward_cert_conf: unknown;
+  nginxforward_user_file: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "nginxforward_host": "127.0.0.1",
   "nginxforward_enable": true,
   "nginxforward_file": "nginxforward-default",
-  "nginxforward_path_available": tmpl`/etc/nginx/sites-available/${
-    expr("nginxforward_name")
-  }.conf`,
-  "nginxforward_path_enabled": tmpl`/etc/nginx/sites-enabled/${
-    expr("nginxforward_name")
-  }.conf`,
-  "nginxforward_site_path": tmpl`/etc/letsencrypt/live/${
-    expr("nginxforward_cert")
-  }`,
+  "nginxforward_path_available":
+    tmpl`/etc/nginx/sites-available/${V.nginxforward_name}.conf`,
+  "nginxforward_path_enabled":
+    tmpl`/etc/nginx/sites-enabled/${V.nginxforward_name}.conf`,
+  "nginxforward_site_path": tmpl`/etc/letsencrypt/live/${V.nginxforward_cert}`,
   "nginxforward_cert_path": tmpl`${V.nginxforward_site_path}/fullchain.pem`,
   "nginxforward_key_path": tmpl`${V.nginxforward_site_path}/privkey.pem`,
   "nginxforward_cert_conf": tmpl`ssl_certificate ${V.nginxforward_cert_path};
 ssl_certificate_key ${V.nginxforward_key_path};
 `,
-  "nginxforward_user_file": tmpl`/etc/nginx/passwords/${
-    expr("nginxforward_name")
-  }.pass`,
+  "nginxforward_user_file":
+    tmpl`/etc/nginx/passwords/${V.nginxforward_name}.pass`,
 } satisfies VarsFile;

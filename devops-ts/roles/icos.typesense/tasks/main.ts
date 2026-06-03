@@ -4,7 +4,7 @@ import {
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -104,9 +104,9 @@ export default [
     name: "Create and initialize collection",
     block: [
       {
-        name: tmpl`Create ${expr("website")} directory`,
+        name: tmpl`Create ${V.website} directory`,
         file: {
-          path: tmpl`${V.typesense_home}/${expr("website")}/`,
+          path: tmpl`${V.typesense_home}/${V.website}/`,
           state: "directory",
           recurse: true,
           owner: V.typesense_user,
@@ -121,9 +121,9 @@ export default [
         },
       },
       {
-        name: tmpl`Create log file in ${V.typesense_home}/${expr("website")}`,
+        name: tmpl`Create log file in ${V.typesense_home}/${V.website}`,
         file: {
-          path: tmpl`${V.typesense_home}/${expr("website")}/collection.log`,
+          path: tmpl`${V.typesense_home}/${V.website}/collection.log`,
           state: "touch",
           mode: "u+rw,g-wx,o-rwx",
           modification_time: "preserve",
@@ -132,10 +132,10 @@ export default [
         },
       },
       {
-        name: tmpl`Set up logrotate for typesense website ${expr("website")}`,
+        name: tmpl`Set up logrotate for typesense website ${V.website}`,
         "ansible.builtin.template": {
           src: "logrotate",
-          dest: tmpl`/etc/logrotate.d/typesense-${expr("website")}`,
+          dest: tmpl`/etc/logrotate.d/typesense-${V.website}`,
         },
       },
       loopOver<{ src: Tmpl }>(
@@ -148,12 +148,10 @@ export default [
           { src: "utilities.py" },
         ],
         (item) => ({
-          name: tmpl`Copy python scripts and schema to ${
-            expr("website")
-          } directory`,
+          name: tmpl`Copy python scripts and schema to ${V.website} directory`,
           "ansible.builtin.template": {
             src: item.src,
-            dest: tmpl`${V.typesense_home}/${expr("website")}`,
+            dest: tmpl`${V.typesense_home}/${V.website}`,
             owner: V.typesense_user,
           },
         }),
@@ -169,26 +167,20 @@ export default [
       {
         name: "Create collection",
         "ansible.builtin.shell":
-          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${
-            expr("website")
-          }/init_collection.py >> collection.log 2>&1\n`,
-        args: { chdir: tmpl`${V.typesense_home}/${expr("website")}` },
+          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${V.website}/init_collection.py >> collection.log 2>&1\n`,
+        args: { chdir: tmpl`${V.typesense_home}/${V.website}` },
       },
       {
         name: "Add initial documents to collection",
         "ansible.builtin.shell":
-          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${
-            expr("website")
-          }/init_documents.py >> collection.log 2>&1\n`,
-        args: { chdir: tmpl`${V.typesense_home}/${expr("website")}` },
+          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${V.website}/init_documents.py >> collection.log 2>&1\n`,
+        args: { chdir: tmpl`${V.typesense_home}/${V.website}` },
       },
       {
         name: "Add initial stations to collection",
         "ansible.builtin.shell":
-          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${
-            expr("website")
-          }/update_stations.py >> collection.log 2>&1\n`,
-        args: { chdir: tmpl`${V.typesense_home}/${expr("website")}` },
+          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${V.website}/update_stations.py >> collection.log 2>&1\n`,
+        args: { chdir: tmpl`${V.typesense_home}/${V.website}` },
       },
     ],
     tags: ["initialize_collection"],
@@ -197,16 +189,15 @@ export default [
     name: "Add timer for updating documents and stations",
     block: [
       {
-        name: tmpl`Install typesense-update-${expr("website")} timer`,
+        name: tmpl`Install typesense-update-${V.website} timer`,
         include_role: { name: "icos.timer" },
         vars: {
           timer_user: V.typesense_user,
           timer_home: V.typesense_home,
-          timer_name: tmpl`typesense-update-${expr("website")}`,
+          timer_name: tmpl`typesense-update-${V.website}`,
           timer_conf: "OnCalendar=*-*-* 1/4:17:00\n",
-          timer_content: tmpl`#!/bin/bash\ncd ${V.typesense_home}/${
-            expr("website")
-          }\n${V.typesense_home}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1\n${V.typesense_home}/typesense-venv/bin/python3 update_stations.py >> collection.log 2>&1\n`,
+          timer_content:
+            tmpl`#!/bin/bash\ncd ${V.typesense_home}/${V.website}\n${V.typesense_home}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1\n${V.typesense_home}/typesense-venv/bin/python3 update_stations.py >> collection.log 2>&1\n`,
         },
       },
     ],
@@ -218,12 +209,11 @@ export default [
       loopOver<{ src: Tmpl }>(
         [{ src: "update_synonyms.py" }, { src: "utilities.py" }],
         (item) => ({
-          name: tmpl`Copy update_synonyms required python scripts to ${
-            expr("website")
-          } directory`,
+          name:
+            tmpl`Copy update_synonyms required python scripts to ${V.website} directory`,
           "ansible.builtin.template": {
             src: item.src,
-            dest: tmpl`${V.typesense_home}/${expr("website")}`,
+            dest: tmpl`${V.typesense_home}/${V.website}`,
             owner: V.typesense_user,
           },
         }),
@@ -231,10 +221,8 @@ export default [
       {
         name: "Run update synonyms script",
         "ansible.builtin.shell":
-          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${
-            expr("website")
-          }/update_synonyms.py >> collection.log 2>&1\n`,
-        args: { chdir: tmpl`${V.typesense_home}/${expr("website")}` },
+          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${V.website}/update_synonyms.py >> collection.log 2>&1\n`,
+        args: { chdir: tmpl`${V.typesense_home}/${V.website}` },
       },
     ],
     tags: ["update_synonyms", "initialize_collection"],
@@ -249,10 +237,10 @@ export default [
           { src: "utilities.py" },
         ],
         (item) => ({
-          name: tmpl`Copy python scripts to ${expr("website")} directory`,
+          name: tmpl`Copy python scripts to ${V.website} directory`,
           "ansible.builtin.template": {
             src: item.src,
-            dest: tmpl`${V.typesense_home}/${expr("website")}`,
+            dest: tmpl`${V.typesense_home}/${V.website}`,
             owner: V.typesense_user,
           },
         }),
@@ -260,18 +248,14 @@ export default [
       {
         name: "Run update documents script",
         "ansible.builtin.shell":
-          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${
-            expr("website")
-          }/update_documents.py >> collection.log 2>&1\n`,
-        args: { chdir: tmpl`${V.typesense_home}/${expr("website")}` },
+          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${V.website}/update_documents.py >> collection.log 2>&1\n`,
+        args: { chdir: tmpl`${V.typesense_home}/${V.website}` },
       },
       {
         name: "Run update stations script",
         "ansible.builtin.shell":
-          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${
-            expr("website")
-          }/update_stations.py >> collection.log 2>&1\n`,
-        args: { chdir: tmpl`${V.typesense_home}/${expr("website")}` },
+          tmpl`${V.typesense_home}/typesense-venv/bin/python3 ${V.typesense_home}/${V.website}/update_stations.py >> collection.log 2>&1\n`,
+        args: { chdir: tmpl`${V.typesense_home}/${V.website}` },
       },
     ],
     tags: ["update_documents"],

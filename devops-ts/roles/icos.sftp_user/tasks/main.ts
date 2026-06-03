@@ -28,7 +28,7 @@ export default [
   {
     name: "Create sftp user",
     user: {
-      name: expr("sftp_user_login"),
+      name: V.sftp_user_login,
       password: expr(
         "sftp_user_password | password_hash('sha512', vault_pw_salt)\n   if sftp_user_password else omit",
       ),
@@ -40,7 +40,7 @@ export default [
   {
     name: "Install public key",
     authorized_key: {
-      user: expr("sftp_user_login"),
+      user: V.sftp_user_login,
       key: V.sftp_user_pubkey,
     },
     when: raw("sftp_user_pubkey"),
@@ -59,7 +59,7 @@ export default [
   {
     name: "Create sftp directory",
     file: {
-      path: expr("sftp_user_dir"),
+      path: V.sftp_user_dir,
       state: "directory",
       owner: V.sftp_user_owner,
       group: V.sftp_user_group,
@@ -68,7 +68,7 @@ export default [
   {
     name: "Add sftp user config to sshd to sshd_config",
     blockinfile: {
-      marker: tmpl`# {mark} ansible / sftp_user / ${expr("sftp_user_login")}`,
+      marker: tmpl`# {mark} ansible / sftp_user / ${V.sftp_user_login}`,
       create: true,
       insertafter: "EOF",
       path: "/etc/ssh/sshd_config",

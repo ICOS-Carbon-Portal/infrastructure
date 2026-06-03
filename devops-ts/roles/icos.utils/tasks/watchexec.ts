@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gr = register("gr");
 
 export default [
   // Used to be a symlink to /opt/download/watchexec.
@@ -25,12 +27,12 @@ export default [
           repo: "watchexec",
           action: "latest_release",
         },
-        register: "gr",
+        register: gr,
       },
       {
         name: "Set watchexec_version fact",
         set_fact: {
-          watchexec_version: expr("gr.tag.lstrip('v')"),
+          watchexec_version: gr.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -38,7 +40,7 @@ export default [
   },
   {
     name: "Install watchexec",
-    apt: { deb: expr("watchexec_url_map[watchexec_architecture]") },
+    apt: { deb: V.watchexec_url_map.at(V.watchexec_architecture) },
   },
   {
     name: "Check that watchexec is executable and the correct version",

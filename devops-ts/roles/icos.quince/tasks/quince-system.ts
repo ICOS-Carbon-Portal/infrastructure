@@ -1,12 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create quince user",
     user: {
       name: V.quince_user,
-      home: expr("quince_home | default(omit)"),
+      home: V.quince_home.default(V.omit),
       shell: "/bin/bash",
     },
   },

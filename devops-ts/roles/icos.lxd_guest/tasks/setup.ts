@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -43,7 +43,7 @@ export default [
     name: "Add default gateway as host",
     lineinfile: {
       path: "/etc/hosts",
-      line: tmpl`${expr("ansible_default_ipv4.gateway")} gateway.lxd`,
+      line: tmpl`${V.ansible_default_ipv4.gateway} gateway.lxd`,
       regex: "gateway.lxd$",
       state: "present",
     },

@@ -1,0 +1,90 @@
+// Names-only registry of vault-defined variables (ansible-vault files are
+// encrypted, so these cannot be auto-generated; the names are hand-curated
+// from references in converted playbooks — each came from working YAML that
+// verify.ts proved identical). Names only: the V accessor maps every key to
+// a Ref, so the uniform `string` type is never consulted.
+// Add a name here when a converted playbook first references it.
+export interface VaultVars {
+  vault_amalthea_ssh_keys: string;
+  vault_aquanet_form_git_repo: string;
+  vault_callisto_admins: string;
+  vault_callisto_sftp_fluxcom_upload_password: string;
+  vault_callisto_sftp_fluxcom_upload_username: string;
+  vault_callisto_sftp_password: string;
+  vault_callisto_user_conf: string;
+  vault_callisto_user_volumes: string;
+  vault_cdb_root_keys: string;
+  vault_city_restheart_basic_auth: string;
+  vault_cpauth_mailing_pass: string;
+  vault_cpauth_mailing_smtp: string;
+  vault_cpauth_masteradmin_pass: string;
+  vault_cpauth_oauth_conf: string;
+  vault_cpauth_user_secret_salt: string;
+  vault_cpdata_dlreporter_pass: string;
+  vault_cpdata_etcfacade_secret: string;
+  vault_cpdata_irods_pass: string;
+  vault_cpdata_sentry_backend_dsn: string;
+  vault_cpdata_sentry_portal_dsn: string;
+  vault_cpmeta_sentry_dsn: string;
+  vault_ctehires_user_conf: string;
+  vault_cupcake_user_conf: string;
+  vault_doi_admins: string;
+  vault_doi_password: string;
+  vault_doi_test_password: string;
+  vault_doi_to_addresses: string;
+  vault_dokku_root_keys: string;
+  vault_erddap_root_keys: string;
+  vault_eurocom_users: string;
+  vault_exploredata_password: string;
+  vault_exploredata_root_keys: string;
+  vault_flexextract_user_conf: string;
+  vault_flexpart_admins: string;
+  vault_fsicos2_root_keys: string;
+  vault_fsicos4_vms_root_keys: string;
+  vault_ganymede_jbuild_users: string;
+  vault_ganymede_jupyter_admins: string;
+  vault_ganymede_sshlogins: string;
+  vault_ganymede_user_conf: string;
+  vault_geoip_nginx_allow_deny: string;
+  vault_jupyter_admins: string;
+  vault_jupyter_root_keys: string;
+  vault_mailman_admin_email: string;
+  vault_mailman_hyperkitty_api_key: string;
+  vault_mailman_postgres_password: string;
+  vault_mailman_rest_allow_deny: string;
+  vault_mailman_rest_pass: string;
+  vault_mailman_web_secret_key: string;
+  vault_maps_lantmateriet_auth: string;
+  vault_matomo_mysql_database_user: string;
+  vault_matomo_mysql_password: string;
+  vault_matomo_mysql_root_password: string;
+  vault_matomo_mysql_user: string;
+  vault_nc_paul_upload_password: string;
+  vault_nextcloud_admin_password: string;
+  vault_nextcloud_exporter_pass: string;
+  vault_nginx_allow_internal_only: string;
+  vault_nginx_testing_users: string;
+  vault_onlyoffice_secret: string;
+  vault_pancake_user_conf: string;
+  vault_plausible_google_client_id: string;
+  vault_plausible_mailer_email: string;
+  vault_plausible_postgres_password: string;
+  vault_plausible_secret: string;
+  vault_plausible_totp_key: string;
+  vault_postgis_admin_pass: string;
+  vault_postgis_reader_pass: string;
+  vault_postgis_user_conf: string;
+  vault_postgis_writer_pass: string;
+  vault_prometheus_promlens_token: string;
+  vault_quince3_user_conf: string;
+  vault_rdflog_db_pass: string;
+  vault_rdflog_rep_pass: string;
+  vault_registry_pass: string;
+  vault_registry_users: string;
+  vault_root_keys: string;
+  vault_rspamd_admin_password: string;
+  vault_rspamd_admin_password_hashed: string;
+  vault_virtuoso_dba_pass: string;
+  vault_vmagent_auth: { username: string; password: string };
+  vault_vm_graf_pass: string;
+}

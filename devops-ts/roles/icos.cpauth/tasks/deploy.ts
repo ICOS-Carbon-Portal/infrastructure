@@ -28,7 +28,7 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: expr("cpauth_jar_file"),
+      src: V.cpauth_jar_file,
       dest: tmpl`${V.cpauth_home}/cpauth.jar`,
       backup: true,
     },
@@ -57,7 +57,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${expr("cpauth_domains | first")}/buildInfo`,
+      url: tmpl`https://${V.cpauth_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

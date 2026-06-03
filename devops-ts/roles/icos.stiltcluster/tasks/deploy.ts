@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // Stiltcluster can be deployed either:
@@ -51,7 +51,7 @@ export default [
     name: "Copy jarfile",
     when: raw("stiltcluster_jar_file is defined"),
     copy: {
-      src: expr("stiltcluster_jar_file"),
+      src: V.stiltcluster_jar_file,
       dest: tmpl`${V.stiltcluster_home}/stiltcluster.jar`,
       backup: true,
     },

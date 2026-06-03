@@ -66,7 +66,7 @@ PersistentKeepalive = 25
   {
     name: "Add hosts",
     blockinfile: {
-      marker: tmpl`# {mark} cloud.wg_hub ${expr("wg_hub_config.name")}`,
+      marker: tmpl`# {mark} cloud.wg_hub ${V.wg_hub_config.name}`,
       path: "/etc/hosts",
       block: `{% for name, conf in wg_hub_config.peers.items() %}
 {{ conf.addr }} {{ conf.name | default(name) }}.{{ wg_hub_intf }}
@@ -81,7 +81,7 @@ PersistentKeepalive = 25
     name: "Allow wireguard through firewall",
     when: raw("wg_hub_ishub"),
     iptables_raw: {
-      name: tmpl`wireguard_${expr("wg_hub_config.name")}`,
+      name: tmpl`wireguard_${V.wg_hub_config.name}`,
       rules: `-A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
 -A FORWARD -i {{ wg_hub_intf }} -j ACCEPT
 `,
@@ -90,7 +90,7 @@ PersistentKeepalive = 25
   {
     name: "Allow all inbound traffic on the wireguard interface",
     iptables_raw: {
-      name: tmpl`wireguard_${expr("wg_hub_config.name")}_allow_all`,
+      name: tmpl`wireguard_${V.wg_hub_config.name}_allow_all`,
       state: expr("'present' if wg_hub_allow_all else 'absent'"),
       rules: `-A INPUT -i {{ wg_hub_intf }} -j ACCEPT
 `,
@@ -116,9 +116,8 @@ PersistentKeepalive = 25
   },
   {
     name: "Ping hub",
-    command: tmpl`ping -c 1 -w 10 "${
-      expr("wg_hub_config.hub.peer")
-    }.${V.wg_hub_intf}"`,
+    command:
+      tmpl`ping -c 1 -w 10 "${V.wg_hub_config.hub.peer}.${V.wg_hub_intf}"`,
     tags: "wg_hub_ping",
     changed_when: false,
   },

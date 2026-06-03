@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+import { expr, V } from "../_ctx.ts";
+
+const _justfile = register("_justfile");
 
 export default [
   {
@@ -10,7 +12,7 @@ export default [
     name: "Add config block to /etc/rsyncd.conf",
     copy: {
       dest: "/etc/rsyncd.conf",
-      content: expr("rsyncd_conf"),
+      content: V.rsyncd_conf,
     },
     notify: "restart rsync",
   },
@@ -42,11 +44,11 @@ export default [
       variable_end_string: "))",
       lstrip_blocks: true,
     },
-    register: "_justfile",
+    register: _justfile,
   },
   {
     name: "Check that the justfile is executable",
-    shell: expr("_justfile.dest"),
+    shell: _justfile.dest.ref,
     changed_when: false,
   },
 ] satisfies TaskFile;

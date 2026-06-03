@@ -1,5 +1,14 @@
-import { raw, type TaskFile, type When } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import {
+  raw,
+  register,
+  type TaskFile,
+  type When,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
+
+const _version = register("_version");
 
 export default [
   // 20231210 - ripgrep currently doesn't provide prebuilt binaries for e.g ARM.
@@ -22,12 +31,12 @@ export default [
           repo: "ripgrep",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set ripgrep_version fact",
         set_fact: {
-          ripgrep_version: expr("gh.tag.lstrip('v')"),
+          ripgrep_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -36,7 +45,7 @@ export default [
   {
     when: raw('ansible_architecture == "x86_64"'),
     name: "Install ripgrep using .deb from github",
-    apt: { deb: expr("ripgrep_url_map[ansible_architecture]") },
+    apt: { deb: V.ripgrep_url_map.at(V.ansible_architecture) },
   },
   // Hope that some version of ripgrep is bundled with OS.
   {
@@ -52,10 +61,10 @@ export default [
     name: "Check that ripgrep is executable",
     shell: "rg --version | head -1",
     changed_when: false,
-    register: "_version",
+    register: _version,
   },
   {
     name: "Which version of ripgrep was installed",
-    debug: { msg: tmpl`Installed ${expr("_version.stdout")}` },
+    debug: { msg: tmpl`Installed ${_version.stdout.ref}` },
   },
 ] satisfies TaskFile;

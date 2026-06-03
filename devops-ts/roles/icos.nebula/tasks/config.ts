@@ -1,5 +1,8 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _slurp = register("_slurp");
+const update = register("update");
 
 export default [
   {
@@ -12,12 +15,12 @@ export default [
           lstrip_blocks: true,
           backup: true,
         },
-        register: "update",
+        register: update,
         notify: "restart nebula",
       },
       {
         name: "Run validation",
-        command: tmpl`nebula -test -config ${expr("update.dest")}`,
+        command: tmpl`nebula -test -config ${update.dest.ref}`,
         changed_when: false,
       },
     ],
@@ -25,20 +28,20 @@ export default [
       {
         name: "Slurp failed file and add line numbers",
         command: tmpl`cat -n "${V.nebula_etc_dir}/config.yml"`,
-        register: "_slurp",
+        register: _slurp,
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
           dest: tmpl`${V.nebula_etc_dir}/config.yml`,
-          src: expr("update.backup_file"),
+          src: update.backup_file.ref,
         },
         when: raw("update['backup_file'] is defined"),
       },
       {
         name: "Dump failed configuration",
-        debug: { msg: expr("_slurp.stdout") },
+        debug: { msg: _slurp.stdout.ref },
       },
       {
         name: "Fail",
@@ -48,7 +51,7 @@ export default [
     always: [
       {
         name: "Remove backup file",
-        file: { name: expr("update.backup_file"), state: "absent" },
+        file: { name: update.backup_file.ref, state: "absent" },
         when: raw("update['backup_file'] is defined"),
       },
     ],

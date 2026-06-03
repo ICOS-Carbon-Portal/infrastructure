@@ -1,12 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create flexextract user",
     user: {
       name: V.flexextract_user,
-      home: expr("flexextract_home | default(omit)"),
+      home: V.flexextract_home.default(V.omit),
       shell: "/bin/bash",
       groups: "docker",
       append: true,

@@ -4,24 +4,29 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  sftp_user_owner: string;
-  sftp_user_group: string;
-  sftp_user_password: string;
-  sftp_user_pubkey: string;
-  sftp_user_hostdesc: string;
-  _sftp_parent_dir: string;
-  _sftp_create_home: string;
+  sftp_user_owner: unknown;
+  sftp_user_group: unknown;
+  sftp_user_password: unknown;
+  sftp_user_pubkey: unknown;
+  sftp_user_hostdesc: unknown;
+  _sftp_parent_dir: unknown;
+  _sftp_create_home: unknown;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
-  "sftp_user_owner": expr("sftp_user_login"),
+  "sftp_user_owner": V.sftp_user_login,
   "sftp_user_group": V.sftp_user_owner,
   "sftp_user_password": null,
   "sftp_user_pubkey": null,
   "sftp_user_hostdesc": V.inventory_hostname,
-  "_sftp_parent_dir": expr("sftp_user_dir | dirname"),
-  "_sftp_create_home": expr("sftp_authorized_keys | bool"),
+  "_sftp_parent_dir": V.sftp_user_dir.dirname(),
+  "_sftp_create_home": V.sftp_authorized_keys.bool(),
 } satisfies VarsFile;

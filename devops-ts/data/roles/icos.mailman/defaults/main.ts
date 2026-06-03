@@ -4,37 +4,40 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  mailman_user: string;
-  mailman_home: string;
-  mailman_version: string;
-  mailman_serve_from_domain: string;
-  mailman_postgres_password: string;
-  mailman_hyperkitty_api_key: string;
-  mailman_web_secret_key: string;
-  mailman_admin_email: string;
-  mailman_volume_core: string;
-  mailman_volume_web: string;
-  mailman_volume_database: string;
-  mailman_build_core: string;
-  mailman_build_web: string;
-  mailman_django_settings: string;
-  mailman_subnet: string;
-  mailman_host_ipv4: string;
-  mailman_core_ipv4: string;
-  mailman_web_ipv4: string;
-  mailman_database_ipv4: string;
-  mailman_postfix_config: string;
-  mailman_rest_user: string;
-  mailman_rest_port: string;
-  mailman_rest_allow_deny: string;
-  mailman_certbot_name: string;
-  mailman_nginxsite_name: string;
-  mailman_nginxsite_file: string;
+  mailman_user: unknown;
+  mailman_home: unknown;
+  mailman_version: unknown;
+  mailman_serve_from_domain: unknown;
+  mailman_postgres_password: unknown;
+  mailman_hyperkitty_api_key: unknown;
+  mailman_web_secret_key: unknown;
+  mailman_admin_email: unknown;
+  mailman_volume_core: unknown;
+  mailman_volume_web: unknown;
+  mailman_volume_database: unknown;
+  mailman_build_core: unknown;
+  mailman_build_web: unknown;
+  mailman_django_settings: unknown;
+  mailman_subnet: unknown;
+  mailman_host_ipv4: unknown;
+  mailman_core_ipv4: unknown;
+  mailman_web_ipv4: unknown;
+  mailman_database_ipv4: unknown;
+  mailman_postfix_config: unknown;
+  mailman_rest_user: unknown;
+  mailman_rest_port: unknown;
+  mailman_rest_allow_deny: unknown;
+  mailman_certbot_name: unknown;
+  mailman_nginxsite_name: unknown;
+  mailman_nginxsite_file: unknown;
 }
-const { V, expr, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars
+const { V, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();
 
 export default {
@@ -44,10 +47,10 @@ export default {
   "mailman_serve_from_domain": rawTmpl(
     "{{ mailman_domains | mandatory | first}}",
   ),
-  "mailman_postgres_password": expr("vault_mailman_postgres_password"),
-  "mailman_hyperkitty_api_key": expr("vault_mailman_hyperkitty_api_key"),
-  "mailman_web_secret_key": expr("vault_mailman_web_secret_key"),
-  "mailman_admin_email": expr("vault_mailman_admin_email"),
+  "mailman_postgres_password": V.vault_mailman_postgres_password,
+  "mailman_hyperkitty_api_key": V.vault_mailman_hyperkitty_api_key,
+  "mailman_web_secret_key": V.vault_mailman_web_secret_key,
+  "mailman_admin_email": V.vault_mailman_admin_email,
   "mailman_volume_core": tmpl`${V.mailman_home}/volumes/core`,
   "mailman_volume_web": tmpl`${V.mailman_home}/volumes/web`,
   "mailman_volume_database": tmpl`${V.mailman_home}/volumes/database`,

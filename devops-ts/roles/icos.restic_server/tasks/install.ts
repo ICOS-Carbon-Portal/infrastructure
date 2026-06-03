@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "rest-server",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set restic_server_version fact",
         set_fact: {
-          restic_server_version: expr("gh.tag.lstrip('v')"),
+          restic_server_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -31,7 +33,7 @@ export default [
     name: "Install restic_server",
     unarchive: {
       remote_src: true,
-      src: expr("restic_server_url_map[restic_server_architecture]"),
+      src: V.restic_server_url_map.at(V.restic_server_architecture),
       dest: tmpl`${V.restic_server_home}/bin/`,
       mode: "+x",
       include: ["*/rest-server"],

@@ -5,34 +5,37 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  __base_config: string;
-  __docker_config: string;
-  __docker_device: string;
-  __lxd_vm_config: string;
-  __lxd_vm_devices: string;
-  __lxd_vm_profiles: string;
-  __root_device: string;
-  lxd_source: string;
-  lxd_vm_config: string;
-  lxd_vm_default_config: string;
-  lxd_vm_default_devices: string;
-  lxd_vm_default_profiles: string;
-  lxd_vm_devices: string;
-  lxd_vm_docker: string;
-  lxd_vm_docker_size: string;
-  lxd_vm_forward: string;
-  lxd_vm_inventory_hostname: string;
-  lxd_vm_ip: string;
-  lxd_vm_port: string;
-  lxd_vm_profiles: string;
-  lxd_vm_root_pool: string;
-  lxd_vm_root_size: string;
-  lxd_vm_ubuntu_version: string;
-  zfsdocker_name: string;
+  __base_config: unknown;
+  __docker_config: unknown;
+  __docker_device: unknown;
+  __lxd_vm_config: unknown;
+  __lxd_vm_devices: unknown;
+  __lxd_vm_profiles: unknown;
+  __root_device: unknown;
+  lxd_source: unknown;
+  lxd_vm_config: unknown;
+  lxd_vm_default_config: unknown;
+  lxd_vm_default_devices: unknown;
+  lxd_vm_default_profiles: unknown;
+  lxd_vm_devices: unknown;
+  lxd_vm_docker: unknown;
+  lxd_vm_docker_size: unknown;
+  lxd_vm_forward: unknown;
+  lxd_vm_inventory_hostname: unknown;
+  lxd_vm_ip: unknown;
+  lxd_vm_port: unknown;
+  lxd_vm_profiles: unknown;
+  lxd_vm_root_pool: unknown;
+  lxd_vm_root_size: unknown;
+  lxd_vm_ubuntu_version: unknown;
+  zfsdocker_name: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

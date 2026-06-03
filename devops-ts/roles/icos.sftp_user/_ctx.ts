@@ -5,17 +5,20 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  _sftp_create_home: string;
-  _sftp_parent_dir: string;
-  sftp_user_group: string;
-  sftp_user_hostdesc: string;
-  sftp_user_owner: string;
-  sftp_user_password: string;
-  sftp_user_pubkey: string;
+  _sftp_create_home: unknown;
+  _sftp_parent_dir: unknown;
+  sftp_user_group: unknown;
+  sftp_user_hostdesc: unknown;
+  sftp_user_owner: unknown;
+  sftp_user_password: unknown;
+  sftp_user_pubkey: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

@@ -13,7 +13,7 @@ export default [
     local_action: {
       module: "community.general.ssh_config",
       ssh_config_file: tmpl`~${expr("lookup('env', 'USER')")}/.ssh/config.icos`,
-      host: expr("lxd_vm_name"),
+      host: V.lxd_vm_name,
       state: "absent",
     },
   },
@@ -28,11 +28,11 @@ export default [
   {
     name: "Remove ssh port forward and /etc/hosts entry",
     include_role: { name: "icos.lxd_forward", tasks_from: "remove.yml" },
-    vars: { lxd_forward_name: expr("lxd_vm_name") },
+    vars: { lxd_forward_name: V.lxd_vm_name },
   },
   {
     name: "Remove lxd container",
-    lxd_container: { name: expr("lxd_vm_name"), state: "absent" },
+    lxd_container: { name: V.lxd_vm_name, state: "absent" },
   },
   {
     when: raw("lxd_vm_variant == 'ext4'"),

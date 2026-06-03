@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, tmpl } from "../_ctx.ts";
+
+const _key = register("_key");
 
 export default [
   {
@@ -10,15 +12,14 @@ export default [
       mode: "0644",
       force: true,
     },
-    register: "_key",
+    register: _key,
   },
   {
     name: "Add xcaddy apt repository",
     apt_repository: {
       filename: "xcaddy",
-      repo: tmpl`deb [signed-by=${
-        expr("_key.dest")
-      }] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main`,
+      repo:
+        tmpl`deb [signed-by=${_key.dest.ref}] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main`,
     },
   },
   {

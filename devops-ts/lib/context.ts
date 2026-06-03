@@ -20,16 +20,18 @@ import {
   expr,
   type RawTemplate,
   rawTmpl,
-  type Ref,
   type Template,
   tmpl,
+  varProxy,
+  type VarRef,
 } from "./template.ts";
 import { Expr } from "./vars.ts";
 
 /** The accessor bundle a role context exposes, scoped to that role's vars `V`. */
 export interface Context<V> {
-  /** Typed reference accessor: `V.foo` -> Template "{{ foo }}". Unknown names error. */
-  V: { readonly [K in keyof V]: Ref };
+  /** Typed reference accessor: `V.foo` -> Template "{{ foo }}". Unknown names
+   * error; object-shaped vars (lib/shapes.ts) expose checked field refs. */
+  V: { readonly [K in keyof V]: VarRef<V[K]> };
   /** Composite template (tagged form): tmpl`${V.x}/y`. */
   tmpl: (
     strings: TemplateStringsArray,
@@ -52,8 +54,8 @@ export interface Context<V> {
  */
 export function context<V>(): Context<V> {
   const Vproxy = new Proxy({}, {
-    get: (_t, name: string) => expr(name),
-  }) as { readonly [K in keyof V]: Ref };
+    get: (_t, name: string) => varProxy(name),
+  }) as { readonly [K in keyof V]: VarRef<V[K]> };
 
   const isDef = (name: keyof V & string): Expr =>
     new Expr(`${name} is defined`, name);

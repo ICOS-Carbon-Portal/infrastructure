@@ -1,4 +1,6 @@
-import { expr, type Playbook, role, V } from "../lib/ansible.ts";
+import { type Playbook, register, role, V } from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
@@ -59,12 +61,12 @@ export default [
           wait_for_ipv4_interfaces: "eth0",
           timeout: 60,
         },
-        register: "_lxd",
+        register: _lxd,
       },
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: expr("_lxd.addresses.eth0 | first"),
+        lxd_forward_ip: _lxd.addresses.eth0.ref.first(),
         lxd_forward_name: "registry",
       }),
 
@@ -78,7 +80,7 @@ export default [
         nginxsite_file: "roles/icos.registry/templates/registry-nginx.conf",
         registry_host: "registry.lxd",
         registry_cert: "registry",
-        registry_allow: expr("vault_nginx_allow_internal_only"),
+        registry_allow: V.vault_nginx_allow_internal_only,
       }).tags(["registry", "nginx"]),
     ],
   },
@@ -93,7 +95,7 @@ export default [
       role("icos.docker2").tags("docker"),
 
       role("icos.registry", {
-        registry_users: expr("vault_registry_users"),
+        registry_users: V.vault_registry_users,
       }).tags("registry"),
     ],
     tasks: [
@@ -102,7 +104,7 @@ export default [
         "community.general.docker_login": {
           registry_url: V.registry_domain,
           username: "docker",
-          password: expr("vault_registry_pass"),
+          password: V.vault_registry_pass,
         },
       },
     ],

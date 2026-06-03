@@ -1,17 +1,19 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { loopOverVar, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
-  {
-    name: "Create fail2ban config files",
-    copy: {
-      dest: expr("item.dest"),
-      content: expr("item.content"),
-    },
-    loop: V.fail2ban_config_files,
-    loop_control: {
-      label: expr("item.dest"),
-    },
-    notify: "fail2ban reload",
-  },
+  loopOverVar<{ content: string; dest: string }>(
+    V.fail2ban_config_files,
+    (item) => ({
+      name: "Create fail2ban config files",
+      copy: {
+        dest: item.dest,
+        content: item.content,
+      },
+      loop_control: {
+        label: item.dest,
+      },
+      notify: "fail2ban reload",
+    }),
+  ),
 ] satisfies TaskFile;

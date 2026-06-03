@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "uv",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set uv_version fact",
         set_fact: {
-          uv_version: expr("gh.tag.lstrip('v')"),
+          uv_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -33,7 +35,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: expr("uv_url_map[uv_architecture]"),
+      src: V.uv_url_map.at(V.uv_architecture),
       // Only two binaries, uv and uvx
       dest: "/usr/local/bin",
       extra_opts: [

@@ -4,27 +4,32 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  cpdata_user: string;
-  cpdata_home: string;
-  cpdata_service: string;
-  cpdata_meta_port: string;
-  cpdata_meta_addr: string;
-  cpdata_bind_addr: string;
-  cpdata_host: string;
-  cpdata_port: string;
-  cpdata_irods_pass: string;
-  cpdata_dlreporter_pass: string;
-  cpdata_cpuser_secret_salt: string;
-  cpdata_etcfacade_secret: string;
-  cpdata_pgreslog_admin_pass: string;
-  cpdata_pgreslog_writer_pass: string;
-  cpdata_pgreslog_reader_pass: string;
-  cpdata_netcdf_folder: string;
-  cpdata_jre_package: string;
+  cpdata_user: unknown;
+  cpdata_home: unknown;
+  cpdata_service: unknown;
+  cpdata_meta_port: unknown;
+  cpdata_meta_addr: unknown;
+  cpdata_bind_addr: unknown;
+  cpdata_host: unknown;
+  cpdata_port: unknown;
+  cpdata_irods_pass: unknown;
+  cpdata_dlreporter_pass: unknown;
+  cpdata_cpuser_secret_salt: unknown;
+  cpdata_etcfacade_secret: unknown;
+  cpdata_pgreslog_admin_pass: unknown;
+  cpdata_pgreslog_writer_pass: unknown;
+  cpdata_pgreslog_reader_pass: unknown;
+  cpdata_netcdf_folder: unknown;
+  cpdata_jre_package: unknown;
 }
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "cpdata_user": "cpdata",
@@ -35,10 +40,10 @@ export default {
   "cpdata_bind_addr": V.coreapp_bind_addr,
   "cpdata_host": V.coreapp_httpproxy_host,
   "cpdata_port": 9011,
-  "cpdata_irods_pass": expr("vault_cpdata_irods_pass"),
-  "cpdata_dlreporter_pass": expr("vault_cpdata_dlreporter_pass"),
-  "cpdata_cpuser_secret_salt": expr("vault_cpauth_user_secret_salt"),
-  "cpdata_etcfacade_secret": expr("vault_cpdata_etcfacade_secret"),
+  "cpdata_irods_pass": V.vault_cpdata_irods_pass,
+  "cpdata_dlreporter_pass": V.vault_cpdata_dlreporter_pass,
+  "cpdata_cpuser_secret_salt": V.vault_cpauth_user_secret_salt,
+  "cpdata_etcfacade_secret": V.vault_cpdata_etcfacade_secret,
   "cpdata_pgreslog_admin_pass": V.postgis_admin_pass,
   "cpdata_pgreslog_writer_pass": V.postgis_writer_pass,
   "cpdata_pgreslog_reader_pass": V.postgis_reader_pass,

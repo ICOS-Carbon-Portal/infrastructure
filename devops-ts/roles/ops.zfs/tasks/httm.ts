@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -23,12 +25,12 @@ export default [
           repo: "httm",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set httm_version fact",
         set_fact: {
-          httm_version: expr("gh.tag.lstrip('v')"),
+          httm_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -37,7 +39,7 @@ export default [
   {
     name: "Install httm",
     apt: {
-      deb: expr("httm_url_map[httm_architecture]"),
+      deb: V.httm_url_map.at(V.httm_architecture),
     },
   },
   {

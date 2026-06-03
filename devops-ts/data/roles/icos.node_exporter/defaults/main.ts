@@ -4,30 +4,35 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  node_exporter_user: string;
-  node_exporter_home: string;
-  node_exporter_download: string;
-  node_exporter_textfiles: string;
-  node_exporter_environ: string;
-  node_exporter_bin: string;
-  node_exporter_listen: string;
-  node_exporter_bindto: string;
-  node_exporter_allow: string;
-  node_exporter_arch: string;
-  node_exporter_arch_map: string;
-  dirsize_home: string;
-  dirsize_sh: string;
-  dirsize_dirnames: string;
-  dirsize_prom: string;
-  dirsize_initial: string;
-  dockermon_enable: string;
-  dockermon_home: string;
-  dockermon_prom: string;
-  lxdmon_enable: string;
+  node_exporter_user: unknown;
+  node_exporter_home: unknown;
+  node_exporter_download: unknown;
+  node_exporter_textfiles: unknown;
+  node_exporter_environ: unknown;
+  node_exporter_bin: unknown;
+  node_exporter_listen: unknown;
+  node_exporter_bindto: unknown;
+  node_exporter_allow: unknown;
+  node_exporter_arch: unknown;
+  node_exporter_arch_map: unknown;
+  dirsize_home: unknown;
+  dirsize_sh: unknown;
+  dirsize_dirnames: unknown;
+  dirsize_prom: unknown;
+  dirsize_initial: unknown;
+  dockermon_enable: unknown;
+  dockermon_home: unknown;
+  dockermon_prom: unknown;
+  lxdmon_enable: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, expr, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "node_exporter_user": "node_exporter",
@@ -49,7 +54,7 @@ export default {
   },
   "dirsize_enable": false,
   "dirsize_home": tmpl`${V.node_exporter_home}/directory-size`,
-  "dirsize_sh": tmpl`${expr("node_exporter_scripts")}/directory-size.sh`,
+  "dirsize_sh": tmpl`${V.node_exporter_scripts}/directory-size.sh`,
   "dirsize_dirnames": tmpl`${V.dirsize_home}/dirnames.txt`,
   "dirsize_prom": tmpl`${V.node_exporter_textfiles}/directory-size.prom`,
   "dirsize_initial": [],

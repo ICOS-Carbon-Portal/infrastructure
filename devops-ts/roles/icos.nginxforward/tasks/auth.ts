@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { loopOverVar, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // This gets us htpasswd(1)
@@ -16,13 +16,15 @@ export default [
       name: "python3-passlib",
     },
   },
-  {
-    name: "Add basic auth users",
-    htpasswd: {
-      path: V.nginxforward_user_file,
-      name: expr("item.name"),
-      password: expr("item.password"),
-    },
-    loop: expr("nginxforward_users"),
-  },
+  loopOverVar<{ name: string; password: string }>(
+    V.nginxforward_users,
+    (item) => ({
+      name: "Add basic auth users",
+      htpasswd: {
+        path: V.nginxforward_user_file,
+        name: item.name,
+        password: item.password,
+      },
+    }),
+  ),
 ] satisfies TaskFile;

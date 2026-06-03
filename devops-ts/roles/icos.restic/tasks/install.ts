@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "restic",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set restic_version fact",
         set_fact: {
-          restic_version: expr("gh.tag.lstrip('v')"),
+          restic_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -30,7 +32,7 @@ export default [
   {
     name: "Download restic",
     "ansible.builtin.shell": tmpl`curl -L --silent ${
-      expr("restic_url_map[restic_architecture]")
+      V.restic_url_map.at(V.restic_architecture)
     } | bunzip2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic`,
     args: {
       creates: expr("omit if restic_upgrade else '/usr/local/bin/restic'"),

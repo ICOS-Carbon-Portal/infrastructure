@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
+
+const update = register("update");
 
 export default [
   {
@@ -31,7 +33,7 @@ export default [
           dest: V.nginxsite_path_confd,
           backup: true,
         },
-        register: "update",
+        register: update,
       },
       {
         name: "Remove old config file from sites-available",
@@ -67,15 +69,15 @@ export default [
         name: "Restore old config",
         copy: {
           remote_src: true,
-          dest: expr("update.dest"),
-          src: expr("update.backup_file"),
+          dest: update.dest.ref,
+          src: update.backup_file.ref,
         },
         when: raw("update.backup_file is defined"),
       },
       {
         name: "Remove broken config",
         file: {
-          path: expr("update.dest"),
+          path: update.dest.ref,
           state: "absent",
         },
         when: raw("update.backup_file is not defined"),
@@ -85,7 +87,7 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          path: expr("update.backup_file"),
+          path: update.backup_file.ref,
           state: "absent",
         },
         changed_when: false,

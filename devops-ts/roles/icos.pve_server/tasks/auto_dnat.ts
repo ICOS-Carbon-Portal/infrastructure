@@ -1,5 +1,5 @@
 import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { expr, V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
 const _systemd = register("_systemd");

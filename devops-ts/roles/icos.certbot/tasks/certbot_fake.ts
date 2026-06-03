@@ -1,9 +1,9 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    include_vars: tmpl`vars/${expr("ansible_distribution | lower")}.yml`,
+    include_vars: tmpl`vars/${V.ansible_distribution.lower()}.yml`,
   },
   {
     name: "Create self-signed certificate",

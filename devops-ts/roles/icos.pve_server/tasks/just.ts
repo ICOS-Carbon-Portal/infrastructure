@@ -1,5 +1,6 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _ops = register("_ops");
 
 export default [
   {
@@ -9,11 +10,11 @@ export default [
       dest: "/usr/local/bin/",
       mode: "+x",
     },
-    register: "_ops",
+    register: _ops,
   },
   {
     name: "Check that the justfile is executable",
-    shell: expr("_ops.dest"),
+    shell: _ops.dest.ref,
     changed_when: false,
   },
   {

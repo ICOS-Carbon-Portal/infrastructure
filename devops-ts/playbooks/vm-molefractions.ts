@@ -1,4 +1,6 @@
-import { expr, type Playbook, role, tmpl } from "../lib/ansible.ts";
+import { type Playbook, register, role, tmpl, V } from "../lib/ansible.ts";
+
+const _lxd = register("_lxd");
 
 export default [
   {
@@ -52,12 +54,12 @@ export default [
           wait_for_ipv4_interfaces: "eth0",
           timeout: 60,
         },
-        register: "_lxd",
+        register: _lxd,
       },
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: expr("_lxd.addresses.eth0 | first"),
+        lxd_forward_ip: _lxd.addresses.eth0.ref.first(),
         lxd_forward_name: "molefractions",
       }),
     ],
@@ -79,9 +81,9 @@ export default [
     ],
     tasks: [
       {
-        name: tmpl`add ${expr("username")} user`,
+        name: tmpl`add ${V.username} user`,
         user: {
-          name: expr("username"),
+          name: V.username,
           shell: "/sbin/nologin",
           create_home: false,
           password_lock: true,

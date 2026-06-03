@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { type TaskFile, V } from "../../../lib/ansible.ts";
+import { expr } from "../_ctx.ts";
 
 export default [
   {
@@ -10,7 +10,7 @@ export default [
     "community.general.docker_login": {
       registry_url: "registry.icos-cp.eu",
       username: "docker",
-      password: expr("vault_registry_pass"),
+      password: V.vault_registry_pass,
     },
   },
   {
@@ -20,7 +20,7 @@ export default [
       source: "pull",
     },
     vars: {
-      conf: expr("jupyter_hub_config_defaults | combine(jupyter_hub_config)"),
+      conf: V.jupyter_hub_config_defaults.combine(V.jupyter_hub_config),
     },
   },
 ] satisfies TaskFile;

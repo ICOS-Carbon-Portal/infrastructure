@@ -4,9 +4,14 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 type Self = Record<never, never>;
-const { V, expr } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "all": {
@@ -35,7 +40,7 @@ export default {
       "pgrep_peer_user": "pgrepuser",
       "pgrep_peer_host": "fsicos2",
       "pgrep_peer_port": V.rdflog_ext_port,
-      "pgrep_peer_pass": expr("vault_rdflog_rep_pass"),
+      "pgrep_peer_pass": V.vault_rdflog_rep_pass,
       "pgrep_peer_cert": "roles/icos.rdflog/files/server.crt",
     },
     "hosts": {

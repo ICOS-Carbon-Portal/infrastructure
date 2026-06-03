@@ -11,7 +11,7 @@
 //
 // Remove keys
 //  icos play user_cleanup remove
-import { expr, pattern, type Playbook, V } from "../../lib/ansible.ts";
+import { pattern, type Playbook, V } from "../../lib/ansible.ts";
 
 export default [
   {
@@ -37,12 +37,12 @@ export default [
           key: V.item,
           state: "absent",
         },
-        loop: expr("remove_keys"),
+        loop: V.remove_keys,
       },
       {
         tags: "lockuser",
         user: {
-          name: expr("lockuser"),
+          name: V.lockuser,
           password_lock: true,
           shell: "/usr/sbin/nologin",
         },

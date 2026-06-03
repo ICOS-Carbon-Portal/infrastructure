@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { expr } from "../_ctx.ts";
 
 // openresolv / dhcpcd / dnsmasq are all integrated, even though it's tricky to
 // figure out exactly how.

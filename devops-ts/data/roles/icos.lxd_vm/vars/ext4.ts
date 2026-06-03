@@ -4,16 +4,19 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  lxd_vm_default_devices: string;
-  lxd_vm_default_profiles: string;
-  __base_config: string;
-  __docker_config: string;
-  lxd_vm_default_config: string;
+  lxd_vm_default_devices: unknown;
+  lxd_vm_default_profiles: unknown;
+  __base_config: unknown;
+  __docker_config: unknown;
+  lxd_vm_default_config: unknown;
 }
-const { V, expr, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars
+const { V, tmpl, rawTmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();
 
 export default {
@@ -34,5 +37,5 @@ export default {
   } {"security.nesting": "true"} ${rawTmpl("{% else %}")}{}${
     rawTmpl("{% endif -%}")
   }`,
-  "lxd_vm_default_config": expr("__base_config | combine(__docker_config)"),
+  "lxd_vm_default_config": V.__base_config.combine(V.__docker_config),
 } satisfies VarsFile;

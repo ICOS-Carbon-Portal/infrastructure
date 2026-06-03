@@ -1,5 +1,7 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const gh = register("gh");
 
 export default [
   {
@@ -16,12 +18,12 @@ export default [
           repo: "lazygit",
           action: "latest_release",
         },
-        register: "gh",
+        register: gh,
       },
       {
         name: "Set lazygit_version fact",
         set_fact: {
-          lazygit_version: expr("gh.tag.lstrip('v')"),
+          lazygit_version: gh.tag.ref.lstrip("v"),
           cacheable: true,
         },
       },
@@ -33,7 +35,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: expr("lazygit_url_map[lazygit_architecture]"),
+      src: V.lazygit_url_map.at(V.lazygit_architecture),
       dest: "/usr/local/bin/",
       // extract only this
       include: ["lazygit"],

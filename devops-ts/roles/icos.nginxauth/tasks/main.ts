@@ -1,5 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { loopOverVar, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -19,17 +19,19 @@ export default [
   {
     name: "Create directory for auth file",
     file: {
-      path: expr("nginxauth_file | dirname"),
+      path: V.nginxauth_file.dirname(),
       state: "directory",
     },
   },
-  {
-    name: "Add basic auth users",
-    htpasswd: {
-      path: V.nginxauth_file,
-      name: expr("item.username"),
-      password: expr("item.password"),
-    },
-    loop: V.nginxauth_users,
-  },
+  loopOverVar<{ password: string; username: string }>(
+    V.nginxauth_users,
+    (item) => ({
+      name: "Add basic auth users",
+      htpasswd: {
+        path: V.nginxauth_file,
+        name: item.username,
+        password: item.password,
+      },
+    }),
+  ),
 ] satisfies TaskFile;

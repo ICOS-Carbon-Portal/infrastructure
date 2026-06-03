@@ -4,21 +4,26 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  nexus_home: string;
-  nexus_host_port: string;
-  nexus_domains: string;
-  nexus_version: string;
-  certbot_name: string;
-  certbot_domains: string;
-  nginxsite_name: string;
-  nginxsite_file: string;
+  nexus_home: unknown;
+  nexus_host_port: unknown;
+  nexus_domains: unknown;
+  nexus_version: unknown;
+  certbot_name: unknown;
+  certbot_domains: unknown;
+  nginxsite_name: unknown;
+  nginxsite_file: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
-  "nexus_home": tmpl`${expr("docker_compose_home | default('/docker')")}/nexus`,
+  "nexus_home": tmpl`${V.docker_compose_home.default("/docker")}/nexus`,
   "nexus_host_port": 8881,
   "nexus_domains": [
     "repo.icos-cp.eu",

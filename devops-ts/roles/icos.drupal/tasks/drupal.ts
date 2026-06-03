@@ -1,5 +1,5 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, isDef, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { isDef, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,7 +13,7 @@ export default [
     name: "Pull source code from git",
     git: {
       repo: "https://github.com/ICOS-Carbon-Portal/drupal",
-      version: expr("git_version | default('master')"),
+      version: V.git_version.default("master"),
       dest: V.project_dir,
       force: true,
     },

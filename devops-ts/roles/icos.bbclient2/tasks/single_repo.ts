@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { hostvar, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // LOCAL
@@ -15,7 +15,7 @@ export default [
   // REMOTE
   {
     name: "Configure remote - bbserver - host",
-    delegate_to: expr("bbclient_remote"),
+    delegate_to: V.bbclient_remote,
     block: [
       {
         name: "Retrieve host keys",
@@ -24,9 +24,9 @@ export default [
           // The keys don't always appear in the same order, so sort them.
           // Otherwise the known_hosts task on LOCAL will keep changing.
           exec: tmpl`ssh-keyscan -p ${
-            expr("hostvars[bbclient_remote].bbserver_port")
+            hostvar(V.bbclient_remote).bbserver_port
           } localhost | sed "s/localhost/${
-            expr("hostvars[bbclient_remote].bbserver_host")
+            hostvar(V.bbclient_remote).bbserver_host
           }/" | sort -u`,
           fact: "bbclient_remote_keys",
         },
@@ -36,7 +36,7 @@ export default [
         authorized_key: {
           user: V.bbclient_remote_user,
           state: "present",
-          key: expr("bbclient_key_data"),
+          key: V.bbclient_key_data,
           key_options:
             tmpl`command="/usr/local/bin/borg serve --restrict-to-path ${V.bbclient_remote_repo}",restrict`,
         },
@@ -55,8 +55,8 @@ export default [
         blockinfile: {
           create: true,
           path: V.bbclient_ssh_hosts,
-          marker: tmpl`# {mark} ${expr("bbclient_remote")}`,
-          block: tmpl`${expr("bbclient_remote_keys")}
+          marker: tmpl`# {mark} ${V.bbclient_remote}`,
+          block: tmpl`${V.bbclient_remote_keys}
 `,
         },
       },

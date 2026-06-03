@@ -5,15 +5,18 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  _timer_sysd_service: string;
-  _timer_sysd_timer: string;
-  timer_dest: string;
-  timer_home: string;
-  timer_state: string;
+  _timer_sysd_service: unknown;
+  _timer_sysd_timer: unknown;
+  timer_dest: unknown;
+  timer_home: unknown;
+  timer_state: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

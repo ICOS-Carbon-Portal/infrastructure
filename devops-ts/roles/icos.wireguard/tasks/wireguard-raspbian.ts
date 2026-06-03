@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 // https://github.com/adrianmihalko/raspberrypiwireguard#1-wireguard-installation-raspberry-pi-2-v12-and-above
 
@@ -8,7 +8,7 @@ import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`Add key for debian ${expr("ansible_lsb.release")}`,
+    name: tmpl`Add key for debian ${V.ansible_lsb.release}`,
     apt_key: {
       url: tmpl`https://ftp-master.debian.org/keys/archive-key-${
         rawTmpl("{{ ansible_lsb.release}}")

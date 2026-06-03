@@ -1,4 +1,10 @@
-import { expr, isDefined, type Playbook, tmpl, V } from "../lib/ansible.ts";
+import {
+  isDefined,
+  loopOverVar,
+  type Playbook,
+  tmpl,
+  V,
+} from "../lib/ansible.ts";
 
 export default [
   // ZFS
@@ -55,19 +61,21 @@ export default [
           path: V.item,
           state: "directory",
         },
-        loop: expr("icosdata_mkdirs | default([])"),
+        loop: V.icosdata_mkdirs.default([]),
       },
-      {
-        name: "Do bind-mount local data",
-        mount: {
-          fstype: "none",
-          state: "mounted",
-          path: expr("item.path"),
-          src: expr("item.src"),
-          opts: tmpl`bind${expr("item.opts | default('')")}`,
-        },
-        loop: expr("icosdata_bind_mounts | default([])"),
-      },
+      loopOverVar<{ opts: string; path: string; src: string }>(
+        V.icosdata_bind_mounts.default([]),
+        (item) => ({
+          name: "Do bind-mount local data",
+          mount: {
+            fstype: "none",
+            state: "mounted",
+            path: item.path,
+            src: item.src,
+            opts: tmpl`bind${item.opts.default("")}`,
+          },
+        }),
+      ),
       {
         when: isDefined("icosdata_exports"),
         name: "Export data via nfs",
@@ -87,21 +95,23 @@ export default [
         command: "exportfs -rav",
         changed_when: false,
       },
-      {
-        when: isDefined("icosdata_nfs_mounts"),
-        name: "Mount nfs data",
-        tags: "mount",
-        mount: {
-          fstype: "nfs4",
-          state: expr("item.state | default('mounted')"),
-          // The next two default to omit so that they can be left out when state
-          // is "unmounted".
-          src: expr("item.src | default(omit)"),
-          path: expr("item.path | default(omit)"),
-          opts: expr("item.opts | default('ro')"),
-        },
-        loop: V.icosdata_nfs_mounts,
-      },
+      loopOverVar<{ opts: string; path: string; src: string; state: string }>(
+        V.icosdata_nfs_mounts,
+        (item) => ({
+          when: isDefined("icosdata_nfs_mounts"),
+          name: "Mount nfs data",
+          tags: "mount",
+          mount: {
+            fstype: "nfs4",
+            state: item.state.default("mounted"),
+            // The next two default to omit so that they can be left out when state
+            // is "unmounted".
+            src: item.src.default(V.omit),
+            path: item.path.default(V.omit),
+            opts: item.opts.default("ro"),
+          },
+        }),
+      ),
     ],
   },
 

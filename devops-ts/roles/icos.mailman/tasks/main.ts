@@ -1,11 +1,12 @@
 import {
   loopOver,
+  loopOverVar,
   not,
   register,
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -34,9 +35,9 @@ export default [
       name: "Copy mailman files",
       template: {
         // item.src is typed (loop element key); the filtered forms stay raw.
-        dest: expr("item.dest | default(mailman_home)"),
+        dest: item.dest.default(V.mailman_home),
         src: item.src,
-        mode: expr("item.mode | default(omit)"),
+        mode: item.mode.default(V.omit),
       },
       register: "_files",
     }),
@@ -51,9 +52,9 @@ export default [
   {
     name: "Test the REST API",
     uri: {
-      url: tmpl`https://${expr("mailman_domains | first")}/rest/3.0/domains`,
+      url: tmpl`https://${V.mailman_domains.first()}/rest/3.0/domains`,
       user: V.mailman_rest_user,
-      password: expr("mailman_rest_pass"),
+      password: V.mailman_rest_pass,
     },
     register: r,
     failed_when: [
@@ -64,20 +65,22 @@ export default [
     delay: 20,
     until: not(r.failed),
   },
-  {
-    name: "Set postfix parameters",
-    postconf: {
-      param: expr("item.param"),
-      value: expr("item.value"),
-      append: expr("item.append | default(omit)"),
-    },
-    loop: V.mailman_postfix_config,
-  },
+  loopOverVar<{ append: string; param: string; value: string }>(
+    V.mailman_postfix_config,
+    (item) => ({
+      name: "Set postfix parameters",
+      postconf: {
+        param: item.param,
+        value: item.value,
+        append: item.append.default(V.omit),
+      },
+    }),
+  ),
   {
     name: "delete_spam tasks",
     tags: "mailman_delete_spam",
     block: [
-      loopOver<{ src: Tmpl }>(
+      loopOver<{ src: Tmpl; dest?: Tmpl; mode?: Tmpl }>(
         [
           { src: "delete_spam_hyperkitty.py" },
           { src: "get_spam_ids.py" },
@@ -86,9 +89,9 @@ export default [
         (item) => ({
           name: "Copy mailman_delete_spam files",
           template: {
-            dest: expr("item.dest | default(mailman_home)"),
+            dest: item.dest.default(V.mailman_home),
             src: item.src,
-            mode: expr("item.mode | default(omit)"),
+            mode: item.mode.default(V.omit),
           },
           register: "_files",
         }),

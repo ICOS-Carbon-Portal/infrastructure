@@ -1,11 +1,11 @@
 import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`Add ${expr("username")} user`,
+    name: tmpl`Add ${V.username} user`,
     user: {
-      name: expr("username"),
+      name: V.username,
       groups: V.extra_groups,
       append: true,
       shell: "/bin/bash",
@@ -17,15 +17,15 @@ export default [
     when: raw("not (jarservice_conf_only | default(False) | bool)"),
   },
   {
-    name: tmpl`Copy ${expr("servicename")} config file ${expr("configfile")}`,
+    name: tmpl`Copy ${V.servicename} config file ${V.configfile}`,
     template: {
-      src: expr("configfile"),
+      src: V.configfile,
       dest: tmpl`${rawTmpl("{{ _user.home}}")}/`,
     },
-    notify: tmpl`restart ${expr("servicename")}`,
+    notify: tmpl`restart ${V.servicename}`,
   },
   {
-    name: tmpl`Copy ${expr("servicename")} nginx config file(s) ${
+    name: tmpl`Copy ${V.servicename} nginx config file(s) ${
       rawTmpl("{{nginxconfig}}")
     }*`,
     template: {
@@ -40,15 +40,15 @@ export default [
     notify: "reload nginx config",
   },
   {
-    name: tmpl`Add systemd ${expr("servicename")} servicefile`,
+    name: tmpl`Add systemd ${V.servicename} servicefile`,
     template: {
-      src: expr("servicetemplate"),
-      dest: tmpl`/etc/systemd/system/${expr("servicename")}.service`,
+      src: V.servicetemplate,
+      dest: tmpl`/etc/systemd/system/${V.servicename}.service`,
     },
     notify: ["reload systemd config"],
   },
   {
-    name: tmpl`Enable systemd ${expr("servicename")}`,
-    service: tmpl`name=${expr("servicename")} enabled=yes state=started`,
+    name: tmpl`Enable systemd ${V.servicename}`,
+    service: tmpl`name=${V.servicename} enabled=yes state=started`,
   },
 ] satisfies TaskFile;

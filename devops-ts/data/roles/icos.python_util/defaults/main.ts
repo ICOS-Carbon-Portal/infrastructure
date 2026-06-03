@@ -4,20 +4,24 @@ import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
+import type { ParamVars } from "../../../../lib/paramvars.ts";
+import type { VaultVars } from "../../../../lib/vaultvars.ts";
+import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
-  python_util_bin_dir: string;
-  python_util_python_executable: string;
-  python_util_install_prefix: string;
-  python_util_install_dir: string;
+  python_util_bin_dir: unknown;
+  python_util_python_executable: unknown;
+  python_util_install_prefix: unknown;
+  python_util_install_dir: unknown;
 }
-const { V, expr, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<
+  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+>();
 
 export default {
   "python_util_bin_dir": "/usr/local/bin",
   "python_util_python_executable": "python3.11",
   "python_util_install_prefix": "/opt/",
-  "python_util_install_dir": tmpl`${V.python_util_install_prefix}/${
-    expr("python_util_src | basename")
-  }`,
+  "python_util_install_dir":
+    tmpl`${V.python_util_install_prefix}/${V.python_util_src.basename()}`,
 } satisfies VarsFile;

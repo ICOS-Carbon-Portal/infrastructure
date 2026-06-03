@@ -1,5 +1,7 @@
 import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { tmpl } from "../_ctx.ts";
+
+const _mkdir = register("_mkdir");
 
 const _conf = register("_conf");
 
@@ -12,12 +14,12 @@ export default [
       path: "/etc/systemd/system/serial-getty@ttyS0.service.d",
       state: "directory",
     },
-    register: "_mkdir",
+    register: _mkdir,
   },
   {
     name: "Create ttyS0 override",
     copy: {
-      dest: tmpl`${expr("_mkdir.path")}/autologin.conf`,
+      dest: tmpl`${_mkdir.path.ref}/autologin.conf`,
       content: `[Service]
 ExecStart=
 ExecStart=-/sbin/agetty -o '-p -- \\\\u' --keep-baud 115200,57600,38400,9600 --autologin root - $TERM

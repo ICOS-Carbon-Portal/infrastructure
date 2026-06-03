@@ -19,7 +19,6 @@ export interface Vars {
   cpdata_domains: string;
   doi_certbot_name: string;
   cpauth_envries: string; // list of "envri" items (cf. icos.cpauth template loop)
-  virtuoso_enable: boolean;
   root_keys: string; // global: the ssh keys each host authorizes for root
   icosdata_exports: string;
   icosdata_nfs_mounts: string;
@@ -36,17 +35,30 @@ import type { Scalar } from "./ansible.ts";
 import type { BuiltinVars } from "./builtins.ts";
 import type { Globals } from "./globals.ts";
 import type { AllVars } from "./allvars.ts";
-import { expr, type Ref } from "./template.ts";
+import type { ParamVars } from "./paramvars.ts";
+import type { VaultVars } from "./vaultvars.ts";
+import type { VarShapes } from "./shapes.ts";
+import { type Ref, varProxy, type VarRef } from "./template.ts";
 
-// The full set of statically-known variable names a playbook may reference: the
-// hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins, and
-// every role-defined var (lib/allvars.ts). Ansible variable names are a single
-// flat namespace, so a name defined anywhere is the same variable everywhere —
-// referencing it through a checked `V.x` (not `expr("x")`) catches typos.
-// A UNION of keyofs (not an intersection of the interfaces) is used so a name
-// declared with different types in different sources can't intersect to a
-// `never`-valued property, which would collapse the whole mapped accessor.
-type KnownName = keyof Vars | keyof Globals | keyof BuiltinVars | keyof AllVars;
+// The full set of statically-known variables a playbook may reference: the
+// hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins,
+// every role-defined var (lib/allvars.ts), role caller-params / play vars
+// (lib/paramvars.ts), vault-defined names (lib/vaultvars.ts), and object
+// shapes (lib/shapes.ts). Ansible variable names are a single flat namespace,
+// so a name defined anywhere is the same variable everywhere — referencing it
+// through a checked `V.x` (not `expr("x")`) catches typos.
+// The generated registries declare every value as `unknown`, so a name that is
+// also hand-declared (a fact shape, a boolean global) intersects to the
+// hand-declared type rather than to a `never`-valued property.
+type AllKnown =
+  & Vars
+  & Globals
+  & BuiltinVars
+  & AllVars
+  & ParamVars
+  & VaultVars
+  & VarShapes;
+type KnownName = keyof AllKnown & string;
 
 // Re-exported for convenience (the canonical definitions live in template.ts).
 export {
@@ -61,15 +73,33 @@ export {
 
 /**
  * Typed accessor for variable references in value position. Each access yields a
- * `Template` (rendered quoted), so unknown names are a compile error.
+ * `Template` (rendered quoted), so unknown names are a compile error. A variable
+ * declared with an object shape (lib/shapes.ts) exposes checked field refs.
  *
  *   V.nexus_home            // Template "{{ nexus_home }}"
+ *   V.wg_hub_config.name    // Template "{{ wg_hub_config.name }}"
  *   V.nope                  // compile error: not in Vars
  */
-export const V: { readonly [K in KnownName]: Ref } = new Proxy(
+export const V: { readonly [K in KnownName]: VarRef<AllKnown[K]> } = new Proxy(
   {},
-  { get: (_t, name: string) => expr(name) },
-) as { readonly [K in KnownName]: Ref };
+  { get: (_t, name: string) => varProxy(name) },
+) as { readonly [K in KnownName]: VarRef<AllKnown[K]> };
+
+/**
+ * Checked access to another host's variables:
+ *   hostvar(V.jbuild_rsync_host).ansible_port  // {{ hostvars[jbuild_rsync_host].ansible_port }}
+ *   hostvar("localhost").some_fact             // {{ hostvars.localhost.some_fact }}
+ * The host is a variable ref (rendered as `hostvars[<name>]`) or a literal
+ * hostname (rendered as `hostvars.<host>`); the field is any known variable.
+ */
+export function hostvar(
+  host: Ref | string,
+): { readonly [K in KnownName]: Ref } {
+  const path = typeof host === "string"
+    ? `hostvars.${host}`
+    : `hostvars[${host.parts[0].kind === "ref" ? host.parts[0].jinja : host}]`;
+  return varProxy(path) as unknown as { readonly [K in KnownName]: Ref };
+}
 
 // --- when: expression builder (bare name, no `{{ }}` wrapper) ----------------
 

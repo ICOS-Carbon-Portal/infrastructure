@@ -4,7 +4,7 @@ import {
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -32,9 +32,9 @@ export default [
     (item) => ({
       name: "Install templates",
       template: {
-        dest: expr("item.dest | default(rdflog_home)"),
+        dest: item.dest.default(V.rdflog_home),
         src: item.src,
-        mode: expr("item.mode | default(omit)"),
+        mode: item.mode.default(V.omit),
       },
     }),
   ),

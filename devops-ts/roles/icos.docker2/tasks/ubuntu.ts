@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { register, type TaskFile, V } from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
+
+const _key = register("_key");
 
 export default [
   {
@@ -10,7 +12,7 @@ export default [
       mode: "0644",
       force: true,
     },
-    register: "_key",
+    register: _key,
   },
   {
     name: "Retrieve deb_arch fact",
@@ -24,11 +26,8 @@ export default [
     name: "Add docker apt repository",
     apt_repository: {
       filename: "docker",
-      repo: tmpl`deb [arch=${expr("deb_arch")} signed-by=${
-        expr("_key.dest")
-      }] https://download.docker.com/linux/ubuntu ${
-        expr("ansible_lsb.codename")
-      } stable`,
+      repo:
+        tmpl`deb [arch=${V.deb_arch} signed-by=${_key.dest.ref}] https://download.docker.com/linux/ubuntu ${V.ansible_lsb.codename} stable`,
     },
   },
 ] satisfies TaskFile;

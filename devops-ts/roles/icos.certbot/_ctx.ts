@@ -5,20 +5,23 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
+import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  certbot_bin: string;
-  certbot_conf_path: string;
-  certbot_disabled: string;
-  certbot_email: string;
-  certbot_fake_certificate: string;
-  certbot_fake_cn: string;
-  certbot_fake_crt: string;
-  certbot_fake_key: string;
-  certbot_live_crt: string;
-  certbot_live_key: string;
+  certbot_bin: unknown;
+  certbot_conf_path: unknown;
+  certbot_disabled: unknown;
+  certbot_email: unknown;
+  certbot_fake_certificate: unknown;
+  certbot_fake_cn: unknown;
+  certbot_fake_crt: unknown;
+  certbot_fake_key: unknown;
+  certbot_live_crt: unknown;
+  certbot_live_key: unknown;
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & Globals & BuiltinVars & AllVars
+  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
 >();

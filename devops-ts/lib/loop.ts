@@ -66,3 +66,33 @@ export function withItemsOver<T>(
     with_items: items as unknown as Task["with_items"],
   };
 }
+
+/**
+ * As `loopOver`, but for a loop over a VARIABLE (`loop: "{{ some_list }}"`).
+ * The element type cannot be inferred from a variable, so the caller asserts
+ * it; `item.<key>` references are then checked against that assertion — a
+ * weaker guarantee than `loopOver`'s inference, but it still catches typos and
+ * documents the element shape at the loop site.
+ *
+ *   loopOverVar<{ name: string; key: string }>(
+ *     expr("user_conf.create_users").default([]),
+ *     (item) => ({ authorized_key: { user: item.name, key: item.key } }),
+ *   )
+ */
+export function loopOverVar<T>(
+  source: Ref,
+  body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
+): Task {
+  return { ...body(itemProxy<T>()), loop: source as unknown as Task["loop"] };
+}
+
+/** As `loopOverVar`, but emits the legacy `with_items:` key. */
+export function withItemsOverVar<T>(
+  source: Ref,
+  body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
+): Task {
+  return {
+    ...body(itemProxy<T>()),
+    with_items: source as unknown as Task["with_items"],
+  };
+}

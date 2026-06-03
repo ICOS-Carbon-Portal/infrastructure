@@ -20,6 +20,8 @@ export interface BuiltinVars {
   groups: unknown;
   group_names: unknown;
   hostvars: unknown;
+  /** The "skip this argument" sentinel: `foo: "{{ omit }}"` omits the arg. */
+  omit: string;
   play_hosts: unknown;
   ansible_play_hosts: unknown;
 
@@ -39,8 +41,14 @@ export interface BuiltinVars {
   ansible_hostname: string;
   ansible_fqdn: string;
   ansible_kernel: string;
-  ansible_lsb: unknown;
-  ansible_default_ipv4: unknown;
+  ansible_lsb: {
+    id: string;
+    codename: string;
+    release: string;
+    major_release: string;
+  };
+  ansible_default_ipv4: { gateway: string };
+  ansible_python: { version: { major: string; minor: string } };
   ansible_default_ipv6: unknown;
   ansible_facts: unknown;
   ansible_date_time: unknown;

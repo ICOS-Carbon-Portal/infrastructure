@@ -1,5 +1,5 @@
 import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -37,7 +37,7 @@ export default [
   {
     name: "Check that geoip responds",
     uri: {
-      url: tmpl`http://${expr("certbot_domains | first")}:/ip/8.8.8.8`,
+      url: tmpl`http://${V.certbot_domains.first()}:/ip/8.8.8.8`,
       return_content: true,
     },
     register: r,

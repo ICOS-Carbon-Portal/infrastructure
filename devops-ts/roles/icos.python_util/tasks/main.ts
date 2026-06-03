@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Copying python utility",
     copy: {
-      src: expr("python_util_src"),
+      src: V.python_util_src,
       dest: V.python_util_install_prefix,
     },
     register: "_util",
