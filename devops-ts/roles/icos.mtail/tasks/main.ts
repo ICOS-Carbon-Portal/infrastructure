@@ -18,8 +18,8 @@ export default [
       name: "Configure mtail",
       lineinfile: {
         path: "/etc/default/mtail",
-        regexp: tmpl`^#?${expr("item.key")}=`,
-        line: tmpl`${expr("item.key")}=${expr("item.val")}`,
+        regexp: tmpl`^#?${item.key}=`,
+        line: tmpl`${item.key}=${item.val}`,
         state: "present",
         create: false,
       },

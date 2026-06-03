@@ -70,7 +70,7 @@ export default [
     (item) => ({
       name: "Check that services responds on local ports",
       uri: {
-        url: tmpl`http://localhost:${expr("item.port")}`,
+        url: tmpl`http://localhost:${item.port}`,
       },
       retries: 10,
       loop_control: {
