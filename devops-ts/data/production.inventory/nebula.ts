@@ -2,16 +2,8 @@
 import type { Inventory } from "../../lib/data.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
-import type { BuiltinVars } from "../../lib/builtins.ts";
-import type { AllVars } from "../../lib/allvars.ts";
-import type { ParamVars } from "../../lib/paramvars.ts";
-import type { VaultVars } from "../../lib/vaultvars.ts";
-import type { VarShapes } from "../../lib/shapes.ts";
 
-type Self = Record<never, never>;
-const { V, expr, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V, expr, tmpl, rawTmpl } = context<Globals>();
 
 export default {
   "nebula_hosts": {

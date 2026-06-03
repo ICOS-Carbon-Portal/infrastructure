@@ -2,25 +2,8 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
-import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
-import type { ParamVars } from "../../../../lib/paramvars.ts";
-import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
-interface Self {
-  postgis_home: unknown;
-  postgresql_postgis_enable: unknown;
-  postgis_db_name: unknown;
-  postgis_db_user: unknown;
-  postgis_db_pass: unknown;
-  postgis_postgres_version: unknown;
-  postgis_package: unknown;
-  postgis_db_users: unknown;
-}
-const { V } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V } = context<Globals>();
 
 export default {
   "postgis_backup_enable": false,

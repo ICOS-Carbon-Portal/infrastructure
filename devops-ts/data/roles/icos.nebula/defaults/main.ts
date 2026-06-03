@@ -6,8 +6,6 @@ import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
-import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
   nebula_is_lighthouse: unknown;
@@ -33,7 +31,7 @@ interface Self {
   nebula_url_map: unknown;
 }
 const { V, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
+  Self & Globals & BuiltinVars & AllVars & ParamVars
 >();
 
 export default {

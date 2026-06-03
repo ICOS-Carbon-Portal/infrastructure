@@ -2,12 +2,9 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
-import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
   restic_server_data: unknown;
@@ -22,9 +19,7 @@ interface Self {
   restic_server_version: unknown;
   restic_server_url_map: unknown;
 }
-const { V, tmpl } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
 
 export default {
   "restic_server_data": null,

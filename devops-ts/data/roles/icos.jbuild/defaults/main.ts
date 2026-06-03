@@ -2,27 +2,10 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { Globals } from "../../../../lib/globals.ts";
-import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
-interface Self {
-  jbuild_registry: unknown;
-  jbuild_edctl_host_name: unknown;
-  jbuild_edctl_host_port: unknown;
-  jbuild_jyctl_host_name: unknown;
-  jbuild_jyctl_host_port: unknown;
-  jbuild_rsync_host_name: unknown;
-  jbuild_rsync_host_port: unknown;
-  jbuild_rsync_user: unknown;
-  jbuild_rrsync_bin: unknown;
-}
-const { V } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V } = context<ParamVars & VaultVars>();
 
 export default {
   "jbuild_registry": {

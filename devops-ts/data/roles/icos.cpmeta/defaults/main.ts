@@ -2,29 +2,9 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
-import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
-import type { ParamVars } from "../../../../lib/paramvars.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
-interface Self {
-  cpmeta_user: unknown;
-  cpmeta_home: unknown;
-  cpmeta_servicename: unknown;
-  cpmeta_readonly_mode: unknown;
-  cpmeta_db_name: unknown;
-  cpmeta_db_user: unknown;
-  cpmeta_db_port: unknown;
-  cpmeta_db_pass: unknown;
-  doi_password_icos: unknown;
-  cpmeta_bind_addr: unknown;
-  cpmeta_host: unknown;
-  cpmeta_port: unknown;
-}
-const { V } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V } = context<Globals & VaultVars>();
 
 export default {
   "cpmeta_user": "cpmeta",

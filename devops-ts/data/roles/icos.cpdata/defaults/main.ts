@@ -2,34 +2,9 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
-import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
-import type { ParamVars } from "../../../../lib/paramvars.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
-interface Self {
-  cpdata_user: unknown;
-  cpdata_home: unknown;
-  cpdata_service: unknown;
-  cpdata_meta_port: unknown;
-  cpdata_meta_addr: unknown;
-  cpdata_bind_addr: unknown;
-  cpdata_host: unknown;
-  cpdata_port: unknown;
-  cpdata_irods_pass: unknown;
-  cpdata_dlreporter_pass: unknown;
-  cpdata_cpuser_secret_salt: unknown;
-  cpdata_etcfacade_secret: unknown;
-  cpdata_pgreslog_admin_pass: unknown;
-  cpdata_pgreslog_writer_pass: unknown;
-  cpdata_pgreslog_reader_pass: unknown;
-  cpdata_netcdf_folder: unknown;
-  cpdata_jre_package: unknown;
-}
-const { V } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V } = context<Globals & VaultVars>();
 
 export default {
   "cpdata_user": "cpdata",

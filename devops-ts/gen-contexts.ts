@@ -1,8 +1,11 @@
 // Generate per-role variable contexts: roles/<role>/_ctx.ts
 //
 // Reads each role's ../devops/roles/<role>/{defaults,vars}/*.yml, collects the
-// top-level variable names with inferred types, and emits a `Vars` interface +
-// a `context<Vars>()` accessor. Idempotent; re-run after editing role defaults.
+// top-level variable names, and emits a `Vars` interface + a `context<...>()`
+// accessor. The context is widened with ONLY the registries the role's task
+// and handler files actually reference (scanned for `V.x` / `isDef("x")` /
+// `notVar("x")`), so each _ctx.ts carries the smallest type that still checks.
+// Idempotent; re-run after editing role defaults or converting tasks.
 //
 //   deno run --allow-read --allow-write gen-contexts.ts
 import { parse } from "yaml";
@@ -20,13 +23,16 @@ async function declaredNames(path: string): Promise<Set<string>> {
   return names;
 }
 
+const GLOBALS = await declaredNames("./lib/globals.ts");
+const BUILTINS = await declaredNames("./lib/builtins.ts");
+const PARAMVARS = await declaredNames("./lib/paramvars.ts");
+const VAULTVARS = await declaredNames("./lib/vaultvars.ts");
+const SHAPES = await declaredNames("./lib/shapes.ts");
+
 // A role's own var that is also a global/builtin would make `Vars & Globals &
 // BuiltinVars` collide (e.g. boolean & string -> never), so own vars exclude them;
 // they remain reachable through the widening with the global/builtin type.
-const reserved = new Set([
-  ...await declaredNames("./lib/globals.ts"),
-  ...await declaredNames("./lib/builtins.ts"),
-]);
+const reserved = new Set([...GLOBALS, ...BUILTINS]);
 
 // Every var name is declared `unknown`: only the NAMES matter (the V accessor
 // maps a scalar-typed key to a plain Ref). `unknown` (not `string`) keeps the
@@ -40,21 +46,19 @@ function tsType(_v: unknown): string {
 /** A valid bare TS identifier needs no quoting as an interface key. */
 const ident = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
-// Every var name defined in ANY role's defaults/vars, accumulated across all
-// roles. Emitted as lib/allvars.ts so a role-defined variable can be referenced
-// statically (checked `V.x`) from an inventory or a *different* role — Ansible
-// variable names are a single flat namespace, so a name defined anywhere is the
-// same variable everywhere. Already excludes globals/builtins (via `reserved`).
-const allVars = new Set<string>();
-
-let generated = 0;
+// ---------------------------------------------------------------------------
+// Pass 1: collect every role's own variable names (defaults/vars yml). The
+// full cross-role set is needed before emitting any context (a role may
+// reference another role's var through AllVars).
+// ---------------------------------------------------------------------------
+const roleVars = new Map<string, Map<string, string>>(); // role -> name -> type
 for await (const role of Deno.readDir(devopsRoles)) {
   if (!role.isDirectory) continue;
 
-  const vars = new Map<string, string>(); // name -> ts type
+  const vars = new Map<string, string>();
   for (const sub of ["defaults", "vars"]) {
     const dir = new URL(`${role.name}/${sub}/`, devopsRoles);
-    let entries: Deno.DirEntry[] = [];
+    const entries: Deno.DirEntry[] = [];
     try {
       for await (const f of Deno.readDir(dir)) entries.push(f);
     } catch {
@@ -71,7 +75,6 @@ for await (const role of Deno.readDir(devopsRoles)) {
       if (doc && typeof doc === "object" && !Array.isArray(doc)) {
         for (const [k, v] of Object.entries(doc as Record<string, unknown>)) {
           if (reserved.has(k)) continue; // covered by Globals/BuiltinVars widening
-          // defaults win over vars only if vars hasn't set a non-unknown type
           if (!vars.has(k) || vars.get(k) === "unknown") {
             vars.set(k, tsType(v));
           }
@@ -79,14 +82,91 @@ for await (const role of Deno.readDir(devopsRoles)) {
       }
     }
   }
+  roleVars.set(role.name, vars);
+}
 
+// Every var name defined in ANY role's defaults/vars (see lib/allvars.ts).
+const allVars = new Set<string>();
+for (const vars of roleVars.values()) {
+  for (const name of vars.keys()) allVars.add(name);
+}
+
+// ---------------------------------------------------------------------------
+// Pass 2: emit each role's _ctx.ts, widened with only the registries its task
+// and handler files actually use.
+// ---------------------------------------------------------------------------
+
+/**
+ * Variable names a role's TS files reference through its _ctx: `V.<name>` (only
+ * in files that import V from "../_ctx.ts" — a file may instead use the global
+ * V from lib/ansible.ts), plus `isDef("<name>")` / `notVar("<name>")` (always
+ * _ctx exports).
+ */
+async function usedNames(roleName: string): Promise<Set<string>> {
+  const used = new Set<string>();
+  for (const sub of ["tasks", "handlers"]) {
+    const dir = new URL(`${roleName}/${sub}/`, tsRoles);
+    const entries: Deno.DirEntry[] = [];
+    try {
+      for await (const f of Deno.readDir(dir)) entries.push(f);
+    } catch {
+      continue;
+    }
+    for (const f of entries) {
+      if (!f.isFile || !f.name.endsWith(".ts")) continue;
+      const src = await Deno.readTextFile(new URL(f.name, dir));
+      const ctxImport = src.match(
+        /import \{([^}]*)\} from "\.\.\/_ctx\.ts";/s,
+      );
+      const ctxNames = new Set(
+        (ctxImport?.[1] ?? "").split(",").map((s) => s.trim()),
+      );
+      if (ctxNames.has("V")) {
+        for (const m of src.matchAll(/\bV\.([A-Za-z_]\w*)/g)) used.add(m[1]);
+      }
+      for (
+        const m of src.matchAll(/\b(?:isDef|notVar)\(\s*["']([A-Za-z_]\w*)/g)
+      ) {
+        used.add(m[1]);
+      }
+    }
+  }
+  return used;
+}
+
+let generated = 0;
+for (const [roleName, vars] of roleVars) {
   // Ensure the role's TS dir exists (it does for ported roles; create otherwise).
-  const outDir = new URL(`${role.name}/`, tsRoles);
+  const outDir = new URL(`${roleName}/`, tsRoles);
   try {
     await Deno.mkdir(outDir, { recursive: true });
   } catch { /* exists */ }
 
-  for (const name of vars.keys()) allVars.add(name);
+  // Pick, per used name, the registry that provides it. A shaped name needs
+  // VarShapes (its object type lives there; everywhere else it is `unknown`);
+  // otherwise prefer the most specific source, falling back to the system-wide
+  // AllVars. Unmatched names (e.g. `V.x` in a comment) are ignored — if real,
+  // the type check fails and points at them.
+  const used = await usedNames(roleName);
+  const needs = {
+    Vars: false,
+    Globals: false,
+    BuiltinVars: false,
+    AllVars: false,
+    ParamVars: false,
+    VaultVars: false,
+    VarShapes: false,
+  };
+  for (const name of used) {
+    if (SHAPES.has(name)) needs.VarShapes = true;
+    else if (vars.has(name)) needs.Vars = true;
+    else if (GLOBALS.has(name)) needs.Globals = true;
+    else if (BUILTINS.has(name)) needs.BuiltinVars = true;
+    else if (PARAMVARS.has(name)) needs.ParamVars = true;
+    else if (VAULTVARS.has(name)) needs.VaultVars = true;
+    else if (allVars.has(name)) needs.AllVars = true;
+  }
+  needs.Vars ||= used.size === 0; // floor: context<Vars> (possibly empty)
 
   const lines = [...vars.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
@@ -99,21 +179,40 @@ for await (const role of Deno.readDir(devopsRoles)) {
     ? `export interface Vars {\n${lines.join("\n")}\n}`
     : `// deno-lint-ignore no-empty-interface\nexport interface Vars {}`;
 
-  // The context is widened with globals (group_vars/inventory) and Ansible
-  // built-ins, so references to those are checkable too — not just own-defaults.
+  const imports = [
+    `import { context } from "../../lib/context.ts";\n`,
+    needs.Globals
+      ? `import type { Globals } from "../../lib/globals.ts";\n`
+      : "",
+    needs.BuiltinVars
+      ? `import type { BuiltinVars } from "../../lib/builtins.ts";\n`
+      : "",
+    needs.AllVars
+      ? `import type { AllVars } from "../../lib/allvars.ts";\n`
+      : "",
+    needs.ParamVars
+      ? `import type { ParamVars } from "../../lib/paramvars.ts";\n`
+      : "",
+    needs.VaultVars
+      ? `import type { VaultVars } from "../../lib/vaultvars.ts";\n`
+      : "",
+    needs.VarShapes
+      ? `import type { VarShapes } from "../../lib/shapes.ts";\n`
+      : "",
+  ].join("");
+
+  const widening = (Object.keys(needs) as Array<keyof typeof needs>)
+    .filter((k) => needs[k])
+    .join(" & ");
+
   const out = `// Auto-generated by gen-contexts.ts from\n` +
-    `// ../../../devops/roles/${role.name}/{defaults,vars}/*.yml\n` +
-    `// Per-role variable context: ${vars.size} own variables (+ globals + builtins).\n` +
-    `import { context } from "../../lib/context.ts";\n` +
-    `import type { Globals } from "../../lib/globals.ts";\n` +
-    `import type { BuiltinVars } from "../../lib/builtins.ts";\n` +
-    `import type { AllVars } from "../../lib/allvars.ts";\n` +
-    `import type { ParamVars } from "../../lib/paramvars.ts";\n` +
-    `import type { VaultVars } from "../../lib/vaultvars.ts";\n` +
-    `import type { VarShapes } from "../../lib/shapes.ts";\n\n` +
-    `${body}\n\n` +
+    `// ../../../devops/roles/${roleName}/{defaults,vars}/*.yml\n` +
+    `// Per-role variable context: ${vars.size} own variables, widened with\n` +
+    `// only the registries this role's task/handler files reference.\n` +
+    imports +
+    `\n${body}\n\n` +
     `export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<\n` +
-    `  Vars & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes\n` +
+    `  ${widening}\n` +
     `>();\n`;
 
   await Deno.writeTextFile(new URL("_ctx.ts", outDir), out);

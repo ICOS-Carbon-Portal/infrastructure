@@ -256,22 +256,64 @@ for (const rel of await dataYmls()) {
       "V",
       ...["expr", "tmpl", "rawTmpl"].filter((h) => used.has(h)),
     ];
-    const self = selfKeys.length
-      ? `interface Self {\n${
-        selfKeys.map((k) => `  ${k}: unknown;`).join("\n")
-      }\n}\n`
-      : `type Self = Record<never, never>;\n`;
+    // Widen the context with ONLY the registries that cover the names this
+    // file actually references through V (scanned from the emitted literal),
+    // so each data module carries the smallest type that still checks.
+    const usedNames = new Set(
+      [...literal.matchAll(/\bV\.([A-Za-z_]\w*)/g)].map((m) => m[1]),
+    );
+    const selfSet = new Set(selfKeys);
+    const needs = {
+      Self: false,
+      Globals: false,
+      BuiltinVars: false,
+      AllVars: false,
+      ParamVars: false,
+      VaultVars: false,
+      VarShapes: false,
+    };
+    for (const n of usedNames) {
+      if (SHAPES.has(n)) needs.VarShapes = true;
+      else if (selfSet.has(n)) needs.Self = true;
+      else if (GLOBALS.has(n)) needs.Globals = true;
+      else if (BUILTINS.has(n)) needs.BuiltinVars = true;
+      else if (PARAMVARS.has(n)) needs.ParamVars = true;
+      else if (VAULTVARS.has(n)) needs.VaultVars = true;
+      else if (ALLVARS.has(n)) needs.AllVars = true;
+    }
+    needs.Self ||= usedNames.size === 0; // floor: context<Self>
+    const self = needs.Self
+      ? (selfKeys.length
+        ? `interface Self {\n${
+          selfKeys.map((k) => `  ${k}: unknown;`).join("\n")
+        }\n}\n`
+        : `type Self = Record<never, never>;\n`)
+      : "";
+    const widening = (Object.keys(needs) as Array<keyof typeof needs>)
+      .filter((k) => needs[k])
+      .join(" & ");
     header += `import { context } from "${ups}lib/context.ts";\n` +
-      `import type { Globals } from "${ups}lib/globals.ts";\n` +
-      `import type { BuiltinVars } from "${ups}lib/builtins.ts";\n` +
-      `import type { AllVars } from "${ups}lib/allvars.ts";\n` +
-      `import type { ParamVars } from "${ups}lib/paramvars.ts";\n` +
-      `import type { VaultVars } from "${ups}lib/vaultvars.ts";\n` +
-      `import type { VarShapes } from "${ups}lib/shapes.ts";\n\n` +
+      (needs.Globals
+        ? `import type { Globals } from "${ups}lib/globals.ts";\n`
+        : "") +
+      (needs.BuiltinVars
+        ? `import type { BuiltinVars } from "${ups}lib/builtins.ts";\n`
+        : "") +
+      (needs.AllVars
+        ? `import type { AllVars } from "${ups}lib/allvars.ts";\n`
+        : "") +
+      (needs.ParamVars
+        ? `import type { ParamVars } from "${ups}lib/paramvars.ts";\n`
+        : "") +
+      (needs.VaultVars
+        ? `import type { VaultVars } from "${ups}lib/vaultvars.ts";\n`
+        : "") +
+      (needs.VarShapes
+        ? `import type { VarShapes } from "${ups}lib/shapes.ts";\n`
+        : "") +
+      `\n` +
       self +
-      `const { ${
-        helpers.join(", ")
-      } } = context<\n  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes\n>();\n`;
+      `const { ${helpers.join(", ")} } = context<${widening}>();\n`;
   } else if (used.size) {
     header += `import { ${
       [...used].sort().join(", ")

@@ -2,12 +2,7 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { Globals } from "../../../../lib/globals.ts";
-import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
-import type { VaultVars } from "../../../../lib/vaultvars.ts";
-import type { VarShapes } from "../../../../lib/shapes.ts";
 
 interface Self {
   sshlogin_dst_from: unknown;
@@ -27,9 +22,7 @@ interface Self {
   sshlogin_src_dst_host: unknown;
   sshlogin_src_dst_port: unknown;
 }
-const { V, expr, tmpl, rawTmpl } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars & VaultVars & VarShapes
->();
+const { V, expr, tmpl, rawTmpl } = context<Self & ParamVars>();
 
 export default {
   "sshlogin_dst_from": null,
