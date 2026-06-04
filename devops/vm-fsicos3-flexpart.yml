@@ -21,8 +21,8 @@
       file:
         path: "/data/flexpart/output"
         state: directory
-        owner: "{{ 1001000 }}"
-        group: "{{ 1001000 }}"
+        owner: 1001000
+        group: 1001000
 
     - name: Create the flexpart container
       tags:

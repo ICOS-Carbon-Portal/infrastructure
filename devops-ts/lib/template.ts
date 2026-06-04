@@ -276,6 +276,40 @@ export function concat(...parts: FilterArg[]): Template {
 }
 
 /**
+ * A typed reference to a Jinja variable by name — like `V`, but for a name the
+ * registries don't cover: a task-local `vars:` entry, an include parameter, a
+ * `set_fact` output. The shape is asserted by the caller; field access is then
+ * checked (`binding<{ image: string }>("conf").image` -> `{{ conf.image }}`).
+ */
+export function binding<T>(name: string): VarRef<T> {
+  return varProxy(name) as VarRef<T>;
+}
+
+/**
+ * A Jinja `{% for %}` loop rendered as a verbatim fragment. `body` receives a
+ * typed reference to the loop variable; the iterable is a checked ref. Replaces
+ * the `rawTmpl("{% for x in y %}")` / `expr("x")` / `rawTmpl("{% endfor %}")`
+ * trio with one construct whose iterable and loop-var references are checked.
+ *
+ *   jinjaFor<string>("module", V.caddy_modules, (m) => tmpl` --with ${m} `)
+ *   // {% for module in caddy_modules %} --with {{ module }} {% endfor %}
+ */
+export function jinjaFor<T>(
+  loopVar: string,
+  iterable: Template,
+  body: (item: VarRef<T>) => Template,
+): RawTemplate {
+  const p = iterable.parts;
+  const iter = p.length === 1 && p[0].kind === "ref"
+    ? p[0].jinja
+    : iterable.toText();
+  const bodyText = body(varProxy(loopVar) as VarRef<T>).toText();
+  return new RawTemplate(
+    `{% for ${loopVar} in ${iter} %}${bodyText}{% endfor %}`,
+  );
+}
+
+/**
  * Build a Template from a tagged template literal, splicing interpolated refs:
  *   tmpl`${V.nexus_home}/bbclient`     // {{ nexus_home }}/bbclient
  *

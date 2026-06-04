@@ -64,9 +64,11 @@ export {
 } from "./loop.ts";
 export { type Reg, register, type Result } from "./register.ts";
 export {
+  binding,
   concat,
   expr,
   iff,
+  jinjaFor,
   lookup,
   type LookupPlugin,
   RawTemplate,

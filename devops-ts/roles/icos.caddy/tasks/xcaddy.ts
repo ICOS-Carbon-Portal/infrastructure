@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { jinjaFor, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // First install the xcaddy tool.
@@ -9,8 +9,9 @@ export default [
   {
     name: "Compile caddy using xcaddy",
     command: tmpl`xcaddy build --output ${V.caddy_via_xcaddy} ${
-      rawTmpl("{% for module in caddy_modules %}")
-    } --with ${expr("module")} ${rawTmpl("{% endfor %}")}`,
+      jinjaFor<string>("module", V.caddy_modules, (module) =>
+        tmpl` --with ${module} `)
+    }`,
     args: {
       chdir: "/tmp",
       creates: V.caddy_via_xcaddy,

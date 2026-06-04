@@ -1,4 +1,4 @@
-import { expr, type Playbook, register, role, V } from "../lib/ansible.ts";
+import { type Playbook, register, role, V } from "../lib/ansible.ts";
 
 const _lxd = register("_lxd");
 
@@ -33,8 +33,8 @@ export default [
         file: {
           path: "/data/flexpart/output",
           state: "directory",
-          owner: expr("1001000"),
-          group: expr("1001000"),
+          owner: 1001000,
+          group: 1001000,
         },
       },
       {
