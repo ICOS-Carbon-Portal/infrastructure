@@ -3,7 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
 
-const { V, expr } = context<VaultVars>();
+const { V } = context<VaultVars>();
 
 export default {
   "plausible_home": "/opt/plausible",
@@ -12,9 +12,7 @@ export default {
   "plausible_postgres_password": V.vault_plausible_postgres_password,
   "plausible_secret": V.vault_plausible_secret,
   "plausible_google_client_id": V.vault_plausible_google_client_id,
-  "plausible_google_client_secret": expr(
-    "vault_plausible_google_client_secret",
-  ),
+  "plausible_google_client_secret": V.vault_plausible_google_client_secret,
   "plausible_mailer_email": V.vault_plausible_mailer_email,
   "plausible_backup_enabled": false,
   "plausible_totp_key": V.vault_plausible_totp_key,

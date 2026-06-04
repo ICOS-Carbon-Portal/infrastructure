@@ -3,16 +3,15 @@ import type { Inventory } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
 
-const { V, expr } = context<VaultVars>();
+const { V } = context<VaultVars>();
 
 export default {
   "postgis_admin_pass": V.vault_postgis_admin_pass,
   "postgis_writer_pass": V.vault_postgis_writer_pass,
   "postgis_reader_pass": V.vault_postgis_reader_pass,
   "rdflog_db_pass": V.vault_rdflog_db_pass,
-  "stiltweb_atmoaccess_user_password": expr(
-    "vault_stiltweb_atmoaccess_user_password",
-  ),
+  "stiltweb_atmoaccess_user_password":
+    V.vault_stiltweb_atmoaccess_user_password,
   "doi_admins": V.vault_doi_admins,
   "doi_to_addresses": V.vault_doi_to_addresses,
   "cpmeta_sentry_dsn": V.vault_cpmeta_sentry_dsn,

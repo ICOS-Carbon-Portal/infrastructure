@@ -55,6 +55,7 @@ export interface VaultVars {
   vault_mailman_rest_pass: string;
   vault_mailman_web_secret_key: string;
   vault_maps_lantmateriet_auth: string;
+  vault_matomo_mysql_database_password: string;
   vault_matomo_mysql_database_user: string;
   vault_matomo_mysql_password: string;
   vault_matomo_mysql_root_password: string;
@@ -67,6 +68,7 @@ export interface VaultVars {
   vault_onlyoffice_secret: string;
   vault_pancake_user_conf: string;
   vault_plausible_google_client_id: string;
+  vault_plausible_google_client_secret: string;
   vault_plausible_mailer_email: string;
   vault_plausible_postgres_password: string;
   vault_plausible_secret: string;
@@ -84,6 +86,7 @@ export interface VaultVars {
   vault_root_keys: string;
   vault_rspamd_admin_password: string;
   vault_rspamd_admin_password_hashed: string;
+  vault_stiltweb_atmoaccess_user_password: string;
   vault_virtuoso_dba_pass: string;
   vault_vmagent_auth: { username: string; password: string };
   vault_vm_graf_pass: string;

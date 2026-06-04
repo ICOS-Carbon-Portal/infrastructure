@@ -3,7 +3,7 @@ import type { VarsFile } from "../../../../lib/data.ts";
 import { context } from "../../../../lib/context.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
 
-const { V, expr } = context<VaultVars>();
+const { V } = context<VaultVars>();
 
 export default {
   "matomo_home": "/opt/matomo",
@@ -12,9 +12,7 @@ export default {
   "matomo_mysql_root_password": V.vault_matomo_mysql_root_password,
   "matomo_mysql_password": V.vault_matomo_mysql_password,
   "matomo_mysql_user": V.vault_matomo_mysql_user,
-  "matomo_mysql_database_password": expr(
-    "vault_matomo_mysql_database_password",
-  ),
+  "matomo_mysql_database_password": V.vault_matomo_mysql_database_password,
   "matomo_mysql_database_user": V.vault_matomo_mysql_database_user,
   "matomo_backup_enable": false,
 } satisfies VarsFile;
