@@ -1,5 +1,5 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 const newpub = register("newpub");
 const signedcert = register("signedcert");
@@ -43,7 +43,7 @@ export default [
           // We default to an empty passphrase, so it'll work by default for keys
           // with no password.
           responses: {
-            "Enter passphrase: ": expr("nebula_passphrase | default ('')"),
+            "Enter passphrase: ": V.nebula_passphrase.default(""),
           },
         },
         register: signedcert,

@@ -1,5 +1,5 @@
 import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, V } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
     name: "Install/upgrade docker",
     apt: {
       name: ["docker.io", "containerd"],
-      state: expr('"latest" if docker_upgrade | bool else "present"'),
+      state: iff(raw("docker_upgrade | bool"), "latest", "present"),
       update_cache: true,
     },
   },

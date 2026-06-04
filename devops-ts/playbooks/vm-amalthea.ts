@@ -1,5 +1,5 @@
 import {
-  expr,
+  hostvar,
   type Playbook,
   register,
   role,
@@ -80,7 +80,7 @@ export default [
           name: "forward_ssh_to_amalthea",
           table: "nat",
           rules: tmpl`-A PREROUTING -p tcp --dport ${
-            expr("hostvars['amalthea'].ansible_port")
+            hostvar("amalthea").ansible_port
           } -j DNAT --to-destination ${V.amalthea_ip}:22`,
         },
       },

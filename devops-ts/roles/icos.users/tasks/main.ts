@@ -1,5 +1,5 @@
 import { loopOverVar, raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   loopOverVar<{ groups: string; home: string; name: string; password: string }>(
@@ -11,7 +11,7 @@ export default [
         password: item.password.default(V.omit),
         home: item.home.default(V.omit),
         groups: item.groups.default(V.omit),
-        append: expr("item.groups | default(false) | bool"),
+        append: item.groups.default(false).bool(),
       },
     }),
   ),

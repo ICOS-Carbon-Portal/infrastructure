@@ -21,7 +21,7 @@
     name:
       - docker.io
       - containerd
-    state: '{{ "latest" if docker_upgrade | bool else "present" }}'
+    state: "{{ 'latest' if docker_upgrade | bool else 'present' }}"
     update_cache: yes
 
 - name: Make sure docker isn't upgraded

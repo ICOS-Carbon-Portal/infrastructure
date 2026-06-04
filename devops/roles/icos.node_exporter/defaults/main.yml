@@ -22,8 +22,7 @@ node_exporter_allow: false
 
 # Help download_github_bin choose architecture.
 node_exporter_arch: >-
-  {{ node_exporter_arch_map[ansible_architecture] |
-     default(ansible_architecture) }}
+  {{ node_exporter_arch_map[ansible_architecture] | default(ansible_architecture) }}
 
 node_exporter_arch_map:
   "armv6l": "armv6"

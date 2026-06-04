@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, V } from "../_ctx.ts";
+import { iff, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,8 +9,8 @@ export default [
       home: V.stiltcluster_home,
       state: "present",
       shell: "/bin/bash",
-      groups: expr('"docker" if stiltcluster_docker else omit'),
-      append: expr('"yes" if stiltcluster_docker else omit'),
+      groups: iff(V.stiltcluster_docker, "docker", V.omit),
+      append: iff(V.stiltcluster_docker, "yes", V.omit),
     },
   },
   {

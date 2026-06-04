@@ -3,8 +3,7 @@ sexp_config_file: "{{ sexp_home }}/config.yaml"
 sexp_listen: localhost:9469
 
 sexp_arch: >-
-  {{ sexp_arch_map[ansible_architecture] |
-     default(ansible_architecture) }}
+  {{ sexp_arch_map[ansible_architecture] | default(ansible_architecture) }}
 
 sexp_arch_map:
   "armv7l": "armv7"

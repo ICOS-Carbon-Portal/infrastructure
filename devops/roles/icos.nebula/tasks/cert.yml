@@ -37,7 +37,7 @@
         # We default to an empty passphrase, so it'll work by default for keys
         # with no password.
         responses:
-          "Enter passphrase: ": "{{ nebula_passphrase | default ('') }}"
+          "Enter passphrase: ": "{{ nebula_passphrase | default('') }}"
       register: signedcert
 
     - name: Write signed certificate

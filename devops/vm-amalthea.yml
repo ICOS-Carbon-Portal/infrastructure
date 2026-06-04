@@ -61,7 +61,7 @@
         table: nat
         rules: >-
           -A PREROUTING -p tcp
-          --dport {{ hostvars['amalthea'].ansible_port }}
+          --dport {{ hostvars.amalthea.ansible_port }}
           -j DNAT --to-destination {{ amalthea_ip }}:22
 
 
