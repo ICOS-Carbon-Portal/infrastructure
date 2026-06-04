@@ -62,7 +62,15 @@ export {
   withItemsOverVar,
 } from "./loop.ts";
 export { type Reg, register, type Result } from "./register.ts";
-export { expr, iff, RawTemplate, rawTmpl, Template } from "./template.ts";
+export {
+  expr,
+  iff,
+  lookup,
+  type LookupPlugin,
+  RawTemplate,
+  rawTmpl,
+  Template,
+} from "./template.ts";
 
 /**
  * A value that may be a plain string or a Jinja template (`V.x`, `tmpl(...)`).

@@ -1,5 +1,11 @@
-import { raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import {
+  lookup,
+  raw,
+  register,
+  type TaskFile,
+  V,
+} from "../../../lib/ansible.ts";
+import { tmpl } from "../_ctx.ts";
 
 const _user = register("_user");
 
@@ -24,7 +30,7 @@ export default [
       jarservice_name: "filedrop",
       jarservice_home: _user.home.ref,
       jarservice_local: V.filedrop_jar_file,
-      jarservice_unit: expr("lookup('template', 'filedrop.service')"),
+      jarservice_unit: lookup("template", "filedrop.service"),
     },
     when: raw("filedrop_jar_file is defined"),
   },

@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { lookup, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -23,7 +23,7 @@ export default [
         "PYTHONUNBUFFERED=1",
         "PATH=/usr/bin:/usr/local/bin",
       ],
-      timer_content: expr("lookup('template', 'dockermon.py')"),
+      timer_content: lookup("template", "dockermon.py"),
       timer_exec:
         tmpl`/bin/bash -c 'set -o pipefail && ${V.timer_dest} | uniq | sponge ${V.dockermon_prom}'`,
     },

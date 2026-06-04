@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { lookup, type TaskFile } from "../../../lib/ansible.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -25,7 +25,7 @@ export default [
     name: "Add vm to local ssh config",
     local_action: {
       module: "community.general.ssh_config",
-      ssh_config_file: tmpl`~${expr("lookup('env', 'USER')")}/.ssh/config.icos`,
+      ssh_config_file: tmpl`~${lookup("env", "USER")}/.ssh/config.icos`,
       hostname: V.inventory_hostname,
       remote_user: "root",
       host: V.lxd_vm_name,

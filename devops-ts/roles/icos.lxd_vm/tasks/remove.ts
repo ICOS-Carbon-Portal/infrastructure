@@ -1,5 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { lookup, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +12,7 @@ export default [
     name: "Remove vm from local ssh config",
     local_action: {
       module: "community.general.ssh_config",
-      ssh_config_file: tmpl`~${expr("lookup('env', 'USER')")}/.ssh/config.icos`,
+      ssh_config_file: tmpl`~${lookup("env", "USER")}/.ssh/config.icos`,
       host: V.lxd_vm_name,
       state: "absent",
     },

@@ -1,5 +1,5 @@
-import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { iff, lookup, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -31,7 +31,7 @@ export default [
       create: true,
       insertafter: "BOF",
       path: V.sexp_config_file,
-      block: expr("lookup('template', 'config.yaml')"),
+      block: lookup("template", "config.yaml"),
     },
     notify: "reload script-exporter",
   },

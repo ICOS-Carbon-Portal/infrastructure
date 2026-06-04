@@ -1,11 +1,12 @@
 import {
+  lookup,
   loopOver,
   raw,
   register,
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _build = register("_build");
 const _user = register("_user");
@@ -59,7 +60,7 @@ export default [
         authorized_key: {
           user: V.flexpart_user,
           state: "present",
-          key: expr("lookup('file', 'roles/icos.flexpart/files/flexpart.pub')"),
+          key: lookup("file", "roles/icos.flexpart/files/flexpart.pub"),
           key_options: tmpl`command="${_user.home.ref}/flexpart_ssh.sh"`,
         },
       },

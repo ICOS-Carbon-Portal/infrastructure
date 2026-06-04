@@ -233,6 +233,24 @@ export function rawTmpl(text: string): RawTemplate {
 }
 
 /**
+ * An Ansible `lookup(...)` value expression. The plugin name is a closed union
+ * (a typo is a compile error; add a plugin here before using it); each argument
+ * is a filter-arg — a string becomes a `'quoted'` literal, a `V.x` ref renders
+ * bare (for `lookup('vars', some_var)`).
+ *
+ *   lookup("template", "borgmon.py")  // {{ lookup('template', 'borgmon.py') }}
+ *   lookup("vars", V.set_fact)         // {{ lookup('vars', set_fact) }}
+ *
+ * Replaces `expr("lookup('template', '...')")`.
+ */
+export type LookupPlugin = "template" | "file" | "env" | "vars";
+
+export function lookup(plugin: LookupPlugin, ...args: FilterArg[]): Template {
+  const parts = [plugin, ...args].map(filterArgText).join(", ");
+  return new Template([{ kind: "ref", jinja: `lookup(${parts})` }]);
+}
+
+/**
  * Build a Template from a tagged template literal, splicing interpolated refs:
  *   tmpl`${V.nexus_home}/bbclient`     // {{ nexus_home }}/bbclient
  *

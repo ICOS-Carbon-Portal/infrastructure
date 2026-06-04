@@ -64,6 +64,8 @@ type KnownName = keyof AllKnown & string;
 export {
   expr,
   iff,
+  lookup,
+  type LookupPlugin,
   RawTemplate,
   rawTmpl,
   type Ref,
