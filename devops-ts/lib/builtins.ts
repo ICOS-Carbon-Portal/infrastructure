@@ -41,6 +41,7 @@ export interface BuiltinVars {
   ansible_hostname: string;
   ansible_fqdn: string;
   ansible_kernel: string;
+  ansible_ssh_host_key_ecdsa_public: string;
   ansible_lsb: {
     id: string;
     codename: string;

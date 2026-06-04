@@ -1,5 +1,5 @@
-import { register, type TaskFile, V } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl } from "../_ctx.ts";
+import { hostvar, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import { rawTmpl, tmpl } from "../_ctx.ts";
 
 const _home_dir = register("_home_dir");
 const _ssh_dir = register("_ssh_dir");
@@ -41,9 +41,8 @@ export default [
           name: V.flexpart_ssh_remote_host,
           key:
             tmpl`${V.flexpart_ssh_remote_host},${V.flexpart_ssh_remote_ip} ecdsa-sha2-nistp256 ${
-              expr(
-                "hostvars[flexpart_ssh_remote_host].ansible_ssh_host_key_ecdsa_public",
-              )
+              hostvar(V.flexpart_ssh_remote_host)
+                .ansible_ssh_host_key_ecdsa_public
             }`,
         },
       },
