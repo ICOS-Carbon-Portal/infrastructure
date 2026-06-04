@@ -276,16 +276,6 @@ export function concat(...parts: FilterArg[]): Template {
 }
 
 /**
- * A typed reference to a Jinja variable by name — like `V`, but for a name the
- * registries don't cover: a task-local `vars:` entry, an include parameter, a
- * `set_fact` output. The shape is asserted by the caller; field access is then
- * checked (`binding<{ image: string }>("conf").image` -> `{{ conf.image }}`).
- */
-export function binding<T>(name: string): VarRef<T> {
-  return varProxy(name) as VarRef<T>;
-}
-
-/**
  * A Jinja `{% for %}` loop rendered as a verbatim fragment. `body` receives a
  * typed reference to the loop variable; the iterable is a checked ref. Replaces
  * the `rawTmpl("{% for x in y %}")` / `expr("x")` / `rawTmpl("{% endfor %}")`

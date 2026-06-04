@@ -1,4 +1,5 @@
-import { binding, type TaskFile, V } from "../../../lib/ansible.ts";
+import { type TaskFile, V } from "../../../lib/ansible.ts";
+import { expr } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +16,7 @@ export default [
   {
     name: "Pull the notebook image from registry",
     docker_image: {
-      name: binding<{ image: string }>("conf").image,
+      name: expr("conf.image"),
       source: "pull",
     },
     vars: {

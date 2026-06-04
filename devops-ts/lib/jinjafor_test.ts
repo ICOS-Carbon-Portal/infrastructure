@@ -1,6 +1,7 @@
-// Tests for binding() and jinjaFor(), which replace expr() in the previously
-// "irreducible" cases: a task-local vars: reference, and a {% for %} loop.
-import { binding, expr, jinjaFor, tmpl } from "./template.ts";
+// Tests for jinjaFor(), which replaces the rawTmpl("{% for %}") / expr("x") /
+// rawTmpl("{% endfor %}") trio with one construct whose iterable and loop-var
+// references are checked.
+import { jinjaFor, tmpl } from "./template.ts";
 import { V } from "./vars.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
@@ -8,19 +9,6 @@ function eq(actual: string, expected: string, msg: string): void {
     throw new Error(`${msg}\n  expected: ${expected}\n  actual:   ${actual}`);
   }
 }
-
-Deno.test("binding: typed reference to a local var name", () => {
-  eq(
-    binding<{ image: string }>("conf").image.toText(),
-    "{{ conf.image }}",
-    "jupyter conf.image",
-  );
-  eq(
-    binding<{ image: string }>("conf").image.toText(),
-    expr("conf.image").toText(),
-    "binding == expr equivalence",
-  );
-});
 
 Deno.test("jinjaFor: {% for %} with a typed loop var and checked iterable", () => {
   eq(
