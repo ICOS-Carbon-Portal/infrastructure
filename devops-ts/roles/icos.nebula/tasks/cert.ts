@@ -33,7 +33,7 @@ export default [
         expect: {
           // Use fileglob to search for the nebula certificate directory, then
           // switch to that directory.
-          chdir: expr("nebula_cert_sign | fileglob | first | dirname"),
+          chdir: V.nebula_cert_sign.fileglob().first().dirname(),
           // Create new certificate with a duration 1 second less than the CA's.
           command: tmpl`/bin/bash -c 'nebula-cert sign -ca-crt ${
             rawTmpl("{{nebula_cert_sign | basename}}")

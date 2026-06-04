@@ -1,5 +1,12 @@
-import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import {
+  loopOver,
+  register,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _find = register("_find");
 
 export default [
   {
@@ -10,7 +17,7 @@ export default [
   },
   loopOver<{ key: Tmpl; val: Tmpl }>(
     [
-      { key: "LOGS", val: expr("mtail_logs | join(',')") },
+      { key: "LOGS", val: V.mtail_logs.join(",") },
       { key: "PORT", val: V.mtail_port },
       { key: "HOST", val: V.mtail_host },
     ],
@@ -43,7 +50,7 @@ export default [
       patterns: "icos-*.mtail",
       excludes: V.mtail_programs,
     },
-    register: "_find",
+    register: _find,
   },
   {
     name: "Remove unconfigured icos programs",
@@ -52,7 +59,7 @@ export default [
       state: "absent",
     },
     notify: "reload mtail",
-    loop: expr("_find.files | map(attribute='path')"),
+    loop: _find.files.ref.mapAttr("path"),
   },
   {
     name: "Start mtail service",

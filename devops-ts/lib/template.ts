@@ -115,6 +115,18 @@ export class Template {
   combine(other: Template): Template {
     return this.filter(`combine(${filterArgText(other)})`);
   }
+  /** `| join(sep)` — join a list into a string. */
+  join(sep: string): Template {
+    return this.filter(`join('${sep}')`);
+  }
+  /** `| fileglob` — expand a glob to matching paths. */
+  fileglob(): Template {
+    return this.filter("fileglob");
+  }
+  /** `| map(attribute='attr')` — pluck an attribute from each list item. */
+  mapAttr(attr: string): Template {
+    return this.filter(`map(attribute='${attr}')`);
+  }
 
   /**
    * Python string methods usable in Jinja value expressions:
