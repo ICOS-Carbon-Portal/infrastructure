@@ -51,6 +51,9 @@ export default [
       {
         name: "Remove backup file",
         file: {
+          // BUG (see BUGS.md): `_r` is never registered — this file registers
+          // `update`. Left as expr()/raw() escapes (not the `update` handle) to
+          // stay byte-identical with ../devops until fixed in both trees.
           name: expr("_r.backup_file"),
           state: "absent",
         },

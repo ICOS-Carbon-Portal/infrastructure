@@ -1,7 +1,7 @@
 # Latent bugs found during the TypeScript conversion
 
-Bugs in the original `../devops` YAML that the typed conversion surfaced. The
-TS port reproduces them faithfully (the `deno task verify` gate requires
+Bugs in the original `../devops` YAML that the typed conversion surfaced. The TS
+port reproduces them faithfully (the `deno task verify` gate requires
 byte-identical rendering), so fixing one means changing **both** trees — or
 fixing `../devops` first and re-running the converters.
 
@@ -39,9 +39,32 @@ cannot restore the previous config, and no backup is ever created or removed.
 - add `backup: true` to the `template:` task;
 - in `rescue:` guard the restore with
   `when: "update['backup_file'] is defined"`;
-- in `always:`, replace both `_r` references with `update`
-  (in TS: `update.backup_file.ref` / `raw("update['backup_file'] is defined")`).
+- in `always:`, replace both `_r` references with `update` (in TS:
+  `update.backup_file.ref` / `raw("update['backup_file'] is defined")`).
 
 Apply to `../devops/roles/icos.nextcloud/tasks/nginx.yml` and mirror in
 `roles/icos.nextcloud/tasks/nginx.ts` (or temporarily exempt the file from
 `verify.ts` if the trees must diverge).
+
+## icos.zrepl: same phantom-`_r` register in `tasks/config.yml`
+
+**Files:** `roles/icos.zrepl/tasks/config.ts` (TS),
+`../devops/roles/icos.zrepl/tasks/config.yml` (origin).
+
+Found while sweeping the remaining `expr()` escapes (the `_r` reference can only
+be written as a string — a typed `register()` handle for an unregistered name is
+a compile error, which is how this surfaced). The `always:` "Remove backup file"
+task uses `{{ _r.backup_file }}` / `when: "_r['backup_file'] is defined"`, but
+the file registers **`update`** (and `_r` is never registered), so the `when:`
+is always false and the cleanup is dead code — exactly bug 2 above.
+
+Unlike nextcloud, the `copy:` task here **does** set `backup: true`, so bug 1
+does not apply: had the `always:` block referenced `update`, it would work.
+
+**Suggested fix:** replace both `_r` references with `update` (in TS:
+`update.backup_file.ref` / `raw("update['backup_file'] is defined")`), applied
+to `../devops/roles/icos.zrepl/tasks/config.yml` and mirrored in the TS.
+
+Both `_r` sites are deliberately left as `expr()`/`raw()` escapes (not converted
+to the typed `update` handle) so the TS tree stays byte-identical to `../devops`
+until the bug is fixed in both trees.
