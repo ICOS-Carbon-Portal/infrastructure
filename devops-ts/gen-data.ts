@@ -81,6 +81,69 @@ const SHAPED = new Map<string, Set<string>>([
   ["vault_vmagent_auth", new Set(["username", "password"])],
 ]);
 
+// Names registered by tasks (`register: foo`) across the playbooks. A data
+// default that references a registered result (`{{ _release.tag }}`) is a
+// cross-file reference the registries can't cover, so it would otherwise stay
+// an expr() escape; recognizing the name lets gen-data emit a typed
+// `register("_release").tag.ref` handle instead. The rendered Jinja is
+// identical, and register()'s proxy accepts any field, so this is byte-safe.
+function collectRegisterNames(dir: URL): Set<string> {
+  const out = new Set<string>();
+  for (const e of Deno.readDirSync(dir)) {
+    if (e.isDirectory) {
+      for (const n of collectRegisterNames(new URL(`${e.name}/`, dir))) {
+        out.add(n);
+      }
+    } else if (e.name.endsWith(".yml") || e.name.endsWith(".yaml")) {
+      const txt = Deno.readTextFileSync(new URL(e.name, dir));
+      for (
+        const m of txt.matchAll(/^\s*register:\s*["']?([A-Za-z_]\w*)["']?/gm)
+      ) {
+        out.add(m[1]);
+      }
+    }
+  }
+  return out;
+}
+const REGISTERS = collectRegisterNames(devops);
+// Template methods reachable on a register field's `.ref` (lib/template.ts).
+const REG_METHODS = new Set(["lstrip", "rstrip"]);
+
+/**
+ * A checked register-result expression for a Jinja head whose root is a known
+ * register, or null. Handles `reg.a.b`, a `[int]` index, and a trailing
+ * modelled method (`.lstrip('v')`): `_unar.files[0].rstrip('/')` ->
+ * `register("_unar").files.ref.at(0).rstrip("/")`.
+ */
+function registerExpr(head: string): string | null {
+  const root = head.match(/^[A-Za-z_]\w*/)?.[0];
+  if (!root || !REGISTERS.has(root)) return null;
+  let rest = head.slice(root.length);
+  let out = `register(${JSON.stringify(root)})`;
+  let m: RegExpMatchArray | null;
+  // Field navigation on the register proxy: a complete `.ident` not opening a
+  // call. The `[\w(]` lookahead (not just `(`) stops greedy `\w*` from
+  // backtracking to a partial ident before a method call (`.lstrip(` -> `.lstri`).
+  while ((m = rest.match(/^\.([A-Za-z_]\w*)(?![\w(])/))) {
+    out += `.${m[1]}`;
+    rest = rest.slice(m[0].length);
+  }
+  out += ".ref";
+  // Value-position ops on the resulting Template: `[int]` and modelled methods.
+  while (rest) {
+    if ((m = rest.match(/^\[(\d+)\]/))) {
+      out += `.at(${m[1]})`;
+    } else if ((m = rest.match(/^\.([A-Za-z_]\w*)\('([^']*)'\)/))) {
+      if (!REG_METHODS.has(m[1])) return null;
+      out += `.${m[1]}(${JSON.stringify(m[2])})`;
+    } else {
+      return null;
+    }
+    rest = rest.slice(m[0].length);
+  }
+  return out;
+}
+
 /** Pick the `satisfies` type + its export name for a given relative path. */
 function typeFor(rel: string): { name: string } {
   if (/\/meta\//.test(rel)) return { name: "Meta" };
@@ -214,6 +277,13 @@ for (const rel of await dataYmls()) {
         }
       }
     }
+    if (!out) {
+      const r = registerExpr(head);
+      if (r) {
+        used.add("register");
+        out = r;
+      }
+    }
     if (!out) return null;
     for (const f of segs.slice(1)) {
       if (SIMPLE_FILTERS.has(f)) {
@@ -250,6 +320,10 @@ for (const rel of await dataYmls()) {
   if (used.has("hostvar") && used.has("V")) {
     header += `import { hostvar } from "${ups}lib/ansible.ts";\n`;
     used.delete("hostvar");
+  }
+  if (used.has("register")) {
+    header += `import { register } from "${ups}lib/ansible.ts";\n`;
+    used.delete("register");
   }
   if (used.has("V")) {
     const helpers = [
