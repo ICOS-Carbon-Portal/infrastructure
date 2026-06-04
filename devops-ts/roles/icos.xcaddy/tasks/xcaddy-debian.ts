@@ -1,5 +1,5 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl } from "../_ctx.ts";
+import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _key = register("_key");
 
@@ -26,7 +26,7 @@ export default [
     name: "Install xcaddy",
     apt: {
       name: "xcaddy",
-      state: expr("'latest' if xcaddy_upgrade else 'present'"),
+      state: iff(V.xcaddy_upgrade, "latest", "present"),
     },
   },
   {

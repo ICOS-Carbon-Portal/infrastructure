@@ -3,6 +3,7 @@
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
 import { context } from "../../lib/context.ts";
+import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
@@ -17,5 +18,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  Vars & AllVars
+  Vars & BuiltinVars & AllVars
 >();

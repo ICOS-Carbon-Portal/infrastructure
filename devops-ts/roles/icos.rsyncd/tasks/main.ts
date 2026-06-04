@@ -1,5 +1,5 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, V } from "../_ctx.ts";
+import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 const _justfile = register("_justfile");
 
@@ -31,7 +31,7 @@ export default [
     systemd: {
       name: "rsync",
       enabled: V.rsyncd_enable,
-      state: expr("'started' if rsyncd_enable else 'stopped'"),
+      state: iff(V.rsyncd_enable, "started", "stopped"),
     },
   },
   {

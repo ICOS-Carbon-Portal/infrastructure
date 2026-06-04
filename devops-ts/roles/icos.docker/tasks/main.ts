@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, V } from "../_ctx.ts";
 
 export default [
@@ -23,7 +23,7 @@ export default [
     name: "Make sure docker isn't upgraded",
     dpkg_selections: {
       name: V.item,
-      selection: expr("'hold' if docker_prevent_upgrade else 'install'"),
+      selection: iff(V.docker_prevent_upgrade, "hold", "install"),
     },
     loop: ["docker.io", "containerd"],
   },

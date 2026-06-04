@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -47,7 +47,7 @@ export default [
   {
     name: "Start/restart script-exporter.service",
     systemd: {
-      "daemon-reload": expr("'yes' if _sysd.changed else 'no'"),
+      "daemon-reload": iff(raw("_sysd.changed"), "yes", "no"),
       name: "script-exporter.service",
       enabled: true,
       state: "started",

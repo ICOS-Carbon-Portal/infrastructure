@@ -1,5 +1,5 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl } from "../_ctx.ts";
+import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 const _key = register("_key");
 
@@ -26,7 +26,7 @@ export default [
     name: "Install telegraf",
     apt: {
       name: "telegraf",
-      state: expr("'latest' if telegraf_upgrade else 'present'"),
+      state: iff(V.telegraf_upgrade, "latest", "present"),
       // Setting this will also set update_cache. It's time consuming on slow
       // devices so set it to an hour.
       cache_valid_time: rawTmpl("{{ 3600 if telegraf_upgrade else omit}}"),

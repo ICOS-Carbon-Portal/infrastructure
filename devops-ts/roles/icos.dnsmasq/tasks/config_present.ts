@@ -1,5 +1,5 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -61,7 +61,7 @@ export default [
     systemd: {
       name: V.dnsmasq_service_name,
       enabled: true,
-      state: expr("'restarted' if check.changed else 'started'"),
+      state: iff(raw("check.changed"), "restarted", "started"),
     },
   },
 ] satisfies TaskFile;

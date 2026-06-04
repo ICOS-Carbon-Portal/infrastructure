@@ -1,5 +1,5 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -21,8 +21,8 @@ export default [
           state: V.state.default(V.omit),
           backup: true,
           create: true,
-          insertafter: expr("'EOF' if where == 'EOF' else omit"),
-          insertbefore: expr("'BOF' if where == 'BOF' else omit"),
+          insertafter: iff(raw("where == 'EOF'"), "EOF", V.omit),
+          insertbefore: iff(raw("where == 'BOF'"), "BOF", V.omit),
         },
         register: _r,
       },

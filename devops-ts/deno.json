@@ -1,5 +1,6 @@
 {
   "tasks": {
+    "test": "deno test --allow-read --allow-env lib/",
     "check": "deno check lib/*.ts playbooks/**/*.ts roles/*/_ctx.ts roles/*/tasks/*.ts roles/*/handlers/*.ts data/**/*.ts render.ts render-all.ts verify.ts check-braces.ts",
     "check-braces": "deno run --allow-read check-braces.ts",
     "verify": "deno run --allow-read --allow-env verify.ts",

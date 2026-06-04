@@ -12,5 +12,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
-  BuiltinVars
+  Vars & BuiltinVars
 >();

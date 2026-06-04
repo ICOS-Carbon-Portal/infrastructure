@@ -1,5 +1,10 @@
-import { loopOver, type TaskFile, type Tmpl } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import {
+  iff,
+  loopOver,
+  type TaskFile,
+  type Tmpl,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -49,7 +54,7 @@ export default [
     name: "Build and start",
     "community.docker.docker_compose_v2": {
       project_src: V.vm_home,
-      pull: expr("'always' if vm_upgrade else omit"),
+      pull: iff(V.vm_upgrade, "always", V.omit),
     },
   },
   {

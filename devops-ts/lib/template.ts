@@ -12,6 +12,10 @@
 // The renderer emits any Template as a double-quoted scalar — quoting is decided
 // by the value's TYPE, never by scanning a string for `{{`.
 
+// Type-only (erased at runtime, so no circular dependency with vars.ts): the
+// `when:` expression type, accepted as the condition of `iff()`.
+import type { Expr } from "./vars.ts";
+
 /** One piece of a template. */
 export type Part =
   | { kind: "lit"; text: string } // literal text (must not contain `{{`/`{%`)
@@ -195,6 +199,32 @@ export type Tmpl = string | Template;
 /** Reference a dynamic variable / arbitrary Jinja value expression: `{{ jinja }}`. */
 export function expr(jinja: string): Template {
   return new Template([{ kind: "ref", jinja }]);
+}
+
+/**
+ * A Jinja conditional value expression: `iff(c, a, b)` -> `{{ A if C else B }}`.
+ *
+ * The condition renders bare — pass a `when:`-style `Expr` (`raw(...)`, `and`/
+ * `or`, a register field like `_r.changed`) or a single-ref `Template` (`V.x`).
+ * The branches are filter-args: a string becomes a `'quoted'` Jinja literal,
+ * `V.x` / `V.omit` render bare, numbers and booleans as-is.
+ *
+ *   iff(V.caddy_upgrade, "latest", "present")  // {{ 'latest' if caddy_upgrade else 'present' }}
+ *   iff(raw("where == 'EOF'"), "EOF", V.omit)  // {{ 'EOF' if where == 'EOF' else omit }}
+ *
+ * Replaces the stringly-typed `expr("'a' if cond else 'b'")`: the branches are
+ * type-checked, and a `V.x`/register condition is checked too.
+ */
+export function iff(
+  cond: Expr | Template,
+  then: FilterArg,
+  otherwise: FilterArg,
+): Template {
+  const c = cond instanceof Template ? filterArgText(cond) : String(cond);
+  return new Template([{
+    kind: "ref",
+    jinja: `${filterArgText(then)} if ${c} else ${filterArgText(otherwise)}`,
+  }]);
 }
 
 /** Verbatim template escape for awkward cases (see RawTemplate). */

@@ -1,5 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, notVar, tmpl, V } from "../_ctx.ts";
+import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -91,7 +91,7 @@ PersistentKeepalive = 25
     name: "Allow all inbound traffic on the wireguard interface",
     iptables_raw: {
       name: tmpl`wireguard_${V.wg_hub_config.name}_allow_all`,
-      state: expr("'present' if wg_hub_allow_all else 'absent'"),
+      state: iff(V.wg_hub_allow_all, "present", "absent"),
       rules: `-A INPUT -i {{ wg_hub_intf }} -j ACCEPT
 `,
     },
@@ -108,8 +108,10 @@ PersistentKeepalive = 25
     name: "Start wg-quick service",
     systemd: {
       name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
-      state: expr(
-        "'restarted' if _hub_conf.changed or _spoke_conf.changed or _reresolve.changed else 'started'",
+      state: iff(
+        raw("_hub_conf.changed or _spoke_conf.changed or _reresolve.changed"),
+        "restarted",
+        "started",
       ),
       enabled: true,
     },

@@ -1,5 +1,5 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _rsyslog = register("_rsyslog");
 
@@ -77,7 +77,7 @@ if $syslogtag == "dataold:" then {
     systemd: {
       "daemon-reload": true,
       enabled: true,
-      state: expr("'restarted' if _cf.changed or _sr.changed else 'started'"),
+      state: iff(raw("_cf.changed or _sr.changed"), "restarted", "started"),
       name: "dataold.service",
     },
   },

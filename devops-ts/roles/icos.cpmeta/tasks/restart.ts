@@ -1,5 +1,11 @@
-import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import {
+  iff,
+  not,
+  raw,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -31,7 +37,7 @@ export default [
     systemd: {
       name: "cpmeta.service",
       enabled: true,
-      state: expr("'restarted' if _restart_needed else 'started'"),
+      state: iff(raw("_restart_needed"), "restarted", "started"),
     },
   },
   {

@@ -1,5 +1,11 @@
-import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import {
+  iff,
+  not,
+  raw,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -43,9 +49,11 @@ export default [
     systemd: {
       name: "doi.service",
       enabled: true,
-      "daemon-reload": expr("'yes' if _service.changed else 'no'"),
-      state: expr(
-        "'restarted' if _jarfile.changed or _config.changed else 'started'",
+      "daemon-reload": iff(raw("_service.changed"), "yes", "no"),
+      state: iff(
+        raw("_jarfile.changed or _config.changed"),
+        "restarted",
+        "started",
       ),
     },
   },

@@ -1,5 +1,5 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
@@ -35,7 +35,7 @@ export default [
       V.restic_url_map.at(V.restic_architecture)
     } | bunzip2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic`,
     args: {
-      creates: expr("omit if restic_upgrade else '/usr/local/bin/restic'"),
+      creates: iff(V.restic_upgrade, V.omit, "/usr/local/bin/restic"),
       executable: "/bin/bash",
     },
   },
