@@ -13,6 +13,6 @@ export interface Vars {
   jarservice_keep_n_old: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

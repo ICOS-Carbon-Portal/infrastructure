@@ -13,6 +13,6 @@ export interface Vars {
   certbot_site_path: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const {} = context<
   Vars
 >();

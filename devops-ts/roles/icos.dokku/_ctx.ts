@@ -12,6 +12,6 @@ export interface Vars {
   dokku_ssh_port: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   BuiltinVars
 >();

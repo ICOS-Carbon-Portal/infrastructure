@@ -10,6 +10,6 @@ export interface Vars {
   pve_dnat_leases: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V } = context<
   BuiltinVars
 >();

@@ -8,6 +8,6 @@ import type { BuiltinVars } from "../../lib/builtins.ts";
 // deno-lint-ignore no-empty-interface
 export interface Vars {}
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   BuiltinVars
 >();

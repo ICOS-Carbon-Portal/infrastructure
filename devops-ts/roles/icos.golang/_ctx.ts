@@ -15,6 +15,6 @@ export interface Vars {
   golang_version_install: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, notVar } = context<
   Vars & BuiltinVars
 >();

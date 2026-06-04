@@ -9,6 +9,6 @@ export interface Vars {
   docker_periodic_cleanup: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   BuiltinVars
 >();

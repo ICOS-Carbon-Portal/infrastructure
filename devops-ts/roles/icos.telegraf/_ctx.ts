@@ -13,6 +13,6 @@ export interface Vars {
   telegraf_upgrade: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars
 >();

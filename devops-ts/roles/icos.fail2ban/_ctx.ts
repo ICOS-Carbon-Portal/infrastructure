@@ -8,6 +8,6 @@ export interface Vars {
   fail2ban_config_files: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V } = context<
   Vars
 >();

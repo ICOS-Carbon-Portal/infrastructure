@@ -9,6 +9,6 @@ export interface Vars {
   lxd_forward_port: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars & ParamVars
 >();

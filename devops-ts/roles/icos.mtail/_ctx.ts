@@ -12,6 +12,6 @@ export interface Vars {
   mtail_programs: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars
 >();

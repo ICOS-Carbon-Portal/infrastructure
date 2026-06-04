@@ -7,6 +7,6 @@ import { context } from "../../lib/context.ts";
 // deno-lint-ignore no-empty-interface
 export interface Vars {}
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const {} = context<
   Vars
 >();

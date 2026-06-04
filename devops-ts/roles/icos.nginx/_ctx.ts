@@ -13,6 +13,6 @@ export interface Vars {
   nginx_user: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, isDef } = context<
   Vars & Globals
 >();

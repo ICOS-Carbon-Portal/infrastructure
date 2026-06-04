@@ -17,6 +17,6 @@ export interface Vars {
   postgresql_ssh_keys: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, expr, rawTmpl } = context<
   Vars
 >();

@@ -16,6 +16,6 @@ export interface Vars {
   podman_version: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & AllVars & ParamVars
 >();

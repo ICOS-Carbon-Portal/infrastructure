@@ -31,6 +31,6 @@ export interface Vars {
   bbclient_wrapper: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars & Globals & BuiltinVars & AllVars & ParamVars
 >();

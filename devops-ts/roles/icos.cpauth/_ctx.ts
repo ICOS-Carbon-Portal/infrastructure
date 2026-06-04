@@ -19,6 +19,6 @@ export interface Vars {
   cpauth_user_secret_salt: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   Vars & Globals & ParamVars
 >();

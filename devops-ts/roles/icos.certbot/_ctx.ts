@@ -19,6 +19,6 @@ export interface Vars {
   certbot_live_key: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, rawTmpl, notVar } = context<
   Vars & BuiltinVars & AllVars
 >();

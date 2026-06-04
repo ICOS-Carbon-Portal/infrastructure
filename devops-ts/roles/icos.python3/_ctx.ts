@@ -10,6 +10,6 @@ export interface Vars {
   python3_version_list: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

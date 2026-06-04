@@ -11,6 +11,6 @@ export interface Vars {
   maps_lantmateriet_url: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V } = context<
   Vars
 >();

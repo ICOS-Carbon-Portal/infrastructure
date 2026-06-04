@@ -8,6 +8,6 @@ export interface Vars {
   mosh_add_firewall: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const {} = context<
   Vars
 >();

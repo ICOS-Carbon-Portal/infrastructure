@@ -18,6 +18,6 @@ export interface Vars {
   postgresql_postgis_enable: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   Vars & Globals & BuiltinVars & ParamVars
 >();

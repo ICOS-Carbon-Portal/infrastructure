@@ -12,6 +12,6 @@ export interface Vars {
   eurocom_web_root: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V } = context<
   Vars & ParamVars
 >();

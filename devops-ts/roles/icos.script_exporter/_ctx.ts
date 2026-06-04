@@ -17,6 +17,6 @@ export interface Vars {
   sexp_scripts_venv: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & AllVars
 >();

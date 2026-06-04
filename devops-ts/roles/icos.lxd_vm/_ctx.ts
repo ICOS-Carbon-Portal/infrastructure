@@ -34,6 +34,6 @@ export interface Vars {
   zfsdocker_name: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars & Globals & BuiltinVars & ParamVars
 >();

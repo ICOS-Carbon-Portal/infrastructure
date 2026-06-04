@@ -21,6 +21,6 @@ export interface Vars {
   doi_password_icos: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V, tmpl, expr } = context<
   Vars & Globals & ParamVars
 >();

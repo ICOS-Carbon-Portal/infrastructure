@@ -9,6 +9,6 @@ export interface Vars {
   fairdolab_home: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, isDef, notVar } = context<
+export const { V } = context<
   Vars
 >();
