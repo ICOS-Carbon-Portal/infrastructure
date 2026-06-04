@@ -263,6 +263,19 @@ export function lookup(plugin: LookupPlugin, ...args: FilterArg[]): Template {
 }
 
 /**
+ * A Jinja `+` expression: `concat(a, b, ...)` -> `{{ a + b + ... }}`. Each part
+ * is a filter-arg, so a `V.x` ref renders bare and a string becomes a `'quoted'`
+ * literal. Used for list/string concatenation in value position.
+ *
+ *   concat(V.jupyter_domains, V.ganymede_domains)  // {{ jupyter_domains + ganymede_domains }}
+ */
+export function concat(...parts: FilterArg[]): Template {
+  return new Template([
+    { kind: "ref", jinja: parts.map(filterArgText).join(" + ") },
+  ]);
+}
+
+/**
  * Build a Template from a tagged template literal, splicing interpolated refs:
  *   tmpl`${V.nexus_home}/bbclient`     // {{ nexus_home }}/bbclient
  *

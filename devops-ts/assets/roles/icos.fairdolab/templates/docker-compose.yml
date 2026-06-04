@@ -1,0 +1,59 @@
+services:
+  fairdoscope:
+    build:
+      context: ./fairdoscope
+    ports:
+      - "{{ fairdolab_docker_listen }}8081:80"
+
+  collectionapi:
+    image: kitdm/collection-api
+    ports:
+      - "{{ fairdolab_docker_listen }}8091:8080"
+
+  indexer:
+    build:
+      context: .
+      dockerfile: ./indexer/Dockerfile
+    container_name: indexer
+    depends_on:
+      - messagebroker
+
+  pit-service:
+    build:
+      context: . # without this context, the dockerfile can not access the java-release-run.sh and similar files.
+      dockerfile: ./pit-service/Dockerfile
+    container_name: pit-service
+    ports:
+      - "{{ fairdolab_docker_listen }}8090:8080"
+    depends_on:
+      - messagebroker
+
+  # "deprecated (demo interface)"
+  fairris:
+    build:
+      context: . # without this context, the dockerfile can not access the java-release-run.sh and similar files.
+      dockerfile: ./fairris/Dockerfile
+    container_name: fairris
+    ports:
+      - "{{ fairdolab_docker_listen }}8080:80"
+
+  messagebroker:
+    image: rabbitmq:3-management-alpine
+    container_name: messagebroker
+    ports:
+      - "{{ fairdolab_docker_listen }}5672:5672"
+      - "{{ fairdolab_docker_listen }}15672:15672"
+
+  elasticsearch:
+    image: elasticsearch:7.8.1
+    environment:
+      - discovery.type=single-node
+      - logger.org.elasticsearch=ERROR
+    ports:
+      - "{{ fairdolab_docker_listen }}9200:9200"
+      - "{{ fairdolab_docker_listen }}9300:9300"
+
+  kibana:
+    image: kibana:7.8.1
+    ports:
+      - "{{ fairdolab_docker_listen }}5601:5601"

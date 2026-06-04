@@ -1,0 +1,27 @@
+# SYSTEMD-RESOLVED
+
+# # systemd-resolved will provide the resolvconf binary
+# - name: Purge resolvconf
+#   apt:
+#     state: absent
+#     purge: yes
+#     name:
+#       - resolvconf
+
+# - name: Install systemd-resolved
+#   apt:
+#     name:
+#       - systemd-resolved
+#   register: _r
+#   failed_when:
+#     - _r.failed
+#     # In Ubuntu 22.04 systemd-resolved is part of the systemd package.
+#     # In Debian 12 however, it needs to be installed separately.
+#     - _r.msg != "No package matching 'systemd-resolved' is available"
+
+# # Make sure that systemd-resolved is in charge of system name resolution.
+# - name: Create /etc/resolv.conf symlink
+#   file:
+#     dest: /etc/resolv.conf
+#     src: /run/systemd/resolve/stub-resolv.conf
+#     state: link

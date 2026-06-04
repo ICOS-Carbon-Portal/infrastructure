@@ -8,7 +8,7 @@
 // Recreate virtual environments, i.e after do-release-upgrade:
 //   icos play ganymede jbuild -evirtualenv_recreate=True
 import {
-  expr,
+  concat,
   loopOverVar,
   type Playbook,
   register,
@@ -93,7 +93,7 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "ganymede",
-        certbot_domains: expr("jupyter_domains + ganymede_domains"),
+        certbot_domains: concat(V.jupyter_domains, V.ganymede_domains),
       }).tags("cert"),
 
       role("icos.nginxsite", {

@@ -64,6 +64,7 @@ export {
 } from "./loop.ts";
 export { type Reg, register, type Result } from "./register.ts";
 export {
+  concat,
   expr,
   iff,
   lookup,

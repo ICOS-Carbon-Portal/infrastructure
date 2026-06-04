@@ -58,6 +58,8 @@ export interface ParamVars {
   doi_jar_file: string;
   dokku_proxy_host: string;
   dokku_proxy_port: string;
+  dokku_redirect_domains: string;
+  dokku_static_domains: string;
   dovecot_domains: string;
   eurocom_users: string;
   exploredata_ip: string;
@@ -75,6 +77,7 @@ export interface ParamVars {
   flexpart_ssh_remote_ip: string;
   flexpart_ssh_users: string;
   fsd_name: string;
+  ganymede_domains: string;
   fsd_path: string;
   fsd_target: string;
   git_version: string;

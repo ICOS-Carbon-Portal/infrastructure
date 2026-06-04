@@ -1,4 +1,4 @@
-import { expr, type Playbook, role } from "../lib/ansible.ts";
+import { concat, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -24,8 +24,9 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "dokku",
-        certbot_domains: expr(
-          "(dokku_static_domains + dokku_redirect_domains)",
+        certbot_domains: concat(
+          V.dokku_static_domains,
+          V.dokku_redirect_domains,
         ),
       }).tags("cert"),
 

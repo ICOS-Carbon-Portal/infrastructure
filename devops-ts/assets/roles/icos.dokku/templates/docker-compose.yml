@@ -1,0 +1,29 @@
+# https://dokku.com/docs/getting-started/install/docker/
+
+services:
+  dokku:
+    image: dokku/dokku:latest
+    container_name: dokku
+    ports:
+      - "{{ dokku_ssh_port }}:22"
+      - "{{ dokku_http_port }}:80"
+      # - "8443:443"
+    volumes:
+      # "Application repositories, plugin config, as well as plugin data are
+      # persisted here". Typically I would set this to ./data, but in this
+      # case I'm considering migrating from container-dokku to host-dokku once
+      # the packages for Ubuntu 24.04 is released and then it might be easier
+      # to migrate?
+      - "/var/lib/dokku:/mnt/dokku"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      DOKKU_HOSTNAME: {{ dokku_hostname }}
+      # These two variables are barely documented. The word HOST does not mean
+      # "on the host as opposed to in the container" but rather where stuff
+      # will be HOSTED. At least I think so.
+      # Looking through the dokku container entrypoint and Dockerfile also
+      # shows that for example /home/dokku is symlinked to
+      # /var/lib/dokku/home/dokku.
+      DOKKU_HOST_ROOT: /var/lib/dokku/home/dokku
+      DOKKU_LIB_HOST_ROOT: /var/lib/dokku/var/lib/dokku
+    restart: unless-stopped

@@ -1,0 +1,27 @@
+sync:
+  defaults:
+    permissions:
+      defaultFileMode: 0644
+      defaultDirectoryMode: 0755
+      defaultOwner: "id:1002"
+      defaultGroup: "id:1002"
+#      defaultOwner: "stiltweb"
+#      defaultGroup: "stiltweb"
+    ignore:
+      paths:
+        - __pycache__
+        - .ruff_cache
+
+  src:
+    mode: "one-way-replica"
+    alpha: "stilt_utils"
+    # [[[cog cog.outl(f'beta: "root@{host}:{home}/stilt-utils/stilt_utils"') ]]]
+    beta: "root@fsicos2.icos-cp.eu:/home/stiltweb/stilt-utils/stilt_utils"
+    # [[[end]]]
+
+  pyproject:
+    mode: "one-way-replica"
+    alpha: "pyproject.toml"
+    # [[[cog cog.outl(f'beta: "root@{host}:{home}/stilt-utils/pystilt_utils"') ]]]
+    beta: "root@fsicos2.icos-cp.eu:/home/stiltweb/stilt-utils/stilt_utils"
+    # [[[end]]]

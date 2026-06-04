@@ -21,7 +21,7 @@
     - role: icos.certbot2
       tags: cert
       certbot_name: dokku
-      certbot_domains: "{{ (dokku_static_domains + dokku_redirect_domains) }}"
+      certbot_domains: "{{ dokku_static_domains + dokku_redirect_domains }}"
 
     - role: icos.nginxsite
       tags: nginx

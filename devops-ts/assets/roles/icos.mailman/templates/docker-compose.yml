@@ -1,0 +1,72 @@
+# https://github.com/maxking/docker-mailman/blob/main/docker-compose.yaml
+services:
+  mailman-core:
+    build: ./build/mailman-core
+    container_name: mailman-core
+    hostname: mailman-core
+    restart: unless-stopped
+    volumes:
+    - {{ mailman_volume_core }}:/opt/mailman/
+    - /etc/localtime:/etc/localtime:ro
+    stop_grace_period: 30s
+    links:
+    - database:database
+    depends_on:
+    - database
+    environment:
+    - MTA=postfix
+    - DATABASE_URL=postgresql://mailman:{{ mailman_postgres_password }}@database/mailmandb
+    - DATABASE_TYPE=postgres
+    - DATABASE_CLASS=mailman.database.postgresql.PostgreSQLDatabase
+    - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}
+    networks:
+      mailman:
+        ipv4_address: {{ mailman_core_ipv4 }}
+
+  mailman-web:
+    build: ./build/mailman-web
+    container_name: mailman-web
+    hostname: mailman-web
+    restart: unless-stopped
+    depends_on:
+    - database
+    links:
+    - mailman-core:mailman-core
+    - database:database
+    volumes:
+    - {{ mailman_volume_web }}:/opt/mailman-web-data
+    - /etc/localtime:/etc/localtime:ro
+    environment:
+    - DATABASE_TYPE=postgres
+    - DATABASE_URL=postgres://mailman:{{ mailman_postgres_password }}@database/mailmandb
+    - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}
+    - SERVE_FROM_DOMAIN={{ mailman_serve_from_domain }}
+    - MAILMAN_ADMIN_USER=admin
+    - MAILMAN_ADMIN_EMAIL={{ mailman_admin_email }}
+    - SECRET_KEY={{ mailman_web_secret_key }}
+    networks:
+      mailman:
+        ipv4_address: {{ mailman_web_ipv4 }}
+
+  database:
+    image: postgres:11
+    container_name: mailman-database
+    environment:
+      POSTGRES_DB: mailmandb
+      POSTGRES_USER: mailman
+      POSTGRES_PASSWORD: {{ mailman_postgres_password }}
+    restart: always
+    volumes:
+    - {{ mailman_volume_database }}:/var/lib/postgresql/data
+    networks:
+      mailman:
+        ipv4_address: {{ mailman_database_ipv4 }}
+
+networks:
+   mailman:
+     driver: bridge
+     ipam:
+       driver: default
+       config:
+       -
+         subnet: {{ mailman_subnet }}
