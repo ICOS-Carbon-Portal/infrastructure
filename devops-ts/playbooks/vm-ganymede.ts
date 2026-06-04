@@ -7,7 +7,14 @@
 //
 // Recreate virtual environments, i.e after do-release-upgrade:
 //   icos play ganymede jbuild -evirtualenv_recreate=True
-import { expr, type Playbook, register, role, V } from "../lib/ansible.ts";
+import {
+  expr,
+  loopOverVar,
+  type Playbook,
+  register,
+  role,
+  V,
+} from "../lib/ansible.ts";
 
 const _lxd = register("_lxd");
 
@@ -146,24 +153,30 @@ export default [
       }).tags("jbuild"),
     ],
     tasks: [
-      {
-        tags: "sshlogin",
-        include_role: {
-          name: "icos.sshlogin",
-          apply: { tags: "sshlogin" },
-        },
-        vars: {
-          sshlogin_dst: expr("login.dst"),
-          sshlogin_src_user: expr("login.src_user"),
-          sshlogin_dst_user: expr("login.dst_user"),
-          sshlogin_src_dst_host: expr("login.dst_host"),
-          sshlogin_src_dst_port: expr("login.dst_port"),
-        },
-        loop: V.vault_ganymede_sshlogins,
-        loop_control: {
-          loop_var: "login",
-        },
-      },
+      loopOverVar<{
+        dst: string;
+        src_user: string;
+        dst_user: string;
+        dst_host: string;
+        dst_port: string;
+      }>(
+        V.vault_ganymede_sshlogins,
+        (login) => ({
+          tags: "sshlogin",
+          include_role: {
+            name: "icos.sshlogin",
+            apply: { tags: "sshlogin" },
+          },
+          vars: {
+            sshlogin_dst: login.dst,
+            sshlogin_src_user: login.src_user,
+            sshlogin_dst_user: login.dst_user,
+            sshlogin_src_dst_host: login.dst_host,
+            sshlogin_src_dst_port: login.dst_port,
+          },
+        }),
+        { loopVar: "login" },
+      ),
     ],
   },
 ] satisfies Playbook;

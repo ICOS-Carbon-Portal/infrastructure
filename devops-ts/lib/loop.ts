@@ -27,22 +27,37 @@ export type Item<T> = T extends object
   ? Ref & { readonly [K in keyof T]-?: Ref }
   : Ref;
 
-function itemProxy<T>(): Item<T> {
-  // Base template for the bare loop variable: `{{ item }}`. Wrapping a real
-  // `Template` (rather than a plain function) makes the proxy `instanceof
-  // Template`, so it splices into `tmpl` as a structured ref part and renders as
-  // a double-quoted ref scalar — never as a literal string that re-embeds
-  // `{{ }}`. Template's own members (`parts`, `toText`, `toString`, symbols)
-  // pass through to the base; any other property is a field ref `item.<key>`.
-  const base = expr("item");
+function itemProxy<T>(varName = "item"): Item<T> {
+  // Base template for the bare loop variable: `{{ item }}` (or the custom
+  // `loop_var`). Wrapping a real `Template` (rather than a plain function) makes
+  // the proxy `instanceof Template`, so it splices into `tmpl` as a structured
+  // ref part and renders as a double-quoted ref scalar — never as a literal
+  // string that re-embeds `{{ }}`. Template's own members (`parts`, `toText`,
+  // `toString`, symbols) pass through to the base; any other property is a
+  // field ref `<varName>.<key>`.
+  const base = expr(varName);
   return new Proxy(base, {
     get(target, key, receiver) {
       if (typeof key === "symbol" || key in target) {
         return Reflect.get(target, key, receiver);
       }
-      return expr(`item.${String(key)}`);
+      return expr(`${varName}.${String(key)}`);
     },
   }) as unknown as Item<T>;
+}
+
+/**
+ * Loop options. `loopVar` renames the element variable (Ansible's
+ * `loop_control: { loop_var }`); the typed item refs then render as
+ * `<loopVar>.<key>` and the task emits the matching `loop_control`.
+ */
+export interface LoopOpts {
+  loopVar?: string;
+}
+
+function withLoopControl(task: Task, opts?: LoopOpts): Task {
+  if (opts?.loopVar) task.loop_control = { loop_var: opts.loopVar };
+  return task;
 }
 
 /**
@@ -52,19 +67,27 @@ function itemProxy<T>(): Item<T> {
 export function loopOver<T>(
   items: readonly T[],
   body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
+  opts?: LoopOpts,
 ): Task {
-  return { ...body(itemProxy<T>()), loop: items as unknown as Task["loop"] };
+  return withLoopControl(
+    {
+      ...body(itemProxy<T>(opts?.loopVar)),
+      loop: items as unknown as Task["loop"],
+    },
+    opts,
+  );
 }
 
 /** As `loopOver`, but emits the legacy `with_items:` key instead of `loop:`. */
 export function withItemsOver<T>(
   items: readonly T[],
   body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
+  opts?: LoopOpts,
 ): Task {
-  return {
-    ...body(itemProxy<T>()),
+  return withLoopControl({
+    ...body(itemProxy<T>(opts?.loopVar)),
     with_items: items as unknown as Task["with_items"],
-  };
+  }, opts);
 }
 
 /**
@@ -82,17 +105,25 @@ export function withItemsOver<T>(
 export function loopOverVar<T>(
   source: Ref,
   body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
+  opts?: LoopOpts,
 ): Task {
-  return { ...body(itemProxy<T>()), loop: source as unknown as Task["loop"] };
+  return withLoopControl(
+    {
+      ...body(itemProxy<T>(opts?.loopVar)),
+      loop: source as unknown as Task["loop"],
+    },
+    opts,
+  );
 }
 
 /** As `loopOverVar`, but emits the legacy `with_items:` key. */
 export function withItemsOverVar<T>(
   source: Ref,
   body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
+  opts?: LoopOpts,
 ): Task {
-  return {
-    ...body(itemProxy<T>()),
+  return withLoopControl({
+    ...body(itemProxy<T>(opts?.loopVar)),
     with_items: source as unknown as Task["with_items"],
-  };
+  }, opts);
 }

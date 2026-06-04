@@ -56,6 +56,7 @@ export { type Host, type HostPattern, pattern } from "./hosts.ts";
 export type { BuiltinVars } from "./builtins.ts";
 export {
   type Item,
+  type LoopOpts,
   loopOver,
   loopOverVar,
   withItemsOver,
