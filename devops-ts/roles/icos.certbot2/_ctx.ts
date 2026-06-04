@@ -2,7 +2,6 @@
 // ../../../devops/roles/icos.certbot2/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
-import { context } from "../../lib/context.ts";
 
 export interface Vars {
   certbot_bin: unknown;
@@ -12,7 +11,3 @@ export interface Vars {
   certbot_nginx_conf: unknown;
   certbot_site_path: unknown;
 }
-
-export const {} = context<
-  Vars
->();

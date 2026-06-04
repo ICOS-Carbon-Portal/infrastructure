@@ -2,11 +2,6 @@
 // ../../../devops/roles/icos.sysstat/{defaults,vars}/*.yml
 // Per-role variable context: 0 own variables, widened with
 // only the registries this role's task/handler files reference.
-import { context } from "../../lib/context.ts";
 
 // deno-lint-ignore no-empty-interface
 export interface Vars {}
-
-export const {} = context<
-  Vars
->();
