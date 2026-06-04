@@ -1,5 +1,4 @@
 import { raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
-import { expr } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -51,13 +50,10 @@ export default [
       {
         name: "Remove backup file",
         file: {
-          // BUG (see BUGS.md): `_r` is never registered — this file registers
-          // `update`. Left as expr()/raw() escapes (not the `update` handle) to
-          // stay byte-identical with ../devops until fixed in both trees.
-          name: expr("_r.backup_file"),
+          name: update.backup_file.ref,
           state: "absent",
         },
-        when: raw("_r['backup_file'] is defined"),
+        when: raw("update['backup_file'] is defined"),
       },
     ],
   },

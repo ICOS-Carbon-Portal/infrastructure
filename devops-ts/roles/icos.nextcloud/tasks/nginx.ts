@@ -1,5 +1,4 @@
 import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -18,6 +17,7 @@ export default [
           src: "nextcloud-nginx.conf",
           dest: "/etc/nginx/conf.d/nextcloud.conf",
           lstrip_blocks: true,
+          backup: true,
         },
         register: update,
       },
@@ -45,20 +45,17 @@ export default [
           dest: "/etc/nginx/conf.d/nextcloud.conf",
           src: update.backup_file.ref,
         },
+        when: raw("update['backup_file'] is defined"),
       },
     ],
     always: [
       {
         name: "Remove backup file",
         file: {
-          // BUG (see BUGS.md): `_r` is never registered — this file registers
-          // `update`, and the template task also lacks `backup: true`. Left as
-          // expr()/raw() escapes (not a typed handle) to stay byte-identical
-          // with ../devops until fixed in both trees.
-          name: expr("_r.backup_file"),
+          name: update.backup_file.ref,
           state: "absent",
         },
-        when: raw("_r['backup_file'] is defined"),
+        when: raw("update['backup_file'] is defined"),
       },
       {
         name: "Flush handlers",

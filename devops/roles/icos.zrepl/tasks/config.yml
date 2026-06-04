@@ -33,6 +33,6 @@
   always:
     - name: Remove backup file
       file:
-        name: "{{ _r.backup_file }}"
+        name: "{{ update.backup_file }}"
         state: absent
-      when: "_r['backup_file'] is defined"
+      when: "update['backup_file'] is defined"

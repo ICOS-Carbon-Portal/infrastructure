@@ -8,6 +8,7 @@
         src: nextcloud-nginx.conf
         dest: /etc/nginx/conf.d/nextcloud.conf
         lstrip_blocks: yes
+        backup: true
       register: update
 
     - name: Run validation
@@ -29,13 +30,14 @@
          remote_src: true
          dest: /etc/nginx/conf.d/nextcloud.conf
          src: "{{ update.backup_file }}"
+      when: "update['backup_file'] is defined"
 
   always:
     - name: Remove backup file
       file:
-        name: "{{ _r.backup_file }}"
+        name: "{{ update.backup_file }}"
         state: absent
-      when: "_r['backup_file'] is defined"
+      when: "update['backup_file'] is defined"
 
     - name: Flush handlers
       meta: flush_handlers
