@@ -1,4 +1,4 @@
-import { eq, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, expr, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 // Configuring client DNS resolution is much harder than setting up the DNS
@@ -24,7 +24,7 @@ export default [
         register: "_r",
       },
       {
-        when: raw('_r.status.ActiveState == "active"'),
+        when: eq(expr("_r.status.ActiveState"), "active"),
         name: "Set nebula_resolve_type to dnsmasq",
         set_fact: { nebula_resolve_type: "dnsmasq", cacheable: true },
       },
@@ -40,7 +40,7 @@ export default [
         register: "_r",
       },
       {
-        when: raw('_r.status.ActiveState == "active"'),
+        when: eq(expr("_r.status.ActiveState"), "active"),
         name: "Set nebula_resolve_type to NetworkManager",
         set_fact: { nebula_resolve_type: "NetworkManager", cacheable: true },
       },
@@ -56,7 +56,7 @@ export default [
         register: "_r",
       },
       {
-        when: raw('_r.status.ActiveState == "active"'),
+        when: eq(expr("_r.status.ActiveState"), "active"),
         name: "Set nebula_resolve_type to systemd-networkd",
         set_fact: { nebula_resolve_type: "systemd-networkd", cacheable: true },
       },

@@ -1,6 +1,6 @@
 import {
+  isIn,
   isNotDefined,
-  raw,
   register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
@@ -39,7 +39,7 @@ export default [
     fail: {
       msg: tmpl`borg is not supported on ${V.ansible_architecture}`,
     },
-    when: raw('ansible_architecture in ("armv6l", "armv7l", "aarch64")'),
+    when: isIn(V.ansible_architecture, ["armv6l", "armv7l", "aarch64"]),
   },
   {
     name: "Download borg",

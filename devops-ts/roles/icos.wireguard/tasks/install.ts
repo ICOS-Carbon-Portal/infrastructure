@@ -1,11 +1,11 @@
-import { eq, ne, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, isVersion, ne, type TaskFile } from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Install wireguard for modern kernels",
     include_tasks: "wireguard-ubuntu.yml",
-    when: [raw("ansible_kernel is version('5.6', '>=')")],
+    when: [isVersion(V.ansible_kernel, "5.6", ">=")],
   },
   {
     name: "Include install tasks for raspbian",
@@ -13,7 +13,7 @@ export default [
     when: [
       notVar("_wg_is_installed"),
       eq(V.ansible_distribution, "Debian"),
-      raw('ansible_lsb.id == "Raspbian"'),
+      eq(V.ansible_lsb.id, "Raspbian"),
       eq(V.ansible_machine, "armv6l"),
     ],
   },
@@ -23,7 +23,7 @@ export default [
     when: [
       notVar("_wg_is_installed"),
       eq(V.ansible_distribution, "Debian"),
-      raw('ansible_lsb.id == "Raspbian"'),
+      eq(V.ansible_lsb.id, "Raspbian"),
       ne(V.ansible_machine, "armv6l"),
     ],
   },

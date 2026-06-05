@@ -11,7 +11,7 @@
     name: systemd-networkd
   register: _networkd
 
-- when: _networkd.status.ActiveState == "active"
+- when: _networkd.status.ActiveState == 'active'
   name: Warn about NetworkManage+systemd-networkd
   fail:
     msg: |

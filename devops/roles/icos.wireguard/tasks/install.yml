@@ -8,7 +8,7 @@
   when:
     - not _wg_is_installed
     - ansible_distribution == 'Debian'
-    - ansible_lsb.id == "Raspbian"
+    - ansible_lsb.id == 'Raspbian'
     - ansible_machine == 'armv6l'
 
 - name: Include install tasks for raspbian
@@ -16,7 +16,7 @@
   when:
     - not _wg_is_installed
     - ansible_distribution == 'Debian'
-    - ansible_lsb.id == "Raspbian"
+    - ansible_lsb.id == 'Raspbian'
     - ansible_machine != 'armv6l'
 
 - name: Include install tasks for ubuntu

@@ -19,7 +19,7 @@
         name: dhcpcd
       register: _r
 
-    - when: _r.status.ActiveState == "active"
+    - when: _r.status.ActiveState == 'active'
       name: Set nebula_resolve_type to dnsmasq
       set_fact:
         nebula_resolve_type: "dnsmasq"
@@ -34,7 +34,7 @@
         name: NetworkManager
       register: _r
 
-    - when: _r.status.ActiveState == "active"
+    - when: _r.status.ActiveState == 'active'
       name: Set nebula_resolve_type to NetworkManager
       set_fact:
         nebula_resolve_type: "NetworkManager"
@@ -49,7 +49,7 @@
         name: systemd-networkd
       register: _r
 
-    - when: _r.status.ActiveState == "active"
+    - when: _r.status.ActiveState == 'active'
       name: Set nebula_resolve_type to systemd-networkd
       set_fact:
         nebula_resolve_type: "systemd-networkd"

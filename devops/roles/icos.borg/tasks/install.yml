@@ -19,7 +19,7 @@
 - name: Architecture is not supported
   fail:
     msg: "borg is not supported on {{ ansible_architecture }}"
-  when: ansible_architecture in ("armv6l", "armv7l", "aarch64")
+  when: ansible_architecture in ('armv6l', 'armv7l', 'aarch64')
 
 - name: Download borg
   get_url:
