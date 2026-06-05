@@ -2,13 +2,16 @@ import {
   iff,
   isDefined,
   not,
-  raw,
+  or,
   register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
+const _service = register("_service");
+const _config = register("_config");
+const _jarfile = register("_jarfile");
 
 export default [
   {
@@ -17,12 +20,12 @@ export default [
       src: "stiltweb.service",
       dest: "/etc/systemd/system/stiltweb.service",
     },
-    register: "_service",
+    register: _service,
   },
   {
     name: "Create configuration file",
     template: { dest: tmpl`${V.stiltweb_home}/local.conf`, src: "local.conf" },
-    register: "_config",
+    register: _config,
   },
   {
     name: "Copy jarfile",
@@ -32,7 +35,7 @@ export default [
       dest: tmpl`${V.stiltweb_home}/stiltweb.jar`,
       backup: true,
     },
-    register: "_jarfile",
+    register: _jarfile,
   },
   {
     name: "Remove all but the five newest of jar file backups",
@@ -48,9 +51,9 @@ export default [
     systemd: {
       name: "stiltweb.service",
       enabled: true,
-      "daemon-reload": iff(raw("_service.changed"), "yes", "no"),
+      "daemon-reload": iff(_service.changed, "yes", "no"),
       state: iff(
-        raw("_jarfile.changed or _config.changed"),
+        or(_jarfile.changed, _config.changed),
         "restarted",
         "started",
       ),

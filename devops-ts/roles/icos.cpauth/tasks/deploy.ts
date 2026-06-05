@@ -1,13 +1,10 @@
-import {
-  iff,
-  not,
-  raw,
-  register,
-  type TaskFile,
-} from "../../../lib/ansible.ts";
+import { iff, not, or, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
+const _service = register("_service");
+const _config = register("_config");
+const _jarfile = register("_jarfile");
 
 export default [
   {
@@ -16,7 +13,7 @@ export default [
       src: "cpauth.service",
       dest: "/etc/systemd/system/cpauth.service",
     },
-    register: "_service",
+    register: _service,
   },
   {
     name: "Create application.conf",
@@ -29,7 +26,7 @@ export default [
 {% endfor %}
 `,
     },
-    register: "_config",
+    register: _config,
   },
   {
     name: "Copy jarfile",
@@ -38,7 +35,7 @@ export default [
       dest: tmpl`${V.cpauth_home}/cpauth.jar`,
       backup: true,
     },
-    register: "_jarfile",
+    register: _jarfile,
   },
   {
     name: "Remove all but the five newest of jar file backups",
@@ -54,9 +51,9 @@ export default [
     systemd: {
       name: "cpauth.service",
       enabled: true,
-      "daemon-reload": iff(raw("_service.changed"), "yes", "no"),
+      "daemon-reload": iff(_service.changed, "yes", "no"),
       state: iff(
-        raw("_jarfile.changed or _config.changed"),
+        or(_jarfile.changed, _config.changed),
         "restarted",
         "started",
       ),
