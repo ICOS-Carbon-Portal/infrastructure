@@ -1,9 +1,13 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "install.yml", tags: "nebula_install" },
   {
-    when: [raw("nebula_ssh_enable"), raw("nebula_ssh_public is not defined")],
+    when: [
+      truthy(V.nebula_ssh_enable),
+      raw("nebula_ssh_public is not defined"),
+    ],
     import_tasks: "ssh.yml",
     tags: ["nebula_ssh", "nebula_config"],
   },
@@ -15,7 +19,7 @@ export default [
   { import_tasks: "service.yml", tags: "nebula_service" },
   { import_tasks: "hosts.yml", tags: "nebula_hosts" },
   {
-    when: raw("nebula_resolve_enable"),
+    when: truthy(V.nebula_resolve_enable),
     import_tasks: "resolve.yml",
     tags: "nebula_resolve",
   },

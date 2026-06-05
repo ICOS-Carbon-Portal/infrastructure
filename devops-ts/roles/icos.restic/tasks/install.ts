@@ -1,11 +1,16 @@
-import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  iff,
+  isNotDefined,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
 export default [
   {
-    when: raw("restic_version is not defined"),
+    when: isNotDefined(V.restic_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",

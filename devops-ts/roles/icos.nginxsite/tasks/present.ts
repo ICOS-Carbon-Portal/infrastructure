@@ -1,4 +1,9 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  raw,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 const update = register("update");
@@ -12,7 +17,7 @@ export default [
       apply: { tags: "nginxsite_cert" },
       public: true,
     },
-    when: raw("nginxsite_domains is defined"),
+    when: isDefined(V.nginxsite_domains),
   },
   {
     name: "Create basic auth users",
@@ -22,7 +27,7 @@ export default [
       apply: { tags: "nginxsite_users" },
       public: true,
     },
-    when: raw("nginxsite_users is defined"),
+    when: isDefined(V.nginxsite_users),
   },
   {
     block: [

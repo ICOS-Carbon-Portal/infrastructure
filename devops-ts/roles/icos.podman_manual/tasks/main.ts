@@ -1,4 +1,5 @@
-import { or, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { or, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -65,7 +66,7 @@ export default [
   },
   {
     name: "Emulate docker",
-    when: raw("podman_docker"),
+    when: truthy(V.podman_docker),
     tags: "podman_docker",
     import_tasks: "docker.yml",
   },

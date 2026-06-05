@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -20,7 +20,7 @@ while read repo; do
 done < "{{ bbclient_repo_file }}"
 `,
     },
-    when: raw("rdflog_backup_enable | default(False)"),
+    when: truthy(V.rdflog_backup_enable).default(false),
   },
   {
     name: "Install rdflog restore scripts",
@@ -29,6 +29,6 @@ done < "{{ bbclient_repo_file }}"
       src: "icos-rdflog-restore.sh",
       mode: "+x",
     },
-    when: raw("rdflog_backup_enable | default(False)"),
+    when: truthy(V.rdflog_backup_enable).default(false),
   },
 ] satisfies TaskFile;

@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.
@@ -34,7 +34,7 @@ export default [
     apt: {
       name: expr("'postgresql-%s-postgis-3' % postgresql_version"),
     },
-    when: raw("postgresql_postgis_enable"),
+    when: truthy(V.postgresql_postgis_enable),
   },
   // Needed for ansible's postgresql_* modules
   {

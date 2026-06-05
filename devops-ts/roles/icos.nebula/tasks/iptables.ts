@@ -1,9 +1,9 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { notVar, V } from "../_ctx.ts";
 
 export default [
   {
-    when: raw("nebula_fw_enable"),
+    when: truthy(V.nebula_fw_enable),
     block: [
       {
         name: "Install iptables",

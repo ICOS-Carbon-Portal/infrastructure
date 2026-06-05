@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -25,6 +25,6 @@ export default [
       hour: "*/3",
       job: tmpl`${V.quince_home}/backup.sh`,
     },
-    when: raw("quince_backup_enable"),
+    when: truthy(V.quince_backup_enable),
   },
 ] satisfies TaskFile;

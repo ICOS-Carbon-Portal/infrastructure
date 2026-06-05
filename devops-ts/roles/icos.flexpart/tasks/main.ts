@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   // This task will install the flexpart simulation software (in a docker image)
@@ -6,7 +7,7 @@ export default [
   {
     import_tasks: "flexpart_run.yml",
     tags: ["flexpart_only", "flexpart_run"],
-    when: raw("flexpart_install_run is defined"),
+    when: isDefined(V.flexpart_install_run),
   },
   // This task will install support for starting the flexpart simulations remotely
   // using a locked-down ssh account. The flexpart_ssh_users is a list ['alice',
@@ -14,6 +15,6 @@ export default [
   {
     import_tasks: "flexpart_ssh.yml",
     tags: ["flexpart_only", "flexpart_ssh"],
-    when: raw("flexpart_ssh_users is defined"),
+    when: isDefined(V.flexpart_ssh_users),
   },
 ] satisfies TaskFile;

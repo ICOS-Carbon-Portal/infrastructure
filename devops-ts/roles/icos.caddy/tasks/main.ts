@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -19,7 +19,7 @@ export default [
       apply: { tags: "caddy_modules" },
     },
     tags: "caddy_xcaddy",
-    when: raw("caddy_modules"),
+    when: truthy(V.caddy_modules),
   },
   {
     name: "Check that caddy was properly installed",
@@ -37,6 +37,6 @@ export default [
       apply: { tags: "caddy_site" },
     },
     tags: "caddy_site",
-    when: raw("caddy_name is defined"),
+    when: isDefined(V.caddy_name),
   },
 ] satisfies TaskFile;

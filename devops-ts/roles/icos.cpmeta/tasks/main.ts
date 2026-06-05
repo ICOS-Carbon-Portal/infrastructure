@@ -1,11 +1,12 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "cpmeta_setup" },
   {
     import_tasks: "deploy.yml",
     tags: "cpmeta_deploy",
-    when: raw("cpmeta_jar_file is defined"),
+    when: isDefined(V.cpmeta_jar_file),
   },
   {
     import_tasks: "restart.yml",
@@ -17,6 +18,6 @@ export default [
   {
     import_tasks: "backup.yml",
     tags: "cpmeta_backup",
-    when: raw("cpmeta_backup_enable | default(False)"),
+    when: truthy(V.cpmeta_backup_enable).default(false),
   },
 ] satisfies TaskFile;

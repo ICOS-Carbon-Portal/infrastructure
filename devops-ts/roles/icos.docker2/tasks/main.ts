@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -63,7 +64,7 @@ export default [
   {
     import_tasks: "cleanup.yml",
     tags: "docker_cleanup",
-    when: raw("docker_periodic_cleanup"),
+    when: truthy(V.docker_periodic_cleanup),
   },
   {
     import_role: "name=icos.docker_utils",

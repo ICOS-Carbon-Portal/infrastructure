@@ -1,4 +1,5 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -7,7 +8,7 @@ const update = register("update");
 export default [
   {
     import_role: { name: "icos.certbot2" },
-    when: raw("nextcloud_certbot_enable"),
+    when: truthy(V.nextcloud_certbot_enable),
   },
   {
     block: [

@@ -1,11 +1,17 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  eq,
+  isNotDefined,
+  ne,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
 export default [
   {
-    when: raw("fd_version is not defined"),
+    when: isNotDefined(V.fd_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -32,13 +38,13 @@ export default [
   // Installing using the .deb is preferable because then we get manual pages etc
   // as well. But currently .deb only exist for x86_64.
   {
-    when: raw("fd_architecture == 'x86_64'"),
+    when: eq(V.fd_architecture, "x86_64"),
     name: "Install fd",
     apt: { deb: V.fd_url_map.at(V.fd_architecture) },
   },
   // For other architecture we'll just extract the fd binary.
   {
-    when: raw("fd_architecture != 'x86_64'"),
+    when: ne(V.fd_architecture, "x86_64"),
     name: "Unarchive fd",
     unarchive: {
       remote_src: true,

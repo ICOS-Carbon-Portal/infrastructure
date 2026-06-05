@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -19,7 +19,7 @@ export default [
   },
   {
     name: "Remove - Allow wireguard through firewall",
-    when: raw("wg_hub_ishub"),
+    when: truthy(V.wg_hub_ishub),
     iptables_raw: {
       name: tmpl`wireguard_${V.wg_hub_config.name}`,
       state: "absent",

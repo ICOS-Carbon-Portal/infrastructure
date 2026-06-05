@@ -1,4 +1,9 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  raw,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
 const _src_user = register("_src_user");
@@ -16,7 +21,7 @@ export default [
   },
   {
     name: "Use sshlogin_user to derive sshlogin_{src,dst}_user",
-    when: raw("sshlogin_user is defined"),
+    when: isDefined(V.sshlogin_user),
     set_fact: {
       sshlogin_src_user: V.sshlogin_user,
       sshlogin_dst_user: V.sshlogin_user,

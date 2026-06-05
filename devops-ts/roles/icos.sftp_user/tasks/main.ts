@@ -1,4 +1,10 @@
-import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  not,
+  raw,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
 const _parent = register("_parent");
@@ -43,7 +49,7 @@ export default [
       user: V.sftp_user_login,
       key: V.sftp_user_pubkey,
     },
-    when: raw("sftp_user_pubkey"),
+    when: truthy(V.sftp_user_pubkey),
   },
   {
     name: "Stat parent directory again",

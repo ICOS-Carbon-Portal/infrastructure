@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, ne, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -16,11 +17,11 @@ export default [
   {
     name: "Install timer and service",
     import_tasks: "setup.yml",
-    when: raw("timer_state != 'absent'"),
+    when: ne(V.timer_state, "absent"),
   },
   {
     name: "Remove timer and service",
     import_tasks: "remove.yml",
-    when: raw("timer_state == 'absent'"),
+    when: eq(V.timer_state, "absent"),
   },
 ] satisfies TaskFile;

@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,7 +8,7 @@ export default [
       that: 'timer_home != "/etc/systemd/system"',
     },
     changed_when: false,
-    when: raw("timer_content is defined"),
+    when: isDefined(V.timer_content),
   },
   {
     name: "Create home directory",
@@ -24,7 +24,7 @@ export default [
       mode: "+x",
       content: V.timer_content,
     },
-    when: raw("timer_content is defined"),
+    when: isDefined(V.timer_content),
   },
   {
     name: "Create systemd timer",

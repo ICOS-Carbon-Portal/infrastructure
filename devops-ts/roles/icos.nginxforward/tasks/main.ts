@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -17,7 +17,7 @@ export default [
   },
   {
     import_tasks: "auth.yml",
-    when: raw("nginxforward_users is defined"),
+    when: isDefined(V.nginxforward_users),
     tags: "nginxforward_auth",
   },
   {
@@ -37,7 +37,7 @@ export default [
         rawTmpl("{% else %}")
       }absent${rawTmpl("{% endif %}")}`,
     },
-    when: raw("nginxforward_enable"),
+    when: truthy(V.nginxforward_enable),
     notify: "reload nginx config",
   },
 ] satisfies TaskFile;

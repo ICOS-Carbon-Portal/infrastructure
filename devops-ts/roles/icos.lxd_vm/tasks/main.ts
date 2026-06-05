@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -62,6 +62,6 @@ export default [
   {
     import_tasks: "forward.yml",
     tags: "lxd_vm_forward",
-    when: raw("lxd_vm_forward"),
+    when: truthy(V.lxd_vm_forward),
   },
 ] satisfies TaskFile;

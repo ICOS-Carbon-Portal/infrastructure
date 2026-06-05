@@ -1,13 +1,12 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "cpauth_setup" },
   {
     import_tasks: "deploy.yml",
     tags: "cpauth_deploy",
-    // cpauth_jar_file is a role variable, so the typed isDefined() can't name it
-    // (it isn't in the global Vars registry) — raw() is the auditable escape.
-    when: raw("cpauth_jar_file is defined"),
+    when: isDefined(V.cpauth_jar_file),
   },
   { import_tasks: "backup.yml", tags: "cpauth_backup" },
 ] satisfies TaskFile;

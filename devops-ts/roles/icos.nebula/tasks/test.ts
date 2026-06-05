@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,7 +8,7 @@ export default [
     meta: "flush_handlers",
   },
   {
-    when: [raw("nebula_resolve_servers"), raw("nebula_resolve_test")],
+    when: [truthy(V.nebula_resolve_servers), truthy(V.nebula_resolve_test)],
     block: [
       {
         name: "Install dnsutils",

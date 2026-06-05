@@ -10,5 +10,5 @@ export interface Vars {
 }
 
 export const { V, tmpl } = context<
-  BuiltinVars
+  Vars & BuiltinVars
 >();

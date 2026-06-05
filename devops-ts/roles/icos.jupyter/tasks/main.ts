@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "jupyter_setup" },
@@ -6,7 +7,7 @@ export default [
   {
     import_tasks: "jusers.yml",
     tags: "jupyter_jusers",
-    when: raw("jupyter_jusers_enable"),
+    when: truthy(V.jupyter_jusers_enable),
   },
   { import_tasks: "just.yml", tags: "jupyter_just" },
 ] satisfies TaskFile;

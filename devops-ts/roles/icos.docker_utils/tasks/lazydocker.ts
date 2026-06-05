@@ -1,11 +1,11 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { isNotDefined, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
 export default [
   {
-    when: raw("lazydocker_version is not defined"),
+    when: isNotDefined(V.lazydocker_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",

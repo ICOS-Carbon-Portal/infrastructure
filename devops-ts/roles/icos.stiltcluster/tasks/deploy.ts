@@ -1,4 +1,9 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  isUndefined,
+  raw,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -23,7 +28,7 @@ export default [
   {
     when: [
       raw("inventory_hostname != stiltcluster_fetch_host"),
-      raw("stiltcluster_jar_file is undefined"),
+      isUndefined(V.stiltcluster_jar_file),
     ],
     block: [
       {
@@ -49,7 +54,7 @@ export default [
   },
   {
     name: "Copy jarfile",
-    when: raw("stiltcluster_jar_file is defined"),
+    when: isDefined(V.stiltcluster_jar_file),
     copy: {
       src: V.stiltcluster_jar_file,
       dest: tmpl`${V.stiltcluster_home}/stiltcluster.jar`,

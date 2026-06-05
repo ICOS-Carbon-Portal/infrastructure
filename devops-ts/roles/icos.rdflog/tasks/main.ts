@@ -1,6 +1,6 @@
 import {
+  isDefined,
   loopOver,
-  raw,
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
@@ -55,6 +55,6 @@ export default [
   {
     import_tasks: "restore.yml",
     tags: "rdflog_restore",
-    when: raw("rdflog_restore_file is defined"),
+    when: isDefined(V.rdflog_restore_file),
   },
 ] satisfies TaskFile;

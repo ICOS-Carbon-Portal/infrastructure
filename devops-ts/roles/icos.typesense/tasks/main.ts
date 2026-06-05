@@ -1,4 +1,5 @@
 import {
+  isUndefined,
   loopOver,
   raw,
   type TaskFile,
@@ -85,7 +86,7 @@ export default [
       {
         name: "Check if website is defined",
         fail: { msg: "website needs to be defined" },
-        when: raw("website is undefined"),
+        when: isUndefined(V.website),
       },
       {
         name: "Check that website is valid",

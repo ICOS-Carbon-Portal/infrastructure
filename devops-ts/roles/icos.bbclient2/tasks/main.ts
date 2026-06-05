@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -29,7 +29,7 @@ export default [
     become: true,
     become_user: V.bbclient_user,
     tags: "bbclient_coldbackup",
-    when: raw("bbclient_coldbackup is defined"),
+    when: isDefined(V.bbclient_coldbackup),
   },
   {
     name: "Install bbclient backup script",
@@ -41,7 +41,7 @@ export default [
       timer_content: V.bbclient_timer_content,
     },
     tags: "bbclient_timer",
-    when: [raw("bbclient_timer_content is defined")],
+    when: [isDefined(V.bbclient_timer_content)],
   },
   { import_tasks: "just.yml", tags: "bbclient_just" },
 ] satisfies TaskFile;

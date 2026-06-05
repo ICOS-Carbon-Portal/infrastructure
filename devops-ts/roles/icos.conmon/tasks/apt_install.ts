@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -16,6 +17,6 @@ export default [
     apt: {
       name: "conmon",
     },
-    when: raw("conmon_apt_version_ok"),
+    when: truthy(V.conmon_apt_version_ok),
   },
 ] satisfies TaskFile;

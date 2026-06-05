@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { isDef, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -89,7 +89,7 @@ export default [
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 drush maint:set 1`,
-    when: raw("update | bool"),
+    when: truthy(V.update).bool(),
   },
   {
     name: "(Re)start docker containers",
@@ -134,21 +134,21 @@ export default [
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 composer update`,
-    when: raw("update | bool"),
+    when: truthy(V.update).bool(),
     register: "result",
     changed_when: '"Package operations" in result.stderr',
   },
   {
     name: "Update database",
     command: tmpl`docker exec ${rawTmpl("{{website}}")}_drupal_1 drush updb`,
-    when: raw("update | bool"),
+    when: truthy(V.update).bool(),
   },
   {
     name: "Disable maintenance mode",
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 drush maint:set 0`,
-    when: raw("update | bool"),
+    when: truthy(V.update).bool(),
   },
   {
     name: "Clear caches",

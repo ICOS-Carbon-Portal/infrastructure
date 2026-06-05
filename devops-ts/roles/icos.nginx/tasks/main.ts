@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "nginx_setup" },
@@ -7,6 +8,6 @@ export default [
   {
     import_tasks: "metrics.yml",
     tags: "nginx_metrics",
-    when: raw("nginx_metrics_enable"),
+    when: truthy(V.nginx_metrics_enable),
   },
 ] satisfies TaskFile;

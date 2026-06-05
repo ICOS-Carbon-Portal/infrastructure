@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { notVar, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,7 +8,7 @@ export default [
   },
   {
     import_tasks: "certbot_fake.yml",
-    when: raw("certbot_fake_certificate"),
+    when: truthy(V.certbot_fake_certificate),
   },
   // The certbot_nginx_conf variable is set by either the live or fake path.
   {

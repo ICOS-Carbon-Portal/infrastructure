@@ -1,4 +1,4 @@
-import { raw, type TaskFile, V } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy, V } from "../../../lib/ansible.ts";
 import { notVar, tmpl } from "../_ctx.ts";
 
 export default [
@@ -18,7 +18,7 @@ export default [
     debug: {
       msg: tmpl`${V.golang_local_version} is sufficient.`,
     },
-    when: raw("golang_local_version_ok"),
+    when: truthy(V.golang_local_version_ok),
   },
   // Otherwise, attempt to install by using apt.
   {

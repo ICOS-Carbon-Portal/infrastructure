@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -49,6 +49,6 @@ export default [
   },
   {
     include_tasks: "backup.yml",
-    when: raw("matomo_backup_enable"),
+    when: truthy(V.matomo_backup_enable),
   },
 ] satisfies TaskFile;

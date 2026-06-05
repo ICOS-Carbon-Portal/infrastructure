@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
   {
     import_tasks: "pg_stat.yml",
     tags: "postgresql_pg_stat",
-    when: raw("postgresql_pg_stat_enable"),
+    when: truthy(V.postgresql_pg_stat_enable),
   },
   {
     import_tasks: "util.yml",

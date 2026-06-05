@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -11,7 +11,7 @@ export default [
       rules:
         tmpl`-A PREROUTING -p tcp --dport ${V.lxd_forward_port} -j DNAT --to-destination ${V.lxd_forward_ip}:22`,
     },
-    when: raw("lxd_forward_port"),
+    when: truthy(V.lxd_forward_port),
   },
   {
     name: "Modify /etc/hosts to add lxd_forward_name.lxd",

@@ -1,4 +1,4 @@
-import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -17,7 +17,7 @@ export default [
   },
   {
     name: "Install wireguard hub config",
-    when: raw("wg_hub_ishub"),
+    when: truthy(V.wg_hub_ishub),
     register: "_hub_conf",
     copy: {
       dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
@@ -79,7 +79,7 @@ PersistentKeepalive = 25
   },
   {
     name: "Allow wireguard through firewall",
-    when: raw("wg_hub_ishub"),
+    when: truthy(V.wg_hub_ishub),
     iptables_raw: {
       name: tmpl`wireguard_${V.wg_hub_config.name}`,
       rules: `-A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT

@@ -1,4 +1,9 @@
-import { raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import {
+  isNotDefined,
+  register,
+  type TaskFile,
+  V,
+} from "../../../lib/ansible.ts";
 import { tmpl } from "../_ctx.ts";
 
 const gh = register("gh");
@@ -8,7 +13,7 @@ const unarchive = register("unarchive");
 
 export default [
   {
-    when: raw("btop_version is not defined"),
+    when: isNotDefined(V.btop_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",

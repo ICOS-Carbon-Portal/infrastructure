@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -12,7 +12,7 @@ export default [
       password: V.postgresql_postgres_password,
       login_unix_socket: "/var/run/postgresql",
     },
-    when: [raw("postgresql_postgres_password")],
+    when: [truthy(V.postgresql_postgres_password)],
   },
   {
     name: "Change with addresses postgresql listens to",
@@ -22,7 +22,7 @@ export default [
 `,
     },
     notify: "restart postgresql",
-    when: raw("postgresql_listen_addresses"),
+    when: truthy(V.postgresql_listen_addresses),
   },
   {
     name: "Install public keys for postgres user",
@@ -32,6 +32,6 @@ export default [
       state: "present",
       key: V.postgresql_ssh_keys,
     },
-    when: raw("postgresql_ssh_keys"),
+    when: truthy(V.postgresql_ssh_keys),
   },
 ] satisfies TaskFile;

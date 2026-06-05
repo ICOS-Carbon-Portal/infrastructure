@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isTruthy, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -37,7 +37,7 @@ export default [
       key: V.lxd_guest_root_keys,
       exclusive: true,
     },
-    when: raw("lxd_guest_root_keys is truthy"),
+    when: isTruthy(V.lxd_guest_root_keys),
   },
   {
     name: "Add default gateway as host",

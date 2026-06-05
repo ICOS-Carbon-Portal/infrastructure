@@ -1,10 +1,10 @@
-import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Make sure docker is upgraded if requested",
-    when: raw("docker_upgrade | bool"),
+    when: truthy(V.docker_upgrade).bool(),
     dpkg_selections: {
       name: V.item,
       selection: "install",
@@ -15,7 +15,7 @@ export default [
     name: "Install/upgrade docker",
     apt: {
       name: ["docker.io", "containerd"],
-      state: iff(raw("docker_upgrade | bool"), "latest", "present"),
+      state: iff(truthy(V.docker_upgrade).bool(), "latest", "present"),
       update_cache: true,
     },
   },
@@ -50,7 +50,7 @@ export default [
   {
     import_tasks: "cleanup.yml",
     tags: "docker_cleanup",
-    when: raw("docker_periodic_cleanup"),
+    when: truthy(V.docker_periodic_cleanup),
   },
   { import_role: "name=icos.docker_utils", tags: "docker_utils" },
 ] satisfies TaskFile;

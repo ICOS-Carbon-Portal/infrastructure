@@ -1,4 +1,5 @@
 import {
+  isNotDefined,
   raw,
   register,
   type TaskFile,
@@ -17,7 +18,7 @@ export default [
     // the list structure rather than collapsing to a single `a and b` string.
     when: [
       raw('ansible_architecture == "x86_64"'),
-      raw("ripgrep_version is not defined"),
+      isNotDefined(V.ripgrep_version),
     ] as unknown as When,
     run_once: true,
     check_mode: false,

@@ -1,5 +1,6 @@
 import {
   iff,
+  isDefined,
   not,
   raw,
   register,
@@ -25,7 +26,7 @@ export default [
   },
   {
     name: "Copy jarfile",
-    when: raw("stiltweb_jar_file is defined"),
+    when: isDefined(V.stiltweb_jar_file),
     copy: {
       src: V.stiltweb_jar_file,
       dest: tmpl`${V.stiltweb_home}/stiltweb.jar`,

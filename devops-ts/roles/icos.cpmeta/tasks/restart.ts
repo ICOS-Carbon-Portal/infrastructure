@@ -4,6 +4,7 @@ import {
   raw,
   register,
   type TaskFile,
+  truthy,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
@@ -63,6 +64,6 @@ export default [
     retries: 30,
     delay: 10,
     until: not(r.failed),
-    when: raw("cpmeta_readonly_mode"),
+    when: truthy(V.cpmeta_readonly_mode),
   },
 ] satisfies TaskFile;

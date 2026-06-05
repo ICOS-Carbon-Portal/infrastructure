@@ -1,13 +1,14 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, ne, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_role: "name=icos.golang" },
   {
     import_tasks: "xcaddy-debian.yml",
-    when: raw("ansible_distribution_file_variety == 'Debian'"),
+    when: eq(V.ansible_distribution_file_variety, "Debian"),
   },
   {
     import_tasks: "xcaddy-other.yml",
-    when: raw("ansible_distribution_file_variety != 'Debian'"),
+    when: ne(V.ansible_distribution_file_variety, "Debian"),
   },
 ] satisfies TaskFile;

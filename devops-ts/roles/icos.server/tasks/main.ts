@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isTruthy, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -11,7 +11,7 @@ export default [
       // Make sure to remove stale root keys
       exclusive: true,
     },
-    when: raw("root_keys is truthy"),
+    when: isTruthy(V.root_keys),
   },
   {
     name: "Set timezone to Europe/Stockholm",

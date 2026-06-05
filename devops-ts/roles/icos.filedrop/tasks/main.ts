@@ -1,6 +1,6 @@
 import {
+  isDefined,
   lookup,
-  raw,
   register,
   type TaskFile,
   V,
@@ -32,7 +32,7 @@ export default [
       jarservice_local: V.filedrop_jar_file,
       jarservice_unit: lookup("template", "filedrop.service"),
     },
-    when: raw("filedrop_jar_file is defined"),
+    when: isDefined(V.filedrop_jar_file),
   },
   {
     name: "Create filedrop config file",

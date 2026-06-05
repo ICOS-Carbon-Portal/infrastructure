@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,7 +14,7 @@ export default [
   },
   {
     name: "install golang using apt",
-    when: raw("golang_apt_version_ok"),
+    when: truthy(V.golang_apt_version_ok),
     apt: {
       name: "golang",
     },

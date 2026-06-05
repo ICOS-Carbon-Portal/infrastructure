@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -17,7 +17,7 @@ export default [
       nginxauth_file: V.eurocom_auth_file,
       nginxauth_users: V.eurocom_users,
     },
-    when: raw("eurocom_users is defined"),
+    when: isDefined(V.eurocom_users),
   },
   {
     include_role: "name=icos.nginxsite",

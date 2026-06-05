@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -39,7 +39,7 @@ export default [
       autoclean: true,
       autoremove: true,
     },
-    when: raw("upgrade_everything"),
+    when: truthy(V.upgrade_everything),
     notify: "reboot",
   },
 ] satisfies TaskFile;

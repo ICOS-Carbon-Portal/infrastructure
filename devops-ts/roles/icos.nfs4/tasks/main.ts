@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -10,7 +10,7 @@ export default [
   },
   {
     name: "Allow nfs through firewall",
-    when: raw("nfs4_interface"),
+    when: truthy(V.nfs4_interface),
     iptables_raw: {
       name: "allow_nfs4",
       rules: tmpl`-A INPUT ${

@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -54,6 +54,6 @@ export default [
   },
   {
     include_tasks: "backup.yml",
-    when: raw("plausible_backup_enabled"),
+    when: truthy(V.plausible_backup_enabled),
   },
 ] satisfies TaskFile;
