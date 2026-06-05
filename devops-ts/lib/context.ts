@@ -4,7 +4,8 @@
 // own `defaults/` (the rest are caller params, registered results, loop items,
 // set_fact outputs, globals — see ROLES_PLAN.md). This module turns the
 // statically-known half into a typed, autocompleted accessor; the dynamic rest
-// keep using raw "{{ }}" strings and raw() exactly as before.
+// (registered results, loop items, ...) are reached through the typed handles
+// and when-helpers (register()/loopOver()/eq()/and()/...).
 //
 // Each role gets a generated `roles/<role>/_ctx.ts` that calls `context<Vars>()`
 // with that role's variable interface and re-exports the result. A task file

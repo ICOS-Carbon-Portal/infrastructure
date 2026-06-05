@@ -220,13 +220,13 @@ export function expr(jinja: string): Template {
 /**
  * A Jinja conditional value expression: `iff(c, a, b)` -> `{{ A if C else B }}`.
  *
- * The condition renders bare — pass a `when:`-style `Expr` (`raw(...)`, `and`/
+ * The condition renders bare — pass a `when:`-style `Expr` (`eq`/`isIn`, `and`/
  * `or`, a register field like `_r.changed`) or a single-ref `Template` (`V.x`).
  * The branches are filter-args: a string becomes a `'quoted'` Jinja literal,
  * `V.x` / `V.omit` render bare, numbers and booleans as-is.
  *
- *   iff(V.caddy_upgrade, "latest", "present")  // {{ 'latest' if caddy_upgrade else 'present' }}
- *   iff(raw("where == 'EOF'"), "EOF", V.omit)  // {{ 'EOF' if where == 'EOF' else omit }}
+ *   iff(V.caddy_upgrade, "latest", "present")     // {{ 'latest' if caddy_upgrade else 'present' }}
+ *   iff(eq(V.where, "EOF"), "EOF", V.omit)        // {{ 'EOF' if where == 'EOF' else omit }}
  *
  * Replaces the stringly-typed `expr("'a' if cond else 'b'")`: the branches are
  * type-checked, and a `V.x`/register condition is checked too.

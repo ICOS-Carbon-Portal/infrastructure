@@ -1,7 +1,7 @@
 // Tests for the iff() ternary combinator: it must render byte-identically to the
 // hand-written `expr("'a' if cond else 'b'")` strings it replaces.
 import { expr, iff } from "./template.ts";
-import { and, or, raw, V } from "./vars.ts";
+import { and, eq as eqExpr, isIn, or, truthy, V } from "./vars.ts";
 import { register } from "./register.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
@@ -39,14 +39,14 @@ Deno.test("iff: omit branch (V.omit) renders bare", () => {
   );
 });
 
-Deno.test("iff: raw() comparison condition", () => {
+Deno.test("iff: comparison condition", () => {
   eq(
-    iff(raw("where == 'EOF'"), "EOF", V.omit).toText(),
+    iff(eqExpr(V.where, "EOF"), "EOF", V.omit).toText(),
     "{{ 'EOF' if where == 'EOF' else omit }}",
     "caddy insertafter",
   );
   eq(
-    iff(raw("'smartmon' in sexp_exporters"), "docker", V.omit).toText(),
+    iff(isIn("smartmon", V.sexp_exporters), "docker", V.omit).toText(),
     "{{ 'docker' if 'smartmon' in sexp_exporters else omit }}",
     "script_exporter scripts",
   );
@@ -54,7 +54,7 @@ Deno.test("iff: raw() comparison condition", () => {
 
 Deno.test("iff: numeric branches", () => {
   eq(
-    iff(raw("exploredata_type == 'test'"), 4567, 4566).toText(),
+    iff(eqExpr(V.exploredata_type, "test"), 4567, 4566).toText(),
     "{{ 4567 if exploredata_type == 'test' else 4566 }}",
     "exploredata port",
   );
@@ -81,8 +81,8 @@ Deno.test("iff: compound register condition via or()", () => {
 
 Deno.test("iff: and() condition", () => {
   eq(
-    and(raw("a"), raw("b")).toString(),
-    "a and b",
+    and(truthy(V.caddy_upgrade), truthy(V.restic_upgrade)).toString(),
+    "caddy_upgrade and restic_upgrade",
     "and helper sanity",
   );
 });

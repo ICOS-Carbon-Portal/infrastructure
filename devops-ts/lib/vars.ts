@@ -201,20 +201,6 @@ export function not(s: Subject): Expr {
   return new Expr(`not ${sub}`, sub);
 }
 
-/**
- * An explicit, auditable escape for `when:` expressions the typed helpers do not
- * model — comparisons (`==`, `in`), filters (`| bool`), attribute access on
- * registered results (`_conf.changed`) or loop items (`item.x`). Role task files
- * are dense with these. Unlike the removed *implicit* string→`When` coercion,
- * `raw()` is a deliberate, greppable call: `grep -r 'raw(' shows every escape.
- *
- *   raw('ansible_distribution == "Debian"')
- *   raw("cpauth_jar_file is defined")
- */
-export function raw(text: string): Expr {
-  return new Expr(text, text);
-}
-
 /** Join expressions with Jinja `and`: `and(a, b)` -> "a and b". */
 export function and(...exprs: Expr[]): Expr {
   const text = exprs.map(String).join(" and ");

@@ -60,7 +60,6 @@ export {
   notIn,
   type Operand,
   or,
-  raw,
   type Ref,
   type Subject,
   tmpl,
@@ -100,8 +99,8 @@ export type { Tmpl } from "./template.ts";
 
 /**
  * A `when:` condition. A built `Expr` (never a raw string — build it with
- * isDefined/not/raw/etc.), or a list of them for YAML's list-form `when:` where
- * Ansible ANDs the entries.
+ * isDefined/not/eq/and/etc.), or a list of them for YAML's list-form `when:`
+ * where Ansible ANDs the entries.
  */
 export type When = Expr | Expr[];
 
