@@ -1,9 +1,12 @@
 import {
+  isUndefined,
+  ne,
   not,
-  raw,
+  or,
   register,
   type TaskFile,
   truthy,
+  varByName,
 } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
@@ -12,7 +15,7 @@ const _parent = register("_parent");
 export default [
   {
     fail: { msg: tmpl`${V.item} needs to be defined` },
-    when: raw("vars[item] is undefined"),
+    when: isUndefined(varByName(V.item)),
     loop: ["sftp_user_dir", "sftp_user_login"],
   },
   {
@@ -60,7 +63,7 @@ export default [
   {
     name: "Fail if parent directory isn't owned by root",
     fail: { msg: tmpl`${V._sftp_parent_dir} must be owned by root` },
-    when: raw("_parent.stat.uid != 0 or _parent.stat.gid != 0"),
+    when: or(ne(_parent.stat.uid, 0), ne(_parent.stat.gid, 0)),
   },
   {
     name: "Create sftp directory",

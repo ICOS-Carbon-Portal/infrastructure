@@ -65,6 +65,8 @@ export interface StatResult extends Expr {
   exists: Field;
   isdir: Field;
   checksum: Field;
+  uid: Field;
+  gid: Field;
 }
 
 /** The common fields of an Ansible task result. */
@@ -128,8 +130,9 @@ export function register(name: string): Reg {
         }
         if (key === "ref") return expr(path);
         const k = String(key);
-        // A numeric key is Jinja list access (`stdout_lines[0]`), not `.0`.
-        if (/^\d+$/.test(k)) return node(`${path}[${k}]`);
+        // A numeric key is Jinja list access (`stdout_lines[0]`,
+        // `stdout_lines[-1]`), not `.0`.
+        if (/^-?\d+$/.test(k)) return node(`${path}[${k}]`);
         return node(`${path}.${k}`);
       },
       // Method calls (`stdout.endswith(x)`) extend the path: `<path>(<args>)`.

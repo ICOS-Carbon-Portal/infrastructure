@@ -19,6 +19,7 @@ import type { VaultVars } from "./vaultvars.ts";
 import type { VarShapes } from "./shapes.ts";
 
 export interface ParamVars {
+  _builtin_version: string;
   _ssh_user: string;
   _version: string;
   admin_users: string;

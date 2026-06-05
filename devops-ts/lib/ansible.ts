@@ -66,6 +66,7 @@ export {
   tmpl,
   truthy,
   V,
+  varByName,
   type Vars,
 } from "./vars.ts";
 export { type Host, type HostPattern, pattern } from "./hosts.ts";

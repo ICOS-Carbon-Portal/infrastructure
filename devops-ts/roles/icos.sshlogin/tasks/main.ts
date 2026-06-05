@@ -1,8 +1,10 @@
 import {
   isDefined,
+  isUndefined,
   raw,
   register,
   type TaskFile,
+  varByName,
 } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
@@ -32,7 +34,7 @@ export default [
     fail: {
       msg: tmpl`${V.item} needs to be defined`,
     },
-    when: raw("vars[item] is undefined"),
+    when: isUndefined(varByName(V.item)),
     loop: [
       "sshlogin_dst",
       "sshlogin_src_user",

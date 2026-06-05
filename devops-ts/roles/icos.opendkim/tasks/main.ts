@@ -1,8 +1,8 @@
 import {
   loopOver,
-  raw,
   type TaskFile,
   type Tmpl,
+  truthy,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
@@ -80,7 +80,7 @@ export default [
 done`,
     register: "_r",
     changed_when: false,
-    when: raw("opendkim_domains | difference(opendkim_domains_testkeys)"),
+    when: truthy(V.opendkim_domains.difference(V.opendkim_domains_testkeys)),
   },
   {
     name: "Print instructions about adding DNS records",
@@ -89,7 +89,7 @@ done`,
 "{{ _r.stdout }}"
 `,
     },
-    when: raw("opendkim_domains | difference(opendkim_domains_testkeys)"),
+    when: truthy(V.opendkim_domains.difference(V.opendkim_domains_testkeys)),
   },
   {
     name: "Run opendkim-testkey on keys that have been added to DNS",

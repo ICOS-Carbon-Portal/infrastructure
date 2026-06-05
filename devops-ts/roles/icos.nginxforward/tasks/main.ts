@@ -1,4 +1,10 @@
-import { isDefined, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  isUndefined,
+  type TaskFile,
+  truthy,
+  varByName,
+} from "../../../lib/ansible.ts";
 import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -7,7 +13,7 @@ export default [
     fail: {
       msg: tmpl`${V.item} needs to be defined`,
     },
-    when: raw("vars[item] is undefined"),
+    when: isUndefined(varByName(V.item)),
     loop: [
       "nginxforward_port",
       "nginxforward_name",

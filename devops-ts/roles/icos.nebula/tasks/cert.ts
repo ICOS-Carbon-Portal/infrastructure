@@ -1,15 +1,22 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  and,
+  eq,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 const newpub = register("newpub");
 const signedcert = register("signedcert");
+const status = register("status");
 
 export default [
   {
     name: "Check status of certificate",
     command: tmpl`ops-nebula cert-check ${V.nebula_cert_min_days}`,
     changed_when: false,
-    register: "status",
+    register: status,
   },
   {
     name: "Cert status",
@@ -17,10 +24,13 @@ export default [
       msg: `{{status.stdout_lines[0]}}
 `,
     },
-    when: raw("status.stdout_lines"),
+    when: truthy(status.stdout_lines),
   },
   {
-    when: raw('status.stdout and status.stdout_lines[-1] == "need to sign"'),
+    when: and(
+      truthy(status.stdout),
+      eq(status.stdout_lines[-1], "need to sign"),
+    ),
     block: [
       {
         name: "Retrieve public key",

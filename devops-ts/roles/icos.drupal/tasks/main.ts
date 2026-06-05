@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isUndefined, type TaskFile, varByName } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -7,7 +7,7 @@ export default [
     fail: {
       msg: tmpl`${V.item} needs to be defined`,
     },
-    when: raw("vars[item] is undefined"),
+    when: isUndefined(varByName(V.item)),
     loop: ["website"],
     tags: ["drupal", "drupal_nginx"],
   },

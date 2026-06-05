@@ -1,4 +1,4 @@
-import { eq, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, ne, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -32,7 +32,7 @@ export default [
     apt: {
       name: tmpl`python${V._version}-venv`,
     },
-    when: raw("_builtin_version != _version"),
+    when: ne(V._builtin_version, V._version),
     loop: V.python3_version_list,
     loop_control: {
       loop_var: "_version",

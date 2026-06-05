@@ -123,6 +123,10 @@ export class Template {
   fileglob(): Template {
     return this.filter("fileglob");
   }
+  /** `| difference(other)` — items in this list not in `other`. */
+  difference(other: FilterArg): Template {
+    return this.filter(`difference(${filterArgText(other)})`);
+  }
   /** `| map(attribute='attr')` — pluck an attribute from each list item. */
   mapAttr(attr: string): Template {
     return this.filter(`map(attribute='${attr}')`);

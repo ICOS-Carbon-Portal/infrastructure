@@ -239,6 +239,16 @@ export function isUndefined(s: Subject): Expr {
   return new Expr(`${sub} is undefined`, sub);
 }
 
+/**
+ * The variable whose NAME is held by `name`, via the magic `vars` dict:
+ * `varByName(V.item)` -> `vars[item]`. Used in loop-driven required-parameter
+ * guards: `when: isUndefined(varByName(V.item))`.
+ */
+export function varByName(name: Subject): Expr {
+  const t = `vars[${subjText(name)}]`;
+  return new Expr(t, t);
+}
+
 /** A bare variable/ref used directly as a truthiness condition: `<subject>`. */
 export function truthy(s: Subject): Expr {
   const sub = subjText(s);
