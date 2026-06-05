@@ -1,7 +1,7 @@
 import {
   isDefined,
   isUndefined,
-  raw,
+  ne,
   type TaskFile,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
@@ -27,7 +27,7 @@ export default [
   // variable temporarily.
   {
     when: [
-      raw("inventory_hostname != stiltcluster_fetch_host"),
+      ne(V.inventory_hostname, V.stiltcluster_fetch_host),
       isUndefined(V.stiltcluster_jar_file),
     ],
     block: [

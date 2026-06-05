@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { and, not, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "sysctl.yml", tags: "lxd_sysctl" },
@@ -14,7 +15,7 @@ export default [
   // "For users of the snap, those limits are automatically raised."
   {
     name: "Modify /etc/security/limits.conf",
-    when: raw("not lxd_is_snap and not ansible_check_mode"),
+    when: and(not(V.lxd_is_snap), not(V.ansible_check_mode)),
     tags: "lxd_limits",
     copy: {
       dest: "/etc/security/limits.conf",

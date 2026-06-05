@@ -1,4 +1,6 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, ne, register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _r = register("_r");
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -6,7 +8,7 @@ export default [
     name: "List tables in the rdflog database",
     command: "./psql.sh -c '\\d' rdflog",
     args: { chdir: V.rdflog_home, creates: "/some/file" },
-    register: "_r",
+    register: _r,
     changed_when: false,
   },
   {
@@ -17,8 +19,8 @@ export default [
     // accepts a single Expr, so this array is a deliberate type-error escape;
     // it renders to the same YAML sequence the original used.
     when: [
-      raw("_r.stderr != 'Did not find any relations.'"),
-      raw("_r.stdout != ''"),
+      ne(_r.stderr, "Did not find any relations."),
+      ne(_r.stdout, ""),
     ],
   },
   {
@@ -26,10 +28,10 @@ export default [
     "ansible.builtin.shell": tmpl`zcat ${V.rdflog_restore_file} | ./psql.sh
 `,
     args: { chdir: V.rdflog_home },
-    register: "_r",
+    register: _r,
     when: [
-      raw("_r.stderr == 'Did not find any relations.'"),
-      raw("_r.stdout == ''"),
+      eq(_r.stderr, "Did not find any relations."),
+      eq(_r.stdout, ""),
     ],
   },
 ] satisfies TaskFile;

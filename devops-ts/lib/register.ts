@@ -46,6 +46,7 @@ export interface Result {
   path: Field;
   content: Field;
   backup_file: Field;
+  restart_required: Field;
   stat: StatResult;
   // Module-specific result fields (user, github_release, lxd, find, ...).
   home: Field;

@@ -1,4 +1,11 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  and,
+  group,
+  isDefined,
+  not,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -14,7 +21,7 @@ export default [
   },
   {
     include_tasks: "jarfile.yml",
-    when: raw("not (jarservice_conf_only | default(False) | bool)"),
+    when: not(group(truthy(V.jarservice_conf_only).default(false).bool())),
   },
   {
     name: tmpl`Copy ${V.servicename} config file ${V.configfile}`,
@@ -36,7 +43,7 @@ export default [
     // Our nginx config template is dependent on a variable set by
     // certbot. This means that if the certbot role is disabled, we
     // cannot deploy the config.
-    when: raw("nginxconfig is defined and not certbot_disabled"),
+    when: and(isDefined(V.nginxconfig), not(V.certbot_disabled)),
     notify: "reload nginx config",
   },
   {

@@ -1,4 +1,13 @@
-import { or, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import {
+  isUndefined,
+  or,
+  raw,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
+
+const _podman = register("_podman");
 import { V } from "../_ctx.ts";
 
 export default [
@@ -24,7 +33,7 @@ export default [
     command: "podman --version",
     failed_when: false,
     changed_when: false,
-    register: "_podman",
+    register: _podman,
   },
   {
     name: "Installing podman",
@@ -36,13 +45,13 @@ export default [
     name: "Podman is installed and the correct version.",
     // _podman will be undefined if we use the podman_configure tag
     when: or(
-      raw("_podman is undefined"),
+      isUndefined(_podman.ref),
       raw("_podman.stdout.endswith(podman_version)"),
     ),
     block: [
       {
         debug: { msg: "The correct version of podman is installed." },
-        when: raw("_podman is undefined"),
+        when: isUndefined(_podman.ref),
       },
       {
         import_tasks: "configure.yml",

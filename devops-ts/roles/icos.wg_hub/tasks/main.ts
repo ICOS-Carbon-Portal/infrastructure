@@ -1,5 +1,17 @@
-import { iff, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import {
+  and,
+  iff,
+  not,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
+
+const _hub_conf = register("_hub_conf");
+const _spoke_conf = register("_spoke_conf");
+const _reresolve = register("_reresolve");
 
 export default [
   {
@@ -18,7 +30,7 @@ export default [
   {
     name: "Install wireguard hub config",
     when: truthy(V.wg_hub_ishub),
-    register: "_hub_conf",
+    register: _hub_conf,
     copy: {
       dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       mode: 0o600,
@@ -43,7 +55,7 @@ PersistentKeepalive = 25
   {
     name: "Install wireguard spoke config",
     when: notVar("wg_hub_ishub"),
-    register: "_spoke_conf",
+    register: _spoke_conf,
     copy: {
       dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       mode: 0o600,
@@ -98,10 +110,10 @@ PersistentKeepalive = 25
   },
   {
     name: "Setup reresolve dependency",
-    when: raw("wg_hub_reresolve and not wg_hub_ishub"),
+    when: and(truthy(V.wg_hub_reresolve), not(V.wg_hub_ishub)),
     command:
       tmpl`systemctl add-wants wg-quick@${V.wg_hub_intf}.service wg-reresolve@${V.wg_hub_intf}.timer`,
-    register: "_reresolve",
+    register: _reresolve,
     changed_when: '_reresolve.stderr.startswith("Created symlink")',
   },
   {
@@ -109,7 +121,7 @@ PersistentKeepalive = 25
     systemd: {
       name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
       state: iff(
-        raw("_hub_conf.changed or _spoke_conf.changed or _reresolve.changed"),
+        or(_hub_conf.changed, _spoke_conf.changed, _reresolve.changed),
         "restarted",
         "started",
       ),

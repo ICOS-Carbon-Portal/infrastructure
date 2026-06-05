@@ -4,10 +4,11 @@
 // only the registries this role's task/handler files reference.
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
 
 // deno-lint-ignore no-empty-interface
 export interface Vars {}
 
 export const { V, tmpl } = context<
-  BuiltinVars
+  BuiltinVars & ParamVars
 >();

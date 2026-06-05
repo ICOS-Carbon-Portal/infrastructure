@@ -1,4 +1,6 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { and, register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _set = register("_set");
 
 export default [
   {
@@ -11,7 +13,7 @@ export default [
           name: "shared_preload_libraries",
           value: "pg_stat_statements",
         },
-        register: "_set",
+        register: _set,
       },
     ],
   },
@@ -23,7 +25,7 @@ export default [
     },
     // postgresql_set always reports 'restart_required' for the
     // 'shared_preload_libraries' key, even though it wasn't changed.
-    when: raw("_set.changed and _set.restart_required"),
+    when: and(_set.changed, _set.restart_required),
   },
   // pg_stat_statements still needs to be enabled in each database
   // - name: Add the pg_stat_statements extension

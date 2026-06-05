@@ -1,5 +1,8 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { or, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _virtuoso_ini = register("_virtuoso_ini");
+const _virtuoso_compose = register("_virtuoso_compose");
 
 export default [
   {
@@ -18,7 +21,7 @@ export default [
       src: "virtuoso.ini",
       dest: tmpl`${V.virtuoso_home}/volumes/virtuoso.db/virtuoso.ini`,
     },
-    register: "_virtuoso_ini",
+    register: _virtuoso_ini,
   },
   {
     name: "Copy docker-compose.yml",
@@ -26,7 +29,7 @@ export default [
       src: "docker-compose.yml",
       dest: V.virtuoso_home,
     },
-    register: "_virtuoso_compose",
+    register: _virtuoso_compose,
   },
   {
     name: "Start Virtuoso",
@@ -42,6 +45,6 @@ export default [
       project_src: V.virtuoso_home,
       state: "restarted",
     },
-    when: raw("_virtuoso_ini.changed or _virtuoso_compose.changed"),
+    when: or(_virtuoso_ini.changed, _virtuoso_compose.changed),
   },
 ] satisfies TaskFile;
