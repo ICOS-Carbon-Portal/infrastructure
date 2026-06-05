@@ -1,4 +1,5 @@
-import { raw, type TaskFile, type When } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -29,6 +30,6 @@ Pin-Priority: -1
   {
     name: "Configure storage for LXD + ZFS",
     import_tasks: "zfs-and-lxd.yml",
-    when: [raw("icos.inside_lxd"), raw("icos.root_is_zfs")] as unknown as When,
+    when: [truthy(V.icos.inside_lxd), truthy(V.icos.root_is_zfs)],
   },
 ] satisfies TaskFile;

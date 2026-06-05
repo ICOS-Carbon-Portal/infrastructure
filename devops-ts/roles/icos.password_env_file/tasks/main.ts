@@ -1,4 +1,4 @@
-import { lookup, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { lookup, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,7 +8,7 @@ export default [
       dest: V.file,
       content: tmpl`${V.file_var}=${lookup("vars", V.set_fact)}`,
     },
-    when: raw("lookup('vars', set_fact, default=False)"),
+    when: truthy(lookup("vars", V.set_fact, { default: false })),
   },
   {
     name: "Generate password file",

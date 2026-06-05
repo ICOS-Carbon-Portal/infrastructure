@@ -1,4 +1,4 @@
-import { loopOverVar, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { loopOverVar, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -27,7 +27,7 @@ export default [
       },
     }),
   ),
-  loopOverVar<{ name: string }>(
+  loopOverVar<{ name: string; sudopwless: boolean }>(
     V.user_conf.create_users.default([]),
     (item) => ({
       name: "Install password-less sudo rule",
@@ -36,7 +36,7 @@ export default [
         content: `{{ item.name }} ALL=(ALL) NOPASSWD: ALL
 `,
       },
-      when: raw("item.sudopwless | default(false)"),
+      when: truthy(item.sudopwless.default(false)),
     }),
   ),
   loopOverVar<{ name: string; remove: string }>(

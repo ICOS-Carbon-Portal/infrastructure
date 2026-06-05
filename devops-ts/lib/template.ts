@@ -257,13 +257,40 @@ export function rawTmpl(text: string): RawTemplate {
  *   lookup("template", "borgmon.py")  // {{ lookup('template', 'borgmon.py') }}
  *   lookup("vars", V.set_fact)         // {{ lookup('vars', set_fact) }}
  *
+ * A trailing plain-object argument is rendered as Jinja keyword arguments:
+ *
+ *   lookup("vars", V.set_fact, { default: false })
+ *     // {{ lookup('vars', set_fact, default=False) }}
+ *
  * Replaces `expr("lookup('template', '...')")`.
  */
 export type LookupPlugin = "template" | "file" | "env" | "vars";
 
-export function lookup(plugin: LookupPlugin, ...args: FilterArg[]): Template {
-  const parts = [plugin, ...args].map(filterArgText).join(", ");
-  return new Template([{ kind: "ref", jinja: `lookup(${parts})` }]);
+type LookupKwargs = Record<string, FilterArg>;
+
+export function lookup(
+  plugin: LookupPlugin,
+  ...args: (FilterArg | LookupKwargs)[]
+): Template {
+  // A trailing plain object (not a Template/array/primitive) is keyword args.
+  let kwargs: LookupKwargs | undefined;
+  const last = args[args.length - 1];
+  if (
+    last !== null && typeof last === "object" && !Array.isArray(last) &&
+    !(last instanceof Template)
+  ) {
+    kwargs = args.pop() as LookupKwargs;
+  }
+  const parts = [
+    filterArgText(plugin),
+    ...(args as FilterArg[]).map(filterArgText),
+  ];
+  if (kwargs) {
+    for (const [k, v] of Object.entries(kwargs)) {
+      parts.push(`${k}=${filterArgText(v)}`);
+    }
+  }
+  return new Template([{ kind: "ref", jinja: `lookup(${parts.join(", ")})` }]);
 }
 
 /**

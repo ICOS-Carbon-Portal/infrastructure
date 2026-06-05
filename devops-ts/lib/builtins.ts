@@ -56,4 +56,10 @@ export interface BuiltinVars {
   ansible_env: unknown;
   ansible_processor_vcpus: number;
   ansible_memtotal_mb: number;
+
+  /** Custom `icos` facts (set by the icos fact module): host-environment flags. */
+  icos: {
+    inside_lxd: boolean;
+    root_is_zfs: boolean;
+  };
 }
