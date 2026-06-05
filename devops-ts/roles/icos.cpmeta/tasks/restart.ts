@@ -1,7 +1,6 @@
 import {
   iff,
   not,
-  raw,
   register,
   type TaskFile,
   truthy,
@@ -31,14 +30,14 @@ export default [
       url: tmpl`http://127.0.0.1:${V.cpmeta_port}/admin/switchToReadonlyMode`,
     },
     failed_when: false,
-    when: raw("_restart_needed"),
+    when: truthy(V._restart_needed),
   },
   {
     name: "Start/restart service",
     systemd: {
       name: "cpmeta.service",
       enabled: true,
-      state: iff(raw("_restart_needed"), "restarted", "started"),
+      state: iff(truthy(V._restart_needed), "restarted", "started"),
     },
   },
   {

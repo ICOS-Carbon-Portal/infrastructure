@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -10,7 +10,7 @@ export default [
       path: V.jusers_venv,
       state: "absent",
     },
-    when: raw("virtualenv_recreate | default(False) | bool"),
+    when: truthy(V.virtualenv_recreate).default(false).bool(),
   },
   {
     name: "Create virtual env",

@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -24,7 +24,7 @@ export default [
     },
     register: "_output",
     changed_when: '" ---> Running in " in _output.stdout',
-    when: raw("flexextract_docker_build | default(True)"),
+    when: truthy(V.flexextract_docker_build).default(true),
   },
   {
     name: "Create download directory",

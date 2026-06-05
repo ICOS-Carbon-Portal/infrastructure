@@ -1,4 +1,4 @@
-import { eq, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { eq, notIn, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -24,7 +24,7 @@ export default [
     fail: {
       msg: "This role currently only support Debian and Ubuntu",
     },
-    when: raw("ansible_distribution not in ('Debian', 'Ubuntu')"),
+    when: notIn(V.ansible_distribution, ["Debian", "Ubuntu"]),
   },
   {
     name: "Uninstall docker-compose version 1",

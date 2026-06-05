@@ -1,4 +1,4 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 const _user = register("_user");
@@ -49,7 +49,7 @@ export default [
       path: "/opt/edctl/venv",
       state: "absent",
     },
-    when: raw("virtualenv_recreate | default(False) | bool"),
+    when: truthy(V.virtualenv_recreate).default(false).bool(),
   },
   {
     name: "Create virtual env",

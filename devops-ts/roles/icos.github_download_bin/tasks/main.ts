@@ -1,4 +1,4 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { register, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const dbin_download = register("dbin_download");
@@ -35,7 +35,7 @@ export default [
   },
   {
     name: tmpl`Unarchive ${V._dbin_name} tarball`,
-    when: raw("_dbin_unar"),
+    when: truthy(V._dbin_unar),
     unarchive: {
       src: dbin_download.dest.ref,
       dest: V.dbin_download_dest,

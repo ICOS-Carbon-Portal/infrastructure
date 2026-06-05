@@ -205,6 +205,16 @@ export interface ParamVars {
   vmagent_config_dest: string;
   website: string;
   where: string;
+  virtualenv_recreate: string;
+  nexus_certbot_enable: string;
+  jarservice_conf_only: string;
+  lxd_vm_variant: string;
+  _restart_needed: string;
+  nebula_ssh_public: string;
+  nginxconfig: string;
+  lxd_is_snap: string;
+  flexextract_docker_build: string;
+  stiltcluster_fetch_host: string;
   wordpress_domains: string;
   zrepl_config: string;
 }

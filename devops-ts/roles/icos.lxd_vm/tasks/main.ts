@@ -1,16 +1,16 @@
-import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { eq, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Include tasks for ext4 variant",
     include_tasks: "ext4.yml",
-    when: raw("lxd_vm_variant == 'ext4'"),
+    when: eq(V.lxd_vm_variant, "ext4"),
   },
   {
     name: "Include tasks for zfs variant",
     include_tasks: "zfs.yml",
-    when: raw("lxd_vm_variant == 'zfs'"),
+    when: eq(V.lxd_vm_variant, "zfs"),
   },
   {
     name: "Retrieve static IP devices",

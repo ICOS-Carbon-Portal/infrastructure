@@ -1,7 +1,7 @@
 import {
   isUndefined,
   loopOver,
-  raw,
+  notIn,
   type TaskFile,
   type Tmpl,
 } from "../../../lib/ansible.ts";
@@ -91,7 +91,7 @@ export default [
       {
         name: "Check that website is valid",
         fail: { msg: "website provided is not valid" },
-        when: raw("website not in base_urls"),
+        when: notIn(V.website, V.base_urls),
       },
     ],
     tags: [

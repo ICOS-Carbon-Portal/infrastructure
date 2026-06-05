@@ -1,4 +1,4 @@
-import { lookup, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, lookup, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -35,7 +35,7 @@ export default [
     lxd_container: { name: V.lxd_vm_name, state: "absent" },
   },
   {
-    when: raw("lxd_vm_variant == 'ext4'"),
+    when: eq(V.lxd_vm_variant, "ext4"),
     block: [
       {
         name: "Delete storage pool",
@@ -46,7 +46,7 @@ export default [
     ],
   },
   {
-    when: raw("lxd_vm_variant == 'zfs'"),
+    when: eq(V.lxd_vm_variant, "zfs"),
     block: [
       {
         name: "Delete docker storage",

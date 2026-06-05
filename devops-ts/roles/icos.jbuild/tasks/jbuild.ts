@@ -1,4 +1,4 @@
-import { raw, type TaskFile, V } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy, V } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -7,7 +7,7 @@ export default [
       path: "/opt/jbuild/venv",
       state: "absent",
     },
-    when: raw("virtualenv_recreate | default(False) | bool"),
+    when: truthy(V.virtualenv_recreate).default(false).bool(),
   },
   {
     name: "Create virtual env",

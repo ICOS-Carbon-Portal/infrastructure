@@ -1,4 +1,4 @@
-import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { isNotDefined, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -6,7 +6,7 @@ export default [
   {
     when: [
       truthy(V.nebula_ssh_enable),
-      raw("nebula_ssh_public is not defined"),
+      isNotDefined(V.nebula_ssh_public),
     ],
     import_tasks: "ssh.yml",
     tags: ["nebula_ssh", "nebula_config"],

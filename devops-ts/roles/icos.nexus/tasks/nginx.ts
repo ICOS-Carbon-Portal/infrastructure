@@ -1,4 +1,4 @@
-import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { not, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
@@ -6,7 +6,7 @@ const r = register("r");
 export default [
   {
     import_role: "name=icos.certbot2",
-    when: raw("nexus_certbot_enable | default(True)"),
+    when: truthy(V.nexus_certbot_enable).default(true),
   },
   {
     import_role: "name=icos.nginxsite",
