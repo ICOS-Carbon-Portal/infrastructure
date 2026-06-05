@@ -1,9 +1,16 @@
-import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  iff,
+  isDefined,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
 const config = register("config");
+
+const check = register("check");
 
 export default [
   {
@@ -21,7 +28,7 @@ export default [
         name: "Run validation",
         command: tmpl`dnsmasq --test --conf-dir ${V.dnsmasq_config_dir}`,
         changed_when: config.changed,
-        register: "check",
+        register: check,
       },
     ],
     rescue: [
@@ -52,7 +59,7 @@ export default [
           name: config.backup_file.ref,
           state: "absent",
         },
-        when: raw("config['backup_file'] is defined"),
+        when: isDefined(config.backup_file),
       },
     ],
   },
@@ -61,7 +68,7 @@ export default [
     systemd: {
       name: V.dnsmasq_service_name,
       enabled: true,
-      state: iff(raw("check.changed"), "restarted", "started"),
+      state: iff(check.changed, "restarted", "started"),
     },
   },
 ] satisfies TaskFile;

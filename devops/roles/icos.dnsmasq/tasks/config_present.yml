@@ -31,7 +31,7 @@
       file:
         name: "{{ config.backup_file }}"
         state: absent
-      when: "config['backup_file'] is defined"
+      when: "config.backup_file is defined"
 
 - name: Restart dnsmasq
   systemd:

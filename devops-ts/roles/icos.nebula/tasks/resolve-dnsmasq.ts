@@ -1,4 +1,6 @@
-import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _conf = register("_conf");
 
 // openresolv / dhcpcd / dnsmasq are all integrated, even though it's tricky to
 // figure out exactly how.
@@ -29,13 +31,13 @@ server=/nebula/{{server}}
 {% endfor %}
 `,
     },
-    register: "_conf",
+    register: _conf,
   },
   {
     name: "Make sure dnsmasq is (re)started",
     systemd: {
       name: "dnsmasq",
-      state: iff(raw("_conf.changed"), "restarted", "started"),
+      state: iff(_conf.changed, "restarted", "started"),
     },
   },
 ] satisfies TaskFile;

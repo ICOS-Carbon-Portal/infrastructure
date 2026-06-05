@@ -1,5 +1,7 @@
-import { iff, lookup, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, lookup, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _sysd = register("_sysd");
 
 export default [
   {
@@ -42,12 +44,12 @@ export default [
       dest: "/etc/systemd/system/",
       src: "script-exporter.service",
     },
-    register: "_sysd",
+    register: _sysd,
   },
   {
     name: "Start/restart script-exporter.service",
     systemd: {
-      "daemon-reload": iff(raw("_sysd.changed"), "yes", "no"),
+      "daemon-reload": iff(_sysd.changed, "yes", "no"),
       name: "script-exporter.service",
       enabled: true,
       state: "started",

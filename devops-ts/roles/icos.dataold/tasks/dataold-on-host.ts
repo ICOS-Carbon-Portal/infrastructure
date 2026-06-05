@@ -1,7 +1,9 @@
-import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, or, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _rsyslog = register("_rsyslog");
+const _cf = register("_cf");
+const _sr = register("_sr");
 
 export default [
   {
@@ -61,7 +63,7 @@ if $syslogtag == "dataold:" then {
       lstrip_blocks: true,
       validate: "nginx -t -c %s",
     },
-    register: "_cf",
+    register: _cf,
   },
   {
     name: "Copy dataold.service",
@@ -70,14 +72,14 @@ if $syslogtag == "dataold:" then {
       dest: "/etc/systemd/system/",
       lstrip_blocks: true,
     },
-    register: "_sr",
+    register: _sr,
   },
   {
     name: "Start dataold service",
     systemd: {
       "daemon-reload": true,
       enabled: true,
-      state: iff(raw("_cf.changed or _sr.changed"), "restarted", "started"),
+      state: iff(or(_cf.changed, _sr.changed), "restarted", "started"),
       name: "dataold.service",
     },
   },

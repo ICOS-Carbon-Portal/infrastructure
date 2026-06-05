@@ -1,4 +1,4 @@
-import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
@@ -63,7 +63,7 @@ export default [
     systemd: {
       name: V.item,
       enabled: true,
-      state: iff(raw("_systemd.changed"), "restarted", "started"),
+      state: iff(_systemd.changed, "restarted", "started"),
     },
     loop: ["icos-auto-dnat.path", "icos-auto-dnat.timer"],
   },
