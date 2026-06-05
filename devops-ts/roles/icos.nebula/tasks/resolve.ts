@@ -1,24 +1,25 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
-    when: raw('nebula_resolve_type == "probe"'),
+    when: eq(V.nebula_resolve_type, "probe"),
     include_tasks: "resolve-probe.yml",
   },
   {
-    when: raw('nebula_resolve_type == "dnsmasq"'),
+    when: eq(V.nebula_resolve_type, "dnsmasq"),
     include_tasks: "resolve-dnsmasq.yml",
   },
   {
-    when: raw('nebula_resolve_type == "NetworkManager"'),
+    when: eq(V.nebula_resolve_type, "NetworkManager"),
     include_tasks: "resolve-networkmanager.yml",
   },
   {
-    when: raw('nebula_resolve_type == "systemd-networkd"'),
+    when: eq(V.nebula_resolve_type, "systemd-networkd"),
     include_tasks: "resolve-networkd.yml",
   },
   {
-    when: raw('nebula_resolve_type == "unknown"'),
+    when: eq(V.nebula_resolve_type, "unknown"),
     debug: {
       msg: `Don't know which network provisioner to configure.
 `,

@@ -1,16 +1,16 @@
-- when: nebula_resolve_type == "probe"
+- when: nebula_resolve_type == 'probe'
   include_tasks: resolve-probe.yml
 
-- when: nebula_resolve_type == "dnsmasq"
+- when: nebula_resolve_type == 'dnsmasq'
   include_tasks: resolve-dnsmasq.yml
 
-- when: nebula_resolve_type == "NetworkManager"
+- when: nebula_resolve_type == 'NetworkManager'
   include_tasks: resolve-networkmanager.yml
 
-- when: nebula_resolve_type == "systemd-networkd"
+- when: nebula_resolve_type == 'systemd-networkd'
   include_tasks: resolve-networkd.yml
 
-- when: nebula_resolve_type == "unknown"
+- when: nebula_resolve_type == 'unknown'
   debug:
     msg: |
       Don't know which network provisioner to configure.
