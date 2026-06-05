@@ -5,7 +5,7 @@
   when: timer_content is defined
 
 - name: Create home directory
-  when: timer_home != "/etc/systemd/systemd"
+  when: timer_home != '/etc/systemd/systemd'
   file:
     path: "{{ timer_home }}"
     state: directory
@@ -50,7 +50,7 @@
       {% endif %}
 
 - name: Link systemd files
-  when: timer_home != "/etc/systemd/system"
+  when: timer_home != '/etc/systemd/system'
   # noqa: command-instead-of-module
   command:  systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}
   register: _r

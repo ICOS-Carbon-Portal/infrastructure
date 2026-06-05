@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, ne, type TaskFile } from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -8,11 +8,11 @@ export default [
       that: 'timer_home != "/etc/systemd/systemd"',
     },
     changed_when: false,
-    when: raw("timer_content is defined"),
+    when: isDefined(V.timer_content),
   },
   {
     name: "Create home directory",
-    when: raw('timer_home != "/etc/systemd/systemd"'),
+    when: ne(V.timer_home, "/etc/systemd/systemd"),
     file: {
       path: V.timer_home,
       state: "directory",
@@ -25,7 +25,7 @@ export default [
       mode: "+x",
       content: V.timer_content,
     },
-    when: raw("timer_content is defined"),
+    when: isDefined(V.timer_content),
   },
   {
     name: "Create systemd timer definition",
@@ -65,7 +65,7 @@ WorkingDirectory={{ timer_wdir }}
   },
   {
     name: "Link systemd files",
-    when: raw('timer_home != "/etc/systemd/system"'),
+    when: ne(V.timer_home, "/etc/systemd/system"),
     command:
       tmpl`systemctl link ${V._timer_sysd_timer} ${V._timer_sysd_service}`,
     register: "_r",

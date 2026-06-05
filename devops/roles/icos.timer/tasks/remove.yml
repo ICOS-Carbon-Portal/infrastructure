@@ -7,7 +7,7 @@
     - not r.stderr.endswith('does not exist.')
 
 - name: Remove home directory
-  when: timer_home != "/etc/systemd/systemd"
+  when: timer_home != '/etc/systemd/systemd'
   file:
     path: "{{ timer_home }}"
     state: absent
