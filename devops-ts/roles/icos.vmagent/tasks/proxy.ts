@@ -1,9 +1,9 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, notIn, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    when: raw('vmagent_proxy == "probe"'),
+    when: eq(V.vmagent_proxy, "probe"),
     name: "Probe for vmagent_proxy fact",
     check_mode: false,
     shellfact: {
@@ -12,7 +12,7 @@ export default [
     },
   },
   {
-    when: raw("vmagent_proxy not in ('nginx', 'caddy')"),
+    when: notIn(V.vmagent_proxy, ["nginx", "caddy"]),
     check_mode: false,
     name: "Fail if we can't figure out which proxy server is used",
     fail: {
@@ -20,14 +20,14 @@ export default [
     },
   },
   {
-    when: raw("vmagent_proxy == 'nginx'"),
+    when: eq(V.vmagent_proxy, "nginx"),
     name: "Setup nginx proxy for vmagent",
     include_role: {
       name: "icos.nginxsite",
     },
   },
   {
-    when: raw("vmagent_proxy == 'caddy'"),
+    when: eq(V.vmagent_proxy, "caddy"),
     name: "Setup caddy proxy for vmagent",
     include_role: {
       name: "icos.caddy",
@@ -39,7 +39,7 @@ export default [
     meta: "flush_handlers",
   },
   {
-    when: raw("vmagent_auth"),
+    when: truthy(V.vmagent_auth),
     block: [
       {
         name: "Test that the vmagent UI is password protected",

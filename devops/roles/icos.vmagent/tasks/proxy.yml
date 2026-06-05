@@ -1,4 +1,4 @@
-- when: vmagent_proxy == "probe"
+- when: vmagent_proxy == 'probe'
   name: Probe for vmagent_proxy fact
   check_mode: false
   shellfact:

@@ -1,10 +1,16 @@
 import {
+  group,
   loopOver,
-  raw,
+  not,
+  or,
+  register,
   type TaskFile,
   type Tmpl,
+  truthy,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _vmagent = register("_vmagent");
 
 export default [
   loopOver<{ path: Tmpl; mode?: Tmpl }>(
@@ -28,13 +34,14 @@ export default [
     stat: {
       path: tmpl`${V.vmagent_bin}/vmagent-prod`,
     },
-    register: "_vmagent",
+    register: _vmagent,
   },
   {
     name: "Install/upgrade install vmagent",
     import_tasks: "really_install.yml",
-    when: raw(
-      "not _vmagent.stat.exists or (vmagent_upgrade | default(False) | bool)",
+    when: or(
+      not(_vmagent.stat.exists),
+      group(truthy(V.vmagent_upgrade).default(false).bool()),
     ),
   },
 ] satisfies TaskFile;
