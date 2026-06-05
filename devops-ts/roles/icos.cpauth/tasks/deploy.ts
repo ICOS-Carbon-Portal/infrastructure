@@ -5,6 +5,7 @@ const r = register("r");
 const _service = register("_service");
 const _config = register("_config");
 const _jarfile = register("_jarfile");
+const _r = register("_r");
 
 export default [
   {
@@ -43,8 +44,8 @@ export default [
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
     args: { chdir: V.cpauth_home },
-    register: "_r",
-    changed_when: '_r.stdout.startswith("removed")',
+    register: _r,
+    changed_when: _r.stdout.startswith("removed"),
   },
   {
     name: "Start/restart service",

@@ -23,7 +23,7 @@
   args:
     chdir: "{{ doi_home }}"
   register: _r
-  changed_when: _r.stdout.startswith("removed")
+  changed_when: _r.stdout.startswith('removed')
 
 - name: Start/restart service
   systemd:

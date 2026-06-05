@@ -51,6 +51,15 @@ export interface PyStr extends Field {
   lower(): PyStr;
 }
 
+/**
+ * A register field holding a list of strings (`stdout_lines`). A numeric index
+ * yields a `PyStr` rendered with Jinja bracket access, so the element's `str`
+ * methods compose: `_r.stdout_lines[0].endswith(V.version)`.
+ */
+export interface PyStrList extends Field {
+  [index: number]: PyStr;
+}
+
 /** A registered `.stat` sub-result (the `stat` module). */
 export interface StatResult extends Expr {
   exists: Field;
@@ -65,7 +74,7 @@ export interface Result {
   rc: Field;
   stdout: PyStr;
   stderr: PyStr;
-  stdout_lines: Field;
+  stdout_lines: PyStrList;
   status: Field;
   msg: PyStr;
   dest: Field;
@@ -118,7 +127,10 @@ export function register(name: string): Reg {
           return () => path;
         }
         if (key === "ref") return expr(path);
-        return node(`${path}.${String(key)}`);
+        const k = String(key);
+        // A numeric key is Jinja list access (`stdout_lines[0]`), not `.0`.
+        if (/^\d+$/.test(k)) return node(`${path}[${k}]`);
+        return node(`${path}.${k}`);
       },
       // Method calls (`stdout.endswith(x)`) extend the path: `<path>(<args>)`.
       apply(_t, _this, args) {

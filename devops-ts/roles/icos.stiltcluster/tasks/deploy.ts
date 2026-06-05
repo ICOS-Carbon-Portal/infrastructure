@@ -2,9 +2,12 @@ import {
   isDefined,
   isUndefined,
   ne,
+  register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   // Stiltcluster can be deployed either:
@@ -68,8 +71,8 @@ export default [
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
     args: { chdir: V.stiltcluster_home },
-    register: "_r",
-    changed_when: '_r.stdout.startswith("removed")',
+    register: _r,
+    changed_when: _r.stdout.startswith("removed"),
   },
   {
     name: "Make sure stiltcluster is started",

@@ -114,7 +114,7 @@ PersistentKeepalive = 25
     command:
       tmpl`systemctl add-wants wg-quick@${V.wg_hub_intf}.service wg-reresolve@${V.wg_hub_intf}.timer`,
     register: _reresolve,
-    changed_when: '_reresolve.stderr.startswith("Created symlink")',
+    changed_when: _reresolve.stderr.startswith("Created symlink"),
   },
   {
     name: "Start wg-quick service",

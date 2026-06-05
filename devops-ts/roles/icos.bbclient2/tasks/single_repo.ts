@@ -1,5 +1,14 @@
-import { hostvar, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  eq,
+  hostvar,
+  ne,
+  not,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   // LOCAL
@@ -64,11 +73,11 @@ export default [
         name: "Initialize repo",
         command:
           tmpl`${V.bbclient_wrapper} init ${V.bbclient_repo_url} --encryption=none\n`,
-        register: "r",
-        changed_when: ["r.rc == 0"],
+        register: r,
+        changed_when: [eq(r.rc, 0)],
         failed_when: [
-          "r.rc != 0",
-          "not r.stderr.startswith('A repository already exists at')",
+          ne(r.rc, 0),
+          not(r.stderr.startswith("A repository already exists at")),
         ],
       },
     ],

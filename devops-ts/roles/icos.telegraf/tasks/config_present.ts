@@ -1,9 +1,15 @@
-import { isDefined, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  lt,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
 const update = register("update");
+const test = register("test");
 
 export default [
   {
@@ -22,13 +28,13 @@ export default [
         // redirect stdout to /dev/null since it will contain the metrics (which
         // can be a lot of lines); stderr will contain the messages.
         shell: tmpl`telegraf --test --config ${update.dest.ref} > /dev/null`,
-        register: "test",
+        register: test,
         changed_when: update.changed,
         failed_when: [
-          "test.failed",
+          test.failed,
           // If we run test on a config file containing agent-only config, it'll
           // fail because it has no inputs!
-          "test.stderr.find('no inputs found') < 0",
+          lt(test.stderr.find("no inputs found"), 0),
         ],
         notify: "reload telegraf",
       },

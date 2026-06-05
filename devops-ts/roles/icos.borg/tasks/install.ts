@@ -1,12 +1,14 @@
 import {
   isIn,
   isNotDefined,
+  not,
   register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
+const _r = register("_r");
 
 export default [
   {
@@ -54,8 +56,8 @@ export default [
     name: "Check that borg is executable and the correct version",
     shell: tmpl`${V.borg_bin} --version`,
     changed_when: false,
-    register: "_r",
-    failed_when: "not _r.stdout.endswith(borg_version)",
+    register: _r,
+    failed_when: not(_r.stdout.endswith(V.borg_version)),
   },
   {
     name: "Which version of borg is installed",

@@ -1,5 +1,8 @@
 import {
+  eq,
   hostvar,
+  ne,
+  notIn,
   type Playbook,
   register,
   tmpl,
@@ -7,6 +10,7 @@ import {
 } from "../../lib/ansible.ts";
 
 const ip = register("ip");
+const r = register("r");
 
 export default [
   {
@@ -20,16 +24,16 @@ export default [
       {
         name: "stop container",
         command: tmpl`lxc stop ${V.old_name}`,
-        register: "r",
-        failed_when: ["r.rc != 0", "'not found' not in r.stderr.lower()"],
-        changed_when: ["r.rc == 0"],
+        register: r,
+        failed_when: [ne(r.rc, 0), notIn("not found", r.stderr.lower())],
+        changed_when: [eq(r.rc, 0)],
       },
       {
         name: "rename container",
         command: tmpl`lxc rename ${V.old_name} ${V.new_name}`,
-        register: "r",
-        failed_when: ["r.rc != 0", "'not found' not in r.stderr.lower()"],
-        changed_when: ["r.rc == 0"],
+        register: r,
+        failed_when: [ne(r.rc, 0), notIn("not found", r.stderr.lower())],
+        changed_when: [eq(r.rc, 0)],
       },
       {
         name: "Modify /etc/hosts",
@@ -40,7 +44,7 @@ export default [
           state: "present",
           backrefs: true,
         },
-        register: "r",
+        register: r,
       },
       {
         name: "Remove old iptables rule",

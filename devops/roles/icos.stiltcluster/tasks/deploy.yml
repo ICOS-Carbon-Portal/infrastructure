@@ -48,7 +48,7 @@
   args:
     chdir: "{{ stiltcluster_home }}"
   register: _r
-  changed_when: _r.stdout.startswith("removed")
+  changed_when: _r.stdout.startswith('removed')
 
 - name: Make sure stiltcluster is started
   systemd:

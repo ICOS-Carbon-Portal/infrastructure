@@ -1,7 +1,13 @@
-import { isNotDefined, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  isNotDefined,
+  not,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
+const _r = register("_r");
 
 export default [
   {
@@ -42,8 +48,8 @@ export default [
     name: "Check that just is executable and the correct version",
     shell: "just --version",
     changed_when: false,
-    register: "_r",
-    failed_when: "not _r.stdout.endswith(just_version)",
+    register: _r,
+    failed_when: not(_r.stdout.endswith(V.just_version)),
   },
   {
     name: "Which version of just was installed",

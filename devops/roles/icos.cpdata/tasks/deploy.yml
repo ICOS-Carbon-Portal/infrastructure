@@ -17,7 +17,7 @@
   args:
     chdir: "{{ cpdata_home }}"
   register: _r
-  changed_when: _r.stdout.startswith("removed")
+  changed_when: _r.stdout.startswith('removed')
 
 - import_tasks: config.yml
   tags: cpdata_config

@@ -1,8 +1,9 @@
-import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, iff, register, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
 const _systemd = register("_systemd");
+const _pipx = register("_pipx");
 
 export default [
   {
@@ -31,12 +32,12 @@ export default [
       name: "/opt/icos-auto-dnat/",
     },
     when: _rsync.changed,
-    register: "_pipx",
+    register: _pipx,
     // pipx seems to always report changed when installing editable from file
     changed_when: [
-      "_pipx.changed",
-      "_pipx.stdout",
-      "_pipx.stdout.find('already seems to be installed') == -1",
+      _pipx.changed,
+      _pipx.stdout,
+      eq(_pipx.stdout.find("already seems to be installed"), -1),
     ],
   },
   {

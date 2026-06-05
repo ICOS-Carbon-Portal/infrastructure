@@ -39,6 +39,12 @@ Deno.test("register: PyStr methods render as Python str calls", () => {
     "_podman.stderr.lower().endswith('x')",
     "lower().endswith()",
   );
+  // list element (Jinja bracket access), then a str method off the element
+  eq(
+    String(r.stdout_lines[0].endswith(V.podman_version)),
+    "_podman.stdout_lines[0].endswith(podman_version)",
+    "stdout_lines[0].endswith(var)",
+  );
 });
 
 Deno.test("register: .ref renders the value-position template", () => {

@@ -269,6 +269,30 @@ export function ne(a: Operand, b: Operand): Expr {
   return new Expr(t, t);
 }
 
+/** `<a> < <b>` — e.g. `lt(r.msg.find('x'), 0)` -> `r.msg.find('x') < 0`. */
+export function lt(a: Operand, b: Operand): Expr {
+  const t = `${operandText(a)} < ${operandText(b)}`;
+  return new Expr(t, t);
+}
+
+/** `<a> > <b>`. */
+export function gt(a: Operand, b: Operand): Expr {
+  const t = `${operandText(a)} > ${operandText(b)}`;
+  return new Expr(t, t);
+}
+
+/** `<a> <= <b>`. */
+export function lte(a: Operand, b: Operand): Expr {
+  const t = `${operandText(a)} <= ${operandText(b)}`;
+  return new Expr(t, t);
+}
+
+/** `<a> >= <b>`. */
+export function gte(a: Operand, b: Operand): Expr {
+  const t = `${operandText(a)} >= ${operandText(b)}`;
+  return new Expr(t, t);
+}
+
 /** A collection: a ref (`V.x` -> bare) or an array rendered as a `('a', 'b')` tuple. */
 function collText(coll: Operand | Operand[]): string {
   return Array.isArray(coll)

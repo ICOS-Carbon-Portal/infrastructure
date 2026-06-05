@@ -44,6 +44,8 @@ export {
   eq,
   Expr,
   group,
+  gt,
+  gte,
   hostvar,
   isDefined,
   isIn,
@@ -51,6 +53,8 @@ export {
   isTruthy,
   isUndefined,
   isVersion,
+  lt,
+  lte,
   ne,
   not,
   notIn,
@@ -440,9 +444,10 @@ export interface Task {
   ignore_errors?: boolean;
   check_mode?: boolean;
   // Condition fields accept an `Expr` too, so register-result fields
-  // (`r.failed`) and `not(...)` compose into them.
-  changed_when?: boolean | string | string[] | Expr;
-  failed_when?: boolean | string | string[] | Expr;
+  // (`r.failed`) and `not(...)` compose into them; arrays may mix the two
+  // (an AND-list of `string` and `Expr` conditions).
+  changed_when?: boolean | string | Expr | (string | Expr)[];
+  failed_when?: boolean | string | Expr | (string | Expr)[];
   until?: string | Expr;
   loop?: Tmpl | VarValue[];
   loop_control?: Record<string, VarValue>;

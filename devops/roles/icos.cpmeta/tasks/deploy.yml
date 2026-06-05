@@ -12,7 +12,7 @@
   args:
     chdir: "{{ cpmeta_home }}"
   register: _r
-  changed_when: _r.stdout.startswith("removed")
+  changed_when: _r.stdout.startswith('removed')
 
 - include_tasks: restart.yml
   vars:

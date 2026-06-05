@@ -1,7 +1,8 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
+const _pipx = register("_pipx");
 
 // PYTHON UTILS
 export default [
@@ -33,12 +34,12 @@ export default [
       force: _rsync.changed.ref,
       name: tmpl`${V.stiltweb_home}/stilt-utils`,
     },
-    register: "_pipx",
+    register: _pipx,
     // pipx seems to always report changed when installing editable from file
     changed_when: [
-      "_pipx.changed",
-      "_pipx.stdout",
-      "_pipx.stdout.find('already seems to be installed') == -1",
+      _pipx.changed,
+      _pipx.stdout,
+      eq(_pipx.stdout.find("already seems to be installed"), -1),
     ],
     environment: {
       PIPX_BIN_DIR: V.stiltweb_bindir,

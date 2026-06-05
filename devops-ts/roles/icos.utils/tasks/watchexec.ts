@@ -1,7 +1,13 @@
-import { isNotDefined, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  isNotDefined,
+  not,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gr = register("gr");
+const _r = register("_r");
 
 export default [
   // Used to be a symlink to /opt/download/watchexec.
@@ -46,8 +52,8 @@ export default [
     name: "Check that watchexec is executable and the correct version",
     shell: "watchexec --version | awk 'NR == 1 { print $2 }'",
     changed_when: false,
-    register: "_r",
-    failed_when: "not _r.stdout.endswith(watchexec_version)",
+    register: _r,
+    failed_when: not(_r.stdout.endswith(V.watchexec_version)),
   },
   {
     name: "Which version of watchexec was installed",

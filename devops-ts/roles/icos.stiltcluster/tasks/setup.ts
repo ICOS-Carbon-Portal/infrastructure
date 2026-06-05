@@ -1,5 +1,7 @@
-import { iff, type TaskFile } from "../../../lib/ansible.ts";
+import { iff, lt, register, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   {
@@ -64,10 +66,10 @@ find . -maxdepth 1 -name 'stilt-run-*' -type d -mtime "+10" -exec rm -rf -- '{}'
       name: "remove old stiltruns",
       state: "absent",
     },
-    register: "_r",
+    register: _r,
     failed_when: [
-      "_r.failed",
-      `_r.msg.find('required executable "crontab"') < 0`,
+      _r.failed,
+      lt(_r.msg.find('required executable "crontab"'), 0),
     ],
   },
 ] satisfies TaskFile;

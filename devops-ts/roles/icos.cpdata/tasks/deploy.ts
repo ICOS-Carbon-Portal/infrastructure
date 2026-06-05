@@ -2,6 +2,7 @@ import { not, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
+const _r = register("_r");
 
 export default [
   {
@@ -27,8 +28,8 @@ export default [
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
     args: { chdir: V.cpdata_home },
-    register: "_r",
-    changed_when: '_r.stdout.startswith("removed")',
+    register: _r,
+    changed_when: _r.stdout.startswith("removed"),
   },
   { import_tasks: "config.yml", tags: "cpdata_config" },
   {

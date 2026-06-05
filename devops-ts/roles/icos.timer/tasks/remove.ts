@@ -1,15 +1,17 @@
-import { ne, type TaskFile } from "../../../lib/ansible.ts";
+import { ne, not, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const r = register("r");
 
 export default [
   {
     name: "Stop and disable timer",
     command: tmpl`systemctl disable --now ${V.timer_name}.timer`,
-    register: "r",
+    register: r,
     changed_when: false,
     failed_when: [
-      "r.rc != 0",
-      "not r.stderr.endswith('does not exist.')",
+      ne(r.rc, 0),
+      not(r.stderr.endswith("does not exist.")),
     ],
   },
   {

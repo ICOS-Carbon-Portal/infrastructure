@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { eq, register, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
+
+const _pipx = register("_pipx");
 
 export default [
   {
@@ -19,12 +21,12 @@ export default [
       // name can be a pypi name or - in this case - a filesystem path
       name: V.python_util_install_dir,
     },
-    register: "_pipx",
+    register: _pipx,
     // pipx seems to always report changed when installing editable from file
     changed_when: [
-      "_pipx.changed",
-      "_pipx.stdout",
-      "_pipx.stdout.find('already seems to be installed') == -1",
+      _pipx.changed,
+      _pipx.stdout,
+      eq(_pipx.stdout.find("already seems to be installed"), -1),
     ],
   },
 ] satisfies TaskFile;
