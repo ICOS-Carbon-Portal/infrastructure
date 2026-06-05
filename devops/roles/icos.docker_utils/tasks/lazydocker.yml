@@ -6,15 +6,14 @@
   block:
 
   - name: Find the latest release of lazydocker
-    github_release:
-      user: jesseduffield
-      repo: lazydocker
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/jesseduffield/lazydocker/releases/latest
+      return_content: true
     register: gh
 
   - name: Set lazydocker_version fact
     set_fact:
-      lazydocker_version: "{{ gh.tag.lstrip('v') }}"
+      lazydocker_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 # FIXME: Remove in 2025

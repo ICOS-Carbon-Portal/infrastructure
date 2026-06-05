@@ -1,0 +1,50 @@
+services:
+  db:
+    image: {{ item.db_image | default(wordpress_mariadb_image) }}
+    container_name: wordpress_{{ item.name }}_db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: {{ item.db_name | to_json }}
+      MARIADB_USER: {{ item.db_user | to_json }}
+      MARIADB_PASSWORD: {{ item.db_password | replace('$', '$$') | to_json }}
+      MARIADB_ROOT_PASSWORD: {{ item.db_root_password | replace('$', '$$') | to_json }}
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      wordpress:
+        aliases:
+          - {{ item.name }}-db
+
+  wordpress:
+    image: {{ item.image | default(wordpress_image) }}
+    container_name: wordpress_{{ item.name }}
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      WORDPRESS_DB_HOST: {{ item.db_host }}:3306
+      WORDPRESS_DB_NAME: {{ item.db_name | to_json }}
+      WORDPRESS_DB_USER: {{ item.db_user | to_json }}
+      WORDPRESS_DB_PASSWORD: {{ item.db_password | replace('$', '$$') | to_json }}
+      WORDPRESS_CONFIG_EXTRA: |
+        if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            $$_SERVER['HTTPS'] = 'on';
+            $$_SERVER['SERVER_PORT'] = 443;
+        }
+
+        $$wordpress_allowed_hosts = array({% for domain in item.domains %}{{ domain | to_json }}{{ ',' if not loop.last else '' }}{% endfor %});
+        if (isset($$_SERVER['HTTP_HOST']) && in_array($$_SERVER['HTTP_HOST'], $$wordpress_allowed_hosts, true)) {
+            define('WP_HOME', 'https://' . $$_SERVER['HTTP_HOST']);
+            define('WP_SITEURL', 'https://' . $$_SERVER['HTTP_HOST']);
+        }
+    volumes:
+      - ./html:/var/www/html
+    networks:
+      wordpress:
+        aliases:
+          - {{ item.name }}
+
+networks:
+  wordpress:
+    name: {{ wordpress_network_name }}
+    external: true

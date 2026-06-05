@@ -1,15 +1,17 @@
-- name: Synchronize icos-auto-dnat source
-  ansible.posix.synchronize:
-    src: "icos-auto-dnat/"
-    dest: "/opt/icos-auto-dnat"
-    # preserver owner and group, default is yes
-    owner: no
-    group: no
-    rsync_opts:
-      # read the .rsync-filter file
-      - '-F'
-      - '--delete-excluded'
-  register: _rsync
+- name: Create icos-auto-dnat source directory
+  file:
+    path: /opt/icos-auto-dnat
+    state: directory
+
+- name: Copy icos-auto-dnat source
+  copy:
+    src: "icos-auto-dnat/{{ item }}"
+    dest: "/opt/icos-auto-dnat/{{ item }}"
+  loop:
+    - pyproject.toml
+    - icos_auto_dnat.py
+    - .gitignore
+  register: _src
 
 - name: Install icos-auto-dnat
   community.general.pipx:
@@ -18,12 +20,12 @@
     editable: true
     force: true
     name: "/opt/icos-auto-dnat/"
-  when: _rsync.changed
+  when: _src.changed
   register: _pipx
   # pipx seems to always report changed when installing editable from file
   changed_when:
-    - _pipx.changed
-    - _pipx.stdout
+    - _pipx.changed | bool
+    - _pipx.stdout | length > 0
     - _pipx.stdout.find('already seems to be installed') == -1
 
 - name: Copy auto-dnat service files

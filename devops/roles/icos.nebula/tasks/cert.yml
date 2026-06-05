@@ -7,9 +7,11 @@
   debug:
     msg: |
       {{status.stdout_lines[0]}}
-  when: status.stdout_lines
+  when: status.stdout_lines | length > 0
 
-- when: status.stdout and status.stdout_lines[-1] == "need to sign"
+- when:
+    - status.stdout | length > 0
+    - status.stdout_lines[-1] == "need to sign"
   block:
     - name: Retrieve public key
       slurp:

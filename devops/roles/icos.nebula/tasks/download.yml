@@ -6,15 +6,14 @@
   block:
 
   - name: Find the latest release of nebula
-    github_release:
-      user: slackhq
-      repo: nebula
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/slackhq/nebula/releases/latest
+      return_content: true
     register: gh
 
   - name: Set nebula_version fact
     set_fact:
-      nebula_version: "{{ gh.tag.lstrip('v') }}"
+      nebula_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 - name: Install nebula

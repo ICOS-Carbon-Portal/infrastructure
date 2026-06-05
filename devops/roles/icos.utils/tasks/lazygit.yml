@@ -5,15 +5,14 @@
   delegate_facts: true
   block:
   - name: Find the latest release of lazygit
-    github_release:
-      user: jesseduffield
-      repo: lazygit
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/jesseduffield/lazygit/releases/latest
+      return_content: true
     register: gh
 
   - name: Set lazygit_version fact
     set_fact:
-      lazygit_version: "{{ gh.tag.lstrip('v') }}"
+      lazygit_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 - name: Install lazygit

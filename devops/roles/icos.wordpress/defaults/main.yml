@@ -1,0 +1,11 @@
+wordpress_home: /docker/wordpress
+wordpress_http_port: 80
+
+wordpress_caddy_image: caddy:2.10-alpine
+wordpress_image: wordpress:7-php8.4-apache
+wordpress_mariadb_image: mariadb:10.11
+wordpress_network_name: wordpress
+wordpress_web_owner: "33"
+wordpress_web_group: "33"
+
+wordpress_sites: []

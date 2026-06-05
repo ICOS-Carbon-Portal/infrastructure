@@ -6,15 +6,14 @@
   block:
 
   - name: Find the latest release of btop
-    github_release:
-      user: aristocratos
-      repo: btop
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/aristocratos/btop/releases/latest
+      return_content: true
     register: gh
 
   - name: Set btop_version fact
     set_fact:
-      btop_version: "{{ gh.tag.lstrip('v') }}"
+      btop_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 - name: Unarchive btop
