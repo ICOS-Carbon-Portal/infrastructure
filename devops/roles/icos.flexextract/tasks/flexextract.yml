@@ -36,7 +36,7 @@
     dest: "{{ flexextract_home }}/download"
     src: "{{ flexextract_download_host }}"
     state: link
-  when: flexextract_download_host  != (flexextract_home+"/download")
+  when: flexextract_download_host != flexextract_home + '/download'
 
 - import_tasks: script.yml
   tags: flexextract_script

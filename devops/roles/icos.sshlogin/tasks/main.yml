@@ -1,9 +1,7 @@
 - name: Check that enough parameters are provided
   fail:
     msg: "Must set either sshlogin_user or both of sshlogin_src_user and sshlogin_dst_user"
-  when: >-
-    not (sshlogin_user is defined or
-        (sshlogin_src_user is defined and sshlogin_dst_user is defined))
+  when: not (sshlogin_user is defined or (sshlogin_src_user is defined and sshlogin_dst_user is defined))
 
 - name: Use sshlogin_user to derive sshlogin_{src,dst}_user
   when: sshlogin_user is defined

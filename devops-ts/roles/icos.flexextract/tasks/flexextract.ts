@@ -1,4 +1,4 @@
-import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { concat, ne, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -44,7 +44,10 @@ export default [
       src: V.flexextract_download_host,
       state: "link",
     },
-    when: raw('flexextract_download_host  != (flexextract_home+"/download")'),
+    when: ne(
+      V.flexextract_download_host,
+      concat(V.flexextract_home, "/download"),
+    ),
   },
   {
     import_tasks: "script.yml",

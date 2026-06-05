@@ -1,7 +1,10 @@
 import {
+  and,
+  group,
   isDefined,
   isUndefined,
-  raw,
+  not,
+  or,
   register,
   type TaskFile,
   varByName,
@@ -17,8 +20,18 @@ export default [
       msg:
         "Must set either sshlogin_user or both of sshlogin_src_user and sshlogin_dst_user",
     },
-    when: raw(
-      "not (sshlogin_user is defined or\n    (sshlogin_src_user is defined and sshlogin_dst_user is defined))",
+    when: not(
+      group(
+        or(
+          isDefined(V.sshlogin_user),
+          group(
+            and(
+              isDefined(V.sshlogin_src_user),
+              isDefined(V.sshlogin_dst_user),
+            ),
+          ),
+        ),
+      ),
     ),
   },
   {
