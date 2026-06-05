@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 // Configuring client DNS resolution is much harder than setting up the DNS
@@ -16,7 +16,7 @@ import { tmpl, V } from "../_ctx.ts";
 export default [
   // DHCPCD
   {
-    when: raw('nebula_resolve_type == "probe"'),
+    when: eq(V.nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for dhcpcd",
@@ -32,7 +32,7 @@ export default [
   },
   // NETWORK MANAGER
   {
-    when: raw('nebula_resolve_type == "probe"'),
+    when: eq(V.nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for NetworkManager",
@@ -48,7 +48,7 @@ export default [
   },
   // SYSTEMD-NETWORKD
   {
-    when: raw('nebula_resolve_type == "probe"'),
+    when: eq(V.nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for systemd-networkd",
@@ -65,8 +65,8 @@ export default [
   // DEBIAN
   {
     when: [
-      raw('nebula_resolve_type == "probe"'),
-      raw('ansible_distribution == "Debian"'),
+      eq(V.nebula_resolve_type, "probe"),
+      eq(V.ansible_distribution, "Debian"),
     ],
     set_fact: {
       name: "Set nebula_resolve_type to dnsmasq",
@@ -76,7 +76,7 @@ export default [
   },
   // UNKNOWN
   {
-    when: raw('nebula_resolve_type == "probe"'),
+    when: eq(V.nebula_resolve_type, "probe"),
     set_fact: {
       name: "Set nebula_resolve_type to unknown",
       nebula_resolve_type: "unknown",

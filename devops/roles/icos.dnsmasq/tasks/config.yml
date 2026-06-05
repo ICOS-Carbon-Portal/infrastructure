@@ -1,5 +1,5 @@
 - import_tasks: config_present.yml
-  when: dnsmasq_config_state == "present"
+  when: dnsmasq_config_state == 'present'
 
 - import_tasks: config_absent.yml
-  when: dnsmasq_config_state == "absent"
+  when: dnsmasq_config_state == 'absent'

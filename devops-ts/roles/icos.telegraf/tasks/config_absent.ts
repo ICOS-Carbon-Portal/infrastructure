@@ -1,11 +1,11 @@
-import { raw, type TaskFile, type When } from "../../../lib/ansible.ts";
+import { eq, type TaskFile, type When } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Fail if user is trying to remove main config file",
     fail: { msg: "Refusing to remove main config file." },
-    when: [raw('telegraf_config_file == "telegraf.conf"')] as unknown as When,
+    when: [eq(V.telegraf_config_file, "telegraf.conf")] as unknown as When,
   },
   {
     name: "Remove telegraf config file",

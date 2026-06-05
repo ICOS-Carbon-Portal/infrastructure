@@ -78,7 +78,7 @@
     - {src: flexpart_run.sh.j2, dest: /usr/local/bin/flexpart_run}
 
 
-- when: flexpart_export_output_to != ""
+- when: flexpart_export_output_to != ''
   block:
     - name: Install ssh server
       apt:

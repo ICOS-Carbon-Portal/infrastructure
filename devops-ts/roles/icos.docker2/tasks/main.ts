@@ -1,4 +1,4 @@
-import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { eq, raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -13,11 +13,11 @@ export default [
   },
   {
     import_tasks: "debian.yml",
-    when: raw('ansible_distribution == "Debian"'),
+    when: eq(V.ansible_distribution, "Debian"),
   },
   {
     import_tasks: "ubuntu.yml",
-    when: raw('ansible_distribution == "Ubuntu"'),
+    when: eq(V.ansible_distribution, "Ubuntu"),
   },
   {
     name: "Fail if we're not on a supported distribution",

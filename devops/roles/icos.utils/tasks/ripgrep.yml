@@ -1,6 +1,6 @@
 # 20231210 - ripgrep currently doesn't provide prebuilt binaries for e.g ARM.
 - when:
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == 'x86_64'
     - ripgrep_version is not defined
   run_once: true
   check_mode: false
@@ -19,14 +19,14 @@
         ripgrep_version: "{{ gh.tag.lstrip('v') }}"
         cacheable: true
 
-- when: ansible_architecture == "x86_64"
+- when: ansible_architecture == 'x86_64'
   name: Install ripgrep using .deb from github
   apt:
     deb: "{{ ripgrep_url_map[ansible_architecture] }}"
 
 
 # Hope that some version of ripgrep is bundled with OS.
-- when: ansible_architecture != "x86_64"
+- when: ansible_architecture != 'x86_64'
   block:
     - name: Install ripgrep using apt
       apt:

@@ -1,12 +1,13 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
     import_tasks: "config_present.yml",
-    when: raw('telegraf_config_state == "present"'),
+    when: eq(V.telegraf_config_state, "present"),
   },
   {
     import_tasks: "config_absent.yml",
-    when: raw('telegraf_config_state == "absent"'),
+    when: eq(V.telegraf_config_state, "absent"),
   },
 ] satisfies TaskFile;

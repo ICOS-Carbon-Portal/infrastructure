@@ -1,6 +1,7 @@
 import {
+  eq,
   isNotDefined,
-  raw,
+  ne,
   register,
   type TaskFile,
   type When,
@@ -17,7 +18,7 @@ export default [
     // Original `when:` is a YAML list (implicitly AND-ed by Ansible); preserve
     // the list structure rather than collapsing to a single `a and b` string.
     when: [
-      raw('ansible_architecture == "x86_64"'),
+      eq(V.ansible_architecture, "x86_64"),
       isNotDefined(V.ripgrep_version),
     ] as unknown as When,
     run_once: true,
@@ -44,13 +45,13 @@ export default [
     ],
   },
   {
-    when: raw('ansible_architecture == "x86_64"'),
+    when: eq(V.ansible_architecture, "x86_64"),
     name: "Install ripgrep using .deb from github",
     apt: { deb: V.ripgrep_url_map.at(V.ansible_architecture) },
   },
   // Hope that some version of ripgrep is bundled with OS.
   {
-    when: raw('ansible_architecture != "x86_64"'),
+    when: ne(V.ansible_architecture, "x86_64"),
     block: [
       {
         name: "Install ripgrep using apt",

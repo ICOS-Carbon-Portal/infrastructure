@@ -1,6 +1,6 @@
 import {
   isNotDefined,
-  raw,
+  ne,
   register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
@@ -14,7 +14,7 @@ export default [
     fail: {
       msg: tmpl`httm is not supported on ${V.ansible_architecture}`,
     },
-    when: raw('ansible_architecture != "x86_64"'),
+    when: ne(V.ansible_architecture, "x86_64"),
   },
   {
     when: isNotDefined(V.httm_version),

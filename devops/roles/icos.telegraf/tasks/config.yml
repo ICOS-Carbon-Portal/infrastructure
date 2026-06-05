@@ -1,5 +1,5 @@
 - import_tasks: config_present.yml
-  when: telegraf_config_state == "present"
+  when: telegraf_config_state == 'present'
 
 - import_tasks: config_absent.yml
-  when: telegraf_config_state == "absent"
+  when: telegraf_config_state == 'absent'

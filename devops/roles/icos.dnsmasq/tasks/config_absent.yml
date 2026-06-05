@@ -2,7 +2,7 @@
   fail:
     msg: "We're not setup to remove the default config file."
   when:
-    - dnsmasq_config_name == "config"
+    - dnsmasq_config_name == 'config'
 
 - name: Remove dnsmasq config file
   file:

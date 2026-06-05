@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, ne, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -12,9 +12,9 @@ export default [
     include_tasks: "wireguard-raspbian-zero.yml",
     when: [
       notVar("_wg_is_installed"),
-      raw('ansible_distribution == "Debian"'),
+      eq(V.ansible_distribution, "Debian"),
       raw('ansible_lsb.id == "Raspbian"'),
-      raw('ansible_machine == "armv6l"'),
+      eq(V.ansible_machine, "armv6l"),
     ],
   },
   {
@@ -22,9 +22,9 @@ export default [
     include_tasks: "wireguard-raspbian.yml",
     when: [
       notVar("_wg_is_installed"),
-      raw('ansible_distribution == "Debian"'),
+      eq(V.ansible_distribution, "Debian"),
       raw('ansible_lsb.id == "Raspbian"'),
-      raw('ansible_machine != "armv6l"'),
+      ne(V.ansible_machine, "armv6l"),
     ],
   },
   {
@@ -32,7 +32,7 @@ export default [
     include_tasks: "wireguard-ubuntu.yml",
     when: [
       notVar("_wg_is_installed"),
-      raw('ansible_distribution == "Ubuntu"'),
+      eq(V.ansible_distribution, "Ubuntu"),
     ],
   },
   {

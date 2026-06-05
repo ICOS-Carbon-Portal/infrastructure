@@ -11,10 +11,10 @@
   failed_when: r.rc == 0
 
 - import_tasks: debian.yml
-  when: ansible_distribution == "Debian"
+  when: ansible_distribution == 'Debian'
 
 - import_tasks: ubuntu.yml
-  when: ansible_distribution == "Ubuntu"
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Fail if we're not on a supported distribution
   fail:

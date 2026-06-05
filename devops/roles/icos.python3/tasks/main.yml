@@ -12,7 +12,7 @@
       - python3-venv
 
 # On Ubuntu we'll install extra versions of python from here.
-- when: ansible_distribution == "Ubuntu"
+- when: ansible_distribution == 'Ubuntu'
   name: Add ppa:deadsnakes repository
   apt_repository:
     repo: ppa:deadsnakes/ppa

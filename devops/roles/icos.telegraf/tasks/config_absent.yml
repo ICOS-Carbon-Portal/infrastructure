@@ -2,7 +2,7 @@
   fail:
     msg: "Refusing to remove main config file."
   when:
-    - telegraf_config_file == "telegraf.conf"
+    - telegraf_config_file == 'telegraf.conf'
 
 - name: Remove telegraf config file
   file:

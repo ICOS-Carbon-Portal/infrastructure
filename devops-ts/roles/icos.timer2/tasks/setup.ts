@@ -1,4 +1,4 @@
-import { isDefined, raw, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, ne, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -43,7 +43,7 @@ export default [
   },
   {
     name: "Link systemd files",
-    when: raw('timer_home != "/etc/systemd/system"'),
+    when: ne(V.timer_home, "/etc/systemd/system"),
     // noqa: command-instead-of-module
     command:
       tmpl`systemctl link ${V._timer_sysd_timer} ${V._timer_sysd_service}`,

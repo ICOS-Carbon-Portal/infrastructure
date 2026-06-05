@@ -1,7 +1,7 @@
 import {
   lookup,
   loopOver,
-  raw,
+  ne,
   register,
   type TaskFile,
   type Tmpl,
@@ -115,7 +115,7 @@ export default [
     }),
   ),
   {
-    when: raw('flexpart_export_output_to != ""'),
+    when: ne(V.flexpart_export_output_to, ""),
     block: [
       {
         name: "Install ssh server",

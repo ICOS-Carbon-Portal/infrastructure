@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, type TaskFile } from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 export default [
@@ -8,7 +8,7 @@ export default [
       msg: "We're not setup to remove the default config file.",
     },
     // Source uses a single-element YAML list for `when:`; preserved as an array.
-    when: [raw('dnsmasq_config_name == "config"')],
+    when: [eq(V.dnsmasq_config_name, "config")],
   },
   {
     name: "Remove dnsmasq config file",

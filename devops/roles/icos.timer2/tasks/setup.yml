@@ -28,7 +28,7 @@
     content: "{{ timer_service }}"
 
 - name: Link systemd files
-  when: timer_home != "/etc/systemd/system"
+  when: timer_home != '/etc/systemd/system'
   # noqa: command-instead-of-module
   command:  systemctl link {{ _timer_sysd_timer }} {{ _timer_sysd_service }}
   register: _r

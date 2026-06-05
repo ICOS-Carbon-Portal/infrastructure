@@ -1,4 +1,4 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, raw, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -20,7 +20,7 @@ export default [
   },
   // On Ubuntu we'll install extra versions of python from here.
   {
-    when: raw('ansible_distribution == "Ubuntu"'),
+    when: eq(V.ansible_distribution, "Ubuntu"),
     name: "Add ppa:deadsnakes repository",
     apt_repository: {
       repo: "ppa:deadsnakes/ppa",

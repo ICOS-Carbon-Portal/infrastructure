@@ -1,7 +1,7 @@
 - name: Architecture is not supported
   fail:
     msg: "httm is not supported on {{ ansible_architecture }}"
-  when: ansible_architecture != "x86_64"
+  when: ansible_architecture != 'x86_64'
 
 - when: httm_version is not defined
   run_once: true
