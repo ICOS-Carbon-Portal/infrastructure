@@ -1,4 +1,4 @@
-import { raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import { isDefined, register, type TaskFile, V } from "../../../lib/ansible.ts";
 
 const _slurp = register("_slurp");
 
@@ -53,7 +53,7 @@ export default [
           name: update.backup_file.ref,
           state: "absent",
         },
-        when: raw("update['backup_file'] is defined"),
+        when: isDefined(update.backup_file),
       },
     ],
   },

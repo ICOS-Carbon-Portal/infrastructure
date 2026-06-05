@@ -1,4 +1,4 @@
-import { raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { isDefined, register, type TaskFile } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
@@ -37,7 +37,7 @@ export default [
           dest: tmpl`${V.nebula_etc_dir}/config.yml`,
           src: update.backup_file.ref,
         },
-        when: raw("update['backup_file'] is defined"),
+        when: isDefined(update.backup_file),
       },
       {
         name: "Dump failed configuration",
@@ -52,7 +52,7 @@ export default [
       {
         name: "Remove backup file",
         file: { name: update.backup_file.ref, state: "absent" },
-        when: raw("update['backup_file'] is defined"),
+        when: isDefined(update.backup_file),
       },
     ],
   },

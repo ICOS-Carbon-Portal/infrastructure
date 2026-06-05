@@ -30,14 +30,14 @@
          remote_src: true
          dest: /etc/nginx/conf.d/nextcloud.conf
          src: "{{ update.backup_file }}"
-      when: "update['backup_file'] is defined"
+      when: "update.backup_file is defined"
 
   always:
     - name: Remove backup file
       file:
         name: "{{ update.backup_file }}"
         state: absent
-      when: "update['backup_file'] is defined"
+      when: "update.backup_file is defined"
 
     - name: Flush handlers
       meta: flush_handlers

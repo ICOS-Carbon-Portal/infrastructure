@@ -1,4 +1,9 @@
-import { raw, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
@@ -46,7 +51,7 @@ export default [
           dest: "/etc/nginx/conf.d/nextcloud.conf",
           src: update.backup_file.ref,
         },
-        when: raw("update['backup_file'] is defined"),
+        when: isDefined(update.backup_file),
       },
     ],
     always: [
@@ -56,7 +61,7 @@ export default [
           name: update.backup_file.ref,
           state: "absent",
         },
-        when: raw("update['backup_file'] is defined"),
+        when: isDefined(update.backup_file),
       },
       {
         name: "Flush handlers",

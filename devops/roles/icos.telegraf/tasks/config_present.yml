@@ -44,7 +44,7 @@
       file:
         name: "{{ update.backup_file }}"
         state: absent
-      when: "update['backup_file'] is defined"
+      when: "update.backup_file is defined"
 
 - name: Make sure telegraf is started
   systemd:

@@ -1,4 +1,10 @@
-import { iff, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  eq,
+  iff,
+  isDefined,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
@@ -21,8 +27,8 @@ export default [
           state: V.state.default(V.omit),
           backup: true,
           create: true,
-          insertafter: iff(raw("where == 'EOF'"), "EOF", V.omit),
-          insertbefore: iff(raw("where == 'BOF'"), "BOF", V.omit),
+          insertafter: iff(eq(V.where, "EOF"), "EOF", V.omit),
+          insertbefore: iff(eq(V.where, "BOF"), "BOF", V.omit),
         },
         register: _r,
       },
@@ -52,7 +58,7 @@ export default [
           src: _r.backup_file.ref,
         },
         // backup_file won't be set if templating failed
-        when: raw("_r['backup_file'] is defined"),
+        when: isDefined(_r.backup_file),
       },
     ],
     always: [
@@ -63,7 +69,7 @@ export default [
           state: "absent",
         },
         changed_when: false,
-        when: raw("_r['backup_file'] is defined"),
+        when: isDefined(_r.backup_file),
       },
     ],
   },

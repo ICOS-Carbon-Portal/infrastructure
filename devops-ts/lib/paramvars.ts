@@ -204,6 +204,7 @@ export interface ParamVars {
   vmagent_config_content: string;
   vmagent_config_dest: string;
   website: string;
+  where: string;
   wordpress_domains: string;
   zrepl_config: string;
 }

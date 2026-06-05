@@ -1,6 +1,6 @@
 import {
   isDefined,
-  raw,
+  isNotDefined,
   register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
@@ -77,7 +77,7 @@ export default [
           dest: update.dest.ref,
           src: update.backup_file.ref,
         },
-        when: raw("update.backup_file is defined"),
+        when: isDefined(update.backup_file),
       },
       {
         name: "Remove broken config",
@@ -85,7 +85,7 @@ export default [
           path: update.dest.ref,
           state: "absent",
         },
-        when: raw("update.backup_file is not defined"),
+        when: isNotDefined(update.backup_file),
       },
     ],
     always: [
@@ -96,7 +96,7 @@ export default [
           state: "absent",
         },
         changed_when: false,
-        when: raw("update.backup_file is defined"),
+        when: isDefined(update.backup_file),
       },
     ],
   },

@@ -38,7 +38,7 @@
          dest: /etc/caddy/Caddyfile
          src: "{{ _r.backup_file }}"
       # backup_file won't be set if templating failed
-      when: "_r['backup_file'] is defined"
+      when: "_r.backup_file is defined"
 
   always:
     - name: Remove backup file
@@ -46,4 +46,4 @@
         name: "{{ _r.backup_file }}"
         state: absent
       changed_when: false
-      when: "_r['backup_file'] is defined"
+      when: "_r.backup_file is defined"
