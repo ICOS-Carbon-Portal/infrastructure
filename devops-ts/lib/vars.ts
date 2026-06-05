@@ -38,7 +38,7 @@ import type { AllVars } from "./allvars.ts";
 import type { ParamVars } from "./paramvars.ts";
 import type { VaultVars } from "./vaultvars.ts";
 import type { VarShapes } from "./shapes.ts";
-import { type Ref, varProxy, type VarRef } from "./template.ts";
+import { type Ref, Template, varProxy, type VarRef } from "./template.ts";
 
 // The full set of statically-known variables a playbook may reference: the
 // hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins,
@@ -136,26 +136,64 @@ export class Expr {
   toString(): string {
     return this.text;
   }
+
+  /** `| bool` filter, applied to the full expression so far. */
+  bool(): Expr {
+    return new Expr(`${this.text} | bool`, this.name);
+  }
 }
 
 /** Any referenceable variable name: user `Vars`, globals, built-ins, or any role var. */
 export type VarName = KnownName;
 
-/** Start a `when:` expression from a variable: `name is defined`. */
-export function isDefined(name: VarName): Expr {
-  return new Expr(`${name} is defined`, name as string);
+/**
+ * An operand of a `when:` comparison/test. A `string`/`number`/`boolean` is a
+ * LITERAL (a string renders `'quoted'`); a variable or expression reference —
+ * `V.x` (a Template), a register field (`r.changed`), or another `Expr` —
+ * renders BARE. This mirrors the value-combinator convention (iff/lookup), so
+ * `eq(V.x, "y")` -> `x == 'y'`.
+ */
+export type Operand = Expr | Template | string | number | boolean;
+
+/** A unary-test subject: a checked variable NAME, or a ref (`V.x`/register field). */
+export type Subject = VarName | Expr | Template;
+
+/** Bare text for a non-string operand (refs render bare). */
+function refText(o: Exclude<Operand, string>): string {
+  if (typeof o === "number") return String(o);
+  if (typeof o === "boolean") return o ? "True" : "False";
+  if (o instanceof Template) {
+    const p = o.parts;
+    if (p.length === 1 && p[0].kind === "ref") return p[0].jinja;
+    if (p.length === 1 && p[0].kind === "raw") return p[0].text;
+    return o.toText();
+  }
+  return String(o); // Expr, or a register-field proxy
+}
+/** Operand text: a bare string is a quoted literal. */
+function operandText(o: Operand): string {
+  return typeof o === "string" ? `'${o}'` : refText(o);
+}
+/** Subject text: a bare string is a variable NAME (rendered bare, not quoted). */
+function subjText(s: Subject): string {
+  return typeof s === "string" ? s : refText(s);
+}
+
+/** Start a `when:` test from a variable/ref: `<subject> is defined`. */
+export function isDefined(s: Subject): Expr {
+  const sub = subjText(s);
+  return new Expr(`${sub} is defined`, sub);
 }
 
 /**
- * Negate a boolean variable or expression:
+ * Negate a boolean variable, ref, or expression:
  *   not("ansible_check_mode")  -> "not ansible_check_mode"
+ *   not(V.lxd_is_snap)         -> "not lxd_is_snap"
  *   not(r.failed)              -> "not r.failed"  (register result field)
  */
-export function not(name: VarName): Expr;
-export function not(expr: Expr): Expr;
-export function not(arg: VarName | Expr): Expr {
-  const text = typeof arg === "string" ? arg : String(arg);
-  return new Expr(`not ${text}`, text);
+export function not(s: Subject): Expr {
+  const sub = subjText(s);
+  return new Expr(`not ${sub}`, sub);
 }
 
 /**
@@ -182,4 +220,71 @@ export function and(...exprs: Expr[]): Expr {
 export function or(...exprs: Expr[]): Expr {
   const text = exprs.map(String).join(" or ");
   return new Expr(text, text);
+}
+
+/** `<subject> is not defined`. */
+export function isNotDefined(s: Subject): Expr {
+  const sub = subjText(s);
+  return new Expr(`${sub} is not defined`, sub);
+}
+
+/** `<subject> is undefined` (a distinct rendering from `is not defined`). */
+export function isUndefined(s: Subject): Expr {
+  const sub = subjText(s);
+  return new Expr(`${sub} is undefined`, sub);
+}
+
+/** A bare variable/ref used directly as a truthiness condition: `<subject>`. */
+export function truthy(s: Subject): Expr {
+  const sub = subjText(s);
+  return new Expr(sub, sub);
+}
+
+/** `<subject> is truthy`. */
+export function isTruthy(s: Subject): Expr {
+  const sub = subjText(s);
+  return new Expr(`${sub} is truthy`, sub);
+}
+
+/** `<subject> is version('<version>', '<op>')`. */
+export function isVersion(s: Subject, version: string, op: string): Expr {
+  const t = `${subjText(s)} is version('${version}', '${op}')`;
+  return new Expr(t, t);
+}
+
+/** `<a> == <b>` — strings are quoted literals; `V.x`/register refs render bare. */
+export function eq(a: Operand, b: Operand): Expr {
+  const t = `${operandText(a)} == ${operandText(b)}`;
+  return new Expr(t, t);
+}
+
+/** `<a> != <b>`. */
+export function ne(a: Operand, b: Operand): Expr {
+  const t = `${operandText(a)} != ${operandText(b)}`;
+  return new Expr(t, t);
+}
+
+/** A collection: a ref (`V.x` -> bare) or an array rendered as a `('a', 'b')` tuple. */
+function collText(coll: Operand | Operand[]): string {
+  return Array.isArray(coll)
+    ? `(${coll.map(operandText).join(", ")})`
+    : operandText(coll);
+}
+
+/** `<item> in <coll>`. */
+export function isIn(item: Operand, coll: Operand | Operand[]): Expr {
+  const t = `${operandText(item)} in ${collText(coll)}`;
+  return new Expr(t, t);
+}
+
+/** `<item> not in <coll>`. */
+export function notIn(item: Operand, coll: Operand | Operand[]): Expr {
+  const t = `${operandText(item)} not in ${collText(coll)}`;
+  return new Expr(t, t);
+}
+
+/** Parenthesize for precedence: `(<e>)` — e.g. `not(group(... | bool))`. */
+export function group(e: Expr): Expr {
+  const t = `(${e})`;
+  return new Expr(t, t);
 }
