@@ -1,7 +1,7 @@
 import {
   isUndefined,
+  not,
   or,
-  raw,
   register,
   type TaskFile,
   truthy,
@@ -39,14 +39,14 @@ export default [
     name: "Installing podman",
     import_tasks: "install.yml",
     tags: "podman_install",
-    when: raw("not _podman.stdout.endswith(podman_version)"),
+    when: not(_podman.stdout.endswith(V.podman_version)),
   },
   {
     name: "Podman is installed and the correct version.",
     // _podman will be undefined if we use the podman_configure tag
     when: or(
       isUndefined(_podman.ref),
-      raw("_podman.stdout.endswith(podman_version)"),
+      _podman.stdout.endswith(V.podman_version),
     ),
     block: [
       {

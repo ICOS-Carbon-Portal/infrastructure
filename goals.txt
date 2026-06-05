@@ -1,6 +1,8 @@
 Short term:
   Statically type as much as possible of devops and subest of Ansible in TS
   so that it generates identical yaml, but with statically known variables etc.
+  It should be necessary to declare tags/variables somewhere before using them. Even if it's still all
+  global scope, we still get an easier overview, and the ability to use an LSP to find all usages.
 
 Long term:
   - Rework the definitions so that they follow a more normal flow, with variables being introduced in scopes etc.

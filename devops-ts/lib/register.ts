@@ -13,10 +13,12 @@
 //       dest: tmpl`${r.dest.ref}/bin/btop`   // "{{ r.dest }}/bin/btop"
 //
 // Declare it once as a `const` and reference it across tasks, so an unregistered
-// name becomes a "Cannot find name" compile error. Complex expressions over a
-// result (`_r.stdout.startswith(...)`) stay raw — only field access is modelled.
+// name becomes a "Cannot find name" compile error. String-valued fields are
+// typed `PyStr` and expose the Python `str` methods used across the playbooks
+// (`_r.stdout.endswith(V.podman_version)`), so those conditions no longer need
+// raw() either.
 import type { Expr } from "./vars.ts";
-import { expr, type Ref } from "./template.ts";
+import { expr, type Ref, Template } from "./template.ts";
 
 /**
  * One field of a result: an `Expr` (renders bare, for when-positions) whose
@@ -24,6 +26,30 @@ import { expr, type Ref } from "./template.ts";
  * `Template` filter methods are then available: `r.stdout.ref.first()`.
  */
 export type Field = Expr & { readonly ref: Ref };
+
+/**
+ * An argument to a Python string method: a string LITERAL (rendered `'quoted'`)
+ * or a variable/expression reference (`V.x`, a register field) rendered bare.
+ */
+export type StrArg = string | Ref | Expr;
+
+/**
+ * A register result field that holds a Python string. Beyond the bare `Field`
+ * (which renders the dotted path) it exposes the `str` methods used as Jinja
+ * conditions across the playbooks; each renders `<path>.<method>(<args>)`:
+ *
+ *   _r.stdout.endswith(V.podman_version)   // _r.stdout.endswith(podman_version)
+ *   _r.stderr.startswith("Created symlink")
+ *   _r.msg.find("crontab")                  // an int — compare with eq/ne
+ *   _r.stderr.lower()                       // a Python string (chainable)
+ */
+export interface PyStr extends Field {
+  endswith(suffix: StrArg): Expr;
+  startswith(prefix: StrArg): Expr;
+  /** Index of `sub` (or -1); compare with eq/ne. */
+  find(sub: StrArg): Expr;
+  lower(): PyStr;
+}
 
 /** A registered `.stat` sub-result (the `stat` module). */
 export interface StatResult extends Expr {
@@ -37,14 +63,14 @@ export interface Result {
   changed: Field;
   failed: Field;
   rc: Field;
-  stdout: Field;
-  stderr: Field;
+  stdout: PyStr;
+  stderr: PyStr;
   stdout_lines: Field;
   status: Field;
-  msg: Field;
+  msg: PyStr;
   dest: Field;
   path: Field;
-  content: Field;
+  content: PyStr;
   backup_file: Field;
   restart_required: Field;
   stat: StatResult;
@@ -69,6 +95,19 @@ export type Reg = string & Result & { readonly ref: Ref };
  * value-position `Template`. The static type (`Reg`, `Result`, `Field`) is
  * supplied by the cast.
  */
+/** Render a method argument: a string is a `'quoted'` literal; a ref/expr bare. */
+function argText(a: unknown): string {
+  if (typeof a === "string") return `'${a}'`;
+  if (typeof a === "number" || typeof a === "boolean") return String(a);
+  if (a instanceof Template) {
+    const p = a.parts;
+    if (p.length === 1 && p[0].kind === "ref") return p[0].jinja;
+    if (p.length === 1 && p[0].kind === "raw") return p[0].text;
+    return a.toText();
+  }
+  return String(a); // another register field / Expr
+}
+
 export function register(name: string): Reg {
   const node = (path: string): unknown =>
     new Proxy(function () {}, {
@@ -80,6 +119,10 @@ export function register(name: string): Reg {
         }
         if (key === "ref") return expr(path);
         return node(`${path}.${String(key)}`);
+      },
+      // Method calls (`stdout.endswith(x)`) extend the path: `<path>(<args>)`.
+      apply(_t, _this, args) {
+        return node(`${path}(${args.map(argText).join(", ")})`);
       },
     });
   return node(name) as Reg;

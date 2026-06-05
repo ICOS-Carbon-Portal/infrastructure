@@ -9,12 +9,37 @@
 // becomes a "Cannot find name" compile error instead of a silent no-op.
 import { expr } from "./template.ts";
 import { register } from "./register.ts";
+import { V } from "./vars.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
   if (actual !== expected) {
     throw new Error(`${msg}\n  expected: ${expected}\n  actual:   ${actual}`);
   }
 }
+
+Deno.test("register: PyStr methods render as Python str calls", () => {
+  const r = register("_podman");
+  // bare-variable argument
+  eq(
+    String(r.stdout.endswith(V.podman_version)),
+    "_podman.stdout.endswith(podman_version)",
+    "endswith(var)",
+  );
+  // string-literal argument is quoted
+  eq(
+    String(r.stderr.startswith("Created symlink")),
+    "_podman.stderr.startswith('Created symlink')",
+    "startswith('lit')",
+  );
+  eq(String(r.msg.find("crontab")), "_podman.msg.find('crontab')", "find");
+  eq(String(r.stderr.lower()), "_podman.stderr.lower()", "lower()");
+  // chaining off lower()
+  eq(
+    String(r.stderr.lower().endswith("x")),
+    "_podman.stderr.lower().endswith('x')",
+    "lower().endswith()",
+  );
+});
 
 Deno.test("register: .ref renders the value-position template", () => {
   const update = register("update");
