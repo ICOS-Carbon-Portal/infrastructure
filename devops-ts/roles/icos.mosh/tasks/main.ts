@@ -1,4 +1,5 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -16,6 +17,6 @@ export default [
       rules:
         "-A INPUT -p udp -m multiport --dports 60000:61000 -j ACCEPT -m comment --comment 'mosh'",
     },
-    when: raw("mosh_add_firewall"),
+    when: truthy(V.mosh_add_firewall),
   },
 ] satisfies TaskFile;

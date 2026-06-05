@@ -80,6 +80,7 @@ export interface ParamVars {
   ganymede_domains: string;
   fsd_path: string;
   fsd_target: string;
+  geoip_docker_build: string;
   git_version: string;
   golang_local_version: string;
   grafana_datasource_version: string;
@@ -89,6 +90,7 @@ export interface ParamVars {
   icosdata_mkdirs: string;
   jarfile: string;
   jarservice_check: string;
+  jarservice_githash: string;
   jarservice_home: string;
   jarservice_local: string;
   jarservice_name: string;

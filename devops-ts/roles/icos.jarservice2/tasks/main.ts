@@ -1,4 +1,11 @@
-import { not, raw, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import {
+  isDefined,
+  not,
+  register,
+  type TaskFile,
+  truthy,
+  V,
+} from "../../../lib/ansible.ts";
 import { tmpl } from "../_ctx.ts";
 
 const r = register("r");
@@ -7,7 +14,7 @@ export default [
   {
     import_tasks: "jarfile.yml",
     tags: "jarservice_jarfile",
-    when: raw("jarservice_jar_enable | bool"),
+    when: truthy(V.jarservice_jar_enable).bool(),
   },
   {
     name: tmpl`Add systemd ${V.jarservice_name} servicefile`,
@@ -27,7 +34,7 @@ export default [
   },
   {
     name: "Check that the service responds",
-    when: raw("jarservice_check is defined"),
+    when: isDefined(V.jarservice_check),
     uri: {
       url: V.jarservice_check,
       return_content: true,
@@ -44,8 +51,8 @@ export default [
       that: ["jarservice_githash in r.content"],
     },
     when: [
-      raw("jarservice_check is defined"),
-      raw("jarservice_githash is defined"),
+      isDefined(V.jarservice_check),
+      isDefined(V.jarservice_githash),
     ],
   },
 ] satisfies TaskFile;

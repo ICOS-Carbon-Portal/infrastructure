@@ -17,6 +17,6 @@ export interface Vars {
   xcaddy_upgrade: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl, notVar } = context<
+export const { V, tmpl, notVar } = context<
   Vars & BuiltinVars & ParamVars
 >();

@@ -1,4 +1,4 @@
-import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { not, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 const _old = register("_old");
@@ -52,7 +52,7 @@ export default [
       state: "link",
     },
     notify: tmpl`restart ${V.jarservice_name}`,
-    when: raw("jarservice_restart"),
+    when: truthy(V.jarservice_restart),
   },
   {
     name: "Keep the jarfiles directory from filling up",

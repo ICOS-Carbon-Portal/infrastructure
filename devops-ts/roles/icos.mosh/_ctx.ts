@@ -2,7 +2,12 @@
 // ../../../devops/roles/icos.mosh/{defaults,vars}/*.yml
 // Per-role variable context: 1 own variables, widened with
 // only the registries this role's task/handler files reference.
+import { context } from "../../lib/context.ts";
 
 export interface Vars {
   mosh_add_firewall: unknown;
 }
+
+export const { V } = context<
+  Vars
+>();

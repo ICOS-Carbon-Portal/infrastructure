@@ -1,4 +1,4 @@
-import { not, raw, register, type TaskFile } from "../../../lib/ansible.ts";
+import { not, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
@@ -26,7 +26,7 @@ export default [
     },
     register: "_output",
     changed_when: '" ---> Running in " in _output.stdout',
-    when: raw("geoip_docker_build | default(True)"),
+    when: truthy(V.geoip_docker_build).default(true),
   },
   {
     name: "Start containers",
