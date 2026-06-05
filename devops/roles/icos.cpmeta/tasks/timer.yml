@@ -1,0 +1,22 @@
+- name: Install cpmeta weekly restart timer
+  include_role:
+    name: icos.timer2
+  vars:
+    timer_state: started
+    timer_name: cpmeta-weekly-restart
+    timer_config: |
+      [Unit]
+      Description=Weekly restart of cpmeta
+
+      [Timer]
+      OnCalendar=Sun *-*-* 03:00:00
+
+      [Install]
+      WantedBy=timers.target
+    timer_service: |
+      [Unit]
+      Description=Weekly restart of cpmeta
+
+      [Service]
+      Type=oneshot
+      ExecStart=systemctl restart cpmeta.service
