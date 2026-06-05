@@ -13,6 +13,6 @@
   systemd:
     name: cpdata.service
     enabled: yes
-    daemon-reload: "{{ 'yes' if _service.changed | default(false) else 'no' }}"
+    daemon-reload: "{{ 'yes' if _service.changed | default(False) else 'no' }}"
     state: >-
-      {{ 'restarted' if _jarfile.changed | default(false) or _config.changed else 'started' }}
+      {{ 'restarted' if _jarfile.changed | default(False) or _config.changed else 'started' }}

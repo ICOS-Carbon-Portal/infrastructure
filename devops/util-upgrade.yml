@@ -51,7 +51,7 @@
     - name: Make sure docker isn't upgraded
       dpkg_selections:
         name: "{{ item }}"
-        selection: "{{ 'hold' if docker_prevent_upgrade | default(false) else 'install' }}"
+        selection: "{{ 'hold' if docker_prevent_upgrade | default(False) else 'install' }}"
       loop:
         - docker.io
         - containerd

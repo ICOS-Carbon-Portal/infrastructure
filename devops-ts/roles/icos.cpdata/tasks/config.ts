@@ -1,5 +1,15 @@
-import { iff, raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  iff,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { tmpl, V } from "../_ctx.ts";
+
+const _service = register("_service");
+const _jarfile = register("_jarfile");
+const _config = register("_config");
 
 export default [
   {
@@ -13,7 +23,7 @@ export default [
 {% endfor %}
 `,
     },
-    register: "_config",
+    register: _config,
   },
   {
     name: "Start/restart service",
@@ -21,14 +31,12 @@ export default [
       name: "cpdata.service",
       enabled: true,
       "daemon-reload": iff(
-        raw("_service.changed | default(false)"),
+        truthy(_service.changed).default(false),
         "yes",
         "no",
       ),
       state: iff(
-        raw(
-          "_jarfile.changed | default(false) or _config.changed",
-        ),
+        or(truthy(_jarfile.changed).default(false), _config.changed),
         "restarted",
         "started",
       ),

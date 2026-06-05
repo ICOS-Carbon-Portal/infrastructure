@@ -1,7 +1,7 @@
 // This playbook can be used to:
 //   1. Find out which hosts run a specific distribution of ubuntu.
 //   2. Dist-upgrade those hosts.
-import { iff, type Playbook, raw, tmpl, V } from "../lib/ansible.ts";
+import { iff, type Playbook, tmpl, truthy, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -74,7 +74,7 @@ export default [
         dpkg_selections: {
           name: V.item,
           selection: iff(
-            raw("docker_prevent_upgrade | default(false)"),
+            truthy(V.docker_prevent_upgrade).default(false),
             "hold",
             "install",
           ),

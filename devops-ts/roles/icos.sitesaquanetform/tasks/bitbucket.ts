@@ -1,4 +1,6 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, register, type TaskFile } from "../../../lib/ansible.ts";
+
+const bitbucket_known_hosts = register("bitbucket_known_hosts");
 import { expr, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -21,7 +23,7 @@ export default [
   {
     name: "Check if known_hosts contains bitbucket",
     command: "ssh-keygen -F bitbucket.org",
-    register: "bitbucket_known_hosts",
+    register: bitbucket_known_hosts,
     failed_when: false,
     changed_when: false,
   },
@@ -33,6 +35,6 @@ export default [
         "lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`')",
       ),
     },
-    when: raw('bitbucket_known_hosts.stdout == ""'),
+    when: eq(bitbucket_known_hosts.stdout, ""),
   },
 ] satisfies TaskFile;

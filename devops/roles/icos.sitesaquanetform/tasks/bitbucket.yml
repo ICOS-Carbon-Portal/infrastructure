@@ -26,4 +26,4 @@
   known_hosts:
     name: bitbucket.org
     key: "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}"
-  when: bitbucket_known_hosts.stdout == ""
+  when: bitbucket_known_hosts.stdout == ''

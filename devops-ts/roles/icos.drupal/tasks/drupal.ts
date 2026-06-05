@@ -1,4 +1,7 @@
-import { raw, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { ne, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
+
+const private_directory_owner = register("private_directory_owner");
+const files_directory_owner = register("files_directory_owner");
 import { isDef, rawTmpl, tmpl, V } from "../_ctx.ts";
 
 export default [
@@ -104,7 +107,7 @@ export default [
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 stat -c '%U' /var/www/private/`,
-    register: "private_directory_owner",
+    register: private_directory_owner,
     changed_when: false,
   },
   {
@@ -112,14 +115,14 @@ export default [
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 chown -R www-data:www-data /var/www/private/`,
-    when: raw('private_directory_owner.stdout != "www-data"'),
+    when: ne(private_directory_owner.stdout, "www-data"),
   },
   {
     name: "Check files directory owner",
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 stat -c '%U' /var/www/private/`,
-    register: "files_directory_owner",
+    register: files_directory_owner,
     changed_when: false,
   },
   {
@@ -127,7 +130,7 @@ export default [
     command: tmpl`docker exec ${
       rawTmpl("{{website}}")
     }_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files`,
-    when: raw('files_directory_owner.stdout != "www-data"'),
+    when: ne(files_directory_owner.stdout, "www-data"),
   },
   {
     name: "Composer update",

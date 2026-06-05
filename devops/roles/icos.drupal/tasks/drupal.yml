@@ -75,7 +75,7 @@
 
 - name: Change private directory owner
   command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/private/
-  when: private_directory_owner.stdout != "www-data"
+  when: private_directory_owner.stdout != 'www-data'
 
 - name: Check files directory owner
   command: docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/
@@ -84,7 +84,7 @@
 
 - name: Change files directory owner
   command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
-  when: files_directory_owner.stdout != "www-data"
+  when: files_directory_owner.stdout != 'www-data'
 
 - name: Composer update
   command: docker exec {{website}}_drupal_1 composer update
