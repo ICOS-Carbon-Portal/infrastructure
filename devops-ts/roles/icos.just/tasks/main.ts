@@ -1,15 +1,24 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  not,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   {
     name: "Check whether just is installed",
     stat: { path: "/usr/local/bin/just" },
-    register: "_r",
+    register: _r,
   },
   {
     name: "Install/upgrade just",
     include_tasks: { file: "install.yml" },
-    when: raw("not _r.stat.exists or just_upgrade"),
+    when: or(not(_r.stat.exists), truthy(V.just_upgrade)),
   },
   {
     name: "Create bash_completion.d directory",

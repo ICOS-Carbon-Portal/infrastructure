@@ -1,4 +1,13 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  not,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   {
@@ -6,14 +15,18 @@ export default [
     stat: {
       path: "/usr/local/bin/uv",
     },
-    register: "_r",
+    register: _r,
   },
   {
     name: "Install/upgrade uv",
     include_tasks: {
       file: "install.yml",
     },
-    when: raw("not _r.stat.exists or uv_upgrade or not ansible_check_mode"),
+    when: or(
+      not(_r.stat.exists),
+      truthy(V.uv_upgrade),
+      not(V.ansible_check_mode),
+    ),
   },
   {
     name: 'Create "global" version of uv',

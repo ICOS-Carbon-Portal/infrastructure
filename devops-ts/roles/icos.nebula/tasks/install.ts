@@ -1,5 +1,13 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  not,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   {
@@ -31,12 +39,12 @@ export default [
   {
     name: "Check whether nebula is already installed",
     stat: { path: tmpl`${V.nebula_bin_dir}/nebula` },
-    register: "_r",
+    register: _r,
   },
   {
     name: "Download and unpack nebula",
     include_tasks: "download.yml",
-    when: raw("not _r.stat.exists or nebula_upgrade"),
+    when: or(not(_r.stat.exists), truthy(V.nebula_upgrade)),
   },
   {
     name: "Check that nebula runs",

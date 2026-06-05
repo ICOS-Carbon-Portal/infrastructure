@@ -1,5 +1,13 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  not,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
 import { V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   {
@@ -7,14 +15,14 @@ export default [
     stat: {
       path: V.borg_bin,
     },
-    register: "_r",
+    register: _r,
   },
   {
     name: "Install/upgrade borg",
     include_tasks: {
       file: "install.yml",
     },
-    when: raw("not _r.stat.exists or borg_upgrade"),
+    when: or(not(_r.stat.exists), truthy(V.borg_upgrade)),
   },
   {
     import_tasks: "just.yml",

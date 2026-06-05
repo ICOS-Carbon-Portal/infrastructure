@@ -1,4 +1,13 @@
-import { raw, type TaskFile } from "../../../lib/ansible.ts";
+import {
+  not,
+  or,
+  register,
+  type TaskFile,
+  truthy,
+} from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
+
+const _r = register("_r");
 
 export default [
   {
@@ -11,7 +20,7 @@ export default [
     stat: {
       path: "/usr/bin/httm",
     },
-    register: "_r",
+    register: _r,
   },
   {
     name: "Install/upgrade httm",
@@ -19,6 +28,6 @@ export default [
     include_tasks: {
       file: "httm.yml",
     },
-    when: raw("not _r.stat.exists or httm_upgrade"),
+    when: or(not(_r.stat.exists), truthy(V.httm_upgrade)),
   },
 ] satisfies TaskFile;
