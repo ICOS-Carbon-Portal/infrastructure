@@ -1,4 +1,4 @@
-import { raw, type TaskFile, V } from "../../../lib/ansible.ts";
+import { eq, type TaskFile, truthy, V } from "../../../lib/ansible.ts";
 import { tmpl } from "../_ctx.ts";
 
 export default [
@@ -8,7 +8,7 @@ export default [
       name: V.jarservice_name,
       state: "restarted",
     },
-    when: raw("jarservice_state | default('started') == 'started'"),
+    when: eq(truthy(V.jarservice_state).default("started"), "started"),
   },
   {
     name: "reload systemd config",

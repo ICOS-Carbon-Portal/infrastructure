@@ -122,10 +122,15 @@ export class Expr {
     private readonly name: string,
   ) {}
 
-  /** `| default(...)` filter; booleans render as Python `True`/`False`. */
+  /**
+   * `| default(...)` filter; booleans render as Python `True`/`False`, strings
+   * as `'quoted'` Jinja literals (matching Template.default / filterArgText).
+   */
   default(fallback: Scalar): Expr {
     const rendered = typeof fallback === "boolean"
       ? fallback ? "True" : "False"
+      : typeof fallback === "string"
+      ? `'${fallback}'`
       : String(fallback);
     return new Expr(`${this.name} | default(${rendered})`, this.name);
   }
