@@ -194,25 +194,6 @@
   register: _wordpress_site_compose
   no_log: true
 
-- name: Check for legacy wordpress compose file
-  stat:
-    path: "{{ wordpress_home }}/docker-compose.yml"
-  register: _wordpress_legacy_compose
-
-- name: Stop legacy wordpress compose project
-  community.docker.docker_compose_v2:
-    project_src: "{{ wordpress_home }}"
-    state: absent
-  when: _wordpress_legacy_compose.stat.exists
-
-- name: Remove legacy wordpress compose files
-  file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - "{{ wordpress_home }}/docker-compose.yml"
-    - "{{ wordpress_home }}/Caddyfile"
-
 - name: Check wordpress proxy Caddyfile mount
   command: >-
     docker inspect -f {% raw %}'{{ range .Mounts }}{{ if eq .Destination "/etc/caddy/Caddyfile" }}{{ .Source }}{{ end }}{{ end }}'{% endraw %} wordpress_proxy
