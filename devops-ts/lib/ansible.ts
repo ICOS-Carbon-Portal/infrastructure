@@ -82,6 +82,7 @@ export { type Reg, register, type Result } from "./register.ts";
 export {
   concat,
   iff,
+  jinja,
   jinjaFor,
   jinjaLiteral,
   localVar,
@@ -90,7 +91,6 @@ export {
   pct,
   randomInt,
   RawTemplate,
-  rawTmpl,
   Template,
 } from "./template.ts";
 

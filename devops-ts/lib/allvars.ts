@@ -3,7 +3,7 @@
 // already in Globals/BuiltinVars). Ansible variable names form a single
 // namespace, so a role-defined var is the same variable everywhere; declaring
 // the names here lets an inventory or a different role reference one as a
-// checked `V.x` instead of a `rawTmpl("{{ x }}")` escape. Declared as
+// checked `V.x` instead of a `jinja\`{{ x }}\`` escape. Declared as
 // `unknown` so a hand-declared type elsewhere wins in intersections —
 // only the names matter (the V accessor maps every key to a Ref).
 export interface AllVars {

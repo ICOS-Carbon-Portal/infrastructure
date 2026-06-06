@@ -17,14 +17,7 @@
 //
 // Adoption is incremental and per-reference: convert the references whose names
 // the context knows; leave the dynamic ones as raw strings.
-import {
-  type RawTemplate,
-  rawTmpl,
-  type Template,
-  tmpl,
-  varProxy,
-  type VarRef,
-} from "./template.ts";
+import { type Template, tmpl, varProxy, type VarRef } from "./template.ts";
 import { Expr } from "./vars.ts";
 
 /** The accessor bundle a role context exposes, scoped to that role's vars `V`. */
@@ -38,7 +31,6 @@ export interface Context<V> {
     ...refs: Array<Template | string>
   ) => Template;
   /** Verbatim template escape for awkward cases (exact bytes). */
-  rawTmpl: (text: string) => RawTemplate;
   /** `when:` builder over a known var name: `isDef("foo")` -> "foo is defined". */
   isDef: (name: keyof V & string) => Expr;
   /** `when:` builder: `notVar("foo")` -> "not foo". */
@@ -61,5 +53,5 @@ export function context<V>(): Context<V> {
   const notVar = (name: keyof V & string): Expr =>
     new Expr(`not ${name}`, name);
 
-  return { V: Vproxy, tmpl, rawTmpl, isDef, notVar };
+  return { V: Vproxy, tmpl, isDef, notVar };
 }

@@ -1,11 +1,11 @@
 // Guard: no Jinja braces (`{{` / `{%`) may appear in an ordinary quoted string.
 //
-// Templated values must be structured — `V.x`, `expr("...")`, `tmpl`...``. The
+// Templated values must be structured — `V.x`, `tmpl`...``, `jinja`...``. The
 // only places braces are allowed in a string literal are the argument of
-// `rawTmpl("...")` (the tracked verbatim escape) and inside backtick template
-// literals (tmpl-tagged composites and multi-line config-file bodies). This
-// catches any hand-written or codemod-missed `{{` that slipped into a plain
-// string.
+// `jinjaLiteral("...")` (a literal-brace Jinja expression) and inside backtick
+// template literals (tmpl/jinja-tagged composites and multi-line config-file
+// bodies). This catches any hand-written or codemod-missed `{{` that slipped
+// into a plain string.
 //
 //   deno run --allow-read check-braces.ts
 const roots = ["roles", "playbooks", "data"].map((d) =>
@@ -42,9 +42,9 @@ function scan(file: string, src: string) {
       while (j < n && src[j] !== c) j += src[j] === "\\" ? 2 : 1;
       const body = src.slice(i + 1, j);
       if (body.includes("{{") || body.includes("{%")) {
-        // allowed only as the argument of rawTmpl(
+        // allowed only as the argument of jinjaLiteral(
         const before = src.slice(0, i).trimEnd();
-        if (!before.endsWith("rawTmpl(")) {
+        if (!before.endsWith("jinjaLiteral(")) {
           violations.push({ file, line: lineAt(i), text: `${c}${body}${c}` });
         }
       }
@@ -81,7 +81,7 @@ if (violations.length) {
     console.error(`  ${v.file}:${v.line}  ${v.text}`);
   }
   console.error(
-    '\nUse V.x / expr("...") / tmpl`...` for templates, or rawTmpl("...") for verbatim.',
+    '\nUse V.x / tmpl`...` / jinja`...` for templates, or jinjaLiteral("...") for literal braces.',
   );
   Deno.exit(1);
 }

@@ -2,12 +2,11 @@
 // and variable references — rather than a flat string that re-embeds `{{ }}`.
 //
 // Produced by:
-//   V.foo                      // a ref part         -> {{ foo }}
-//   expr("item.src")           // a ref part (escape) -> {{ item.src }}
-//   tmpl`${V.foo}/bar`         // ref + literal parts -> {{ foo }}/bar
-//   rawTmpl("{{nginxconfig}}") // a verbatim escape (exact bytes), for the few
-//                              // awkward cases (non-canonical spacing, {% %},
-//                              // Jinja escapes) that can't be cleanly structured
+//   V.foo                       // a ref part         -> {{ foo }}
+//   tmpl`${V.foo}/bar`          // ref + literal parts -> {{ foo }}/bar
+//   jinja`{% if ${V.foo} -%}`   // verbatim Jinja structure + CHECKED ${refs},
+//                               // for {% %} control-flow / whitespace-control
+//                               // that can't be cleanly structured otherwise
 //
 // The renderer emits any Template as a double-quoted scalar — quoting is decided
 // by the value's TYPE, never by scanning a string for `{{`.
@@ -238,10 +237,9 @@ export type VarRef<T> = [T] extends [object]
   : Ref;
 
 /**
- * A verbatim template escape: renders its exact text (incl. braces/spacing).
- * A distinct, greppable type for the awkward cases that can't be structured —
- * non-canonical spacing, `{% %}` statements, Jinja escapes. Audit with
- * `grep -r 'rawTmpl('`.
+ * A verbatim template fragment: renders its exact text (incl. braces/spacing).
+ * The structural backing for `jinja`` and `jinjaFor()`, which build it with
+ * checked `${ref}` interpolation; not constructed directly.
  */
 export class RawTemplate extends Template {
   constructor(text: string) {
@@ -281,9 +279,40 @@ export function iff(
   }]);
 }
 
-/** Verbatim template escape for awkward cases (see RawTemplate). */
-export function rawTmpl(text: string): RawTemplate {
-  return new RawTemplate(text);
+/** The bare Jinja text of an interpolated value: a ref renders as its expression
+ * (`V.x` -> `x`), a raw template verbatim, a string as-is. */
+function bareText(r: Template | string): string {
+  if (typeof r === "string") return r;
+  const p = r.parts;
+  if (p.length === 1 && p[0].kind === "ref") return p[0].jinja;
+  if (p.length === 1 && p[0].kind === "raw") return p[0].text;
+  return r.toText();
+}
+
+/**
+ * A verbatim Jinja fragment with CHECKED interpolation: literal parts (Jinja
+ * control syntax `{% %}`, whitespace-control `-`, delimiters) render exactly as
+ * written, while interpolated refs render BARE (their expression, no `{{ }}`
+ * wrapper) and are type-checked. Use for `{% if/for %}` control-flow and
+ * whitespace-controlled refs whose structure is inherently textual but whose
+ * variables should still be checked:
+ *
+ *   jinja`{% if ${V.lxd_vm_docker} -%}`        // {% if lxd_vm_docker -%}
+ *   jinja`{{ ${V._dbin_src} -}}`                // {{ _dbin_src -}}
+ *   jinja`{{ (${_fs.files.ref} | last).path }}` // {{ (_fs.files | last).path }}
+ *
+ * Every `${ref}` is a checked reference, so there is no opaque-string escape.
+ */
+export function jinja(
+  strings: TemplateStringsArray,
+  ...refs: Array<Template | string>
+): RawTemplate {
+  let out = "";
+  strings.forEach((s, i) => {
+    out += s;
+    if (i < refs.length) out += bareText(refs[i]);
+  });
+  return new RawTemplate(out);
 }
 
 /**
@@ -384,8 +413,7 @@ export function localVar<T>(name: string): VarRef<T> {
  * A Jinja expression yielding a string LITERAL: `jinjaLiteral("{{{{")` ->
  * `{{ '{{{{' }}`. Used to emit literal text that itself looks like Jinja
  * delimiters (e.g. a `template` module's `variable_start_string`), so it passes
- * through unambiguously rather than being interpreted. Replaces
- * `rawTmpl("{{ '{{{{' }}")`.
+ * through unambiguously rather than being interpreted.
  */
 export function jinjaLiteral(value: string): Template {
   return new Template([{ kind: "ref", jinja: `'${value}'` }]);
@@ -393,9 +421,9 @@ export function jinjaLiteral(value: string): Template {
 
 /**
  * A Jinja `{% for %}` loop rendered as a verbatim fragment. `body` receives a
- * typed reference to the loop variable; the iterable is a checked ref. Replaces
- * the `rawTmpl("{% for x in y %}")` / `expr("x")` / `rawTmpl("{% endfor %}")`
- * trio with one construct whose iterable and loop-var references are checked.
+ * typed reference to the loop variable; the iterable is a checked ref. One
+ * construct for the {% for %} / body / {% endfor %} trio whose iterable and
+ * loop-var references are checked.
  *
  *   jinjaFor<string>("module", V.caddy_modules, (m) => tmpl` --with ${m} `)
  *   // {% for module in caddy_modules %} --with {{ module }} {% endfor %}
@@ -420,8 +448,8 @@ export function jinjaFor<T>(
  *   tmpl`${V.nexus_home}/bbclient`     // {{ nexus_home }}/bbclient
  *
  * Tagged-only by design: a templated value is structured (literal parts + refs),
- * never a flat string with embedded `{{ }}`. For a dynamic ref use `expr(...)`;
- * for an awkward verbatim case use `rawTmpl(...)`.
+ * never a flat string with embedded `{{ }}`. For verbatim Jinja control-flow
+ * with checked refs use `jinja\`...\``.
  */
 export function tmpl(
   strings: TemplateStringsArray,

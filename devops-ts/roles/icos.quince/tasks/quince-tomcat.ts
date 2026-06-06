@@ -1,5 +1,7 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { jinja, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _fs = register("_fs");
 
 export default [
   {
@@ -28,14 +30,13 @@ export default [
       paths: "/opt",
       patterns: "apache-tomcat-*",
     },
-    register: "_fs",
+    register: _fs,
   },
   {
     name: "Extract the version-specific directory of tomcat",
     set_fact: {
-      quince_tomcat_dir: rawTmpl(
-        "{{ (_fs.files | sort(attribute='path') | last).path  }}",
-      ),
+      quince_tomcat_dir:
+        jinja`{{ (${_fs.files.ref} | sort(attribute='path') | last).path  }}`,
     },
   },
   {

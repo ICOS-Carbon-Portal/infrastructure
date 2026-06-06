@@ -98,6 +98,7 @@ export interface Result {
   tag: Field;
   files: Field;
   ip: Field;
+  devices: Field;
   addresses: { eth0: Field };
 }
 

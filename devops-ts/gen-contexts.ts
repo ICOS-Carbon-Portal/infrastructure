@@ -135,11 +135,11 @@ async function usedNames(roleName: string): Promise<Set<string>> {
 }
 
 // The helpers context() can provide, in canonical emit order.
-const HELPER_ORDER = ["V", "tmpl", "rawTmpl", "isDef", "notVar"];
+const HELPER_ORDER = ["V", "tmpl", "isDef", "notVar"];
 
 /**
  * Which _ctx helpers a role's task/handler files actually import from
- * "../_ctx.ts" (e.g. `V`, `tmpl`, `rawTmpl`). The emitted destructuring exports
+ * "../_ctx.ts" (e.g. `V`, `tmpl`, `isDef`). The emitted destructuring exports
  * only these, so an unused helper never lingers in a role's _ctx.
  */
 async function usedHelpers(roleName: string): Promise<Set<string>> {
@@ -273,7 +273,7 @@ const allVarsOut =
   `// already in Globals/BuiltinVars). Ansible variable names form a single\n` +
   `// namespace, so a role-defined var is the same variable everywhere; declaring\n` +
   `// the names here lets an inventory or a different role reference one as a\n` +
-  `// checked \`V.x\` instead of a \`rawTmpl("{{ x }}")\` escape. Declared as\n` +
+  `// checked \`V.x\` instead of a \`jinja\\\`{{ x }}\\\`\` escape. Declared as\n` +
   `// \`unknown\` so a hand-declared type elsewhere wins in intersections —\n` +
   `// only the names matter (the V accessor maps every key to a Ref).\n` +
   `export interface AllVars {\n${allVarLines.join("\n")}\n}\n`;

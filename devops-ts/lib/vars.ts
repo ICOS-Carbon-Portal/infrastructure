@@ -64,11 +64,11 @@ type KnownName = keyof AllKnown & string;
 export {
   concat,
   iff,
+  jinja,
   jinjaFor,
   lookup,
   type LookupPlugin,
   RawTemplate,
-  rawTmpl,
   type Ref,
   Template,
   type Tmpl,
