@@ -3,7 +3,7 @@
 // and for jinja``, the checked-interpolation verbatim fragment.
 import { jinja, jinjaFor, tmpl } from "./template.ts";
 import { register } from "./register.ts";
-import { V } from "./vars.ts";
+import { V } from "./test-v.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
   if (actual !== expected) {

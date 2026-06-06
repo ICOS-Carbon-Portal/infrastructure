@@ -1,6 +1,6 @@
 // Tests for the Template filter helpers added to drop expr() escapes
 // for | join, | fileglob, and | map(attribute=...).
-import { V } from "./vars.ts";
+import { V } from "./test-v.ts";
 import { register } from "./register.ts";
 
 function eq(actual: string, expected: string, msg: string): void {

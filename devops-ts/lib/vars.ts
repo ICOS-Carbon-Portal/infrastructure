@@ -34,7 +34,7 @@ export interface Vars {
 import type { Scalar } from "./ansible.ts";
 import type { BuiltinVars } from "./builtins.ts";
 import type { Globals } from "./globals.ts";
-import type { AllVars } from "./allvars.ts";
+import type { SharedVars } from "./sharedvars.ts";
 import type { ParamVars } from "./paramvars.ts";
 import type { VaultVars } from "./vaultvars.ts";
 import type { VarShapes } from "./shapes.ts";
@@ -42,8 +42,8 @@ import { type Ref, Template, varProxy, type VarRef } from "./template.ts";
 
 // The full set of statically-known variables a playbook may reference: the
 // hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins,
-// every role-defined var (lib/allvars.ts), role caller-params / play vars
-// (lib/paramvars.ts), vault-defined names (lib/vaultvars.ts), and object
+// the cross-role shared surface (lib/sharedvars.ts), role caller-params / play
+// vars (lib/paramvars.ts), vault-defined names (lib/vaultvars.ts), and object
 // shapes (lib/shapes.ts). Ansible variable names are a single flat namespace,
 // so a name defined anywhere is the same variable everywhere — referencing it
 // through a checked `V.x` (not `expr("x")`) catches typos.
@@ -54,7 +54,7 @@ type AllKnown =
   & Vars
   & Globals
   & BuiltinVars
-  & AllVars
+  & SharedVars
   & ParamVars
   & VaultVars
   & VarShapes;
@@ -96,13 +96,15 @@ export const V: { readonly [K in KnownName]: VarRef<AllKnown[K]> } = new Proxy(
  * The host is a variable ref (rendered as `hostvars[<name>]`) or a literal
  * hostname (rendered as `hostvars.<host>`); the field is any known variable.
  */
-export function hostvar(
-  host: Ref | string,
-): { readonly [K in KnownName]: Ref } {
+// `hostvars[host].x` reaches ANOTHER host's variables — a different host runs
+// different roles, so the name space is genuinely open. Typed loosely (any name
+// -> Ref) rather than over the local `KnownName`, which only covers this host's
+// shared/registry vars.
+export function hostvar(host: Ref | string): Record<string, Ref> {
   const path = typeof host === "string"
     ? `hostvars.${host}`
     : `hostvars[${host.parts[0].kind === "ref" ? host.parts[0].jinja : host}]`;
-  return varProxy(path) as unknown as { readonly [K in KnownName]: Ref };
+  return varProxy(path) as unknown as Record<string, Ref>;
 }
 
 // --- when: expression builder (bare name, no `{{ }}` wrapper) ----------------

@@ -1,5 +1,5 @@
-import { hostvar, register, type TaskFile, V } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { hostvar, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _home_dir = register("_home_dir");
 const _ssh_dir = register("_ssh_dir");

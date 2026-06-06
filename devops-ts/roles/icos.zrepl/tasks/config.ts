@@ -1,4 +1,5 @@
-import { isDefined, register, type TaskFile, V } from "../../../lib/ansible.ts";
+import { isDefined, register, type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 

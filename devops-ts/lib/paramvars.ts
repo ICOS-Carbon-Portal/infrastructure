@@ -7,16 +7,9 @@
 // Names only: the V accessor maps every key to a Ref, so the uniform
 // `string` type is never consulted.
 //
-// The check at the bottom forces every parameter declared in a lib/roles.ts
-// schema to appear in some registry, so a role param is always referenceable
-// as a checked `V.x` from the role's own task files.
-import type { Roles } from "./roles.ts";
-import type { Vars } from "./vars.ts";
-import type { Globals } from "./globals.ts";
-import type { BuiltinVars } from "./builtins.ts";
-import type { AllVars } from "./allvars.ts";
-import type { VaultVars } from "./vaultvars.ts";
-import type { VarShapes } from "./shapes.ts";
+// The generated lib/role-coverage.ts forces every parameter declared in a
+// lib/roles.ts schema to be reachable as `V.x` from that role — covered by the
+// role's own `Vars` (its _ctx) or a shared registry (this one, Globals, …).
 
 export interface ParamVars {
   _builtin_version: string;
@@ -111,6 +104,7 @@ export interface ParamVars {
   jupyter_domain: string;
   jupyter_domains: string;
   jupyter_ip: string;
+  jupyter_port: string;
   jupyter_user_volumes: string;
   kc_hostname: string;
   keys: string;
@@ -223,24 +217,7 @@ export interface ParamVars {
   zrepl_config: string;
 }
 
-// --- completeness check ------------------------------------------------------
-// Every name declared in a Roles schema (lib/roles.ts), excluding the Common
-// envelope keys and index-signature maps, must be declared in a registry. An
-// error on `_ok` below means a roles.ts param was added without registering
-// its name — add it to ParamVars above.
-type RoleParamNames = {
-  [R in keyof Roles]: string extends keyof Roles[R] ? never
-    : Exclude<keyof Roles[R] & string, "name" | "vars">;
-}[keyof Roles];
-type MissingRoleParams = Exclude<
-  RoleParamNames,
-  | keyof ParamVars
-  | keyof Vars
-  | keyof Globals
-  | keyof BuiltinVars
-  | keyof AllVars
-  | keyof VaultVars
-  | keyof VarShapes
->;
-type AssertNever<T extends never> = T;
-export type _ParamVarsComplete = AssertNever<MissingRoleParams>;
+// The role-parameter completeness check moved to the generated
+// lib/role-coverage.ts: each role's `roles.ts` parameters must be covered by
+// that role's OWN `Vars` (its _ctx) or a shared registry — a per-role check
+// (no flat all-role-vars union needed).

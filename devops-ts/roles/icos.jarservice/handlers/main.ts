@@ -1,5 +1,5 @@
-import { type TaskFile, V } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // Variable is not always expanded - https://github.com/ansible/ansible/issues/15505

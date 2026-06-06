@@ -1,4 +1,5 @@
-import { type TaskFile, truthy, V } from "../../../lib/ansible.ts";
+import { type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   {

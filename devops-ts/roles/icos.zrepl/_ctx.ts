@@ -3,11 +3,13 @@
 // Per-role variable context: 1 own variables, widened with
 // only the registries this role's task/handler files reference.
 import { context } from "../../lib/context.ts";
+import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   zrepl_port: number;
 }
 
-export const { tmpl } = context<
-  Vars
+export const { V, tmpl } = context<
+  BuiltinVars & ParamVars
 >();

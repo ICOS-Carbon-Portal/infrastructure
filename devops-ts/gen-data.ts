@@ -33,9 +33,9 @@ const ifaceNames = (path: string) =>
   );
 const GLOBALS = ifaceNames("./lib/globals.ts");
 const BUILTINS = ifaceNames("./lib/builtins.ts");
-// Role-defined variable names (system-wide flat namespace; see lib/allvars.ts).
-// A data file referencing one becomes a checked `V.x`, not an `expr("x")`.
-const ALLVARS = ifaceNames("./lib/allvars.ts");
+// The cross-role shared surface (lib/sharedvars.ts) — names referenced outside
+// their defining role. Own-role refs resolve via the role's _ctx Vars instead.
+const SHAREDVARS = ifaceNames("./lib/sharedvars.ts");
 // Role caller-params / play vars and vault-defined names (hand-curated
 // registries; see lib/paramvars.ts and lib/vaultvars.ts).
 const PARAMVARS = ifaceNames("./lib/paramvars.ts");
@@ -241,11 +241,19 @@ for (const rel of await dataYmls()) {
       !Array.isArray(doc)
     ? Object.keys(doc as Record<string, unknown>).filter(isBareIdent)
     : [];
+  // The role this data file belongs to (if any) and its whole own-var set (from
+  // _ctx `Vars`) — a role data file may reference a sibling var from another of
+  // the role's defaults/vars files. Cross-role refs resolve via SharedVars.
+  const dataRole = rel.match(/^roles\/([^/]+)\//)?.[1];
+  const roleOwn = (dataRole ? roleVarsKeys(dataRole) : null) ?? new Set<string>();
+  // A `{{ x }}` is a recognized var (→ checked `V.x`) if it is this file's own
+  // key, one of the role's own vars, a shared cross-role var, or in a registry.
   const known = new Set([
     ...ownKeys,
+    ...roleOwn,
+    ...SHAREDVARS,
     ...GLOBALS,
     ...BUILTINS,
-    ...ALLVARS,
     ...PARAMVARS,
     ...VAULTVARS,
     ...SHAPES,
@@ -253,12 +261,6 @@ for (const rel of await dataYmls()) {
   // Self excludes names already in Globals/BuiltinVars (avoid intersection
   // collapsing to `never`); they remain reachable via the widening.
   const selfKeys = ownKeys.filter((k) => !GLOBALS.has(k) && !BUILTINS.has(k));
-  // The "self" var set for V.x resolution is the WHOLE role's vars (from its
-  // _ctx `Vars`), not just this file's keys — a role data file may reference a
-  // sibling var defined in another of the role's defaults/vars files. Only refs
-  // outside this set are cross-role and resolve via SharedVars.
-  const dataRole = rel.match(/^roles\/([^/]+)\//)?.[1];
-  const roleOwn = (dataRole ? roleVarsKeys(dataRole) : null) ?? new Set<string>();
   const selfVarSet = new Set<string>([...selfKeys, ...roleOwn]);
   // Reserved keys this file RESTATES (a global/builtin set in a role's
   // defaults) — typed name-only via `Restated<Globals|BuiltinVars, ...>`.
@@ -545,9 +547,9 @@ for (const rel of await dataYmls()) {
       else if (BUILTINS.has(n)) needs.BuiltinVars = true;
       else if (PARAMVARS.has(n)) needs.ParamVars = true;
       else if (VAULTVARS.has(n)) needs.VaultVars = true;
-      // A cross-role ref (in AllVars, not own/other-registry) resolves through
+      // A cross-role ref (a role var, not own/other-registry) resolves through
       // the small SharedVars registry (gen-contexts collects every such name).
-      else if (ALLVARS.has(n)) needs.SharedVars = true;
+      else if (SHAREDVARS.has(n)) needs.SharedVars = true;
     }
     needs.Self ||= usedNames.size === 0; // floor: context<Self>
     // A restated global/builtin (`Restated<Globals, ...>` in the satisfies type)

@@ -6,17 +6,18 @@ import type { Tmpl, VarValue } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
 
 export interface Vars {
   jupyter_home: string;
   jupyter_hub_config: Record<string, VarValue>;
   jupyter_hub_config_defaults: Record<string, VarValue>;
   jupyter_jusers_enable: boolean;
-  jupyter_port: number;
+  jupyter_port: unknown;
   jusers_home: string;
   jusers_venv: Tmpl;
 }
 
 export const { V, tmpl } = context<
-  Vars & BuiltinVars & ParamVars
+  Vars & BuiltinVars & ParamVars & VaultVars
 >();

@@ -1,4 +1,5 @@
-import { type TaskFile, V } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 // If we've been running xcaddy before this then we might have installed our
 // overrides - see xcaddy.yml for details.

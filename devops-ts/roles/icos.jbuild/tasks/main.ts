@@ -1,4 +1,5 @@
-import { type TaskFile, V } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible.ts";
+import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "jbuild.yml", tags: "jbuild_jbuild" },

@@ -1,5 +1,5 @@
-import { eq, type TaskFile, truthy, V } from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { eq, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {

@@ -1,6 +1,6 @@
 // Hand-curated OBJECT SHAPES for variables whose fields the playbooks access
 // (`wg_hub_config.name`, `jbuild_registry.url`, ...). The generated registries
-// (lib/allvars.ts, per-role _ctx Vars) declare every name as `unknown`, so a
+// (per-role _ctx Vars, sharedvars.ts) declare names as `unknown`, so a
 // shape declared here wins in the context intersection (`unknown & T = T`) and
 // `V.x.y` becomes a checked, nested reference (see VarRef in lib/template.ts).
 //

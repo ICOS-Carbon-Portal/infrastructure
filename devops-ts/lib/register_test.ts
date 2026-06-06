@@ -8,7 +8,7 @@
 // `const`, so an unregistered name (the `_r` bug in icos.nextcloud/icos.zrepl)
 // becomes a "Cannot find name" compile error instead of a silent no-op.
 import { register } from "./register.ts";
-import { V } from "./vars.ts";
+import { V } from "./test-v.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
   if (actual !== expected) {

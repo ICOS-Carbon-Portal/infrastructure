@@ -7,7 +7,7 @@ import {
   pct,
   randomInt,
 } from "./template.ts";
-import { V } from "./vars.ts";
+import { V } from "./test-v.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
   if (actual !== expected) {

@@ -17,7 +17,7 @@ import {
   or,
   truthy,
 } from "./vars.ts";
-import { V } from "./vars.ts";
+import { V } from "./test-v.ts";
 import { register } from "./register.ts";
 
 function eqs(actual: unknown, expected: string, msg: string): void {
@@ -46,12 +46,12 @@ Deno.test("isDefined family: name string is bare; distinct undefined renderings"
     "isDefined name",
   );
   eqs(
-    isNotDefined("nebula_version"),
+    isNotDefined(V.nebula_version),
     "nebula_version is not defined",
     "isNotDefined",
   );
   eqs(
-    isUndefined("podman_docker"),
+    isUndefined(V.podman_docker),
     "podman_docker is undefined",
     "isUndefined",
   );

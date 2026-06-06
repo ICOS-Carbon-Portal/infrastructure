@@ -1,10 +1,5 @@
-import {
-  isNotDefined,
-  register,
-  type TaskFile,
-  V,
-} from "../../../lib/ansible.ts";
-import { tmpl } from "../_ctx.ts";
+import { isNotDefined, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 

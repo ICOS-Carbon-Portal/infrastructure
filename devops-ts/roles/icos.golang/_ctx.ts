@@ -5,6 +5,7 @@
 import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   golang_apt_version_ok: Tmpl;
@@ -17,5 +18,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, notVar } = context<
-  Vars & BuiltinVars
+  Vars & BuiltinVars & ParamVars
 >();

@@ -4,11 +4,12 @@
 // only the registries this role's task/handler files reference.
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   docker_periodic_cleanup: boolean;
 }
 
 export const { V, tmpl } = context<
-  Vars & BuiltinVars
+  Vars & BuiltinVars & ParamVars
 >();

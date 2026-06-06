@@ -1,7 +1,8 @@
 // Tests for the iff() ternary combinator: it must render byte-identically to the
 // hand-written `expr("'a' if cond else 'b'")` strings it replaces.
 import { iff } from "./template.ts";
-import { and, eq as eqExpr, isIn, or, truthy, V } from "./vars.ts";
+import { and, eq as eqExpr, isIn, or, truthy } from "./vars.ts";
+import { V } from "./test-v.ts";
 import { register } from "./register.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
