@@ -2,12 +2,13 @@
 // ../../../devops/roles/icos.pve_server/{defaults,vars}/*.yml
 // Per-role variable context: 2 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  pve_dnat_bridge: unknown;
-  pve_dnat_leases: unknown;
+  pve_dnat_bridge: string;
+  pve_dnat_leases: Tmpl;
 }
 
 export const { V } = context<

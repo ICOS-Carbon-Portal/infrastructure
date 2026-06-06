@@ -2,30 +2,31 @@
 // ../../../devops/roles/icos.utils/{defaults,vars}/*.yml
 // Per-role variable context: 20 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  btop_home: unknown;
-  btop_url_map: unknown;
-  btop_version: unknown;
-  fd_architecture: unknown;
-  fd_url_map: unknown;
-  fd_version: unknown;
-  lazygit_architecture: unknown;
-  lazygit_upgrade: unknown;
-  lazygit_url_map: unknown;
-  lazygit_version: unknown;
-  ncdu_arch_map: unknown;
-  ncdu_url: unknown;
-  ncdu_version: unknown;
-  ripgrep_url_map: unknown;
-  ripgrep_version: unknown;
-  trippy_url_map: unknown;
-  trippy_version: unknown;
-  watchexec_architecture: unknown;
-  watchexec_url_map: unknown;
-  watchexec_version: unknown;
+  btop_home: string;
+  btop_url_map: Record<string, Tmpl>;
+  btop_version: Tmpl;
+  fd_architecture: Tmpl;
+  fd_url_map: Record<string, Tmpl>;
+  fd_version: Tmpl;
+  lazygit_architecture: Tmpl;
+  lazygit_upgrade: Tmpl;
+  lazygit_url_map: Record<string, Tmpl>;
+  lazygit_version: Tmpl;
+  ncdu_arch_map: Record<string, string>;
+  ncdu_url: Tmpl;
+  ncdu_version: number;
+  ripgrep_url_map: Record<string, Tmpl>;
+  ripgrep_version: Tmpl;
+  trippy_url_map: Record<string, Tmpl>;
+  trippy_version: Tmpl;
+  watchexec_architecture: Tmpl;
+  watchexec_url_map: Record<string, Tmpl>;
+  watchexec_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

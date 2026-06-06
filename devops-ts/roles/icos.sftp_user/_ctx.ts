@@ -2,19 +2,20 @@
 // ../../../devops/roles/icos.sftp_user/{defaults,vars}/*.yml
 // Per-role variable context: 7 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 import type { VaultVars } from "../../lib/vaultvars.ts";
 
 export interface Vars {
-  _sftp_create_home: unknown;
-  _sftp_parent_dir: unknown;
-  sftp_user_group: unknown;
-  sftp_user_hostdesc: unknown;
-  sftp_user_owner: unknown;
-  sftp_user_password: unknown;
-  sftp_user_pubkey: unknown;
+  _sftp_create_home: Tmpl;
+  _sftp_parent_dir: Tmpl;
+  sftp_user_group: Tmpl;
+  sftp_user_hostdesc: Tmpl;
+  sftp_user_owner: Tmpl;
+  sftp_user_password: null;
+  sftp_user_pubkey: null;
 }
 
 export const { V, tmpl } = context<

@@ -2,21 +2,22 @@
 // ../../../devops/roles/icos.nginxforward/{defaults,vars}/*.yml
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  nginxforward_cert_conf: unknown;
-  nginxforward_cert_path: unknown;
-  nginxforward_enable: unknown;
-  nginxforward_file: unknown;
-  nginxforward_host: unknown;
-  nginxforward_key_path: unknown;
-  nginxforward_path_available: unknown;
-  nginxforward_path_enabled: unknown;
-  nginxforward_site_path: unknown;
-  nginxforward_user_file: unknown;
+  nginxforward_cert_conf: Tmpl;
+  nginxforward_cert_path: Tmpl;
+  nginxforward_enable: boolean;
+  nginxforward_file: string;
+  nginxforward_host: string;
+  nginxforward_key_path: Tmpl;
+  nginxforward_path_available: Tmpl;
+  nginxforward_path_enabled: Tmpl;
+  nginxforward_site_path: Tmpl;
+  nginxforward_user_file: Tmpl;
 }
 
 export const { V, tmpl } = context<

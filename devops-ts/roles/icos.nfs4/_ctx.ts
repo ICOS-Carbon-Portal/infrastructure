@@ -6,8 +6,8 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  nfs4_host: unknown;
-  nfs4_interface: unknown;
+  nfs4_host: null;
+  nfs4_interface: null;
 }
 
 export const { V, tmpl } = context<

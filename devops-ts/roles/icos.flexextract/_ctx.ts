@@ -2,17 +2,18 @@
 // ../../../devops/roles/icos.flexextract/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  flexextract_bin_dir: unknown;
-  flexextract_download_cont: unknown;
-  flexextract_download_host: unknown;
-  flexextract_home: unknown;
-  flexextract_tag: unknown;
-  flexextract_user: unknown;
+  flexextract_bin_dir: Tmpl;
+  flexextract_download_cont: string;
+  flexextract_download_host: Tmpl;
+  flexextract_home: string;
+  flexextract_tag: string;
+  flexextract_user: string;
 }
 
 export const { V, tmpl } = context<

@@ -6,7 +6,7 @@ import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  length: unknown;
+  length: number;
 }
 
 export const { V, tmpl } = context<

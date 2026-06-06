@@ -2,14 +2,15 @@
 // ../../../devops/roles/icos.nginxauth/{defaults,vars}/*.yml
 // Per-role variable context: 3 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  nginxauth_conf: unknown;
-  nginxauth_file: unknown;
-  nginxauth_title: unknown;
+  nginxauth_conf: Tmpl;
+  nginxauth_file: Tmpl;
+  nginxauth_title: string;
 }
 
 export const { V, tmpl } = context<

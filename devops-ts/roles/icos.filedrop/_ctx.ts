@@ -7,7 +7,7 @@ import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  filedrop_port: unknown;
+  filedrop_port: number;
 }
 
 export const { V, tmpl } = context<

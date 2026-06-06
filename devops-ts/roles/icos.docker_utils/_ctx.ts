@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.docker_utils/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  dive_architecture: unknown;
-  dive_url_map: unknown;
-  dive_version: unknown;
-  lazydocker_architecture: unknown;
-  lazydocker_url_map: unknown;
-  lazydocker_version: unknown;
+  dive_architecture: Tmpl;
+  dive_url_map: Record<string, Tmpl>;
+  dive_version: Tmpl;
+  lazydocker_architecture: Tmpl;
+  lazydocker_url_map: Record<string, Tmpl>;
+  lazydocker_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

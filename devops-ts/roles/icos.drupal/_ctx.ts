@@ -2,28 +2,29 @@
 // ../../../devops/roles/icos.drupal/{defaults,vars}/*.yml
 // Per-role variable context: 17 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  certbot_conf_name: unknown;
-  certbot_domains: unknown;
-  database_name: unknown;
-  database_user: unknown;
-  domain: unknown;
-  drupal_docker_port: unknown;
-  drupal_home: unknown;
+  certbot_conf_name: Tmpl;
+  certbot_domains: Tmpl;
+  database_name: string;
+  database_user: string;
+  domain: string;
+  drupal_docker_port: number;
+  drupal_home: string;
   drupal_modules: unknown;
-  drupal_version: unknown;
+  drupal_version: number;
   drupal_websites: unknown;
-  mysql_docker_port: unknown;
-  nginx_conf_name: unknown;
-  project_dir: unknown;
-  robots_txt: unknown;
+  mysql_docker_port: number;
+  nginx_conf_name: string;
+  project_dir: Tmpl;
+  robots_txt: string;
   ssl_domains: unknown;
-  trusted_host: unknown;
-  update: unknown;
+  trusted_host: string;
+  update: boolean;
 }
 
 export const { V, tmpl, isDef } = context<

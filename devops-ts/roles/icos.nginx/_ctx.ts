@@ -6,11 +6,11 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 
 export interface Vars {
-  nginx_certbot_bin: unknown;
-  nginx_metrics_addr: unknown;
-  nginx_metrics_enable: unknown;
-  nginx_metrics_url: unknown;
-  nginx_user: unknown;
+  nginx_certbot_bin: string;
+  nginx_metrics_addr: string;
+  nginx_metrics_enable: boolean;
+  nginx_metrics_url: string;
+  nginx_user: string;
 }
 
 export const { V, tmpl, isDef } = context<

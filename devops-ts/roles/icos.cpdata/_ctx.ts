@@ -2,28 +2,29 @@
 // ../../../devops/roles/icos.cpdata/{defaults,vars}/*.yml
 // Per-role variable context: 17 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  cpdata_bind_addr: unknown;
-  cpdata_cpuser_secret_salt: unknown;
-  cpdata_dlreporter_pass: unknown;
-  cpdata_etcfacade_secret: unknown;
-  cpdata_home: unknown;
-  cpdata_host: unknown;
-  cpdata_irods_pass: unknown;
-  cpdata_jre_package: unknown;
-  cpdata_meta_addr: unknown;
-  cpdata_meta_port: unknown;
+  cpdata_bind_addr: Tmpl;
+  cpdata_cpuser_secret_salt: Tmpl;
+  cpdata_dlreporter_pass: Tmpl;
+  cpdata_etcfacade_secret: Tmpl;
+  cpdata_home: string;
+  cpdata_host: Tmpl;
+  cpdata_irods_pass: Tmpl;
+  cpdata_jre_package: string;
+  cpdata_meta_addr: string;
+  cpdata_meta_port: number;
   cpdata_netcdf_folder: unknown;
-  cpdata_pgreslog_admin_pass: unknown;
-  cpdata_pgreslog_reader_pass: unknown;
-  cpdata_pgreslog_writer_pass: unknown;
-  cpdata_port: unknown;
-  cpdata_service: unknown;
-  cpdata_user: unknown;
+  cpdata_pgreslog_admin_pass: Tmpl;
+  cpdata_pgreslog_reader_pass: Tmpl;
+  cpdata_pgreslog_writer_pass: Tmpl;
+  cpdata_port: number;
+  cpdata_service: string;
+  cpdata_user: string;
 }
 
 export const { V, tmpl } = context<

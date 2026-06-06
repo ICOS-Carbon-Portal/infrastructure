@@ -2,19 +2,20 @@
 // ../../../devops/roles/icos.wg_hub/{defaults,vars}/*.yml
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  wg_hub_addr: unknown;
-  wg_hub_allow_all: unknown;
-  wg_hub_intf: unknown;
-  wg_hub_ishub: unknown;
-  wg_hub_key: unknown;
-  wg_hub_key_dir: unknown;
-  wg_hub_peer: unknown;
-  wg_hub_port: unknown;
-  wg_hub_reresolve: unknown;
+  wg_hub_addr: Tmpl;
+  wg_hub_allow_all: Tmpl;
+  wg_hub_intf: Tmpl;
+  wg_hub_ishub: Tmpl;
+  wg_hub_key: Tmpl;
+  wg_hub_key_dir: string;
+  wg_hub_peer: Tmpl;
+  wg_hub_port: Tmpl;
+  wg_hub_reresolve: Tmpl;
   wg_hub_self: unknown;
 }
 

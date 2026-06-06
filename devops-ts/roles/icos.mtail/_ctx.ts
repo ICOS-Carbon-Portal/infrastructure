@@ -6,9 +6,9 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  mtail_host: unknown;
+  mtail_host: string;
   mtail_logs: unknown;
-  mtail_port: unknown;
+  mtail_port: number;
   mtail_programs: unknown;
 }
 

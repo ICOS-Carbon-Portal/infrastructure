@@ -2,12 +2,13 @@
 // ../../../devops/roles/icos.zfsdocker/{defaults,vars}/*.yml
 // Per-role variable context: 2 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  zfsdocker_size: unknown;
-  zfsdocker_zvol: unknown;
+  zfsdocker_size: string;
+  zfsdocker_zvol: Tmpl;
 }
 
 export const { V, tmpl } = context<

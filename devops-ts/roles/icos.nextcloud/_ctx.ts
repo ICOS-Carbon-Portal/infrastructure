@@ -2,28 +2,29 @@
 // ../../../devops/roles/icos.nextcloud/{defaults,vars}/*.yml
 // Per-role variable context: 18 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   certbot_domains: unknown;
-  certbot_name: unknown;
-  nextcloud_certbot_enable: unknown;
-  nextcloud_db_host: unknown;
-  nextcloud_db_name: unknown;
-  nextcloud_db_user: unknown;
-  nextcloud_domain: unknown;
-  nextcloud_exporter_conf_host: unknown;
-  nextcloud_exporter_port: unknown;
-  nextcloud_exporter_user: unknown;
-  nextcloud_home: unknown;
-  nextcloud_nextcloud_version: unknown;
-  nextcloud_port: unknown;
-  nextcloud_postgres_version: unknown;
-  nextcloud_user: unknown;
-  nextcloud_volume_nextcloud: unknown;
-  nextcloud_volume_postgres: unknown;
+  certbot_name: string;
+  nextcloud_certbot_enable: boolean;
+  nextcloud_db_host: string;
+  nextcloud_db_name: string;
+  nextcloud_db_user: string;
+  nextcloud_domain: string;
+  nextcloud_exporter_conf_host: Tmpl;
+  nextcloud_exporter_port: number;
+  nextcloud_exporter_user: string;
+  nextcloud_home: string;
+  nextcloud_nextcloud_version: string;
+  nextcloud_port: number;
+  nextcloud_postgres_version: number;
+  nextcloud_user: string;
+  nextcloud_volume_nextcloud: Tmpl;
+  nextcloud_volume_postgres: Tmpl;
   nextcloud_volumes: unknown;
 }
 

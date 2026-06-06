@@ -2,20 +2,21 @@
 // ../../../devops/roles/icos.postgis/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  postgis_db_name: unknown;
-  postgis_db_pass: unknown;
-  postgis_db_user: unknown;
+  postgis_db_name: string;
+  postgis_db_pass: Tmpl;
+  postgis_db_user: string;
   postgis_db_users: unknown;
-  postgis_home: unknown;
-  postgis_package: unknown;
-  postgis_postgres_version: unknown;
-  postgresql_postgis_enable: unknown;
+  postgis_home: string;
+  postgis_package: string;
+  postgis_postgres_version: number;
+  postgresql_postgis_enable: boolean;
 }
 
 export const { V, tmpl } = context<

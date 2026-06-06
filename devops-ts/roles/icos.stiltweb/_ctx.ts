@@ -2,21 +2,22 @@
 // ../../../devops/roles/icos.stiltweb/{defaults,vars}/*.yml
 // Per-role variable context: 9 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  stiltweb_akka_hostname: unknown;
-  stiltweb_akka_port: unknown;
-  stiltweb_bindir: unknown;
-  stiltweb_certbot_name: unknown;
-  stiltweb_home: unknown;
-  stiltweb_java: unknown;
-  stiltweb_jre_package: unknown;
-  stiltweb_nginxsite_name: unknown;
-  stiltweb_username: unknown;
+  stiltweb_akka_hostname: Tmpl;
+  stiltweb_akka_port: number;
+  stiltweb_bindir: Tmpl;
+  stiltweb_certbot_name: string;
+  stiltweb_home: Tmpl;
+  stiltweb_java: string;
+  stiltweb_jre_package: string;
+  stiltweb_nginxsite_name: string;
+  stiltweb_username: string;
 }
 
 export const { V, tmpl } = context<

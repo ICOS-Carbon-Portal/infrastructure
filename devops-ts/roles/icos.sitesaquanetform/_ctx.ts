@@ -6,10 +6,10 @@ import { context } from "../../lib/context.ts";
 import type { VaultVars } from "../../lib/vaultvars.ts";
 
 export interface Vars {
-  certbot_conf_name: unknown;
+  certbot_conf_name: string;
   certbot_domains: unknown;
-  nginx_conf_name: unknown;
-  project_dir: unknown;
+  nginx_conf_name: string;
+  project_dir: string;
 }
 
 export const { V, tmpl } = context<

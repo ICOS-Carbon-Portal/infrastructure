@@ -2,14 +2,15 @@
 // ../../../devops/roles/icos.python_util/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  python_util_bin_dir: unknown;
-  python_util_install_dir: unknown;
-  python_util_install_prefix: unknown;
-  python_util_python_executable: unknown;
+  python_util_bin_dir: string;
+  python_util_install_dir: Tmpl;
+  python_util_install_prefix: string;
+  python_util_python_executable: string;
 }
 
 export const { V } = context<

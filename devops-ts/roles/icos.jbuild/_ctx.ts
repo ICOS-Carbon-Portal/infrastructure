@@ -2,6 +2,7 @@
 // ../../../devops/roles/icos.jbuild/{defaults,vars}/*.yml
 // Per-role variable context: 9 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
@@ -9,15 +10,15 @@ import type { ParamVars } from "../../lib/paramvars.ts";
 import type { VarShapes } from "../../lib/shapes.ts";
 
 export interface Vars {
-  jbuild_edctl_host_name: unknown;
-  jbuild_edctl_host_port: unknown;
-  jbuild_jyctl_host_name: unknown;
-  jbuild_jyctl_host_port: unknown;
+  jbuild_edctl_host_name: Tmpl;
+  jbuild_edctl_host_port: Tmpl;
+  jbuild_jyctl_host_name: Tmpl;
+  jbuild_jyctl_host_port: Tmpl;
   jbuild_registry: unknown;
-  jbuild_rrsync_bin: unknown;
-  jbuild_rsync_host_name: unknown;
-  jbuild_rsync_host_port: unknown;
-  jbuild_rsync_user: unknown;
+  jbuild_rrsync_bin: string;
+  jbuild_rsync_host_name: Tmpl;
+  jbuild_rsync_host_port: Tmpl;
+  jbuild_rsync_user: string;
 }
 
 export const { V, tmpl } = context<

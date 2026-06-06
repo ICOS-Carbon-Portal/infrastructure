@@ -6,7 +6,7 @@ import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  rsyncd_enable: unknown;
+  rsyncd_enable: boolean;
 }
 
 export const { V } = context<

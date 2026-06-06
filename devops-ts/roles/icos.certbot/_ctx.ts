@@ -2,21 +2,22 @@
 // ../../../devops/roles/icos.certbot/{defaults,vars}/*.yml
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  certbot_bin: unknown;
-  certbot_conf_path: unknown;
-  certbot_disabled: unknown;
-  certbot_email: unknown;
-  certbot_fake_certificate: unknown;
-  certbot_fake_cn: unknown;
-  certbot_fake_crt: unknown;
-  certbot_fake_key: unknown;
-  certbot_live_crt: unknown;
-  certbot_live_key: unknown;
+  certbot_bin: string;
+  certbot_conf_path: Tmpl;
+  certbot_disabled: boolean;
+  certbot_email: string;
+  certbot_fake_certificate: boolean;
+  certbot_fake_cn: Tmpl;
+  certbot_fake_crt: Tmpl;
+  certbot_fake_key: Tmpl;
+  certbot_live_crt: Tmpl;
+  certbot_live_key: Tmpl;
 }
 
 export const { V, tmpl, notVar } = context<

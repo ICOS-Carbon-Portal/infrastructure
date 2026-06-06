@@ -5,7 +5,7 @@
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  zrepl_port: unknown;
+  zrepl_port: number;
 }
 
 export const { tmpl } = context<

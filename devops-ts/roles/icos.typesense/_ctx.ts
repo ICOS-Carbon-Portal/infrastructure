@@ -6,10 +6,10 @@ import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  base_urls: unknown;
-  typesense_home: unknown;
-  typesense_port: unknown;
-  typesense_user: unknown;
+  base_urls: Record<string, string>;
+  typesense_home: string;
+  typesense_port: number;
+  typesense_user: string;
 }
 
 export const { V, tmpl } = context<

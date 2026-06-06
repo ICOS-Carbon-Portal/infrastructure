@@ -2,14 +2,15 @@
 // ../../../devops/roles/icos.stiltrun/{defaults,vars}/*.yml
 // Per-role variable context: 5 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  stiltrun_image_id: unknown;
-  stiltrun_image_name: unknown;
-  stiltrun_image_url: unknown;
-  stiltrun_input_dir: unknown;
-  stiltrun_user: unknown;
+  stiltrun_image_id: string;
+  stiltrun_image_name: string;
+  stiltrun_image_url: Tmpl;
+  stiltrun_input_dir: Tmpl;
+  stiltrun_user: string;
 }
 
 export const { V, tmpl } = context<

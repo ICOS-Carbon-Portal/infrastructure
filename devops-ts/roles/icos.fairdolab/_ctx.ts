@@ -5,8 +5,8 @@
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  fairdolab_docker_listen: unknown;
-  fairdolab_home: unknown;
+  fairdolab_docker_listen: string;
+  fairdolab_home: string;
 }
 
 export const { V } = context<

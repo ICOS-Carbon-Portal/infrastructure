@@ -2,13 +2,14 @@
 // ../../../devops/roles/icos.conmon/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  conmon_apt_version_ok: unknown;
-  conmon_local_version_ok: unknown;
-  conmon_url: unknown;
-  conmon_version_install: unknown;
+  conmon_apt_version_ok: Tmpl;
+  conmon_local_version_ok: Tmpl;
+  conmon_url: Tmpl;
+  conmon_version_install: string;
 }
 
 export const { V, tmpl, notVar } = context<

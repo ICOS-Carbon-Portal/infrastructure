@@ -2,13 +2,14 @@
 // ../../../devops/roles/icos.just/{defaults,vars}/*.yml
 // Per-role variable context: 3 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  just_upgrade: unknown;
-  just_url_map: unknown;
-  just_version: unknown;
+  just_upgrade: Tmpl;
+  just_url_map: Record<string, Tmpl>;
+  just_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

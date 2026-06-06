@@ -2,16 +2,17 @@
 // ../../../devops/roles/icos.dnsmasq/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  dnsmasq_config_dir: unknown;
-  dnsmasq_config_file: unknown;
-  dnsmasq_config_name: unknown;
-  dnsmasq_config_state: unknown;
-  dnsmasq_hosts: unknown;
-  dnsmasq_service_name: unknown;
+  dnsmasq_config_dir: Tmpl;
+  dnsmasq_config_file: Tmpl;
+  dnsmasq_config_name: string;
+  dnsmasq_config_state: string;
+  dnsmasq_hosts: null;
+  dnsmasq_service_name: Tmpl;
 }
 
 export const { V, tmpl } = context<

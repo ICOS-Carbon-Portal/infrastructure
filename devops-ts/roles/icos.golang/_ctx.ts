@@ -2,17 +2,18 @@
 // ../../../devops/roles/icos.golang/{defaults,vars}/*.yml
 // Per-role variable context: 7 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  golang_apt_version_ok: unknown;
-  golang_bin_dir: unknown;
-  golang_local_version_ok: unknown;
-  golang_min_version: unknown;
-  golang_opt_dir: unknown;
-  golang_url: unknown;
-  golang_version_install: unknown;
+  golang_apt_version_ok: Tmpl;
+  golang_bin_dir: Tmpl;
+  golang_local_version_ok: Tmpl;
+  golang_min_version: Tmpl;
+  golang_opt_dir: Tmpl;
+  golang_url: Tmpl;
+  golang_version_install: string;
 }
 
 export const { V, tmpl, notVar } = context<

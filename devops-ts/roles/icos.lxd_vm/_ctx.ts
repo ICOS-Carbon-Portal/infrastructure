@@ -2,36 +2,37 @@
 // ../../../devops/roles/icos.lxd_vm/{defaults,vars}/*.yml
 // Per-role variable context: 24 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl, VarValue } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  __base_config: unknown;
-  __docker_config: unknown;
-  __docker_device: unknown;
-  __lxd_vm_config: unknown;
-  __lxd_vm_devices: unknown;
-  __lxd_vm_profiles: unknown;
-  __root_device: unknown;
-  lxd_source: unknown;
-  lxd_vm_config: unknown;
-  lxd_vm_default_config: unknown;
-  lxd_vm_default_devices: unknown;
+  __base_config: Record<string, VarValue>;
+  __docker_config: Tmpl;
+  __docker_device: Tmpl;
+  __lxd_vm_config: Tmpl;
+  __lxd_vm_devices: Tmpl;
+  __lxd_vm_profiles: Tmpl;
+  __root_device: Record<string, Record<string, Tmpl>>;
+  lxd_source: Record<string, Tmpl>;
+  lxd_vm_config: Record<string, VarValue>;
+  lxd_vm_default_config: Tmpl;
+  lxd_vm_default_devices: Record<string, Record<string, Tmpl>>;
   lxd_vm_default_profiles: unknown;
-  lxd_vm_devices: unknown;
-  lxd_vm_docker: unknown;
-  lxd_vm_docker_size: unknown;
-  lxd_vm_forward: unknown;
-  lxd_vm_inventory_hostname: unknown;
-  lxd_vm_ip: unknown;
-  lxd_vm_port: unknown;
+  lxd_vm_devices: Record<string, VarValue>;
+  lxd_vm_docker: boolean;
+  lxd_vm_docker_size: string;
+  lxd_vm_forward: boolean;
+  lxd_vm_inventory_hostname: Tmpl;
+  lxd_vm_ip: Tmpl;
+  lxd_vm_port: Tmpl;
   lxd_vm_profiles: unknown;
-  lxd_vm_root_pool: unknown;
-  lxd_vm_root_size: unknown;
-  lxd_vm_ubuntu_version: unknown;
-  zfsdocker_name: unknown;
+  lxd_vm_root_pool: Tmpl;
+  lxd_vm_root_size: string;
+  lxd_vm_ubuntu_version: string;
+  zfsdocker_name: Tmpl;
 }
 
 export const { V, tmpl } = context<

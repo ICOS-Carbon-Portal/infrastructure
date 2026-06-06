@@ -2,23 +2,24 @@
 // ../../../devops/roles/icos.github_download_bin/{defaults,vars}/*.yml
 // Per-role variable context: 13 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  _dbin_name: unknown;
-  _dbin_path: unknown;
-  _dbin_src: unknown;
-  _dbin_unar: unknown;
-  _dbin_url: unknown;
-  dbin__down: unknown;
-  dbin__plat: unknown;
-  dbin__vers: unknown;
-  dbin_arch: unknown;
-  dbin_bin_dir: unknown;
-  dbin_default_url: unknown;
-  dbin_download_base: unknown;
-  dbin_download_dest: unknown;
+  _dbin_name: Tmpl;
+  _dbin_path: Tmpl;
+  _dbin_src: Tmpl;
+  _dbin_unar: Tmpl;
+  _dbin_url: Tmpl;
+  dbin__down: Tmpl;
+  dbin__plat: Tmpl;
+  dbin__vers: Tmpl;
+  dbin_arch: string;
+  dbin_bin_dir: string;
+  dbin_default_url: Tmpl;
+  dbin_download_base: string;
+  dbin_download_dest: Tmpl;
 }
 
 export const { V, tmpl } = context<

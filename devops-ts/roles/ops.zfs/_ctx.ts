@@ -2,14 +2,15 @@
 // ../../../devops/roles/ops.zfs/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  httm_architecture: unknown;
-  httm_upgrade: unknown;
-  httm_url_map: unknown;
-  httm_version: unknown;
+  httm_architecture: Tmpl;
+  httm_upgrade: Tmpl;
+  httm_url_map: Record<string, Tmpl>;
+  httm_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

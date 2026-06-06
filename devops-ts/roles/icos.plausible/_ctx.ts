@@ -2,19 +2,20 @@
 // ../../../devops/roles/icos.plausible/{defaults,vars}/*.yml
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  plausible_backup_enabled: unknown;
-  plausible_domain: unknown;
-  plausible_google_client_id: unknown;
-  plausible_google_client_secret: unknown;
-  plausible_home: unknown;
-  plausible_mailer_email: unknown;
-  plausible_port: unknown;
-  plausible_postgres_password: unknown;
-  plausible_secret: unknown;
-  plausible_totp_key: unknown;
+  plausible_backup_enabled: boolean;
+  plausible_domain: string;
+  plausible_google_client_id: Tmpl;
+  plausible_google_client_secret: Tmpl;
+  plausible_home: string;
+  plausible_mailer_email: Tmpl;
+  plausible_port: number;
+  plausible_postgres_password: Tmpl;
+  plausible_secret: Tmpl;
+  plausible_totp_key: Tmpl;
 }
 
 export const { V, tmpl } = context<

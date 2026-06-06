@@ -6,10 +6,10 @@ import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  eurocom_auth_file: unknown;
-  eurocom_data_home: unknown;
-  eurocom_domain: unknown;
-  eurocom_web_root: unknown;
+  eurocom_auth_file: string;
+  eurocom_data_home: string;
+  eurocom_domain: string;
+  eurocom_web_root: string;
 }
 
 export const { V } = context<

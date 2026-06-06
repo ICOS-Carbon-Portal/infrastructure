@@ -2,33 +2,34 @@
 // ../../../devops/roles/icos.nebula/{defaults,vars}/*.yml
 // Per-role variable context: 21 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  nebula_bin_dir: unknown;
-  nebula_ca_path: unknown;
-  nebula_cert_min_days: unknown;
-  nebula_domain: unknown;
-  nebula_etc_dir: unknown;
-  nebula_fw_enable: unknown;
-  nebula_hostname: unknown;
-  nebula_hosts_enable: unknown;
-  nebula_is_lighthouse: unknown;
-  nebula_resolve_enable: unknown;
-  nebula_resolve_servers: unknown;
-  nebula_resolve_test: unknown;
-  nebula_resolve_type: unknown;
-  nebula_ssh_key: unknown;
-  nebula_ssh_port: unknown;
-  nebula_stats_enable: unknown;
-  nebula_stats_port: unknown;
-  nebula_upgrade: unknown;
-  nebula_url_map: unknown;
-  nebula_user: unknown;
-  nebula_version: unknown;
+  nebula_bin_dir: string;
+  nebula_ca_path: Tmpl;
+  nebula_cert_min_days: number;
+  nebula_domain: string;
+  nebula_etc_dir: string;
+  nebula_fw_enable: boolean;
+  nebula_hostname: Tmpl;
+  nebula_hosts_enable: boolean;
+  nebula_is_lighthouse: boolean;
+  nebula_resolve_enable: boolean;
+  nebula_resolve_servers: null;
+  nebula_resolve_test: null;
+  nebula_resolve_type: string;
+  nebula_ssh_key: Tmpl;
+  nebula_ssh_port: number;
+  nebula_stats_enable: boolean;
+  nebula_stats_port: number;
+  nebula_upgrade: Tmpl;
+  nebula_url_map: Record<string, Tmpl>;
+  nebula_user: string;
+  nebula_version: Tmpl;
 }
 
 export const { V, tmpl, notVar } = context<

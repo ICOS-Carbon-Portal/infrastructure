@@ -2,19 +2,20 @@
 // ../../../devops/roles/icos.nginxsite/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  certbot_domains: unknown;
-  certbot_name: unknown;
-  nginxauth_name: unknown;
-  nginxauth_users: unknown;
-  nginxsite_path_available: unknown;
-  nginxsite_path_confd: unknown;
-  nginxsite_path_enable: unknown;
-  nginxsite_state: unknown;
+  certbot_domains: Tmpl;
+  certbot_name: Tmpl;
+  nginxauth_name: Tmpl;
+  nginxauth_users: Tmpl;
+  nginxsite_path_available: Tmpl;
+  nginxsite_path_confd: Tmpl;
+  nginxsite_path_enable: Tmpl;
+  nginxsite_state: string;
 }
 
 export const { V, tmpl } = context<

@@ -2,11 +2,12 @@
 // ../../../devops/roles/icos.pipx/{defaults,vars}/*.yml
 // Per-role variable context: 2 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  pipx_home: unknown;
-  pipx_upgrade: unknown;
+  pipx_home: string;
+  pipx_upgrade: Tmpl;
 }
 
 export const { V, tmpl } = context<

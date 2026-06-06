@@ -2,16 +2,17 @@
 // ../../../devops/roles/icos.restheart/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  restheart_bind_port: unknown;
-  restheart_home: unknown;
-  restheart_port: unknown;
-  restheart_user: unknown;
+  restheart_bind_port: number;
+  restheart_home: Tmpl;
+  restheart_port: Tmpl;
+  restheart_user: string;
 }
 
 export const { V, tmpl } = context<

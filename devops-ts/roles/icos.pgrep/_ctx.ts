@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.pgrep/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  pgrep_conninfo: unknown;
-  pgrep_home: unknown;
-  pgrep_image: unknown;
-  pgrep_metric_port: unknown;
+  pgrep_conninfo: Tmpl;
+  pgrep_home: Tmpl;
+  pgrep_image: string;
+  pgrep_metric_port: number;
 }
 
 export const { V, tmpl } = context<

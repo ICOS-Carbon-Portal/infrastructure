@@ -6,10 +6,10 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  dokku_data: unknown;
-  dokku_home: unknown;
-  dokku_http_port: unknown;
-  dokku_ssh_port: unknown;
+  dokku_data: string;
+  dokku_home: string;
+  dokku_http_port: number;
+  dokku_ssh_port: number;
 }
 
 export const { V, tmpl } = context<

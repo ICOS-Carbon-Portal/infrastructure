@@ -2,23 +2,24 @@
 // ../../../devops/roles/icos.cpmeta/{defaults,vars}/*.yml
 // Per-role variable context: 12 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  cpmeta_bind_addr: unknown;
-  cpmeta_db_name: unknown;
-  cpmeta_db_pass: unknown;
-  cpmeta_db_port: unknown;
-  cpmeta_db_user: unknown;
-  cpmeta_home: unknown;
-  cpmeta_host: unknown;
-  cpmeta_port: unknown;
-  cpmeta_readonly_mode: unknown;
-  cpmeta_servicename: unknown;
-  cpmeta_user: unknown;
-  doi_password_icos: unknown;
+  cpmeta_bind_addr: Tmpl;
+  cpmeta_db_name: string;
+  cpmeta_db_pass: Tmpl;
+  cpmeta_db_port: number;
+  cpmeta_db_user: string;
+  cpmeta_home: string;
+  cpmeta_host: Tmpl;
+  cpmeta_port: number;
+  cpmeta_readonly_mode: boolean;
+  cpmeta_servicename: string;
+  cpmeta_user: string;
+  doi_password_icos: Tmpl;
 }
 
 export const { V, tmpl } = context<

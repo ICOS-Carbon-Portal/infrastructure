@@ -2,18 +2,19 @@
 // ../../../devops/roles/icos.nexus/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  certbot_domains: unknown;
-  certbot_name: unknown;
+  certbot_domains: Tmpl;
+  certbot_name: string;
   nexus_domains: unknown;
-  nexus_home: unknown;
-  nexus_host_port: unknown;
-  nexus_version: unknown;
-  nginxsite_file: unknown;
-  nginxsite_name: unknown;
+  nexus_home: Tmpl;
+  nexus_host_port: number;
+  nexus_version: string;
+  nginxsite_file: string;
+  nginxsite_name: string;
 }
 
 export const { V, tmpl } = context<

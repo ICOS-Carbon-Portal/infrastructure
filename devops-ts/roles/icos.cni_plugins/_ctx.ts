@@ -2,11 +2,12 @@
 // ../../../devops/roles/icos.cni_plugins/{defaults,vars}/*.yml
 // Per-role variable context: 1 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  cni_plugin_url: unknown;
+  cni_plugin_url: Tmpl;
 }
 
 export const { V } = context<

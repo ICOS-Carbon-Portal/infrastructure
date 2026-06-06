@@ -7,9 +7,9 @@ import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
   certbot_domains: unknown;
-  certbot_name: unknown;
-  dataold_ext_port: unknown;
-  dataold_home: unknown;
+  certbot_name: string;
+  dataold_ext_port: number;
+  dataold_home: string;
 }
 
 export const { V, tmpl } = context<

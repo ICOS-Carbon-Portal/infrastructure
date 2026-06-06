@@ -2,14 +2,15 @@
 // ../../../devops/roles/icos.onlyoffice/{defaults,vars}/*.yml
 // Per-role variable context: 5 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  onlyoffice_build_dir: unknown;
+  onlyoffice_build_dir: Tmpl;
   onlyoffice_domain: unknown;
-  onlyoffice_home: unknown;
-  onlyoffice_port: unknown;
-  onlyoffice_version: unknown;
+  onlyoffice_home: string;
+  onlyoffice_port: number;
+  onlyoffice_version: string;
 }
 
 export const { V, tmpl } = context<

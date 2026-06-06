@@ -6,7 +6,7 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  docker_periodic_cleanup: unknown;
+  docker_periodic_cleanup: boolean;
 }
 
 export const { V, tmpl } = context<

@@ -2,20 +2,21 @@
 // ../../../devops/roles/icos.script_exporter/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  sexp_arch: unknown;
-  sexp_arch_map: unknown;
-  sexp_config_file: unknown;
-  sexp_home: unknown;
-  sexp_listen: unknown;
+  sexp_arch: Tmpl;
+  sexp_arch_map: Record<string, string>;
+  sexp_config_file: Tmpl;
+  sexp_home: string;
+  sexp_listen: string;
   sexp_scripts_enable: unknown;
-  sexp_scripts_repo: unknown;
-  sexp_scripts_venv: unknown;
+  sexp_scripts_repo: Tmpl;
+  sexp_scripts_venv: Tmpl;
 }
 
 export const { V, tmpl } = context<

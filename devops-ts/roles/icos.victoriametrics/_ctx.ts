@@ -2,20 +2,21 @@
 // ../../../devops/roles/icos.victoriametrics/{defaults,vars}/*.yml
 // Per-role variable context: 9 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  vm_graf_image: unknown;
-  vm_graf_plugins: unknown;
-  vm_graf_port: unknown;
-  vm_graf_url: unknown;
-  vm_home: unknown;
-  vm_promlens_port: unknown;
-  vm_scrape_conf: unknown;
-  vm_upgrade: unknown;
-  vm_vm_port: unknown;
+  vm_graf_image: string;
+  vm_graf_plugins: Tmpl;
+  vm_graf_port: number;
+  vm_graf_url: string;
+  vm_home: string;
+  vm_promlens_port: number;
+  vm_scrape_conf: string;
+  vm_upgrade: Tmpl;
+  vm_vm_port: number;
 }
 
 export const { V, tmpl } = context<

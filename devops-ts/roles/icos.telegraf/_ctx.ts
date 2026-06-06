@@ -2,16 +2,17 @@
 // ../../../devops/roles/icos.telegraf/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  telegraf_config: unknown;
-  telegraf_config_file: unknown;
-  telegraf_config_root: unknown;
-  telegraf_config_state: unknown;
-  telegraf_smart_enable: unknown;
-  telegraf_upgrade: unknown;
+  telegraf_config: string;
+  telegraf_config_file: string;
+  telegraf_config_root: string;
+  telegraf_config_state: string;
+  telegraf_smart_enable: boolean;
+  telegraf_upgrade: Tmpl;
 }
 
 export const { V, tmpl } = context<

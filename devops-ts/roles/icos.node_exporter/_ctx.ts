@@ -2,31 +2,32 @@
 // ../../../devops/roles/icos.node_exporter/{defaults,vars}/*.yml
 // Per-role variable context: 20 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 
 export interface Vars {
-  dirsize_dirnames: unknown;
-  dirsize_home: unknown;
+  dirsize_dirnames: Tmpl;
+  dirsize_home: Tmpl;
   dirsize_initial: unknown;
-  dirsize_prom: unknown;
-  dirsize_sh: unknown;
-  dockermon_enable: unknown;
-  dockermon_home: unknown;
-  dockermon_prom: unknown;
-  lxdmon_enable: unknown;
-  node_exporter_allow: unknown;
-  node_exporter_arch: unknown;
-  node_exporter_arch_map: unknown;
-  node_exporter_bin: unknown;
-  node_exporter_bindto: unknown;
-  node_exporter_download: unknown;
-  node_exporter_environ: unknown;
-  node_exporter_home: unknown;
-  node_exporter_listen: unknown;
-  node_exporter_textfiles: unknown;
-  node_exporter_user: unknown;
+  dirsize_prom: Tmpl;
+  dirsize_sh: Tmpl;
+  dockermon_enable: boolean;
+  dockermon_home: Tmpl;
+  dockermon_prom: Tmpl;
+  lxdmon_enable: boolean;
+  node_exporter_allow: boolean;
+  node_exporter_arch: Tmpl;
+  node_exporter_arch_map: Record<string, string>;
+  node_exporter_bin: string;
+  node_exporter_bindto: string;
+  node_exporter_download: Tmpl;
+  node_exporter_environ: Tmpl;
+  node_exporter_home: string;
+  node_exporter_listen: number;
+  node_exporter_textfiles: Tmpl;
+  node_exporter_user: string;
 }
 
 export const { V, tmpl } = context<

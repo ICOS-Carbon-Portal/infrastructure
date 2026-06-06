@@ -6,9 +6,9 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  _wg_is_installed: unknown;
-  wireguard_reresolve_script: unknown;
-  wireguard_update: unknown;
+  _wg_is_installed: boolean;
+  wireguard_reresolve_script: string;
+  wireguard_update: boolean;
 }
 
 export const { V, tmpl, notVar } = context<

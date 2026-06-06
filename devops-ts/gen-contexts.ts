@@ -34,13 +34,51 @@ const SHAPES = await declaredNames("./lib/shapes.ts");
 // they remain reachable through the widening with the global/builtin type.
 const reserved = new Set([...GLOBALS, ...BUILTINS]);
 
-// Every var name is declared `unknown`: only the NAMES matter (the V accessor
-// maps a scalar-typed key to a plain Ref). `unknown` (not `string`) keeps the
-// `Vars & ... & AllVars & VarShapes` intersection conflict-free — `unknown & T
-// = T`, so a hand-declared type (a fact shape in lib/shapes.ts, a boolean
-// global) wins instead of intersecting to a `never`-valued property.
-function tsType(_v: unknown): string {
+// Infer a TS type for a default VALUE — the type the generated data file (which
+// `satisfies Vars`) must also produce. A scalar is concrete (`string`/`number`/
+// `boolean`/`null`); a TEMPLATED string is emitted as a `Template`, so it is
+// typed `Tmpl` (= string | Template), which also keeps `VarRef<Tmpl>` a plain
+// Ref (a union that isn't `extends object`); maps/lists recurse. Shaped names
+// (lib/shapes.ts) stay `unknown` so the hand-declared object shape still wins the
+// `Vars & VarShapes` intersection (`unknown & Shape = Shape`); globals/builtins
+// are already excluded from Vars (`reserved`), so no `concrete & string = never`.
+const isTemplated = (s: string) => s.includes("{{") || s.includes("{%");
+function unifyTypes(types: string[]): string {
+  const set = [...new Set(types)];
+  if (set.length === 1) return set[0];
+  if (set.every((t) => t === "string" || t === "Tmpl")) return "Tmpl";
+  return "VarValue";
+}
+function inferType(v: unknown): string {
+  if (v === null) return "null";
+  const t = typeof v;
+  if (t === "boolean") return "boolean";
+  if (t === "number") return "number";
+  if (t === "string") return isTemplated(v as string) ? "Tmpl" : "string";
+  // Arrays stay `unknown`: `VarRef<T[]>` intersects the array's `filter` with
+  // Template's PRIVATE `filter`, collapsing the whole ref to `never`. Records
+  // are fine — they add an index signature, not a conflicting named member.
+  if (Array.isArray(v)) return "unknown";
+  if (t === "object") {
+    const vals = Object.values(v as Record<string, unknown>);
+    if (vals.length === 0) return "Record<string, VarValue>";
+    return `Record<string, ${unifyTypes(vals.map(inferType))}>`;
+  }
   return "unknown";
+}
+function tsType(name: string, v: unknown): string {
+  // Keep `unknown` for any name another widened registry types concretely, so
+  // the `Vars & ...` intersection can't collapse to `never` (e.g. a default of
+  // `null`/`number` for a name ParamVars/VaultVars declare `string`). Shaped
+  // names keep `unknown` so the hand-written object shape wins. Globals/builtins
+  // are already excluded from Vars (`reserved`).
+  if (
+    SHAPES.has(name) || PARAMVARS.has(name) || VAULTVARS.has(name) ||
+    GLOBALS.has(name) || BUILTINS.has(name)
+  ) {
+    return "unknown";
+  }
+  return inferType(v);
 }
 
 /** A valid bare TS identifier needs no quoting as an interface key. */
@@ -68,7 +106,11 @@ for await (const role of Deno.readDir(devopsRoles)) {
       if (!f.isFile || !f.name.endsWith(".yml")) continue;
       let doc: unknown;
       try {
-        doc = parse(await Deno.readTextFile(new URL(f.name, dir)));
+        // YAML 1.1 (matching gen-data + verify), so `yes`/`no` infer as
+        // `boolean`, not the strings "yes"/"no".
+        doc = parse(await Deno.readTextFile(new URL(f.name, dir)), {
+          version: "1.1",
+        });
       } catch {
         continue;
       }
@@ -76,7 +118,7 @@ for await (const role of Deno.readDir(devopsRoles)) {
         for (const [k, v] of Object.entries(doc as Record<string, unknown>)) {
           if (reserved.has(k)) continue; // covered by Globals/BuiltinVars widening
           if (!vars.has(k) || vars.get(k) === "unknown") {
-            vars.set(k, tsType(v));
+            vars.set(k, tsType(k, v));
           }
         }
       }
@@ -214,6 +256,16 @@ for (const [roleName, vars] of roleVars) {
     ? `export interface Vars {\n${lines.join("\n")}\n}`
     : `// deno-lint-ignore no-empty-interface\nexport interface Vars {}`;
 
+  // The inferred Vars types may reference `Tmpl`/`VarValue` (from lib/ansible);
+  // import whichever the interface actually uses, independent of the context
+  // helpers (a role with no context() still has a typed Vars its data satisfies).
+  const allTypes = [...vars.values()].join(" ");
+  const libTypes = ["Tmpl", "VarValue"]
+    .filter((t) => new RegExp(`\\b${t}\\b`).test(allTypes));
+  const typeImports = libTypes.length
+    ? `import type { ${libTypes.join(", ")} } from "../../lib/ansible.ts";\n`
+    : "";
+
   // Export only the helpers the role's task/handler files actually import. A
   // role that imports none needs no context() call at all, so emit just the
   // Vars interface (and drop the otherwise-unused `context`/registry imports).
@@ -253,6 +305,7 @@ for (const [roleName, vars] of roleVars) {
     `// ../../../devops/roles/${roleName}/{defaults,vars}/*.yml\n` +
     `// Per-role variable context: ${vars.size} own variables, widened with\n` +
     `// only the registries this role's task/handler files reference.\n` +
+    typeImports +
     imports +
     `\n${body}\n` +
     contextDecl;

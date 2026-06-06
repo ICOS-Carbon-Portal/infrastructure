@@ -2,18 +2,19 @@
 // ../../../devops/roles/icos.rdflog/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  rdflog_db_name: unknown;
-  rdflog_db_port: unknown;
-  rdflog_db_user: unknown;
-  rdflog_home: unknown;
-  rdflog_rep_pass: unknown;
-  rdflog_rep_user: unknown;
+  rdflog_db_name: string;
+  rdflog_db_port: number;
+  rdflog_db_user: string;
+  rdflog_home: string;
+  rdflog_rep_pass: Tmpl;
+  rdflog_rep_user: string;
 }
 
 export const { V, tmpl } = context<

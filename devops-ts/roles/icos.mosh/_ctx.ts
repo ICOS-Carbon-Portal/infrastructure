@@ -5,7 +5,7 @@
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  mosh_add_firewall: unknown;
+  mosh_add_firewall: boolean;
 }
 
 export const { V } = context<

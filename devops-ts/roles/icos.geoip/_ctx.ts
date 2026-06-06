@@ -2,25 +2,26 @@
 // ../../../devops/roles/icos.geoip/{defaults,vars}/*.yml
 // Per-role variable context: 15 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   certbot_domains: unknown;
-  certbot_name: unknown;
-  geoip_build_dir: unknown;
-  geoip_db_dir: unknown;
-  geoip_domain: unknown;
-  geoip_git_repo: unknown;
-  geoip_git_version: unknown;
-  geoip_home: unknown;
-  geoip_host_port: unknown;
-  geoip_nginx_allow_deny: unknown;
-  geoip_python_version: unknown;
-  geoip_repo_dir: unknown;
-  geoip_user: unknown;
-  nginxsite_file: unknown;
-  nginxsite_name: unknown;
+  certbot_name: string;
+  geoip_build_dir: Tmpl;
+  geoip_db_dir: Tmpl;
+  geoip_domain: string;
+  geoip_git_repo: string;
+  geoip_git_version: string;
+  geoip_home: Tmpl;
+  geoip_host_port: number;
+  geoip_nginx_allow_deny: Tmpl;
+  geoip_python_version: string;
+  geoip_repo_dir: Tmpl;
+  geoip_user: string;
+  nginxsite_file: string;
+  nginxsite_name: string;
 }
 
 export const { V, tmpl } = context<

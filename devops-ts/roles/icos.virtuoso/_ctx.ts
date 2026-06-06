@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.virtuoso/{defaults,vars}/*.yml
 // Per-role variable context: 5 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  virtuoso_bind_host: unknown;
-  virtuoso_home: unknown;
-  virtuoso_host: unknown;
-  virtuoso_http_port: unknown;
-  virtuoso_port: unknown;
+  virtuoso_bind_host: string;
+  virtuoso_home: Tmpl;
+  virtuoso_host: Tmpl;
+  virtuoso_http_port: number;
+  virtuoso_port: Tmpl;
 }
 
 export const { V, tmpl } = context<

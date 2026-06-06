@@ -2,21 +2,22 @@
 // ../../../devops/roles/icos.postgresql/{defaults,vars}/*.yml
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  postgresql_bin: unknown;
-  postgresql_confd: unknown;
-  postgresql_etc: unknown;
-  postgresql_home: unknown;
-  postgresql_listen_addresses: unknown;
-  postgresql_pg_hba: unknown;
-  postgresql_pg_stat_enable: unknown;
-  postgresql_postgis_enable: unknown;
-  postgresql_postgres_password: unknown;
-  postgresql_ssh_keys: unknown;
+  postgresql_bin: Tmpl;
+  postgresql_confd: Tmpl;
+  postgresql_etc: Tmpl;
+  postgresql_home: string;
+  postgresql_listen_addresses: null;
+  postgresql_pg_hba: Tmpl;
+  postgresql_pg_stat_enable: boolean;
+  postgresql_postgis_enable: boolean;
+  postgresql_postgres_password: null;
+  postgresql_ssh_keys: null;
 }
 
 export const { V, tmpl } = context<

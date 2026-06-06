@@ -2,6 +2,7 @@
 // ../../../devops/roles/icos.vmagent/{defaults,vars}/*.yml
 // Per-role variable context: 18 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
@@ -10,22 +11,22 @@ import type { ParamVars } from "../../lib/paramvars.ts";
 export interface Vars {
   caddy_conf: unknown;
   caddy_name: unknown;
-  fsd_host: unknown;
+  fsd_host: Tmpl;
   nginxsite_domains: unknown;
-  nginxsite_file: unknown;
-  nginxsite_name: unknown;
+  nginxsite_file: string;
+  nginxsite_name: string;
   nginxsite_users: unknown;
-  vmagent_arch: unknown;
-  vmagent_arch_map: unknown;
-  vmagent_bin: unknown;
-  vmagent_conf: unknown;
-  vmagent_configs: unknown;
-  vmagent_environ: unknown;
-  vmagent_fsd: unknown;
-  vmagent_home: unknown;
-  vmagent_listen: unknown;
-  vmagent_proxy: unknown;
-  vmagent_upgrade: unknown;
+  vmagent_arch: Tmpl;
+  vmagent_arch_map: Record<string, string>;
+  vmagent_bin: Tmpl;
+  vmagent_conf: Tmpl;
+  vmagent_configs: Tmpl;
+  vmagent_environ: Tmpl;
+  vmagent_fsd: Tmpl;
+  vmagent_home: string;
+  vmagent_listen: string;
+  vmagent_proxy: string;
+  vmagent_upgrade: Tmpl;
 }
 
 export const { V, tmpl } = context<

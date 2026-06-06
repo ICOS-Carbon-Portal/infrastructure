@@ -2,37 +2,38 @@
 // ../../../devops/roles/icos.mailman/{defaults,vars}/*.yml
 // Per-role variable context: 26 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  mailman_admin_email: unknown;
-  mailman_build_core: unknown;
-  mailman_build_web: unknown;
-  mailman_certbot_name: unknown;
-  mailman_core_ipv4: unknown;
-  mailman_database_ipv4: unknown;
-  mailman_django_settings: unknown;
-  mailman_home: unknown;
-  mailman_host_ipv4: unknown;
-  mailman_hyperkitty_api_key: unknown;
-  mailman_nginxsite_file: unknown;
-  mailman_nginxsite_name: unknown;
+  mailman_admin_email: Tmpl;
+  mailman_build_core: Tmpl;
+  mailman_build_web: Tmpl;
+  mailman_certbot_name: string;
+  mailman_core_ipv4: string;
+  mailman_database_ipv4: string;
+  mailman_django_settings: Tmpl;
+  mailman_home: string;
+  mailman_host_ipv4: string;
+  mailman_hyperkitty_api_key: Tmpl;
+  mailman_nginxsite_file: string;
+  mailman_nginxsite_name: string;
   mailman_postfix_config: unknown;
-  mailman_postgres_password: unknown;
-  mailman_rest_allow_deny: unknown;
-  mailman_rest_port: unknown;
-  mailman_rest_user: unknown;
-  mailman_serve_from_domain: unknown;
-  mailman_subnet: unknown;
-  mailman_user: unknown;
-  mailman_version: unknown;
-  mailman_volume_core: unknown;
-  mailman_volume_database: unknown;
-  mailman_volume_web: unknown;
-  mailman_web_ipv4: unknown;
-  mailman_web_secret_key: unknown;
+  mailman_postgres_password: Tmpl;
+  mailman_rest_allow_deny: null;
+  mailman_rest_port: number;
+  mailman_rest_user: string;
+  mailman_serve_from_domain: Tmpl;
+  mailman_subnet: string;
+  mailman_user: string;
+  mailman_version: string;
+  mailman_volume_core: Tmpl;
+  mailman_volume_database: Tmpl;
+  mailman_volume_web: Tmpl;
+  mailman_web_ipv4: string;
+  mailman_web_secret_key: Tmpl;
 }
 
 export const { V, tmpl } = context<

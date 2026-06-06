@@ -2,6 +2,7 @@
 // ../../../devops/roles/icos.bbclient2/{defaults,vars}/*.yml
 // Per-role variable context: 20 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
@@ -9,26 +10,26 @@ import type { AllVars } from "../../lib/allvars.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  bbclient_all: unknown;
-  bbclient_bin_dir: unknown;
-  bbclient_borg_dir: unknown;
-  bbclient_coldbackup_hour: unknown;
-  bbclient_coldbackup_minute: unknown;
-  bbclient_one: unknown;
-  bbclient_patterns: unknown;
-  bbclient_patterns_path: unknown;
-  bbclient_remote_repo: unknown;
-  bbclient_remote_user: unknown;
-  bbclient_repo_file: unknown;
-  bbclient_repo_url: unknown;
-  bbclient_ssh_bin: unknown;
-  bbclient_ssh_config: unknown;
-  bbclient_ssh_dir: unknown;
-  bbclient_ssh_hosts: unknown;
-  bbclient_ssh_key: unknown;
-  bbclient_timer_conf: unknown;
-  bbclient_user: unknown;
-  bbclient_wrapper: unknown;
+  bbclient_all: Tmpl;
+  bbclient_bin_dir: Tmpl;
+  bbclient_borg_dir: Tmpl;
+  bbclient_coldbackup_hour: Tmpl;
+  bbclient_coldbackup_minute: Tmpl;
+  bbclient_one: Tmpl;
+  bbclient_patterns: string;
+  bbclient_patterns_path: Tmpl;
+  bbclient_remote_repo: Tmpl;
+  bbclient_remote_user: Tmpl;
+  bbclient_repo_file: Tmpl;
+  bbclient_repo_url: Tmpl;
+  bbclient_ssh_bin: Tmpl;
+  bbclient_ssh_config: Tmpl;
+  bbclient_ssh_dir: Tmpl;
+  bbclient_ssh_hosts: Tmpl;
+  bbclient_ssh_key: Tmpl;
+  bbclient_timer_conf: string;
+  bbclient_user: string;
+  bbclient_wrapper: Tmpl;
 }
 
 export const { V, tmpl } = context<

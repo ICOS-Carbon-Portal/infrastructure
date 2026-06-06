@@ -2,12 +2,13 @@
 // ../../../devops/roles/icos.certbot2/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 
 export interface Vars {
-  certbot_bin: unknown;
-  certbot_cert_path: unknown;
-  certbot_email: unknown;
-  certbot_key_path: unknown;
-  certbot_nginx_conf: unknown;
-  certbot_site_path: unknown;
+  certbot_bin: string;
+  certbot_cert_path: Tmpl;
+  certbot_email: string;
+  certbot_key_path: Tmpl;
+  certbot_nginx_conf: Tmpl;
+  certbot_site_path: Tmpl;
 }

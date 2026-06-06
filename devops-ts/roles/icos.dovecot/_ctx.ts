@@ -6,15 +6,15 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  dovecot_auth_file: unknown;
-  dovecot_cert_file: unknown;
+  dovecot_auth_file: string;
+  dovecot_cert_file: string;
   dovecot_domains: unknown;
-  dovecot_domains_file: unknown;
-  dovecot_lmtp: unknown;
-  dovecot_log_file: unknown;
-  dovecot_port: unknown;
-  dovecot_vmail_home: unknown;
-  dovecot_vmail_name: unknown;
+  dovecot_domains_file: string;
+  dovecot_lmtp: string;
+  dovecot_log_file: string;
+  dovecot_port: number;
+  dovecot_vmail_home: string;
+  dovecot_vmail_name: string;
 }
 
 export const { V, tmpl } = context<

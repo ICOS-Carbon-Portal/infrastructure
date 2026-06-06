@@ -2,22 +2,23 @@
 // ../../../devops/roles/icos.quince/{defaults,vars}/*.yml
 // Per-role variable context: 11 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  bbclient_name: unknown;
-  bbclient_user: unknown;
-  quince_backup_enable: unknown;
-  quince_filestore: unknown;
-  quince_home: unknown;
-  quince_jdk_version: unknown;
-  quince_log_file: unknown;
-  quince_slack_url: unknown;
-  quince_tomcat_home: unknown;
-  quince_tomcat_url: unknown;
-  quince_user: unknown;
+  bbclient_name: string;
+  bbclient_user: Tmpl;
+  quince_backup_enable: boolean;
+  quince_filestore: string;
+  quince_home: string;
+  quince_jdk_version: number;
+  quince_log_file: string;
+  quince_slack_url: string;
+  quince_tomcat_home: string;
+  quince_tomcat_url: string;
+  quince_user: string;
 }
 
 export const { V, tmpl } = context<

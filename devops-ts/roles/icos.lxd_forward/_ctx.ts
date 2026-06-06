@@ -2,11 +2,12 @@
 // ../../../devops/roles/icos.lxd_forward/{defaults,vars}/*.yml
 // Per-role variable context: 1 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  lxd_forward_port: unknown;
+  lxd_forward_port: Tmpl;
 }
 
 export const { V, tmpl } = context<

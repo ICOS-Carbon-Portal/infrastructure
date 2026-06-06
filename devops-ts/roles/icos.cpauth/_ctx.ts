@@ -2,21 +2,22 @@
 // ../../../devops/roles/icos.cpauth/{defaults,vars}/*.yml
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  cpauth_bind_addr: unknown;
-  cpauth_home: unknown;
-  cpauth_host: unknown;
-  cpauth_mailing_pass: unknown;
-  cpauth_mailing_smtp: unknown;
-  cpauth_masteradmin_pass: unknown;
-  cpauth_oauth_conf: unknown;
-  cpauth_port: unknown;
-  cpauth_user: unknown;
-  cpauth_user_secret_salt: unknown;
+  cpauth_bind_addr: Tmpl;
+  cpauth_home: string;
+  cpauth_host: Tmpl;
+  cpauth_mailing_pass: Tmpl;
+  cpauth_mailing_smtp: Tmpl;
+  cpauth_masteradmin_pass: Tmpl;
+  cpauth_oauth_conf: Tmpl;
+  cpauth_port: number;
+  cpauth_user: string;
+  cpauth_user_secret_salt: Tmpl;
 }
 
 export const { V, tmpl } = context<

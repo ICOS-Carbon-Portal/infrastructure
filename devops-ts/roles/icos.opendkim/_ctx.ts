@@ -8,9 +8,9 @@ import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   opendkim_domains_testkeys: unknown;
-  opendkim_keys: unknown;
-  opendkim_sock: unknown;
-  opendkim_user: unknown;
+  opendkim_keys: string;
+  opendkim_sock: string;
+  opendkim_user: string;
 }
 
 export const { V, tmpl } = context<

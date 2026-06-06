@@ -2,19 +2,20 @@
 // ../../../devops/roles/icos.caddy/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  caddy_bin: unknown;
-  caddy_dropin_path: unknown;
-  caddy_global_conf: unknown;
+  caddy_bin: Tmpl;
+  caddy_dropin_path: string;
+  caddy_global_conf: string;
   caddy_modules: unknown;
-  caddy_site_state: unknown;
-  caddy_upgrade: unknown;
-  caddy_via_xcaddy: unknown;
-  xcaddy_upgrade: unknown;
+  caddy_site_state: string;
+  caddy_upgrade: Tmpl;
+  caddy_via_xcaddy: string;
+  xcaddy_upgrade: Tmpl;
 }
 
 export const { V, tmpl, notVar } = context<

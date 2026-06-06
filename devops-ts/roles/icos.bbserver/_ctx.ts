@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.bbserver/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  bbserver_home: unknown;
-  bbserver_monitor_home: unknown;
-  bbserver_repo_home: unknown;
-  bbserver_textfiles: unknown;
+  bbserver_home: string;
+  bbserver_monitor_home: Tmpl;
+  bbserver_repo_home: Tmpl;
+  bbserver_textfiles: string;
 }
 
 export const { V, tmpl } = context<

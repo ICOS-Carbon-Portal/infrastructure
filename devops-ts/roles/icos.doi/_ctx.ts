@@ -2,18 +2,19 @@
 // ../../../devops/roles/icos.doi/{defaults,vars}/*.yml
 // Per-role variable context: 7 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  doi_bind_addr: unknown;
-  doi_home: unknown;
-  doi_host: unknown;
-  doi_meta_domain: unknown;
-  doi_port: unknown;
-  doi_servicename: unknown;
-  doi_user: unknown;
+  doi_bind_addr: Tmpl;
+  doi_home: string;
+  doi_host: Tmpl;
+  doi_meta_domain: Tmpl;
+  doi_port: number;
+  doi_servicename: string;
+  doi_user: string;
 }
 
 export const { V, tmpl } = context<

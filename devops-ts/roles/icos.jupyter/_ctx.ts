@@ -2,18 +2,19 @@
 // ../../../devops/roles/icos.jupyter/{defaults,vars}/*.yml
 // Per-role variable context: 7 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl, VarValue } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  jupyter_home: unknown;
-  jupyter_hub_config: unknown;
-  jupyter_hub_config_defaults: unknown;
-  jupyter_jusers_enable: unknown;
-  jupyter_port: unknown;
-  jusers_home: unknown;
-  jusers_venv: unknown;
+  jupyter_home: string;
+  jupyter_hub_config: Record<string, VarValue>;
+  jupyter_hub_config_defaults: Record<string, VarValue>;
+  jupyter_jusers_enable: boolean;
+  jupyter_port: number;
+  jusers_home: string;
+  jusers_venv: Tmpl;
 }
 
 export const { V, tmpl } = context<

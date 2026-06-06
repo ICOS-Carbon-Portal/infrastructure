@@ -6,9 +6,9 @@ import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 
 export interface Vars {
-  iptables_mdns: unknown;
-  iptables_ssh_port: unknown;
-  iptables_upnp: unknown;
+  iptables_mdns: boolean;
+  iptables_ssh_port: number;
+  iptables_upnp: boolean;
 }
 
 export const { V, tmpl } = context<

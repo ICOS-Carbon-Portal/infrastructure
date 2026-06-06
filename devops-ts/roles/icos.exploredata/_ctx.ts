@@ -2,20 +2,21 @@
 // ../../../devops/roles/icos.exploredata/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { VaultVars } from "../../lib/vaultvars.ts";
 
 export interface Vars {
-  exploredata_home: unknown;
-  exploredata_hub_container: unknown;
-  exploredata_hub_image: unknown;
-  exploredata_max_notebooks: unknown;
-  exploredata_name: unknown;
-  exploredata_network: unknown;
-  exploredata_notebook_image: unknown;
-  exploredata_port: unknown;
+  exploredata_home: Tmpl;
+  exploredata_hub_container: Tmpl;
+  exploredata_hub_image: Tmpl;
+  exploredata_max_notebooks: number;
+  exploredata_name: Tmpl;
+  exploredata_network: Tmpl;
+  exploredata_notebook_image: Tmpl;
+  exploredata_port: Tmpl;
 }
 
 export const { V, tmpl } = context<

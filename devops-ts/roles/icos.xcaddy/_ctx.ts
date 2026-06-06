@@ -2,11 +2,12 @@
 // ../../../devops/roles/icos.xcaddy/{defaults,vars}/*.yml
 // Per-role variable context: 1 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  xcaddy_upgrade: unknown;
+  xcaddy_upgrade: Tmpl;
 }
 
 export const { V, tmpl } = context<

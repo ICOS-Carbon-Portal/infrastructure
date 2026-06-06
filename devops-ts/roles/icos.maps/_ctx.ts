@@ -2,13 +2,14 @@
 // ../../../devops/roles/icos.maps/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
   maps_domains: unknown;
-  maps_lantmateriet_auth: unknown;
-  maps_lantmateriet_loc: unknown;
-  maps_lantmateriet_url: unknown;
+  maps_lantmateriet_auth: Tmpl;
+  maps_lantmateriet_loc: string;
+  maps_lantmateriet_url: string;
 }
 
 export const { V } = context<

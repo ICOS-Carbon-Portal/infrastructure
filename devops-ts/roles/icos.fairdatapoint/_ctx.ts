@@ -7,10 +7,10 @@ import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  fdp_domain: unknown;
-  fdp_home: unknown;
-  index_enabled: unknown;
-  ping_enabled: unknown;
+  fdp_domain: string;
+  fdp_home: string;
+  index_enabled: boolean;
+  ping_enabled: boolean;
 }
 
 export const { V, tmpl } = context<

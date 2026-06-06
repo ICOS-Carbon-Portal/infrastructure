@@ -2,16 +2,17 @@
 // ../../../devops/roles/icos.borg/{defaults,vars}/*.yml
 // Per-role variable context: 5 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  borg_libc_map: unknown;
-  borg_libc_version: unknown;
-  borg_upgrade: unknown;
-  borg_url_map: unknown;
-  borg_version: unknown;
+  borg_libc_map: Record<string, Record<string, string>>;
+  borg_libc_version: Tmpl;
+  borg_upgrade: Tmpl;
+  borg_url_map: Record<string, Tmpl>;
+  borg_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

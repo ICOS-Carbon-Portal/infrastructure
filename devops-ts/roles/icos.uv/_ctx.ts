@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.uv/{defaults,vars}/*.yml
 // Per-role variable context: 5 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  uv_architecture: unknown;
-  uv_home: unknown;
-  uv_upgrade: unknown;
-  uv_url_map: unknown;
-  uv_version: unknown;
+  uv_architecture: Tmpl;
+  uv_home: string;
+  uv_upgrade: Tmpl;
+  uv_url_map: Record<string, Tmpl>;
+  uv_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

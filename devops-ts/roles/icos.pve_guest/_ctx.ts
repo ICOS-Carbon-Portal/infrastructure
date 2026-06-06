@@ -6,7 +6,7 @@ import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  upgrade_everything: unknown;
+  upgrade_everything: boolean;
 }
 
 export const { V, tmpl } = context<

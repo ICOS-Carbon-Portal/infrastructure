@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.jarservice/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  certbot_disabled: unknown;
-  extra_groups: unknown;
-  jarservice_jar: unknown;
-  jarservice_keep_n_old: unknown;
+  certbot_disabled: boolean;
+  extra_groups: string;
+  jarservice_jar: Tmpl;
+  jarservice_keep_n_old: number;
 }
 
 export const { V, tmpl } = context<

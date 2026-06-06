@@ -2,15 +2,16 @@
 // ../../../devops/roles/icos.timer2/{defaults,vars}/*.yml
 // Per-role variable context: 5 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  _timer_sysd_service: unknown;
-  _timer_sysd_timer: unknown;
-  timer_dest: unknown;
-  timer_home: unknown;
-  timer_state: unknown;
+  _timer_sysd_service: Tmpl;
+  _timer_sysd_timer: Tmpl;
+  timer_dest: Tmpl;
+  timer_home: string;
+  timer_state: string;
 }
 
 export const { V, tmpl } = context<

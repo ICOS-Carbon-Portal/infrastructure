@@ -6,8 +6,8 @@ import { context } from "../../lib/context.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  kc_home: unknown;
-  kc_port: unknown;
+  kc_home: string;
+  kc_port: number;
 }
 
 export const { V, tmpl } = context<

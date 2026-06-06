@@ -2,17 +2,18 @@
 // ../../../devops/roles/icos.podman/{defaults,vars}/*.yml
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  conmon_min_version: unknown;
-  golang_min_version: unknown;
-  podman_arch: unknown;
-  podman_docker: unknown;
-  podman_src_dir: unknown;
-  podman_version: unknown;
+  conmon_min_version: string;
+  golang_min_version: number;
+  podman_arch: Record<string, string>;
+  podman_docker: boolean;
+  podman_src_dir: Tmpl;
+  podman_version: string;
 }
 
 export const { V, tmpl } = context<

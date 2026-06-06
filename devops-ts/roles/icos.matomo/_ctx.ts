@@ -2,18 +2,19 @@
 // ../../../devops/roles/icos.matomo/{defaults,vars}/*.yml
 // Per-role variable context: 9 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 
 export interface Vars {
-  matomo_backup_enable: unknown;
-  matomo_domain: unknown;
-  matomo_home: unknown;
-  matomo_mysql_database_password: unknown;
-  matomo_mysql_database_user: unknown;
-  matomo_mysql_password: unknown;
-  matomo_mysql_root_password: unknown;
-  matomo_mysql_user: unknown;
-  matomo_port: unknown;
+  matomo_backup_enable: boolean;
+  matomo_domain: string;
+  matomo_home: string;
+  matomo_mysql_database_password: Tmpl;
+  matomo_mysql_database_user: Tmpl;
+  matomo_mysql_password: Tmpl;
+  matomo_mysql_root_password: Tmpl;
+  matomo_mysql_user: Tmpl;
+  matomo_port: number;
 }
 
 export const { V, tmpl } = context<

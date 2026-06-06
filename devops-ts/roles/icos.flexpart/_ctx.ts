@@ -7,12 +7,12 @@ import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  flexpart_container_prefix: unknown;
-  flexpart_export_output_to: unknown;
-  flexpart_image: unknown;
-  flexpart_max_parallel: unknown;
-  flexpart_output_directory: unknown;
-  flexpart_user: unknown;
+  flexpart_container_prefix: string;
+  flexpart_export_output_to: null;
+  flexpart_image: string;
+  flexpart_max_parallel: number;
+  flexpart_output_directory: string;
+  flexpart_user: string;
 }
 
 export const { V, tmpl } = context<

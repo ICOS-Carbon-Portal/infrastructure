@@ -2,14 +2,15 @@
 // ../../../devops/roles/icos.restic/{defaults,vars}/*.yml
 // Per-role variable context: 4 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
-  restic_architecture: unknown;
-  restic_upgrade: unknown;
-  restic_url_map: unknown;
-  restic_version: unknown;
+  restic_architecture: Tmpl;
+  restic_upgrade: Tmpl;
+  restic_url_map: Record<string, Tmpl>;
+  restic_version: Tmpl;
 }
 
 export const { V, tmpl } = context<

@@ -2,20 +2,21 @@
 // ../../../devops/roles/icos.stiltcluster/{defaults,vars}/*.yml
 // Per-role variable context: 8 own variables, widened with
 // only the registries this role's task/handler files reference.
+import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
-  stiltcluster_bindir: unknown;
-  stiltcluster_docker: unknown;
-  stiltcluster_home: unknown;
-  stiltcluster_maxcores: unknown;
-  stiltcluster_port: unknown;
-  stiltcluster_servicename: unknown;
-  stiltcluster_stiltweb_port: unknown;
-  stiltcluster_username: unknown;
+  stiltcluster_bindir: Tmpl;
+  stiltcluster_docker: boolean;
+  stiltcluster_home: string;
+  stiltcluster_maxcores: number;
+  stiltcluster_port: number;
+  stiltcluster_servicename: string;
+  stiltcluster_stiltweb_port: number;
+  stiltcluster_username: string;
 }
 
 export const { V, tmpl } = context<
