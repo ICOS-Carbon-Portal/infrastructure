@@ -410,25 +410,6 @@ export function localVar<T>(name: string): VarRef<T> {
 }
 
 /**
- * Declare variables LOCAL to a scope (a play's or block's `vars:` definition).
- * Returns the `vars` object to place in that scope, and `ref` — a checked
- * accessor whose only valid keys are the ones declared here (`ref.x` renders
- * `{{ x }}`). Use this instead of the global `V` for values a play/block
- * defines itself, so the reference is scoped and name-checked:
- *
- *   const local = scopeVars({ jre_pkg: "openjdk-21", java_path: "/usr/.../java" });
- *   { hosts, vars: local.vars, tasks: [{ apt: { name: local.ref.jre_pkg } }] }
- */
-export function scopeVars<T extends object>(
-  vars: T,
-): { vars: T; ref: { readonly [K in keyof T]: Ref } } {
-  const ref = new Proxy({}, {
-    get: (_t, name: string) => varProxy(name),
-  }) as { readonly [K in keyof T]: Ref };
-  return { vars, ref };
-}
-
-/**
  * A Jinja expression yielding a string LITERAL: `jinjaLiteral("{{{{")` ->
  * `{{ '{{{{' }}`. Used to emit literal text that itself looks like Jinja
  * delimiters (e.g. a `template` module's `variable_start_string`), so it passes

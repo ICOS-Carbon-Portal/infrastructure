@@ -1,11 +1,4 @@
-import { isDefined, type Playbook, role, scopeVars } from "../lib/ansible.ts";
-
-// Global vars shared by all deployment targets on core_host; defined here to
-// avoid repeating them in the inventories.
-const core = scopeVars({
-  jre_apt_package: "openjdk-21-jre-headless",
-  java_path: "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
-});
+import { isDefined, type Playbook, role, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -42,11 +35,16 @@ export default [
   },
   {
     hosts: "core_host",
-    vars: core.vars,
+    // Global vars shared by all deployment targets; declared in the hand-curated
+    // `Vars` registry (lib/vars.ts) and referenced via the explicit global `V`.
+    vars: {
+      jre_apt_package: "openjdk-21-jre-headless",
+      java_path: "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+    },
     pre_tasks: [
       {
         name: "Install jre",
-        apt: { name: core.ref.jre_apt_package },
+        apt: { name: V.jre_apt_package },
       },
       {
         name: "Setup rdflog",

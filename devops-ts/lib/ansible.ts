@@ -91,7 +91,6 @@ export {
   pct,
   randomInt,
   RawTemplate,
-  scopeVars,
   Template,
 } from "./template.ts";
 
