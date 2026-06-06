@@ -28,5 +28,16 @@ export interface Meta {
 /** A plain variable map (defaults, vars, host_vars, group_vars). */
 export type VarsFile = Record<string, VarValue>;
 
+/**
+ * Name-only typing for keys a role's `defaults` RESTATES from another registry
+ * (`Globals`, `BuiltinVars`) rather than declaring as its own. Each key `K` must
+ * be a declared member of `T` (so a typo is caught against that registry), while
+ * the value stays an unchecked `VarValue` — the registries declare names as
+ * `string`, but defaults set booleans/numbers/objects/templates.
+ *
+ *   } satisfies Vars & Restated<Globals, "borg_bin">;
+ */
+export type Restated<T, K extends keyof T> = { [P in K]: VarValue };
+
 /** An Ansible inventory tree (groups -> {hosts, children, vars}). */
 export type Inventory = Record<string, VarValue>;
