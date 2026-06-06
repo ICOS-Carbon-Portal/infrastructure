@@ -4,16 +4,16 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  postgresql_postgis_enable: unknown;
-  postgresql_pg_stat_enable: unknown;
-  postgresql_postgres_password: unknown;
-  postgresql_listen_addresses: unknown;
-  postgresql_ssh_keys: unknown;
-  postgresql_etc: unknown;
-  postgresql_confd: unknown;
-  postgresql_pg_hba: unknown;
-  postgresql_home: unknown;
   postgresql_bin: unknown;
+  postgresql_confd: unknown;
+  postgresql_etc: unknown;
+  postgresql_home: unknown;
+  postgresql_listen_addresses: unknown;
+  postgresql_pg_hba: unknown;
+  postgresql_pg_stat_enable: unknown;
+  postgresql_postgis_enable: unknown;
+  postgresql_postgres_password: unknown;
+  postgresql_ssh_keys: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

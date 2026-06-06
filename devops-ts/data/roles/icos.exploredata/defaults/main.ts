@@ -5,14 +5,14 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  exploredata_port: unknown;
-  exploredata_name: unknown;
   exploredata_home: unknown;
-  exploredata_network: unknown;
-  exploredata_hub_image: unknown;
   exploredata_hub_container: unknown;
-  exploredata_notebook_image: unknown;
+  exploredata_hub_image: unknown;
   exploredata_max_notebooks: unknown;
+  exploredata_name: unknown;
+  exploredata_network: unknown;
+  exploredata_notebook_image: unknown;
+  exploredata_port: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

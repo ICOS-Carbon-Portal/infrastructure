@@ -5,31 +5,31 @@ import { lookup } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
 
 interface Self {
-  vmagent_home: unknown;
-  vmagent_fsd: unknown;
-  vmagent_bin: unknown;
-  vmagent_configs: unknown;
-  vmagent_environ: unknown;
-  vmagent_conf: unknown;
-  vmagent_listen: unknown;
-  vmagent_upgrade: unknown;
+  caddy_conf: unknown;
+  caddy_name: unknown;
+  fsd_host: unknown;
+  nginxsite_domains: unknown;
+  nginxsite_file: unknown;
+  nginxsite_name: unknown;
+  nginxsite_users: unknown;
   vmagent_arch: unknown;
   vmagent_arch_map: unknown;
-  fsd_host: unknown;
+  vmagent_bin: unknown;
+  vmagent_conf: unknown;
+  vmagent_configs: unknown;
+  vmagent_environ: unknown;
+  vmagent_fsd: unknown;
+  vmagent_home: unknown;
+  vmagent_listen: unknown;
   vmagent_proxy: unknown;
-  nginxsite_name: unknown;
-  nginxsite_file: unknown;
-  nginxsite_users: unknown;
-  nginxsite_domains: unknown;
-  caddy_name: unknown;
-  caddy_conf: unknown;
+  vmagent_upgrade: unknown;
 }
 const { V, tmpl } = context<
-  Self & Globals & BuiltinVars & AllVars & VaultVars
+  Self & Globals & BuiltinVars & SharedVars & VaultVars
 >();
 
 export default {

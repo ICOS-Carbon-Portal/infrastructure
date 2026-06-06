@@ -2,14 +2,14 @@
 import type { Vars } from "../../../../roles/icos.just/_ctx.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 
 interface Self {
   just_upgrade: unknown;
-  just_version: unknown;
   just_url_map: unknown;
+  just_version: unknown;
 }
-const { V, tmpl } = context<Self & AllVars>();
+const { V, tmpl } = context<Self & SharedVars>();
 
 export default {
   "just_upgrade": V.upgrade_everything.default(false).bool(),

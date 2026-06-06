@@ -3,17 +3,17 @@ import type { Vars } from "../../../../roles/icos.uv/_ctx.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
+  uv_architecture: unknown;
   uv_home: unknown;
   uv_upgrade: unknown;
-  uv_architecture: unknown;
-  uv_version: unknown;
   uv_url_map: unknown;
+  uv_version: unknown;
 }
-const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & BuiltinVars & SharedVars & ParamVars>();
 
 export default {
   "uv_home": "/opt/uv",

@@ -7,11 +7,11 @@ import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
   dive_architecture: unknown;
-  dive_version: unknown;
   dive_url_map: unknown;
+  dive_version: unknown;
   lazydocker_architecture: unknown;
-  lazydocker_version: unknown;
   lazydocker_url_map: unknown;
+  lazydocker_version: unknown;
 }
 const { V, tmpl } = context<Self & BuiltinVars & ParamVars>();
 

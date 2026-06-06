@@ -3,23 +3,23 @@ import type { Vars } from "../../../../roles/icos.restic_server/_ctx.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  restic_server_data: unknown;
-  restic_server_listen: unknown;
-  restic_server_users: unknown;
-  restic_server_htpasswd: unknown;
-  restic_server_home: unknown;
-  restic_server_exec: unknown;
-  restic_server_user: unknown;
-  restic_server_upgrade: unknown;
   restic_server_architecture: unknown;
-  restic_server_version: unknown;
+  restic_server_data: unknown;
+  restic_server_exec: unknown;
+  restic_server_home: unknown;
+  restic_server_htpasswd: unknown;
+  restic_server_listen: unknown;
+  restic_server_upgrade: unknown;
   restic_server_url_map: unknown;
+  restic_server_user: unknown;
+  restic_server_users: unknown;
+  restic_server_version: unknown;
 }
-const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & BuiltinVars & SharedVars & ParamVars>();
 
 export default {
   "restic_server_data": null,

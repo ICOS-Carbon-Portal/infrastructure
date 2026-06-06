@@ -3,23 +3,23 @@ import type { Vars } from "../../../../roles/icos.nextcloud/_ctx.ts";
 import { context } from "../../../../lib/context.ts";
 
 interface Self {
-  nextcloud_nextcloud_version: unknown;
-  nextcloud_postgres_version: unknown;
-  nextcloud_port: unknown;
-  nextcloud_user: unknown;
-  nextcloud_home: unknown;
-  nextcloud_domain: unknown;
-  nextcloud_certbot_enable: unknown;
   certbot_domains: unknown;
   certbot_name: unknown;
-  nextcloud_volume_nextcloud: unknown;
-  nextcloud_volume_postgres: unknown;
+  nextcloud_certbot_enable: unknown;
+  nextcloud_db_host: unknown;
   nextcloud_db_name: unknown;
   nextcloud_db_user: unknown;
-  nextcloud_db_host: unknown;
+  nextcloud_domain: unknown;
   nextcloud_exporter_conf_host: unknown;
-  nextcloud_exporter_user: unknown;
   nextcloud_exporter_port: unknown;
+  nextcloud_exporter_user: unknown;
+  nextcloud_home: unknown;
+  nextcloud_nextcloud_version: unknown;
+  nextcloud_port: unknown;
+  nextcloud_postgres_version: unknown;
+  nextcloud_user: unknown;
+  nextcloud_volume_nextcloud: unknown;
+  nextcloud_volume_postgres: unknown;
   nextcloud_volumes: unknown;
 }
 const { V, tmpl } = context<Self>();

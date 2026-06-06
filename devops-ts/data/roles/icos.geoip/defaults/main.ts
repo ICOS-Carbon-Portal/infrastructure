@@ -5,21 +5,21 @@ import type { ParamVars } from "../../../../lib/paramvars.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
 
 interface Self {
-  geoip_user: unknown;
-  geoip_home: unknown;
+  certbot_domains: unknown;
+  certbot_name: unknown;
   geoip_build_dir: unknown;
-  geoip_repo_dir: unknown;
   geoip_db_dir: unknown;
+  geoip_domain: unknown;
   geoip_git_repo: unknown;
   geoip_git_version: unknown;
+  geoip_home: unknown;
   geoip_host_port: unknown;
   geoip_nginx_allow_deny: unknown;
   geoip_python_version: unknown;
-  certbot_domains: unknown;
-  certbot_name: unknown;
-  nginxsite_name: unknown;
+  geoip_repo_dir: unknown;
+  geoip_user: unknown;
   nginxsite_file: unknown;
-  geoip_domain: unknown;
+  nginxsite_name: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars & VaultVars>();
 

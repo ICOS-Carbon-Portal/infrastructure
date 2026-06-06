@@ -2,10 +2,10 @@
 import type { Inventory } from "../../lib/data.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
-import type { AllVars } from "../../lib/allvars.ts";
+import type { SharedVars } from "../../lib/sharedvars.ts";
 import type { VarShapes } from "../../lib/shapes.ts";
 
-const { V, tmpl } = context<Globals & AllVars & VarShapes>();
+const { V, tmpl } = context<Globals & SharedVars & VarShapes>();
 
 export default {
   "all": {

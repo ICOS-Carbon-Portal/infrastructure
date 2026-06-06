@@ -5,34 +5,34 @@ import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  nebula_is_lighthouse: unknown;
-  nebula_domain: unknown;
-  nebula_etc_dir: unknown;
   nebula_bin_dir: unknown;
-  nebula_user: unknown;
-  nebula_hosts_enable: unknown;
-  nebula_fw_enable: unknown;
-  nebula_hostname: unknown;
-  nebula_upgrade: unknown;
   nebula_ca_path: unknown;
   nebula_cert_min_days: unknown;
-  nebula_stats_enable: unknown;
-  nebula_stats_port: unknown;
+  nebula_domain: unknown;
+  nebula_etc_dir: unknown;
+  nebula_fw_enable: unknown;
+  nebula_hostname: unknown;
+  nebula_hosts_enable: unknown;
+  nebula_is_lighthouse: unknown;
   nebula_resolve_enable: unknown;
-  nebula_resolve_type: unknown;
   nebula_resolve_servers: unknown;
   nebula_resolve_test: unknown;
+  nebula_resolve_type: unknown;
   nebula_ssh_key: unknown;
   nebula_ssh_port: unknown;
-  nebula_version: unknown;
+  nebula_stats_enable: unknown;
+  nebula_stats_port: unknown;
+  nebula_upgrade: unknown;
   nebula_url_map: unknown;
+  nebula_user: unknown;
+  nebula_version: unknown;
 }
 const { V, tmpl } = context<
-  Self & Globals & BuiltinVars & AllVars & ParamVars
+  Self & Globals & BuiltinVars & SharedVars & ParamVars
 >();
 
 export default {

@@ -2,9 +2,9 @@
 import type { Inventory } from "../../lib/data.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
-import type { AllVars } from "../../lib/allvars.ts";
+import type { SharedVars } from "../../lib/sharedvars.ts";
 
-const { V, tmpl } = context<BuiltinVars & AllVars>();
+const { V, tmpl } = context<BuiltinVars & SharedVars>();
 
 export default {
   "bbservers": {

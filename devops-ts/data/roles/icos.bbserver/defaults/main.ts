@@ -6,8 +6,8 @@ import type { Globals } from "../../../../lib/globals.ts";
 
 interface Self {
   bbserver_home: unknown;
-  bbserver_repo_home: unknown;
   bbserver_monitor_home: unknown;
+  bbserver_repo_home: unknown;
   bbserver_textfiles: unknown;
 }
 const { V, tmpl } = context<Self & Globals>();

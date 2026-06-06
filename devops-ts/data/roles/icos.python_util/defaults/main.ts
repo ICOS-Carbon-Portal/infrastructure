@@ -5,9 +5,9 @@ import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
   python_util_bin_dir: unknown;
-  python_util_python_executable: unknown;
-  python_util_install_prefix: unknown;
   python_util_install_dir: unknown;
+  python_util_install_prefix: unknown;
+  python_util_python_executable: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

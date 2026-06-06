@@ -2,18 +2,35 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { jinja } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 
 interface Self {
-  __root_device: unknown;
-  __docker_device: unknown;
-  lxd_vm_default_devices: unknown;
-  lxd_vm_default_profiles: unknown;
   __base_config: unknown;
   __docker_config: unknown;
+  __docker_device: unknown;
+  __lxd_vm_config: unknown;
+  __lxd_vm_devices: unknown;
+  __lxd_vm_profiles: unknown;
+  __root_device: unknown;
+  lxd_source: unknown;
+  lxd_vm_config: unknown;
   lxd_vm_default_config: unknown;
+  lxd_vm_default_devices: unknown;
+  lxd_vm_default_profiles: unknown;
+  lxd_vm_devices: unknown;
+  lxd_vm_docker: unknown;
+  lxd_vm_docker_size: unknown;
+  lxd_vm_forward: unknown;
+  lxd_vm_inventory_hostname: unknown;
+  lxd_vm_ip: unknown;
+  lxd_vm_port: unknown;
+  lxd_vm_profiles: unknown;
+  lxd_vm_root_pool: unknown;
+  lxd_vm_root_size: unknown;
+  lxd_vm_ubuntu_version: unknown;
+  zfsdocker_name: unknown;
 }
-const { V, tmpl } = context<Self & AllVars>();
+const { V, tmpl } = context<Self & SharedVars>();
 
 export default {
   "__root_device": {

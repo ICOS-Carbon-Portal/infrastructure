@@ -7,14 +7,14 @@ import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 
 interface Self {
-  stiltcluster_username: unknown;
-  stiltcluster_servicename: unknown;
-  stiltcluster_home: unknown;
   stiltcluster_bindir: unknown;
-  stiltcluster_stiltweb_port: unknown;
-  stiltcluster_port: unknown;
-  stiltcluster_maxcores: unknown;
   stiltcluster_docker: unknown;
+  stiltcluster_home: unknown;
+  stiltcluster_maxcores: unknown;
+  stiltcluster_port: unknown;
+  stiltcluster_servicename: unknown;
+  stiltcluster_stiltweb_port: unknown;
+  stiltcluster_username: unknown;
 }
 const { V, tmpl } = context<Self & Globals & BuiltinVars>();
 

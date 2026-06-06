@@ -7,26 +7,26 @@ import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  node_exporter_user: unknown;
-  node_exporter_home: unknown;
-  node_exporter_download: unknown;
-  node_exporter_textfiles: unknown;
-  node_exporter_environ: unknown;
-  node_exporter_bin: unknown;
-  node_exporter_listen: unknown;
-  node_exporter_bindto: unknown;
-  node_exporter_allow: unknown;
-  node_exporter_arch: unknown;
-  node_exporter_arch_map: unknown;
-  dirsize_home: unknown;
-  dirsize_sh: unknown;
   dirsize_dirnames: unknown;
-  dirsize_prom: unknown;
+  dirsize_home: unknown;
   dirsize_initial: unknown;
+  dirsize_prom: unknown;
+  dirsize_sh: unknown;
   dockermon_enable: unknown;
   dockermon_home: unknown;
   dockermon_prom: unknown;
   lxdmon_enable: unknown;
+  node_exporter_allow: unknown;
+  node_exporter_arch: unknown;
+  node_exporter_arch_map: unknown;
+  node_exporter_bin: unknown;
+  node_exporter_bindto: unknown;
+  node_exporter_download: unknown;
+  node_exporter_environ: unknown;
+  node_exporter_home: unknown;
+  node_exporter_listen: unknown;
+  node_exporter_textfiles: unknown;
+  node_exporter_user: unknown;
 }
 const { V, tmpl } = context<Self & Globals & BuiltinVars & ParamVars>();
 

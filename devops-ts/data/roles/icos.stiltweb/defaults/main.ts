@@ -4,15 +4,15 @@ import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 
 interface Self {
-  stiltweb_username: unknown;
-  stiltweb_home: unknown;
-  stiltweb_bindir: unknown;
-  stiltweb_akka_port: unknown;
   stiltweb_akka_hostname: unknown;
+  stiltweb_akka_port: unknown;
+  stiltweb_bindir: unknown;
+  stiltweb_certbot_name: unknown;
+  stiltweb_home: unknown;
   stiltweb_java: unknown;
   stiltweb_jre_package: unknown;
-  stiltweb_certbot_name: unknown;
   stiltweb_nginxsite_name: unknown;
+  stiltweb_username: unknown;
 }
 const { V, tmpl } = context<Self & BuiltinVars>();
 

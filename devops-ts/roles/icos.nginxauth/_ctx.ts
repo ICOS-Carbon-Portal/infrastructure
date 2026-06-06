@@ -5,7 +5,7 @@
 import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
-import type { AllVars } from "../../lib/allvars.ts";
+import type { SharedVars } from "../../lib/sharedvars.ts";
 
 export interface Vars {
   nginxauth_conf: Tmpl;
@@ -14,5 +14,5 @@ export interface Vars {
 }
 
 export const { V, tmpl } = context<
-  Vars & BuiltinVars & AllVars
+  Vars & BuiltinVars & SharedVars
 >();

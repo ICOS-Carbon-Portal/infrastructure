@@ -6,13 +6,13 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  golang_version_install: unknown;
-  golang_min_version: unknown;
-  golang_local_version_ok: unknown;
   golang_apt_version_ok: unknown;
-  golang_url: unknown;
-  golang_opt_dir: unknown;
   golang_bin_dir: unknown;
+  golang_local_version_ok: unknown;
+  golang_min_version: unknown;
+  golang_opt_dir: unknown;
+  golang_url: unknown;
+  golang_version_install: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

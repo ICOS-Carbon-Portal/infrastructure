@@ -6,22 +6,22 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  sshlogin_dst_from: unknown;
+  _sshlogin_opt_list: unknown;
   sshlogin_dst_command: unknown;
-  sshlogin_dst_restrict: unknown;
-  sshlogin_dst_ssh_dir: unknown;
-  sshlogin_dst_known_hosts: unknown;
+  sshlogin_dst_from: unknown;
   sshlogin_dst_key_file: unknown;
   sshlogin_dst_key_options: unknown;
-  _sshlogin_opt_list: unknown;
+  sshlogin_dst_known_hosts: unknown;
+  sshlogin_dst_restrict: unknown;
+  sshlogin_dst_ssh_dir: unknown;
   sshlogin_src_dst: unknown;
-  sshlogin_src_ssh_dir: unknown;
-  sshlogin_src_ssh_config: unknown;
-  sshlogin_src_known_hosts: unknown;
-  sshlogin_src_key_file: unknown;
-  sshlogin_src_dst_name: unknown;
   sshlogin_src_dst_host: unknown;
+  sshlogin_src_dst_name: unknown;
   sshlogin_src_dst_port: unknown;
+  sshlogin_src_key_file: unknown;
+  sshlogin_src_known_hosts: unknown;
+  sshlogin_src_ssh_config: unknown;
+  sshlogin_src_ssh_dir: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

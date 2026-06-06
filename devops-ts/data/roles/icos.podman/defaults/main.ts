@@ -3,11 +3,12 @@ import type { Vars } from "../../../../roles/icos.podman/_ctx.ts";
 import { context } from "../../../../lib/context.ts";
 
 interface Self {
-  podman_version: unknown;
-  podman_src_dir: unknown;
   conmon_min_version: unknown;
   golang_min_version: unknown;
+  podman_arch: unknown;
   podman_docker: unknown;
+  podman_src_dir: unknown;
+  podman_version: unknown;
 }
 const { V, tmpl } = context<Self>();
 

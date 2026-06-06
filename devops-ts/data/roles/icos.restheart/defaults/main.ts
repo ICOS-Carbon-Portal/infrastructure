@@ -6,10 +6,10 @@ import type { Globals } from "../../../../lib/globals.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  restheart_user: unknown;
-  restheart_home: unknown;
   restheart_bind_port: unknown;
+  restheart_home: unknown;
   restheart_port: unknown;
+  restheart_user: unknown;
 }
 const { V, tmpl } = context<Self & Globals & ParamVars>();
 

@@ -3,12 +3,12 @@ import type { Vars } from "../../../../roles/icos.flexextract/_ctx.ts";
 import { context } from "../../../../lib/context.ts";
 
 interface Self {
-  flexextract_user: unknown;
+  flexextract_bin_dir: unknown;
+  flexextract_download_cont: unknown;
+  flexextract_download_host: unknown;
   flexextract_home: unknown;
   flexextract_tag: unknown;
-  flexextract_download_host: unknown;
-  flexextract_download_cont: unknown;
-  flexextract_bin_dir: unknown;
+  flexextract_user: unknown;
 }
 const { V, tmpl } = context<Self>();
 

@@ -4,10 +4,10 @@ import { context } from "../../../../lib/context.ts";
 
 interface Self {
   jupyter_home: unknown;
-  jupyter_port: unknown;
-  jupyter_jusers_enable: unknown;
-  jupyter_hub_config_defaults: unknown;
   jupyter_hub_config: unknown;
+  jupyter_hub_config_defaults: unknown;
+  jupyter_jusers_enable: unknown;
+  jupyter_port: unknown;
   jusers_home: unknown;
   jusers_venv: unknown;
 }

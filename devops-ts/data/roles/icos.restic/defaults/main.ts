@@ -3,16 +3,16 @@ import type { Vars } from "../../../../roles/icos.restic/_ctx.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  restic_upgrade: unknown;
   restic_architecture: unknown;
-  restic_version: unknown;
+  restic_upgrade: unknown;
   restic_url_map: unknown;
+  restic_version: unknown;
 }
-const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & BuiltinVars & SharedVars & ParamVars>();
 
 export default {
   "restic_upgrade": V.upgrade_everything.default(false).bool(),

@@ -7,10 +7,10 @@ import type { ParamVars } from "../../../../lib/paramvars.ts";
 import type { VaultVars } from "../../../../lib/vaultvars.ts";
 
 interface Self {
-  virtuoso_home: unknown;
   virtuoso_bind_host: unknown;
-  virtuoso_http_port: unknown;
+  virtuoso_home: unknown;
   virtuoso_host: unknown;
+  virtuoso_http_port: unknown;
   virtuoso_port: unknown;
 }
 const { V, tmpl } = context<Self & Globals & ParamVars & VaultVars>();

@@ -2,19 +2,19 @@
 import type { Vars } from "../../../../roles/icos.caddy/_ctx.ts";
 import { iff } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 
 interface Self {
-  caddy_global_conf: unknown;
-  caddy_site_state: unknown;
-  caddy_modules: unknown;
-  caddy_dropin_path: unknown;
-  caddy_via_xcaddy: unknown;
   caddy_bin: unknown;
+  caddy_dropin_path: unknown;
+  caddy_global_conf: unknown;
+  caddy_modules: unknown;
+  caddy_site_state: unknown;
   caddy_upgrade: unknown;
+  caddy_via_xcaddy: unknown;
   xcaddy_upgrade: unknown;
 }
-const { V } = context<Self & AllVars>();
+const { V } = context<Self & SharedVars>();
 
 export default {
   "caddy_global_conf": ':80 {\n  respond "Not found." 404\n}\n',

@@ -5,16 +5,16 @@ import { hostvar, jinja } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 
 interface Self {
-  borg_upgrade: unknown;
-  borg_version: unknown;
-  borg_url_map: unknown;
   borg_libc_map: unknown;
   borg_libc_version: unknown;
+  borg_upgrade: unknown;
+  borg_url_map: unknown;
+  borg_version: unknown;
 }
-const { V, tmpl } = context<Self & Globals & BuiltinVars & AllVars>();
+const { V, tmpl } = context<Self & Globals & BuiltinVars & SharedVars>();
 
 export default {
   "borg_upgrade": V.upgrade_everything.default(false).bool(),

@@ -2,10 +2,28 @@
 import type { VarsFile } from "../../../../lib/data.ts";
 import { jinja } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
-const { V, tmpl } = context<AllVars & ParamVars>();
+interface Self {
+  certbot_conf_name: unknown;
+  certbot_domains: unknown;
+  database_name: unknown;
+  database_user: unknown;
+  domain: unknown;
+  drupal_docker_port: unknown;
+  drupal_home: unknown;
+  drupal_modules: unknown;
+  drupal_version: unknown;
+  drupal_websites: unknown;
+  mysql_docker_port: unknown;
+  nginx_conf_name: unknown;
+  project_dir: unknown;
+  robots_txt: unknown;
+  ssl_domains: unknown;
+  trusted_host: unknown;
+  update: unknown;
+}
+const { V, tmpl } = context<Self & ParamVars>();
 
 export default {
   "project_dir": tmpl`${V.drupal_home}/${V.website}/drupal`,

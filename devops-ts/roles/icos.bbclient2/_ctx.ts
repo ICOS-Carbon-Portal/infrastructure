@@ -6,7 +6,7 @@ import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
-import type { AllVars } from "../../lib/allvars.ts";
+import type { SharedVars } from "../../lib/sharedvars.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
@@ -33,5 +33,5 @@ export interface Vars {
 }
 
 export const { V, tmpl } = context<
-  Vars & Globals & BuiltinVars & AllVars & ParamVars
+  Vars & Globals & BuiltinVars & SharedVars & ParamVars
 >();

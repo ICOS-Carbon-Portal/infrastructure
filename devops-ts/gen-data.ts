@@ -253,6 +253,13 @@ for (const rel of await dataYmls()) {
   // Self excludes names already in Globals/BuiltinVars (avoid intersection
   // collapsing to `never`); they remain reachable via the widening.
   const selfKeys = ownKeys.filter((k) => !GLOBALS.has(k) && !BUILTINS.has(k));
+  // The "self" var set for V.x resolution is the WHOLE role's vars (from its
+  // _ctx `Vars`), not just this file's keys — a role data file may reference a
+  // sibling var defined in another of the role's defaults/vars files. Only refs
+  // outside this set are cross-role and resolve via SharedVars.
+  const dataRole = rel.match(/^roles\/([^/]+)\//)?.[1];
+  const roleOwn = (dataRole ? roleVarsKeys(dataRole) : null) ?? new Set<string>();
+  const selfVarSet = new Set<string>([...selfKeys, ...roleOwn]);
   // Reserved keys this file RESTATES (a global/builtin set in a role's
   // defaults) — typed name-only via `Restated<Globals|BuiltinVars, ...>`.
   const globalKeys = ownKeys.filter((k) => GLOBALS.has(k));
@@ -521,12 +528,12 @@ for (const rel of await dataYmls()) {
     const usedNames = new Set(
       [...literal.matchAll(/\bV\.([A-Za-z_]\w*)/g)].map((m) => m[1]),
     );
-    const selfSet = new Set(selfKeys);
+    const selfSet = selfVarSet;
     const needs = {
       Self: false,
       Globals: false,
       BuiltinVars: false,
-      AllVars: false,
+      SharedVars: false,
       ParamVars: false,
       VaultVars: false,
       VarShapes: false,
@@ -538,17 +545,25 @@ for (const rel of await dataYmls()) {
       else if (BUILTINS.has(n)) needs.BuiltinVars = true;
       else if (PARAMVARS.has(n)) needs.ParamVars = true;
       else if (VAULTVARS.has(n)) needs.VaultVars = true;
-      else if (ALLVARS.has(n)) needs.AllVars = true;
+      // A cross-role ref (in AllVars, not own/other-registry) resolves through
+      // the small SharedVars registry (gen-contexts collects every such name).
+      else if (ALLVARS.has(n)) needs.SharedVars = true;
     }
     needs.Self ||= usedNames.size === 0; // floor: context<Self>
     // A restated global/builtin (`Restated<Globals, ...>` in the satisfies type)
     // needs the registry imported even when no `V.<global>` references it.
     needs.Globals ||= restateGlobals;
     needs.BuiltinVars ||= restateBuiltins;
+    // Self lists the role's whole own-var set (this file's keys + sibling vars),
+    // so a same-role reference to a var defined in another of the role's files
+    // resolves here rather than falling through to SharedVars.
+    const selfNames = [...selfVarSet].sort();
     const self = needs.Self
-      ? (selfKeys.length
+      ? (selfNames.length
         ? `interface Self {\n${
-          selfKeys.map((k) => `  ${k}: unknown;`).join("\n")
+          selfNames.map((k) =>
+            `  ${isBareIdent(k) ? k : JSON.stringify(k)}: unknown;`
+          ).join("\n")
         }\n}\n`
         : `type Self = Record<never, never>;\n`)
       : "";
@@ -562,8 +577,8 @@ for (const rel of await dataYmls()) {
       (needs.BuiltinVars
         ? `import type { BuiltinVars } from "${ups}lib/builtins.ts";\n`
         : "") +
-      (needs.AllVars
-        ? `import type { AllVars } from "${ups}lib/allvars.ts";\n`
+      (needs.SharedVars
+        ? `import type { SharedVars } from "${ups}lib/sharedvars.ts";\n`
         : "") +
       (needs.ParamVars
         ? `import type { ParamVars } from "${ups}lib/paramvars.ts";\n`

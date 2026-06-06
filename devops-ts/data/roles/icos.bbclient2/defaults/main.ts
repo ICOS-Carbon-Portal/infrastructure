@@ -4,32 +4,32 @@ import type { Restated } from "../../../../lib/data.ts";
 import { hostvar, randomInt } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { Globals } from "../../../../lib/globals.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  bbclient_user: unknown;
-  bbclient_timer_conf: unknown;
-  bbclient_patterns: unknown;
-  bbclient_ssh_dir: unknown;
+  bbclient_all: unknown;
   bbclient_bin_dir: unknown;
   bbclient_borg_dir: unknown;
-  bbclient_ssh_bin: unknown;
-  bbclient_ssh_config: unknown;
-  bbclient_ssh_hosts: unknown;
-  bbclient_ssh_key: unknown;
-  bbclient_repo_url: unknown;
-  bbclient_repo_file: unknown;
-  bbclient_wrapper: unknown;
-  bbclient_one: unknown;
-  bbclient_all: unknown;
-  bbclient_remote_user: unknown;
-  bbclient_remote_repo: unknown;
   bbclient_coldbackup_hour: unknown;
   bbclient_coldbackup_minute: unknown;
+  bbclient_one: unknown;
+  bbclient_patterns: unknown;
   bbclient_patterns_path: unknown;
+  bbclient_remote_repo: unknown;
+  bbclient_remote_user: unknown;
+  bbclient_repo_file: unknown;
+  bbclient_repo_url: unknown;
+  bbclient_ssh_bin: unknown;
+  bbclient_ssh_config: unknown;
+  bbclient_ssh_dir: unknown;
+  bbclient_ssh_hosts: unknown;
+  bbclient_ssh_key: unknown;
+  bbclient_timer_conf: unknown;
+  bbclient_user: unknown;
+  bbclient_wrapper: unknown;
 }
-const { V, tmpl } = context<Self & Globals & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & Globals & SharedVars & ParamVars>();
 
 export default {
   "bbclient_user": "root",

@@ -6,19 +6,19 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  dbin_download_base: unknown;
-  dbin_download_dest: unknown;
+  _dbin_name: unknown;
+  _dbin_path: unknown;
+  _dbin_src: unknown;
+  _dbin_unar: unknown;
+  _dbin_url: unknown;
+  dbin__down: unknown;
+  dbin__plat: unknown;
+  dbin__vers: unknown;
+  dbin_arch: unknown;
   dbin_bin_dir: unknown;
   dbin_default_url: unknown;
-  dbin_arch: unknown;
-  _dbin_url: unknown;
-  _dbin_unar: unknown;
-  _dbin_path: unknown;
-  _dbin_name: unknown;
-  _dbin_src: unknown;
-  dbin__down: unknown;
-  dbin__vers: unknown;
-  dbin__plat: unknown;
+  dbin_download_base: unknown;
+  dbin_download_dest: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

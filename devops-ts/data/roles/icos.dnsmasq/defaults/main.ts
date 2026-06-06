@@ -4,11 +4,11 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  dnsmasq_hosts: unknown;
-  dnsmasq_config_name: unknown;
-  dnsmasq_config_state: unknown;
   dnsmasq_config_dir: unknown;
   dnsmasq_config_file: unknown;
+  dnsmasq_config_name: unknown;
+  dnsmasq_config_state: unknown;
+  dnsmasq_hosts: unknown;
   dnsmasq_service_name: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();

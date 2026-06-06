@@ -3,16 +3,16 @@ import type { Vars } from "../../../../roles/ops.zfs/_ctx.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  httm_upgrade: unknown;
   httm_architecture: unknown;
-  httm_version: unknown;
+  httm_upgrade: unknown;
   httm_url_map: unknown;
+  httm_version: unknown;
 }
-const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & BuiltinVars & SharedVars & ParamVars>();
 
 export default {
   "httm_upgrade": V.upgrade_everything.default(false).bool(),

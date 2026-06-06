@@ -5,13 +5,13 @@ import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  sftp_user_owner: unknown;
+  _sftp_create_home: unknown;
+  _sftp_parent_dir: unknown;
   sftp_user_group: unknown;
+  sftp_user_hostdesc: unknown;
+  sftp_user_owner: unknown;
   sftp_user_password: unknown;
   sftp_user_pubkey: unknown;
-  sftp_user_hostdesc: unknown;
-  _sftp_parent_dir: unknown;
-  _sftp_create_home: unknown;
 }
 const { V } = context<Self & BuiltinVars & ParamVars>();
 

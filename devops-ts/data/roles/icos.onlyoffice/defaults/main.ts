@@ -3,11 +3,11 @@ import type { Vars } from "../../../../roles/icos.onlyoffice/_ctx.ts";
 import { context } from "../../../../lib/context.ts";
 
 interface Self {
-  onlyoffice_version: unknown;
-  onlyoffice_port: unknown;
-  onlyoffice_home: unknown;
   onlyoffice_build_dir: unknown;
   onlyoffice_domain: unknown;
+  onlyoffice_home: unknown;
+  onlyoffice_port: unknown;
+  onlyoffice_version: unknown;
 }
 const { V, tmpl } = context<Self>();
 

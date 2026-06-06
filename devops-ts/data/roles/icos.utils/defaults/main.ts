@@ -3,32 +3,32 @@ import type { Vars } from "../../../../roles/icos.utils/_ctx.ts";
 import { hostvar } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  ripgrep_version: unknown;
-  ripgrep_url_map: unknown;
-  ncdu_version: unknown;
-  ncdu_arch_map: unknown;
-  ncdu_url: unknown;
-  fd_architecture: unknown;
-  fd_version: unknown;
-  fd_url_map: unknown;
-  watchexec_architecture: unknown;
-  watchexec_version: unknown;
-  watchexec_url_map: unknown;
-  btop_version: unknown;
   btop_home: unknown;
   btop_url_map: unknown;
-  trippy_version: unknown;
-  trippy_url_map: unknown;
-  lazygit_upgrade: unknown;
+  btop_version: unknown;
+  fd_architecture: unknown;
+  fd_url_map: unknown;
+  fd_version: unknown;
   lazygit_architecture: unknown;
-  lazygit_version: unknown;
+  lazygit_upgrade: unknown;
   lazygit_url_map: unknown;
+  lazygit_version: unknown;
+  ncdu_arch_map: unknown;
+  ncdu_url: unknown;
+  ncdu_version: unknown;
+  ripgrep_url_map: unknown;
+  ripgrep_version: unknown;
+  trippy_url_map: unknown;
+  trippy_version: unknown;
+  watchexec_architecture: unknown;
+  watchexec_url_map: unknown;
+  watchexec_version: unknown;
 }
-const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & BuiltinVars & SharedVars & ParamVars>();
 
 export default {
   "ripgrep_version": hostvar("localhost").ripgrep_version,

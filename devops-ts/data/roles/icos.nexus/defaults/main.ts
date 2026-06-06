@@ -4,14 +4,14 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
+  certbot_domains: unknown;
+  certbot_name: unknown;
+  nexus_domains: unknown;
   nexus_home: unknown;
   nexus_host_port: unknown;
-  nexus_domains: unknown;
   nexus_version: unknown;
-  certbot_name: unknown;
-  certbot_domains: unknown;
-  nginxsite_name: unknown;
   nginxsite_file: unknown;
+  nginxsite_name: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

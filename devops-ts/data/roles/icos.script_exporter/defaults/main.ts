@@ -4,14 +4,14 @@ import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 
 interface Self {
-  sexp_home: unknown;
-  sexp_config_file: unknown;
-  sexp_listen: unknown;
   sexp_arch: unknown;
   sexp_arch_map: unknown;
-  sexp_scripts_venv: unknown;
-  sexp_scripts_repo: unknown;
+  sexp_config_file: unknown;
+  sexp_home: unknown;
+  sexp_listen: unknown;
   sexp_scripts_enable: unknown;
+  sexp_scripts_repo: unknown;
+  sexp_scripts_venv: unknown;
 }
 const { V, tmpl } = context<Self & BuiltinVars>();
 

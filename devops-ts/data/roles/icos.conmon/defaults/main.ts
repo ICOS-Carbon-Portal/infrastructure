@@ -3,16 +3,16 @@ import type { Vars } from "../../../../roles/icos.conmon/_ctx.ts";
 import { register } from "../../../../lib/ansible.ts";
 import { jinja } from "../../../../lib/ansible.ts";
 import { context } from "../../../../lib/context.ts";
-import type { AllVars } from "../../../../lib/allvars.ts";
+import type { SharedVars } from "../../../../lib/sharedvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  conmon_version_install: unknown;
-  conmon_local_version_ok: unknown;
   conmon_apt_version_ok: unknown;
+  conmon_local_version_ok: unknown;
   conmon_url: unknown;
+  conmon_version_install: unknown;
 }
-const { V, tmpl } = context<Self & AllVars & ParamVars>();
+const { V, tmpl } = context<Self & SharedVars & ParamVars>();
 
 export default {
   "conmon_version_install": "2.1.4",

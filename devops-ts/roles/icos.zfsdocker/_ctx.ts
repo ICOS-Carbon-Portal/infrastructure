@@ -4,7 +4,7 @@
 // only the registries this role's task/handler files reference.
 import type { Tmpl } from "../../lib/ansible.ts";
 import { context } from "../../lib/context.ts";
-import type { AllVars } from "../../lib/allvars.ts";
+import type { SharedVars } from "../../lib/sharedvars.ts";
 
 export interface Vars {
   zfsdocker_size: string;
@@ -12,5 +12,5 @@ export interface Vars {
 }
 
 export const { V, tmpl } = context<
-  Vars & AllVars
+  Vars & SharedVars
 >();

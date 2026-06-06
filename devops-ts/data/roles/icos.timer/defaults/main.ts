@@ -4,14 +4,14 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  timer_user: unknown;
-  timer_home: unknown;
-  timer_exec: unknown;
-  timer_dest: unknown;
-  timer_desc: unknown;
-  timer_wdir: unknown;
-  _timer_sysd_timer: unknown;
   _timer_sysd_service: unknown;
+  _timer_sysd_timer: unknown;
+  timer_desc: unknown;
+  timer_dest: unknown;
+  timer_exec: unknown;
+  timer_home: unknown;
+  timer_user: unknown;
+  timer_wdir: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
 

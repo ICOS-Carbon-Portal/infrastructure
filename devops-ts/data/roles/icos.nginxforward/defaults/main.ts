@@ -4,15 +4,15 @@ import { context } from "../../../../lib/context.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
 interface Self {
-  nginxforward_host: unknown;
+  nginxforward_cert_conf: unknown;
+  nginxforward_cert_path: unknown;
   nginxforward_enable: unknown;
   nginxforward_file: unknown;
+  nginxforward_host: unknown;
+  nginxforward_key_path: unknown;
   nginxforward_path_available: unknown;
   nginxforward_path_enabled: unknown;
   nginxforward_site_path: unknown;
-  nginxforward_cert_path: unknown;
-  nginxforward_key_path: unknown;
-  nginxforward_cert_conf: unknown;
   nginxforward_user_file: unknown;
 }
 const { V, tmpl } = context<Self & ParamVars>();
