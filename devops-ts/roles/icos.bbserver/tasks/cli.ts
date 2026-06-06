@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { randomInt, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -24,8 +24,8 @@ export default [
     cron: {
       user: "bbserver",
       job: tmpl`${V.bbserver_home}/bin/bbserver list > /dev/null 2>&1`,
-      hour: expr("4 | random(seed='bbserver')"),
-      minute: expr("60 | random(seed='bbserver')"),
+      hour: randomInt(4, "bbserver"),
+      minute: randomInt(60, "bbserver"),
       name: "bbserver_prime_borg_cache",
     },
   },

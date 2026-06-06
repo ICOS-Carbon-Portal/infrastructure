@@ -1,5 +1,5 @@
 // Tests for concat(): a Jinja `+` expression, replacing expr("a + b").
-import { concat, expr } from "./template.ts";
+import { concat, expr, iff, localVar, pct, randomInt } from "./template.ts";
 import { V } from "./vars.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
@@ -30,5 +30,35 @@ Deno.test("concat: variadic (3+ parts)", () => {
       .toText(),
     "{{ jupyter_domains + ganymede_domains + dokku_static_domains }}",
     "three-way concat",
+  );
+});
+
+Deno.test("pct: python %-format (postgresql package name)", () => {
+  eq(
+    pct("postgresql-%s", V.postgresql_version).toText(),
+    "{{ 'postgresql-%s' % postgresql_version }}",
+    "postgresql-%s",
+  );
+  // inside a ternary (nfs4 firewall rule)
+  eq(
+    iff(V.nfs4_interface, pct("-i %s", V.nfs4_interface), "").toText(),
+    "{{ '-i %s' % nfs4_interface if nfs4_interface else '' }}",
+    "nfs4 -i %s",
+  );
+});
+
+Deno.test("randomInt: seeded random filter on an int literal", () => {
+  eq(
+    randomInt(4, "bbserver").toText(),
+    "{{ 4 | random(seed='bbserver') }}",
+    "bbserver cron hour",
+  );
+});
+
+Deno.test("localVar: typed task-local var reference", () => {
+  eq(
+    localVar<{ image: string }>("conf").image.toText(),
+    "{{ conf.image }}",
+    "jupyter registry image",
   );
 });

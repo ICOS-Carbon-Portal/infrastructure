@@ -13,6 +13,6 @@ export interface Vars {
   ping_enabled: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

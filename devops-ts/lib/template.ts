@@ -346,6 +346,41 @@ export function concat(...parts: FilterArg[]): Template {
 }
 
 /**
+ * Python `%` string formatting: `pct(fmt, arg)` -> `{{ '<fmt>' % <arg> }}`. The
+ * format is a single-quoted literal; the argument is a filter-arg (a `V.x` ref
+ * renders bare). Replaces `expr("'pkg-%s' % version")`.
+ *
+ *   pct("postgresql-%s", V.postgresql_version)  // {{ 'postgresql-%s' % postgresql_version }}
+ */
+export function pct(fmt: string, arg: FilterArg): Template {
+  return new Template([
+    { kind: "ref", jinja: `'${fmt}' % ${filterArgText(arg)}` },
+  ]);
+}
+
+/**
+ * The Jinja2 `random` filter with a deterministic seed, over an integer upper
+ * bound: `randomInt(max, seed)` -> `{{ <max> | random(seed='<seed>') }}` (a
+ * stable pseudo-random int in `[0, max)`). Replaces
+ * `expr("4 | random(seed='x')")` (e.g. spreading cron jobs across hosts).
+ */
+export function randomInt(max: number, seed: string): Template {
+  return new Template([
+    { kind: "ref", jinja: `${max} | random(seed='${seed}')` },
+  ]);
+}
+
+/**
+ * A typed reference to a task-local variable (one bound in a task's `vars:`):
+ * `localVar<{image: string}>("conf").image` -> `{{ conf.image }}`. The shape `T`
+ * names the fields the playbook accesses; the proxy serves any of them. This is
+ * the task-`vars:` counterpart of `V.x` (globals) and the loop `item` proxy.
+ */
+export function localVar<T>(name: string): VarRef<T> {
+  return varProxy(name) as unknown as VarRef<T>;
+}
+
+/**
  * A Jinja `{% for %}` loop rendered as a verbatim fragment. `body` receives a
  * typed reference to the loop variable; the iterable is a checked ref. Replaces
  * the `rawTmpl("{% for x in y %}")` / `expr("x")` / `rawTmpl("{% endfor %}")`

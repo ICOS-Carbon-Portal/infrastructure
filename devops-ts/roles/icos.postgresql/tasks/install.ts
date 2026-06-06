@@ -1,5 +1,5 @@
-import { type TaskFile, truthy } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { pct, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.
 // Debian/Ubuntu then allows multiple installed versions/clusters of postgresql,
@@ -26,13 +26,13 @@ export default [
   {
     name: "Install postgresql",
     apt: {
-      name: expr("'postgresql-%s' % postgresql_version"),
+      name: pct("postgresql-%s", V.postgresql_version),
     },
   },
   {
     name: "Install postgis",
     apt: {
-      name: expr("'postgresql-%s-postgis-3' % postgresql_version"),
+      name: pct("postgresql-%s-postgis-3", V.postgresql_version),
     },
     when: truthy(V.postgresql_postgis_enable),
   },

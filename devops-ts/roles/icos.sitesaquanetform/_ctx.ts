@@ -12,6 +12,6 @@ export interface Vars {
   project_dir: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & VaultVars
 >();

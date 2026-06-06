@@ -10,6 +10,6 @@ export interface Vars {
   nfs4_interface: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars & BuiltinVars
 >();

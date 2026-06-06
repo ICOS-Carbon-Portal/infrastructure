@@ -1,5 +1,5 @@
-import { type TaskFile, truthy } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { iff, pct, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -14,7 +14,7 @@ export default [
     iptables_raw: {
       name: "allow_nfs4",
       rules: tmpl`-A INPUT ${
-        expr('"-i %s" % nfs4_interface if nfs4_interface else ""')
+        iff(V.nfs4_interface, pct("-i %s", V.nfs4_interface), "")
       } -p tcp --dport 2049 -j ACCEPT`,
     },
   },

@@ -17,6 +17,6 @@ export interface Vars {
   sftp_user_pubkey: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars & VaultVars
 >();

@@ -3,6 +3,7 @@
 // Per-role variable context: 10 own variables, widened with
 // only the registries this role's task/handler files reference.
 import { context } from "../../lib/context.ts";
+import type { ParamVars } from "../../lib/paramvars.ts";
 
 export interface Vars {
   postgresql_bin: unknown;
@@ -17,6 +18,6 @@ export interface Vars {
   postgresql_ssh_keys: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl } = context<
-  Vars
+export const { V, tmpl, rawTmpl } = context<
+  Vars & ParamVars
 >();

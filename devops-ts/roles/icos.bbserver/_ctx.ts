@@ -13,6 +13,6 @@ export interface Vars {
   bbserver_textfiles: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & Globals & BuiltinVars
 >();

@@ -12,6 +12,6 @@ export interface Vars {
   stiltrun_user: unknown;
 }
 
-export const { V, tmpl, expr, rawTmpl } = context<
+export const { V, tmpl, rawTmpl } = context<
   Vars
 >();

@@ -16,6 +16,6 @@ export interface Vars {
   jusers_venv: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();
