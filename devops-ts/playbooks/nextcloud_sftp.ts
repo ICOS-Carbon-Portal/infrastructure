@@ -1,7 +1,6 @@
 // display instructions
 //   run nextcloud_sftp.yml howto
 import {
-  expr,
   loopOverVar,
   type Playbook,
   rawTmpl,
@@ -99,8 +98,9 @@ export default [
           name: V.sftp_user,
           uid: V.host_uid,
           group: V.host_uid,
-          password: expr(
-            "vault_nc_paul_upload_password |\n   password_hash('sha512', vault_pw_salt)",
+          password: V.vault_nc_paul_upload_password.passwordHash(
+            "sha512",
+            V.vault_pw_salt,
           ),
           non_unique: true,
           create_home: true,

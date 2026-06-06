@@ -64,9 +64,7 @@
         name: "{{ sftp_user }}"
         uid: "{{ host_uid }}"
         group: "{{ host_uid }}"
-        password: >-
-          {{ vault_nc_paul_upload_password |
-             password_hash('sha512', vault_pw_salt) }}
+        password: "{{ vault_nc_paul_upload_password | password_hash('sha512', vault_pw_salt) }}"
         non_unique: yes
         create_home: yes
 

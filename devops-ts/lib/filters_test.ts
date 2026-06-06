@@ -35,3 +35,19 @@ Deno.test("mapAttr on a register field .ref", () => {
     "mtail loop",
   );
 });
+
+Deno.test("passwordHash: ansible.builtin password_hash filter", () => {
+  // scheme + ref salt (nextcloud_sftp sftp user password)
+  eq(
+    V.vault_nc_paul_upload_password.passwordHash("sha512", V.vault_pw_salt)
+      .toText(),
+    "{{ vault_nc_paul_upload_password | password_hash('sha512', vault_pw_salt) }}",
+    "password with salt",
+  );
+  // scheme only (salt omitted)
+  eq(
+    V.vault_nc_paul_upload_password.passwordHash("sha512").toText(),
+    "{{ vault_nc_paul_upload_password | password_hash('sha512') }}",
+    "password without salt",
+  );
+});

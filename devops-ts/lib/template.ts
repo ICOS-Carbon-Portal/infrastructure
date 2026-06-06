@@ -69,10 +69,15 @@ export class Template {
     return this.toText();
   }
 
-  // --- Jinja filters ----------------------------------------------------------
+  // --- filters ----------------------------------------------------------------
   // Chainable, each appending `| <filter>` (canonical spacing) to a single-ref
   // template: V.x.default(false).bool() -> {{ x | default(False) | bool }}.
   // Only the common filters are modelled; anything else stays an expr() escape.
+  //
+  // Grouped by origin: filters built into Jinja2 itself, and filters supplied by
+  // Ansible's `ansible.builtin` filter plugins. (Functionally both are just
+  // `| name(args)` in the rendered output; the split is documentation so a reader
+  // knows which engine each one comes from.)
 
   /** Append `| <text>`; valid only on a single-ref template (V.x, expr(...)). */
   private filter(text: string): Template {
@@ -83,41 +88,57 @@ export class Template {
     return new Template([{ kind: "ref", jinja: `${p[0].jinja} | ${text}` }]);
   }
 
+  // -- Jinja2 built-in filters --
   /** `| default(...)`; pass `V.omit` for `default(omit)`, a ref for a var. */
   default(fallback: FilterArg): Template {
     return this.filter(`default(${filterArgText(fallback)})`);
   }
-  bool(): Template {
-    return this.filter("bool");
-  }
+  /** `| int` — convert to an integer. */
   int(): Template {
     return this.filter("int");
   }
+  /** `| lower` — lowercase a string. */
   lower(): Template {
     return this.filter("lower");
   }
+  /** `| first` — the first element of a list. */
   first(): Template {
     return this.filter("first");
   }
+  /** `| join(sep)` — join a list into a string. */
+  join(sep: string): Template {
+    return this.filter(`join('${sep}')`);
+  }
+  /** `| map(attribute='attr')` — pluck an attribute from each list item. */
+  mapAttr(attr: string): Template {
+    return this.filter(`map(attribute='${attr}')`);
+  }
+
+  // -- Ansible `ansible.builtin` filter plugins --
+  // https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html#filter-plugins
+  /** `| bool` — interpret a value (`"yes"`, `1`, ...) as a boolean. */
+  bool(): Template {
+    return this.filter("bool");
+  }
+  /** `| dirname` — the directory portion of a path. */
   dirname(): Template {
     return this.filter("dirname");
   }
+  /** `| basename` — the final component of a path. */
   basename(): Template {
     return this.filter("basename");
   }
+  /** `| splitext` — split a path into `(root, ext)`. */
   splitext(): Template {
     return this.filter("splitext");
   }
+  /** `| b64decode` — decode a base64 string. */
   b64decode(): Template {
     return this.filter("b64decode");
   }
   /** `| combine(other)` — merge two dict-valued variables. */
   combine(other: Template): Template {
     return this.filter(`combine(${filterArgText(other)})`);
-  }
-  /** `| join(sep)` — join a list into a string. */
-  join(sep: string): Template {
-    return this.filter(`join('${sep}')`);
   }
   /** `| fileglob` — expand a glob to matching paths. */
   fileglob(): Template {
@@ -127,9 +148,15 @@ export class Template {
   difference(other: FilterArg): Template {
     return this.filter(`difference(${filterArgText(other)})`);
   }
-  /** `| map(attribute='attr')` — pluck an attribute from each list item. */
-  mapAttr(attr: string): Template {
-    return this.filter(`map(attribute='${attr}')`);
+  /**
+   * `| password_hash(scheme[, salt])` — hash a password with crypt. `scheme` is
+   * a crypt method like `"sha512"`; `salt` is an optional ref/literal salt.
+   */
+  passwordHash(scheme: string, salt?: FilterArg): Template {
+    const args = salt === undefined
+      ? `'${scheme}'`
+      : `'${scheme}', ${filterArgText(salt)}`;
+    return this.filter(`password_hash(${args})`);
   }
 
   /**

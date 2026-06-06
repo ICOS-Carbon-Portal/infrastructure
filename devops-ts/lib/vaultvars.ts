@@ -78,6 +78,7 @@ export interface VaultVars {
   vault_postgis_user_conf: string;
   vault_postgis_writer_pass: string;
   vault_prometheus_promlens_token: string;
+  vault_pw_salt: string;
   vault_quince3_user_conf: string;
   vault_rdflog_db_pass: string;
   vault_rdflog_rep_pass: string;
