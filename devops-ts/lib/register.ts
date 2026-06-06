@@ -69,6 +69,11 @@ export interface StatResult extends Expr {
   gid: Field;
 }
 
+/** A registered `.status` sub-result (the `systemd` module's status dict). */
+export interface SystemdStatus extends Field {
+  ActiveState: Field;
+}
+
 /** The common fields of an Ansible task result. */
 export interface Result {
   changed: Field;
@@ -77,7 +82,7 @@ export interface Result {
   stdout: PyStr;
   stderr: PyStr;
   stdout_lines: PyStrList;
-  status: Field;
+  status: SystemdStatus;
   msg: PyStr;
   dest: Field;
   path: Field;

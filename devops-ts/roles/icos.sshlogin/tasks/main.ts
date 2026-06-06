@@ -9,7 +9,7 @@ import {
   type TaskFile,
   varByName,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _src_user = register("_src_user");
 
@@ -85,7 +85,7 @@ export default [
           name: V.sshlogin_src_dst,
           key: V.item,
         },
-        loop: expr("sshlogin_dst_host_keys.strip().split('\\n')"),
+        loop: V.sshlogin_dst_host_keys.strip().split("\\n"),
       },
       {
         name: "Add ssh config",

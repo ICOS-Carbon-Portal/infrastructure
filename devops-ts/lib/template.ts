@@ -148,6 +148,10 @@ export class Template {
   difference(other: FilterArg): Template {
     return this.filter(`difference(${filterArgText(other)})`);
   }
+  /** `| regex_replace(pattern, replacement)` — regex substitution. */
+  regexReplace(pattern: string, replacement: string): Template {
+    return this.filter(`regex_replace('${pattern}', '${replacement}')`);
+  }
   /**
    * `| password_hash(scheme[, salt])` — hash a password with crypt. `scheme` is
    * a crypt method like `"sha512"`; `salt` is an optional ref/literal salt.
@@ -168,6 +172,14 @@ export class Template {
   }
   rstrip(chars: string): Template {
     return this.method(`rstrip('${chars}')`);
+  }
+  /** `.strip()` — strip leading/trailing whitespace. */
+  strip(): Template {
+    return this.method("strip()");
+  }
+  /** `.split(sep)` — split a string into a list (pass `"\\n"` for a newline). */
+  split(sep: string): Template {
+    return this.method(`split('${sep}')`);
   }
   private method(call: string): Template {
     const p = this.parts;
@@ -291,7 +303,7 @@ export function rawTmpl(text: string): RawTemplate {
  *
  * Replaces `expr("lookup('template', '...')")`.
  */
-export type LookupPlugin = "template" | "file" | "env" | "vars";
+export type LookupPlugin = "template" | "file" | "env" | "vars" | "pipe";
 
 type LookupKwargs = Record<string, FilterArg>;
 

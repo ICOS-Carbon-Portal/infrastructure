@@ -1,5 +1,10 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { or, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _compose = register("_compose");
+const _dockerfile = register("_dockerfile");
+const _jarfile = register("_jarfile");
+const _config = register("_config");
 
 export default [
   // https://fairdatapoint.readthedocs.io
@@ -17,7 +22,7 @@ export default [
       dest: V.fdp_home,
       lstrip_blocks: true,
     },
-    register: "_compose",
+    register: _compose,
   },
   {
     name: "Copy Dockerfile",
@@ -25,7 +30,7 @@ export default [
       src: "Dockerfile",
       dest: V.fdp_home,
     },
-    register: "_dockerfile",
+    register: _dockerfile,
   },
   // either get a copy of the jar in production or package the FAIRDataPoint project anew (https://github.com/ICOS-Carbon-Portal/FAIRDataPoint)
   {
@@ -34,7 +39,7 @@ export default [
       src: V.fdp_jar_file,
       dest: tmpl`${V.fdp_home}/fdp.jar`,
     },
-    register: "_jarfile",
+    register: _jarfile,
   },
   {
     name: "Copy application.yml",
@@ -43,7 +48,7 @@ export default [
       dest: tmpl`${V.fdp_home}/`,
       lstrip_blocks: true,
     },
-    register: "_config",
+    register: _config,
   },
   {
     name: "Copy files",
@@ -57,9 +62,12 @@ export default [
     name: "Start fairdatapoint",
     icos_docker_compose: {
       chdir: V.fdp_home,
-      force_recreate: expr(
-        "_config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed",
-      ),
+      force_recreate: or(
+        _config.changed,
+        _compose.changed,
+        _jarfile.changed,
+        _dockerfile.changed,
+      ).asValue(),
     },
   },
 ] satisfies TaskFile;

@@ -9,6 +9,6 @@ export interface Vars {
   length: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & ParamVars
 >();

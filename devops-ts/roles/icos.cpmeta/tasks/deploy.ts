@@ -1,7 +1,9 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { or, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _r = register("_r");
+const _config = register("_config");
+const _jarfile = register("_jarfile");
 
 export default [
   {
@@ -11,7 +13,7 @@ export default [
       dest: tmpl`${V.cpmeta_home}/cpmeta.jar`,
       backup: true,
     },
-    register: "_jarfile",
+    register: _jarfile,
   },
   {
     name: "Remove all but the five newest of jar file backups",
@@ -25,7 +27,7 @@ export default [
   {
     include_tasks: "restart.yml",
     vars: {
-      _restart_needed: expr("_config.changed or _jarfile.changed"),
+      _restart_needed: or(_config.changed, _jarfile.changed).asValue(),
     },
   },
 ] satisfies TaskFile;

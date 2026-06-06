@@ -6,7 +6,7 @@
 # We need to run this as a particular user, because in the case we're using
 # podman, images are stored per-user and not shared by a global daemon.
 - when: stiltrun_image_id not in docker_images.stdout
-  become: '{{ stiltrun_user != "root" }}'
+  become: "{{ stiltrun_user != 'root' }}"
   become_user: "{{ stiltrun_user }}"
   block:
     - name: Download stilt docker image

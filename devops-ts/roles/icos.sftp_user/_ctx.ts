@@ -5,6 +5,7 @@
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";
+import type { VaultVars } from "../../lib/vaultvars.ts";
 
 export interface Vars {
   _sftp_create_home: unknown;
@@ -17,5 +18,5 @@ export interface Vars {
 }
 
 export const { V, tmpl, expr } = context<
-  Vars & BuiltinVars & ParamVars
+  Vars & BuiltinVars & ParamVars & VaultVars
 >();

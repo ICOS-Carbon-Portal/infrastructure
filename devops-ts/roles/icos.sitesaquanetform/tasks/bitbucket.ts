@@ -1,7 +1,7 @@
-import { eq, register, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, lookup, register, type TaskFile } from "../../../lib/ansible.ts";
 
 const bitbucket_known_hosts = register("bitbucket_known_hosts");
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -31,8 +31,9 @@ export default [
     name: "Update bitbucket known hosts",
     known_hosts: {
       name: "bitbucket.org",
-      key: expr(
-        "lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`')",
+      key: lookup(
+        "pipe",
+        "ssh-keyscan bitbucket.org, `dig +short bitbucket.org`",
       ),
     },
     when: eq(bitbucket_known_hosts.stdout, ""),

@@ -1,4 +1,6 @@
 import {
+  iff,
+  isTruthy,
   isUndefined,
   ne,
   not,
@@ -8,7 +10,7 @@ import {
   truthy,
   varByName,
 } from "../../../lib/ansible.ts";
-import { expr, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _parent = register("_parent");
 
@@ -38,10 +40,12 @@ export default [
     name: "Create sftp user",
     user: {
       name: V.sftp_user_login,
-      password: expr(
-        "sftp_user_password | password_hash('sha512', vault_pw_salt)\n   if sftp_user_password else omit",
+      password: iff(
+        V.sftp_user_password,
+        V.sftp_user_password.passwordHash("sha512", V.vault_pw_salt),
+        V.omit,
       ),
-      create_home: expr("sftp_user_pubkey is truthy"),
+      create_home: isTruthy(V.sftp_user_pubkey).asValue(),
       shell: "/usr/sbin/nologin",
     },
     register: "_user",

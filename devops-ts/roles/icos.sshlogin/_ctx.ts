@@ -25,6 +25,6 @@ export interface Vars {
   sshlogin_src_ssh_dir: unknown;
 }
 
-export const { V, tmpl, expr } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

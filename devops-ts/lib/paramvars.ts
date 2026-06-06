@@ -181,6 +181,7 @@ export interface ParamVars {
   ssh_port: string;
   sshlogin_dst: string;
   sshlogin_dst_home: string;
+  sshlogin_dst_host_keys: string;
   sshlogin_dst_user: string;
   sshlogin_src_home: string;
   sshlogin_src_ip: string;

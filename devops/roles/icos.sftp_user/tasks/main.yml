@@ -25,9 +25,7 @@
 - name: Create sftp user
   user:
     name: "{{ sftp_user_login }}"
-    password: >-
-      {{ sftp_user_password | password_hash('sha512', vault_pw_salt)
-         if sftp_user_password else omit }}
+    password: "{{ sftp_user_password | password_hash('sha512', vault_pw_salt) if sftp_user_password else omit }}"
     # We only need the home directory as a place for storing keys.
     create_home: "{{ sftp_user_pubkey is truthy }}"
     shell: /usr/sbin/nologin

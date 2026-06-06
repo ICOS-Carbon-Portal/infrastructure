@@ -56,3 +56,12 @@ Deno.test("lookup: matches the expr() string it replaces", () => {
     "lookup == expr equivalence",
   );
 });
+
+Deno.test("lookup: pipe plugin (sitesaquanetform known_hosts key)", () => {
+  eq(
+    lookup("pipe", "ssh-keyscan bitbucket.org, `dig +short bitbucket.org`")
+      .toText(),
+    "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}",
+    "pipe lookup with backticks",
+  );
+});

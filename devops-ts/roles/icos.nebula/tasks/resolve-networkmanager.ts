@@ -1,4 +1,6 @@
-import { eq, expr, type TaskFile } from "../../../lib/ansible.ts";
+import { eq, register, type TaskFile } from "../../../lib/ansible.ts";
+
+const _networkd = register("_networkd");
 
 // https://wiki.archlinux.org/title/NetworkManager#DNS_management
 // NetworkManager can use either:
@@ -11,10 +13,10 @@ export default [
   {
     name: "Query systemd for systemd-networkd",
     systemd: { name: "systemd-networkd" },
-    register: "_networkd",
+    register: _networkd,
   },
   {
-    when: eq(expr("_networkd.status.ActiveState"), "active"),
+    when: eq(_networkd.status.ActiveState, "active"),
     name: "Warn about NetworkManage+systemd-networkd",
     fail: {
       msg: `We're not setup for provisioning NetworkManager+systemd-networkd

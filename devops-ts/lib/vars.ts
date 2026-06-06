@@ -146,6 +146,17 @@ export class Expr {
   bool(): Expr {
     return new Expr(`${this.text} | bool`, this.name);
   }
+
+  /**
+   * Use this condition in a VALUE position (a `set_fact`, `become:`, a module
+   * arg) as `{{ <expr> }}` — the value-position counterpart of the bare
+   * when-condition rendering. Replaces `expr("a or b")`-style escapes:
+   *
+   *   or(_a.changed, _b.changed).asValue()  // {{ _a.changed or _b.changed }}
+   */
+  asValue(): Template {
+    return new Template([{ kind: "ref", jinja: this.text }]);
+  }
 }
 
 /** Any referenceable variable name: user `Vars`, globals, built-ins, or any role var. */

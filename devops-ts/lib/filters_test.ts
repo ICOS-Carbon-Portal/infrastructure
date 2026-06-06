@@ -36,6 +36,24 @@ Deno.test("mapAttr on a register field .ref", () => {
   );
 });
 
+Deno.test("strip + split: python str methods", () => {
+  eq(
+    V.sshlogin_dst_host_keys.strip().split("\\n").toText(),
+    "{{ sshlogin_dst_host_keys.strip().split('\\n') }}",
+    "sshlogin host-keys loop",
+  );
+});
+
+Deno.test("regexReplace: ansible.builtin regex_replace filter", () => {
+  const slurp = register("_slurp");
+  eq(
+    slurp.content.ref.b64decode().regexReplace("[^=]+=(\\S+)\\s*", "\\1")
+      .toText(),
+    "{{ _slurp.content | b64decode | regex_replace('[^=]+=(\\S+)\\s*', '\\1') }}",
+    "password_env_file extract",
+  );
+});
+
 Deno.test("passwordHash: ansible.builtin password_hash filter", () => {
   // scheme + ref salt (nextcloud_sftp sftp user password)
   eq(

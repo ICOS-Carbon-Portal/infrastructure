@@ -1,5 +1,5 @@
-import { notIn, register, type TaskFile } from "../../../lib/ansible.ts";
-import { expr, rawTmpl, tmpl, V } from "../_ctx.ts";
+import { ne, notIn, register, type TaskFile } from "../../../lib/ansible.ts";
+import { rawTmpl, tmpl, V } from "../_ctx.ts";
 
 const _get_url = register("_get_url");
 const _stilt_py = register("_stilt_py");
@@ -14,7 +14,7 @@ export default [
   },
   {
     when: notIn(V.stiltrun_image_id, docker_images.stdout),
-    become: expr('stiltrun_user != "root"'),
+    become: ne(V.stiltrun_user, "root").asValue(),
     become_user: V.stiltrun_user,
     block: [
       {

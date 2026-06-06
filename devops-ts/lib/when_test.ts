@@ -121,3 +121,14 @@ Deno.test("composition: not / or / group", () => {
     "is defined and not …",
   );
 });
+
+Deno.test("asValue: render a condition in value position as {{ … }}", () => {
+  const a = register("_config");
+  const b = register("_jarfile");
+  // set_fact / force_recreate boolean (cpmeta, fairdatapoint)
+  eqs(
+    or(a.changed, b.changed).asValue().toText(),
+    "{{ _config.changed or _jarfile.changed }}",
+    "or(...).asValue()",
+  );
+});
