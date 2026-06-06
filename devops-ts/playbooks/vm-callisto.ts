@@ -8,8 +8,19 @@
 //  icos play callisto filedrop -lfsicos3
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { callisto_ip } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { filedrop_port, zfsdocker_zvol } from "../lib/sharedvars.ts";
+import { tmpl } from "../lib/vars.ts";
+import {
+  vault_callisto_admins,
+  vault_callisto_sftp_fluxcom_upload_password,
+  vault_callisto_sftp_fluxcom_upload_username,
+  vault_callisto_sftp_password,
+  vault_callisto_user_conf,
+  vault_callisto_user_volumes,
+  vault_eurocom_users,
+} from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
@@ -55,7 +66,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: V.zfsdocker_zvol,
+              source: zfsdocker_zvol,
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -120,11 +131,11 @@ export default [
     roles: [
       role("icos.lxd_forward", {
         lxd_forward_name: "callisto",
-        lxd_forward_ip: V.callisto_ip,
+        lxd_forward_ip: callisto_ip,
       }).tags("forward"),
 
       role("icos.eurocom", {
-        eurocom_users: V.vault_eurocom_users,
+        eurocom_users: vault_eurocom_users,
         eurocom_web_root: "/pool/ute/eurocom_web_root",
         eurocom_data_home: "/data/project/eurocom",
       }).tags("eurocom"),
@@ -163,7 +174,7 @@ export default [
     hosts: "callisto",
     roles: [
       role("icos.lxd_guest", {
-        user_conf: V.vault_callisto_user_conf,
+        user_conf: vault_callisto_user_conf,
       }).tags("guest"),
 
       role("icos.docker", {
@@ -176,8 +187,8 @@ export default [
       }).tags("filedrop"),
 
       role("icos.jupyter", {
-        jupyter_admins: V.vault_callisto_admins,
-        jupyter_user_volumes: V.vault_callisto_user_volumes,
+        jupyter_admins: vault_callisto_admins,
+        jupyter_user_volumes: vault_callisto_user_volumes,
         jupyter_backup_enable: false,
       }).tags("jupyter"),
 
@@ -186,14 +197,14 @@ export default [
         sftp_user_dir: "/ute/sftp_home/data",
         sftp_user_login: "sftp",
         sftp_user_owner: "ute",
-        sftp_user_password: V.vault_callisto_sftp_password,
+        sftp_user_password: vault_callisto_sftp_password,
       }).tags("sftp"),
 
       // This sftp user will be able to upload.
       role("icos.sftp_user", {
         sftp_user_dir: "/ute/fluxcom/upload",
-        sftp_user_login: V.vault_callisto_sftp_fluxcom_upload_username,
-        sftp_user_password: V.vault_callisto_sftp_fluxcom_upload_password,
+        sftp_user_login: vault_callisto_sftp_fluxcom_upload_username,
+        sftp_user_password: vault_callisto_sftp_fluxcom_upload_password,
         sftp_user_hostdesc: "fluxcom-upload",
       }).tags("sftp"),
 
@@ -237,7 +248,7 @@ echo "Compacting"
           name: "forward_filedrop",
           table: "nat",
           rules:
-            tmpl`-A PREROUTING -p tcp --dport ${V.filedrop_port} -j DNAT --to-destination 127.0.0.1:${V.filedrop_port}`,
+            tmpl`-A PREROUTING -p tcp --dport ${filedrop_port} -j DNAT --to-destination 127.0.0.1:${filedrop_port}`,
         },
       },
     ],

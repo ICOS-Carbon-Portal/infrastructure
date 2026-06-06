@@ -1,7 +1,8 @@
+import { quince_tomcat_home, quince_tomcat_url, quince_user } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { quince_tomcat_dir } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { jinja } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { jinja, tmpl } from "../../../lib/template.ts";
 
 const _fs = register("_fs");
 
@@ -9,7 +10,7 @@ export default [
   {
     name: "Download tomcat binary",
     get_url: {
-      url: V.quince_tomcat_url,
+      url: quince_tomcat_url,
       dest: "/opt/tomcat.tgz",
     },
   },
@@ -19,8 +20,8 @@ export default [
       src: "/opt/tomcat.tgz",
       dest: "/opt",
       remote_src: true,
-      owner: V.quince_user,
-      group: V.quince_user,
+      owner: quince_user,
+      group: quince_user,
     },
     diff: false,
   },
@@ -44,8 +45,8 @@ export default [
   {
     name: "Create /opt/tomcat symlink",
     file: {
-      dest: V.quince_tomcat_home,
-      src: V.quince_tomcat_dir,
+      dest: quince_tomcat_home,
+      src: quince_tomcat_dir,
       state: "link",
     },
   },
@@ -53,7 +54,7 @@ export default [
     name: "Create /usr/bin/catalina.sh symlink",
     file: {
       dest: "/usr/bin/catalina.sh",
-      src: tmpl`${V.quince_tomcat_home}/bin/catalina.sh`,
+      src: tmpl`${quince_tomcat_home}/bin/catalina.sh`,
       state: "link",
     },
   },

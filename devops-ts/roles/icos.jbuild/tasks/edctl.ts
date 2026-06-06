@@ -1,7 +1,9 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
+import { jbuild_force, virtualenv_recreate } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { jbuild_registry } from "../../../lib/shapes.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const _user = register("_user");
 
@@ -26,7 +28,7 @@ export default [
   {
     name: "Change access rights on template directories",
     file: {
-      path: V.item,
+      path: item,
       owner: _user.uid.ref,
       group: _user.group.ref,
     },
@@ -40,9 +42,9 @@ export default [
     become: true,
     become_user: "edctl",
     "community.general.docker_login": {
-      registry_url: V.jbuild_registry.url,
-      username: V.jbuild_registry.username,
-      password: V.jbuild_registry.password,
+      registry_url: jbuild_registry.url,
+      username: jbuild_registry.username,
+      password: jbuild_registry.password,
     },
   },
   {
@@ -51,7 +53,7 @@ export default [
       path: "/opt/edctl/venv",
       state: "absent",
     },
-    when: truthy(V.virtualenv_recreate).default(false).bool(),
+    when: truthy(virtualenv_recreate).default(false).bool(),
   },
   {
     name: "Create virtual env",
@@ -66,7 +68,7 @@ export default [
       src: "edctl.py",
       dest: "/opt/edctl/edctl.py",
       mode: "+x",
-      force: V.jbuild_force.default(true).bool(),
+      force: jbuild_force.default(true).bool(),
     },
   },
   {

@@ -4,15 +4,16 @@
 // Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { V } from "../lib/vars.ts";
+import { cpdata_domains } from "../lib/globals.ts";
+import { cpdata_cert_name } from "../lib/vars.ts";
 
 export default [
   {
     hosts: "fsicos2",
     roles: [
       role("icos.certbot2", {
-        certbot_name: V.cpdata_cert_name,
-        certbot_domains: V.cpdata_domains,
+        certbot_name: cpdata_cert_name,
+        certbot_domains: cpdata_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {

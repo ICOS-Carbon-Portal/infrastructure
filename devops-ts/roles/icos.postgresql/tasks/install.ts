@@ -1,7 +1,13 @@
+import {
+  postgresql_bin,
+  postgresql_home,
+  postgresql_postgis_enable,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { pct } from "../../../lib/template.ts";
+import { ansible_distribution_release } from "../../../lib/builtins.ts";
+import { postgresql_version } from "../../../lib/paramvars.ts";
+import { pct, tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.
 // Debian/Ubuntu then allows multiple installed versions/clusters of postgresql,
@@ -20,22 +26,22 @@ export default [
     name: "Adding the postgresql repo",
     apt_repository: {
       repo:
-        tmpl`deb http://apt.postgresql.org/pub/repos/apt/ ${V.ansible_distribution_release}-pgdg main`,
+        tmpl`deb http://apt.postgresql.org/pub/repos/apt/ ${ansible_distribution_release}-pgdg main`,
       filename: "pgdg",
     },
   },
   {
     name: "Install postgresql",
     apt: {
-      name: pct("postgresql-%s", V.postgresql_version),
+      name: pct("postgresql-%s", postgresql_version),
     },
   },
   {
     name: "Install postgis",
     apt: {
-      name: pct("postgresql-%s-postgis-3", V.postgresql_version),
+      name: pct("postgresql-%s-postgis-3", postgresql_version),
     },
-    when: truthy(V.postgresql_postgis_enable),
+    when: truthy(postgresql_postgis_enable),
   },
   // Needed for ansible's postgresql_* modules
   {
@@ -47,9 +53,9 @@ export default [
   },
   // We'll keep various scripts in $HOME/bin
   {
-    name: tmpl`Create ${V.postgresql_bin} directory`,
+    name: tmpl`Create ${postgresql_bin} directory`,
     file: {
-      path: V.postgresql_bin,
+      path: postgresql_bin,
       state: "directory",
       owner: "postgres",
       group: "postgres",
@@ -61,7 +67,7 @@ export default [
       owner: "postgres",
       group: "postgres",
       create: true,
-      path: tmpl`${V.postgresql_home}/.profile`,
+      path: tmpl`${postgresql_home}/.profile`,
       regex: "^PATH=",
       line: "PATH=$HOME/bin:$PATH",
       state: "present",

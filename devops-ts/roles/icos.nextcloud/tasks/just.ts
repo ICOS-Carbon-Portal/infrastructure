@@ -1,6 +1,6 @@
+import { nextcloud_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
-import { V } from "../_ctx.ts";
 
 const _justfile = register("_justfile");
 const _symlink = register("_symlink");
@@ -10,7 +10,7 @@ export default [
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: V.nextcloud_home,
+      dest: nextcloud_home,
       mode: "+x",
       variable_start_string: "((",
       variable_end_string: "))",

@@ -1,5 +1,13 @@
+import {
+  bbclient_bin_dir,
+  bbclient_coldbackup_hour,
+  bbclient_coldbackup_minute,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
+import { bbclient_home } from "../../../lib/globals.ts";
+import { bbclient_name } from "../../../lib/sharedvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -9,8 +17,8 @@ export default [
   {
     name: "Create coldbackup helper scripts",
     template: {
-      src: V.item,
-      dest: V.bbclient_bin_dir,
+      src: item,
+      dest: bbclient_bin_dir,
       mode: "+x",
     },
     loop: ["bbclient-coldbackup", "bbclient-coldrestore"],
@@ -19,11 +27,11 @@ export default [
     name: "Add coldbackup systemd timer",
     include_role: { name: "icos.timer" },
     vars: {
-      timer_home: V.bbclient_home,
-      timer_exec: tmpl`${V.bbclient_bin_dir}/bbclient-coldbackup`,
-      timer_name: tmpl`bbclient-${V.bbclient_name}-coldbackup`,
+      timer_home: bbclient_home,
+      timer_exec: tmpl`${bbclient_bin_dir}/bbclient-coldbackup`,
+      timer_name: tmpl`bbclient-${bbclient_name}-coldbackup`,
       timer_conf:
-        tmpl`OnCalendar=${V.bbclient_coldbackup_hour}:${V.bbclient_coldbackup_minute}\n`,
+        tmpl`OnCalendar=${bbclient_coldbackup_hour}:${bbclient_coldbackup_minute}\n`,
       timer_envs: ["PYTHONUNBUFFERED=1"],
     },
   },

@@ -1,6 +1,8 @@
+import { caddy_bin, caddy_modules } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { isDefined, truthy } from "../../../lib/vars.ts";
-import { notVar, tmpl, V } from "../_ctx.ts";
+import { caddy_name } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
+import { isDefined, not, truthy } from "../../../lib/vars.ts";
 
 export default [
   // First install standard version of caddy, this will create the caddy user and
@@ -11,7 +13,7 @@ export default [
   {
     name: "Install plain caddy",
     include_tasks: "plain.yml",
-    when: notVar("caddy_modules"),
+    when: not(caddy_modules),
   },
   // If any modules are needed we need xcaddy instead.
   {
@@ -20,11 +22,11 @@ export default [
       apply: { tags: "caddy_modules" },
     },
     tags: "caddy_xcaddy",
-    when: truthy(V.caddy_modules),
+    when: truthy(caddy_modules),
   },
   {
     name: "Check that caddy was properly installed",
-    "ansible.builtin.shell": tmpl`${V.caddy_bin} version`,
+    "ansible.builtin.shell": tmpl`${caddy_bin} version`,
     changed_when: false,
   },
   {
@@ -38,6 +40,6 @@ export default [
       apply: { tags: "caddy_site" },
     },
     tags: "caddy_site",
-    when: isDefined(V.caddy_name),
+    when: isDefined(caddy_name),
   },
 ] satisfies TaskFile;

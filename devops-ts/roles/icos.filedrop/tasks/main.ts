@@ -1,8 +1,8 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { filedrop_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { lookup } from "../../../lib/template.ts";
+import { lookup, tmpl } from "../../../lib/template.ts";
 import { isDefined } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _user = register("_user");
 
@@ -26,10 +26,10 @@ export default [
     vars: {
       jarservice_name: "filedrop",
       jarservice_home: _user.home.ref,
-      jarservice_local: V.filedrop_jar_file,
+      jarservice_local: filedrop_jar_file,
       jarservice_unit: lookup("template", "filedrop.service"),
     },
-    when: isDefined(V.filedrop_jar_file),
+    when: isDefined(filedrop_jar_file),
   },
   {
     name: "Create filedrop config file",

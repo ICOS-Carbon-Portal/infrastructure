@@ -1,6 +1,9 @@
+import { python3_version_list } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_distribution, ansible_python } from "../../../lib/builtins.ts";
+import { _builtin_version, _version } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { eq, ne } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   // First install pip and venv for the system version of python. This is for the
@@ -21,7 +24,7 @@ export default [
   },
   // On Ubuntu we'll install extra versions of python from here.
   {
-    when: eq(V.ansible_distribution, "Ubuntu"),
+    when: eq(ansible_distribution, "Ubuntu"),
     name: "Add ppa:deadsnakes repository",
     apt_repository: {
       repo: "ppa:deadsnakes/ppa",
@@ -31,16 +34,16 @@ export default [
   {
     name: "Install extra version of python",
     apt: {
-      name: tmpl`python${V._version}-venv`,
+      name: tmpl`python${_version}-venv`,
     },
-    when: ne(V._builtin_version, V._version),
-    loop: V.python3_version_list,
+    when: ne(_builtin_version, _version),
+    loop: python3_version_list,
     loop_control: {
       loop_var: "_version",
     },
     vars: {
       _builtin_version:
-        tmpl`${V.ansible_python.version.major}.${V.ansible_python.version.minor}`,
+        tmpl`${ansible_python.version.major}.${ansible_python.version.minor}`,
     },
   },
 ] satisfies TaskFile;

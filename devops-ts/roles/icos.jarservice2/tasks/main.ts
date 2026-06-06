@@ -1,7 +1,15 @@
+import { jarservice_jar_enable } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import {
+  jarservice_check,
+  jarservice_githash,
+  jarservice_name,
+  jarservice_state,
+  jarservice_unit,
+} from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isDefined, not, truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 
@@ -9,29 +17,29 @@ export default [
   {
     import_tasks: "jarfile.yml",
     tags: "jarservice_jarfile",
-    when: truthy(V.jarservice_jar_enable).bool(),
+    when: truthy(jarservice_jar_enable).bool(),
   },
   {
-    name: tmpl`Add systemd ${V.jarservice_name} servicefile`,
+    name: tmpl`Add systemd ${jarservice_name} servicefile`,
     copy: {
-      content: V.jarservice_unit,
-      dest: tmpl`/etc/systemd/system/${V.jarservice_name}.service`,
+      content: jarservice_unit,
+      dest: tmpl`/etc/systemd/system/${jarservice_name}.service`,
     },
     notify: ["reload systemd config"],
   },
   {
-    name: tmpl`Enable systemd ${V.jarservice_name}`,
+    name: tmpl`Enable systemd ${jarservice_name}`,
     service: {
-      name: V.jarservice_name,
+      name: jarservice_name,
       enabled: true,
-      state: V.jarservice_state.default("started"),
+      state: jarservice_state.default("started"),
     },
   },
   {
     name: "Check that the service responds",
-    when: isDefined(V.jarservice_check),
+    when: isDefined(jarservice_check),
     uri: {
-      url: V.jarservice_check,
+      url: jarservice_check,
       return_content: true,
     },
     register: r,
@@ -46,8 +54,8 @@ export default [
       that: ["jarservice_githash in r.content"],
     },
     when: [
-      isDefined(V.jarservice_check),
-      isDefined(V.jarservice_githash),
+      isDefined(jarservice_check),
+      isDefined(jarservice_githash),
     ],
   },
 ] satisfies TaskFile;

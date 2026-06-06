@@ -1,6 +1,8 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_lsb } from "../../../lib/builtins.ts";
+import { deb_arch } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 const _key = register("_key");
 
@@ -28,7 +30,7 @@ export default [
     apt_repository: {
       filename: "docker",
       repo:
-        tmpl`deb [arch=${V.deb_arch} signed-by=${_key.dest.ref}] https://download.docker.com/linux/ubuntu ${V.ansible_lsb.codename} stable`,
+        tmpl`deb [arch=${deb_arch} signed-by=${_key.dest.ref}] https://download.docker.com/linux/ubuntu ${ansible_lsb.codename} stable`,
     },
   },
 ] satisfies TaskFile;

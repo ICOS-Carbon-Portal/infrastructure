@@ -1,6 +1,6 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { V } from "../lib/vars.ts";
+import { vault_ctehires_user_conf } from "../lib/vaultvars.ts";
 
 export default [
   {
@@ -48,7 +48,7 @@ export default [
   {
     hosts: "ctehires",
     vars: {
-      user_conf: V.vault_ctehires_user_conf,
+      user_conf: vault_ctehires_user_conf,
       user_disable_coredump: true,
     },
     pre_tasks: [

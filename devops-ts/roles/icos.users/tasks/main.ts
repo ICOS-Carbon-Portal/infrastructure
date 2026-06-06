@@ -1,24 +1,26 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { omit } from "../../../lib/builtins.ts";
 import { loopOverVar } from "../../../lib/loop.ts";
+import { user_conf } from "../../../lib/shapes.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   loopOverVar<{ groups: string; home: string; name: string; password: string }>(
-    V.user_conf.create_users.default([]),
+    user_conf.create_users.default([]),
     (item) => ({
       name: "Create user",
       user: {
         name: item.name,
-        password: item.password.default(V.omit),
-        home: item.home.default(V.omit),
-        groups: item.groups.default(V.omit),
+        password: item.password.default(omit),
+        home: item.home.default(omit),
+        groups: item.groups.default(omit),
         append: item.groups.default(false).bool(),
       },
     }),
   ),
   loopOverVar<{ key: string; name: string }>(
-    V.user_conf.create_users.default([]),
+    user_conf.create_users.default([]),
     (item) => ({
       name: "Install public key",
       authorized_key: {
@@ -30,7 +32,7 @@ export default [
     }),
   ),
   loopOverVar<{ name: string; sudopwless: boolean }>(
-    V.user_conf.create_users.default([]),
+    user_conf.create_users.default([]),
     (item) => ({
       name: "Install password-less sudo rule",
       copy: {
@@ -42,12 +44,12 @@ export default [
     }),
   ),
   loopOverVar<{ name: string; remove: string }>(
-    V.user_conf.remove_users.default([]),
+    user_conf.remove_users.default([]),
     (item) => ({
       name: "Remove user",
       user: {
         name: item.name,
-        remove: item.remove.default(V.omit),
+        remove: item.remove.default(omit),
         state: "absent",
       },
     }),

@@ -1,6 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
-import { tmpl } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 const _mkdir = register("_mkdir");
 

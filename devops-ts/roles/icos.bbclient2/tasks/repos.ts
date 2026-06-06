@@ -1,11 +1,13 @@
+import { bbclient_all, bbclient_repo_file } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { bbclient_remotes } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Create new repo file",
     copy: {
-      dest: V.bbclient_repo_file,
+      dest: bbclient_repo_file,
       content:
         `# Be aware that the "hostnames" in this file are then transformed by the
 # ssh config at {{ bbclient_ssh_config }}
@@ -17,12 +19,12 @@ export default [
   },
   {
     include_tasks: "single_repo.yml",
-    loop: V.bbclient_remotes,
+    loop: bbclient_remotes,
     loop_control: { loop_var: "bbclient_remote" },
   },
   {
     name: "Run bbclient-all info to verify access",
-    command: tmpl`${V.bbclient_all} info`,
+    command: tmpl`${bbclient_all} info`,
     environment: {
       BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: true,
       BORG_RELOCATED_REPO_ACCESS_IS_OK: true,

@@ -1,7 +1,9 @@
+import { httm_architecture, httm_url_map, httm_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isNotDefined, ne, not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 const _r = register("_r");
@@ -10,12 +12,12 @@ export default [
   {
     name: "Architecture is not supported",
     fail: {
-      msg: tmpl`httm is not supported on ${V.ansible_architecture}`,
+      msg: tmpl`httm is not supported on ${ansible_architecture}`,
     },
-    when: ne(V.ansible_architecture, "x86_64"),
+    when: ne(ansible_architecture, "x86_64"),
   },
   {
-    when: isNotDefined(V.httm_version),
+    when: isNotDefined(httm_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -42,7 +44,7 @@ export default [
   {
     name: "Install httm",
     apt: {
-      deb: V.httm_url_map.at(V.httm_architecture),
+      deb: httm_url_map.at(httm_architecture),
     },
   },
   {
@@ -50,12 +52,12 @@ export default [
     shell: "httm --version",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(V.httm_version)),
+    failed_when: not(_r.stdout.endswith(httm_version)),
   },
   {
     name: "Which version of httm was installed",
     debug: {
-      msg: tmpl`Installed ${V.httm_version}`,
+      msg: tmpl`Installed ${httm_version}`,
     },
   },
 ] satisfies TaskFile;

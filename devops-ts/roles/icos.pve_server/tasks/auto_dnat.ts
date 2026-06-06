@@ -1,8 +1,8 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
 import { iff } from "../../../lib/template.ts";
 import { eq } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
 const _systemd = register("_systemd");
@@ -46,7 +46,7 @@ export default [
   {
     name: "Copy auto-dnat service files",
     template: {
-      src: V.item,
+      src: item,
       dest: "/etc/systemd/system/",
       lstrip_blocks: true,
     },
@@ -65,7 +65,7 @@ export default [
   {
     name: "Start service",
     systemd: {
-      name: V.item,
+      name: item,
       enabled: true,
       state: iff(_systemd.changed, "restarted", "started"),
     },

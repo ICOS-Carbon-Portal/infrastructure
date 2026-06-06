@@ -1,7 +1,10 @@
+import { fdp_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
+import { fdp_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { or } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _compose = register("_compose");
 const _dockerfile = register("_dockerfile");
@@ -13,7 +16,7 @@ export default [
   {
     name: "Create fairdatapoint directory",
     file: {
-      path: tmpl`${V.fdp_home}/`,
+      path: tmpl`${fdp_home}/`,
       state: "directory",
     },
   },
@@ -21,7 +24,7 @@ export default [
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: V.fdp_home,
+      dest: fdp_home,
       lstrip_blocks: true,
     },
     register: _compose,
@@ -30,7 +33,7 @@ export default [
     name: "Copy Dockerfile",
     template: {
       src: "Dockerfile",
-      dest: V.fdp_home,
+      dest: fdp_home,
     },
     register: _dockerfile,
   },
@@ -38,8 +41,8 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: V.fdp_jar_file,
-      dest: tmpl`${V.fdp_home}/fdp.jar`,
+      src: fdp_jar_file,
+      dest: tmpl`${fdp_home}/fdp.jar`,
     },
     register: _jarfile,
   },
@@ -47,7 +50,7 @@ export default [
     name: "Copy application.yml",
     template: {
       src: "application.yml",
-      dest: tmpl`${V.fdp_home}/`,
+      dest: tmpl`${fdp_home}/`,
       lstrip_blocks: true,
     },
     register: _config,
@@ -55,15 +58,15 @@ export default [
   {
     name: "Copy files",
     copy: {
-      dest: V.fdp_home,
-      src: V.item,
+      dest: fdp_home,
+      src: item,
     },
     loop: ["eh-next_logo.png", "_variables.scss"],
   },
   {
     name: "Start fairdatapoint",
     icos_docker_compose: {
-      chdir: V.fdp_home,
+      chdir: fdp_home,
       force_recreate: or(
         _config.changed,
         _compose.changed,

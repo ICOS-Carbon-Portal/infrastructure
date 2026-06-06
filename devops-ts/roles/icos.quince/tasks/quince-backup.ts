@@ -1,6 +1,7 @@
+import { quince_backup_enable, quince_home, quince_user } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -13,19 +14,19 @@ export default [
     name: "Copy quince-backup.sh",
     template: {
       src: "quince-backup.sh",
-      dest: tmpl`${V.quince_home}/backup.sh`,
+      dest: tmpl`${quince_home}/backup.sh`,
       mode: "+x",
     },
   },
   {
     name: "Install cron job for backups",
     cron: {
-      user: V.quince_user,
+      user: quince_user,
       name: "quince borg backup",
       minute: "15",
       hour: "*/3",
-      job: tmpl`${V.quince_home}/backup.sh`,
+      job: tmpl`${quince_home}/backup.sh`,
     },
-    when: truthy(V.quince_backup_enable),
+    when: truthy(quince_backup_enable),
   },
 ] satisfies TaskFile;

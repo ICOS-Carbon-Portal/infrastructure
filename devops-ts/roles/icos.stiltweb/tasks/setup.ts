@@ -1,14 +1,21 @@
+import {
+  stiltweb_bindir,
+  stiltweb_home,
+  stiltweb_jre_package,
+  stiltweb_username,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
+import { stiltweb_statedir } from "../../../lib/globals.ts";
 
 export default [
   {
     name: "Create stiltweb user",
     user: {
-      name: V.stiltweb_username,
+      name: stiltweb_username,
       state: "present",
       shell: "/bin/bash",
-      home: V.stiltweb_home,
+      home: stiltweb_home,
       groups: "docker",
       append: true,
     },
@@ -16,12 +23,12 @@ export default [
   {
     name: "Create directories",
     file: {
-      path: V.item,
+      path: item,
       state: "directory",
-      owner: V.stiltweb_username,
-      group: V.stiltweb_username,
+      owner: stiltweb_username,
+      group: stiltweb_username,
     },
-    with_items: [V.stiltweb_statedir, V.stiltweb_bindir],
+    with_items: [stiltweb_statedir, stiltweb_bindir],
   },
   {
     name: "Install netcdf C library",
@@ -33,7 +40,7 @@ export default [
   {
     name: "Install jre",
     apt: {
-      name: V.stiltweb_jre_package,
+      name: stiltweb_jre_package,
     },
   },
 ] satisfies TaskFile;

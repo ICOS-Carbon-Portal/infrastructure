@@ -1,13 +1,18 @@
+import { vmagent_configs } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import {
+  vmagent_config_content,
+  vmagent_config_dest,
+} from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   { import_tasks: "assert_installed.yml" },
   {
     name: "Add a vmagent scrape config",
     copy: {
-      dest: tmpl`${V.vmagent_configs}/${V.vmagent_config_dest}`,
-      content: V.vmagent_config_content,
+      dest: tmpl`${vmagent_configs}/${vmagent_config_dest}`,
+      content: vmagent_config_content,
     },
     notify: "reload vmagent",
   },

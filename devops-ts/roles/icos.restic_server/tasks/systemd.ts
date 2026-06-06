@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
 
 export default [
   {
     name: "Copy systemd service files",
     template: {
-      src: V.item,
+      src: item,
       dest: "/etc/systemd/system",
       lstrip_blocks: true,
     },

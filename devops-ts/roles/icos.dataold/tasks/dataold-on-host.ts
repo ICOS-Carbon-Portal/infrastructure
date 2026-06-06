@@ -1,8 +1,9 @@
+import { certbot_domains, dataold_ext_port } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { or } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _rsyslog = register("_rsyslog");
 const _cf = register("_cf");
@@ -26,10 +27,10 @@ if $syslogtag == "dataold:" then {
     register: _rsyslog,
   },
   {
-    name: tmpl`Restart ${V.item}`,
+    name: tmpl`Restart ${item}`,
     when: _rsyslog.changed,
     systemd: {
-      name: V.item,
+      name: item,
       state: "restarted",
     },
     loop: [
@@ -97,18 +98,18 @@ systemctl reload dataold
     },
   },
   {
-    name: tmpl`Open firewall for port ${V.dataold_ext_port}`,
+    name: tmpl`Open firewall for port ${dataold_ext_port}`,
     iptables_raw: {
-      name: tmpl`allow_${V.dataold_ext_port}`,
+      name: tmpl`allow_${dataold_ext_port}`,
       rules:
-        tmpl`-A INPUT -p tcp --dport ${V.dataold_ext_port} -j ACCEPT -m comment --comment 'dataold'`,
+        tmpl`-A INPUT -p tcp --dport ${dataold_ext_port} -j ACCEPT -m comment --comment 'dataold'`,
     },
   },
   {
     name: "Test access to dataold from localhost",
     delegate_to: "localhost",
     uri: {
-      url: tmpl`https://${V.certbot_domains.first()}:${V.dataold_ext_port}`,
+      url: tmpl`https://${certbot_domains.first()}:${dataold_ext_port}`,
     },
     register: "_r",
     failed_when: [

@@ -1,6 +1,6 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { V } from "../lib/vars.ts";
+import { root_keys } from "../lib/globals.ts";
 
 export default [
   {
@@ -14,7 +14,7 @@ export default [
         tags: "root_keys",
         authorized_key: {
           user: "root",
-          key: V.root_keys,
+          key: root_keys,
           state: "present",
           exclusive: true,
         },

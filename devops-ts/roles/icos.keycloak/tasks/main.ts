@@ -1,8 +1,9 @@
+import { kc_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { loopOver } from "../../../lib/loop.ts";
+import { kc_hostname } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 const _config = register("_config");
 
@@ -10,7 +11,7 @@ export default [
   {
     name: "Create keycloak directory",
     file: {
-      path: tmpl`${V.kc_home}/conf`,
+      path: tmpl`${kc_home}/conf`,
       state: "directory",
     },
   },
@@ -18,9 +19,9 @@ export default [
     [
       {
         src: "docker-compose.yml",
-        dest: tmpl`${V.kc_home}/docker-compose.yml`,
+        dest: tmpl`${kc_home}/docker-compose.yml`,
       },
-      { src: "keycloak.conf", dest: tmpl`${V.kc_home}/conf/keycloak.conf` },
+      { src: "keycloak.conf", dest: tmpl`${kc_home}/conf/keycloak.conf` },
     ],
     (item) => ({
       name: "Copy files",
@@ -35,7 +36,7 @@ export default [
   {
     name: "Build and start keycloak",
     docker_compose: {
-      project_src: V.kc_home,
+      project_src: kc_home,
       restarted: _config.changed.ref,
     },
   },
@@ -46,7 +47,7 @@ export default [
     vars: {
       nginxsite_name: "keycloak",
       nginxsite_file: "keycloak-nginx.conf",
-      nginxsite_domains: [V.kc_hostname],
+      nginxsite_domains: [kc_hostname],
     },
   },
 ] satisfies TaskFile;

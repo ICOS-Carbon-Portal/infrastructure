@@ -1,7 +1,7 @@
+import { just_upgrade } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { not, or, truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const _r = register("_r");
 
@@ -14,7 +14,7 @@ export default [
   {
     name: "Install/upgrade just",
     include_tasks: { file: "install.yml" },
-    when: or(not(_r.stat.exists), truthy(V.just_upgrade)),
+    when: or(not(_r.stat.exists), truthy(just_upgrade)),
   },
   {
     name: "Create bash_completion.d directory",

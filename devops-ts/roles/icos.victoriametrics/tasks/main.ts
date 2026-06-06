@@ -1,13 +1,20 @@
+import {
+  vm_graf_port,
+  vm_home,
+  vm_scrape_conf,
+  vm_upgrade,
+  vm_vm_port,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item, omit } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
-import { iff, type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { iff, type Tmpl, tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Create victoriametrics directories",
     file: {
-      path: tmpl`${V.vm_home}/${V.item}`,
+      path: tmpl`${vm_home}/${item}`,
       state: "directory",
     },
     loop: [
@@ -18,7 +25,7 @@ export default [
   {
     name: "Change owner of grafana directories",
     file: {
-      path: tmpl`${V.vm_home}/grafana`,
+      path: tmpl`${vm_home}/grafana`,
       owner: 472,
       recurse: true,
     },
@@ -36,22 +43,22 @@ export default [
       name: "Copy files",
       template: {
         src: item.src,
-        dest: tmpl`${V.vm_home}/${item.dest.default("")}`,
+        dest: tmpl`${vm_home}/${item.dest.default("")}`,
       },
     }),
   ),
   {
     name: "Create victoriametrics scrape config",
     copy: {
-      content: V.vm_scrape_conf,
-      dest: tmpl`${V.vm_home}/victoriametrics/prometheus/prometheus.yml`,
+      content: vm_scrape_conf,
+      dest: tmpl`${vm_home}/victoriametrics/prometheus/prometheus.yml`,
     },
   },
   {
     name: "Build and start",
     "community.docker.docker_compose_v2": {
-      project_src: V.vm_home,
-      pull: iff(V.vm_upgrade, "always", V.omit),
+      project_src: vm_home,
+      pull: iff(vm_upgrade, "always", omit),
     },
   },
   {
@@ -62,11 +69,11 @@ export default [
     [
       {
         name: "victoriametrics",
-        port: V.vm_vm_port,
+        port: vm_vm_port,
       },
       {
         name: "grafana",
-        port: V.vm_graf_port,
+        port: vm_graf_port,
       },
     ],
     (item) => ({

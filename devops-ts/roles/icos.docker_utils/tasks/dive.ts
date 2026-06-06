@@ -1,14 +1,15 @@
+import { dive_architecture, dive_url_map, dive_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isNotDefined, not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 const _r = register("_r");
 
 export default [
   {
-    when: isNotDefined(V.dive_version),
+    when: isNotDefined(dive_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -43,7 +44,7 @@ export default [
   {
     name: "Install dive",
     apt: {
-      deb: V.dive_url_map.at(V.dive_architecture),
+      deb: dive_url_map.at(dive_architecture),
     },
   },
   {
@@ -51,12 +52,12 @@ export default [
     shell: "dive --version",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(V.dive_version)),
+    failed_when: not(_r.stdout.endswith(dive_version)),
   },
   {
     name: "Which version of dive was installed",
     debug: {
-      msg: tmpl`Installed ${V.dive_version}`,
+      msg: tmpl`Installed ${dive_version}`,
     },
   },
 ] satisfies TaskFile;

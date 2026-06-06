@@ -1,5 +1,5 @@
+import { nginx_user } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,8 +15,8 @@ export default [
     template: {
       src: "nginx.conf",
       dest: "/etc/nginx/nginx.conf",
-      owner: V.nginx_user,
-      group: V.nginx_user,
+      owner: nginx_user,
+      group: nginx_user,
       backup: true,
     },
     tags: "nginx_conf",

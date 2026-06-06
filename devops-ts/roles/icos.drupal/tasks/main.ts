@@ -1,25 +1,27 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
+import { website } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isUndefined, varByName } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check that all parameters are defined",
     fail: {
-      msg: tmpl`${V.item} needs to be defined`,
+      msg: tmpl`${item} needs to be defined`,
     },
-    when: isUndefined(varByName(V.item)),
+    when: isUndefined(varByName(item)),
     loop: ["website"],
     tags: ["drupal", "drupal_nginx"],
   },
   {
-    name: tmpl`Include ${V.website} vars`,
-    include_vars: tmpl`${V.website}-vars.yml`,
+    name: tmpl`Include ${website} vars`,
+    include_vars: tmpl`${website}-vars.yml`,
     tags: ["drupal", "drupal_nginx"],
   },
   {
-    name: tmpl`Include ${V.website} vault`,
-    include_vars: tmpl`${V.website}-vault.yml`,
+    name: tmpl`Include ${website} vault`,
+    include_vars: tmpl`${website}-vault.yml`,
     tags: ["drupal", "drupal_nginx"],
   },
   {

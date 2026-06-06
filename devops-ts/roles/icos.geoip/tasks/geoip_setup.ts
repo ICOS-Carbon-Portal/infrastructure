@@ -1,8 +1,13 @@
+import {
+  geoip_build_dir,
+  geoip_db_dir,
+  geoip_home,
+  geoip_user,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { withItemsOver } from "../../../lib/loop.ts";
 import { register } from "../../../lib/register.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 const _user = register("_user");
 
@@ -10,24 +15,24 @@ export default [
   {
     name: "Create geoip user",
     user: {
-      name: V.geoip_user,
+      name: geoip_user,
       state: "present",
       create_home: false,
-      home: V.geoip_home,
+      home: geoip_home,
     },
     register: _user,
   },
   {
     name: "Create build directory",
     file: {
-      path: V.geoip_build_dir,
+      path: geoip_build_dir,
       state: "directory",
     },
   },
   {
     name: "Create database volume directory",
     file: {
-      path: V.geoip_db_dir,
+      path: geoip_db_dir,
       state: "directory",
       owner: _user.uid.ref,
       group: _user.group.ref,
@@ -36,12 +41,12 @@ export default [
   {
     ...withItemsOver<{ src: Tmpl; dest: Tmpl }>(
       [
-        { src: "README.md", dest: tmpl`${V.geoip_home}/README.md` },
-        { src: "Makefile", dest: tmpl`${V.geoip_home}/Makefile` },
-        { src: "Dockerfile", dest: tmpl`${V.geoip_build_dir}/Dockerfile` },
+        { src: "README.md", dest: tmpl`${geoip_home}/README.md` },
+        { src: "Makefile", dest: tmpl`${geoip_home}/Makefile` },
+        { src: "Dockerfile", dest: tmpl`${geoip_build_dir}/Dockerfile` },
         {
           src: "docker-compose.yml",
-          dest: tmpl`${V.geoip_home}/docker-compose.yml`,
+          dest: tmpl`${geoip_home}/docker-compose.yml`,
         },
       ],
       (item) => ({

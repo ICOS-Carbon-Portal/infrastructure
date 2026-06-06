@@ -1,6 +1,7 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_lsb } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 const _key = register("_key");
 
@@ -23,7 +24,7 @@ export default [
     apt_repository: {
       filename: "zrepl",
       repo:
-        tmpl`deb [arch=amd64 signed-by=${_key.dest.ref}] https://zrepl.cschwarz.com/apt/${V.ansible_lsb.id.lower()} ${V.ansible_lsb.codename} main`,
+        tmpl`deb [arch=amd64 signed-by=${_key.dest.ref}] https://zrepl.cschwarz.com/apt/${ansible_lsb.id.lower()} ${ansible_lsb.codename} main`,
     },
   },
   {

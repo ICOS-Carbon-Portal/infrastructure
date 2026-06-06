@@ -29,3 +29,14 @@ export interface VarShapes {
   // icos.users / icos.lxd_guest: user roster.
   user_conf: { create_users: string; remove_users: string };
 }
+
+// === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
+import { varProxy, type VarRef } from "./template.ts";
+const vref = <K extends keyof VarShapes>(k: K): VarRef<VarShapes[K]> =>
+  varProxy(k) as VarRef<VarShapes[K]>;
+
+export const city_restheart_basic_auth = vref("city_restheart_basic_auth");
+export const jbuild_registry = vref("jbuild_registry");
+export const user_conf = vref("user_conf");
+export const wg_hub_config = vref("wg_hub_config");
+export const wg_hub_self = vref("wg_hub_self");

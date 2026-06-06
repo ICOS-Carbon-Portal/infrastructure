@@ -1,8 +1,10 @@
+import { ripgrep_url_map, ripgrep_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { type When } from "../../../lib/ansible/task.ts";
+import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { eq, isNotDefined, ne } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
@@ -14,8 +16,8 @@ export default [
     // Original `when:` is a YAML list (implicitly AND-ed by Ansible); preserve
     // the list structure rather than collapsing to a single `a and b` string.
     when: [
-      eq(V.ansible_architecture, "x86_64"),
-      isNotDefined(V.ripgrep_version),
+      eq(ansible_architecture, "x86_64"),
+      isNotDefined(ripgrep_version),
     ] as unknown as When,
     run_once: true,
     check_mode: false,
@@ -41,13 +43,13 @@ export default [
     ],
   },
   {
-    when: eq(V.ansible_architecture, "x86_64"),
+    when: eq(ansible_architecture, "x86_64"),
     name: "Install ripgrep using .deb from github",
-    apt: { deb: V.ripgrep_url_map.at(V.ansible_architecture) },
+    apt: { deb: ripgrep_url_map.at(ansible_architecture) },
   },
   // Hope that some version of ripgrep is bundled with OS.
   {
-    when: ne(V.ansible_architecture, "x86_64"),
+    when: ne(ansible_architecture, "x86_64"),
     block: [
       {
         name: "Install ripgrep using apt",

@@ -1,18 +1,19 @@
+import { dirsize_dirnames, dirsize_home, dirsize_initial } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
 
 export default [
   {
     name: "Create dirsize home directory",
     file: {
-      path: V.dirsize_home,
+      path: dirsize_home,
       state: "directory",
     },
   },
   {
     name: "Make sure that the dirnames file exists.",
     copy: {
-      dest: V.dirsize_dirnames,
+      dest: dirsize_dirnames,
       force: false,
       content: "",
     },
@@ -20,11 +21,11 @@ export default [
   {
     name: "Ensure that initial directories are in dirnames.txt",
     lineinfile: {
-      path: V.dirsize_dirnames,
-      line: V.item,
+      path: dirsize_dirnames,
+      line: item,
       state: "present",
     },
-    loop: V.dirsize_initial,
+    loop: dirsize_initial,
   },
   {
     name: "Create timer for node-exporter-dirsize",
@@ -32,7 +33,7 @@ export default [
       name: "icos.timer",
     },
     vars: {
-      timer_home: V.dirsize_home,
+      timer_home: dirsize_home,
       timer_name: "node-exporter-dirsize",
       timer_conf: "OnCalendar=hourly",
       timer_content: `#!/bin/bash

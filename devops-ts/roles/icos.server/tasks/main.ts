@@ -1,6 +1,7 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
+import { root_keys } from "../../../lib/globals.ts";
 import { isTruthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,11 +9,11 @@ export default [
     authorized_key: {
       user: "root",
       state: "present",
-      key: V.root_keys,
+      key: root_keys,
       // Make sure to remove stale root keys
       exclusive: true,
     },
-    when: isTruthy(V.root_keys),
+    when: isTruthy(root_keys),
   },
   {
     name: "Set timezone to Europe/Stockholm",
@@ -21,7 +22,7 @@ export default [
   },
   {
     name: "Generate locale",
-    locale_gen: { name: V.item, state: "present" },
+    locale_gen: { name: item, state: "present" },
     loop: ["en_US.UTF-8", "sv_SE.UTF-8"],
   },
 ] satisfies TaskFile;

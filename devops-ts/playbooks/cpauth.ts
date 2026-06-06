@@ -13,15 +13,16 @@
 //   $ icos play cpauth bbclient cpauth_backup
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { V } from "../lib/vars.ts";
+import { cpauth_domains } from "../lib/globals.ts";
+import { cpauth_cert_name } from "../lib/vars.ts";
 
 export default [
   {
     hosts: "fsicos2",
     roles: [
       role("icos.certbot2", {
-        certbot_name: V.cpauth_cert_name,
-        certbot_domains: V.cpauth_domains,
+        certbot_name: cpauth_cert_name,
+        certbot_domains: cpauth_domains,
       }).tags("cert"),
 
       role("icos.cpauth").tags("cpauth"),

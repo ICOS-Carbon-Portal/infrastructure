@@ -1,7 +1,12 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { jupyter_domains } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
-import { V } from "../lib/vars.ts";
+import {
+  vault_flexpart_admins,
+  vault_ganymede_user_conf,
+  vault_registry_pass,
+} from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
@@ -142,13 +147,13 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "flexpart",
-        certbot_domains: V.jupyter_domains,
+        certbot_domains: jupyter_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "flexpart",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: V.jupyter_domains.first(),
+        jupyter_domain: jupyter_domains.first(),
         jupyter_cert_name: "flexpart",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -159,7 +164,7 @@ export default [
     roles: [
       role("icos.lxd_guest", {
         user_disable_coredump: true,
-        user_conf: V.vault_ganymede_user_conf,
+        user_conf: vault_ganymede_user_conf,
       }).tags("guest"),
 
       role("icos.docker").tags("docker"),
@@ -169,7 +174,7 @@ export default [
       }).tags("flexpart"),
 
       role("icos.jupyter", {
-        jupyter_admins: V.vault_flexpart_admins,
+        jupyter_admins: vault_flexpart_admins,
         jupyter_backup_enable: false,
       }).tags("jupyter"),
     ],
@@ -182,7 +187,7 @@ export default [
         "community.general.docker_login": {
           registry_url: "registry.icos-cp.eu",
           username: "docker",
-          password: V.vault_registry_pass,
+          password: vault_registry_pass,
         },
       },
     ],

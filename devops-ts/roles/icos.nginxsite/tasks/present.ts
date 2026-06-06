@@ -1,7 +1,16 @@
+import {
+  nginxsite_path_available,
+  nginxsite_path_confd,
+  nginxsite_path_enable,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
+import {
+  nginxsite_domains,
+  nginxsite_file,
+  nginxsite_users,
+} from "../../../lib/sharedvars.ts";
 import { isDefined, isNotDefined } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const update = register("update");
 
@@ -14,7 +23,7 @@ export default [
       apply: { tags: "nginxsite_cert" },
       public: true,
     },
-    when: isDefined(V.nginxsite_domains),
+    when: isDefined(nginxsite_domains),
   },
   {
     name: "Create basic auth users",
@@ -24,15 +33,15 @@ export default [
       apply: { tags: "nginxsite_users" },
       public: true,
     },
-    when: isDefined(V.nginxsite_users),
+    when: isDefined(nginxsite_users),
   },
   {
     block: [
       {
         name: "Copy config",
         template: {
-          src: V.nginxsite_file,
-          dest: V.nginxsite_path_confd,
+          src: nginxsite_file,
+          dest: nginxsite_path_confd,
           backup: true,
         },
         register: update,
@@ -40,14 +49,14 @@ export default [
       {
         name: "Remove old config file from sites-available",
         file: {
-          dest: V.nginxsite_path_available,
+          dest: nginxsite_path_available,
           state: "absent",
         },
       },
       {
         name: "Remove old symlink sites-enabled",
         file: {
-          dest: V.nginxsite_path_enable,
+          dest: nginxsite_path_enable,
           state: "absent",
         },
       },

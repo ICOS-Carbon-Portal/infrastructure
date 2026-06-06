@@ -1,19 +1,21 @@
+import { vmagent_fsd } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { fsd_name, fsd_path, fsd_target } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   { import_tasks: "assert_installed.yml" },
   {
     name: "Check that the metrics endpoint responds",
     uri: {
-      url: tmpl`http://${V.fsd_target}/${V.fsd_path.default("/metrics")}`,
+      url: tmpl`http://${fsd_target}/${fsd_path.default("/metrics")}`,
     },
     retries: 3,
   },
   {
     name: "Install scrape config",
     copy: {
-      dest: tmpl`${V.vmagent_fsd}/${V.fsd_name}.yaml`,
+      dest: tmpl`${vmagent_fsd}/${fsd_name}.yaml`,
       content: `# {{ fsd_name }}
 - targets:
   - {{ fsd_target }}

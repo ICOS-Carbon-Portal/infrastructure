@@ -1,7 +1,8 @@
+import { rsyncd_enable } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { rsyncd_conf } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
 import { iff } from "../../../lib/template.ts";
-import { V } from "../_ctx.ts";
 
 const _justfile = register("_justfile");
 
@@ -14,7 +15,7 @@ export default [
     name: "Add config block to /etc/rsyncd.conf",
     copy: {
       dest: "/etc/rsyncd.conf",
-      content: V.rsyncd_conf,
+      content: rsyncd_conf,
     },
     notify: "restart rsync",
   },
@@ -32,8 +33,8 @@ export default [
     name: "Start rsync service",
     systemd: {
       name: "rsync",
-      enabled: V.rsyncd_enable,
-      state: iff(V.rsyncd_enable, "started", "stopped"),
+      enabled: rsyncd_enable,
+      state: iff(rsyncd_enable, "started", "stopped"),
     },
   },
   {

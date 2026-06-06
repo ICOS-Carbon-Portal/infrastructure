@@ -1,13 +1,15 @@
+import { postgis_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { postgis_bbclient_name } from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     include_role: { name: "icos.bbclient2", public: true },
     vars: {
       bbclient_user: "root",
-      bbclient_name: V.postgis_bbclient_name,
-      bbclient_home: tmpl`${V.postgis_home}/bbclient`,
+      bbclient_name: postgis_bbclient_name,
+      bbclient_home: tmpl`${postgis_home}/bbclient`,
       bbclient_timer_conf: `# Run once every 6 hour
 OnCalendar=0:0/6
 # Spread the load for timers starting on a whole hour

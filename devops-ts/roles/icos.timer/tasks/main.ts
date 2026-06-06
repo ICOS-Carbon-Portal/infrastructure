@@ -1,6 +1,14 @@
+import {
+  _timer_sysd_service,
+  _timer_sysd_timer,
+  timer_dest,
+  timer_home,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { isDefined, ne } from "../../../lib/vars.ts";
-import { notVar, tmpl, V } from "../_ctx.ts";
+import { ansible_check_mode } from "../../../lib/builtins.ts";
+import { timer_content, timer_name } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
+import { isDefined, ne, not } from "../../../lib/vars.ts";
 
 export default [
   {
@@ -9,29 +17,29 @@ export default [
       that: 'timer_home != "/etc/systemd/systemd"',
     },
     changed_when: false,
-    when: isDefined(V.timer_content),
+    when: isDefined(timer_content),
   },
   {
     name: "Create home directory",
-    when: ne(V.timer_home, "/etc/systemd/systemd"),
+    when: ne(timer_home, "/etc/systemd/systemd"),
     file: {
-      path: V.timer_home,
+      path: timer_home,
       state: "directory",
     },
   },
   {
     name: "Create timer script",
     copy: {
-      dest: V.timer_dest,
+      dest: timer_dest,
       mode: "+x",
-      content: V.timer_content,
+      content: timer_content,
     },
-    when: isDefined(V.timer_content),
+    when: isDefined(timer_content),
   },
   {
     name: "Create systemd timer definition",
     copy: {
-      dest: V._timer_sysd_timer,
+      dest: _timer_sysd_timer,
       content: `[Unit]
 Description={{ timer_desc }}
 
@@ -47,7 +55,7 @@ WantedBy=timers.target
   {
     name: "Create systemd service",
     copy: {
-      dest: V._timer_sysd_service,
+      dest: _timer_sysd_service,
       content: `[Unit]
 Description={{ timer_desc }}
 
@@ -66,18 +74,17 @@ WorkingDirectory={{ timer_wdir }}
   },
   {
     name: "Link systemd files",
-    when: ne(V.timer_home, "/etc/systemd/system"),
-    command:
-      tmpl`systemctl link ${V._timer_sysd_timer} ${V._timer_sysd_service}`,
+    when: ne(timer_home, "/etc/systemd/system"),
+    command: tmpl`systemctl link ${_timer_sysd_timer} ${_timer_sysd_service}`,
     register: "_r",
     failed_when: "_r.rc != 0",
     changed_when: '"Created" in _r.stdout',
   },
   {
     name: "Start timer",
-    when: notVar("ansible_check_mode"),
+    when: not(ansible_check_mode),
     systemd: {
-      name: tmpl`${V.timer_name}.timer`,
+      name: tmpl`${timer_name}.timer`,
       enabled: true,
       state: "started",
       daemon_reload: true,

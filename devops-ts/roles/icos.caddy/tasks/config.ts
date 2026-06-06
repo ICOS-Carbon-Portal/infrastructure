@@ -1,8 +1,10 @@
+import { caddy_bin } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { omit } from "../../../lib/builtins.ts";
+import { block, marker, state, where } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { eq, isDefined } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -19,19 +21,19 @@ export default [
         name: "Add caddy configuration block",
         blockinfile: {
           path: "/etc/caddy/Caddyfile",
-          block: V.block,
-          marker: tmpl`# {mark} ${V.marker}`,
-          state: V.state.default(V.omit),
+          block: block,
+          marker: tmpl`# {mark} ${marker}`,
+          state: state.default(omit),
           backup: true,
           create: true,
-          insertafter: iff(eq(V.where, "EOF"), "EOF", V.omit),
-          insertbefore: iff(eq(V.where, "BOF"), "BOF", V.omit),
+          insertafter: iff(eq(where, "EOF"), "EOF", omit),
+          insertbefore: iff(eq(where, "BOF"), "BOF", omit),
         },
         register: _r,
       },
       {
         name: "Run validation",
-        command: tmpl`${V.caddy_bin} validate`,
+        command: tmpl`${caddy_bin} validate`,
         args: { chdir: "/etc/caddy" },
         changed_when: _r.changed,
         notify: "reload caddy",

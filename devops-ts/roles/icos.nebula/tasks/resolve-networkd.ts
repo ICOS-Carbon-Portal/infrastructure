@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { nebula_interface } from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Add nebula dns server",
     copy: {
-      dest: tmpl`/etc/systemd/network/${V.nebula_interface}.network`,
+      dest: tmpl`/etc/systemd/network/${nebula_interface}.network`,
       content:
         `# This file is read by both systemd-networkd and systemd-resolved. The
 # trick is to configure systemd-resolved to add a specific dns server

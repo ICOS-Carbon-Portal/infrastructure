@@ -1,6 +1,8 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_default_ipv4, item } from "../../../lib/builtins.ts";
+import { lxd_guest_root_keys } from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isTruthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -22,7 +24,7 @@ export default [
   {
     name: "Generate locale",
     locale_gen: {
-      name: V.item,
+      name: item,
       state: "present",
     },
     loop: [
@@ -35,16 +37,16 @@ export default [
     authorized_key: {
       user: "root",
       state: "present",
-      key: V.lxd_guest_root_keys,
+      key: lxd_guest_root_keys,
       exclusive: true,
     },
-    when: isTruthy(V.lxd_guest_root_keys),
+    when: isTruthy(lxd_guest_root_keys),
   },
   {
     name: "Add default gateway as host",
     lineinfile: {
       path: "/etc/hosts",
-      line: tmpl`${V.ansible_default_ipv4.gateway} gateway.lxd`,
+      line: tmpl`${ansible_default_ipv4.gateway} gateway.lxd`,
       regex: "gateway.lxd$",
       state: "present",
     },

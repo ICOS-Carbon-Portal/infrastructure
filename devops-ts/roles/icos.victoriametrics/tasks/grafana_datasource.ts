@@ -1,14 +1,16 @@
+import { vm_graf_plugins, vm_upgrade } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { omit } from "../../../lib/builtins.ts";
+import { grafana_datasource_version } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { concat, iff } from "../../../lib/template.ts";
+import { concat, iff, tmpl } from "../../../lib/template.ts";
 import { hostvar, isNotDefined } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
 export default [
   {
-    when: isNotDefined(V.grafana_datasource_version),
+    when: isNotDefined(grafana_datasource_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -35,7 +37,7 @@ export default [
   {
     name: "Create grafana plugin directory",
     file: {
-      path: V.vm_graf_plugins,
+      path: vm_graf_plugins,
       state: "directory",
     },
   },
@@ -48,12 +50,12 @@ export default [
         }/victoriametrics-metrics-datasource-v${
           hostvar("localhost").grafana_datasource_version
         }.zip`,
-      dest: V.vm_graf_plugins,
+      dest: vm_graf_plugins,
       remote_src: true,
       creates: iff(
-        V.vm_upgrade,
-        V.omit,
-        concat(V.vm_graf_plugins, "/victoriametrics-datasource"),
+        vm_upgrade,
+        omit,
+        concat(vm_graf_plugins, "/victoriametrics-datasource"),
       ),
     },
     diff: false,

@@ -1,6 +1,12 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { isDefined, V } from "../lib/vars.ts";
+import {
+  cpauth_domains,
+  cpauth_envries,
+  doi_certbot_name,
+  virtuoso_enable,
+} from "../lib/globals.ts";
+import { isDefined, jre_apt_package } from "../lib/vars.ts";
 
 export default [
   {
@@ -20,7 +26,7 @@ export default [
         name: "Setup cpauth proxy",
         tags: ["proxy", "cpauth_proxy"],
         import_role: { name: "icos.cpauth", tasks_from: "proxy.yml" },
-        when: isDefined("cpauth_domains"),
+        when: isDefined(cpauth_domains),
       },
       {
         name: "Setup restheart proxy",
@@ -31,7 +37,7 @@ export default [
         name: "Setup doi proxy",
         tags: ["proxy", "doi_proxy"],
         import_role: { name: "icos.doi", tasks_from: "proxy.yml" },
-        when: isDefined("doi_certbot_name"),
+        when: isDefined(doi_certbot_name),
       },
     ],
   },
@@ -46,7 +52,7 @@ export default [
     pre_tasks: [
       {
         name: "Install jre",
-        apt: { name: V.jre_apt_package },
+        apt: { name: jre_apt_package },
       },
       {
         name: "Setup rdflog",
@@ -64,10 +70,10 @@ export default [
       role("icos.restheart"),
       role("icos.cpmeta"),
       role("icos.cpdata"),
-      role("icos.cpauth").when(isDefined("cpauth_envries")),
+      role("icos.cpauth").when(isDefined(cpauth_envries)),
       role("icos.doi"),
       role("icos.virtuoso").tags("virtuoso").when(
-        isDefined("virtuoso_enable").default(false),
+        isDefined(virtuoso_enable).default(false),
       ),
     ],
   },

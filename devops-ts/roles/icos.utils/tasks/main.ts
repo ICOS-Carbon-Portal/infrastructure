@@ -1,5 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -19,8 +20,8 @@ alias psc='ps xawf -eo pid,user,cgroup,args'
     name: "Copy utilities",
     tags: "utils_copy",
     template: {
-      src: V.item,
-      dest: tmpl`/usr/local/sbin/${V.item}`,
+      src: item,
+      dest: tmpl`/usr/local/sbin/${item}`,
       mode: 0o755,
     },
     loop: [

@@ -1,10 +1,10 @@
+import { fail2ban_config_files } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { loopOverVar } from "../../../lib/loop.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   loopOverVar<{ content: string; dest: string }>(
-    V.fail2ban_config_files,
+    fail2ban_config_files,
     (item) => ({
       name: "Create fail2ban config files",
       copy: {

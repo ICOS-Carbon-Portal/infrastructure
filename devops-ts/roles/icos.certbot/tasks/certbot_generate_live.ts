@@ -1,25 +1,26 @@
+import { certbot_bin, certbot_conf_path, certbot_email } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
-import { jinjaFor } from "../../../lib/template.ts";
+import { certbot_conf_name, certbot_domains } from "../../../lib/sharedvars.ts";
+import { jinjaFor, tmpl } from "../../../lib/template.ts";
 import { not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _conf_file = register("_conf_file");
 const _write_conf = register("_write_conf");
 
 export default [
   {
-    name: tmpl`Check if ${V.certbot_conf_name} exists`,
+    name: tmpl`Check if ${certbot_conf_name} exists`,
     stat: {
-      path: V.certbot_conf_path,
+      path: certbot_conf_path,
     },
     register: _conf_file,
   },
   {
     name:
-      tmpl`Create an initial nginx ${V.certbot_conf_name} for the certbot certification`,
+      tmpl`Create an initial nginx ${certbot_conf_name} for the certbot certification`,
     copy: {
-      dest: V.certbot_conf_path,
+      dest: certbot_conf_path,
       content: `server {
   listen 80;
   server_name {% for domain in certbot_domains %} {{ domain }}{% endfor %};
@@ -44,13 +45,13 @@ export default [
   {
     name: "Install SSL certificate",
     command:
-      tmpl`${V.certbot_bin} certonly --authenticator nginx --non-interactive ${
+      tmpl`${certbot_bin} certonly --authenticator nginx --non-interactive ${
         jinjaFor<string>(
           "domain",
-          V.certbot_domains,
+          certbot_domains,
           (domain) => tmpl` --domain ${domain} `,
         )
-      } --email ${V.certbot_email} --agree-tos --expand\n`,
+      } --email ${certbot_email} --agree-tos --expand\n`,
     register: "o",
     changed_when:
       '"Certificate not yet due for renewal; no action taken." not in o.stdout',

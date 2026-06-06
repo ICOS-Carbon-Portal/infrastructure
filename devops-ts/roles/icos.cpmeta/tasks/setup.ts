@@ -1,6 +1,11 @@
+import { cpmeta_home, cpmeta_user } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import {
+  cpmeta_filestorage_target,
+  cpmeta_rdfstorage_path,
+} from "../../../lib/globals.ts";
 import { register } from "../../../lib/register.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 const _service = register("_service");
 
@@ -8,8 +13,8 @@ export default [
   {
     name: "Create cpmeta user",
     user: {
-      name: V.cpmeta_user,
-      home: V.cpmeta_home,
+      name: cpmeta_user,
+      home: cpmeta_home,
       shell: "/bin/bash",
     },
   },
@@ -17,28 +22,28 @@ export default [
     name: "Copy SSL certs and private key for Handle.net client",
     copy: {
       src: "ssl",
-      dest: tmpl`${V.cpmeta_home}/`,
-      owner: V.cpmeta_user,
-      group: V.cpmeta_user,
+      dest: tmpl`${cpmeta_home}/`,
+      owner: cpmeta_user,
+      group: cpmeta_user,
     },
   },
   {
     name: "Create metaAppStorage directory (if not present), take ownership",
     file: {
-      path: V.cpmeta_filestorage_target,
+      path: cpmeta_filestorage_target,
       state: "directory",
-      owner: V.cpmeta_user,
-      group: V.cpmeta_user,
+      owner: cpmeta_user,
+      group: cpmeta_user,
       recurse: true,
     },
   },
   {
     name: "Create rdfStorage directory (if not present), take ownership",
     file: {
-      path: V.cpmeta_rdfstorage_path,
+      path: cpmeta_rdfstorage_path,
       state: "directory",
-      owner: V.cpmeta_user,
-      group: V.cpmeta_user,
+      owner: cpmeta_user,
+      group: cpmeta_user,
       recurse: true,
     },
   },

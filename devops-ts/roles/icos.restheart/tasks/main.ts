@@ -1,6 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { restheart_backup_enable } from "../../../lib/globals.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,6 +12,6 @@ export default [
   {
     import_tasks: "backup.yml",
     tags: "restheart_backup",
-    when: truthy(V.restheart_backup_enable).default(false),
+    when: truthy(restheart_backup_enable).default(false),
   },
 ] satisfies TaskFile;

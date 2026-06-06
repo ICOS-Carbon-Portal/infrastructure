@@ -1,7 +1,10 @@
+import { cpdata_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { cpdata_domains } from "../../../lib/globals.ts";
+import { cpdata_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 const _r = register("_r");
@@ -18,8 +21,8 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: V.cpdata_jar_file,
-      dest: tmpl`${V.cpdata_home}/cpdata.jar`,
+      src: cpdata_jar_file,
+      dest: tmpl`${cpdata_home}/cpdata.jar`,
       backup: true,
     },
     register: "_jarfile",
@@ -29,7 +32,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: V.cpdata_home },
+    args: { chdir: cpdata_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },
@@ -37,7 +40,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${V.cpdata_domains.first()}/buildInfo`,
+      url: tmpl`https://${cpdata_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

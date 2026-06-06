@@ -1,16 +1,22 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import {
+  sexp_block,
+  sexp_config,
+  sexp_marker,
+  sexp_state,
+} from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Add config to script-exporters config.yaml",
     blockinfile: {
-      path: V.sexp_config,
+      path: sexp_config,
       create: false,
-      marker: tmpl`# {mark} ${V.sexp_marker}`,
-      state: V.sexp_state.default("present"),
+      marker: tmpl`# {mark} ${sexp_marker}`,
+      state: sexp_state.default("present"),
       insertafter: "EOF",
-      block: V.sexp_block,
+      block: sexp_block,
     },
     notify: "reload script-exporter",
   },

@@ -1,7 +1,12 @@
+import {
+  watchexec_architecture,
+  watchexec_url_map,
+  watchexec_version,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isNotDefined, not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gr = register("gr");
 const _r = register("_r");
@@ -17,7 +22,7 @@ export default [
     },
   },
   {
-    when: isNotDefined(V.watchexec_version),
+    when: isNotDefined(watchexec_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -43,17 +48,17 @@ export default [
   },
   {
     name: "Install watchexec",
-    apt: { deb: V.watchexec_url_map.at(V.watchexec_architecture) },
+    apt: { deb: watchexec_url_map.at(watchexec_architecture) },
   },
   {
     name: "Check that watchexec is executable and the correct version",
     shell: "watchexec --version | awk 'NR == 1 { print $2 }'",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(V.watchexec_version)),
+    failed_when: not(_r.stdout.endswith(watchexec_version)),
   },
   {
     name: "Which version of watchexec was installed",
-    debug: { msg: tmpl`Installed ${V.watchexec_version}` },
+    debug: { msg: tmpl`Installed ${watchexec_version}` },
   },
 ] satisfies TaskFile;

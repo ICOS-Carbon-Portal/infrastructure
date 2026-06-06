@@ -1,5 +1,7 @@
+import { dnsmasq_config_dir } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { dnsmasq_instance } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -9,7 +11,7 @@ export default [
   {
     name: "Create /etc/default/dnsmasq.INSTANCE",
     copy: {
-      dest: tmpl`/etc/default/dnsmasq.${V.dnsmasq_instance}`,
+      dest: tmpl`/etc/default/dnsmasq.${dnsmasq_instance}`,
       content:
         `# We set this here so that'll be picked up by the etc/init.d/dnsmasq
 # script (which is used by the systemd service)
@@ -25,7 +27,7 @@ DNSMASQ_EXCEPT="lo"
   {
     name: "Create /etc/dnsmasq.INSTANCE.d directory",
     file: {
-      path: V.dnsmasq_config_dir,
+      path: dnsmasq_config_dir,
       state: "directory",
     },
   },

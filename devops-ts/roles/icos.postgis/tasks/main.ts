@@ -1,6 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { postgis_backup_enable } from "../../../lib/globals.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "docker.yml", tags: "postgis_setup" },
@@ -16,7 +16,7 @@ export default [
   {
     import_tasks: "backup.yml",
     tags: "postgis_backup",
-    when: truthy(V.postgis_backup_enable),
+    when: truthy(postgis_backup_enable),
   },
   { import_tasks: "just.yml", tags: "postgis_just" },
 ] satisfies TaskFile;

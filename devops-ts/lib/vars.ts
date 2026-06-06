@@ -75,19 +75,29 @@ export {
   tmpl,
 } from "./template.ts";
 
-/**
- * Typed accessor for variable references in value position. Each access yields a
- * `Template` (rendered quoted), so unknown names are a compile error. A variable
- * declared with an object shape (lib/shapes.ts) exposes checked field refs.
- *
- *   V.nexus_home            // Template "{{ nexus_home }}"
- *   V.wg_hub_config.name    // Template "{{ wg_hub_config.name }}"
- *   V.nope                  // compile error: not in Vars
- */
-export const V: { readonly [K in KnownName]: VarRef<AllKnown[K]> } = new Proxy(
-  {},
-  { get: (_t, name: string) => varProxy(name) },
-) as { readonly [K in KnownName]: VarRef<AllKnown[K]> };
+// A named binding per hand-curated variable, so a playbook references it the
+// normal TS way (`import { jre_apt_package } from "../lib/vars.ts"; ... `),
+// each rendering `{{ <name> }}` in value position and bare in a `when:` subject.
+// Names a generated registry (globals/builtins/…) also provides are imported
+// from there instead — these cover the hand-curated catalogue's own entries.
+const vref = <K extends keyof Vars>(k: K): VarRef<Vars[K]> =>
+  varProxy(k) as VarRef<Vars[K]>;
+
+export const cpauth_cert_name = vref("cpauth_cert_name");
+export const cpauth_domains = vref("cpauth_domains");
+export const cpauth_envries = vref("cpauth_envries");
+export const cpdata_cert_name = vref("cpdata_cert_name");
+export const cpdata_domains = vref("cpdata_domains");
+export const doi_certbot_name = vref("doi_certbot_name");
+export const icosdata_exports = vref("icosdata_exports");
+export const icosdata_nfs_mounts = vref("icosdata_nfs_mounts");
+export const java_path = vref("java_path");
+export const jre_apt_package = vref("jre_apt_package");
+export const lxd_vm_name = vref("lxd_vm_name");
+export const nexus_home = vref("nexus_home");
+export const nginxsite_name = vref("nginxsite_name");
+export const root_keys = vref("root_keys");
+export const stilt_input_mount = vref("stilt_input_mount");
 
 /**
  * Checked access to another host's variables:

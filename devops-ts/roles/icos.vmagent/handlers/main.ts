@@ -1,11 +1,12 @@
+import { vmagent_bin, vmagent_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "reload vmagent",
     shell:
-      tmpl`${V.vmagent_bin}/vmagent-prod -dryRun -promscrape.config=${V.vmagent_home}/prometheus.yml && systemctl reload vmagent`,
+      tmpl`${vmagent_bin}/vmagent-prod -dryRun -promscrape.config=${vmagent_home}/prometheus.yml && systemctl reload vmagent`,
     changed_when: false,
   },
   {

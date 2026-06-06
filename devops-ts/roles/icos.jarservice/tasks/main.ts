@@ -1,16 +1,26 @@
+import { certbot_disabled, extra_groups } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
+import {
+  configfile,
+  jarservice_conf_only,
+  nginxconfig,
+  servicename,
+  servicetemplate,
+  username,
+} from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { and, group, isDefined, not, truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _user = register("_user");
 
 export default [
   {
-    name: tmpl`Add ${V.username} user`,
+    name: tmpl`Add ${username} user`,
     user: {
-      name: V.username,
-      groups: V.extra_groups,
+      name: username,
+      groups: extra_groups,
       append: true,
       shell: "/bin/bash",
     },
@@ -18,39 +28,39 @@ export default [
   },
   {
     include_tasks: "jarfile.yml",
-    when: not(group(truthy(V.jarservice_conf_only).default(false).bool())),
+    when: not(group(truthy(jarservice_conf_only).default(false).bool())),
   },
   {
-    name: tmpl`Copy ${V.servicename} config file ${V.configfile}`,
+    name: tmpl`Copy ${servicename} config file ${configfile}`,
     template: {
-      src: V.configfile,
+      src: configfile,
       dest: tmpl`${_user.home.ref}/`,
     },
-    notify: tmpl`restart ${V.servicename}`,
+    notify: tmpl`restart ${servicename}`,
   },
   {
-    name: tmpl`Copy ${V.servicename} nginx config file(s) ${V.nginxconfig}*`,
+    name: tmpl`Copy ${servicename} nginx config file(s) ${nginxconfig}*`,
     template: {
-      src: V.item,
+      src: item,
       dest: "/etc/nginx/conf.d/",
     },
-    with_fileglob: [tmpl`${V.nginxconfig}*`],
+    with_fileglob: [tmpl`${nginxconfig}*`],
     // Our nginx config template is dependent on a variable set by
     // certbot. This means that if the certbot role is disabled, we
     // cannot deploy the config.
-    when: and(isDefined(V.nginxconfig), not(V.certbot_disabled)),
+    when: and(isDefined(nginxconfig), not(certbot_disabled)),
     notify: "reload nginx config",
   },
   {
-    name: tmpl`Add systemd ${V.servicename} servicefile`,
+    name: tmpl`Add systemd ${servicename} servicefile`,
     template: {
-      src: V.servicetemplate,
-      dest: tmpl`/etc/systemd/system/${V.servicename}.service`,
+      src: servicetemplate,
+      dest: tmpl`/etc/systemd/system/${servicename}.service`,
     },
     notify: ["reload systemd config"],
   },
   {
-    name: tmpl`Enable systemd ${V.servicename}`,
-    service: tmpl`name=${V.servicename} enabled=yes state=started`,
+    name: tmpl`Enable systemd ${servicename}`,
+    service: tmpl`name=${servicename} enabled=yes state=started`,
   },
 ] satisfies TaskFile;

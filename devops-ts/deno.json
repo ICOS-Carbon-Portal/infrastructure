@@ -7,8 +7,10 @@
     "render": "deno run --quiet --allow-all render.ts",
     "render-all": "deno run --allow-read --allow-write --allow-env render-all.ts",
     "gen-contexts": "deno run --allow-read --allow-write --allow-env gen-contexts.ts",
+    "gen-bindings": "deno run --allow-read --allow-write gen-bindings.ts",
     "gen-data": "deno run --allow-read --allow-write --allow-env gen-data.ts",
-    "gen-assets": "deno run --allow-read --allow-write --allow-env vendor-assets.ts"
+    "gen-assets": "deno run --allow-read --allow-write --allow-env vendor-assets.ts",
+    "gen": "deno task gen-contexts && deno task gen-bindings && deno task gen-data"
   },
   "imports": {
     "yaml": "npm:yaml@2"
@@ -26,7 +28,8 @@
       "check-braces.ts",
       "codemod-structured.ts",
       "gen-data.ts",
-      "gen-contexts.ts"
+      "gen-contexts.ts",
+      "gen-bindings.ts"
     ]
   }
 }

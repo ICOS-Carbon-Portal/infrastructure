@@ -1,14 +1,16 @@
+import { trippy_url_map, trippy_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isNotDefined, not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 const _r = register("_r");
 
 export default [
   {
-    when: isNotDefined(V.trippy_version),
+    when: isNotDefined(trippy_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -36,7 +38,7 @@ export default [
     name: "Install trippy",
     unarchive: {
       remote_src: true,
-      src: V.trippy_url_map.at(V.ansible_architecture),
+      src: trippy_url_map.at(ansible_architecture),
       dest: "/usr/local/bin",
       extra_opts: ["--strip-components=1"],
     },
@@ -46,10 +48,10 @@ export default [
     shell: "trip --version",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(V.trippy_version)),
+    failed_when: not(_r.stdout.endswith(trippy_version)),
   },
   {
     name: "Which version of trippy was installed",
-    debug: { msg: tmpl`Installed ${V.trippy_version}` },
+    debug: { msg: tmpl`Installed ${trippy_version}` },
   },
 ] satisfies TaskFile;

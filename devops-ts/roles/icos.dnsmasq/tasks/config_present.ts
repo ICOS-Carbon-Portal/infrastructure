@@ -1,8 +1,13 @@
+import {
+  dnsmasq_config_dir,
+  dnsmasq_config_file,
+  dnsmasq_service_name,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { dnsmasq_config } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { isDefined } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -16,15 +21,15 @@ export default [
       {
         name: "Copy dnsmasq config",
         copy: {
-          content: V.dnsmasq_config,
-          dest: V.dnsmasq_config_file,
+          content: dnsmasq_config,
+          dest: dnsmasq_config_file,
           backup: true,
         },
         register: config,
       },
       {
         name: "Run validation",
-        command: tmpl`dnsmasq --test --conf-dir ${V.dnsmasq_config_dir}`,
+        command: tmpl`dnsmasq --test --conf-dir ${dnsmasq_config_dir}`,
         changed_when: config.changed,
         register: check,
       },
@@ -32,7 +37,7 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: tmpl`cat -n ${V.dnsmasq_config}`,
+        command: tmpl`cat -n ${dnsmasq_config}`,
         register: _slurp,
       },
       {
@@ -45,7 +50,7 @@ export default [
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: V.dnsmasq_config,
+          dest: dnsmasq_config,
           src: config.backup_file.ref,
         },
       },
@@ -64,7 +69,7 @@ export default [
   {
     name: "Restart dnsmasq",
     systemd: {
-      name: V.dnsmasq_service_name,
+      name: dnsmasq_service_name,
       enabled: true,
       state: iff(check.changed, "restarted", "started"),
     },

@@ -8,22 +8,28 @@
 //   icos play nextcloud onlyoffice
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { nextcloud_home } from "../lib/sharedvars.ts";
+import { tmpl } from "../lib/vars.ts";
+import {
+  vault_nextcloud_admin_password,
+  vault_nextcloud_exporter_pass,
+  vault_onlyoffice_secret,
+} from "../lib/vaultvars.ts";
 
 export default [
   {
     hosts: "fsicos2",
     roles: [
       role("icos.nextcloud", {
-        nextcloud_admin_password: V.vault_nextcloud_admin_password,
+        nextcloud_admin_password: vault_nextcloud_admin_password,
         nextcloud_domain: "fileshare.icos-cp.eu",
-        nextcloud_exporter_pass: V.vault_nextcloud_exporter_pass,
+        nextcloud_exporter_pass: vault_nextcloud_exporter_pass,
         nextcloud_volumes: ["/share/with_nextcloud:/share"],
       }).tags("nextcloud"),
 
       role("icos.onlyoffice", {
         onlyoffice_domain: "onlyoffice.icos-cp.eu",
-        onlyoffice_secret: V.vault_onlyoffice_secret,
+        onlyoffice_secret: vault_onlyoffice_secret,
       }).tags("onlyoffice"),
 
       // This will install a coldbackup script, i.e it will shut down nextcloud
@@ -33,10 +39,10 @@ export default [
       // nextcloud, we might as well bring it down.
       role("icos.bbclient2", {
         bbclient_name: "nextcloud",
-        bbclient_home: tmpl`${V.nextcloud_home}/bbclient`,
+        bbclient_home: tmpl`${nextcloud_home}/bbclient`,
         bbclient_coldbackup_hour: 1,
         bbclient_coldbackup_minute: 0,
-        bbclient_coldbackup: V.nextcloud_home,
+        bbclient_coldbackup: nextcloud_home,
         bbclient_patterns: `R /disk/data/nextcloud
 R /docker/nextcloud/volumes
 `,

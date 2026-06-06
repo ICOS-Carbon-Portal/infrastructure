@@ -1,7 +1,7 @@
+import { nextcloud_certbot_enable } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { isDefined, truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -10,7 +10,7 @@ const update = register("update");
 export default [
   {
     import_role: { name: "icos.certbot2" },
-    when: truthy(V.nextcloud_certbot_enable),
+    when: truthy(nextcloud_certbot_enable),
   },
   {
     block: [

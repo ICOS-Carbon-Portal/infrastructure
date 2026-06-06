@@ -1,8 +1,15 @@
+import {
+  opendkim_domains_testkeys,
+  opendkim_keys,
+  opendkim_sock,
+  opendkim_user,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item, omit } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
-import { type Tmpl } from "../../../lib/template.ts";
+import { opendkim_domains } from "../../../lib/paramvars.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,11 +24,11 @@ export default [
   {
     name: "Create keys directory",
     file: {
-      path: V.opendkim_keys,
+      path: opendkim_keys,
       mode: 0o700,
       state: "directory",
-      owner: V.opendkim_user,
-      group: V.opendkim_user,
+      owner: opendkim_user,
+      group: opendkim_user,
     },
   },
   {
@@ -37,7 +44,7 @@ export default [
     name: "Create config files",
     template: {
       dest: "/etc/opendkim",
-      src: V.item,
+      src: item,
       lstrip_blocks: true,
     },
     loop: [
@@ -50,24 +57,24 @@ export default [
   {
     name: "Create key directory for domain",
     file: {
-      path: tmpl`${V.opendkim_keys}/${V.item}`,
+      path: tmpl`${opendkim_keys}/${item}`,
       state: "directory",
-      owner: V.opendkim_user,
-      group: V.opendkim_user,
+      owner: opendkim_user,
+      group: opendkim_user,
     },
-    loop: V.opendkim_domains,
+    loop: opendkim_domains,
   },
   {
     name: "Create domain keys",
     become: true,
-    become_user: V.opendkim_user,
+    become_user: opendkim_user,
     command:
-      tmpl`opendkim-genkey -b 2048 -d ${V.item} -s default -v && chmod 600 default.private`,
+      tmpl`opendkim-genkey -b 2048 -d ${item} -s default -v && chmod 600 default.private`,
     args: {
-      chdir: tmpl`${V.opendkim_keys}/${V.item}`,
+      chdir: tmpl`${opendkim_keys}/${item}`,
       creates: "default.private",
     },
-    loop: V.opendkim_domains,
+    loop: opendkim_domains,
   },
   {
     name: "Find domain keys that needs to be added to DNS",
@@ -78,7 +85,7 @@ export default [
 done`,
     register: "_r",
     changed_when: false,
-    when: truthy(V.opendkim_domains.difference(V.opendkim_domains_testkeys)),
+    when: truthy(opendkim_domains.difference(opendkim_domains_testkeys)),
   },
   {
     name: "Print instructions about adding DNS records",
@@ -87,18 +94,18 @@ done`,
 "{{ _r.stdout }}"
 `,
     },
-    when: truthy(V.opendkim_domains.difference(V.opendkim_domains_testkeys)),
+    when: truthy(opendkim_domains.difference(opendkim_domains_testkeys)),
   },
   {
     name: "Run opendkim-testkey on keys that have been added to DNS",
-    command: tmpl`opendkim-testkey -d ${V.item} -s default -vvv`,
+    command: tmpl`opendkim-testkey -d ${item} -s default -vvv`,
     changed_when: false,
-    loop: V.opendkim_domains_testkeys,
+    loop: opendkim_domains_testkeys,
   },
   {
     name: "Create socket directory",
     file: {
-      path: V.opendkim_sock.dirname(),
+      path: opendkim_sock.dirname(),
       state: "directory",
       owner: "opendkim",
       group: "postfix",
@@ -121,7 +128,7 @@ done`,
       postconf: {
         param: item.param,
         value: item.value,
-        append: item.append.default(V.omit),
+        append: item.append.default(omit),
       },
       notify: "Restart postfix",
     }),

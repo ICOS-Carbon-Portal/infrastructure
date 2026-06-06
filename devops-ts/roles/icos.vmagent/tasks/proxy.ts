@@ -1,10 +1,13 @@
+import { vmagent_proxy } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { inventory_hostname } from "../../../lib/builtins.ts";
+import { vmagent_auth } from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { eq, notIn, truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    when: eq(V.vmagent_proxy, "probe"),
+    when: eq(vmagent_proxy, "probe"),
     name: "Probe for vmagent_proxy fact",
     check_mode: false,
     shellfact: {
@@ -13,22 +16,22 @@ export default [
     },
   },
   {
-    when: notIn(V.vmagent_proxy, ["nginx", "caddy"]),
+    when: notIn(vmagent_proxy, ["nginx", "caddy"]),
     check_mode: false,
     name: "Fail if we can't figure out which proxy server is used",
     fail: {
-      msg: tmpl`Unknown proxy server "${V.vmagent_proxy}".\n`,
+      msg: tmpl`Unknown proxy server "${vmagent_proxy}".\n`,
     },
   },
   {
-    when: eq(V.vmagent_proxy, "nginx"),
+    when: eq(vmagent_proxy, "nginx"),
     name: "Setup nginx proxy for vmagent",
     include_role: {
       name: "icos.nginxsite",
     },
   },
   {
-    when: eq(V.vmagent_proxy, "caddy"),
+    when: eq(vmagent_proxy, "caddy"),
     name: "Setup caddy proxy for vmagent",
     include_role: {
       name: "icos.caddy",
@@ -40,12 +43,12 @@ export default [
     meta: "flush_handlers",
   },
   {
-    when: truthy(V.vmagent_auth),
+    when: truthy(vmagent_auth),
     block: [
       {
         name: "Test that the vmagent UI is password protected",
         uri: {
-          url: tmpl`https://${V.inventory_hostname}/vmagent/`,
+          url: tmpl`https://${inventory_hostname}/vmagent/`,
         },
         retries: 10,
         register: "r",
@@ -54,9 +57,9 @@ export default [
       {
         name: "Test that the vmagent UI works with password",
         uri: {
-          url: tmpl`https://${V.inventory_hostname}/vmagent/`,
-          user: V.vmagent_auth.username,
-          password: V.vmagent_auth.password,
+          url: tmpl`https://${inventory_hostname}/vmagent/`,
+          user: vmagent_auth.username,
+          password: vmagent_auth.password,
         },
         retries: 10,
         register: "r",

@@ -1,8 +1,10 @@
+import { stiltweb_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { stiltweb_domains } from "../../../lib/globals.ts";
+import { stiltweb_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { isDefined, not, or } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 const _service = register("_service");
@@ -21,15 +23,15 @@ export default [
   },
   {
     name: "Create configuration file",
-    template: { dest: tmpl`${V.stiltweb_home}/local.conf`, src: "local.conf" },
+    template: { dest: tmpl`${stiltweb_home}/local.conf`, src: "local.conf" },
     register: _config,
   },
   {
     name: "Copy jarfile",
-    when: isDefined(V.stiltweb_jar_file),
+    when: isDefined(stiltweb_jar_file),
     copy: {
-      src: V.stiltweb_jar_file,
-      dest: tmpl`${V.stiltweb_home}/stiltweb.jar`,
+      src: stiltweb_jar_file,
+      dest: tmpl`${stiltweb_home}/stiltweb.jar`,
       backup: true,
     },
     register: _jarfile,
@@ -39,7 +41,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: V.stiltweb_home },
+    args: { chdir: stiltweb_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },
@@ -59,7 +61,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${V.stiltweb_domains.first()}/buildInfo`,
+      url: tmpl`https://${stiltweb_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

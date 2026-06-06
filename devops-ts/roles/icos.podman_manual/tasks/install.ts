@@ -1,5 +1,7 @@
+import { podman_src_dir, podman_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { ansible_kernel } from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -39,11 +41,11 @@ export default [
   {
     name: "Assert that user namespaces are available",
     check_mode: false,
-    command: tmpl`grep -q CONFIG_USER_NS=y /boot/config-${V.ansible_kernel}`,
+    command: tmpl`grep -q CONFIG_USER_NS=y /boot/config-${ansible_kernel}`,
     args: {
       // When running in LXD, /boot/config-* won't exist and grep will fail.
       // Use "removes" as a way to avoid this check completely.
-      removes: tmpl`/boot/config-${V.ansible_kernel}`,
+      removes: tmpl`/boot/config-${ansible_kernel}`,
     },
     changed_when: false,
   },
@@ -51,15 +53,15 @@ export default [
     name: "Clone podman",
     git: {
       repo: "https://github.com/containers/podman",
-      version: tmpl`v${V.podman_version}`,
-      dest: V.podman_src_dir,
+      version: tmpl`v${podman_version}`,
+      dest: podman_src_dir,
     },
     diff: false,
   },
   {
     name: "Build podman",
     make: {
-      chdir: V.podman_src_dir,
+      chdir: podman_src_dir,
       target: "default",
       params: { BUILDTAGS: "seccomp selinux systemd" },
     },
@@ -67,7 +69,7 @@ export default [
   {
     name: "Install podman",
     make: {
-      chdir: V.podman_src_dir,
+      chdir: podman_src_dir,
       target: "install",
     },
   },

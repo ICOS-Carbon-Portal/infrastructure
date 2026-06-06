@@ -1,7 +1,11 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { ansible_check_mode } from "../lib/builtins.ts";
+import { exploredata_ip } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
-import { not, V } from "../lib/vars.ts";
+import { zfsdocker_zvol } from "../lib/sharedvars.ts";
+import { not } from "../lib/vars.ts";
+import { vault_exploredata_password } from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
@@ -47,7 +51,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: V.zfsdocker_zvol,
+              source: zfsdocker_zvol,
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -69,7 +73,7 @@ export default [
           timeout: 60,
         },
         register: _lxd,
-        when: not("ansible_check_mode"),
+        when: not(ansible_check_mode),
       },
       {
         name: "Forward ssh port and create /etc/hosts entry",
@@ -79,7 +83,7 @@ export default [
         },
         vars: {
           lxd_forward_name: "exploredata",
-          lxd_forward_ip: V.exploredata_ip,
+          lxd_forward_ip: exploredata_ip,
         },
       },
       {
@@ -106,7 +110,7 @@ export default [
             "roles/icos.exploredata/templates/exploredata-nginx.conf",
           exploredata_name: "test",
           exploredata_port: 4567,
-          exploredata_host: V.exploredata_ip,
+          exploredata_host: exploredata_ip,
           exploredata_domains: ["exploretest.icos-cp.eu"],
         },
       },
@@ -122,7 +126,7 @@ export default [
             "roles/icos.exploredata/templates/exploredata-nginx.conf",
           exploredata_name: "prod",
           exploredata_port: 4566,
-          exploredata_host: V.exploredata_ip,
+          exploredata_host: exploredata_ip,
           exploredata_domains: ["exploredata.icos-cp.eu"],
         },
       },
@@ -131,7 +135,7 @@ export default [
   {
     hosts: "exploredata",
     vars: {
-      exploredata_password: V.vault_exploredata_password,
+      exploredata_password: vault_exploredata_password,
       exploredata_max_notebooks: 100,
     },
     roles: [

@@ -1,13 +1,14 @@
+import { dovecot_domains_file } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Create domains file",
     blockinfile: {
-      path: V.dovecot_domains_file,
+      path: dovecot_domains_file,
       create: true,
       insertbefore: "BOF",
       marker: "# {mark} ansible - icos.dovecot",
@@ -22,7 +23,7 @@ export default [
   {
     name: "Make sure that postfix dbs exists",
     copy: {
-      dest: V.item,
+      dest: item,
       force: false,
       content: "",
     },
@@ -31,12 +32,12 @@ export default [
   },
   {
     name: "Compile postfix database files",
-    command: tmpl`postmap ${V.item}`,
+    command: tmpl`postmap ${item}`,
     changed_when: false,
     loop: [
       "/etc/postfix/transport",
       "/etc/postfix/virtual",
-      V.dovecot_domains_file,
+      dovecot_domains_file,
     ],
   },
   loopOver<{ append?: boolean; param: Tmpl; value: Tmpl }>(
@@ -47,8 +48,8 @@ export default [
       // relay_domains.
       { param: "virtual_alias_domains", value: "", append: false },
       { param: "virtual_alias_maps", value: "hash:/etc/postfix/virtual" },
-      { param: "transport_maps", value: tmpl`hash:${V.dovecot_domains_file}` },
-      { param: "relay_domains", value: tmpl`hash:${V.dovecot_domains_file}` },
+      { param: "transport_maps", value: tmpl`hash:${dovecot_domains_file}` },
+      { param: "relay_domains", value: tmpl`hash:${dovecot_domains_file}` },
     ],
     (item) => ({
       name: "Configure postfix to use database files",

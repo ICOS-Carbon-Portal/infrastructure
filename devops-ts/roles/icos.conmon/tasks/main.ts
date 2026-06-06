@@ -1,6 +1,8 @@
+import { conmon_apt_version_ok, conmon_local_version_ok } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { truthy } from "../../../lib/vars.ts";
-import { notVar, tmpl, V } from "../_ctx.ts";
+import { conmon_local_version } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
+import { not, truthy } from "../../../lib/vars.ts";
 
 export default [
   {
@@ -23,21 +25,21 @@ done
   {
     name: "Is installed version of conmon sufficient?",
     debug: {
-      msg: tmpl`Version (${V.conmon_local_version}) is sufficient`,
+      msg: tmpl`Version (${conmon_local_version}) is sufficient`,
     },
-    when: truthy(V.conmon_local_version_ok),
+    when: truthy(conmon_local_version_ok),
   },
   // Otherwise, attempt to install by using apt.
   {
     import_tasks: "apt_install.yml",
-    when: notVar("conmon_local_version_ok"),
+    when: not(conmon_local_version_ok),
   },
   // Finally, fall back to downloading and installing.
   {
     import_tasks: "download_install.yml",
     when: [
-      notVar("conmon_local_version_ok"),
-      notVar("conmon_apt_version_ok"),
+      not(conmon_local_version_ok),
+      not(conmon_apt_version_ok),
     ],
   },
 ] satisfies TaskFile;

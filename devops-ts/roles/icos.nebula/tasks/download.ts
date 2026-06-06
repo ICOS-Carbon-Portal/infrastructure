@@ -1,13 +1,14 @@
+import { nebula_bin_dir, nebula_url_map, nebula_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
 import { isNotDefined } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const gh = register("gh");
 
 export default [
   {
-    when: isNotDefined(V.nebula_version),
+    when: isNotDefined(nebula_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -35,8 +36,8 @@ export default [
     name: "Install nebula",
     unarchive: {
       remote_src: true,
-      src: V.nebula_url_map.at(V.ansible_architecture),
-      dest: V.nebula_bin_dir,
+      src: nebula_url_map.at(ansible_architecture),
+      dest: nebula_bin_dir,
       extra_opts: ["--no-same-owner"],
     },
     notify: "restart nebula",

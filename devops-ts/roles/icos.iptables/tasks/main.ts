@@ -1,5 +1,7 @@
+import { iptables_ssh_port } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { iptables_forward } from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   // This package is required by the iptables_raw module.
@@ -11,7 +13,7 @@ export default [
     name: "Set IP forwarding",
     sysctl: {
       name: "net.ipv4.ip_forward",
-      value: V.iptables_forward.int(),
+      value: iptables_forward.int(),
     },
   },
   // These are mostly copied from the default ufw rules.
@@ -65,7 +67,7 @@ export default [
     iptables_raw: {
       name: "allow_ssh",
       rules:
-        tmpl`-A INPUT -p tcp --dport ${V.iptables_ssh_port} -j ACCEPT -m comment --comment 'ssh'`,
+        tmpl`-A INPUT -p tcp --dport ${iptables_ssh_port} -j ACCEPT -m comment --comment 'ssh'`,
     },
   },
 ] satisfies TaskFile;

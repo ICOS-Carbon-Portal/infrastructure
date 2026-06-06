@@ -1,6 +1,8 @@
+import { golang_bin_dir, golang_opt_dir, golang_url } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 const _download = register("_download");
 
@@ -27,7 +29,7 @@ export default [
   {
     name: "Download go binary",
     get_url: {
-      url: V.golang_url,
+      url: golang_url,
       dest: "/tmp",
     },
     register: _download,
@@ -35,7 +37,7 @@ export default [
   {
     name: "Create golang directory",
     file: {
-      path: V.golang_opt_dir,
+      path: golang_opt_dir,
       state: "directory",
     },
   },
@@ -43,7 +45,7 @@ export default [
     name: "Unarchive golang",
     unarchive: {
       src: _download.dest.ref,
-      dest: V.golang_opt_dir,
+      dest: golang_opt_dir,
       remote_src: true,
     },
     diff: false,
@@ -51,8 +53,8 @@ export default [
   {
     name: "Create symlinks for go binaries",
     file: {
-      dest: tmpl`/usr/local/bin/${V.item}`,
-      src: tmpl`${V.golang_bin_dir}/${V.item}`,
+      dest: tmpl`/usr/local/bin/${item}`,
+      src: tmpl`${golang_bin_dir}/${item}`,
       state: "link",
     },
     loop: ["go", "gofmt"],

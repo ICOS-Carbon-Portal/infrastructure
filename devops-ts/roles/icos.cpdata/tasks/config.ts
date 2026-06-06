@@ -1,8 +1,8 @@
+import { cpdata_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { or, truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _service = register("_service");
 const _jarfile = register("_jarfile");
@@ -12,7 +12,7 @@ export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: tmpl`${V.cpdata_home}/application.conf`,
+      dest: tmpl`${cpdata_home}/application.conf`,
       content: `{% for item in cpdata_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}

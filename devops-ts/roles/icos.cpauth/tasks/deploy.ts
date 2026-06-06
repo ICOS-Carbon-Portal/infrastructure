@@ -1,8 +1,10 @@
+import { cpauth_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { cpauth_domains } from "../../../lib/globals.ts";
+import { cpauth_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { not, or } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 const _service = register("_service");
@@ -22,7 +24,7 @@ export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: tmpl`${V.cpauth_home}/application.conf`,
+      dest: tmpl`${cpauth_home}/application.conf`,
       content: `{% for item in cpauth_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}
@@ -35,8 +37,8 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: V.cpauth_jar_file,
-      dest: tmpl`${V.cpauth_home}/cpauth.jar`,
+      src: cpauth_jar_file,
+      dest: tmpl`${cpauth_home}/cpauth.jar`,
       backup: true,
     },
     register: _jarfile,
@@ -46,7 +48,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: V.cpauth_home },
+    args: { chdir: cpauth_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },
@@ -66,7 +68,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${V.cpauth_domains.first()}/buildInfo`,
+      url: tmpl`https://${cpauth_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

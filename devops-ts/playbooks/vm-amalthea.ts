@@ -1,7 +1,10 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { amalthea_ip } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
-import { hostvar, tmpl, V } from "../lib/vars.ts";
+import { zfsdocker_zvol } from "../lib/sharedvars.ts";
+import { hostvar, tmpl } from "../lib/vars.ts";
+import { vault_amalthea_ssh_keys } from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
@@ -47,7 +50,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: V.zfsdocker_zvol,
+              source: zfsdocker_zvol,
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -77,7 +80,7 @@ export default [
           table: "nat",
           rules: tmpl`-A PREROUTING -p tcp --dport ${
             hostvar("amalthea").ansible_port
-          } -j DNAT --to-destination ${V.amalthea_ip}:22`,
+          } -j DNAT --to-destination ${amalthea_ip}:22`,
         },
       },
     ],
@@ -91,7 +94,7 @@ export default [
         superuser_list: [
           {
             name: "ubuntu",
-            key: V.vault_amalthea_ssh_keys,
+            key: vault_amalthea_ssh_keys,
           },
         ],
       }).tags("superuser"),

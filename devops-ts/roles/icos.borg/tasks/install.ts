@@ -1,14 +1,17 @@
+import { borg_upgrade, borg_url_map, borg_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_architecture } from "../../../lib/builtins.ts";
+import { borg_bin } from "../../../lib/globals.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isIn, isNotDefined, not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 const _r = register("_r");
 
 export default [
   {
-    when: isNotDefined(V.borg_version),
+    when: isNotDefined(borg_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -35,30 +38,30 @@ export default [
   {
     name: "Architecture is not supported",
     fail: {
-      msg: tmpl`borg is not supported on ${V.ansible_architecture}`,
+      msg: tmpl`borg is not supported on ${ansible_architecture}`,
     },
-    when: isIn(V.ansible_architecture, ["armv6l", "armv7l", "aarch64"]),
+    when: isIn(ansible_architecture, ["armv6l", "armv7l", "aarch64"]),
   },
   {
     name: "Download borg",
     get_url: {
-      url: V.borg_url_map.at(V.ansible_architecture),
-      dest: V.borg_bin,
-      force: V.borg_upgrade,
+      url: borg_url_map.at(ansible_architecture),
+      dest: borg_bin,
+      force: borg_upgrade,
       mode: "+x",
     },
   },
   {
     name: "Check that borg is executable and the correct version",
-    shell: tmpl`${V.borg_bin} --version`,
+    shell: tmpl`${borg_bin} --version`,
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(V.borg_version)),
+    failed_when: not(_r.stdout.endswith(borg_version)),
   },
   {
     name: "Which version of borg is installed",
     debug: {
-      msg: tmpl`Installed ${V.borg_version}`,
+      msg: tmpl`Installed ${borg_version}`,
     },
   },
 ] satisfies TaskFile;

@@ -1,6 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { nextcloud_exporter_pass } from "../../../lib/paramvars.ts";
 import { isDefined } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "nextcloud_setup" },
@@ -8,7 +8,7 @@ export default [
   {
     import_tasks: "prometheus.yml",
     tags: "nextcloud_prometheus",
-    when: isDefined(V.nextcloud_exporter_pass),
+    when: isDefined(nextcloud_exporter_pass),
   },
   { import_tasks: "just.yml", tags: "nextcloud_just" },
 ] satisfies TaskFile;

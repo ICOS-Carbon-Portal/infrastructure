@@ -1,5 +1,7 @@
+import { wireguard_reresolve_script } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { ansible_lsb } from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 // https://github.com/adrianmihalko/raspberrypiwireguard#1-wireguard-installation-raspberry-pi-2-v12-and-above
 
@@ -8,10 +10,10 @@ import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`Add key for debian ${V.ansible_lsb.release}`,
+    name: tmpl`Add key for debian ${ansible_lsb.release}`,
     apt_key: {
       url:
-        tmpl`https://ftp-master.debian.org/keys/archive-key-${V.ansible_lsb.release}.asc`,
+        tmpl`https://ftp-master.debian.org/keys/archive-key-${ansible_lsb.release}.asc`,
       state: "present",
     },
   },
@@ -46,7 +48,7 @@ Pin-Priority: 150
   {
     name: "Create wireguard-reresolve-dns.sh symlink",
     file: {
-      dest: V.wireguard_reresolve_script,
+      dest: wireguard_reresolve_script,
       src:
         "/usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh",
       state: "link",

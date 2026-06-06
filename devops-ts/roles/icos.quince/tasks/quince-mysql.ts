@@ -1,11 +1,11 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
 
 export default [
   {
     name: "Install MySQL",
     apt: {
-      name: V.item,
+      name: item,
       state: "present",
     },
     loop: ["mysql-server", "python3-pymysql"],

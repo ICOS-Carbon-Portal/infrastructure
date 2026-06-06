@@ -1,7 +1,12 @@
+import {
+  telegraf_config,
+  telegraf_config_file,
+  telegraf_config_root,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isDefined, lt } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -14,8 +19,8 @@ export default [
       {
         name: "Create telegraf config file",
         copy: {
-          dest: tmpl`${V.telegraf_config_root}/${V.telegraf_config_file}`,
-          content: V.telegraf_config,
+          dest: tmpl`${telegraf_config_root}/${telegraf_config_file}`,
+          content: telegraf_config,
           backup: true,
         },
         register: update,

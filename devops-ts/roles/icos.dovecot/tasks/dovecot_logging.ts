@@ -1,7 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { loopOver } from "../../../lib/loop.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 export default [
   {

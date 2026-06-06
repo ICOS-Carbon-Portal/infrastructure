@@ -1,13 +1,14 @@
+import { nextcloud_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Create nextcloud docker directory",
     file: {
-      path: V.nextcloud_home,
+      path: nextcloud_home,
       state: "directory",
       mode: "og-rw",
     },
@@ -15,12 +16,12 @@ export default [
   loopOver<{ file: Tmpl; set_fact: Tmpl; file_var: Tmpl }>(
     [
       {
-        file: tmpl`${V.nextcloud_home}/.pg-root-pass`,
+        file: tmpl`${nextcloud_home}/.pg-root-pass`,
         set_fact: "nextcloud_db_root_pass",
         file_var: "POSTGRES_PASSWORD",
       },
       {
-        file: tmpl`${V.nextcloud_home}/.pg-nextcloud-pass`,
+        file: tmpl`${nextcloud_home}/.pg-nextcloud-pass`,
         set_fact: "nextcloud_db_pass",
         file_var: "NEXTCLOUD_PASSWORD",
       },
@@ -37,8 +38,8 @@ export default [
   {
     name: "Copy files",
     template: {
-      src: V.item,
-      dest: V.nextcloud_home,
+      src: item,
+      dest: nextcloud_home,
     },
     loop: [
       "nextcloud.env",
@@ -54,7 +55,7 @@ export default [
   {
     name: "Check docker-compose config",
     command: "docker-compose config",
-    args: { chdir: V.nextcloud_home },
+    args: { chdir: nextcloud_home },
     changed_when: false,
   },
   // This is the recommended way of doing scheduled jobs in large nextcloud
@@ -63,7 +64,7 @@ export default [
     name: "Add nextcloud cron to crontab",
     cron: {
       job:
-        tmpl`cd ${V.nextcloud_home} && docker compose exec -T -u www-data app php -f /var/www/html/cron.php || :`,
+        tmpl`cd ${nextcloud_home} && docker compose exec -T -u www-data app php -f /var/www/html/cron.php || :`,
       hour: "*",
       minute: "*/5",
       name: "nextcloud_cron",

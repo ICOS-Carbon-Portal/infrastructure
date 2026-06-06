@@ -1,7 +1,7 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { zrepl_config } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
 import { isDefined } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 
@@ -13,7 +13,7 @@ export default [
       {
         name: "Create zrepl.yaml",
         copy: {
-          content: V.zrepl_config,
+          content: zrepl_config,
           dest: "/etc/zrepl/zrepl.yml",
           backup: true,
         },

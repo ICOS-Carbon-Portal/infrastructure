@@ -2,7 +2,16 @@
 
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { item } from "../lib/builtins.ts";
+import { cities_datafast_path } from "../lib/globals.ts";
+import {
+  data_fast_path,
+  data_path,
+  docker_path,
+  pool_name,
+  pool_path,
+} from "../lib/paramvars.ts";
+import { tmpl } from "../lib/vars.ts";
 
 export default [
   {
@@ -18,28 +27,28 @@ export default [
       {
         name: "Create cities storage_pool directory",
         file: {
-          path: V.pool_path,
+          path: pool_path,
           state: "directory",
         },
       },
       {
         name: "Create cities directories",
         file: {
-          path: V.item,
+          path: item,
           state: "directory",
           owner: 1000000,
           group: 1000000,
         },
         loop: [
-          V.data_path,
-          V.docker_path,
-          V.data_fast_path,
+          data_path,
+          docker_path,
+          data_fast_path,
         ],
       },
       {
         name: "Create cities storage pool",
         shell:
-          tmpl`/snap/bin/lxc storage show ${V.pool_name} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${V.pool_name} dir source="${V.pool_path}"
+          tmpl`/snap/bin/lxc storage show ${pool_name} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${pool_name} dir source="${pool_path}"
 `,
         register: "_r",
         changed_when: ['("Storage pool %s created" % pool_name) in _r.stdout'],
@@ -60,17 +69,17 @@ export default [
           lxd_vm_devices: {
             data: {
               path: "/data",
-              source: V.data_path,
+              source: data_path,
               type: "disk",
             },
             data_fast: {
-              path: V.cities_datafast_path,
-              source: V.data_fast_path,
+              path: cities_datafast_path,
+              source: data_fast_path,
               type: "disk",
             },
             docker: {
               path: "/var/lib/docker",
-              source: V.docker_path,
+              source: docker_path,
               type: "disk",
             },
           },

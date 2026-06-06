@@ -1,6 +1,8 @@
+import { golang_apt_version_ok, golang_local_version_ok } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { truthy } from "../../../lib/vars.ts";
-import { notVar, tmpl, V } from "../_ctx.ts";
+import { golang_local_version } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
+import { not, truthy } from "../../../lib/vars.ts";
 
 export default [
   {
@@ -17,23 +19,23 @@ export default [
   {
     name: "Is the installed version of golang sufficent?",
     debug: {
-      msg: tmpl`${V.golang_local_version} is sufficient.`,
+      msg: tmpl`${golang_local_version} is sufficient.`,
     },
-    when: truthy(V.golang_local_version_ok),
+    when: truthy(golang_local_version_ok),
   },
   // Otherwise, attempt to install by using apt.
   {
     name: "Installing golang from apt",
     import_tasks: "apt_install.yml",
-    when: notVar("golang_local_version_ok"),
+    when: not(golang_local_version_ok),
   },
   // Finally, fall back to downloading and installing.
   {
     name: "Installing golang from source",
     import_tasks: "download_install.yml",
     when: [
-      notVar("golang_local_version_ok"),
-      notVar("golang_apt_version_ok"),
+      not(golang_local_version_ok),
+      not(golang_apt_version_ok),
     ],
   },
 ] satisfies TaskFile;

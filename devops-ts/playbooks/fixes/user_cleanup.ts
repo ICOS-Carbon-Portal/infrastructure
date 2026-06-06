@@ -12,8 +12,9 @@
 // Remove keys
 //  icos play user_cleanup remove
 import { type Playbook } from "../../lib/ansible/play.ts";
+import { item } from "../../lib/builtins.ts";
 import { pattern } from "../../lib/hosts.ts";
-import { V } from "../../lib/vars.ts";
+import { lockuser, remove_keys } from "../../lib/paramvars.ts";
 
 export default [
   {
@@ -36,15 +37,15 @@ export default [
         tags: "remove",
         authorized_key: {
           user: "root",
-          key: V.item,
+          key: item,
           state: "absent",
         },
-        loop: V.remove_keys,
+        loop: remove_keys,
       },
       {
         tags: "lockuser",
         user: {
-          name: V.lockuser,
+          name: lockuser,
           password_lock: true,
           shell: "/usr/sbin/nologin",
         },

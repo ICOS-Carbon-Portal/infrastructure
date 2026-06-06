@@ -2,7 +2,20 @@
 //   run nextcloud_sftp.yml howto
 import { type Playbook } from "../lib/ansible/play.ts";
 import { loopOverVar } from "../lib/loop.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import {
+  groupfolder_dir,
+  groupfolder_id,
+  groupfolder_name,
+  host_uid,
+  sftp_dirs,
+  sftp_exec,
+  sftp_user,
+} from "../lib/paramvars.ts";
+import { tmpl } from "../lib/vars.ts";
+import {
+  vault_nc_paul_upload_password,
+  vault_pw_salt,
+} from "../lib/vaultvars.ts";
 
 export default [
   {
@@ -11,27 +24,27 @@ export default [
       groupfolder_name: "PAUL",
       groupfolder_id: 27,
       groupfolder_dir:
-        tmpl`/disk/data/nextcloud/data/__groupfolders/${V.groupfolder_id}`,
+        tmpl`/disk/data/nextcloud/data/__groupfolders/${groupfolder_id}`,
       host_uid: 33,
       host_user: "www-data",
       sftp_image: "docker.io/atmoz/sftp:debian",
       sftp_user: "nc_paul_upload",
-      sftp_exec: tmpl`/usr/libexec/sftp-only-${V.sftp_user}`,
+      sftp_exec: tmpl`/usr/libexec/sftp-only-${sftp_user}`,
       sftp_dirs: [
         {
-          src: tmpl`${V.groupfolder_dir}/WP1/Data`,
+          src: tmpl`${groupfolder_dir}/WP1/Data`,
           dst: "WP1_Data",
         },
         {
-          src: tmpl`${V.groupfolder_dir}/WP2/Data`,
+          src: tmpl`${groupfolder_dir}/WP2/Data`,
           dst: "WP2_Data",
         },
         {
-          src: tmpl`${V.groupfolder_dir}/WP3/Data`,
+          src: tmpl`${groupfolder_dir}/WP3/Data`,
           dst: "WP3_Data",
         },
         {
-          src: tmpl`${V.groupfolder_dir}/WP4/Data`,
+          src: tmpl`${groupfolder_dir}/WP4/Data`,
           dst: "WP4_Data",
         },
       ],
@@ -54,7 +67,7 @@ export default [
         check_mode: false,
         shellfact: {
           exec:
-            tmpl`occ groupfolder:list --output json | jq  '.[] | select(.mount_point == "${V.groupfolder_name}") | .id'`,
+            tmpl`occ groupfolder:list --output json | jq  '.[] | select(.mount_point == "${groupfolder_name}") | .id'`,
           fact: "_gfid",
         },
       },
@@ -64,7 +77,7 @@ export default [
           that: "(_gfid | int) == groupfolder_id",
         },
       },
-      loopOverVar<{ src: string }>(V.sftp_dirs, (item) => ({
+      loopOverVar<{ src: string }>(sftp_dirs, (item) => ({
         name: "Check that all the src directories exists",
         stat: {
           path: item.src,
@@ -90,12 +103,12 @@ export default [
       {
         name: "Create sftp user",
         user: {
-          name: V.sftp_user,
-          uid: V.host_uid,
-          group: V.host_uid,
-          password: V.vault_nc_paul_upload_password.passwordHash(
+          name: sftp_user,
+          uid: host_uid,
+          group: host_uid,
+          password: vault_nc_paul_upload_password.passwordHash(
             "sha512",
-            V.vault_pw_salt,
+            vault_pw_salt,
           ),
           non_unique: true,
           create_home: true,
@@ -104,18 +117,18 @@ export default [
       {
         name: "Create passwd file",
         become: true,
-        become_user: V.sftp_user,
+        become_user: sftp_user,
         args: {
-          chdir: tmpl`/home/${V.sftp_user}`,
-          creates: tmpl`/home/${V.sftp_user}/passwd`,
+          chdir: tmpl`/home/${sftp_user}`,
+          creates: tmpl`/home/${sftp_user}/passwd`,
         },
-        shell: tmpl`grep ${V.sftp_user} /etc/passwd > passwd`,
+        shell: tmpl`grep ${sftp_user} /etc/passwd > passwd`,
       },
       {
         name: "Create sftp command script",
         tags: "script",
         copy: {
-          dest: V.sftp_exec,
+          dest: sftp_exec,
           mode: "+x",
           content: `#!/bin/bash
 
@@ -200,9 +213,9 @@ WantedBy=user@{{ host_uid }}.service
         delegate_to: "localhost",
         expect: {
           command:
-            tmpl`sftp -P 60022 -oPreferredAuthentications=password ${V.sftp_user}@fsicos2.icos-cp.eu`,
+            tmpl`sftp -P 60022 -oPreferredAuthentications=password ${sftp_user}@fsicos2.icos-cp.eu`,
           responses: {
-            "password:": V.vault_nc_paul_upload_password,
+            "password:": vault_nc_paul_upload_password,
             "sftp>": [
               "ls -1",
               "quit",

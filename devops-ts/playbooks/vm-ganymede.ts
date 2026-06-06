@@ -10,9 +10,21 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
 import { loopOverVar } from "../lib/loop.ts";
+import {
+  ganymede_domains,
+  jupyter_domains,
+  jupyter_ip,
+} from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
+import { zfsdocker_zvol } from "../lib/sharedvars.ts";
 import { concat } from "../lib/template.ts";
-import { V } from "../lib/vars.ts";
+import {
+  vault_ganymede_jbuild_users,
+  vault_ganymede_jupyter_admins,
+  vault_ganymede_sshlogins,
+  vault_ganymede_user_conf,
+  vault_registry_pass,
+} from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
@@ -61,7 +73,7 @@ export default [
             },
             docker: {
               path: "/var/lib/docker",
-              source: V.zfsdocker_zvol,
+              source: zfsdocker_zvol,
               type: "disk",
               "raw.mount.options": "user_subvol_rm_allowed",
             },
@@ -85,19 +97,19 @@ export default [
     ],
     roles: [
       role("icos.lxd_forward", {
-        lxd_forward_ip: V.jupyter_ip,
+        lxd_forward_ip: jupyter_ip,
         lxd_forward_name: "ganymede",
       }).tags("forward"),
 
       role("icos.certbot2", {
         certbot_name: "ganymede",
-        certbot_domains: concat(V.jupyter_domains, V.ganymede_domains),
+        certbot_domains: concat(jupyter_domains, ganymede_domains),
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "ganymede",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: V.jupyter_domains.first(),
+        jupyter_domain: jupyter_domains.first(),
         jupyter_cert_name: "ganymede",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -124,7 +136,7 @@ export default [
     ],
     roles: [
       role("icos.lxd_guest", {
-        user_conf: V.vault_ganymede_user_conf,
+        user_conf: vault_ganymede_user_conf,
       }).tags("guest"),
 
       role("icos.docker", {
@@ -132,13 +144,13 @@ export default [
       }).tags("docker"),
 
       role("icos.jupyter", {
-        jupyter_admins: V.vault_ganymede_jupyter_admins,
+        jupyter_admins: vault_ganymede_jupyter_admins,
         jupyter_backup_enable: false,
       }).tags("jupyter"),
 
       role("icos.jbuild", {
-        jbuild_users: V.vault_ganymede_jbuild_users,
-        jbuild_registry_pass: V.vault_registry_pass,
+        jbuild_users: vault_ganymede_jbuild_users,
+        jbuild_registry_pass: vault_registry_pass,
         jbuild_edctl_host: "exploredata",
         jbuild_edctl_host_name: "exploredata.lxd",
         jbuild_edctl_host_port: 22,
@@ -158,7 +170,7 @@ export default [
         dst_host: string;
         dst_port: string;
       }>(
-        V.vault_ganymede_sshlogins,
+        vault_ganymede_sshlogins,
         (login) => ({
           tags: "sshlogin",
           include_role: {

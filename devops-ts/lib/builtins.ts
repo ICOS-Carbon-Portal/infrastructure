@@ -63,3 +63,57 @@ export interface BuiltinVars {
     root_is_zfs: boolean;
   };
 }
+
+// === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
+import { varProxy, type VarRef } from "./template.ts";
+const vref = <K extends keyof BuiltinVars>(k: K): VarRef<BuiltinVars[K]> =>
+  varProxy(k) as VarRef<BuiltinVars[K]>;
+
+export const ansible_architecture = vref("ansible_architecture");
+export const ansible_check_mode = vref("ansible_check_mode");
+export const ansible_date_time = vref("ansible_date_time");
+export const ansible_default_ipv4 = vref("ansible_default_ipv4");
+export const ansible_default_ipv6 = vref("ansible_default_ipv6");
+export const ansible_distribution = vref("ansible_distribution");
+export const ansible_distribution_file_variety = vref(
+  "ansible_distribution_file_variety",
+);
+export const ansible_distribution_major_version = vref(
+  "ansible_distribution_major_version",
+);
+export const ansible_distribution_release = vref(
+  "ansible_distribution_release",
+);
+export const ansible_distribution_version = vref(
+  "ansible_distribution_version",
+);
+export const ansible_env = vref("ansible_env");
+export const ansible_facts = vref("ansible_facts");
+export const ansible_fqdn = vref("ansible_fqdn");
+export const ansible_host = vref("ansible_host");
+export const ansible_hostname = vref("ansible_hostname");
+export const ansible_kernel = vref("ansible_kernel");
+export const ansible_lsb = vref("ansible_lsb");
+export const ansible_machine = vref("ansible_machine");
+export const ansible_memtotal_mb = vref("ansible_memtotal_mb");
+export const ansible_os_family = vref("ansible_os_family");
+export const ansible_play_hosts = vref("ansible_play_hosts");
+export const ansible_port = vref("ansible_port");
+export const ansible_processor_vcpus = vref("ansible_processor_vcpus");
+export const ansible_python = vref("ansible_python");
+export const ansible_ssh_host_key_ecdsa_public = vref(
+  "ansible_ssh_host_key_ecdsa_public",
+);
+export const ansible_user = vref("ansible_user");
+export const group_names = vref("group_names");
+export const groups = vref("groups");
+export const hostvars = vref("hostvars");
+export const icos = vref("icos");
+export const inventory_hostname = vref("inventory_hostname");
+export const inventory_hostname_short = vref("inventory_hostname_short");
+export const item = vref("item");
+export const omit = vref("omit");
+export const play_hosts = vref("play_hosts");
+export const playbook_dir = vref("playbook_dir");
+export const role_name = vref("role_name");
+export const role_path = vref("role_path");

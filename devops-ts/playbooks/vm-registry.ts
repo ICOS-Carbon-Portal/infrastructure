@@ -1,7 +1,12 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { registry_domain } from "../lib/globals.ts";
 import { register } from "../lib/register.ts";
-import { V } from "../lib/vars.ts";
+import {
+  vault_nginx_allow_internal_only,
+  vault_registry_pass,
+  vault_registry_users,
+} from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
@@ -75,7 +80,7 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "registry",
-        certbot_domains: [V.registry_domain],
+        certbot_domains: [registry_domain],
       }).tags(["cert", "registry"]),
 
       role("icos.nginxsite", {
@@ -83,7 +88,7 @@ export default [
         nginxsite_file: "roles/icos.registry/templates/registry-nginx.conf",
         registry_host: "registry.lxd",
         registry_cert: "registry",
-        registry_allow: V.vault_nginx_allow_internal_only,
+        registry_allow: vault_nginx_allow_internal_only,
       }).tags(["registry", "nginx"]),
     ],
   },
@@ -98,16 +103,16 @@ export default [
       role("icos.docker2").tags("docker"),
 
       role("icos.registry", {
-        registry_users: V.vault_registry_users,
+        registry_users: vault_registry_users,
       }).tags("registry"),
     ],
     tasks: [
       {
         name: "Login to registry",
         "community.general.docker_login": {
-          registry_url: V.registry_domain,
+          registry_url: registry_domain,
           username: "docker",
-          password: V.vault_registry_pass,
+          password: vault_registry_pass,
         },
       },
     ],

@@ -1,6 +1,7 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_lsb } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 const _key = register("_key");
 
@@ -9,7 +10,7 @@ export default [
     name: "Add kubic key",
     "ansible.builtin.get_url": {
       url:
-        tmpl`https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_${V.ansible_lsb.release}/Release.key`,
+        tmpl`https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_${ansible_lsb.release}/Release.key`,
       dest: "/etc/apt/trusted.gpg.d/kubic.asc",
       mode: "0644",
       force: true,
@@ -21,7 +22,7 @@ export default [
     apt_repository: {
       filename: "kubic",
       repo:
-        tmpl`deb [signed-by=${_key.dest.ref}] https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_${V.ansible_lsb.release}/ /
+        tmpl`deb [signed-by=${_key.dest.ref}] https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_${ansible_lsb.release}/ /
 `,
     },
   },

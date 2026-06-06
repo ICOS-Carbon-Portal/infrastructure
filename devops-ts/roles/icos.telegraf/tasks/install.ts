@@ -1,7 +1,8 @@
+import { telegraf_upgrade } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { omit } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 
 const _key = register("_key");
 
@@ -28,10 +29,10 @@ export default [
     name: "Install telegraf",
     apt: {
       name: "telegraf",
-      state: iff(V.telegraf_upgrade, "latest", "present"),
+      state: iff(telegraf_upgrade, "latest", "present"),
       // Setting this will also set update_cache. It's time consuming on slow
       // devices so set it to an hour.
-      cache_valid_time: iff(V.telegraf_upgrade, 3600, V.omit),
+      cache_valid_time: iff(telegraf_upgrade, 3600, omit),
     },
     notify: "restart telegraf",
   },

@@ -1,6 +1,6 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { V } from "../lib/vars.ts";
+import { wordpress_domains } from "../lib/paramvars.ts";
 
 export default [
   {
@@ -34,7 +34,7 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "wordpress",
-        certbot_domains: V.wordpress_domains,
+        certbot_domains: wordpress_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {

@@ -1,7 +1,9 @@
+import { cpmeta_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { cpmeta_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { or } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _r = register("_r");
 const _config = register("_config");
@@ -11,8 +13,8 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: V.cpmeta_jar_file,
-      dest: tmpl`${V.cpmeta_home}/cpmeta.jar`,
+      src: cpmeta_jar_file,
+      dest: tmpl`${cpmeta_home}/cpmeta.jar`,
       backup: true,
     },
     register: _jarfile,
@@ -22,7 +24,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: V.cpmeta_home },
+    args: { chdir: cpmeta_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },

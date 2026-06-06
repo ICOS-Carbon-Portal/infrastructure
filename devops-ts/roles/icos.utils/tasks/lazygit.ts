@@ -1,13 +1,18 @@
+import {
+  lazygit_architecture,
+  lazygit_url_map,
+  lazygit_version,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isNotDefined } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
 export default [
   {
-    when: isNotDefined(V.lazygit_version),
+    when: isNotDefined(lazygit_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -37,7 +42,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: V.lazygit_url_map.at(V.lazygit_architecture),
+      src: lazygit_url_map.at(lazygit_architecture),
       dest: "/usr/local/bin/",
       // extract only this
       include: ["lazygit"],
@@ -58,6 +63,6 @@ export default [
   },
   {
     name: "Which version of lazygit was installed",
-    debug: { msg: tmpl`Installed ${V.lazygit_version}` },
+    debug: { msg: tmpl`Installed ${lazygit_version}` },
   },
 ] satisfies TaskFile;

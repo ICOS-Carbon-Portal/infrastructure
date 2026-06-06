@@ -1,5 +1,7 @@
 import { type Playbook } from "../lib/ansible/play.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { lxd_vm_name } from "../lib/paramvars.ts";
+import { nginxsite_name } from "../lib/sharedvars.ts";
+import { tmpl } from "../lib/vars.ts";
 
 export default [
   {
@@ -10,12 +12,12 @@ export default [
     },
     tasks: [
       {
-        name: tmpl`Remove nginx config for ${V.nginxsite_name}`,
+        name: tmpl`Remove nginx config for ${nginxsite_name}`,
         tags: "nginx",
         import_role: { name: "icos.nginxsite", tasks_from: "remove.yml" },
       },
       {
-        name: tmpl`Remove lxd vm ${V.lxd_vm_name}`,
+        name: tmpl`Remove lxd vm ${lxd_vm_name}`,
         tags: "lxd",
         import_role: { name: "icos.lxd_vm", tasks_from: "remove.yml" },
       },

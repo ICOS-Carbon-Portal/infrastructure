@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import { flexpart_ssh_users } from "../../../lib/paramvars.ts";
 
 export default [
   {
@@ -22,7 +22,7 @@ exec ssh -q flexpart "$@"
   },
   {
     include_tasks: "flexpart_ssh_user.yml",
-    loop: V.flexpart_ssh_users,
+    loop: flexpart_ssh_users,
     loop_control: {
       loop_var: "_ssh_user",
     },

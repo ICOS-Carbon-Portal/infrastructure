@@ -1,6 +1,13 @@
 import { type Playbook } from "../lib/ansible/play.ts";
+import { item, omit } from "../lib/builtins.ts";
 import { loopOverVar } from "../lib/loop.ts";
-import { isDefined, tmpl, V } from "../lib/vars.ts";
+import { icosdata_bind_mounts, icosdata_mkdirs } from "../lib/paramvars.ts";
+import {
+  icosdata_exports,
+  icosdata_nfs_mounts,
+  isDefined,
+  tmpl,
+} from "../lib/vars.ts";
 
 export default [
   // ZFS
@@ -37,7 +44,7 @@ export default [
     ],
     tasks: [
       {
-        when: isDefined("icosdata_exports"),
+        when: isDefined(icosdata_exports),
         name: "Install packages",
         apt: {
           name: "nfs-kernel-server",
@@ -45,7 +52,7 @@ export default [
         },
       },
       {
-        when: isDefined("icosdata_nfs_mounts"),
+        when: isDefined(icosdata_nfs_mounts),
         name: "Install nfs-client",
         apt: {
           name: ["nfs-client"],
@@ -54,13 +61,13 @@ export default [
       {
         name: "Create directories",
         file: {
-          path: V.item,
+          path: item,
           state: "directory",
         },
-        loop: V.icosdata_mkdirs.default([]),
+        loop: icosdata_mkdirs.default([]),
       },
       loopOverVar<{ opts: string; path: string; src: string }>(
-        V.icosdata_bind_mounts.default([]),
+        icosdata_bind_mounts.default([]),
         (item) => ({
           name: "Do bind-mount local data",
           mount: {
@@ -73,28 +80,28 @@ export default [
         }),
       ),
       {
-        when: isDefined("icosdata_exports"),
+        when: isDefined(icosdata_exports),
         name: "Export data via nfs",
         tags: "export",
         blockinfile: {
           path: "/etc/exports",
           create: true,
           marker: "# {mark} icosdata",
-          block: V.icosdata_exports,
+          block: icosdata_exports,
         },
         notify: "Reload NFS server",
       },
       {
-        when: isDefined("icosdata_exports"),
+        when: isDefined(icosdata_exports),
         name: "Export all directories listed in `/etc/exports`",
         tags: "export",
         command: "exportfs -rav",
         changed_when: false,
       },
       loopOverVar<{ opts: string; path: string; src: string; state: string }>(
-        V.icosdata_nfs_mounts,
+        icosdata_nfs_mounts,
         (item) => ({
-          when: isDefined("icosdata_nfs_mounts"),
+          when: isDefined(icosdata_nfs_mounts),
           name: "Mount nfs data",
           tags: "mount",
           mount: {
@@ -102,8 +109,8 @@ export default [
             state: item.state.default("mounted"),
             // The next two default to omit so that they can be left out when state
             // is "unmounted".
-            src: item.src.default(V.omit),
-            path: item.path.default(V.omit),
+            src: item.src.default(omit),
+            path: item.path.default(omit),
             opts: item.opts.default("ro"),
           },
         }),

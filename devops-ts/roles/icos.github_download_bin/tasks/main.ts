@@ -1,19 +1,28 @@
+import {
+  _dbin_name,
+  _dbin_src,
+  _dbin_unar,
+  _dbin_url,
+  dbin_bin_dir,
+  dbin_download_dest,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { dbin_repo, dbin_user } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const dbin_download = register("dbin_download");
 
 export default [
   {
-    name: tmpl`Retrieving latest tag for ${V.dbin_repo}`,
+    name: tmpl`Retrieving latest tag for ${dbin_repo}`,
     run_once: true,
     delegate_to: "localhost",
     check_mode: false,
     github_release: {
-      user: V.dbin_user,
-      repo: V.dbin_repo,
+      user: dbin_user,
+      repo: dbin_repo,
       action: "latest_release",
     },
     register: "_release",
@@ -21,26 +30,26 @@ export default [
   {
     name: "Create download directory",
     file: {
-      path: V.dbin_download_dest,
+      path: dbin_download_dest,
       state: "directory",
     },
   },
   {
-    name: tmpl`Download ${V.dbin_repo}`,
+    name: tmpl`Download ${dbin_repo}`,
     get_url: {
-      url: V._dbin_url,
-      dest: V.dbin_download_dest,
+      url: _dbin_url,
+      dest: dbin_download_dest,
     },
     // This variable can be checked by our users to determine whether anything has
     // changed.
     register: dbin_download,
   },
   {
-    name: tmpl`Unarchive ${V._dbin_name} tarball`,
-    when: truthy(V._dbin_unar),
+    name: tmpl`Unarchive ${_dbin_name} tarball`,
+    when: truthy(_dbin_unar),
     unarchive: {
       src: dbin_download.dest.ref,
-      dest: V.dbin_download_dest,
+      dest: dbin_download_dest,
       remote_src: true,
       list_files: true,
     },
@@ -48,18 +57,18 @@ export default [
     register: "_unar",
   },
   {
-    name: tmpl`Create symlink for ${V._dbin_name}`,
+    name: tmpl`Create symlink for ${_dbin_name}`,
     file: {
-      dest: tmpl`${V.dbin_bin_dir}/${V._dbin_name}`,
-      src: V._dbin_src,
+      dest: tmpl`${dbin_bin_dir}/${_dbin_name}`,
+      src: _dbin_src,
       state: "link",
     },
     register: "dbin_symlink",
   },
   {
-    name: tmpl`Make sure ${V._dbin_name} is executable`,
+    name: tmpl`Make sure ${_dbin_name} is executable`,
     file: {
-      path: V._dbin_src,
+      path: _dbin_src,
       mode: "+x",
     },
   },

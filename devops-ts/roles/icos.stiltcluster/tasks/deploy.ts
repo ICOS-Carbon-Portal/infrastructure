@@ -1,7 +1,14 @@
+import { stiltcluster_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { inventory_hostname } from "../../../lib/builtins.ts";
+import {
+  stiltcluster_fetch_host,
+  stiltcluster_fetch_path,
+} from "../../../lib/globals.ts";
+import { stiltcluster_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isDefined, isUndefined, ne } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _r = register("_r");
 
@@ -26,16 +33,16 @@ export default [
   // variable temporarily.
   {
     when: [
-      ne(V.inventory_hostname, V.stiltcluster_fetch_host),
-      isUndefined(V.stiltcluster_jar_file),
+      ne(inventory_hostname, stiltcluster_fetch_host),
+      isUndefined(stiltcluster_jar_file),
     ],
     block: [
       {
         name: "Retrive stiltcluster.jar",
-        delegate_to: V.stiltcluster_fetch_host,
+        delegate_to: stiltcluster_fetch_host,
         run_once: true,
         fetch: {
-          src: V.stiltcluster_fetch_path,
+          src: stiltcluster_fetch_path,
           // the destination is relative to the playbook
           dest: "tmp/stiltcluster.jar",
           // don't append hostname/path/to/file
@@ -53,10 +60,10 @@ export default [
   },
   {
     name: "Copy jarfile",
-    when: isDefined(V.stiltcluster_jar_file),
+    when: isDefined(stiltcluster_jar_file),
     copy: {
-      src: V.stiltcluster_jar_file,
-      dest: tmpl`${V.stiltcluster_home}/stiltcluster.jar`,
+      src: stiltcluster_jar_file,
+      dest: tmpl`${stiltcluster_home}/stiltcluster.jar`,
       backup: true,
     },
     notify: "restart stiltcluster",
@@ -66,7 +73,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: V.stiltcluster_home },
+    args: { chdir: stiltcluster_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },

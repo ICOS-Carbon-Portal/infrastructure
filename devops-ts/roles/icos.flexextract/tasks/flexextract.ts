@@ -1,15 +1,23 @@
+import {
+  flexextract_download_host,
+  flexextract_home,
+  flexextract_user,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { concat } from "../../../lib/template.ts";
+import {
+  flexextract_docker_build,
+  flexextract_src_dir,
+} from "../../../lib/paramvars.ts";
+import { concat, tmpl } from "../../../lib/template.ts";
 import { ne, truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
-    name: tmpl`Copy ${V.flexextract_src_dir} directory`,
+    name: tmpl`Copy ${flexextract_src_dir} directory`,
     tags: "flexextract_sync",
     synchronize: {
-      src: tmpl`${V.flexextract_src_dir}/`,
-      dest: tmpl`${V.flexextract_home}/build`,
+      src: tmpl`${flexextract_src_dir}/`,
+      dest: tmpl`${flexextract_home}/build`,
     },
   },
   {
@@ -21,34 +29,34 @@ export default [
 | tee -a build.log
 `,
     args: {
-      chdir: V.flexextract_home,
+      chdir: flexextract_home,
       executable: "/bin/bash",
     },
     register: "_output",
     changed_when: '" ---> Running in " in _output.stdout',
-    when: truthy(V.flexextract_docker_build).default(true),
+    when: truthy(flexextract_docker_build).default(true),
   },
   {
     name: "Create download directory",
     become: true,
     become_user: "root",
     file: {
-      path: V.flexextract_download_host,
+      path: flexextract_download_host,
       state: "directory",
-      owner: V.flexextract_user,
-      group: V.flexextract_user,
+      owner: flexextract_user,
+      group: flexextract_user,
     },
   },
   {
     name: "Create a link to the download directory in home directory",
     file: {
-      dest: tmpl`${V.flexextract_home}/download`,
-      src: V.flexextract_download_host,
+      dest: tmpl`${flexextract_home}/download`,
+      src: flexextract_download_host,
       state: "link",
     },
     when: ne(
-      V.flexextract_download_host,
-      concat(V.flexextract_home, "/download"),
+      flexextract_download_host,
+      concat(flexextract_home, "/download"),
     ),
   },
   {

@@ -1,12 +1,17 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import {
+  restheart_basic_auth,
+  restheart_certbot_name,
+  restheart_domains,
+  restheart_nginxsite_name,
+} from "../../../lib/globals.ts";
 
 export default [
   {
     include_role: "name=icos.certbot2",
     vars: {
-      certbot_name: V.restheart_certbot_name,
-      certbot_domains: V.restheart_domains,
+      certbot_name: restheart_certbot_name,
+      certbot_domains: restheart_domains,
     },
   },
   {
@@ -15,9 +20,9 @@ export default [
       nginxauth_conf: `auth_basic "Login required";
 auth_basic_user_file "/etc/nginx/auth/{{ restheart_nginxsite_name }}";
 `,
-      nginxsite_name: V.restheart_nginxsite_name,
+      nginxsite_name: restheart_nginxsite_name,
       nginxsite_file: "restheart-nginx.conf",
-      nginxsite_users: [V.restheart_basic_auth],
+      nginxsite_users: [restheart_basic_auth],
     },
   },
 ] satisfies TaskFile;

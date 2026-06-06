@@ -1,11 +1,12 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { timer_name } from "../../../lib/paramvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "restart icos timer",
     systemd: {
-      name: tmpl`${V.timer_name}.timer`,
+      name: tmpl`${timer_name}.timer`,
       state: "restarted",
     },
   },

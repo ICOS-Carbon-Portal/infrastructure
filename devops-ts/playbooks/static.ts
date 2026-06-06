@@ -1,13 +1,14 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { bbclient_home } from "../lib/globals.ts";
+import { tmpl } from "../lib/vars.ts";
 
 export default [
   {
     hosts: "fsicos2",
     vars: {
       bbclient_home: "/opt/bbclient-nginx-static",
-      backup_script: tmpl`${V.bbclient_home}/backup.sh`,
+      backup_script: tmpl`${bbclient_home}/backup.sh`,
     },
     roles: [
       role("icos.nginxsite", {

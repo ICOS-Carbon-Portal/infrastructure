@@ -1,6 +1,6 @@
+import { conmon_apt_version_ok } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -18,6 +18,6 @@ export default [
     apt: {
       name: "conmon",
     },
-    when: truthy(V.conmon_apt_version_ok),
+    when: truthy(conmon_apt_version_ok),
   },
 ] satisfies TaskFile;

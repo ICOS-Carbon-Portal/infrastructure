@@ -1,5 +1,6 @@
+import { onlyoffice_domain, onlyoffice_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -14,7 +15,7 @@ export default [
     vars: {
       nginxsite_name: "onlyoffice",
       nginxsite_file: "onlyoffice.conf",
-      nginxsite_domains: [V.onlyoffice_domain],
+      nginxsite_domains: [onlyoffice_domain],
     },
   },
   {
@@ -28,7 +29,7 @@ export default [
         name: "Copy fonts directory to docker host",
         copy: {
           src: "fonts/",
-          dest: tmpl`${V.onlyoffice_home}/fonts/`,
+          dest: tmpl`${onlyoffice_home}/fonts/`,
         },
       },
       {

@@ -1,8 +1,10 @@
+import { doi_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { doi_domains } from "../../../lib/globals.ts";
+import { doi_jar_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { iff } from "../../../lib/template.ts";
+import { iff, tmpl } from "../../../lib/template.ts";
 import { not, or } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");
 const _service = register("_service");
@@ -22,7 +24,7 @@ export default [
   {
     name: "Create application.conf",
     template: {
-      dest: tmpl`${V.doi_home}/application.conf`,
+      dest: tmpl`${doi_home}/application.conf`,
       src: "application.conf",
     },
     register: _config,
@@ -30,8 +32,8 @@ export default [
   {
     name: "Copy jarfile",
     copy: {
-      src: V.doi_jar_file,
-      dest: tmpl`${V.doi_home}/doi.jar`,
+      src: doi_jar_file,
+      dest: tmpl`${doi_home}/doi.jar`,
       backup: true,
     },
     register: _jarfile,
@@ -41,7 +43,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: V.doi_home },
+    args: { chdir: doi_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },
@@ -61,7 +63,7 @@ export default [
   {
     name: "Check that the service responds",
     uri: {
-      url: tmpl`https://${V.doi_domains.first()}/buildInfo`,
+      url: tmpl`https://${doi_domains.first()}/buildInfo`,
       return_content: true,
     },
     register: r,

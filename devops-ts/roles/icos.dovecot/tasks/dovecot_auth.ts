@@ -1,21 +1,26 @@
+import {
+  dovecot_auth_file,
+  dovecot_vmail_home,
+  dovecot_vmail_name,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Create dovecot vmail user",
     user: {
-      name: V.dovecot_vmail_name,
-      home: V.dovecot_vmail_home,
+      name: dovecot_vmail_name,
+      home: dovecot_vmail_home,
       create_home: true,
       shell: "/usr/sbin/nologin",
     },
     register: "dovecot_vmail_user",
   },
   {
-    name: tmpl`Copy ${V.dovecot_auth_file}`,
+    name: tmpl`Copy ${dovecot_auth_file}`,
     template: {
-      src: V.dovecot_auth_file,
+      src: dovecot_auth_file,
       dest: "/etc/dovecot/conf.d",
     },
   },
@@ -23,7 +28,7 @@ export default [
     name: "Add passwd-file authentication to dovecot",
     lineinfile: {
       path: "/etc/dovecot/conf.d/10-auth.conf",
-      line: tmpl`!include ${V.dovecot_auth_file.basename()}`,
+      line: tmpl`!include ${dovecot_auth_file.basename()}`,
       state: "present",
     },
   },

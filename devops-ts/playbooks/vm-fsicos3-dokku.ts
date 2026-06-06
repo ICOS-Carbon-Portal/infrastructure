@@ -1,7 +1,10 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import {
+  dokku_redirect_domains,
+  dokku_static_domains,
+} from "../lib/paramvars.ts";
 import { concat } from "../lib/template.ts";
-import { V } from "../lib/vars.ts";
 
 export default [
   {
@@ -28,8 +31,8 @@ export default [
       role("icos.certbot2", {
         certbot_name: "dokku",
         certbot_domains: concat(
-          V.dokku_static_domains,
-          V.dokku_redirect_domains,
+          dokku_static_domains,
+          dokku_redirect_domains,
         ),
       }).tags("cert"),
 

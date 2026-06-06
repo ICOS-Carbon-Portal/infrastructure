@@ -1,5 +1,13 @@
 import { type Playbook } from "../lib/ansible/play.ts";
-import { V } from "../lib/vars.ts";
+import {
+  corebackup_host,
+  postgis_backup_location,
+  postgis_container_name,
+  postgis_user,
+  rdflog_backup_location,
+  rdflog_container_name,
+  rdflog_user,
+} from "../lib/globals.ts";
 
 export default [
   {
@@ -21,10 +29,10 @@ export default [
           tasks_from: "restore.yml",
         },
         vars: {
-          postgresql_backup_host: V.corebackup_host,
-          postgresql_backup_location: V.rdflog_backup_location,
-          container_name: V.rdflog_container_name,
-          postgresql_user: V.rdflog_user,
+          postgresql_backup_host: corebackup_host,
+          postgresql_backup_location: rdflog_backup_location,
+          container_name: rdflog_container_name,
+          postgresql_user: rdflog_user,
           postgresql_container_name: "rdflog",
         },
       },
@@ -36,10 +44,10 @@ export default [
           tasks_from: "restore.yml",
         },
         vars: {
-          postgresql_backup_host: V.corebackup_host,
-          postgresql_backup_location: V.postgis_backup_location,
-          container_name: V.postgis_container_name,
-          postgresql_user: V.postgis_user,
+          postgresql_backup_host: corebackup_host,
+          postgresql_backup_location: postgis_backup_location,
+          container_name: postgis_container_name,
+          postgresql_user: postgis_user,
           postgresql_container_name: "postgis",
         },
       },
@@ -51,7 +59,7 @@ export default [
           tasks_from: "restore.yml",
         },
         vars: {
-          restheart_backup_host: V.corebackup_host,
+          restheart_backup_host: corebackup_host,
         },
       },
     ],

@@ -1,7 +1,9 @@
+import { stiltweb_bindir, stiltweb_home, stiltweb_username } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { eq } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _rsync = register("_rsync");
 const _pipx = register("_pipx");
@@ -12,7 +14,7 @@ export default [
     name: "Synchronize stilt-utils source",
     "ansible.posix.synchronize": {
       src: "stilt-utils",
-      dest: tmpl`${V.stiltweb_home}/`,
+      dest: tmpl`${stiltweb_home}/`,
       // preserver owner and group, default is yes
       delete: true,
       owner: false,
@@ -28,13 +30,13 @@ export default [
   {
     name: "Install stilt-utils",
     become: true,
-    become_user: V.stiltweb_username,
+    become_user: stiltweb_username,
     "community.general.pipx": {
       executable: "pipx",
       python: "python3.12",
       editable: true,
       force: _rsync.changed.ref,
-      name: tmpl`${V.stiltweb_home}/stilt-utils`,
+      name: tmpl`${stiltweb_home}/stilt-utils`,
     },
     register: _pipx,
     // pipx seems to always report changed when installing editable from file
@@ -44,17 +46,17 @@ export default [
       eq(_pipx.stdout.find("already seems to be installed"), -1),
     ],
     environment: {
-      PIPX_BIN_DIR: V.stiltweb_bindir,
+      PIPX_BIN_DIR: stiltweb_bindir,
     },
   },
   // OTHER UTILS
   {
     name: "Install scripts",
     template: {
-      src: V.item,
-      dest: tmpl`${V.stiltweb_bindir}/`,
-      owner: V.stiltweb_username,
-      group: V.stiltweb_username,
+      src: item,
+      dest: tmpl`${stiltweb_bindir}/`,
+      owner: stiltweb_username,
+      group: stiltweb_username,
       mode: 0o755,
     },
     with_items: [

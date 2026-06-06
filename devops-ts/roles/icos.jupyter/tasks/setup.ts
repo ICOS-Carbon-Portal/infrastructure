@@ -1,11 +1,17 @@
+import {
+  jupyter_home,
+  jupyter_hub_config,
+  jupyter_hub_config_defaults,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Create jupyter home",
     file: {
-      path: V.jupyter_home,
+      path: jupyter_home,
       state: "directory",
     },
   },
@@ -15,7 +21,7 @@ export default [
     shell:
       "openssl rand -hex 20 | awk '{ print \"CONFIGPROXY_AUTH_TOKEN=\" $1 }' > auth_token.env",
     args: {
-      chdir: V.jupyter_home,
+      chdir: jupyter_home,
       creates: "auth_token.env",
     },
   },
@@ -28,8 +34,8 @@ export default [
   {
     name: "Copy files",
     copy: {
-      dest: V.jupyter_home,
-      src: V.item,
+      dest: jupyter_home,
+      src: item,
     },
     loop: ["build.hub", "docker-compose.yml"],
   },
@@ -37,23 +43,23 @@ export default [
     name: "Copy jupyterhub_config.py",
     template: {
       src: "jupyterhub_config.py",
-      dest: tmpl`${V.jupyter_home}/jupyterhub_home/`,
+      dest: tmpl`${jupyter_home}/jupyterhub_home/`,
     },
     vars: {
-      conf: V.jupyter_hub_config_defaults.combine(V.jupyter_hub_config),
+      conf: jupyter_hub_config_defaults.combine(jupyter_hub_config),
     },
     register: "_config",
   },
   {
     name: "Start proxy and hub",
     "community.docker.docker_compose_v2": {
-      project_src: V.jupyter_home,
+      project_src: jupyter_home,
     },
   },
   {
     name: "Restart the hub",
     "community.docker.docker_compose_v2": {
-      project_src: V.jupyter_home,
+      project_src: jupyter_home,
       services: ["hub"],
       state: "restarted",
       build: "always",

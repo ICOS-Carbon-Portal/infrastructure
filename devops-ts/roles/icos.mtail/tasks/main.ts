@@ -1,8 +1,9 @@
+import { mtail_host, mtail_logs, mtail_port, mtail_programs } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
 import { register } from "../../../lib/register.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 const _find = register("_find");
 
@@ -15,9 +16,9 @@ export default [
   },
   loopOver<{ key: Tmpl; val: Tmpl }>(
     [
-      { key: "LOGS", val: V.mtail_logs.join(",") },
-      { key: "PORT", val: V.mtail_port },
-      { key: "HOST", val: V.mtail_host },
+      { key: "LOGS", val: mtail_logs.join(",") },
+      { key: "PORT", val: mtail_port },
+      { key: "HOST", val: mtail_host },
     ],
     (item) => ({
       name: "Configure mtail",
@@ -34,26 +35,26 @@ export default [
   {
     name: "Install configure icos programs",
     copy: {
-      src: V.item,
+      src: item,
       dest: "/etc/mtail",
       validate: "mtail --compile_only -port 0 --progs %s",
     },
     notify: "reload mtail",
-    loop: V.mtail_programs,
+    loop: mtail_programs,
   },
   {
     name: "Find unconfigured icos programs",
     find: {
       paths: "/etc/mtail",
       patterns: "icos-*.mtail",
-      excludes: V.mtail_programs,
+      excludes: mtail_programs,
     },
     register: _find,
   },
   {
     name: "Remove unconfigured icos programs",
     file: {
-      name: V.item,
+      name: item,
       state: "absent",
     },
     notify: "reload mtail",
@@ -70,7 +71,7 @@ export default [
   {
     name: "Check that the mtail http server is responding",
     uri: {
-      url: tmpl`http://${V.mtail_host}:${V.mtail_port}`,
+      url: tmpl`http://${mtail_host}:${mtail_port}`,
     },
     retries: 10,
   },

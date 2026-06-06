@@ -1,5 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { inventory_hostname } from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -14,7 +15,7 @@ export default [
     name: "Retrieve public key",
     fetch: {
       src: "/etc/wireguard/publickey",
-      dest: tmpl`files/wireguard/${V.inventory_hostname}`,
+      dest: tmpl`files/wireguard/${inventory_hostname}`,
       flat: true,
     },
   },

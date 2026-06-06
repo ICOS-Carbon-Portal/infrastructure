@@ -1,47 +1,54 @@
+import { _wg_is_installed } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { eq, isVersion, ne } from "../../../lib/vars.ts";
-import { notVar, tmpl, V } from "../_ctx.ts";
+import {
+  ansible_distribution,
+  ansible_kernel,
+  ansible_lsb,
+  ansible_machine,
+} from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
+import { eq, isVersion, ne, not } from "../../../lib/vars.ts";
 
 export default [
   {
     name: "Install wireguard for modern kernels",
     include_tasks: "wireguard-ubuntu.yml",
-    when: [isVersion(V.ansible_kernel, "5.6", ">=")],
+    when: [isVersion(ansible_kernel, "5.6", ">=")],
   },
   {
     name: "Include install tasks for raspbian",
     include_tasks: "wireguard-raspbian-zero.yml",
     when: [
-      notVar("_wg_is_installed"),
-      eq(V.ansible_distribution, "Debian"),
-      eq(V.ansible_lsb.id, "Raspbian"),
-      eq(V.ansible_machine, "armv6l"),
+      not(_wg_is_installed),
+      eq(ansible_distribution, "Debian"),
+      eq(ansible_lsb.id, "Raspbian"),
+      eq(ansible_machine, "armv6l"),
     ],
   },
   {
     name: "Include install tasks for raspbian",
     include_tasks: "wireguard-raspbian.yml",
     when: [
-      notVar("_wg_is_installed"),
-      eq(V.ansible_distribution, "Debian"),
-      eq(V.ansible_lsb.id, "Raspbian"),
-      ne(V.ansible_machine, "armv6l"),
+      not(_wg_is_installed),
+      eq(ansible_distribution, "Debian"),
+      eq(ansible_lsb.id, "Raspbian"),
+      ne(ansible_machine, "armv6l"),
     ],
   },
   {
     name: "Include install tasks for ubuntu",
     include_tasks: "wireguard-ubuntu.yml",
     when: [
-      notVar("_wg_is_installed"),
-      eq(V.ansible_distribution, "Ubuntu"),
+      not(_wg_is_installed),
+      eq(ansible_distribution, "Ubuntu"),
     ],
   },
   {
     name: "Fail if wireguard wasn't installed",
     fail: {
       msg:
-        tmpl`Couldn't install wireguard for ${V.ansible_distribution}/${V.ansible_lsb.id}`,
+        tmpl`Couldn't install wireguard for ${ansible_distribution}/${ansible_lsb.id}`,
     },
-    when: notVar("_wg_is_installed"),
+    when: not(_wg_is_installed),
   },
 ] satisfies TaskFile;

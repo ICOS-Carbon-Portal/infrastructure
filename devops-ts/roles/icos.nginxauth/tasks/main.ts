@@ -1,13 +1,16 @@
+import { nginxauth_file } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { loopOverVar } from "../../../lib/loop.ts";
+import { nginxauth_users } from "../../../lib/sharedvars.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isUndefined, varByName } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
     name: "Check that all parameters are defined",
-    fail: { msg: tmpl`${V.item} needs to be defined` },
-    when: isUndefined(varByName(V.item)),
+    fail: { msg: tmpl`${item} needs to be defined` },
+    when: isUndefined(varByName(item)),
     loop: ["nginxauth_users", "nginxauth_name"],
   },
   {
@@ -21,16 +24,16 @@ export default [
   {
     name: "Create directory for auth file",
     file: {
-      path: V.nginxauth_file.dirname(),
+      path: nginxauth_file.dirname(),
       state: "directory",
     },
   },
   loopOverVar<{ password: string; username: string }>(
-    V.nginxauth_users,
+    nginxauth_users,
     (item) => ({
       name: "Add basic auth users",
       htpasswd: {
-        path: V.nginxauth_file,
+        path: nginxauth_file,
         name: item.username,
         password: item.password,
       },

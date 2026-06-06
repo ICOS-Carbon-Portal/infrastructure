@@ -12,14 +12,19 @@
 
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { mailman_home } from "../lib/sharedvars.ts";
+import { tmpl } from "../lib/vars.ts";
+import {
+  vault_mailman_rest_allow_deny,
+  vault_mailman_rest_pass,
+} from "../lib/vaultvars.ts";
 
 export default [
   {
     hosts: "fsicos2",
     vars: {
-      mailman_rest_pass: V.vault_mailman_rest_pass,
-      mailman_rest_allow_deny: V.vault_mailman_rest_allow_deny,
+      mailman_rest_pass: vault_mailman_rest_pass,
+      mailman_rest_allow_deny: vault_mailman_rest_allow_deny,
       mailman_domains: [
         "lists.icos-ri.eu",
         "lists.eric-forum.eu",
@@ -34,8 +39,8 @@ export default [
         vars: {
           bbclient_name: "mailman",
           bbclient_user: "root",
-          bbclient_home: tmpl`${V.mailman_home}/bbclient`,
-          bbclient_coldbackup: V.mailman_home,
+          bbclient_home: tmpl`${mailman_home}/bbclient`,
+          bbclient_coldbackup: mailman_home,
           bbclient_remotes: [
             "fsicos2",
             "icos1",

@@ -1,5 +1,5 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
 
 export default [
   {
@@ -41,7 +41,7 @@ export default [
   },
   {
     name: "Remove podman binaries",
-    file: { name: V.item, state: "absent" },
+    file: { name: item, state: "absent" },
     loop: ["/usr/local/bin/podman", "/usr/local/bin/podman-remote"],
   },
 ] satisfies TaskFile;

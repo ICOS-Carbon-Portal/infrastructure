@@ -1,9 +1,15 @@
+import {
+  flexpart_export_output_to,
+  flexpart_image,
+  flexpart_output_directory,
+  flexpart_user,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
 import { register } from "../../../lib/register.ts";
-import { lookup, type Tmpl } from "../../../lib/template.ts";
+import { lookup, type Tmpl, tmpl } from "../../../lib/template.ts";
 import { ne } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _build = register("_build");
 const _user = register("_user");
@@ -16,7 +22,7 @@ export default [
   {
     name: "Create flexpart user",
     user: {
-      name: V.flexpart_user,
+      name: flexpart_user,
       state: "present",
       groups: "docker",
       append: true,
@@ -26,13 +32,13 @@ export default [
   {
     name: "Create the flexpart output directory",
     file: {
-      path: V.flexpart_output_directory,
+      path: flexpart_output_directory,
       state: "directory",
     },
   },
   {
     become: true,
-    become_user: V.flexpart_user,
+    become_user: flexpart_user,
     block: [
       {
         name: "Create flexpart build dir",
@@ -55,7 +61,7 @@ export default [
       {
         name: "Authorize our own ssh key",
         authorized_key: {
-          user: V.flexpart_user,
+          user: flexpart_user,
           state: "present",
           key: lookup("file", "roles/icos.flexpart/files/flexpart.pub"),
           key_options: tmpl`command="${_user.home.ref}/flexpart_ssh.sh"`,
@@ -64,7 +70,7 @@ export default [
       {
         name: "Install Dockerfile and build resources",
         copy: {
-          src: V.item,
+          src: item,
           dest: _build.path.ref,
         },
         loop: [
@@ -89,7 +95,7 @@ export default [
         name: "Build flexpart image",
         docker_image: {
           source: "build",
-          name: V.flexpart_image,
+          name: flexpart_image,
           build: {
             path: _build.path.ref,
           },
@@ -112,7 +118,7 @@ export default [
     }),
   ),
   {
-    when: ne(V.flexpart_export_output_to, ""),
+    when: ne(flexpart_export_output_to, ""),
     block: [
       {
         name: "Install ssh server",

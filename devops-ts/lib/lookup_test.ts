@@ -1,7 +1,7 @@
 // Tests for the lookup() helper: it must render byte-identically to the
 // hand-written `expr("lookup('plugin', '...')")` strings it replaces.
 import { lookup, tmpl } from "./template.ts";
-import { V } from "./vars.ts";
+import { V } from "./test-v.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
   if (actual !== expected) {

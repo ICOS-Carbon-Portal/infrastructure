@@ -1,6 +1,14 @@
 import { type Playbook } from "../../lib/ansible/play.ts";
 import { role } from "../../lib/ansible/role.ts";
-import { tmpl, V } from "../../lib/vars.ts";
+import { item } from "../../lib/builtins.ts";
+import {
+  local_cert_dir,
+  local_conf_dir,
+  local_tmp,
+} from "../../lib/paramvars.ts";
+import { cpmeta_home } from "../../lib/sharedvars.ts";
+import { tmpl } from "../../lib/vars.ts";
+import { vault_rdflog_rep_pass } from "../../lib/vaultvars.ts";
 
 export default [
   // ### FSICOS2 ###
@@ -14,8 +22,8 @@ export default [
         tags: "nginx",
         delegate_to: "localhost",
         become: false,
-        file: { path: V.item, state: "directory" },
-        loop: [V.local_cert_dir, V.local_conf_dir],
+        file: { path: item, state: "directory" },
+        loop: [local_cert_dir, local_conf_dir],
       },
       {
         name: "Pull certificates",
@@ -25,7 +33,7 @@ export default [
           copy_links: true,
           src: `/etc/letsencrypt/live/{{ "{" + ",".join(certificates) + "}" }}
 `,
-          dest: tmpl`${V.local_cert_dir}/`,
+          dest: tmpl`${local_cert_dir}/`,
         },
       },
       {
@@ -40,7 +48,7 @@ export default [
           ],
           src: `/etc/nginx/{{ "{" + ",".join(configurations) + "}" }}
 `,
-          dest: V.local_conf_dir,
+          dest: local_conf_dir,
         },
       },
       // CPMETA
@@ -51,7 +59,7 @@ export default [
           mode: "pull",
           copy_links: true,
           src: "/home/cpmeta/cpmeta.jar",
-          dest: tmpl`${V.local_tmp}/`,
+          dest: tmpl`${local_tmp}/`,
         },
       },
       {
@@ -61,7 +69,7 @@ export default [
           owner: false,
           group: false,
           src: "/disk/data/metaAppStorage",
-          dest: tmpl`${V.local_tmp}/`,
+          dest: tmpl`${local_tmp}/`,
         },
       },
       // RDFLOG
@@ -85,7 +93,7 @@ export default [
           owner: false,
           group: false,
           src: "/tmp/rdflog_dump.gz",
-          dest: tmpl`${V.local_tmp}/`,
+          dest: tmpl`${local_tmp}/`,
         },
       },
     ],
@@ -114,7 +122,7 @@ export default [
         tags: "nginx",
         "ansible.posix.synchronize": {
           mode: "push",
-          src: tmpl`${V.local_cert_dir}/`,
+          src: tmpl`${local_cert_dir}/`,
           dest: "/etc/letsencrypt/live/",
           owner: false,
           group: false,
@@ -134,7 +142,7 @@ export default [
         tags: "nginx",
         "ansible.posix.synchronize": {
           mode: "push",
-          src: tmpl`${V.local_conf_dir}/`,
+          src: tmpl`${local_conf_dir}/`,
           dest: "/etc/nginx/conf.d",
           owner: false,
           group: false,
@@ -148,7 +156,7 @@ export default [
         "ansible.posix.synchronize": {
           owner: false,
           group: false,
-          src: tmpl`${V.local_tmp}/rdflog_dump.gz`,
+          src: tmpl`${local_tmp}/rdflog_dump.gz`,
           dest: "/tmp/",
         },
       },
@@ -157,7 +165,7 @@ export default [
       {
         name: "Push metaAppStorage",
         "ansible.posix.synchronize": {
-          src: tmpl`${V.local_tmp}/metaAppStorage`,
+          src: tmpl`${local_tmp}/metaAppStorage`,
           dest: "/home/cpmeta/",
           // Create local directories below dest directory
           rsync_opts: ["--mkpath"],
@@ -173,14 +181,14 @@ export default [
       // RDFLOG
       role("icos.rdflog", {
         rdflog_postgres_version: 10,
-        rdflog_rep_pass: V.vault_rdflog_rep_pass,
-        rdflog_restore_file: tmpl`${V.local_tmp}/rdflog_dump.gz`,
+        rdflog_rep_pass: vault_rdflog_rep_pass,
+        rdflog_restore_file: tmpl`${local_tmp}/rdflog_dump.gz`,
       }).tags("rdflog"),
 
       // CPMETA
       role("icos.cpmeta", {
-        cpmeta_filestorage_target: tmpl`${V.cpmeta_home}/metaAppStorage`,
-        cpmeta_jar_file: tmpl`${V.local_tmp}/cpmeta.jar`,
+        cpmeta_filestorage_target: tmpl`${cpmeta_home}/metaAppStorage`,
+        cpmeta_jar_file: tmpl`${local_tmp}/cpmeta.jar`,
         cpmeta_config_files: [
           "application_production.conf",
           "application_production_sensitive.conf",

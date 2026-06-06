@@ -1,7 +1,9 @@
+import { nebula_etc_dir } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { nebula_config_file } from "../../../lib/globals.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isDefined } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");
 const update = register("update");
@@ -12,8 +14,8 @@ export default [
       {
         name: "Copy nebula_config.yml",
         template: {
-          src: V.nebula_config_file,
-          dest: tmpl`${V.nebula_etc_dir}/config.yml`,
+          src: nebula_config_file,
+          dest: tmpl`${nebula_etc_dir}/config.yml`,
           lstrip_blocks: true,
           backup: true,
         },
@@ -29,14 +31,14 @@ export default [
     rescue: [
       {
         name: "Slurp failed file and add line numbers",
-        command: tmpl`cat -n "${V.nebula_etc_dir}/config.yml"`,
+        command: tmpl`cat -n "${nebula_etc_dir}/config.yml"`,
         register: _slurp,
       },
       {
         name: "Restore config file",
         copy: {
           remote_src: true,
-          dest: tmpl`${V.nebula_etc_dir}/config.yml`,
+          dest: tmpl`${nebula_etc_dir}/config.yml`,
           src: update.backup_file.ref,
         },
         when: isDefined(update.backup_file),

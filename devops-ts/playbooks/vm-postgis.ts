@@ -6,8 +6,9 @@
 
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { postgis_admin_pass } from "../lib/globals.ts";
 import { loopOverVar } from "../lib/loop.ts";
-import { V } from "../lib/vars.ts";
+import { postgis_cplog_users, postgresql_hba_file } from "../lib/paramvars.ts";
 
 export default [
   {
@@ -37,7 +38,7 @@ export default [
         tags: "postgresql",
         vars: {
           postgresql_postgis_enable: true,
-          postgresql_postgres_password: V.postgis_admin_pass,
+          postgresql_postgres_password: postgis_admin_pass,
           postgresql_listen_addresses: "'*'",
           postgresql_pg_stat_enable: true,
         },
@@ -58,7 +59,7 @@ export default [
         name: "Allow postgres user to connect from same subnet",
         tags: "hba",
         postgresql_pg_hba: {
-          dest: V.postgresql_hba_file,
+          dest: postgresql_hba_file,
           users: "postgres",
           source: "samenet",
           method: "md5",
@@ -72,7 +73,7 @@ export default [
         tags: "cplog",
         block: [
           loopOverVar<{ password: string; username: string }>(
-            V.postgis_cplog_users,
+            postgis_cplog_users,
             (item) => ({
               name: "Create postgres cplog users",
               postgresql_user: {
@@ -82,10 +83,10 @@ export default [
               },
             }),
           ),
-          loopOverVar<{ username: string }>(V.postgis_cplog_users, (item) => ({
+          loopOverVar<{ username: string }>(postgis_cplog_users, (item) => ({
             name: "Allow users to connect from same subnet",
             postgresql_pg_hba: {
-              dest: V.postgresql_hba_file,
+              dest: postgresql_hba_file,
               users: item.username,
               source: "samenet",
               method: "md5",

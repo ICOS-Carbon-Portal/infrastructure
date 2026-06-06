@@ -1,20 +1,25 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import {
+  _ssh_user,
+  flexpart_ssh_remote_host,
+  flexpart_ssh_remote_ip,
+} from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { hostvar } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _home_dir = register("_home_dir");
 const _ssh_dir = register("_ssh_dir");
 
 export default [
   {
-    name: tmpl`Run block as ${V._ssh_user}`,
+    name: tmpl`Run block as ${_ssh_user}`,
     become: true,
-    become_user: V._ssh_user,
+    become_user: _ssh_user,
     block: [
       {
-        name: tmpl`Get home directory of ${V._ssh_user}`,
-        shell: tmpl`getent passwd ${V._ssh_user} | cut -d: -f6`,
+        name: tmpl`Get home directory of ${_ssh_user}`,
+        shell: tmpl`getent passwd ${_ssh_user} | cut -d: -f6`,
         register: _home_dir,
         changed_when: false,
       },
@@ -40,10 +45,10 @@ export default [
         name: "Add flexpart run host to each users known_hosts file",
         known_hosts: {
           path: tmpl`${_ssh_dir.path.ref}/known_hosts`,
-          name: V.flexpart_ssh_remote_host,
+          name: flexpart_ssh_remote_host,
           key:
-            tmpl`${V.flexpart_ssh_remote_host},${V.flexpart_ssh_remote_ip} ecdsa-sha2-nistp256 ${
-              hostvar(V.flexpart_ssh_remote_host)
+            tmpl`${flexpart_ssh_remote_host},${flexpart_ssh_remote_ip} ecdsa-sha2-nistp256 ${
+              hostvar(flexpart_ssh_remote_host)
                 .ansible_ssh_host_key_ecdsa_public
             }`,
         },

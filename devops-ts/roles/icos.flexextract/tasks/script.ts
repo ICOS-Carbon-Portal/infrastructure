@@ -1,11 +1,12 @@
+import { flexextract_bin_dir } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
-    name: tmpl`Create ${V.flexextract_bin_dir} directory`,
+    name: tmpl`Create ${flexextract_bin_dir} directory`,
     file: {
-      path: V.flexextract_bin_dir,
+      path: flexextract_bin_dir,
       state: "directory",
     },
   },
@@ -13,7 +14,7 @@ export default [
     name: "Copy flexextract script",
     copy: {
       src: "flexextract.sh",
-      dest: tmpl`${V.flexextract_bin_dir}/`,
+      dest: tmpl`${flexextract_bin_dir}/`,
       mode: "-x",
     },
     register: "_script",
@@ -21,7 +22,7 @@ export default [
   {
     name: "Create flexextract wrapper",
     copy: {
-      dest: tmpl`${V.flexextract_bin_dir}/flexextract`,
+      dest: tmpl`${flexextract_bin_dir}/flexextract`,
       mode: "+x",
       content: `#!/bin/bash
 TAG="{{ flexextract_tag }}"

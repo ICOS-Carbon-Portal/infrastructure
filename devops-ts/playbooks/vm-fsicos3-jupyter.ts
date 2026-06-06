@@ -1,7 +1,10 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { item } from "../lib/builtins.ts";
+import { jupyter_domains } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { tmpl } from "../lib/vars.ts";
+import { vault_jupyter_admins } from "../lib/vaultvars.ts";
 
 // Registered by the icos.lxd_vm role (runs on the host play before this one).
 const _lxd = register("_lxd");
@@ -38,7 +41,7 @@ export default [
         name: "Create jupyter directories for home and project",
         tags: "zfs",
         file: {
-          name: tmpl`/pool/jupyter/${V.item}`,
+          name: tmpl`/pool/jupyter/${item}`,
           state: "directory",
           owner: "1000000",
           group: "1000000",
@@ -86,13 +89,13 @@ export default [
 
       role("icos.certbot2", {
         certbot_name: "jupyter",
-        certbot_domains: V.jupyter_domains,
+        certbot_domains: jupyter_domains,
       }).tags("cert"),
 
       role("icos.nginxsite", {
         nginxsite_name: "jupyter",
         nginxsite_file: "files/jupyter.conf",
-        jupyter_domain: V.jupyter_domains.first(),
+        jupyter_domain: jupyter_domains.first(),
         jupyter_cert_name: "jupyter",
         jupyter_port: 8000,
       }).tags("nginx"),
@@ -123,7 +126,7 @@ export default [
 
       role("icos.jupyter", {
         jupyter_hub_config: {
-          admin_users: V.vault_jupyter_admins,
+          admin_users: vault_jupyter_admins,
           mem_limit: "100G",
           cpu_limit: 40,
         },

@@ -1,10 +1,11 @@
+import { nebula_fw_enable } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { truthy } from "../../../lib/vars.ts";
-import { notVar, V } from "../_ctx.ts";
+import { nebula_interface, nebula_port } from "../../../lib/globals.ts";
+import { not, truthy } from "../../../lib/vars.ts";
 
 export default [
   {
-    when: truthy(V.nebula_fw_enable),
+    when: truthy(nebula_fw_enable),
     block: [
       {
         name: "Install iptables",
@@ -16,7 +17,7 @@ export default [
           state: "absent",
           chain: "INPUT",
           protocol: "udp",
-          destination_port: V.nebula_port,
+          destination_port: nebula_port,
           jump: "ACCEPT",
         },
       },
@@ -27,7 +28,7 @@ export default [
           chain: "INPUT",
           // make sure it appears early
           action: "insert",
-          in_interface: V.nebula_interface,
+          in_interface: nebula_interface,
           jump: "ACCEPT",
         },
       },
@@ -49,7 +50,7 @@ export default [
   },
   // i.e proxmox
   {
-    when: notVar("nebula_fw_enable"),
+    when: not(nebula_fw_enable),
     name: "Display note about manual firewall rules",
     debug: {
       msg: `Please manually add the following firewall rules:

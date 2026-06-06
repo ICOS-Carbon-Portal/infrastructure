@@ -1,9 +1,11 @@
+import { nebula_resolve_type } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_distribution, ansible_lsb } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { eq } from "../../../lib/vars.ts";
 
 const _r = register("_r");
-import { tmpl, V } from "../_ctx.ts";
 
 // Configuring client DNS resolution is much harder than setting up the DNS
 // server.
@@ -20,7 +22,7 @@ import { tmpl, V } from "../_ctx.ts";
 export default [
   // DHCPCD
   {
-    when: eq(V.nebula_resolve_type, "probe"),
+    when: eq(nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for dhcpcd",
@@ -36,7 +38,7 @@ export default [
   },
   // NETWORK MANAGER
   {
-    when: eq(V.nebula_resolve_type, "probe"),
+    when: eq(nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for NetworkManager",
@@ -52,7 +54,7 @@ export default [
   },
   // SYSTEMD-NETWORKD
   {
-    when: eq(V.nebula_resolve_type, "probe"),
+    when: eq(nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for systemd-networkd",
@@ -69,8 +71,8 @@ export default [
   // DEBIAN
   {
     when: [
-      eq(V.nebula_resolve_type, "probe"),
-      eq(V.ansible_distribution, "Debian"),
+      eq(nebula_resolve_type, "probe"),
+      eq(ansible_distribution, "Debian"),
     ],
     set_fact: {
       name: "Set nebula_resolve_type to dnsmasq",
@@ -80,7 +82,7 @@ export default [
   },
   // UNKNOWN
   {
-    when: eq(V.nebula_resolve_type, "probe"),
+    when: eq(nebula_resolve_type, "probe"),
     set_fact: {
       name: "Set nebula_resolve_type to unknown",
       nebula_resolve_type: "unknown",
@@ -92,7 +94,7 @@ export default [
     name: "Inform about the client dns resolution setup",
     debug: {
       msg:
-        tmpl`nebula_resolve_type == ${V.nebula_resolve_type} for ${V.ansible_lsb.id}/${V.ansible_lsb.major_release}`,
+        tmpl`nebula_resolve_type == ${nebula_resolve_type} for ${ansible_lsb.id}/${ansible_lsb.major_release}`,
     },
   },
 ] satisfies TaskFile;

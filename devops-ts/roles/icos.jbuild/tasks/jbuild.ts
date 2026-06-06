@@ -1,6 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { jbuild_force, virtualenv_recreate } from "../../../lib/paramvars.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -9,7 +9,7 @@ export default [
       path: "/opt/jbuild/venv",
       state: "absent",
     },
-    when: truthy(V.virtualenv_recreate).default(false).bool(),
+    when: truthy(virtualenv_recreate).default(false).bool(),
   },
   {
     name: "Create virtual env",
@@ -25,7 +25,7 @@ export default [
       src: "jbuild.py",
       dest: "/opt/jbuild/jbuild.py",
       mode: "+x",
-      force: V.jbuild_force.default(true).bool(),
+      force: jbuild_force.default(true).bool(),
     },
   },
   {

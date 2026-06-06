@@ -1,20 +1,24 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
+import {
+  cpdata_certbot_name,
+  cpdata_domains,
+  cpdata_nginxsite_name,
+} from "../../../lib/globals.ts";
 
 export default [
   {
     name: "Create cpdata certificate",
     include_role: "name=icos.certbot2",
     vars: {
-      certbot_name: V.cpdata_certbot_name,
-      certbot_domains: V.cpdata_domains,
+      certbot_name: cpdata_certbot_name,
+      certbot_domains: cpdata_domains,
     },
   },
   {
     name: "Add cpdata nginx config",
     include_role: "name=icos.nginxsite",
     vars: {
-      nginxsite_name: V.cpdata_nginxsite_name,
+      nginxsite_name: cpdata_nginxsite_name,
       nginxsite_file: "cpdata.conf",
     },
   },

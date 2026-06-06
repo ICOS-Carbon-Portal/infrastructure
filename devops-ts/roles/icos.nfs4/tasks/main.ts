@@ -1,7 +1,8 @@
+import { nfs4_interface } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { iff, pct } from "../../../lib/template.ts";
+import { item } from "../../../lib/builtins.ts";
+import { iff, pct, tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -12,11 +13,11 @@ export default [
   },
   {
     name: "Allow nfs through firewall",
-    when: truthy(V.nfs4_interface),
+    when: truthy(nfs4_interface),
     iptables_raw: {
       name: "allow_nfs4",
       rules: tmpl`-A INPUT ${
-        iff(V.nfs4_interface, pct("-i %s", V.nfs4_interface), "")
+        iff(nfs4_interface, pct("-i %s", nfs4_interface), "")
       } -p tcp --dport 2049 -j ACCEPT`,
     },
   },
@@ -24,9 +25,9 @@ export default [
     name: "Modify nfs-kernel parameters",
     lineinfile: {
       path: "/etc/default/nfs-kernel-server",
-      regex: tmpl`^${V.item}=`,
+      regex: tmpl`^${item}=`,
       line:
-        tmpl`${V.item}="--no-nfs-version 2 --no-nfs-version 3 --nfs-version 4 --no-udp"\n`,
+        tmpl`${item}="--no-nfs-version 2 --no-nfs-version 3 --nfs-version 4 --no-udp"\n`,
       state: "present",
     },
     loop: ["RPCNFSDOPTS", "RPCMOUNTDOPTS"],

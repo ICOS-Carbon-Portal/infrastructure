@@ -2,8 +2,10 @@
 //   1. Find out which hosts run a specific distribution of ubuntu.
 //   2. Dist-upgrade those hosts.
 import { type Playbook } from "../lib/ansible/play.ts";
+import { ansible_distribution_release, item } from "../lib/builtins.ts";
+import { docker_prevent_upgrade } from "../lib/sharedvars.ts";
 import { iff } from "../lib/template.ts";
-import { tmpl, truthy, V } from "../lib/vars.ts";
+import { tmpl, truthy } from "../lib/vars.ts";
 
 export default [
   {
@@ -11,7 +13,7 @@ export default [
     tasks: [
       {
         group_by: {
-          key: tmpl`${V.ansible_distribution_release}_hosts`,
+          key: tmpl`${ansible_distribution_release}_hosts`,
         },
       },
     ],
@@ -34,7 +36,7 @@ export default [
       {
         name: "Make sure docker is upgraded",
         dpkg_selections: {
-          name: V.item,
+          name: item,
           selection: "install",
         },
         loop: ["docker.io", "containerd"],
@@ -74,9 +76,9 @@ export default [
       {
         name: "Make sure docker isn't upgraded",
         dpkg_selections: {
-          name: V.item,
+          name: item,
           selection: iff(
-            truthy(V.docker_prevent_upgrade).default(false),
+            truthy(docker_prevent_upgrade).default(false),
             "hold",
             "install",
           ),

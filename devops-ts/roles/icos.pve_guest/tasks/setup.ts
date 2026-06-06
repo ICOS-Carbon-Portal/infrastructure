@@ -1,6 +1,7 @@
+import { upgrade_everything } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { item } from "../../../lib/builtins.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -24,7 +25,7 @@ export default [
   {
     name: "Generate locale",
     locale_gen: {
-      name: V.item,
+      name: item,
       state: "present",
     },
     loop: [
@@ -40,7 +41,7 @@ export default [
       autoclean: true,
       autoremove: true,
     },
-    when: truthy(V.upgrade_everything),
+    when: truthy(upgrade_everything),
     notify: "reboot",
   },
 ] satisfies TaskFile;

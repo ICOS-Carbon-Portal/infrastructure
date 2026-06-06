@@ -1,6 +1,6 @@
+import { golang_apt_version_ok } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
   },
   {
     name: "install golang using apt",
-    when: truthy(V.golang_apt_version_ok),
+    when: truthy(golang_apt_version_ok),
     apt: {
       name: "golang",
     },

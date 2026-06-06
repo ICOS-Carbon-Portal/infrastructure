@@ -1,14 +1,16 @@
+import { just_url_map, just_version } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { isNotDefined, not } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 const _r = register("_r");
 
 export default [
   {
-    when: isNotDefined(V.just_version),
+    when: isNotDefined(just_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -36,7 +38,7 @@ export default [
     name: "Install just",
     unarchive: {
       remote_src: true,
-      src: V.just_url_map.at(V.ansible_architecture),
+      src: just_url_map.at(ansible_architecture),
       dest: "/usr/local/bin",
       include: ["just"],
     },
@@ -46,10 +48,10 @@ export default [
     shell: "just --version",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(V.just_version)),
+    failed_when: not(_r.stdout.endswith(just_version)),
   },
   {
     name: "Which version of just was installed",
-    debug: { msg: tmpl`Installed ${V.just_version}` },
+    debug: { msg: tmpl`Installed ${just_version}` },
   },
 ] satisfies TaskFile;

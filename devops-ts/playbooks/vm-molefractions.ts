@@ -1,7 +1,8 @@
 import { type Playbook } from "../lib/ansible/play.ts";
 import { role } from "../lib/ansible/role.ts";
+import { username } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
-import { tmpl, V } from "../lib/vars.ts";
+import { tmpl } from "../lib/vars.ts";
 
 const _lxd = register("_lxd");
 
@@ -84,9 +85,9 @@ export default [
     ],
     tasks: [
       {
-        name: tmpl`add ${V.username} user`,
+        name: tmpl`add ${username} user`,
         user: {
-          name: V.username,
+          name: username,
           shell: "/sbin/nologin",
           create_home: false,
           password_lock: true,

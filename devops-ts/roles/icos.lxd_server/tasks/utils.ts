@@ -1,12 +1,13 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Copy utilities",
     copy: {
-      src: V.item,
-      dest: tmpl`/usr/local/sbin/${V.item}`,
+      src: item,
+      dest: tmpl`/usr/local/sbin/${item}`,
       mode: 0o755,
     },
     loop: ["lxdfs"],

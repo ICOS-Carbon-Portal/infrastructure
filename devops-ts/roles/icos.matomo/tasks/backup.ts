@@ -1,5 +1,6 @@
+import { matomo_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
@@ -9,7 +10,7 @@ export default [
     },
     vars: {
       bbclient_name: "matomo",
-      bbclient_home: tmpl`${V.matomo_home}/.bbclient`,
+      bbclient_home: tmpl`${matomo_home}/.bbclient`,
       bbclient_timer_content: `#!/bin/bash
 set -Eueo pipefail
 

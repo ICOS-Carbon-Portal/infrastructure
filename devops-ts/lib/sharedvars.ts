@@ -41,3 +41,44 @@ export interface SharedVars {
   zfsdocker_name: unknown;
   zfsdocker_zvol: unknown;
 }
+
+import { varProxy, type VarRef } from "./template.ts";
+const vref = <K extends keyof SharedVars>(k: K): VarRef<SharedVars[K]> =>
+  varProxy(k) as VarRef<SharedVars[K]>;
+
+export const bbclient_all = vref("bbclient_all");
+export const bbclient_name = vref("bbclient_name");
+export const bbclient_repo_file = vref("bbclient_repo_file");
+export const bbclient_wrapper = vref("bbclient_wrapper");
+export const bbserver_home = vref("bbserver_home");
+export const certbot_conf_name = vref("certbot_conf_name");
+export const certbot_domains = vref("certbot_domains");
+export const certbot_name = vref("certbot_name");
+export const certbot_nginx_conf = vref("certbot_nginx_conf");
+export const conmon_min_version = vref("conmon_min_version");
+export const cpmeta_home = vref("cpmeta_home");
+export const dbin__down = vref("dbin__down");
+export const dbin__vers = vref("dbin__vers");
+export const dbin_download_base = vref("dbin_download_base");
+export const docker_prevent_upgrade = vref("docker_prevent_upgrade");
+export const domain = vref("domain");
+export const filedrop_port = vref("filedrop_port");
+export const iptables_ssh_port = vref("iptables_ssh_port");
+export const mailman_home = vref("mailman_home");
+export const nextcloud_home = vref("nextcloud_home");
+export const nexus_home = vref("nexus_home");
+export const nginxauth_name = vref("nginxauth_name");
+export const nginxauth_users = vref("nginxauth_users");
+export const nginxsite_domains = vref("nginxsite_domains");
+export const nginxsite_file = vref("nginxsite_file");
+export const nginxsite_name = vref("nginxsite_name");
+export const nginxsite_users = vref("nginxsite_users");
+export const podman_arch = vref("podman_arch");
+export const restheart_bind_port = vref("restheart_bind_port");
+export const timer_dest = vref("timer_dest");
+export const update = vref("update");
+export const upgrade_everything = vref("upgrade_everything");
+export const vm_promlens_port = vref("vm_promlens_port");
+export const vm_vm_port = vref("vm_vm_port");
+export const zfsdocker_name = vref("zfsdocker_name");
+export const zfsdocker_zvol = vref("zfsdocker_zvol");

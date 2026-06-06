@@ -1,6 +1,7 @@
+import { docker_periodic_cleanup } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_distribution } from "../../../lib/builtins.ts";
 import { eq, notIn, truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -14,18 +15,18 @@ export default [
   },
   {
     import_tasks: "debian.yml",
-    when: eq(V.ansible_distribution, "Debian"),
+    when: eq(ansible_distribution, "Debian"),
   },
   {
     import_tasks: "ubuntu.yml",
-    when: eq(V.ansible_distribution, "Ubuntu"),
+    when: eq(ansible_distribution, "Ubuntu"),
   },
   {
     name: "Fail if we're not on a supported distribution",
     fail: {
       msg: "This role currently only support Debian and Ubuntu",
     },
-    when: notIn(V.ansible_distribution, ["Debian", "Ubuntu"]),
+    when: notIn(ansible_distribution, ["Debian", "Ubuntu"]),
   },
   {
     name: "Uninstall docker-compose version 1",
@@ -65,7 +66,7 @@ export default [
   {
     import_tasks: "cleanup.yml",
     tags: "docker_cleanup",
-    when: truthy(V.docker_periodic_cleanup),
+    when: truthy(docker_periodic_cleanup),
   },
   {
     import_role: "name=icos.docker_utils",

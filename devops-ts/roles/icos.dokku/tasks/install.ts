@@ -1,8 +1,8 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_lsb } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
 import { register } from "../../../lib/register.ts";
-import { type Tmpl } from "../../../lib/template.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 const _key = register("_key");
 
@@ -22,7 +22,7 @@ export default [
     apt_repository: {
       filename: "dokku",
       repo:
-        tmpl`deb [signed-by=${_key.dest.ref}] https://packagecloud.io/dokku/dokku/${V.ansible_lsb.id.lower()}/ ${V.ansible_lsb.codename} main`,
+        tmpl`deb [signed-by=${_key.dest.ref}] https://packagecloud.io/dokku/dokku/${ansible_lsb.id.lower()}/ ${ansible_lsb.codename} main`,
     },
   },
   loopOver<{ question: Tmpl; value: Tmpl; vtype: Tmpl }>(

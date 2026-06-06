@@ -1,7 +1,8 @@
+import { uv_upgrade } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { ansible_check_mode } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
 import { not, or, truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 const _r = register("_r");
 
@@ -20,8 +21,8 @@ export default [
     },
     when: or(
       not(_r.stat.exists),
-      truthy(V.uv_upgrade),
-      not(V.ansible_check_mode),
+      truthy(uv_upgrade),
+      not(ansible_check_mode),
     ),
   },
   {

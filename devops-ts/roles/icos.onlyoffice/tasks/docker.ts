@@ -1,11 +1,12 @@
+import { onlyoffice_domain, onlyoffice_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Copy build directory",
     copy: {
-      dest: tmpl`${V.onlyoffice_home}/`,
+      dest: tmpl`${onlyoffice_home}/`,
       src: "build",
     },
   },
@@ -13,7 +14,7 @@ export default [
     name: "Install runtime environment file",
     copy: {
       mode: "o-r",
-      dest: tmpl`${V.onlyoffice_home}/onlyoffice.env`,
+      dest: tmpl`${onlyoffice_home}/onlyoffice.env`,
       content: `# JWT == JSON Web Tokens. This is how Nextcloud authenticates
 # itself to OnlyOffice.
 JWT_ENABLED=true
@@ -30,20 +31,20 @@ JWT_REJECT_UNAUTHORIZED=true
     name: "Copy license.lic",
     copy: {
       src: "license.lic",
-      dest: tmpl`${V.onlyoffice_home}/volumes/data/`,
+      dest: tmpl`${onlyoffice_home}/volumes/data/`,
     },
   },
   {
     name: "Copy docker-compose.yml",
     copy: {
       src: "docker-compose.yml",
-      dest: V.onlyoffice_home,
+      dest: onlyoffice_home,
     },
   },
   {
     name: "Install parsetime environment file",
     copy: {
-      dest: tmpl`${V.onlyoffice_home}/.env`,
+      dest: tmpl`${onlyoffice_home}/.env`,
       content: `ONLYOFFICE_PORT={{ onlyoffice_port }}
 ONLYOFFICE_VERSION={{ onlyoffice_version }}
 `,
@@ -52,14 +53,14 @@ ONLYOFFICE_VERSION={{ onlyoffice_version }}
   {
     name: "Build and start",
     "community.docker.docker_compose_v2": {
-      project_src: V.onlyoffice_home,
+      project_src: onlyoffice_home,
       build: "always",
     },
   },
   {
     name: "Check that onlyoffice responds - might take a while",
     uri: {
-      url: tmpl`https://${V.onlyoffice_domain}`,
+      url: tmpl`https://${onlyoffice_domain}`,
     },
     retries: 60,
     delay: 10,

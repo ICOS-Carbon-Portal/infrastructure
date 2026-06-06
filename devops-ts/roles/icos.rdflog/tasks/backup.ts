@@ -1,6 +1,11 @@
+import { rdflog_home } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import {
+  rdflog_backup_enable,
+  rdflog_bbclient_name,
+} from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -8,8 +13,8 @@ export default [
     include_role: { name: "icos.bbclient2", public: true },
     vars: {
       bbclient_user: "root",
-      bbclient_name: V.rdflog_bbclient_name,
-      bbclient_home: tmpl`${V.rdflog_home}/bbclient`,
+      bbclient_name: rdflog_bbclient_name,
+      bbclient_home: tmpl`${rdflog_home}/bbclient`,
       bbclient_timer_conf: "OnCalendar=00/6:11",
       bbclient_timer_content: `#!/bin/bash
 set -eu
@@ -21,7 +26,7 @@ while read repo; do
 done < "{{ bbclient_repo_file }}"
 `,
     },
-    when: truthy(V.rdflog_backup_enable).default(false),
+    when: truthy(rdflog_backup_enable).default(false),
   },
   {
     name: "Install rdflog restore scripts",
@@ -30,6 +35,6 @@ done < "{{ bbclient_repo_file }}"
       src: "icos-rdflog-restore.sh",
       mode: "+x",
     },
-    when: truthy(V.rdflog_backup_enable).default(false),
+    when: truthy(rdflog_backup_enable).default(false),
   },
 ] satisfies TaskFile;

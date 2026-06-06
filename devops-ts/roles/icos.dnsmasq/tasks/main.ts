@@ -1,5 +1,5 @@
+import { dnsmasq_service_name } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   { import_tasks: "setup.yml", tags: "dnsmasq_setup" },
@@ -8,7 +8,7 @@ export default [
   {
     name: "Start and enable dnsmasq",
     systemd: {
-      name: V.dnsmasq_service_name,
+      name: dnsmasq_service_name,
       enabled: true,
     },
   },

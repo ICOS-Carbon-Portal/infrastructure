@@ -1,19 +1,23 @@
+import {
+  restic_server_data,
+  restic_server_exec,
+  restic_server_user,
+} from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
     name: "Create restic_server directory",
     file: {
-      path: V.restic_server_exec.dirname(),
+      path: restic_server_exec.dirname(),
       state: "directory",
     },
   },
   {
     name: "Create restic user",
     user: {
-      name: V.restic_server_user,
-      home: V.restic_server_data,
+      name: restic_server_user,
+      home: restic_server_data,
       shell: "/usr/sbin/nologin",
       system: true,
     },
@@ -21,10 +25,10 @@ export default [
   {
     name: "Create restic data directory",
     file: {
-      path: V.restic_server_data,
+      path: restic_server_data,
       state: "directory",
-      owner: V.restic_server_user,
-      group: V.restic_server_user,
+      owner: restic_server_user,
+      group: restic_server_user,
     },
   },
   {

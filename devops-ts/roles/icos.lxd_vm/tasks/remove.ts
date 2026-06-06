@@ -1,16 +1,18 @@
+import { lxd_vm_port, lxd_vm_root_pool } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { inventory_hostname, item } from "../../../lib/builtins.ts";
+import { lxd_vm_name, lxd_vm_variant } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { lookup } from "../../../lib/template.ts";
+import { lookup, tmpl } from "../../../lib/template.ts";
 import { eq, isUndefined, varByName } from "../../../lib/vars.ts";
-import { tmpl, V } from "../_ctx.ts";
 
 const _r = register("_r");
 
 export default [
   {
     name: "Check that all parameters are defined",
-    fail: { msg: tmpl`${V.item} needs to be defined` },
-    when: isUndefined(varByName(V.item)),
+    fail: { msg: tmpl`${item} needs to be defined` },
+    when: isUndefined(varByName(item)),
     loop: ["lxd_vm_name"],
   },
   {
@@ -18,7 +20,7 @@ export default [
     local_action: {
       module: "community.general.ssh_config",
       ssh_config_file: tmpl`~${lookup("env", "USER")}/.ssh/config.icos`,
-      host: V.lxd_vm_name,
+      host: lxd_vm_name,
       state: "absent",
     },
   },
@@ -26,32 +28,32 @@ export default [
     name: "Remove local known_host",
     local_action: {
       module: "known_hosts",
-      name: tmpl`[${V.inventory_hostname}]:${V.lxd_vm_port}`,
+      name: tmpl`[${inventory_hostname}]:${lxd_vm_port}`,
       state: "absent",
     },
   },
   {
     name: "Remove ssh port forward and /etc/hosts entry",
     include_role: { name: "icos.lxd_forward", tasks_from: "remove.yml" },
-    vars: { lxd_forward_name: V.lxd_vm_name },
+    vars: { lxd_forward_name: lxd_vm_name },
   },
   {
     name: "Remove lxd container",
-    lxd_container: { name: V.lxd_vm_name, state: "absent" },
+    lxd_container: { name: lxd_vm_name, state: "absent" },
   },
   {
-    when: eq(V.lxd_vm_variant, "ext4"),
+    when: eq(lxd_vm_variant, "ext4"),
     block: [
       {
         name: "Delete storage pool",
-        shell: tmpl`/snap/bin/lxc storage delete ${V.lxd_vm_root_pool} || :\n`,
+        shell: tmpl`/snap/bin/lxc storage delete ${lxd_vm_root_pool} || :\n`,
         register: _r,
         changed_when: _r.stdout.endswith("deleted"),
       },
     ],
   },
   {
-    when: eq(V.lxd_vm_variant, "zfs"),
+    when: eq(lxd_vm_variant, "zfs"),
     block: [
       {
         name: "Delete docker storage",

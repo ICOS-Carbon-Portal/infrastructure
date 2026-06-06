@@ -1,5 +1,9 @@
+import { exploredata_home, exploredata_notebook_image } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { tmpl, V } from "../_ctx.ts";
+import { item } from "../../../lib/builtins.ts";
+import { registry_domain } from "../../../lib/globals.ts";
+import { tmpl } from "../../../lib/template.ts";
+import { vault_registry_pass } from "../../../lib/vaultvars.ts";
 
 export default [
   {
@@ -12,8 +16,8 @@ export default [
   {
     name: "Copy files",
     copy: {
-      dest: tmpl`${V.exploredata_home}/`,
-      src: V.item,
+      dest: tmpl`${exploredata_home}/`,
+      src: item,
     },
     loop: ["build.hub", "jupyterhub_home", "docker-compose.yml"],
   },
@@ -21,7 +25,7 @@ export default [
     name: "Copy jupyterhub_config.py",
     template: {
       src: "jupyterhub_config.py",
-      dest: tmpl`${V.exploredata_home}/jupyterhub_home/`,
+      dest: tmpl`${exploredata_home}/jupyterhub_home/`,
       backup: true,
       validate: "python3 -m py_compile %s",
     },
@@ -29,7 +33,7 @@ export default [
   {
     name: "Install runtime environment file",
     copy: {
-      dest: tmpl`${V.exploredata_home}/.env`,
+      dest: tmpl`${exploredata_home}/.env`,
       content: `NETWORK_NAME={{ exploredata_network }}
 HUB_PORT={{ exploredata_port }}
 HUB_RESTART=always
@@ -44,22 +48,22 @@ PASSWORD={{ exploredata_password[exploredata_type] }}
     name: "Login to registry",
     tags: "docker_login",
     "community.general.docker_login": {
-      registry_url: V.registry_domain,
+      registry_url: registry_domain,
       username: "docker",
-      password: V.vault_registry_pass,
+      password: vault_registry_pass,
     },
   },
   {
     name: "Make sure that the notebook images are present",
     "community.docker.docker_image": {
-      name: V.exploredata_notebook_image,
+      name: exploredata_notebook_image,
       source: "pull",
     },
   },
   {
     name: "Build and start the hub image",
     docker_compose: {
-      project_src: V.exploredata_home,
+      project_src: exploredata_home,
       build: true,
     },
   },

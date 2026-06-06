@@ -1,6 +1,6 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { icos } from "../../../lib/builtins.ts";
 import { truthy } from "../../../lib/vars.ts";
-import { V } from "../_ctx.ts";
 
 export default [
   {
@@ -31,6 +31,6 @@ Pin-Priority: -1
   {
     name: "Configure storage for LXD + ZFS",
     import_tasks: "zfs-and-lxd.yml",
-    when: [truthy(V.icos.inside_lxd), truthy(V.icos.root_is_zfs)],
+    when: [truthy(icos.inside_lxd), truthy(icos.root_is_zfs)],
   },
 ] satisfies TaskFile;
