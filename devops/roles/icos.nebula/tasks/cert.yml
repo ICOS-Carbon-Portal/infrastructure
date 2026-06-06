@@ -26,8 +26,8 @@
         # Create new certificate with a duration 1 second less than the CA's.
         command: >-
           /bin/bash -c 'nebula-cert sign
-          -ca-crt {{nebula_cert_sign | basename}}
-          -ca-key {{nebula_cert_sign | basename | splitext | first}}.key
+          -ca-crt {{ nebula_cert_sign | basename }}
+          -ca-key {{ nebula_cert_sign | basename | splitext | first }}.key
           -in-pub <(echo "{{ newpub.content | b64decode }}")
           -ip {{ nebula_ip }}{{ nebula_netmask }}
           -name {{ nebula_hostname }}

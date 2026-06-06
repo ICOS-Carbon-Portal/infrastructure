@@ -59,10 +59,10 @@ nebula_url_map:
   "armv6l": "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-arm-6.tar.gz"
 
   # raspberry pi 3b+
-  "armv7l": "https://github.com/slackhq/nebula/releases/download/v{{  nebula_version }}/nebula-linux-arm-7.tar.gz"
+  "armv7l": "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-arm-7.tar.gz"
 
   # regular server
-  "x86_64": "https://github.com/slackhq/nebula/releases/download/v{{  nebula_version }}/nebula-linux-amd64.tar.gz"
+  "x86_64": "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-amd64.tar.gz"
 
   # cm4 64-bit
-  "aarch64": "https://github.com/slackhq/nebula/releases/download/v{{  nebula_version }}/nebula-linux-arm64.tar.gz"
+  "aarch64": "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-arm64.tar.gz"

@@ -10,7 +10,7 @@
   delegate_to: localhost
   known_hosts:
     name: "[{{ inventory_hostname }}]:{{ lxd_vm_port }}"
-    key: "[{{ inventory_hostname }}]:{{ lxd_vm_port }} {{ _key.stdout}}"
+    key: "[{{ inventory_hostname }}]:{{ lxd_vm_port }} {{ _key.stdout }}"
 
 - name: Add vm to local ssh config
   local_action:

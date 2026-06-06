@@ -1,5 +1,5 @@
 import { not, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _old = register("_old");
 const jardir = register("jardir");
@@ -43,9 +43,7 @@ export default [
     register: "jarservice_copy",
   },
   {
-    name: tmpl`Create the ${
-      rawTmpl("{{ jarservice_name}}")
-    } jar symlink used by systemd`,
+    name: tmpl`Create the ${V.jarservice_name} jar symlink used by systemd`,
     file: {
       src: V.destjarfile,
       dest: V.jarservice_jar,

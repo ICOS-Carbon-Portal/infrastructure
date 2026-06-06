@@ -6,24 +6,26 @@ import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
-const { V, tmpl, rawTmpl } = context<BuiltinVars & AllVars & ParamVars>();
+interface Self {
+  restic_upgrade: unknown;
+  restic_architecture: unknown;
+  restic_version: unknown;
+  restic_url_map: unknown;
+}
+const { V, tmpl } = context<Self & BuiltinVars & AllVars & ParamVars>();
 
 export default {
   "restic_upgrade": V.upgrade_everything.default(false).bool(),
   "restic_architecture": V.fake_architecture.default(V.ansible_architecture),
   "restic_version": hostvar("localhost").restic_version,
   "restic_url_map": {
-    "armv6l": tmpl`https://github.com/restic/restic/releases/download/v${
-      rawTmpl("{{restic_version}}")
-    }/restic_${rawTmpl("{{restic_version}}")}_linux_arm.bz2`,
-    "armv7l": tmpl`https://github.com/restic/restic/releases/download/v${
-      rawTmpl("{{restic_version}}")
-    }/restic_${rawTmpl("{{restic_version}}")}_linux_arm.bz2`,
-    "aarch64": tmpl`https://github.com/restic/restic/releases/download/v${
-      rawTmpl("{{restic_version}}")
-    }/restic_${rawTmpl("{{restic_version}}")}_linux_arm64.bz2`,
-    "x86_64": tmpl`https://github.com/restic/restic/releases/download/v${
-      rawTmpl("{{restic_version}}")
-    }/restic_${rawTmpl("{{restic_version}}")}_linux_amd64.bz2`,
+    "armv6l":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
+    "armv7l":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
+    "aarch64":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm64.bz2`,
+    "x86_64":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_amd64.bz2`,
   },
 } satisfies VarsFile;

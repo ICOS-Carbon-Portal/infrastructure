@@ -1,5 +1,5 @@
 import { pct, type TaskFile, truthy } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.
 // Debian/Ubuntu then allows multiple installed versions/clusters of postgresql,
@@ -17,9 +17,8 @@ export default [
   {
     name: "Adding the postgresql repo",
     apt_repository: {
-      repo: tmpl`deb http://apt.postgresql.org/pub/repos/apt/ ${
-        rawTmpl("{{ansible_distribution_release}}")
-      }-pgdg main`,
+      repo:
+        tmpl`deb http://apt.postgresql.org/pub/repos/apt/ ${V.ansible_distribution_release}-pgdg main`,
       filename: "pgdg",
     },
   },

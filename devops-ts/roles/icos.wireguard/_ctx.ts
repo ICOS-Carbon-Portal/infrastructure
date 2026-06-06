@@ -11,6 +11,6 @@ export interface Vars {
   wireguard_update: unknown;
 }
 
-export const { V, tmpl, rawTmpl, notVar } = context<
+export const { V, tmpl, notVar } = context<
   Vars & BuiltinVars
 >();

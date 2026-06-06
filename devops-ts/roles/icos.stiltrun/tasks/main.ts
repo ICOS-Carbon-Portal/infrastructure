@@ -1,5 +1,5 @@
 import { ne, notIn, register, type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _get_url = register("_get_url");
 const _stilt_py = register("_stilt_py");
@@ -8,7 +8,7 @@ const docker_images = register("docker_images");
 export default [
   {
     name: "List docker images matching the stiltrun image",
-    command: tmpl`docker images -qa ${rawTmpl("{{stiltrun_image_name}}")}`,
+    command: tmpl`docker images -qa ${V.stiltrun_image_name}`,
     register: docker_images,
     changed_when: false,
   },
@@ -37,9 +37,7 @@ export default [
       },
       {
         name: "Tag the stiltrun image",
-        shell: tmpl`docker tag ${rawTmpl("{{stiltrun_image_id}}")} ${
-          rawTmpl("{{stiltrun_image_name}}")
-        }`,
+        shell: tmpl`docker tag ${V.stiltrun_image_id} ${V.stiltrun_image_name}`,
         changed_when: false,
       },
     ],

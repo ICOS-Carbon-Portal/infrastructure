@@ -12,15 +12,15 @@
 - name: Copy {{ servicename }} config file {{ configfile }}
   template:
     src: "{{ configfile }}"
-    dest: "{{ _user.home}}/"
+    dest: "{{ _user.home }}/"
   notify: restart {{ servicename }}
 
-- name: Copy {{ servicename }} nginx config file(s) {{nginxconfig}}*
+- name: Copy {{ servicename }} nginx config file(s) {{ nginxconfig }}*
   template:
     src: "{{ item }}"
     dest: /etc/nginx/conf.d/
   with_fileglob:
-    - "{{nginxconfig}}*"
+    - "{{ nginxconfig }}*"
   # Our nginx config template is dependent on a variable set by
   # certbot. This means that if the certbot role is disabled, we
   # cannot deploy the config.

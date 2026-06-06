@@ -31,6 +31,6 @@ export interface Vars {
   nebula_version: unknown;
 }
 
-export const { V, tmpl, rawTmpl, notVar } = context<
+export const { V, tmpl, notVar } = context<
   Vars & Globals & BuiltinVars & ParamVars
 >();

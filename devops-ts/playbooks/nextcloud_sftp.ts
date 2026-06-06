@@ -1,12 +1,6 @@
 // display instructions
 //   run nextcloud_sftp.yml howto
-import {
-  loopOverVar,
-  type Playbook,
-  rawTmpl,
-  tmpl,
-  V,
-} from "../lib/ansible.ts";
+import { loopOverVar, type Playbook, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -14,9 +8,8 @@ export default [
     vars: {
       groupfolder_name: "PAUL",
       groupfolder_id: 27,
-      groupfolder_dir: tmpl`/disk/data/nextcloud/data/__groupfolders/${
-        rawTmpl("{{ groupfolder_id}}")
-      }`,
+      groupfolder_dir:
+        tmpl`/disk/data/nextcloud/data/__groupfolders/${V.groupfolder_id}`,
       host_uid: 33,
       host_user: "www-data",
       sftp_image: "docker.io/atmoz/sftp:debian",
@@ -24,19 +17,19 @@ export default [
       sftp_exec: tmpl`/usr/libexec/sftp-only-${V.sftp_user}`,
       sftp_dirs: [
         {
-          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP1/Data`,
+          src: tmpl`${V.groupfolder_dir}/WP1/Data`,
           dst: "WP1_Data",
         },
         {
-          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP2/Data`,
+          src: tmpl`${V.groupfolder_dir}/WP2/Data`,
           dst: "WP2_Data",
         },
         {
-          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP3/Data`,
+          src: tmpl`${V.groupfolder_dir}/WP3/Data`,
           dst: "WP3_Data",
         },
         {
-          src: tmpl`${rawTmpl("{{ groupfolder_dir}}")}/WP4/Data`,
+          src: tmpl`${V.groupfolder_dir}/WP4/Data`,
           dst: "WP4_Data",
         },
       ],
@@ -111,10 +104,10 @@ export default [
         become: true,
         become_user: V.sftp_user,
         args: {
-          chdir: tmpl`/home/${rawTmpl("{{sftp_user}}")}`,
-          creates: tmpl`/home/${rawTmpl("{{sftp_user}}")}/passwd`,
+          chdir: tmpl`/home/${V.sftp_user}`,
+          creates: tmpl`/home/${V.sftp_user}/passwd`,
         },
-        shell: tmpl`grep ${rawTmpl("{{sftp_user}}")} /etc/passwd > passwd`,
+        shell: tmpl`grep ${V.sftp_user} /etc/passwd > passwd`,
       },
       {
         name: "Create sftp command script",

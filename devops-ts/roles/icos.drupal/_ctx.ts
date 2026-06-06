@@ -26,6 +26,6 @@ export interface Vars {
   update: unknown;
 }
 
-export const { V, tmpl, rawTmpl, isDef } = context<
+export const { V, tmpl, isDef } = context<
   Vars & BuiltinVars & ParamVars
 >();

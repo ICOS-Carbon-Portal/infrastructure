@@ -32,7 +32,7 @@
     dest: "{{ vm_graf_plugins }}"
     remote_src: true
     creates: >-
-      {{omit if vm_upgrade else vm_graf_plugins + '/victoriametrics-datasource'}}
+      {{ omit if vm_upgrade else vm_graf_plugins + '/victoriametrics-datasource' }}
   diff: false
 
 - name: Which version of grafana-datasource was installed

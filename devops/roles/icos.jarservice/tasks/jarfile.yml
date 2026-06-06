@@ -12,7 +12,7 @@
 - name: Get checksum of local jar file.
   # Stop ansible from running local_action as root (toplevel "become: true")
   become: false
-  local_action: stat path="{{jarfile}}" checksum_algorithm=sha256
+  local_action: stat path="{{ jarfile }}" checksum_algorithm=sha256
   register: _stat
 
 - name: To aid debugging, explicitly check that the local jar file exist.
@@ -22,14 +22,14 @@
 
 - name: Compute the destination filename, we'll be using it more than once.
   set_fact:
-    destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{_stat.stat.checksum}}"
+    destjarfile: "{{ jardir.path }}/{{ jarfile | basename }}-{{ _stat.stat.checksum }}"
 
 - name: Copy {{ servicename }} jar file
   copy:
     src: "{{ jarfile }}"
     dest: "{{ destjarfile }}"
 
-- name: Create the {{ servicename}} jar symlink used by systemd
+- name: Create the {{ servicename }} jar symlink used by systemd
   file:
     src: "{{ destjarfile }}"
     dest: "{{ jarservice_jar }}"
@@ -39,7 +39,7 @@
 - name: Keep the jarfiles directory from filling up
   shell: >-
     ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null |
-    sed '1,{{jarservice_keep_n_old}}d'
+    sed '1,{{ jarservice_keep_n_old }}d'
   register: oldjarfiles
   changed_when: False
 

@@ -9,7 +9,7 @@ sshlogin_dst_key_options : "{{ _sshlogin_opt_list | select('ne', '') | join(',')
 _sshlogin_opt_list       :
   - >-
     {% if sshlogin_dst_command -%}
-    command="{{ sshlogin_dst_command}}"
+    command="{{ sshlogin_dst_command }}"
     {%- endif -%}
   - >-
     {% if sshlogin_dst_from == 'srcip' -%}

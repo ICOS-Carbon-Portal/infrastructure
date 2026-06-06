@@ -1,5 +1,5 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { jinjaLiteral, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -7,8 +7,8 @@ export default [
     template: {
       src: "justfile",
       dest: tmpl`${V.bbclient_home}/`,
-      variable_start_string: rawTmpl("{{ '{{{{' }}"),
-      variable_end_string: rawTmpl("{{ '}}}}' }}"),
+      variable_start_string: jinjaLiteral("{{{{"),
+      variable_end_string: jinjaLiteral("}}}}"),
       lstrip_blocks: true,
     },
   },

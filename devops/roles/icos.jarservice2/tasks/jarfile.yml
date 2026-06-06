@@ -31,7 +31,7 @@
     dest: "{{ destjarfile }}"
   register: jarservice_copy
 
-- name: Create the {{ jarservice_name}} jar symlink used by systemd
+- name: Create the {{ jarservice_name }} jar symlink used by systemd
   file:
     src: "{{ destjarfile }}"
     dest: "{{ jarservice_jar }}"

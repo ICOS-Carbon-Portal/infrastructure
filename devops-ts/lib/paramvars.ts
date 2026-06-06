@@ -85,6 +85,8 @@ export interface ParamVars {
   git_version: string;
   golang_local_version: string;
   grafana_datasource_version: string;
+  groupfolder_dir: string;
+  groupfolder_id: string;
   groupfolder_name: string;
   host_uid: string;
   icosdata_bind_mounts: string;

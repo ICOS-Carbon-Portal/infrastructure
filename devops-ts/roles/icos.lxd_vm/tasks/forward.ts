@@ -1,5 +1,7 @@
-import { lookup, type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { lookup, register, type TaskFile } from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _key = register("_key");
 
 export default [
   {
@@ -16,9 +18,7 @@ export default [
     delegate_to: "localhost",
     known_hosts: {
       name: tmpl`[${V.inventory_hostname}]:${V.lxd_vm_port}`,
-      key: tmpl`[${V.inventory_hostname}]:${V.lxd_vm_port} ${
-        rawTmpl("{{ _key.stdout}}")
-      }`,
+      key: tmpl`[${V.inventory_hostname}]:${V.lxd_vm_port} ${_key.stdout.ref}`,
     },
   },
   {

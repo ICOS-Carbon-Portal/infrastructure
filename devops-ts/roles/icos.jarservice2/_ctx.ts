@@ -13,6 +13,6 @@ export interface Vars {
   jarservice_restart: unknown;
 }
 
-export const { V, tmpl, rawTmpl } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

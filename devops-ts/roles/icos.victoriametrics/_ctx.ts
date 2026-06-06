@@ -18,6 +18,6 @@ export interface Vars {
   vm_vm_port: unknown;
 }
 
-export const { V, tmpl, rawTmpl } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

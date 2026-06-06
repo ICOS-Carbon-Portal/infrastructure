@@ -1,5 +1,4 @@
-import { register, type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl } from "../_ctx.ts";
+import { jinjaLiteral, register, type TaskFile } from "../../../lib/ansible.ts";
 
 const _justfile = register("_justfile");
 
@@ -10,8 +9,8 @@ export default [
       src: "ops-nfs",
       dest: "/usr/local/bin/",
       mode: "+x",
-      variable_start_string: rawTmpl("{{ '{{{' }}"),
-      variable_end_string: rawTmpl("{{ '}}}' }}"),
+      variable_start_string: jinjaLiteral("{{{"),
+      variable_end_string: jinjaLiteral("}}}"),
       lstrip_blocks: true,
     },
     register: _justfile,

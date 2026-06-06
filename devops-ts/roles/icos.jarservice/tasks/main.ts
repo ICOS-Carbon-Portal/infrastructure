@@ -3,10 +3,13 @@ import {
   group,
   isDefined,
   not,
+  register,
   type TaskFile,
   truthy,
 } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
+
+const _user = register("_user");
 
 export default [
   {
@@ -17,7 +20,7 @@ export default [
       append: true,
       shell: "/bin/bash",
     },
-    register: "_user",
+    register: _user,
   },
   {
     include_tasks: "jarfile.yml",
@@ -27,19 +30,17 @@ export default [
     name: tmpl`Copy ${V.servicename} config file ${V.configfile}`,
     template: {
       src: V.configfile,
-      dest: tmpl`${rawTmpl("{{ _user.home}}")}/`,
+      dest: tmpl`${_user.home.ref}/`,
     },
     notify: tmpl`restart ${V.servicename}`,
   },
   {
-    name: tmpl`Copy ${V.servicename} nginx config file(s) ${
-      rawTmpl("{{nginxconfig}}")
-    }*`,
+    name: tmpl`Copy ${V.servicename} nginx config file(s) ${V.nginxconfig}*`,
     template: {
       src: V.item,
       dest: "/etc/nginx/conf.d/",
     },
-    with_fileglob: [tmpl`${rawTmpl("{{nginxconfig}}")}*`],
+    with_fileglob: [tmpl`${V.nginxconfig}*`],
     // Our nginx config template is dependent on a variable set by
     // certbot. This means that if the certbot role is disabled, we
     // cannot deploy the config.

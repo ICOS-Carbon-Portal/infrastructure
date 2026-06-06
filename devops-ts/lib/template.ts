@@ -132,6 +132,10 @@ export class Template {
   splitext(): Template {
     return this.filter("splitext");
   }
+  /** `| regex_escape` — escape a string for use in a regular expression. */
+  regexEscape(): Template {
+    return this.filter("regex_escape");
+  }
   /** `| b64decode` — decode a base64 string. */
   b64decode(): Template {
     return this.filter("b64decode");
@@ -374,6 +378,17 @@ export function randomInt(max: number, seed: FilterArg): Template {
  */
 export function localVar<T>(name: string): VarRef<T> {
   return varProxy(name) as unknown as VarRef<T>;
+}
+
+/**
+ * A Jinja expression yielding a string LITERAL: `jinjaLiteral("{{{{")` ->
+ * `{{ '{{{{' }}`. Used to emit literal text that itself looks like Jinja
+ * delimiters (e.g. a `template` module's `variable_start_string`), so it passes
+ * through unambiguously rather than being interpreted. Replaces
+ * `rawTmpl("{{ '{{{{' }}")`.
+ */
+export function jinjaLiteral(value: string): Template {
+  return new Template([{ kind: "ref", jinja: `'${value}'` }]);
 }
 
 /**

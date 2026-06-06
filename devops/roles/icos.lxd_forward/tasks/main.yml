@@ -12,6 +12,6 @@
 - name: Modify /etc/hosts to add lxd_forward_name.lxd
   lineinfile:
     path: /etc/hosts
-    regex: '(?:^{{ lxd_forward_ip | regex_escape}}.*)|(?:.*{{ lxd_forward_name }})\.lxd$'
+    regex: '(?:^{{ lxd_forward_ip | regex_escape }}.*)|(?:.*{{ lxd_forward_name }})\.lxd$'
     line: "{{ lxd_forward_ip }}\t{{ lxd_forward_name }}.lxd"
     state: present

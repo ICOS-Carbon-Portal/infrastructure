@@ -5,7 +5,7 @@
 
 - name: Add key for debian {{ ansible_lsb.release }}
   apt_key:
-    url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release}}.asc
+    url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release }}.asc
     state: present
 
 - name: Add debian apt repository

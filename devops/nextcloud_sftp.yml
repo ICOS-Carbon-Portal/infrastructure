@@ -6,20 +6,20 @@
     groupfolder_name: PAUL
     groupfolder_id: 27
     groupfolder_dir: >-
-      /disk/data/nextcloud/data/__groupfolders/{{ groupfolder_id}}
+      /disk/data/nextcloud/data/__groupfolders/{{ groupfolder_id }}
     host_uid: 33
     host_user: www-data
     sftp_image: docker.io/atmoz/sftp:debian
     sftp_user: nc_paul_upload
     sftp_exec: "/usr/libexec/sftp-only-{{ sftp_user }}"
     sftp_dirs:
-      - src: "{{ groupfolder_dir}}/WP1/Data"
+      - src: "{{ groupfolder_dir }}/WP1/Data"
         dst: WP1_Data
-      - src: "{{ groupfolder_dir}}/WP2/Data"
+      - src: "{{ groupfolder_dir }}/WP2/Data"
         dst: WP2_Data
-      - src: "{{ groupfolder_dir}}/WP3/Data"
+      - src: "{{ groupfolder_dir }}/WP3/Data"
         dst: WP3_Data
-      - src: "{{ groupfolder_dir}}/WP4/Data"
+      - src: "{{ groupfolder_dir }}/WP4/Data"
         dst: WP4_Data
     sftp_port: 60022
 
@@ -72,10 +72,10 @@
       become: yes
       become_user: "{{ sftp_user }}"
       args:
-        chdir: "/home/{{sftp_user}}"
-        creates: "/home/{{sftp_user}}/passwd"
+        chdir: "/home/{{ sftp_user }}"
+        creates: "/home/{{ sftp_user }}/passwd"
       shell: >-
-        grep {{sftp_user}} /etc/passwd > passwd
+        grep {{ sftp_user }} /etc/passwd > passwd
 
     - name: Create sftp command script
       tags: script

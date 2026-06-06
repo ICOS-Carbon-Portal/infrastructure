@@ -1,6 +1,6 @@
 // Create the ICOS Cities VM.
 
-import { type Playbook, rawTmpl, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook, role, tmpl, V } from "../lib/ansible.ts";
 
 export default [
   {
@@ -37,9 +37,7 @@ export default [
       {
         name: "Create cities storage pool",
         shell:
-          tmpl`/snap/bin/lxc storage show ${V.pool_name} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${V.pool_name} dir source="${
-            rawTmpl("{{ pool_path}}")
-          }"
+          tmpl`/snap/bin/lxc storage show ${V.pool_name} > /dev/null 2>&1 || \\ /snap/bin/lxc storage create ${V.pool_name} dir source="${V.pool_path}"
 `,
         register: "_r",
         changed_when: ['("Storage pool %s created" % pool_name) in _r.stdout'],

@@ -5,7 +5,7 @@ import type { Globals } from "../../lib/globals.ts";
 import type { AllVars } from "../../lib/allvars.ts";
 import type { VarShapes } from "../../lib/shapes.ts";
 
-const { V, tmpl, rawTmpl } = context<Globals & AllVars & VarShapes>();
+const { V, tmpl } = context<Globals & AllVars & VarShapes>();
 
 export default {
   "all": {
@@ -84,15 +84,13 @@ export default {
           "cpauth_envries": [
             {
               "name": "ICOS",
-              "restheart_url": tmpl`http://127.0.0.1:${V.restheart_bind_port}/${
-                rawTmpl("{{ restheart_icos_db_name}}")
-              }`,
+              "restheart_url":
+                tmpl`http://127.0.0.1:${V.restheart_bind_port}/${V.restheart_icos_db_name}`,
             },
             {
               "name": "SITES",
-              "restheart_url": tmpl`http://127.0.0.1:${V.restheart_bind_port}/${
-                rawTmpl("{{ restheart_sites_db_name}}")
-              }`,
+              "restheart_url":
+                tmpl`http://127.0.0.1:${V.restheart_bind_port}/${V.restheart_sites_db_name}`,
             },
             {
               "name": "ICOSCities",
@@ -105,16 +103,14 @@ export default {
           "data_envries": [
             {
               "name": "ICOS",
-              "restheart_url": tmpl`http://127.0.0.1:${V.restheart_bind_port}/${
-                rawTmpl("{{ restheart_icos_db_name}}")
-              }`,
+              "restheart_url":
+                tmpl`http://127.0.0.1:${V.restheart_bind_port}/${V.restheart_icos_db_name}`,
               "postgis_db_name": V.postgis_icos_db_name,
             },
             {
               "name": "SITES",
-              "restheart_url": tmpl`http://127.0.0.1:${V.restheart_bind_port}/${
-                rawTmpl("{{ restheart_sites_db_name}}")
-              }`,
+              "restheart_url":
+                tmpl`http://127.0.0.1:${V.restheart_bind_port}/${V.restheart_sites_db_name}`,
               "postgis_db_name": V.postgis_sites_db_name,
             },
             {

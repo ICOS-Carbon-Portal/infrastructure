@@ -1,5 +1,5 @@
 import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 // Registered by tasks/main.ts (this file is included after it).
 const _user = register("_user");
@@ -27,9 +27,7 @@ export default [
     name: "Get checksum of local jar file.",
     // Stop ansible from running local_action as root (toplevel "become: true")
     become: false,
-    local_action: tmpl`stat path="${
-      rawTmpl("{{jarfile}}")
-    }" checksum_algorithm=sha256`,
+    local_action: tmpl`stat path="${V.jarfile}" checksum_algorithm=sha256`,
     register: _stat,
   },
   {
@@ -40,9 +38,8 @@ export default [
   {
     name: "Compute the destination filename, we'll be using it more than once.",
     set_fact: {
-      destjarfile: tmpl`${rawTmpl("{{jardir.path}}")}/${
-        rawTmpl("{{jarfile|basename}}")
-      }-${rawTmpl("{{_stat.stat.checksum}}")}`,
+      destjarfile:
+        tmpl`${jardir.path.ref}/${V.jarfile.basename()}-${_stat.stat.checksum.ref}`,
     },
   },
   {
@@ -53,9 +50,7 @@ export default [
     },
   },
   {
-    name: tmpl`Create the ${
-      rawTmpl("{{ servicename}}")
-    } jar symlink used by systemd`,
+    name: tmpl`Create the ${V.servicename} jar symlink used by systemd`,
     file: {
       src: V.destjarfile,
       dest: V.jarservice_jar,
@@ -65,9 +60,8 @@ export default [
   },
   {
     name: "Keep the jarfiles directory from filling up",
-    shell: tmpl`ls -1t ${jardir.path.ref}/*.jar-* 2>/dev/null | sed '1,${
-      rawTmpl("{{jarservice_keep_n_old}}")
-    }d'`,
+    shell:
+      tmpl`ls -1t ${jardir.path.ref}/*.jar-* 2>/dev/null | sed '1,${V.jarservice_keep_n_old}d'`,
     register: oldjarfiles,
     changed_when: false,
   },

@@ -1,5 +1,5 @@
 import { hostvar, register, type TaskFile, V } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl } from "../_ctx.ts";
+import { tmpl } from "../_ctx.ts";
 
 const _home_dir = register("_home_dir");
 const _ssh_dir = register("_ssh_dir");
@@ -29,7 +29,7 @@ export default [
         name: "Install the rsa private key",
         copy: {
           src: "roles/icos.flexpart/files/flexpart.rsa",
-          dest: tmpl`${rawTmpl("{{ _ssh_dir.path}}")}/flexpart.rsa`,
+          dest: tmpl`${_ssh_dir.path.ref}/flexpart.rsa`,
           mode: 0o600,
         },
         register: "_rsa_file",

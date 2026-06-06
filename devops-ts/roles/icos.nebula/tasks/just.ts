@@ -1,5 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl } from "../_ctx.ts";
+import { jinjaLiteral, type TaskFile } from "../../../lib/ansible.ts";
 
 export default [
   {
@@ -8,8 +7,8 @@ export default [
       src: "ops-nebula.justfile",
       dest: "/usr/local/bin/ops-nebula",
       mode: "+x",
-      variable_start_string: rawTmpl("{{ '{{{' }}"),
-      variable_end_string: rawTmpl("{{ '}}}' }}"),
+      variable_start_string: jinjaLiteral("{{{"),
+      variable_end_string: jinjaLiteral("}}}"),
       lstrip_blocks: true,
     },
   },

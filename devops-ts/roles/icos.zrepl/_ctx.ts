@@ -8,6 +8,6 @@ export interface Vars {
   zrepl_port: unknown;
 }
 
-export const { tmpl, rawTmpl } = context<
+export const { tmpl } = context<
   Vars
 >();

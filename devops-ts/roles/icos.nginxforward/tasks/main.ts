@@ -1,11 +1,12 @@
 import {
+  iff,
   isDefined,
   isUndefined,
   type TaskFile,
   truthy,
   varByName,
 } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -39,9 +40,7 @@ export default [
     file: {
       dest: V.nginxforward_path_enabled,
       src: V.nginxforward_path_available,
-      state: tmpl`${rawTmpl("{% if nginxforward_enable %}")}link${
-        rawTmpl("{% else %}")
-      }absent${rawTmpl("{% endif %}")}`,
+      state: iff(V.nginxforward_enable, "link", "absent"),
     },
     when: truthy(V.nginxforward_enable),
     notify: "reload nginx config",

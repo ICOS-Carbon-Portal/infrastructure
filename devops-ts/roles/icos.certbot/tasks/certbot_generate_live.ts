@@ -1,5 +1,10 @@
-import { not, register, type TaskFile } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import {
+  jinjaFor,
+  not,
+  register,
+  type TaskFile,
+} from "../../../lib/ansible.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const _conf_file = register("_conf_file");
 const _write_conf = register("_write_conf");
@@ -42,9 +47,11 @@ export default [
     name: "Install SSL certificate",
     command:
       tmpl`${V.certbot_bin} certonly --authenticator nginx --non-interactive ${
-        rawTmpl("{% for domain in certbot_domains %}")
-      } --domain ${V.domain} ${
-        rawTmpl("{% endfor %}")
+        jinjaFor<string>(
+          "domain",
+          V.certbot_domains,
+          (domain) => tmpl` --domain ${domain} `,
+        )
       } --email ${V.certbot_email} --agree-tos --expand\n`,
     register: "o",
     changed_when:

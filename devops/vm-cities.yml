@@ -40,7 +40,7 @@
     - name: Create cities storage pool
       shell: >
         /snap/bin/lxc storage show {{ pool_name }} > /dev/null 2>&1 || \
-        /snap/bin/lxc storage create {{ pool_name }} dir source="{{ pool_path}}"
+        /snap/bin/lxc storage create {{ pool_name }} dir source="{{ pool_path }}"
       register: _r
       changed_when:
         - '("Storage pool %s created" % pool_name) in _r.stdout'

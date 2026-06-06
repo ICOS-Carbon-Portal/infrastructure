@@ -5,7 +5,7 @@ import {
   type TaskFile,
   truthy,
 } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const newpub = register("newpub");
 const signedcert = register("signedcert");
@@ -45,11 +45,8 @@ export default [
           // switch to that directory.
           chdir: V.nebula_cert_sign.fileglob().first().dirname(),
           // Create new certificate with a duration 1 second less than the CA's.
-          command: tmpl`/bin/bash -c 'nebula-cert sign -ca-crt ${
-            rawTmpl("{{nebula_cert_sign | basename}}")
-          } -ca-key ${
-            rawTmpl("{{nebula_cert_sign | basename | splitext | first}}")
-          }.key -in-pub <(echo "${newpub.content.ref.b64decode()}") -ip ${V.nebula_ip}${V.nebula_netmask} -name ${V.nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
+          command:
+            tmpl`/bin/bash -c 'nebula-cert sign -ca-crt ${V.nebula_cert_sign.basename()} -ca-key ${V.nebula_cert_sign.basename().splitext().first()}.key -in-pub <(echo "${newpub.content.ref.b64decode()}") -ip ${V.nebula_ip}${V.nebula_netmask} -name ${V.nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
           // We default to an empty passphrase, so it'll work by default for keys
           // with no password.
           responses: {

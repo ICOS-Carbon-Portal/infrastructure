@@ -1,5 +1,12 @@
 // Tests for concat(): a Jinja `+` expression, replacing expr("a + b").
-import { concat, iff, localVar, pct, randomInt } from "./template.ts";
+import {
+  concat,
+  iff,
+  jinjaLiteral,
+  localVar,
+  pct,
+  randomInt,
+} from "./template.ts";
 import { V } from "./vars.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
@@ -60,5 +67,19 @@ Deno.test("localVar: typed task-local var reference", () => {
     localVar<{ image: string }>("conf").image.toText(),
     "{{ conf.image }}",
     "jupyter registry image",
+  );
+});
+
+Deno.test("jinjaLiteral: a literal-string Jinja expression", () => {
+  // template-module delimiter overrides (just.ts)
+  eq(jinjaLiteral("{{{{").toText(), "{{ '{{{{' }}", "four-brace start");
+  eq(jinjaLiteral("}}}").toText(), "{{ '}}}' }}", "three-brace end");
+});
+
+Deno.test("regexEscape: ansible.builtin regex_escape filter", () => {
+  eq(
+    V.lxd_forward_ip.regexEscape().toText(),
+    "{{ lxd_forward_ip | regex_escape }}",
+    "lxd_forward regex",
   );
 });

@@ -1,5 +1,5 @@
 import { type TaskFile, truthy } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 export default [
   {
@@ -17,9 +17,8 @@ export default [
     name: "Modify /etc/hosts to add lxd_forward_name.lxd",
     lineinfile: {
       path: "/etc/hosts",
-      regex: tmpl`(?:^${
-        rawTmpl("{{ lxd_forward_ip | regex_escape}}")
-      }.*)|(?:.*${V.lxd_forward_name})\\.lxd$`,
+      regex:
+        tmpl`(?:^${V.lxd_forward_ip.regexEscape()}.*)|(?:.*${V.lxd_forward_name})\\.lxd$`,
       line: tmpl`${V.lxd_forward_ip}	${V.lxd_forward_name}.lxd`,
       state: "present",
     },

@@ -1,10 +1,12 @@
 import {
+  concat,
   hostvar,
+  iff,
   isNotDefined,
   register,
   type TaskFile,
 } from "../../../lib/ansible.ts";
-import { rawTmpl, tmpl, V } from "../_ctx.ts";
+import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");
 
@@ -52,8 +54,10 @@ export default [
         }.zip`,
       dest: V.vm_graf_plugins,
       remote_src: true,
-      creates: rawTmpl(
-        "{{omit if vm_upgrade else vm_graf_plugins + '/victoriametrics-datasource'}}",
+      creates: iff(
+        V.vm_upgrade,
+        V.omit,
+        concat(V.vm_graf_plugins, "/victoriametrics-datasource"),
       ),
     },
     diff: false,

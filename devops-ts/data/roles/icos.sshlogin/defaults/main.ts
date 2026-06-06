@@ -36,9 +36,9 @@ export default {
     "{{ _sshlogin_opt_list | select('ne', '') | join(',') }}",
   ),
   "_sshlogin_opt_list": [
-    tmpl`${rawTmpl("{% if sshlogin_dst_command -%}")} command="${
-      rawTmpl("{{ sshlogin_dst_command}}")
-    }" ${rawTmpl("{%- endif -%}")}`,
+    tmpl`${
+      rawTmpl("{% if sshlogin_dst_command -%}")
+    } command="${V.sshlogin_dst_command}" ${rawTmpl("{%- endif -%}")}`,
     tmpl`${
       rawTmpl("{% if sshlogin_dst_from == 'srcip' -%}")
     } from="${V.sshlogin_src_ip}" ${

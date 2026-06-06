@@ -3,6 +3,7 @@
 // Per-role variable context: 6 own variables, widened with
 // only the registries this role's task/handler files reference.
 import { context } from "../../lib/context.ts";
+import type { BuiltinVars } from "../../lib/builtins.ts";
 
 export interface Vars {
   telegraf_config: unknown;
@@ -13,6 +14,6 @@ export interface Vars {
   telegraf_upgrade: unknown;
 }
 
-export const { V, tmpl, rawTmpl } = context<
-  Vars
+export const { V, tmpl } = context<
+  Vars & BuiltinVars
 >();

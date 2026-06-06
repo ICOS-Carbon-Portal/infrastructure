@@ -83,6 +83,7 @@ export {
   concat,
   iff,
   jinjaFor,
+  jinjaLiteral,
   localVar,
   lookup,
   type LookupPlugin,

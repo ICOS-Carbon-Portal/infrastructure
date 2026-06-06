@@ -19,6 +19,6 @@ export interface Vars {
   nginxforward_user_file: unknown;
 }
 
-export const { V, tmpl, rawTmpl } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();

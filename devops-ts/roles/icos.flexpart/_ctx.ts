@@ -15,6 +15,6 @@ export interface Vars {
   flexpart_user: unknown;
 }
 
-export const { V, tmpl, rawTmpl } = context<
+export const { V, tmpl } = context<
   Vars & BuiltinVars & ParamVars
 >();
