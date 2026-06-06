@@ -7,14 +7,12 @@
 //
 // Recreate virtual environments, i.e after do-release-upgrade:
 //   icos play ganymede jbuild -evirtualenv_recreate=True
-import {
-  concat,
-  loopOverVar,
-  type Playbook,
-  register,
-  role,
-  V,
-} from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { loopOverVar } from "../lib/loop.ts";
+import { register } from "../lib/register.ts";
+import { concat } from "../lib/template.ts";
+import { V } from "../lib/vars.ts";
 
 const _lxd = register("_lxd");
 

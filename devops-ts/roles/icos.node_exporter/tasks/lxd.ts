@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { V } from "../_ctx.ts";
 
 // https://linuxcontainers.org/lxd/docs/master/metrics/

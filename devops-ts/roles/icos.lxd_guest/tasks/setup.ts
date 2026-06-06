@@ -1,4 +1,5 @@
-import { isTruthy, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { isTruthy } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

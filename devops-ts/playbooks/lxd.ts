@@ -1,4 +1,6 @@
-import { pattern, type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { pattern } from "../lib/hosts.ts";
 
 export default [
   {

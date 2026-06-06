@@ -1,11 +1,7 @@
-import {
-  concat,
-  hostvar,
-  iff,
-  isNotDefined,
-  register,
-  type TaskFile,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { concat, iff } from "../../../lib/template.ts";
+import { hostvar, isNotDefined } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const gh = register("gh");

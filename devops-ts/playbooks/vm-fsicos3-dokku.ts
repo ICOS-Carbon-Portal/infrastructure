@@ -1,4 +1,7 @@
-import { concat, type Playbook, role, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { concat } from "../lib/template.ts";
+import { V } from "../lib/vars.ts";
 
 export default [
   {

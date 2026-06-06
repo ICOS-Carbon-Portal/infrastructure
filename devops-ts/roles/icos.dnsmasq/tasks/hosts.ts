@@ -1,4 +1,5 @@
-import { iff, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { iff } from "../../../lib/template.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

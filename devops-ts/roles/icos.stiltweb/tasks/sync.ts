@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 // This file installs the script/service/timer needed to keep the new-style and
 // old-style stilt directory structures in sync (by hardlinking them).

@@ -1,9 +1,7 @@
-import {
-  loopOver,
-  type TaskFile,
-  type Tmpl,
-  truthy,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOver } from "../../../lib/loop.ts";
+import { type Tmpl } from "../../../lib/template.ts";
+import { truthy } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

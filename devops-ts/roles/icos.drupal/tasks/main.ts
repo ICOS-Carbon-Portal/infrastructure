@@ -1,4 +1,5 @@
-import { isUndefined, type TaskFile, varByName } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { isUndefined, varByName } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

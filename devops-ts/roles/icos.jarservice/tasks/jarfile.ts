@@ -1,4 +1,6 @@
-import { not, register, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { not } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 // Registered by tasks/main.ts (this file is included after it).

@@ -1,4 +1,5 @@
-import { isNotDefined, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { isNotDefined, truthy } from "../../../lib/vars.ts";
 import { V } from "../_ctx.ts";
 
 export default [

@@ -1,9 +1,7 @@
-import {
-  isDefined,
-  lookup,
-  register,
-  type TaskFile,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { lookup } from "../../../lib/template.ts";
+import { isDefined } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _user = register("_user");

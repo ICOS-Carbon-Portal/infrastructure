@@ -1,13 +1,6 @@
-import {
-  eq,
-  hostvar,
-  ne,
-  notIn,
-  type Playbook,
-  register,
-  tmpl,
-  V,
-} from "../../lib/ansible.ts";
+import { type Playbook } from "../../lib/ansible/play.ts";
+import { register } from "../../lib/register.ts";
+import { eq, hostvar, ne, notIn, tmpl, V } from "../../lib/vars.ts";
 
 const ip = register("ip");
 const r = register("r");

@@ -2,7 +2,7 @@
 // ../../../devops/roles/icos.cpdata/{defaults,vars}/*.yml
 // Per-role variable context: 17 own variables, widened with
 // only the registries this role's task/handler files reference.
-import type { Tmpl } from "../../lib/ansible.ts";
+import type { Tmpl } from "../../lib/template.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";

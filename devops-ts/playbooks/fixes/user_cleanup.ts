@@ -11,7 +11,9 @@
 //
 // Remove keys
 //  icos play user_cleanup remove
-import { pattern, type Playbook, V } from "../../lib/ansible.ts";
+import { type Playbook } from "../../lib/ansible/play.ts";
+import { pattern } from "../../lib/hosts.ts";
+import { V } from "../../lib/vars.ts";
 
 export default [
   {

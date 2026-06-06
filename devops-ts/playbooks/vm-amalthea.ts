@@ -1,11 +1,7 @@
-import {
-  hostvar,
-  type Playbook,
-  register,
-  role,
-  tmpl,
-  V,
-} from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { register } from "../lib/register.ts";
+import { hostvar, tmpl, V } from "../lib/vars.ts";
 
 const _lxd = register("_lxd");
 

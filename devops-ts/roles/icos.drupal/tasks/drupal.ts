@@ -1,4 +1,6 @@
-import { ne, register, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { ne, truthy } from "../../../lib/vars.ts";
 
 const private_directory_owner = register("private_directory_owner");
 const files_directory_owner = register("files_directory_owner");

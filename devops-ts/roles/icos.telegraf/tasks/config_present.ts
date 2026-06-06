@@ -1,9 +1,6 @@
-import {
-  isDefined,
-  lt,
-  register,
-  type TaskFile,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { isDefined, lt } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");

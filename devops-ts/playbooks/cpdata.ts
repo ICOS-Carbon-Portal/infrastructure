@@ -2,7 +2,9 @@
 // icos play cpdata cpdata_config
 //
 // Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
-import { type Playbook, role, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { V } from "../lib/vars.ts";
 
 export default [
   {

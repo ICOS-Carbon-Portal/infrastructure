@@ -1,12 +1,7 @@
-import {
-  and,
-  iff,
-  not,
-  or,
-  register,
-  type TaskFile,
-  truthy,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { iff } from "../../../lib/template.ts";
+import { and, not, or, truthy } from "../../../lib/vars.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 const _hub_conf = register("_hub_conf");

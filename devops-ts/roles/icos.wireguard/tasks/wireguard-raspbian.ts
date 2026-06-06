@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 // https://github.com/adrianmihalko/raspberrypiwireguard#1-wireguard-installation-raspberry-pi-2-v12-and-above

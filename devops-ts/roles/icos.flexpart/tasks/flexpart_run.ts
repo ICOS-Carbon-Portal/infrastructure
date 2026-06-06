@@ -1,11 +1,8 @@
-import {
-  lookup,
-  loopOver,
-  ne,
-  register,
-  type TaskFile,
-  type Tmpl,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOver } from "../../../lib/loop.ts";
+import { register } from "../../../lib/register.ts";
+import { lookup, type Tmpl } from "../../../lib/template.ts";
+import { ne } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _build = register("_build");

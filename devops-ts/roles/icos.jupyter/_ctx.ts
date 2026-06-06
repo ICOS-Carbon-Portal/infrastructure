@@ -2,7 +2,8 @@
 // ../../../devops/roles/icos.jupyter/{defaults,vars}/*.yml
 // Per-role variable context: 7 own variables, widened with
 // only the registries this role's task/handler files reference.
-import type { Tmpl, VarValue } from "../../lib/ansible.ts";
+import type { Tmpl } from "../../lib/template.ts";
+import type { VarValue } from "../../lib/ansible/values.ts";
 import { context } from "../../lib/context.ts";
 import type { BuiltinVars } from "../../lib/builtins.ts";
 import type { ParamVars } from "../../lib/paramvars.ts";

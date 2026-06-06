@@ -2,7 +2,8 @@
 //
 // upgrade to latest vmagent:
 // icos play vmagent vmagent -evmagent_upgrade=1 -D
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
 
 export default [
   {

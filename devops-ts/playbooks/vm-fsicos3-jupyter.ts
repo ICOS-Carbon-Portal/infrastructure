@@ -1,4 +1,7 @@
-import { type Playbook, register, role, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { register } from "../lib/register.ts";
+import { tmpl, V } from "../lib/vars.ts";
 
 // Registered by the icos.lxd_vm role (runs on the host play before this one).
 const _lxd = register("_lxd");

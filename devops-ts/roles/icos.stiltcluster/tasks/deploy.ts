@@ -1,10 +1,6 @@
-import {
-  isDefined,
-  isUndefined,
-  ne,
-  register,
-  type TaskFile,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { isDefined, isUndefined, ne } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _r = register("_r");

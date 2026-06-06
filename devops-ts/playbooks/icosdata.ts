@@ -1,10 +1,6 @@
-import {
-  isDefined,
-  loopOverVar,
-  type Playbook,
-  tmpl,
-  V,
-} from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { loopOverVar } from "../lib/loop.ts";
+import { isDefined, tmpl, V } from "../lib/vars.ts";
 
 export default [
   // ZFS

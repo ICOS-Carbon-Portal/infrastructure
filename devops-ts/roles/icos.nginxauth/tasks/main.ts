@@ -1,9 +1,6 @@
-import {
-  isUndefined,
-  loopOverVar,
-  type TaskFile,
-  varByName,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOverVar } from "../../../lib/loop.ts";
+import { isUndefined, varByName } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

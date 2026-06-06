@@ -1,4 +1,7 @@
-import { iff, not, or, register, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { iff } from "../../../lib/template.ts";
+import { not, or } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");

@@ -1,4 +1,6 @@
-import { eq, type TaskFile, type When } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { type When } from "../../../lib/ansible/task.ts";
+import { eq } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

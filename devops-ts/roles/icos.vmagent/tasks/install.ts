@@ -1,13 +1,8 @@
-import {
-  group,
-  loopOver,
-  not,
-  or,
-  register,
-  type TaskFile,
-  type Tmpl,
-  truthy,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOver } from "../../../lib/loop.ts";
+import { register } from "../../../lib/register.ts";
+import { type Tmpl } from "../../../lib/template.ts";
+import { group, not, or, truthy } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _vmagent = register("_vmagent");

@@ -1,9 +1,6 @@
-import {
-  isDefined,
-  isNotDefined,
-  register,
-  type TaskFile,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { isDefined, isNotDefined } from "../../../lib/vars.ts";
 import { V } from "../_ctx.ts";
 
 const update = register("update");

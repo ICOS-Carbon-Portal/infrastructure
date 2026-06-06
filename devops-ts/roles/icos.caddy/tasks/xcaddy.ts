@@ -1,4 +1,5 @@
-import { jinjaFor, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { jinjaFor } from "../../../lib/template.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 // https://nebula.defined.net/docs/guides/rotating-certificate-authority/

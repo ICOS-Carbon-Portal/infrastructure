@@ -1,4 +1,5 @@
-import { and, not, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { and, not } from "../../../lib/vars.ts";
 import { V } from "../_ctx.ts";
 
 export default [

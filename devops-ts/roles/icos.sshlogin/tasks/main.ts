@@ -1,3 +1,5 @@
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
 import {
   and,
   group,
@@ -5,10 +7,8 @@ import {
   isUndefined,
   not,
   or,
-  register,
-  type TaskFile,
   varByName,
-} from "../../../lib/ansible.ts";
+} from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _src_user = register("_src_user");

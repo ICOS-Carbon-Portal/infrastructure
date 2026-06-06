@@ -1,5 +1,6 @@
 // This playbook contains various domains.
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
 
 export default [
   {

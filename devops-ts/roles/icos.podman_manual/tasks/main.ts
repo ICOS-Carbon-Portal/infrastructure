@@ -1,11 +1,6 @@
-import {
-  isUndefined,
-  not,
-  or,
-  register,
-  type TaskFile,
-  truthy,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { isUndefined, not, or, truthy } from "../../../lib/vars.ts";
 
 const _podman = register("_podman");
 import { V } from "../_ctx.ts";

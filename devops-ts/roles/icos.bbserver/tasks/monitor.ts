@@ -1,4 +1,5 @@
-import { lookup, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { lookup } from "../../../lib/template.ts";
 import { V } from "../_ctx.ts";
 
 export default [

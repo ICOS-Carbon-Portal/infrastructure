@@ -1,4 +1,5 @@
-import { eq, isVersion, ne, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { eq, isVersion, ne } from "../../../lib/vars.ts";
 import { notVar, tmpl, V } from "../_ctx.ts";
 
 export default [

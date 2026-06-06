@@ -1,7 +1,9 @@
 // This playbook can be used to:
 //   1. Find out which hosts run a specific distribution of ubuntu.
 //   2. Dist-upgrade those hosts.
-import { iff, type Playbook, tmpl, truthy, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { iff } from "../lib/template.ts";
+import { tmpl, truthy, V } from "../lib/vars.ts";
 
 export default [
   {

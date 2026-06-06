@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 // Create a reresolve service and timer.
 // It can then be activated be each wireguard network that needs it.

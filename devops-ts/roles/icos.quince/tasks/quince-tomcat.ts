@@ -1,4 +1,6 @@
-import { jinja, register, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { jinja } from "../../../lib/template.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _fs = register("_fs");

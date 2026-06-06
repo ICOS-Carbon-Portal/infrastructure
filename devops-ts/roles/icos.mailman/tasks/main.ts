@@ -1,11 +1,8 @@
-import {
-  loopOver,
-  loopOverVar,
-  not,
-  register,
-  type TaskFile,
-  type Tmpl,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOver, loopOverVar } from "../../../lib/loop.ts";
+import { register } from "../../../lib/register.ts";
+import { type Tmpl } from "../../../lib/template.ts";
+import { not } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const r = register("r");

@@ -1,4 +1,6 @@
-import { isDefined, type Playbook, role, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { isDefined, V } from "../lib/vars.ts";
 
 export default [
   {

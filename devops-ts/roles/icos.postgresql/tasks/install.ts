@@ -1,4 +1,6 @@
-import { pct, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { pct } from "../../../lib/template.ts";
+import { truthy } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 // We use postgres's own apt repo in order to install postgres.

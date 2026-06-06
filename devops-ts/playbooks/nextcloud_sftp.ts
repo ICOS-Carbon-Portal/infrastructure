@@ -1,6 +1,8 @@
 // display instructions
 //   run nextcloud_sftp.yml howto
-import { loopOverVar, type Playbook, tmpl, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { loopOverVar } from "../lib/loop.ts";
+import { tmpl, V } from "../lib/vars.ts";
 
 export default [
   {

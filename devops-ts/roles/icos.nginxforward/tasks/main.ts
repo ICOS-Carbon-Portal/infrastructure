@@ -1,11 +1,11 @@
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { iff } from "../../../lib/template.ts";
 import {
-  iff,
   isDefined,
   isUndefined,
-  type TaskFile,
   truthy,
   varByName,
-} from "../../../lib/ansible.ts";
+} from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 export default [

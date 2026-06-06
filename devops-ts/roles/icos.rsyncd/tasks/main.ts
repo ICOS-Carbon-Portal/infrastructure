@@ -1,4 +1,6 @@
-import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { iff } from "../../../lib/template.ts";
 import { V } from "../_ctx.ts";
 
 const _justfile = register("_justfile");

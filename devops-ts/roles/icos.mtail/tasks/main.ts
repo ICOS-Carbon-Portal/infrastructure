@@ -1,9 +1,7 @@
-import {
-  loopOver,
-  register,
-  type TaskFile,
-  type Tmpl,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOver } from "../../../lib/loop.ts";
+import { register } from "../../../lib/register.ts";
+import { type Tmpl } from "../../../lib/template.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _find = register("_find");

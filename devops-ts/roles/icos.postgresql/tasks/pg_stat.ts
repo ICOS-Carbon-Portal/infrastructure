@@ -1,4 +1,6 @@
-import { and, register, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { and } from "../../../lib/vars.ts";
 
 const _set = register("_set");
 

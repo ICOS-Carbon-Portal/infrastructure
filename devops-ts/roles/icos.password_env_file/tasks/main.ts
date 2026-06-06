@@ -1,9 +1,7 @@
-import {
-  lookup,
-  register,
-  type TaskFile,
-  truthy,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { lookup } from "../../../lib/template.ts";
+import { truthy } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _slurp = register("_slurp");

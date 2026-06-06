@@ -4,7 +4,10 @@
 // Redeploy backup script and bbclient
 //   icos play postgis backup
 
-import { loopOverVar, type Playbook, role, V } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { loopOverVar } from "../lib/loop.ts";
+import { V } from "../lib/vars.ts";
 
 export default [
   {

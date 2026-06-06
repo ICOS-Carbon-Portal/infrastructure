@@ -1,10 +1,6 @@
-import {
-  not,
-  or,
-  register,
-  type TaskFile,
-  truthy,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { not, or, truthy } from "../../../lib/vars.ts";
 import { V } from "../_ctx.ts";
 
 const _r = register("_r");

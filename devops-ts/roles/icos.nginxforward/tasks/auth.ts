@@ -1,4 +1,5 @@
-import { loopOverVar, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { loopOverVar } from "../../../lib/loop.ts";
 import { V } from "../_ctx.ts";
 
 export default [

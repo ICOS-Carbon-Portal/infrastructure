@@ -1,4 +1,6 @@
-import { iff, register, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { iff } from "../../../lib/template.ts";
 
 const _conf = register("_conf");
 

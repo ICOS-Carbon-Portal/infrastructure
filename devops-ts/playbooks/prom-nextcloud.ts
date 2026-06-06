@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
 
 export default [
   {

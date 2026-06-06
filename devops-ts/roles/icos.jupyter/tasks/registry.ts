@@ -1,4 +1,5 @@
-import { localVar, type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { localVar } from "../../../lib/template.ts";
 import { V } from "../_ctx.ts";
 
 export default [

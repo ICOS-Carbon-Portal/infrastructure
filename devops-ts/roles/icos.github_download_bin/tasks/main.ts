@@ -1,4 +1,6 @@
-import { register, type TaskFile, truthy } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { truthy } from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const dbin_download = register("dbin_download");

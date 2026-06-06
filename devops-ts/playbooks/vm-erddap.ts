@@ -1,4 +1,6 @@
-import { type Playbook, register, role } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { register } from "../lib/register.ts";
 
 const _lxd = register("_lxd");
 

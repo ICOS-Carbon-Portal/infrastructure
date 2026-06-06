@@ -1,5 +1,7 @@
 // icos play fsicos3 nginx_certbot
-import { not, type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
+import { not } from "../lib/vars.ts";
 
 export default [
   {

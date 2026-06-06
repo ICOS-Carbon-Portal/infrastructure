@@ -1,6 +1,7 @@
 // Upgrade certbot
 //   icos play fsicos2 nginx_certbot -ecertbot_state=latest
-import { type Playbook, role } from "../lib/ansible.ts";
+import { type Playbook } from "../lib/ansible/play.ts";
+import { role } from "../lib/ansible/role.ts";
 
 export default [
   {

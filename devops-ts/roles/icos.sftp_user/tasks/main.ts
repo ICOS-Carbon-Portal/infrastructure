@@ -1,15 +1,15 @@
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { register } from "../../../lib/register.ts";
+import { iff } from "../../../lib/template.ts";
 import {
-  iff,
   isTruthy,
   isUndefined,
   ne,
   not,
   or,
-  register,
-  type TaskFile,
   truthy,
   varByName,
-} from "../../../lib/ansible.ts";
+} from "../../../lib/vars.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _parent = register("_parent");

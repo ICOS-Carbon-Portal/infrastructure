@@ -1,4 +1,4 @@
-import { type TaskFile } from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
   { import_tasks: "install.yml", tags: "dokku_install" },

@@ -1,9 +1,7 @@
-import {
-  register,
-  type TaskFile,
-  type Tmpl,
-  withItemsOver,
-} from "../../../lib/ansible.ts";
+import { type TaskFile } from "../../../lib/ansible/play.ts";
+import { withItemsOver } from "../../../lib/loop.ts";
+import { register } from "../../../lib/register.ts";
+import { type Tmpl } from "../../../lib/template.ts";
 import { tmpl, V } from "../_ctx.ts";
 
 const _user = register("_user");
