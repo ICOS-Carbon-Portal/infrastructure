@@ -31,7 +31,7 @@ export interface Vars {
   lxd_vm_name: string;
 }
 
-import type { Scalar } from "./ansible.ts";
+import type { Scalar } from "./ansible/values.ts";
 import type { BuiltinVars } from "./builtins.ts";
 import type { Globals } from "./globals.ts";
 import type { SharedVars } from "./sharedvars.ts";

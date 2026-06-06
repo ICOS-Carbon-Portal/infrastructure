@@ -7,8 +7,8 @@
 // *names* are already typed elsewhere (per-role _ctx.ts, hosts.ts, globals.ts)
 // and the values are arbitrary scalars/templates.
 import type { Roles } from "./roles.ts";
-import type { Tags } from "./ansible.ts";
-import type { VarValue } from "./ansible.ts";
+import type { Tags } from "./ansible/tags.ts";
+import type { VarValue } from "./ansible/values.ts";
 
 /** A role dependency in `meta/main.yml`. The role must be a known role. */
 export interface RoleDep {

@@ -1,7 +1,7 @@
 // Render a playbook module to YAML on stdout.
 //
 //   deno run --allow-all render.ts playbooks/keycloak.ts
-import { render } from "./lib/ansible.ts";
+import { render } from "./lib/ansible/render.ts";
 
 const path = Deno.args[0];
 if (!path) {

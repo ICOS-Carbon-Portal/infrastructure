@@ -10,7 +10,7 @@
 //
 // `Tmpl` (= string | Template) documents that a value may be a plain string or
 // a Jinja template like tmpl`${V.nexus_home}/bbclient`.
-import type { VarValue } from "./ansible.ts";
+import type { VarValue } from "./ansible/values.ts";
 import type { Tmpl } from "./template.ts";
 
 // A role ref may carry a `vars:` block (a sibling of `role:`) and/or a display

@@ -4,7 +4,7 @@
 // (derived by analysing every `.yml`). Task references them so a misspelled or
 // wrong-typed module arg is caught; the long tail of rarer modules falls
 // through Task's index signature instead of being enumerated here.
-import type { VarValue } from "./ansible.ts";
+import type { VarValue } from "./ansible/values.ts";
 import type { Tmpl } from "./template.ts";
 
 /** A boolean that may be written as a Jinja template (`"{{ x }}"`). */

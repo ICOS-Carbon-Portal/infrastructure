@@ -15,7 +15,7 @@
 //
 // `item.src` renders to "{{ item.src }}"; `item.scr` is a compile error. The
 // bare `item` (scalar loops) renders to "{{ item }}".
-import type { Task } from "./ansible.ts";
+import type { Task } from "./ansible/task.ts";
 import { type Ref, varProxy } from "./template.ts";
 
 /**

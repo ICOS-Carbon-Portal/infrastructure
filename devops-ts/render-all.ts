@@ -11,7 +11,7 @@
 //
 //   deno run --allow-read --allow-write render-all.ts [outdir] [--rendered-only]
 //   deno task render-all ../devops-rendered
-import { render } from "./lib/ansible.ts";
+import { render } from "./lib/ansible/render.ts";
 import { collectUnits } from "./lib/units.ts";
 
 const flags = Deno.args.filter((a) => a.startsWith("--"));

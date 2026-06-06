@@ -8,7 +8,7 @@
 //
 //   deno run --allow-all verify.ts
 import { parse as parseYaml } from "yaml";
-import { render } from "./lib/ansible.ts";
+import { render } from "./lib/ansible/render.ts";
 import { collectUnits } from "./lib/units.ts";
 
 // Ansible parses with PyYAML (YAML 1.1), where `yes`/`no`/`on`/`off` are
