@@ -8,15 +8,15 @@ interface Self {
   conmon_apt_version_ok: unknown;
   conmon_url: unknown;
 }
-const { V, expr, tmpl } = context<Self>();
+const { V, tmpl, rawTmpl } = context<Self>();
 
 export default {
   "conmon_version_install": "2.1.4",
-  "conmon_local_version_ok": expr(
-    'conmon_local_version and\n   conmon_local_version is version(conmon_min_version, ">=")',
+  "conmon_local_version_ok": rawTmpl(
+    '{{ conmon_local_version and\n   conmon_local_version is version(conmon_min_version, ">=") }}',
   ),
-  "conmon_apt_version_ok": expr(
-    'conmon_apt_version is version(conmon_min_version, ">=")',
+  "conmon_apt_version_ok": rawTmpl(
+    '{{ conmon_apt_version is version(conmon_min_version, ">=") }}',
   ),
   "conmon_url":
     tmpl`https://github.com/containers/conmon/archive/refs/tags/v${V.conmon_version_install}.tar.gz`,

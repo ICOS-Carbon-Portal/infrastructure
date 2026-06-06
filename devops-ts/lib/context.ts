@@ -18,7 +18,6 @@
 // Adoption is incremental and per-reference: convert the references whose names
 // the context knows; leave the dynamic ones as raw strings.
 import {
-  expr,
   type RawTemplate,
   rawTmpl,
   type Template,
@@ -38,8 +37,6 @@ export interface Context<V> {
     strings: TemplateStringsArray,
     ...refs: Array<Template | string>
   ) => Template;
-  /** Escape hatch: reference a dynamic var / Jinja value expression -> `{{ jinja }}`. */
-  expr: (jinja: string) => Template;
   /** Verbatim template escape for awkward cases (exact bytes). */
   rawTmpl: (text: string) => RawTemplate;
   /** `when:` builder over a known var name: `isDef("foo")` -> "foo is defined". */
@@ -51,7 +48,7 @@ export interface Context<V> {
 /**
  * Build a role-scoped variable context from a role's variable interface.
  *
- *   const { V, tmpl, isDef, expr } = context<CpauthVars>();
+ *   const { V, tmpl, isDef } = context<CpauthVars>();
  */
 export function context<V>(): Context<V> {
   const Vproxy = new Proxy({}, {
@@ -64,5 +61,5 @@ export function context<V>(): Context<V> {
   const notVar = (name: keyof V & string): Expr =>
     new Expr(`not ${name}`, name);
 
-  return { V: Vproxy, tmpl, expr, rawTmpl, isDef, notVar };
+  return { V: Vproxy, tmpl, rawTmpl, isDef, notVar };
 }

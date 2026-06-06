@@ -1,5 +1,5 @@
 // Tests for concat(): a Jinja `+` expression, replacing expr("a + b").
-import { concat, expr, iff, localVar, pct, randomInt } from "./template.ts";
+import { concat, iff, localVar, pct, randomInt } from "./template.ts";
 import { V } from "./vars.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
@@ -16,11 +16,11 @@ Deno.test("concat: two var refs render bare, joined by +", () => {
   );
 });
 
-Deno.test("concat: matches the expr() string it replaces", () => {
+Deno.test("concat: renders the canonical + expression", () => {
   eq(
     concat(V.dokku_static_domains, V.dokku_redirect_domains).toText(),
-    expr("dokku_static_domains + dokku_redirect_domains").toText(),
-    "concat == expr equivalence",
+    "{{ dokku_static_domains + dokku_redirect_domains }}",
+    "concat canonical render",
   );
 });
 

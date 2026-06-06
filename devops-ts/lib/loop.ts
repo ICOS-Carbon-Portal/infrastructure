@@ -16,7 +16,7 @@
 // `item.src` renders to "{{ item.src }}"; `item.scr` is a compile error. The
 // bare `item` (scalar loops) renders to "{{ item }}".
 import type { Task } from "./ansible.ts";
-import { expr, type Ref } from "./template.ts";
+import { type Ref, varProxy } from "./template.ts";
 
 /**
  * A typed accessor for the loop variable. For an object element type its keys
@@ -28,22 +28,11 @@ export type Item<T> = T extends object
   : Ref;
 
 function itemProxy<T>(varName = "item"): Item<T> {
-  // Base template for the bare loop variable: `{{ item }}` (or the custom
-  // `loop_var`). Wrapping a real `Template` (rather than a plain function) makes
-  // the proxy `instanceof Template`, so it splices into `tmpl` as a structured
-  // ref part and renders as a double-quoted ref scalar — never as a literal
-  // string that re-embeds `{{ }}`. Template's own members (`parts`, `toText`,
-  // `toString`, symbols) pass through to the base; any other property is a
-  // field ref `<varName>.<key>`.
-  const base = expr(varName);
-  return new Proxy(base, {
-    get(target, key, receiver) {
-      if (typeof key === "symbol" || key in target) {
-        return Reflect.get(target, key, receiver);
-      }
-      return expr(`${varName}.${String(key)}`);
-    },
-  }) as unknown as Item<T>;
+  // The loop variable is a nested-ref proxy: bare `{{ item }}` (or the custom
+  // `loop_var`), and any field access is `{{ item.<key> }}`. This is exactly
+  // `varProxy` (the runtime behind `V.x.y`); the `Item<T>` cast supplies the
+  // element-typed field list.
+  return varProxy(varName) as unknown as Item<T>;
 }
 
 /**
@@ -98,7 +87,7 @@ export function withItemsOver<T>(
  * documents the element shape at the loop site.
  *
  *   loopOverVar<{ name: string; key: string }>(
- *     expr("user_conf.create_users").default([]),
+ *     V.user_conf.create_users.default([]),
  *     (item) => ({ authorized_key: { user: item.name, key: item.key } }),
  *   )
  */

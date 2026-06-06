@@ -4,10 +4,10 @@ import { context } from "../../../../lib/context.ts";
 import type { AllVars } from "../../../../lib/allvars.ts";
 import type { ParamVars } from "../../../../lib/paramvars.ts";
 
-const { V, expr, tmpl } = context<AllVars & ParamVars>();
+const { V, tmpl, rawTmpl } = context<AllVars & ParamVars>();
 
 export default {
   "project_dir": tmpl`${V.drupal_home}/${V.website}/drupal`,
-  "certbot_domains": expr("ssl_domains | default([domain])"),
+  "certbot_domains": rawTmpl("{{ ssl_domains | default([domain]) }}"),
   "certbot_conf_name": V.nginx_conf_name,
 } satisfies VarsFile;

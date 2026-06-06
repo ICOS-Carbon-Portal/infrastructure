@@ -63,7 +63,6 @@ type KnownName = keyof AllKnown & string;
 // Re-exported for convenience (the canonical definitions live in template.ts).
 export {
   concat,
-  expr,
   iff,
   jinjaFor,
   lookup,

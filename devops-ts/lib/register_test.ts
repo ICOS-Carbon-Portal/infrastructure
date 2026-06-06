@@ -7,7 +7,6 @@
 // The safety win is structural — a handle must be `register()`ed and held in a
 // `const`, so an unregistered name (the `_r` bug in icos.nextcloud/icos.zrepl)
 // becomes a "Cannot find name" compile error instead of a silent no-op.
-import { expr } from "./template.ts";
 import { register } from "./register.ts";
 import { V } from "./vars.ts";
 
@@ -56,12 +55,12 @@ Deno.test("register: .ref renders the value-position template", () => {
   );
 });
 
-Deno.test("register: .ref equals the expr() string it replaces", () => {
+Deno.test("register: .ref renders the canonical value reference", () => {
   const update = register("update");
   eq(
     update.backup_file.ref.toText(),
-    expr("update.backup_file").toText(),
-    "handle .ref == expr equivalence (drop-in for the icos.zrepl always: block)",
+    "{{ update.backup_file }}",
+    "handle .ref (drop-in for the icos.zrepl always: block)",
   );
 });
 

@@ -1,6 +1,6 @@
 // Tests for the iff() ternary combinator: it must render byte-identically to the
 // hand-written `expr("'a' if cond else 'b'")` strings it replaces.
-import { expr, iff } from "./template.ts";
+import { iff } from "./template.ts";
 import { and, eq as eqExpr, isIn, or, truthy, V } from "./vars.ts";
 import { register } from "./register.ts";
 
@@ -87,11 +87,10 @@ Deno.test("iff: and() condition", () => {
   );
 });
 
-Deno.test("iff: matches the expr() string it replaces", () => {
-  // The canonical equivalence the conversion relies on.
+Deno.test("iff: renders the canonical ternary", () => {
   eq(
     iff(V.caddy_upgrade, "latest", "present").toText(),
-    expr("'latest' if caddy_upgrade else 'present'").toText(),
-    "iff == expr equivalence",
+    "{{ 'latest' if caddy_upgrade else 'present' }}",
+    "iff canonical render",
   );
 });

@@ -4,15 +4,15 @@ import { context } from "../../../../lib/context.ts";
 import type { BuiltinVars } from "../../../../lib/builtins.ts";
 import type { VarShapes } from "../../../../lib/shapes.ts";
 
-const { V, expr, tmpl, rawTmpl } = context<BuiltinVars & VarShapes>();
+const { V, tmpl, rawTmpl } = context<BuiltinVars & VarShapes>();
 
 export default {
   "wg_hub_self": V.wg_hub_config.peers.at(V.inventory_hostname),
-  "wg_hub_peer": expr(
-    "wg_hub_config.hub.addr if wg_hub_config.hub.addr in wg_hub_config.peers else wg_hub_config.hub.peer",
+  "wg_hub_peer": rawTmpl(
+    "{{ wg_hub_config.hub.addr if wg_hub_config.hub.addr in wg_hub_config.peers else wg_hub_config.hub.peer }}",
   ),
-  "wg_hub_ishub": expr(
-    'wg_hub_config.hub.addr == inventory_hostname or\n   wg_hub_config.hub.peer | default("") == inventory_hostname',
+  "wg_hub_ishub": rawTmpl(
+    '{{ wg_hub_config.hub.addr == inventory_hostname or\n   wg_hub_config.hub.peer | default("") == inventory_hostname }}',
   ),
   "wg_hub_port": tmpl`${
     rawTmpl("{% if wg_hub_self.port is defined -%}")
@@ -25,14 +25,14 @@ export default {
     rawTmpl("{% endif %}")
   }`,
   "wg_hub_key_dir": "files/wireguard",
-  "wg_hub_key": expr(
-    "wg_hub_config.peers[wg_hub_peer].key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, wg_hub_peer)))",
+  "wg_hub_key": rawTmpl(
+    "{{ wg_hub_config.peers[wg_hub_peer].key | default(lookup('file', '%s/%s' % (wg_hub_key_dir, wg_hub_peer))) }}",
   ),
   "wg_hub_intf": tmpl`wg-${V.wg_hub_config.name}`,
-  "wg_hub_allow_all": expr(
-    "wg_hub_self.allow_all | default(wg_hub_config.allow_all) | default(False)",
+  "wg_hub_allow_all": rawTmpl(
+    "{{ wg_hub_self.allow_all | default(wg_hub_config.allow_all) | default(False) }}",
   ),
-  "wg_hub_reresolve": expr(
-    "wg_hub_self.reresolve | default(wg_hub_config.reresolve) | default(False)",
+  "wg_hub_reresolve": rawTmpl(
+    "{{ wg_hub_self.reresolve | default(wg_hub_config.reresolve) | default(False) }}",
   ),
 } satisfies VarsFile;

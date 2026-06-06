@@ -81,7 +81,6 @@ export {
 export { type Reg, register, type Result } from "./register.ts";
 export {
   concat,
-  expr,
   iff,
   jinjaFor,
   localVar,

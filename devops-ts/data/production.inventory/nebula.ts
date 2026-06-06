@@ -3,7 +3,7 @@ import type { Inventory } from "../../lib/data.ts";
 import { context } from "../../lib/context.ts";
 import type { Globals } from "../../lib/globals.ts";
 
-const { V, expr, tmpl, rawTmpl } = context<Globals>();
+const { V, tmpl, rawTmpl } = context<Globals>();
 
 export default {
   "nebula_hosts": {
@@ -44,8 +44,8 @@ export default {
           "{% for host in query('hosts', 'nebula_hosts',\n                     var='nebula_ip', how='version') %}",
         )
       }
-${expr("hostvars[host]['nebula_ip']")}	${
-        expr("hostvars[host]['inventory_hostname_short']")
+${rawTmpl("{{ hostvars[host]['nebula_ip'] }}")}	${
+        rawTmpl("{{ hostvars[host]['inventory_hostname_short'] }}")
       }.nebula
 ${rawTmpl("{% endfor %}")}
 `,

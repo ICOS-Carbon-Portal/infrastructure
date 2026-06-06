@@ -1,6 +1,5 @@
 // Tests for the Template filter helpers added to drop expr() escapes
 // for | join, | fileglob, and | map(attribute=...).
-import { expr } from "./template.ts";
 import { V } from "./vars.ts";
 import { register } from "./register.ts";
 
@@ -22,8 +21,8 @@ Deno.test("fileglob + first + dirname chain", () => {
   );
   eq(
     V.nebula_cert_sign.fileglob().first().dirname().toText(),
-    expr("nebula_cert_sign | fileglob | first | dirname").toText(),
-    "chain == expr equivalence",
+    "{{ nebula_cert_sign | fileglob | first | dirname }}",
+    "chain renders canonical",
   );
 });
 

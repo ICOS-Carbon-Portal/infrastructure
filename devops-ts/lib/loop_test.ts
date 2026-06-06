@@ -2,7 +2,7 @@
 // lets a task with `loop_control: { loop_var }` use typed item refs instead of
 // expr("login.dst") strings.
 import { loopOver, loopOverVar } from "./loop.ts";
-import { expr, type Ref } from "./template.ts";
+import { type Ref, varProxy } from "./template.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
   if (actual !== expected) {
@@ -22,7 +22,7 @@ Deno.test("loopOver: default item var renders item.<key>", () => {
 
 Deno.test("loopOverVar: custom loopVar renders <loopVar>.<key>", () => {
   const task = loopOverVar<{ dst: string; dst_port: string }>(
-    expr("logins"),
+    varProxy("logins"),
     (login) => ({ vars: { d: login.dst, p: login.dst_port } }),
     { loopVar: "login" },
   );
@@ -34,7 +34,7 @@ Deno.test("loopOverVar: custom loopVar renders <loopVar>.<key>", () => {
 
 Deno.test("loopOverVar: custom loopVar emits matching loop_control", () => {
   const task = loopOverVar<{ x: string }>(
-    expr("things"),
+    varProxy("things"),
     (thing) => ({ debug: { msg: thing.x } }),
     { loopVar: "thing" },
   );
@@ -43,8 +43,8 @@ Deno.test("loopOverVar: custom loopVar emits matching loop_control", () => {
     JSON.stringify({ loop_var: "thing" }),
     "loop_control loop_var",
   );
-  // The looped item ref equals the expr() string it replaces.
+  // The looped item ref renders as the dotted Jinja reference.
   // deno-lint-ignore no-explicit-any
   const src: Ref = (task.debug as any).msg;
-  eq(src.toText(), expr("thing.x").toText(), "thing.x == expr equivalence");
+  eq(src.toText(), "{{ thing.x }}", "thing.x ref");
 });

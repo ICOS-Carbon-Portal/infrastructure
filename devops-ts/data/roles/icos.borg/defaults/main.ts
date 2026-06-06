@@ -11,7 +11,7 @@ interface Self {
   borg_libc_map: unknown;
   borg_libc_version: unknown;
 }
-const { V, expr, tmpl } = context<Self & AllVars>();
+const { V, tmpl, rawTmpl } = context<Self & AllVars>();
 
 export default {
   "borg_upgrade": V.upgrade_everything.default(false).bool(),
@@ -27,7 +27,7 @@ export default {
       "24.04": "236",
     },
   },
-  "borg_libc_version": expr(
-    "borg_libc_map[ansible_distribution][ansible_distribution_version]",
+  "borg_libc_version": rawTmpl(
+    "{{ borg_libc_map[ansible_distribution][ansible_distribution_version] }}",
   ),
 } satisfies VarsFile;

@@ -11,16 +11,16 @@ interface Self {
   golang_opt_dir: unknown;
   golang_bin_dir: unknown;
 }
-const { V, expr, tmpl } = context<Self>();
+const { V, tmpl, rawTmpl } = context<Self>();
 
 export default {
   "golang_version_install": "1.21.1",
   "golang_min_version": V.golang_version_install,
-  "golang_local_version_ok": expr(
-    'golang_local_version and\n   golang_local_version is version(golang_min_version, ">=")',
+  "golang_local_version_ok": rawTmpl(
+    '{{ golang_local_version and\n   golang_local_version is version(golang_min_version, ">=") }}',
   ),
-  "golang_apt_version_ok": expr(
-    'golang_apt_version is version(golang_min_version, ">=")',
+  "golang_apt_version_ok": rawTmpl(
+    '{{ golang_apt_version is version(golang_min_version, ">=") }}',
   ),
   "golang_url":
     tmpl`https://go.dev/dl/go${V.golang_version_install}.linux-amd64.tar.gz  `,

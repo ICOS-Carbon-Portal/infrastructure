@@ -251,11 +251,6 @@ export type Ref = Template;
 /** A field value that may be a plain string or a Jinja template. */
 export type Tmpl = string | Template;
 
-/** Reference a dynamic variable / arbitrary Jinja value expression: `{{ jinja }}`. */
-export function expr(jinja: string): Template {
-  return new Template([{ kind: "ref", jinja }]);
-}
-
 /**
  * A Jinja conditional value expression: `iff(c, a, b)` -> `{{ A if C else B }}`.
  *
@@ -360,13 +355,14 @@ export function pct(fmt: string, arg: FilterArg): Template {
 
 /**
  * The Jinja2 `random` filter with a deterministic seed, over an integer upper
- * bound: `randomInt(max, seed)` -> `{{ <max> | random(seed='<seed>') }}` (a
- * stable pseudo-random int in `[0, max)`). Replaces
+ * bound: `randomInt(max, seed)` -> `{{ <max> | random(seed=<seed>) }}` (a
+ * stable pseudo-random int in `[0, max)`). `seed` is a filter-arg: a string
+ * becomes a `'quoted'` literal, a `V.x` ref renders bare. Replaces
  * `expr("4 | random(seed='x')")` (e.g. spreading cron jobs across hosts).
  */
-export function randomInt(max: number, seed: string): Template {
+export function randomInt(max: number, seed: FilterArg): Template {
   return new Template([
-    { kind: "ref", jinja: `${max} | random(seed='${seed}')` },
+    { kind: "ref", jinja: `${max} | random(seed=${filterArgText(seed)})` },
   ]);
 }
 

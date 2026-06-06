@@ -18,7 +18,7 @@
 // (`_r.stdout.endswith(V.podman_version)`), so those conditions no longer need
 // raw() either.
 import type { Expr } from "./vars.ts";
-import { expr, type Ref, Template } from "./template.ts";
+import { type Ref, Template } from "./template.ts";
 
 /**
  * One field of a result: an `Expr` (renders bare, for when-positions) whose
@@ -133,7 +133,8 @@ export function register(name: string): Reg {
         ) {
           return () => path;
         }
-        if (key === "ref") return expr(path);
+        // The value-position reference, "{{ <path> }}".
+        if (key === "ref") return new Template([{ kind: "ref", jinja: path }]);
         const k = String(key);
         // A numeric key is Jinja list access (`stdout_lines[0]`,
         // `stdout_lines[-1]`), not `.0`.

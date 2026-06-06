@@ -13,7 +13,7 @@ interface Self {
   stiltcluster_maxcores: unknown;
   stiltcluster_docker: unknown;
 }
-const { V, expr, tmpl } = context<Self & BuiltinVars>();
+const { V, tmpl, rawTmpl } = context<Self & BuiltinVars>();
 
 export default {
   "stiltcluster_username": "stiltcluster",
@@ -22,8 +22,8 @@ export default {
   "stiltcluster_bindir": tmpl`${V.stiltcluster_home}/bin`,
   "stiltcluster_fetch_host": null,
   "stiltcluster_fetch_path": tmpl`${
-    expr(
-      "hostvars[stiltcluster_fetch_host].stiltcluster_home\n  | default(stiltcluster_home)",
+    rawTmpl(
+      "{{ hostvars[stiltcluster_fetch_host].stiltcluster_home\n  | default(stiltcluster_home) }}",
     )
   }/stiltcluster.jar"`,
   "stiltcluster_hostname": V.inventory_hostname,

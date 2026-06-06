@@ -1,6 +1,6 @@
 // Tests for the lookup() helper: it must render byte-identically to the
 // hand-written `expr("lookup('plugin', '...')")` strings it replaces.
-import { expr, lookup, tmpl } from "./template.ts";
+import { lookup, tmpl } from "./template.ts";
 import { V } from "./vars.ts";
 
 function eq(actual: string, expected: string, msg: string): void {
@@ -49,11 +49,11 @@ Deno.test("lookup: splices into a tmpl literal as a ref part", () => {
   );
 });
 
-Deno.test("lookup: matches the expr() string it replaces", () => {
+Deno.test("lookup: renders the canonical lookup expression", () => {
   eq(
     lookup("template", "config.yaml").toText(),
-    expr("lookup('template', 'config.yaml')").toText(),
-    "lookup == expr equivalence",
+    "{{ lookup('template', 'config.yaml') }}",
+    "lookup canonical render",
   );
 });
 
