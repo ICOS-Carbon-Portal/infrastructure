@@ -23,7 +23,7 @@ export type FileArgs = {
   owner?: Tmpl | number;
   group?: Tmpl | number;
   mode?: Mode;
-  recurse?: Flag;
+  recurse?: boolean;
   modification_time?: Tmpl;
   access_time?: Tmpl;
 };
@@ -34,9 +34,9 @@ export type CopyArgs = {
   mode?: Mode;
   owner?: Tmpl;
   group?: Tmpl;
-  backup?: Flag;
-  remote_src?: Flag;
-  force?: Flag;
+  backup?: boolean;
+  remote_src?: boolean;
+  force?: boolean;
   validate?: Tmpl;
 };
 export type TemplateArgs = {
@@ -45,8 +45,8 @@ export type TemplateArgs = {
   mode?: Mode;
   owner?: Tmpl;
   group?: Tmpl;
-  backup?: Flag;
-  lstrip_blocks?: Flag;
+  backup?: boolean;
+  lstrip_blocks?: boolean;
   validate?: Tmpl;
   variable_start_string?: Tmpl;
   variable_end_string?: Tmpl;
@@ -54,25 +54,25 @@ export type TemplateArgs = {
 export type SystemdArgs = {
   name?: Tmpl;
   state?: Tmpl;
-  enabled?: Flag;
+  enabled?: boolean;
   status?: Tmpl;
   daemon_reload?: Flag;
   "daemon-reload"?: Flag;
 };
 export type ServiceArgs =
   | Tmpl
-  | { name?: Tmpl; state?: Tmpl; enabled?: Flag };
+  | { name?: Tmpl; state?: Tmpl; enabled?: boolean };
 export type AptArgs = {
   name?: Names;
   state?: Tmpl;
-  update_cache?: Flag;
+  update_cache?: boolean;
   deb?: Tmpl;
   cache_valid_time?: Tmpl | number;
   upgrade?: Flag;
-  purge?: Flag;
-  autoclean?: Flag;
-  autoremove?: Flag;
-  install_recommends?: Flag;
+  purge?: boolean;
+  autoclean?: boolean;
+  autoremove?: boolean;
+  install_recommends?: boolean;
 };
 export type PackageArgs = Tmpl | { name?: Names; state?: Tmpl };
 export type UserArgs = {
@@ -85,16 +85,16 @@ export type UserArgs = {
   create_home?: Flag;
   state?: Tmpl;
   password?: Tmpl;
-  system?: Flag;
-  generate_ssh_key?: Flag;
+  system?: boolean;
+  generate_ssh_key?: boolean;
   remove?: Tmpl;
   uid?: Tmpl | number;
-  non_unique?: Flag;
-  password_lock?: Flag;
+  non_unique?: boolean;
+  password_lock?: boolean;
 };
 export type UriArgs = {
   url: Tmpl;
-  return_content?: Flag;
+  return_content?: boolean;
   method?: Tmpl;
   user?: Tmpl;
   password?: Tmpl;
@@ -113,14 +113,14 @@ export type GetUrlArgs = {
 export type UnarchiveArgs = {
   src: Tmpl;
   dest: Tmpl;
-  remote_src?: Flag;
+  remote_src?: boolean;
   extra_opts?: Tmpl[];
   include?: Tmpl[];
   owner?: Tmpl;
   group?: Tmpl;
   mode?: Mode;
   creates?: Tmpl;
-  list_files?: Flag;
+  list_files?: boolean;
 };
 export type PipArgs = Tmpl | {
   name?: Names;
@@ -133,11 +133,11 @@ export type BlockinfileArgs = {
   path: Tmpl;
   marker?: Tmpl;
   block?: Tmpl;
-  create?: Flag;
+  create?: boolean;
   insertafter?: Tmpl;
   insertbefore?: Tmpl;
   state?: Tmpl;
-  backup?: Flag;
+  backup?: boolean;
   mode?: Mode;
 };
 export type LineinfileArgs = {
@@ -146,8 +146,8 @@ export type LineinfileArgs = {
   state?: Tmpl;
   regex?: Tmpl;
   regexp?: Tmpl;
-  backrefs?: Flag;
-  create?: Flag;
+  backrefs?: boolean;
+  create?: boolean;
   insertafter?: Tmpl;
   insertbefore?: Tmpl;
   owner?: Tmpl;
@@ -176,5 +176,5 @@ export type AuthorizedKeyArgs = {
   key: Tmpl;
   state?: Tmpl;
   key_options?: Tmpl;
-  exclusive?: Flag;
+  exclusive?: boolean;
 };

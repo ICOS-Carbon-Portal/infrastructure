@@ -10,7 +10,7 @@
     "gen-bindings": "deno run --allow-read --allow-write gen-bindings.ts",
     "gen-data": "deno run --allow-read --allow-write --allow-env gen-data.ts",
     "gen-assets": "deno run --allow-read --allow-write --allow-env vendor-assets.ts",
-    "gen": "deno task gen-contexts && deno task gen-bindings && deno task gen-data"
+    "gen": "deno task gen-contexts && deno task gen-bindings && deno task gen-data && deno fmt"
   },
   "imports": {
     "yaml": "npm:yaml@2"

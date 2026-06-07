@@ -78,27 +78,31 @@ export class Template {
   // `| name(args)` in the rendered output; the split is documentation so a reader
   // knows which engine each one comes from.)
 
-  /** Append `| <text>`; valid only on a single-ref template (e.g. `V.x`). */
+  // The value-producing filters carry their RESULT type (`| bool` -> boolean,
+  // `| int` -> number, string filters -> string), so a filtered ref stays
+  // assignable to the corresponding primitive field. Filters whose result is a
+  // list/dict/element of an unknown type stay a plain `Template`.
+
   // -- Jinja2 built-in filters --
   /** `| default(...)`; pass `V.omit` for `default(omit)`, a ref for a var. */
   default(fallback: FilterArg): Template {
     return applyFilter(this, `default(${filterArgText(fallback)})`);
   }
   /** `| int` — convert to an integer. */
-  int(): Template {
-    return applyFilter(this, "int");
+  int(): VarRef<number> {
+    return applyFilter<number>(this, "int");
   }
   /** `| lower` — lowercase a string. */
-  lower(): Template {
-    return applyFilter(this, "lower");
+  lower(): VarRef<string> {
+    return applyFilter<string>(this, "lower");
   }
   /** `| first` — the first element of a list. */
   first(): Template {
     return applyFilter(this, "first");
   }
   /** `| join(sep)` — join a list into a string. */
-  join(sep: string): Template {
-    return applyFilter(this, `join('${sep}')`);
+  join(sep: string): VarRef<string> {
+    return applyFilter<string>(this, `join('${sep}')`);
   }
   /** `| map(attribute='attr')` — pluck an attribute from each list item. */
   mapAttr(attr: string): Template {
@@ -108,28 +112,28 @@ export class Template {
   // -- Ansible `ansible.builtin` filter plugins --
   // https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html#filter-plugins
   /** `| bool` — interpret a value (`"yes"`, `1`, ...) as a boolean. */
-  bool(): Template {
-    return applyFilter(this, "bool");
+  bool(): VarRef<boolean> {
+    return applyFilter<boolean>(this, "bool");
   }
   /** `| dirname` — the directory portion of a path. */
-  dirname(): Template {
-    return applyFilter(this, "dirname");
+  dirname(): VarRef<string> {
+    return applyFilter<string>(this, "dirname");
   }
   /** `| basename` — the final component of a path. */
-  basename(): Template {
-    return applyFilter(this, "basename");
+  basename(): VarRef<string> {
+    return applyFilter<string>(this, "basename");
   }
   /** `| splitext` — split a path into `(root, ext)`. */
   splitext(): Template {
     return applyFilter(this, "splitext");
   }
   /** `| regex_escape` — escape a string for use in a regular expression. */
-  regexEscape(): Template {
-    return applyFilter(this, "regex_escape");
+  regexEscape(): VarRef<string> {
+    return applyFilter<string>(this, "regex_escape");
   }
   /** `| b64decode` — decode a base64 string. */
-  b64decode(): Template {
-    return applyFilter(this, "b64decode");
+  b64decode(): VarRef<string> {
+    return applyFilter<string>(this, "b64decode");
   }
   /** `| combine(other)` — merge two dict-valued variables. */
   combine(other: Template): Template {
@@ -144,33 +148,36 @@ export class Template {
     return applyFilter(this, `difference(${filterArgText(other)})`);
   }
   /** `| regex_replace(pattern, replacement)` — regex substitution. */
-  regexReplace(pattern: string, replacement: string): Template {
-    return applyFilter(this, `regex_replace('${pattern}', '${replacement}')`);
+  regexReplace(pattern: string, replacement: string): VarRef<string> {
+    return applyFilter<string>(
+      this,
+      `regex_replace('${pattern}', '${replacement}')`,
+    );
   }
   /**
    * `| password_hash(scheme[, salt])` — hash a password with crypt. `scheme` is
    * a crypt method like `"sha512"`; `salt` is an optional ref/literal salt.
    */
-  passwordHash(scheme: string, salt?: FilterArg): Template {
+  passwordHash(scheme: string, salt?: FilterArg): VarRef<string> {
     const args = salt === undefined
       ? `'${scheme}'`
       : `'${scheme}', ${filterArgText(salt)}`;
-    return applyFilter(this, `password_hash(${args})`);
+    return applyFilter<string>(this, `password_hash(${args})`);
   }
 
   /**
    * Python string methods usable in Jinja value expressions:
    *   gh.tag.ref.lstrip("v")   // {{ gh.tag.lstrip('v') }}
    */
-  lstrip(chars: string): Template {
-    return applyMethod(this, `lstrip('${chars}')`);
+  lstrip(chars: string): VarRef<string> {
+    return applyMethod<string>(this, `lstrip('${chars}')`);
   }
-  rstrip(chars: string): Template {
-    return applyMethod(this, `rstrip('${chars}')`);
+  rstrip(chars: string): VarRef<string> {
+    return applyMethod<string>(this, `rstrip('${chars}')`);
   }
   /** `.strip()` — strip leading/trailing whitespace. */
-  strip(): Template {
-    return applyMethod(this, "strip()");
+  strip(): VarRef<string> {
+    return applyMethod<string>(this, "strip()");
   }
   /** `.split(sep)` — split a string into a list (pass `"\\n"` for a newline). */
   split(sep: string): Template {
@@ -196,19 +203,23 @@ export class Template {
 // STRUCTURAL — `VarRef<T>` can intersect `T` (`VarRef<boolean>` assignable to
 // `boolean`) without a private member collapsing the intersection to `never`,
 // and without exposing a raw `| <anything>` filter escape hatch.
-function applyFilter(t: Template, text: string): Template {
+function applyFilter<T = unknown>(t: Template, text: string): VarRef<T> {
   const p = t.parts;
   if (p.length !== 1 || p[0].kind !== "ref") {
     throw new Error(`Jinja filter applied to a non-ref template: "${t}"`);
   }
-  return new Template([{ kind: "ref", jinja: `${p[0].jinja} | ${text}` }]);
+  return new Template([
+    { kind: "ref", jinja: `${p[0].jinja} | ${text}` },
+  ]) as VarRef<T>;
 }
-function applyMethod(t: Template, call: string): Template {
+function applyMethod<T = unknown>(t: Template, call: string): VarRef<T> {
   const p = t.parts;
   if (p.length !== 1 || p[0].kind !== "ref") {
     throw new Error(`Jinja method call on a non-ref template: "${t}"`);
   }
-  return new Template([{ kind: "ref", jinja: `${p[0].jinja}.${call}` }]);
+  return new Template([
+    { kind: "ref", jinja: `${p[0].jinja}.${call}` },
+  ]) as VarRef<T>;
 }
 
 /**
