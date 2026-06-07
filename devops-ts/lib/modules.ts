@@ -82,7 +82,7 @@ export type UserArgs = {
   groups?: Names;
   group?: Tmpl;
   append?: boolean;
-  create_home?: Flag;
+  create_home?: boolean;
   state?: Tmpl;
   password?: Tmpl;
   system?: boolean;

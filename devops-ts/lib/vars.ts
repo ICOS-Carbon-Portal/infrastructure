@@ -123,12 +123,15 @@ export class Expr {
   /**
    * Use this condition in a VALUE position (a `set_fact`, `become:`, a module
    * arg) as `{{ <expr> }}` — the value-position counterpart of the bare
-   * when-condition rendering. Replaces `expr("a or b")`-style escapes:
+   * when-condition rendering. A `when:` expression always evaluates to a
+   * boolean, so the result is typed `VarRef<boolean>` (it fits a `boolean`
+   * field, while still rendering as the `{{ … }}` reference).
+   * Replaces `expr("a or b")`-style escapes:
    *
    *   or(_a.changed, _b.changed).asValue()  // {{ _a.changed or _b.changed }}
    */
-  asValue(): Template {
-    return new Template([{ kind: "ref", jinja: this.text }]);
+  asValue(): VarRef<boolean> {
+    return new Template([{ kind: "ref", jinja: this.text }]) as VarRef<boolean>;
   }
 }
 
