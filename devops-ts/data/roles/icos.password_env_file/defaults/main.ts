@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.password_env_file/_ctx.ts";
 
 export default {
-  "length": 32,
+  "length": 32
 } satisfies Vars;

@@ -3,5 +3,5 @@ import { type Vars } from "../../../../roles/icos.keycloak/_ctx.ts";
 
 export default {
   "kc_home": "/opt/keycloak",
-  "kc_port": 28080,
+  "kc_port": 28080
 } satisfies Vars;

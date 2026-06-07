@@ -3,5 +3,5 @@ import { type Vars } from "../../../../roles/icos.nfs4/_ctx.ts";
 
 export default {
   "nfs4_interface": null,
-  "nfs4_host": null,
+  "nfs4_host": null
 } satisfies Vars;

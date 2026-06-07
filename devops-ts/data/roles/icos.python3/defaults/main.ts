@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.python3/_ctx.ts";
 
 export default {
-  "python3_version_list": [],
+  "python3_version_list": []
 } satisfies Vars;

@@ -41,7 +41,7 @@ Deno.test("eq/ne: string literal renders quoted, ref renders bare", () => {
 
 Deno.test("isDefined family: name string is bare; distinct undefined renderings", () => {
   eqs(
-    isDefined("cpauth_domains"),
+    isDefined(V.cpauth_domains),
     "cpauth_domains is defined",
     "isDefined name",
   );
@@ -95,7 +95,7 @@ Deno.test("membership: ref collection and tuple literal", () => {
 });
 
 Deno.test("isTruthy / isVersion", () => {
-  eqs(isTruthy("root_keys"), "root_keys is truthy", "is truthy");
+  eqs(isTruthy(V.root_keys), "root_keys is truthy", "is truthy");
   eqs(
     isVersion(V.ansible_kernel, "5.6", ">="),
     "ansible_kernel is version('5.6', '>=')",
@@ -116,7 +116,7 @@ Deno.test("composition: not / or / group", () => {
     "not (… | bool)",
   );
   eqs(
-    and(isDefined("cpauth_domains"), not(V.nginx_metrics_enable)),
+    and(isDefined(V.cpauth_domains), not(V.nginx_metrics_enable)),
     "cpauth_domains is defined and not nginx_metrics_enable",
     "is defined and not …",
   );

@@ -6,10 +6,5 @@ import { tmpl } from "../../../../lib/template.ts";
 import { type Vars } from "../../../../roles/icos.cni_plugins/_ctx.ts";
 
 export default {
-  "cni_plugin_url":
-    tmpl`https://github.com/containernetworking/plugins/releases/download/${
-      register("podman_release").tag.ref
-    }/cni-plugins-linux-${podman_arch.at(ansible_machine)}-${
-      register("podman_release").tag.ref
-    }.tgz`,
+  "cni_plugin_url": tmpl`https://github.com/containernetworking/plugins/releases/download/${register("podman_release").tag.ref}/cni-plugins-linux-${podman_arch.at(ansible_machine)}-${register("podman_release").tag.ref}.tgz`
 } satisfies Vars;

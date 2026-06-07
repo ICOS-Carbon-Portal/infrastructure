@@ -6,5 +6,5 @@ export default {
   "nginx_certbot_bin": "/snap/bin/certbot",
   "nginx_metrics_enable": false,
   "nginx_metrics_addr": "127.0.0.1:9113",
-  "nginx_metrics_url": "http://127.0.0.1/metrics",
+  "nginx_metrics_url": "http://127.0.0.1/metrics"
 } satisfies Vars;

@@ -11,7 +11,6 @@ export default {
   "httm_architecture": fake_architecture.default(ansible_architecture),
   "httm_version": hostvar("localhost").httm_version,
   "httm_url_map": {
-    "x86_64":
-      tmpl`https://github.com/kimono-koans/httm/releases/download/${V.httm_version}/httm_${V.httm_version}-1_amd64.deb`,
-  },
+    "x86_64": tmpl`https://github.com/kimono-koans/httm/releases/download/${V.httm_version}/httm_${V.httm_version}-1_amd64.deb`
+  }
 } satisfies Vars;

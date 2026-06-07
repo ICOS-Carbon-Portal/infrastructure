@@ -14,9 +14,9 @@ export default {
     "otc",
     "otctest",
     "se",
-    "sites",
+    "sites"
   ],
   "drupal_home": "/disk/data/drupal",
   "drupal_modules": [],
-  "update": false,
+  "update": false
 } satisfies Partial<Vars>;

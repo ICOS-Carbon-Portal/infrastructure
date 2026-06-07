@@ -3,7 +3,7 @@
 // Per-role variable context: 17 own variables, reached through
 // the `V` accessor (typed by the Vars interface). The Vars interface is
 // also the type this role's generated data satisfies.
-import { type Tmpl, varProxy, type VarRef } from "../../lib/template.ts";
+import { type Tmpl, type VarRef, varProxy } from "../../lib/template.ts";
 
 export interface Vars {
   certbot_conf_name: Tmpl;
@@ -25,7 +25,6 @@ export interface Vars {
   update: boolean;
 }
 
-export const V: { readonly [K in keyof Vars]: VarRef<Vars[K]> } = new Proxy(
-  {},
-  { get: (_t, name: string) => varProxy(name) },
-) as { readonly [K in keyof Vars]: VarRef<Vars[K]> };
+export const V: { readonly [K in keyof Vars]: VarRef<Vars[K]> } =
+  new Proxy({}, { get: (_t, name: string) => varProxy(name) }) as
+    { readonly [K in keyof Vars]: VarRef<Vars[K]> };

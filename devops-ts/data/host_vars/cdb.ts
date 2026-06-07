@@ -3,8 +3,8 @@ import { type VarsFile } from "../../lib/data.ts";
 
 export default {
   "caddy_modules": [
-    "github.com/caddyserver/replace-response",
+    "github.com/caddyserver/replace-response"
   ],
   "caddy_global_conf": "{\n    order replace after encode\n}\n",
-  "lxd_vm_variant": "ext4",
+  "lxd_vm_variant": "ext4"
 } satisfies VarsFile;

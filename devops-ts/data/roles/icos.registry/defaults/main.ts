@@ -5,5 +5,5 @@ import { V, type Vars } from "../../../../roles/icos.registry/_ctx.ts";
 export default {
   "registry_home": "/docker/registry",
   "registry_htpasswd_file": tmpl`${V.registry_home}/volumes/auth/htpasswd`,
-  "registry_users": [],
+  "registry_users": []
 } satisfies Vars;

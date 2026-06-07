@@ -10,10 +10,10 @@ export default {
   "ssl_domains": [
     "otc.icos-cp.eu",
     "icos-otc.org",
-    "www.icos-otc.org",
+    "www.icos-otc.org"
   ],
   "drupal_modules": [
     "bartik",
-    "redirect",
-  ],
+    "redirect"
+  ]
 } satisfies VarsFile;

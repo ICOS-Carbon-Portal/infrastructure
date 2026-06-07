@@ -9,9 +9,9 @@ export default {
   "trusted_host": "^www\\.icos-netherlands\\.nl$",
   "ssl_domains": [
     "icos-netherlands.nl",
-    "www.icos-netherlands.nl",
+    "www.icos-netherlands.nl"
   ],
   "drupal_modules": [
-    "bartik",
-  ],
+    "bartik"
+  ]
 } satisfies VarsFile;

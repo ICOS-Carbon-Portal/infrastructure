@@ -9,8 +9,8 @@ export default {
     "vars": {
       "nebula_interfaces": {
         "interfaces": {
-          "wg-*": false,
-        },
+          "wg-*": false
+        }
       },
       "nebula_host": "0.0.0.0",
       "nebula_ssh_enable": true,
@@ -23,64 +23,63 @@ export default {
       "nebula_netmask": "/22",
       "nebula_static_host_map": {
         "100.100.4.1": [
-          "fsicos4.icos-cp.eu:60422",
+          "fsicos4.icos-cp.eu:60422"
         ],
         "100.100.4.2": [
-          "fsicos3.icos-cp.eu:60422",
+          "fsicos3.icos-cp.eu:60422"
         ],
         "100.100.4.4": [
-          "fsicos2.icos-cp.eu:60422",
+          "fsicos2.icos-cp.eu:60422"
         ],
         "100.100.4.5": [
-          "icos1.icos-cp.eu:60422",
+          "icos1.icos-cp.eu:60422"
         ],
         "100.100.4.7": [
-          "cdb.nateko.lu.se:60422",
-        ],
+          "cdb.nateko.lu.se:60422"
+        ]
       },
-      "nebula_hosts_block":
-        tmpl`${jinja`{% for host in query('hosts', 'nebula_hosts',
+      "nebula_hosts_block": tmpl`${jinja`{% for host in query('hosts', 'nebula_hosts',
                      var='nebula_ip', how='version') %}`}
 ${jinja`{{ ${hostvars}[host]['nebula_ip'] }}`}	${jinja`{{ ${hostvars}[host]['inventory_hostname_short'] }}`}.nebula
 ${jinja`{% endfor %}`}
-`,
+`
     },
     "hosts": {
       "icos1": {
         "ansible_python_interpreter": "/usr/bin/python3",
         "nebula_ip": "100.100.4.5",
-        "nebula_is_lighthouse": true,
+        "nebula_is_lighthouse": true
       },
       "fsicos2": {
         "nebula_ip": "100.100.4.4",
-        "nebula_is_lighthouse": true,
+        "nebula_is_lighthouse": true
       },
       "fsicos3": {
         "nebula_ip": "100.100.4.2",
-        "nebula_is_lighthouse": true,
+        "nebula_is_lighthouse": true
       },
       "fsicos4": {
         "nebula_ip": "100.100.4.1",
         "nebula_is_lighthouse": true,
-        "nebula_fw_enable": false,
+        "nebula_fw_enable": false
       },
       "cdb": {
         "nebula_ip": "100.100.4.7",
         "nebula_is_lighthouse": true,
-        "nebula_fw_enable": true,
+        "nebula_fw_enable": true
       },
       "cupcake": {
         "nebula_ip": "100.100.4.3",
-        "nebula_port": 60703,
+        "nebula_port": 60703
       },
       "fsicos4-stiltcluster": {
         "nebula_ip": "100.100.4.8",
-        "nebula_port": 60705,
+        "nebula_port": 60705
       },
       "pancake": {
         "nebula_ip": "100.100.4.9",
-        "nebula_port": 60706,
-      },
-    },
-  },
+        "nebula_port": 60706
+      }
+    }
+  }
 } satisfies Inventory;

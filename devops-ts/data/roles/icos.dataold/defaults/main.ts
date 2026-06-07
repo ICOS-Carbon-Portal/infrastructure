@@ -6,6 +6,6 @@ export default {
   "dataold_ext_port": 60443,
   "certbot_name": "dataold",
   "certbot_domains": [
-    "dataold.icos-cp.eu",
-  ],
+    "dataold.icos-cp.eu"
+  ]
 } satisfies Vars;

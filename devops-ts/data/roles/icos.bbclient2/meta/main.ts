@@ -5,7 +5,7 @@ export default {
   "dependencies": [
     {
       "role": "icos.borg",
-      "tags": "borg",
-    },
-  ],
+      "tags": "borg"
+    }
+  ]
 } satisfies Meta;

@@ -7,5 +7,5 @@ import { V } from "../../../../roles/icos.drupal/_ctx.ts";
 export default {
   "project_dir": tmpl`${V.drupal_home}/${website}/drupal`,
   "certbot_domains": jinja`{{ ${V.ssl_domains} | default([${V.domain}]) }}`,
-  "certbot_conf_name": V.nginx_conf_name,
+  "certbot_conf_name": V.nginx_conf_name
 } satisfies VarsFile;

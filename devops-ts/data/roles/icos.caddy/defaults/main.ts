@@ -4,12 +4,12 @@ import { iff } from "../../../../lib/template.ts";
 import { V, type Vars } from "../../../../roles/icos.caddy/_ctx.ts";
 
 export default {
-  "caddy_global_conf": ':80 {\n  respond "Not found." 404\n}\n',
+  "caddy_global_conf": ":80 {\n  respond \"Not found.\" 404\n}\n",
   "caddy_site_state": "present",
   "caddy_modules": [],
   "caddy_dropin_path": "/etc/systemd/system/caddy.service.d/usr_local_bin.conf",
   "caddy_via_xcaddy": "/usr/local/bin/caddy",
   "caddy_bin": iff(V.caddy_modules, V.caddy_via_xcaddy, "/usr/bin/caddy"),
   "caddy_upgrade": upgrade_everything.default(false).bool(),
-  "xcaddy_upgrade": V.caddy_upgrade,
+  "xcaddy_upgrade": V.caddy_upgrade
 } satisfies Vars;

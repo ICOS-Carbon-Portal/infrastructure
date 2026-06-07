@@ -5,5 +5,5 @@ export default {
   "fdp_home": "/home/fdp/fdpenvri",
   "fdp_domain": "fdpdemo.envri.eu",
   "index_enabled": false,
-  "ping_enabled": false,
+  "ping_enabled": false
 } satisfies Vars;

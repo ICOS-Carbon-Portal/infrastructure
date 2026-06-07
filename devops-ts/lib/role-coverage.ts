@@ -129,233 +129,107 @@ type Params<R extends string> = R extends keyof Roles
   : never;
 type Missing<R extends string, Own> = Exclude<Params<R>, keyof Own | Reg>;
 type Assert<T extends never> = T;
-export type _cov_V_icos_bbclient2 = Assert<
-  Missing<"icos.bbclient2", V_icos_bbclient2>
->;
-export type _cov_V_icos_bbserver = Assert<
-  Missing<"icos.bbserver", V_icos_bbserver>
->;
+export type _cov_V_icos_bbclient2 = Assert<Missing<"icos.bbclient2", V_icos_bbclient2>>;
+export type _cov_V_icos_bbserver = Assert<Missing<"icos.bbserver", V_icos_bbserver>>;
 export type _cov_V_icos_borg = Assert<Missing<"icos.borg", V_icos_borg>>;
 export type _cov_V_icos_caddy = Assert<Missing<"icos.caddy", V_icos_caddy>>;
-export type _cov_V_icos_certbot = Assert<
-  Missing<"icos.certbot", V_icos_certbot>
->;
-export type _cov_V_icos_certbot2 = Assert<
-  Missing<"icos.certbot2", V_icos_certbot2>
->;
-export type _cov_V_icos_cni_plugins = Assert<
-  Missing<"icos.cni_plugins", V_icos_cni_plugins>
->;
+export type _cov_V_icos_certbot = Assert<Missing<"icos.certbot", V_icos_certbot>>;
+export type _cov_V_icos_certbot2 = Assert<Missing<"icos.certbot2", V_icos_certbot2>>;
+export type _cov_V_icos_cni_plugins = Assert<Missing<"icos.cni_plugins", V_icos_cni_plugins>>;
 export type _cov_V_icos_conmon = Assert<Missing<"icos.conmon", V_icos_conmon>>;
 export type _cov_V_icos_cpauth = Assert<Missing<"icos.cpauth", V_icos_cpauth>>;
 export type _cov_V_icos_cpdata = Assert<Missing<"icos.cpdata", V_icos_cpdata>>;
 export type _cov_V_icos_cpmeta = Assert<Missing<"icos.cpmeta", V_icos_cpmeta>>;
-export type _cov_V_icos_dataold = Assert<
-  Missing<"icos.dataold", V_icos_dataold>
->;
-export type _cov_V_icos_dnsmasq = Assert<
-  Missing<"icos.dnsmasq", V_icos_dnsmasq>
->;
+export type _cov_V_icos_dataold = Assert<Missing<"icos.dataold", V_icos_dataold>>;
+export type _cov_V_icos_dnsmasq = Assert<Missing<"icos.dnsmasq", V_icos_dnsmasq>>;
 export type _cov_V_icos_docker = Assert<Missing<"icos.docker", V_icos_docker>>;
-export type _cov_V_icos_docker2 = Assert<
-  Missing<"icos.docker2", V_icos_docker2>
->;
-export type _cov_V_icos_docker_utils = Assert<
-  Missing<"icos.docker_utils", V_icos_docker_utils>
->;
+export type _cov_V_icos_docker2 = Assert<Missing<"icos.docker2", V_icos_docker2>>;
+export type _cov_V_icos_docker_utils = Assert<Missing<"icos.docker_utils", V_icos_docker_utils>>;
 export type _cov_V_icos_doi = Assert<Missing<"icos.doi", V_icos_doi>>;
 export type _cov_V_icos_dokku = Assert<Missing<"icos.dokku", V_icos_dokku>>;
-export type _cov_V_icos_dovecot = Assert<
-  Missing<"icos.dovecot", V_icos_dovecot>
->;
+export type _cov_V_icos_dovecot = Assert<Missing<"icos.dovecot", V_icos_dovecot>>;
 export type _cov_V_icos_drupal = Assert<Missing<"icos.drupal", V_icos_drupal>>;
-export type _cov_V_icos_eurocom = Assert<
-  Missing<"icos.eurocom", V_icos_eurocom>
->;
-export type _cov_V_icos_exploredata = Assert<
-  Missing<"icos.exploredata", V_icos_exploredata>
->;
-export type _cov_V_icos_fail2ban = Assert<
-  Missing<"icos.fail2ban", V_icos_fail2ban>
->;
-export type _cov_V_icos_fairdatapoint = Assert<
-  Missing<"icos.fairdatapoint", V_icos_fairdatapoint>
->;
-export type _cov_V_icos_fairdolab = Assert<
-  Missing<"icos.fairdolab", V_icos_fairdolab>
->;
-export type _cov_V_icos_filedrop = Assert<
-  Missing<"icos.filedrop", V_icos_filedrop>
->;
-export type _cov_V_icos_flexextract = Assert<
-  Missing<"icos.flexextract", V_icos_flexextract>
->;
-export type _cov_V_icos_flexpart = Assert<
-  Missing<"icos.flexpart", V_icos_flexpart>
->;
+export type _cov_V_icos_eurocom = Assert<Missing<"icos.eurocom", V_icos_eurocom>>;
+export type _cov_V_icos_exploredata = Assert<Missing<"icos.exploredata", V_icos_exploredata>>;
+export type _cov_V_icos_fail2ban = Assert<Missing<"icos.fail2ban", V_icos_fail2ban>>;
+export type _cov_V_icos_fairdatapoint = Assert<Missing<"icos.fairdatapoint", V_icos_fairdatapoint>>;
+export type _cov_V_icos_fairdolab = Assert<Missing<"icos.fairdolab", V_icos_fairdolab>>;
+export type _cov_V_icos_filedrop = Assert<Missing<"icos.filedrop", V_icos_filedrop>>;
+export type _cov_V_icos_flexextract = Assert<Missing<"icos.flexextract", V_icos_flexextract>>;
+export type _cov_V_icos_flexpart = Assert<Missing<"icos.flexpart", V_icos_flexpart>>;
 export type _cov_V_icos_geoip = Assert<Missing<"icos.geoip", V_icos_geoip>>;
-export type _cov_V_icos_github_download_bin = Assert<
-  Missing<"icos.github_download_bin", V_icos_github_download_bin>
->;
+export type _cov_V_icos_github_download_bin = Assert<Missing<"icos.github_download_bin", V_icos_github_download_bin>>;
 export type _cov_V_icos_golang = Assert<Missing<"icos.golang", V_icos_golang>>;
-export type _cov_V_icos_iptables = Assert<
-  Missing<"icos.iptables", V_icos_iptables>
->;
-export type _cov_V_icos_jarservice = Assert<
-  Missing<"icos.jarservice", V_icos_jarservice>
->;
-export type _cov_V_icos_jarservice2 = Assert<
-  Missing<"icos.jarservice2", V_icos_jarservice2>
->;
+export type _cov_V_icos_iptables = Assert<Missing<"icos.iptables", V_icos_iptables>>;
+export type _cov_V_icos_jarservice = Assert<Missing<"icos.jarservice", V_icos_jarservice>>;
+export type _cov_V_icos_jarservice2 = Assert<Missing<"icos.jarservice2", V_icos_jarservice2>>;
 export type _cov_V_icos_jbuild = Assert<Missing<"icos.jbuild", V_icos_jbuild>>;
-export type _cov_V_icos_jupyter = Assert<
-  Missing<"icos.jupyter", V_icos_jupyter>
->;
+export type _cov_V_icos_jupyter = Assert<Missing<"icos.jupyter", V_icos_jupyter>>;
 export type _cov_V_icos_just = Assert<Missing<"icos.just", V_icos_just>>;
-export type _cov_V_icos_keycloak = Assert<
-  Missing<"icos.keycloak", V_icos_keycloak>
->;
-export type _cov_V_icos_lxd_forward = Assert<
-  Missing<"icos.lxd_forward", V_icos_lxd_forward>
->;
-export type _cov_V_icos_lxd_guest = Assert<
-  Missing<"icos.lxd_guest", V_icos_lxd_guest>
->;
-export type _cov_V_icos_lxd_server = Assert<
-  Missing<"icos.lxd_server", V_icos_lxd_server>
->;
+export type _cov_V_icos_keycloak = Assert<Missing<"icos.keycloak", V_icos_keycloak>>;
+export type _cov_V_icos_lxd_forward = Assert<Missing<"icos.lxd_forward", V_icos_lxd_forward>>;
+export type _cov_V_icos_lxd_guest = Assert<Missing<"icos.lxd_guest", V_icos_lxd_guest>>;
+export type _cov_V_icos_lxd_server = Assert<Missing<"icos.lxd_server", V_icos_lxd_server>>;
 export type _cov_V_icos_lxd_vm = Assert<Missing<"icos.lxd_vm", V_icos_lxd_vm>>;
-export type _cov_V_icos_mailman = Assert<
-  Missing<"icos.mailman", V_icos_mailman>
->;
+export type _cov_V_icos_mailman = Assert<Missing<"icos.mailman", V_icos_mailman>>;
 export type _cov_V_icos_maps = Assert<Missing<"icos.maps", V_icos_maps>>;
 export type _cov_V_icos_matomo = Assert<Missing<"icos.matomo", V_icos_matomo>>;
 export type _cov_V_icos_mosh = Assert<Missing<"icos.mosh", V_icos_mosh>>;
 export type _cov_V_icos_mtail = Assert<Missing<"icos.mtail", V_icos_mtail>>;
 export type _cov_V_icos_nebula = Assert<Missing<"icos.nebula", V_icos_nebula>>;
-export type _cov_V_icos_nextcloud = Assert<
-  Missing<"icos.nextcloud", V_icos_nextcloud>
->;
+export type _cov_V_icos_nextcloud = Assert<Missing<"icos.nextcloud", V_icos_nextcloud>>;
 export type _cov_V_icos_nexus = Assert<Missing<"icos.nexus", V_icos_nexus>>;
 export type _cov_V_icos_nfs4 = Assert<Missing<"icos.nfs4", V_icos_nfs4>>;
 export type _cov_V_icos_nginx = Assert<Missing<"icos.nginx", V_icos_nginx>>;
-export type _cov_V_icos_nginxauth = Assert<
-  Missing<"icos.nginxauth", V_icos_nginxauth>
->;
-export type _cov_V_icos_nginxforward = Assert<
-  Missing<"icos.nginxforward", V_icos_nginxforward>
->;
-export type _cov_V_icos_nginxsite = Assert<
-  Missing<"icos.nginxsite", V_icos_nginxsite>
->;
-export type _cov_V_icos_node_exporter = Assert<
-  Missing<"icos.node_exporter", V_icos_node_exporter>
->;
-export type _cov_V_icos_onlyoffice = Assert<
-  Missing<"icos.onlyoffice", V_icos_onlyoffice>
->;
-export type _cov_V_icos_opendkim = Assert<
-  Missing<"icos.opendkim", V_icos_opendkim>
->;
-export type _cov_V_icos_password_env_file = Assert<
-  Missing<"icos.password_env_file", V_icos_password_env_file>
->;
+export type _cov_V_icos_nginxauth = Assert<Missing<"icos.nginxauth", V_icos_nginxauth>>;
+export type _cov_V_icos_nginxforward = Assert<Missing<"icos.nginxforward", V_icos_nginxforward>>;
+export type _cov_V_icos_nginxsite = Assert<Missing<"icos.nginxsite", V_icos_nginxsite>>;
+export type _cov_V_icos_node_exporter = Assert<Missing<"icos.node_exporter", V_icos_node_exporter>>;
+export type _cov_V_icos_onlyoffice = Assert<Missing<"icos.onlyoffice", V_icos_onlyoffice>>;
+export type _cov_V_icos_opendkim = Assert<Missing<"icos.opendkim", V_icos_opendkim>>;
+export type _cov_V_icos_password_env_file = Assert<Missing<"icos.password_env_file", V_icos_password_env_file>>;
 export type _cov_V_icos_pgrep = Assert<Missing<"icos.pgrep", V_icos_pgrep>>;
 export type _cov_V_icos_pipx = Assert<Missing<"icos.pipx", V_icos_pipx>>;
-export type _cov_V_icos_plausible = Assert<
-  Missing<"icos.plausible", V_icos_plausible>
->;
+export type _cov_V_icos_plausible = Assert<Missing<"icos.plausible", V_icos_plausible>>;
 export type _cov_V_icos_podman = Assert<Missing<"icos.podman", V_icos_podman>>;
-export type _cov_V_icos_podman_manual = Assert<
-  Missing<"icos.podman_manual", V_icos_podman_manual>
->;
-export type _cov_V_icos_postfix = Assert<
-  Missing<"icos.postfix", V_icos_postfix>
->;
-export type _cov_V_icos_postgis = Assert<
-  Missing<"icos.postgis", V_icos_postgis>
->;
-export type _cov_V_icos_postgresql = Assert<
-  Missing<"icos.postgresql", V_icos_postgresql>
->;
-export type _cov_V_icos_pve_guest = Assert<
-  Missing<"icos.pve_guest", V_icos_pve_guest>
->;
-export type _cov_V_icos_pve_server = Assert<
-  Missing<"icos.pve_server", V_icos_pve_server>
->;
-export type _cov_V_icos_python3 = Assert<
-  Missing<"icos.python3", V_icos_python3>
->;
-export type _cov_V_icos_python_util = Assert<
-  Missing<"icos.python_util", V_icos_python_util>
->;
+export type _cov_V_icos_podman_manual = Assert<Missing<"icos.podman_manual", V_icos_podman_manual>>;
+export type _cov_V_icos_postfix = Assert<Missing<"icos.postfix", V_icos_postfix>>;
+export type _cov_V_icos_postgis = Assert<Missing<"icos.postgis", V_icos_postgis>>;
+export type _cov_V_icos_postgresql = Assert<Missing<"icos.postgresql", V_icos_postgresql>>;
+export type _cov_V_icos_pve_guest = Assert<Missing<"icos.pve_guest", V_icos_pve_guest>>;
+export type _cov_V_icos_pve_server = Assert<Missing<"icos.pve_server", V_icos_pve_server>>;
+export type _cov_V_icos_python3 = Assert<Missing<"icos.python3", V_icos_python3>>;
+export type _cov_V_icos_python_util = Assert<Missing<"icos.python_util", V_icos_python_util>>;
 export type _cov_V_icos_quince = Assert<Missing<"icos.quince", V_icos_quince>>;
 export type _cov_V_icos_rdflog = Assert<Missing<"icos.rdflog", V_icos_rdflog>>;
-export type _cov_V_icos_registry = Assert<
-  Missing<"icos.registry", V_icos_registry>
->;
-export type _cov_V_icos_restheart = Assert<
-  Missing<"icos.restheart", V_icos_restheart>
->;
+export type _cov_V_icos_registry = Assert<Missing<"icos.registry", V_icos_registry>>;
+export type _cov_V_icos_restheart = Assert<Missing<"icos.restheart", V_icos_restheart>>;
 export type _cov_V_icos_restic = Assert<Missing<"icos.restic", V_icos_restic>>;
-export type _cov_V_icos_restic_server = Assert<
-  Missing<"icos.restic_server", V_icos_restic_server>
->;
+export type _cov_V_icos_restic_server = Assert<Missing<"icos.restic_server", V_icos_restic_server>>;
 export type _cov_V_icos_rspamd = Assert<Missing<"icos.rspamd", V_icos_rspamd>>;
 export type _cov_V_icos_rsyncd = Assert<Missing<"icos.rsyncd", V_icos_rsyncd>>;
-export type _cov_V_icos_script_exporter = Assert<
-  Missing<"icos.script_exporter", V_icos_script_exporter>
->;
+export type _cov_V_icos_script_exporter = Assert<Missing<"icos.script_exporter", V_icos_script_exporter>>;
 export type _cov_V_icos_server = Assert<Missing<"icos.server", V_icos_server>>;
-export type _cov_V_icos_sftp_user = Assert<
-  Missing<"icos.sftp_user", V_icos_sftp_user>
->;
-export type _cov_V_icos_sitesaquanetform = Assert<
-  Missing<"icos.sitesaquanetform", V_icos_sitesaquanetform>
->;
-export type _cov_V_icos_sshlogin = Assert<
-  Missing<"icos.sshlogin", V_icos_sshlogin>
->;
-export type _cov_V_icos_stiltcluster = Assert<
-  Missing<"icos.stiltcluster", V_icos_stiltcluster>
->;
-export type _cov_V_icos_stiltrun = Assert<
-  Missing<"icos.stiltrun", V_icos_stiltrun>
->;
-export type _cov_V_icos_stiltweb = Assert<
-  Missing<"icos.stiltweb", V_icos_stiltweb>
->;
-export type _cov_V_icos_sysstat = Assert<
-  Missing<"icos.sysstat", V_icos_sysstat>
->;
-export type _cov_V_icos_telegraf = Assert<
-  Missing<"icos.telegraf", V_icos_telegraf>
->;
+export type _cov_V_icos_sftp_user = Assert<Missing<"icos.sftp_user", V_icos_sftp_user>>;
+export type _cov_V_icos_sitesaquanetform = Assert<Missing<"icos.sitesaquanetform", V_icos_sitesaquanetform>>;
+export type _cov_V_icos_sshlogin = Assert<Missing<"icos.sshlogin", V_icos_sshlogin>>;
+export type _cov_V_icos_stiltcluster = Assert<Missing<"icos.stiltcluster", V_icos_stiltcluster>>;
+export type _cov_V_icos_stiltrun = Assert<Missing<"icos.stiltrun", V_icos_stiltrun>>;
+export type _cov_V_icos_stiltweb = Assert<Missing<"icos.stiltweb", V_icos_stiltweb>>;
+export type _cov_V_icos_sysstat = Assert<Missing<"icos.sysstat", V_icos_sysstat>>;
+export type _cov_V_icos_telegraf = Assert<Missing<"icos.telegraf", V_icos_telegraf>>;
 export type _cov_V_icos_timer = Assert<Missing<"icos.timer", V_icos_timer>>;
 export type _cov_V_icos_timer2 = Assert<Missing<"icos.timer2", V_icos_timer2>>;
-export type _cov_V_icos_typesense = Assert<
-  Missing<"icos.typesense", V_icos_typesense>
->;
+export type _cov_V_icos_typesense = Assert<Missing<"icos.typesense", V_icos_typesense>>;
 export type _cov_V_icos_users = Assert<Missing<"icos.users", V_icos_users>>;
 export type _cov_V_icos_utils = Assert<Missing<"icos.utils", V_icos_utils>>;
 export type _cov_V_icos_uv = Assert<Missing<"icos.uv", V_icos_uv>>;
-export type _cov_V_icos_victoriametrics = Assert<
-  Missing<"icos.victoriametrics", V_icos_victoriametrics>
->;
-export type _cov_V_icos_virtuoso = Assert<
-  Missing<"icos.virtuoso", V_icos_virtuoso>
->;
-export type _cov_V_icos_vmagent = Assert<
-  Missing<"icos.vmagent", V_icos_vmagent>
->;
+export type _cov_V_icos_victoriametrics = Assert<Missing<"icos.victoriametrics", V_icos_victoriametrics>>;
+export type _cov_V_icos_virtuoso = Assert<Missing<"icos.virtuoso", V_icos_virtuoso>>;
+export type _cov_V_icos_vmagent = Assert<Missing<"icos.vmagent", V_icos_vmagent>>;
 export type _cov_V_icos_wg_hub = Assert<Missing<"icos.wg_hub", V_icos_wg_hub>>;
-export type _cov_V_icos_wireguard = Assert<
-  Missing<"icos.wireguard", V_icos_wireguard>
->;
+export type _cov_V_icos_wireguard = Assert<Missing<"icos.wireguard", V_icos_wireguard>>;
 export type _cov_V_icos_xcaddy = Assert<Missing<"icos.xcaddy", V_icos_xcaddy>>;
-export type _cov_V_icos_zfsdocker = Assert<
-  Missing<"icos.zfsdocker", V_icos_zfsdocker>
->;
+export type _cov_V_icos_zfsdocker = Assert<Missing<"icos.zfsdocker", V_icos_zfsdocker>>;
 export type _cov_V_icos_zrepl = Assert<Missing<"icos.zrepl", V_icos_zrepl>>;
 export type _cov_V_ops_zfs = Assert<Missing<"ops.zfs", V_ops_zfs>>;

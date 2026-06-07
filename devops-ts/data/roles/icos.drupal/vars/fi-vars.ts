@@ -9,13 +9,13 @@ export default {
   "trusted_host": "^www\\.icos-finland\\.fi$",
   "ssl_domains": [
     "icos-finland.fi",
-    "www.icos-finland.fi",
+    "www.icos-finland.fi"
   ],
   "drupal_modules": [
     "bartik",
     "linkit",
     "pathauto",
     "redirect",
-    "smtp",
-  ],
+    "smtp"
+  ]
 } satisfies VarsFile;

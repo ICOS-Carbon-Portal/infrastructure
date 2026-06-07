@@ -6,20 +6,14 @@ import { V, type Vars } from "../../../../roles/icos.wg_hub/_ctx.ts";
 
 export default {
   "wg_hub_self": wg_hub_config.peers.at(inventory_hostname),
-  "wg_hub_peer":
-    jinja`{{ ${wg_hub_config.hub.addr} if ${wg_hub_config.hub.addr} in ${wg_hub_config.peers} else ${wg_hub_config.hub.peer} }}`,
+  "wg_hub_peer": jinja`{{ ${wg_hub_config.hub.addr} if ${wg_hub_config.hub.addr} in ${wg_hub_config.peers} else ${wg_hub_config.hub.peer} }}`,
   "wg_hub_ishub": jinja`{{ ${wg_hub_config.hub.addr} == ${inventory_hostname} or
    ${wg_hub_config.hub.peer} | default("") == ${inventory_hostname} }}`,
-  "wg_hub_port":
-    tmpl`${jinja`{% if wg_hub_self.port is defined -%}`} ${jinja`{{ wg_hub_self.port }}`} ${jinja`{% elif ${V.wg_hub_ishub} -%}`} ${wg_hub_config.hub.port} ${jinja`{% endif %}`}`,
-  "wg_hub_addr":
-    tmpl`${jinja`{% if wg_hub_self.hub_addr is defined -%}`} ${jinja`{{ wg_hub_self.hub_addr -}}`} ${jinja`{% else -%}`} ${jinja`{{ ${wg_hub_config.hub.addr} -}}`} ${jinja`{% endif %}`}`,
+  "wg_hub_port": tmpl`${jinja`{% if wg_hub_self.port is defined -%}`} ${jinja`{{ wg_hub_self.port }}`} ${jinja`{% elif ${V.wg_hub_ishub} -%}`} ${wg_hub_config.hub.port} ${jinja`{% endif %}`}`,
+  "wg_hub_addr": tmpl`${jinja`{% if wg_hub_self.hub_addr is defined -%}`} ${jinja`{{ wg_hub_self.hub_addr -}}`} ${jinja`{% else -%}`} ${jinja`{{ ${wg_hub_config.hub.addr} -}}`} ${jinja`{% endif %}`}`,
   "wg_hub_key_dir": "files/wireguard",
-  "wg_hub_key":
-    jinja`{{ ${wg_hub_config.peers}[${V.wg_hub_peer}].key | default(lookup('file', '%s/%s' % (${V.wg_hub_key_dir}, ${V.wg_hub_peer}))) }}`,
+  "wg_hub_key": jinja`{{ ${wg_hub_config.peers}[${V.wg_hub_peer}].key | default(lookup('file', '%s/%s' % (${V.wg_hub_key_dir}, ${V.wg_hub_peer}))) }}`,
   "wg_hub_intf": tmpl`wg-${wg_hub_config.name}`,
-  "wg_hub_allow_all":
-    jinja`{{ wg_hub_self.allow_all | default(${wg_hub_config.allow_all}) | default(False) }}`,
-  "wg_hub_reresolve":
-    jinja`{{ wg_hub_self.reresolve | default(${wg_hub_config.reresolve}) | default(False) }}`,
+  "wg_hub_allow_all": jinja`{{ wg_hub_self.allow_all | default(${wg_hub_config.allow_all}) | default(False) }}`,
+  "wg_hub_reresolve": jinja`{{ wg_hub_self.reresolve | default(${wg_hub_config.reresolve}) | default(False) }}`
 } satisfies Vars;

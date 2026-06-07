@@ -11,7 +11,6 @@ export default {
   "exploredata_network": V.exploredata_name,
   "exploredata_hub_image": tmpl`${V.exploredata_name}.hub`,
   "exploredata_hub_container": tmpl`${V.exploredata_name}.hub`,
-  "exploredata_notebook_image":
-    tmpl`registry.icos-cp.eu/${V.exploredata_name}.notebook`,
-  "exploredata_max_notebooks": 50,
+  "exploredata_notebook_image": tmpl`registry.icos-cp.eu/${V.exploredata_name}.notebook`,
+  "exploredata_max_notebooks": 50
 } satisfies Vars;

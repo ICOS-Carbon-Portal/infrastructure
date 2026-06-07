@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.filedrop/_ctx.ts";
 
 export default {
-  "filedrop_port": 8039,
+  "filedrop_port": 8039
 } satisfies Vars;

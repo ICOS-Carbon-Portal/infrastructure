@@ -1,10 +1,10 @@
 // Generate per-role variable contexts: roles/<role>/_ctx.ts
 //
 // Reads each role's ../devops/roles/<role>/{defaults,vars}/*.yml, collects the
-// top-level variable names, and emits a `Vars` interface + a `context<...>()`
-// accessor. The context is widened with ONLY the registries the role's task
-// and handler files actually reference (scanned for `V.x` / `isDef("x")` /
-// `notVar("x")`), so each _ctx.ts carries the smallest type that still checks.
+// top-level variable names, and emits a `Vars` interface plus a `V` accessor (a
+// Proxy typed by `Vars`) that the role's task files reach their own variables
+// through. Also emits lib/sharedvars.ts (the cross-role surface, collected from
+// the devops YAML) and lib/role-coverage.ts (the per-role parameter check).
 // Idempotent; re-run after editing role defaults or converting tasks.
 //
 //   deno run --allow-read --allow-write gen-contexts.ts

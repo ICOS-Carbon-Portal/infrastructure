@@ -12,5 +12,5 @@ export default {
   "virtuoso_http_port": 8890,
   "virtuoso_host": V.virtuoso_bind_host,
   "virtuoso_port": V.virtuoso_http_port,
-  "virtuoso_dba_pass": vault_virtuoso_dba_pass,
+  "virtuoso_dba_pass": vault_virtuoso_dba_pass
 } satisfies Vars & Restated<Globals, "virtuoso_dba_pass">;

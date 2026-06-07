@@ -9,5 +9,5 @@ export default {
   "bbserver_home": "/home/bbserver",
   "bbserver_repo_home": tmpl`${V.bbserver_home}/repos`,
   "bbserver_monitor_home": tmpl`${V.bbserver_home}/monitor`,
-  "bbserver_textfiles": "/opt/node_exporter/textfiles",
+  "bbserver_textfiles": "/opt/node_exporter/textfiles"
 } satisfies Vars & Restated<Globals, "bbserver_user">;

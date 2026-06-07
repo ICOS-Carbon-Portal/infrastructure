@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.zrepl/_ctx.ts";
 
 export default {
-  "zrepl_port": 9479,
+  "zrepl_port": 9479
 } satisfies Vars;

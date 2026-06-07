@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.docker2/_ctx.ts";
 
 export default {
-  "docker_periodic_cleanup": true,
+  "docker_periodic_cleanup": true
 } satisfies Vars;

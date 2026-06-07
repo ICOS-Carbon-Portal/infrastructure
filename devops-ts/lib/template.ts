@@ -71,14 +71,14 @@ export class Template {
   // --- filters ----------------------------------------------------------------
   // Chainable, each appending `| <filter>` (canonical spacing) to a single-ref
   // template: V.x.default(false).bool() -> {{ x | default(False) | bool }}.
-  // Only the common filters are modelled; anything else stays an expr() escape.
+  // Only the common filters are modelled; anything else stays a `jinja` escape.
   //
   // Grouped by origin: filters built into Jinja2 itself, and filters supplied by
   // Ansible's `ansible.builtin` filter plugins. (Functionally both are just
   // `| name(args)` in the rendered output; the split is documentation so a reader
   // knows which engine each one comes from.)
 
-  /** Append `| <text>`; valid only on a single-ref template (V.x, expr(...)). */
+  /** Append `| <text>`; valid only on a single-ref template (e.g. `V.x`). */
   private filter(text: string): Template {
     const p = this.parts;
     if (p.length !== 1 || p[0].kind !== "ref") {

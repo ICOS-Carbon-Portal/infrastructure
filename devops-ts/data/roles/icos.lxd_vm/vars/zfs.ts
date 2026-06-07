@@ -10,8 +10,8 @@ export default {
       "path": "/",
       "type": "disk",
       "pool": "default",
-      "size": V.lxd_vm_root_size,
-    },
+      "size": V.lxd_vm_root_size
+    }
   },
   "__docker_device": tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"docker": {
   "path": "/var/lib/docker",
@@ -21,10 +21,9 @@ export default {
 ${jinja`{% else -%}`}{}${jinja`{% endif -%}`}`,
   "lxd_vm_default_devices": V.__root_device.combine(V.__docker_device),
   "lxd_vm_default_profiles": [
-    "default",
+    "default"
   ],
   "__base_config": {},
-  "__docker_config":
-    tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"security.nesting": "true"} ${jinja`{% else %}`}{}${jinja`{% endif -%}`}`,
-  "lxd_vm_default_config": V.__base_config.combine(V.__docker_config),
+  "__docker_config": tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"security.nesting": "true"} ${jinja`{% else %}`}{}${jinja`{% endif -%}`}`,
+  "lxd_vm_default_config": V.__base_config.combine(V.__docker_config)
 } satisfies VarsFile;

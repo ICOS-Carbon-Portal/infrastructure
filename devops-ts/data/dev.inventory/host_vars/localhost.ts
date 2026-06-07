@@ -2,5 +2,5 @@
 import { type Inventory } from "../../../lib/data.ts";
 
 export default {
-  "ansible_connection": "local",
+  "ansible_connection": "local"
 } satisfies Inventory;

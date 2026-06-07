@@ -11,5 +11,5 @@ export default {
   "certbot_key_path": tmpl`${V.certbot_site_path}/privkey.pem`,
   "certbot_nginx_conf": tmpl`ssl_certificate ${V.certbot_cert_path};
 ssl_certificate_key ${V.certbot_key_path};
-`,
+`
 } satisfies Vars;

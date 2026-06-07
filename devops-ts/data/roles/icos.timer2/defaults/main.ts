@@ -8,5 +8,5 @@ export default {
   "timer_dest": tmpl`${V.timer_home}/${timer_name}`,
   "_timer_sysd_timer": tmpl`${V.timer_home}/${timer_name}.timer`,
   "_timer_sysd_service": tmpl`${V.timer_home}/${timer_name}.service`,
-  "timer_state": "started",
+  "timer_state": "started"
 } satisfies Vars;

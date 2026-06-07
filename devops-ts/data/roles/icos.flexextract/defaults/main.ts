@@ -8,5 +8,5 @@ export default {
   "flexextract_tag": "flexextract",
   "flexextract_download_host": tmpl`${V.flexextract_home}/download`,
   "flexextract_download_cont": "/usr/local/Flexpart_9.0.3/download/",
-  "flexextract_bin_dir": tmpl`${V.flexextract_home}/bin`,
+  "flexextract_bin_dir": tmpl`${V.flexextract_home}/bin`
 } satisfies Vars;

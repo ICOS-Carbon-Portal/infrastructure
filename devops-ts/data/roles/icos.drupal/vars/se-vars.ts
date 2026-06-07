@@ -10,7 +10,7 @@ export default {
   "ssl_domains": [
     "sweden.icos-cp.eu",
     "icos-sweden.se",
-    "www.icos-sweden.se",
+    "www.icos-sweden.se"
   ],
   "drupal_modules": [
     "bartik",
@@ -22,6 +22,6 @@ export default {
     "restui",
     "smtp",
     "toc_js",
-    "webform",
-  ],
+    "webform"
+  ]
 } satisfies VarsFile;

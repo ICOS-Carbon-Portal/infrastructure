@@ -4,8 +4,8 @@ import { type VarsFile } from "../../../../lib/data.ts";
 export default {
   "project_dir": "/disk/data/sites-aquanet-form",
   "certbot_domains": [
-    "apply.fieldsites.se",
+    "apply.fieldsites.se"
   ],
   "nginx_conf_name": "sites-aquanet-form",
-  "certbot_conf_name": "sites_aquanet_form",
+  "certbot_conf_name": "sites_aquanet_form"
 } satisfies VarsFile;

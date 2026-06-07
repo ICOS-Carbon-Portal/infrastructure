@@ -18,13 +18,9 @@ export default {
   "restic_server_architecture": fake_architecture.default(ansible_architecture),
   "restic_server_version": hostvar("localhost").restic_server_version,
   "restic_server_url_map": {
-    "armv6l":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_armv6.tar.gz`,
-    "armv7l":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_armv7.tar.gz`,
-    "aarch64":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_arm64.tar.gz`,
-    "x86_64":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_amd64.tar.gz`,
-  },
+    "armv6l": tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_armv6.tar.gz`,
+    "armv7l": tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_armv7.tar.gz`,
+    "aarch64": tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_arm64.tar.gz`,
+    "x86_64": tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_amd64.tar.gz`
+  }
 } satisfies Vars;

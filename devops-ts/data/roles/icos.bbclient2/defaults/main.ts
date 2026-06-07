@@ -25,10 +25,8 @@ export default {
   "bbclient_one": tmpl`${V.bbclient_bin_dir}/bbclient`,
   "bbclient_all": tmpl`${V.bbclient_bin_dir}/bbclient-all`,
   "bbclient_remote_user": hostvar(bbclient_remote).bbserver_user,
-  "bbclient_remote_repo": tmpl`${
-    hostvar(bbclient_remote).bbserver_home
-  }/repos/${bbclient_name}.repo`,
+  "bbclient_remote_repo": tmpl`${hostvar(bbclient_remote).bbserver_home}/repos/${bbclient_name}.repo`,
   "bbclient_coldbackup_hour": randomInt(4, bbclient_name),
   "bbclient_coldbackup_minute": randomInt(60, bbclient_name),
-  "bbclient_patterns_path": tmpl`${bbclient_home}/patterns.lst`,
+  "bbclient_patterns_path": tmpl`${bbclient_home}/patterns.lst`
 } satisfies Vars & Restated<Globals, "bbclient_home">;

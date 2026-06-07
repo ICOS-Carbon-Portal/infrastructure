@@ -11,5 +11,5 @@ export default {
   "timer_desc": timer_name,
   "timer_wdir": null,
   "_timer_sysd_timer": tmpl`${V.timer_home}/${timer_name}.timer`,
-  "_timer_sysd_service": tmpl`${V.timer_home}/${timer_name}.service`,
+  "_timer_sysd_service": tmpl`${V.timer_home}/${timer_name}.service`
 } satisfies Vars;

@@ -5,15 +5,15 @@ export default {
   "dependencies": [
     {
       "role": "icos.borg",
-      "tags": "borg",
+      "tags": "borg"
     },
     {
       "role": "icos.just",
-      "tags": "just",
+      "tags": "just"
     },
     {
       "role": "icos.uv",
-      "tags": "uv",
-    },
-  ],
+      "tags": "uv"
+    }
+  ]
 } satisfies Meta;

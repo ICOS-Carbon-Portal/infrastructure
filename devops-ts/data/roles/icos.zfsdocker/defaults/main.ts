@@ -5,5 +5,5 @@ import { type Vars } from "../../../../roles/icos.zfsdocker/_ctx.ts";
 
 export default {
   "zfsdocker_size": "100G",
-  "zfsdocker_zvol": tmpl`/dev/zvol/pool/docker/${zfsdocker_name}`,
+  "zfsdocker_zvol": tmpl`/dev/zvol/pool/docker/${zfsdocker_name}`
 } satisfies Vars;

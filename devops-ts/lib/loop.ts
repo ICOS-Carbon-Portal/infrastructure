@@ -104,15 +104,3 @@ export function loopOverVar<T>(
     opts,
   );
 }
-
-/** As `loopOverVar`, but emits the legacy `with_items:` key. */
-export function withItemsOverVar<T>(
-  source: Ref,
-  body: (item: Item<T>) => Omit<Task, "loop" | "with_items">,
-  opts?: LoopOpts,
-): Task {
-  return withLoopControl({
-    ...body(itemProxy<T>(opts?.loopVar)),
-    with_items: source as unknown as Task["with_items"],
-  }, opts);
-}

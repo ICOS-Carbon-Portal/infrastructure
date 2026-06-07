@@ -12,5 +12,5 @@ export default {
   "stiltweb_java": "/usr/bin/java",
   "stiltweb_jre_package": "openjdk-11-jre-headless",
   "stiltweb_certbot_name": "stiltweb",
-  "stiltweb_nginxsite_name": "stiltweb",
+  "stiltweb_nginxsite_name": "stiltweb"
 } satisfies Vars;

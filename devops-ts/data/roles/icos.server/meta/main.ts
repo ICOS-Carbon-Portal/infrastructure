@@ -5,31 +5,31 @@ export default {
   "dependencies": [
     {
       "role": "icos.just",
-      "tags": "just",
+      "tags": "just"
     },
     {
       "role": "icos.uv",
-      "tags": "uv",
+      "tags": "uv"
     },
     {
       "role": "icos.utils",
-      "tags": "utils",
+      "tags": "utils"
     },
     {
       "role": "icos.sysstat",
-      "tags": "sysstat",
+      "tags": "sysstat"
     },
     {
       "role": "icos.iptables",
-      "tags": "iptables",
+      "tags": "iptables"
     },
     {
       "role": "icos.mosh",
-      "tags": "mosh",
+      "tags": "mosh"
     },
     {
       "role": "icos.fail2ban",
-      "tags": "fail2ban",
-    },
-  ],
+      "tags": "fail2ban"
+    }
+  ]
 } satisfies Meta;

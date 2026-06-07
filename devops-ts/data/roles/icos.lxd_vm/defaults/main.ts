@@ -21,18 +21,15 @@ export default {
   "lxd_vm_devices": {},
   "lxd_vm_config": {},
   "__lxd_vm_profiles": concat(V.lxd_vm_default_profiles, V.lxd_vm_profiles),
-  "__lxd_vm_devices": jinja`{{ ${V.lxd_vm_default_devices} | combine(${
-    register("_static_ip_info").devices.ref
-  }) | combine(${V.lxd_vm_devices})  }}`,
-  "__lxd_vm_config":
-    jinja`{{ ${V.lxd_vm_default_config} | combine(${V.lxd_vm_config})  }}`,
+  "__lxd_vm_devices": jinja`{{ ${V.lxd_vm_default_devices} | combine(${register("_static_ip_info").devices.ref}) | combine(${V.lxd_vm_devices})  }}`,
+  "__lxd_vm_config": jinja`{{ ${V.lxd_vm_default_config} | combine(${V.lxd_vm_config})  }}`,
   "lxd_vm_ubuntu_version": "22.04",
   "lxd_source": {
     "type": "image",
     "mode": "pull",
     "server": "https://cloud-images.ubuntu.com/releases",
     "protocol": "simplestreams",
-    "alias": V.lxd_vm_ubuntu_version,
+    "alias": V.lxd_vm_ubuntu_version
   },
-  "zfsdocker_name": lxd_vm_name,
+  "zfsdocker_name": lxd_vm_name
 } satisfies Partial<Vars> & Restated<Globals, "lxd_vm_root_keys">;

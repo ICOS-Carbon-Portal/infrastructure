@@ -15,6 +15,6 @@ export default {
     "pathauto",
     "redirect",
     "smtp",
-    "webform",
-  ],
+    "webform"
+  ]
 } satisfies VarsFile;

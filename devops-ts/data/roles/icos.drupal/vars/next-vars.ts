@@ -34,6 +34,6 @@ export default {
     "token",
     "views_infinite_scroll",
     "webform",
-    "webform_views",
-  ],
+    "webform_views"
+  ]
 } satisfies VarsFile;

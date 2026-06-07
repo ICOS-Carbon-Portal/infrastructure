@@ -8,5 +8,5 @@ export default {
   "telegraf_config_state": "present",
   "telegraf_config": "",
   "telegraf_upgrade": upgrade_everything.default(false).bool(),
-  "telegraf_smart_enable": false,
+  "telegraf_smart_enable": false
 } satisfies Vars;

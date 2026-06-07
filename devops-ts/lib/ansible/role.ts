@@ -18,8 +18,8 @@ export type RoleRef = { role: string } & RoleOpts & Record<string, unknown>;
  * role); Ansible role-keyword options are attached fluently:
  *
  *   role("icos.nexus").tags("nexus")
- *   role("icos.cpauth").when(isDefined("cpauth_envries"))
- *   role("icos.virtuoso").tags("virtuoso").when(isDefined("virtuoso_enable").default(false))
+ *   role("icos.cpauth").when(isDefined(cpauth_envries))
+ *   role("icos.virtuoso").tags("virtuoso").when(isDefined(virtuoso_enable).default(false))
  *
  * `toJSON()` emits the flat ref, so `render()`'s JSON round-trip drops the
  * methods and produces exactly the YAML Ansible expects.

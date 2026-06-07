@@ -4,5 +4,5 @@ import { type Vars } from "../../../../roles/icos.pipx/_ctx.ts";
 
 export default {
   "pipx_home": "/opt/pipx",
-  "pipx_upgrade": upgrade_everything.default(false).bool(),
+  "pipx_upgrade": upgrade_everything.default(false).bool()
 } satisfies Vars;

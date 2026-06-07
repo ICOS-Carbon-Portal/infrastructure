@@ -8,7 +8,7 @@ export default {
   "domain": "test.icos-otc.org",
   "trusted_host": "^test\\.icos-otc\\.org$",
   "ssl_domains": [
-    "test.icos-otc.org",
+    "test.icos-otc.org"
   ],
   "drupal_modules": [
     "bartik",
@@ -16,6 +16,6 @@ export default {
     "media_alias_display",
     "pathauto",
     "redirect",
-    "smtp",
-  ],
+    "smtp"
+  ]
 } satisfies VarsFile;

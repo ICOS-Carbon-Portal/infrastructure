@@ -26,7 +26,6 @@
       "verify.ts",
       "vendor-assets.ts",
       "check-braces.ts",
-      "codemod-structured.ts",
       "gen-data.ts",
       "gen-contexts.ts",
       "gen-bindings.ts"

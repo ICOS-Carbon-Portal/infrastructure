@@ -2,16 +2,15 @@
 import { type VarsFile } from "../../lib/data.ts";
 
 export default {
-  "icosdata_exports":
-    "/data/avengers                      fsicos3.nebula(ro,no_subtree_check,fsid=1)\n",
+  "icosdata_exports": "/data/avengers                      fsicos3.nebula(ro,no_subtree_check,fsid=1)\n",
   "icosdata_mkdirs": [
-    "/data/avengers",
+    "/data/avengers"
   ],
   "icosdata_nfs_mounts": [
     {
       "src": "fsicos3.nebula:/data/fit_ic",
       "path": "/data/fit_ic",
-      "opts": "ro,soft,x-systemd.after=nebula.service",
-    },
-  ],
+      "opts": "ro,soft,x-systemd.after=nebula.service"
+    }
+  ]
 } satisfies VarsFile;

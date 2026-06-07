@@ -32,47 +32,11 @@ export interface Vars {
 }
 
 import type { Scalar } from "./ansible/values.ts";
-import type { BuiltinVars } from "./builtins.ts";
-import type { Globals } from "./globals.ts";
-import type { SharedVars } from "./sharedvars.ts";
-import type { ParamVars } from "./paramvars.ts";
-import type { VaultVars } from "./vaultvars.ts";
 import { type Ref, Template, varProxy, type VarRef } from "./template.ts";
 
-// The full set of statically-known variables a playbook may reference: the
-// hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins,
-// the cross-role shared surface (lib/sharedvars.ts), role caller-params / play
-// vars (lib/paramvars.ts), and vault-defined names (lib/vaultvars.ts). Object
-// shapes live with their variable in the owning registry (globals/vaultvars/the
-// role's _ctx). Ansible variable names are a single flat namespace,
-// so a name defined anywhere is the same variable everywhere — referencing it
-// through a checked `V.x` (not `expr("x")`) catches typos.
-// The generated registries declare every value as `unknown`, so a name that is
-// also hand-declared (a fact shape, a boolean global) intersects to the
-// hand-declared type rather than to a `never`-valued property.
-type AllKnown =
-  & Vars
-  & Globals
-  & BuiltinVars
-  & SharedVars
-  & ParamVars
-  & VaultVars;
-type KnownName = keyof AllKnown & string;
-
-// Re-exported for convenience (the canonical definitions live in template.ts).
-export {
-  concat,
-  iff,
-  jinja,
-  jinjaFor,
-  lookup,
-  type LookupPlugin,
-  RawTemplate,
-  type Ref,
-  Template,
-  type Tmpl,
-  tmpl,
-} from "./template.ts";
+// `tmpl` is re-exported here (canonical definition in template.ts) for the many
+// files that import it alongside the when-helpers below.
+export { tmpl } from "./template.ts";
 
 // A named binding per hand-curated variable, so a playbook references it the
 // normal TS way (`import { jre_apt_package } from "../lib/vars.ts"; ... `),
@@ -106,9 +70,8 @@ export const stilt_input_mount = vref("stilt_input_mount");
  * hostname (rendered as `hostvars.<host>`); the field is any known variable.
  */
 // `hostvars[host].x` reaches ANOTHER host's variables — a different host runs
-// different roles, so the name space is genuinely open. Typed loosely (any name
-// -> Ref) rather than over the local `KnownName`, which only covers this host's
-// shared/registry vars.
+// different roles, so the name space is genuinely open. Typed loosely (any
+// field name -> Ref) rather than against a specific variable type.
 export function hostvar(host: Ref | string): Record<string, Ref> {
   const path = typeof host === "string"
     ? `hostvars.${host}`
@@ -123,8 +86,8 @@ export function hostvar(host: Ref | string): Record<string, Ref> {
  * text (via `toJSON`, so it survives `render()`'s JSON round-trip), and offers
  * chainable filters:
  *
- *   isDefined("cpauth_domains")              // "cpauth_domains is defined"
- *   isDefined("virtuoso_enable").default(false)  // "virtuoso_enable | default(False)"
+ *   isDefined(cpauth_domains)              // "cpauth_domains is defined"
+ *   isDefined(virtuoso_enable).default(false)  // "virtuoso_enable | default(False)"
  */
 export class Expr {
   constructor(
@@ -169,9 +132,6 @@ export class Expr {
   }
 }
 
-/** Any referenceable variable name: user `Vars`, globals, built-ins, or any role var. */
-export type VarName = KnownName;
-
 /**
  * An operand of a `when:` comparison/test. A `string`/`number`/`boolean` is a
  * LITERAL (a string renders `'quoted'`); a variable or expression reference —
@@ -181,8 +141,8 @@ export type VarName = KnownName;
  */
 export type Operand = Expr | Template | string | number | boolean;
 
-/** A unary-test subject: a checked variable NAME, or a ref (`V.x`/register field). */
-export type Subject = VarName | Expr | Template;
+/** A unary-test subject: a ref (`V.x` / register field) or an `Expr`. */
+export type Subject = Expr | Template;
 
 /** Bare text for a non-string operand (refs render bare). */
 function refText(o: Exclude<Operand, string>): string {
@@ -200,9 +160,9 @@ function refText(o: Exclude<Operand, string>): string {
 function operandText(o: Operand): string {
   return typeof o === "string" ? `'${o}'` : refText(o);
 }
-/** Subject text: a bare string is a variable NAME (rendered bare, not quoted). */
+/** Subject text: a ref renders bare (`V.x` -> `x`); an `Expr` as its text. */
 function subjText(s: Subject): string {
-  return typeof s === "string" ? s : refText(s);
+  return refText(s);
 }
 
 /** Start a `when:` test from a variable/ref: `<subject> is defined`. */
@@ -213,7 +173,7 @@ export function isDefined(s: Subject): Expr {
 
 /**
  * Negate a boolean variable, ref, or expression:
- *   not("ansible_check_mode")  -> "not ansible_check_mode"
+ *   not(ansible_check_mode)  -> "not ansible_check_mode"
  *   not(V.lxd_is_snap)         -> "not lxd_is_snap"
  *   not(r.failed)              -> "not r.failed"  (register result field)
  */
@@ -289,24 +249,6 @@ export function ne(a: Operand, b: Operand): Expr {
 /** `<a> < <b>` — e.g. `lt(r.msg.find('x'), 0)` -> `r.msg.find('x') < 0`. */
 export function lt(a: Operand, b: Operand): Expr {
   const t = `${operandText(a)} < ${operandText(b)}`;
-  return new Expr(t, t);
-}
-
-/** `<a> > <b>`. */
-export function gt(a: Operand, b: Operand): Expr {
-  const t = `${operandText(a)} > ${operandText(b)}`;
-  return new Expr(t, t);
-}
-
-/** `<a> <= <b>`. */
-export function lte(a: Operand, b: Operand): Expr {
-  const t = `${operandText(a)} <= ${operandText(b)}`;
-  return new Expr(t, t);
-}
-
-/** `<a> >= <b>`. */
-export function gte(a: Operand, b: Operand): Expr {
-  const t = `${operandText(a)} >= ${operandText(b)}`;
   return new Expr(t, t);
 }
 

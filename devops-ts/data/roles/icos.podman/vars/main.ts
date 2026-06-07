@@ -3,6 +3,6 @@ import { type VarsFile } from "../../../../lib/data.ts";
 
 export default {
   "podman_arch": {
-    "x86_64": "amd64",
-  },
+    "x86_64": "amd64"
+  }
 } satisfies VarsFile;

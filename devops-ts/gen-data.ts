@@ -301,7 +301,8 @@ for (const rel of await dataYmls()) {
    * A checked TS expression for a canonical Jinja value expression, or null:
    * a known bare name (`V.x`), a known-shape dotted path (`V.a.b`), a
    * `name[key]` index of known names (`V.a.at(V.b)`), and/or a chain of the
-   * modelled filters (`V.x.default(false).bool()`). Anything else stays expr().
+   * modelled filters (`V.x.default(false).bool()`). Anything else stays a
+   * verbatim `jinja` escape.
    */
   function checkedRef(inner: string): string | null {
     const segs = inner.split(" | ");

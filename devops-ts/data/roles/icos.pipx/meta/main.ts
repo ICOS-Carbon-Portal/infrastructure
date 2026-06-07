@@ -4,7 +4,7 @@ import { type Meta } from "../../../../lib/data.ts";
 export default {
   "dependencies": [
     {
-      "role": "icos.python3",
-    },
-  ],
+      "role": "icos.python3"
+    }
+  ]
 } satisfies Meta;

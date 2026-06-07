@@ -13,5 +13,5 @@ export default {
   "postgresql_confd": tmpl`${V.postgresql_etc}/conf.d`,
   "postgresql_pg_hba": tmpl`${V.postgresql_etc}/pg_hba.conf`,
   "postgresql_home": "/var/lib/postgresql",
-  "postgresql_bin": tmpl`${V.postgresql_home}/bin`,
+  "postgresql_bin": tmpl`${V.postgresql_home}/bin`
 } satisfies Vars;
