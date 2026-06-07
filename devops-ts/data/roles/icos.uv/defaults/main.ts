@@ -12,9 +12,13 @@ export default {
   "uv_architecture": fake_architecture.default(ansible_architecture),
   "uv_version": hostvar("localhost").uv_version,
   "uv_url_map": {
-    "armv6l": tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-arm-unknown-linux-musleabihf.tar.gz`,
-    "armv7l": tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-armv7-unknown-linux-gnueabihf.tar.gz`,
-    "aarch64": tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-aarch64-unknown-linux-gnu.tar.gz`,
-    "x86_64": tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-x86_64-unknown-linux-gnu.tar.gz`
-  }
+    "armv6l":
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-arm-unknown-linux-musleabihf.tar.gz`,
+    "armv7l":
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-armv7-unknown-linux-gnueabihf.tar.gz`,
+    "aarch64":
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-aarch64-unknown-linux-gnu.tar.gz`,
+    "x86_64":
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-x86_64-unknown-linux-gnu.tar.gz`,
+  },
 } satisfies Vars;

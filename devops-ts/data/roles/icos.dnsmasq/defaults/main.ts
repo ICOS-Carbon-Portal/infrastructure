@@ -9,5 +9,5 @@ export default {
   "dnsmasq_config_state": "present",
   "dnsmasq_config_dir": tmpl`/etc/dnsmasq.${dnsmasq_instance}.d`,
   "dnsmasq_config_file": tmpl`${V.dnsmasq_config_dir}/${V.dnsmasq_config_name}`,
-  "dnsmasq_service_name": tmpl`dnsmasq@${dnsmasq_instance}.service`
+  "dnsmasq_service_name": tmpl`dnsmasq@${dnsmasq_instance}.service`,
 } satisfies Vars;

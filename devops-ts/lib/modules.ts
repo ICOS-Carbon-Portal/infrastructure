@@ -167,8 +167,8 @@ export type GitArgs = {
   repo: Tmpl;
   dest: Tmpl;
   version?: Tmpl;
-  update?: Flag;
-  force?: Flag;
+  update?: boolean;
+  force?: boolean;
   key_file?: Tmpl;
 };
 export type AuthorizedKeyArgs = {

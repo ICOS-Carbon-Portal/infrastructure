@@ -5,5 +5,5 @@ import { tmpl } from "../../../../lib/template.ts";
 
 export default {
   "certbot_fake_key": tmpl`/etc/pki/tls/private/${certbot_conf_name}.key`,
-  "certbot_fake_crt": tmpl`/etc/pki/tls/certs/${certbot_conf_name}.crt`
+  "certbot_fake_crt": tmpl`/etc/pki/tls/certs/${certbot_conf_name}.crt`,
 } satisfies VarsFile;

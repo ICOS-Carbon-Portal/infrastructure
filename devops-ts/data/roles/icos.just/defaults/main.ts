@@ -8,9 +8,13 @@ export default {
   "just_upgrade": upgrade_everything.default(false).bool(),
   "just_version": hostvar("localhost").just_version,
   "just_url_map": {
-    "armv6l": tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-arm-unknown-linux-musleabihf.tar.gz`,
-    "armv7l": tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-armv7-unknown-linux-musleabihf.tar.gz`,
-    "aarch64": tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-aarch64-unknown-linux-musl.tar.gz`,
-    "x86_64": tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-x86_64-unknown-linux-musl.tar.gz`
-  }
+    "armv6l":
+      tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-arm-unknown-linux-musleabihf.tar.gz`,
+    "armv7l":
+      tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-armv7-unknown-linux-musleabihf.tar.gz`,
+    "aarch64":
+      tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-aarch64-unknown-linux-musl.tar.gz`,
+    "x86_64":
+      tmpl`https://github.com/casey/just/releases/download/${V.just_version}/just-${V.just_version}-x86_64-unknown-linux-musl.tar.gz`,
+  },
 } satisfies Vars;

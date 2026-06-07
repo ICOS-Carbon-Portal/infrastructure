@@ -9,7 +9,7 @@ export default {
   "domain": "www.icos-cp.eu",
   "ssl_domains": [
     "icos-cp.eu",
-    "www.icos-cp.eu"
+    "www.icos-cp.eu",
   ],
   "drupal_modules": [
     "bartik",
@@ -38,7 +38,7 @@ export default {
     "token",
     "views_infinite_scroll",
     "webform",
-    "webform_views"
+    "webform_views",
   ],
-  "robots_txt": "cp-robots.txt"
+  "robots_txt": "cp-robots.txt",
 } satisfies VarsFile;

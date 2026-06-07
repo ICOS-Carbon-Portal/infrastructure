@@ -6,5 +6,5 @@ import { V } from "../../../../roles/icos.quince/_ctx.ts";
 export default {
   "bbclient_name": "quince",
   "bbclient_user": V.quince_user,
-  "bbclient_home": tmpl`${V.quince_home}/.bbclient`
+  "bbclient_home": tmpl`${V.quince_home}/.bbclient`,
 } satisfies VarsFile;

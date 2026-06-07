@@ -6,11 +6,12 @@ export default {
     {
       "src": "icos1.nebula:/pool/flexextract",
       "path": "/data/flexextract",
-      "opts": "ro,hard,x-systemd.after=nebula.service"
-    }
+      "opts": "ro,hard,x-systemd.after=nebula.service",
+    },
   ],
   "icosdata_mkdirs": [
-    "/data/flexpart/output"
+    "/data/flexpart/output",
   ],
-  "icosdata_exports": "/data/flexpart/output                      fsicos3.nebula(ro,no_subtree_check,fsid=1)\n"
+  "icosdata_exports":
+    "/data/flexpart/output                      fsicos3.nebula(ro,no_subtree_check,fsid=1)\n",
 } satisfies VarsFile;

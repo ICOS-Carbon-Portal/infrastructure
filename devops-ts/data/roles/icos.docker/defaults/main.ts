@@ -4,5 +4,5 @@ import { type Vars } from "../../../../roles/icos.docker/_ctx.ts";
 export default {
   "docker_periodic_cleanup": true,
   "docker_prevent_upgrade": true,
-  "docker_upgrade": false
+  "docker_upgrade": false,
 } satisfies Vars;

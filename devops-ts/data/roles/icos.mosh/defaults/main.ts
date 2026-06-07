@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.mosh/_ctx.ts";
 
 export default {
-  "mosh_add_firewall": true
+  "mosh_add_firewall": true,
 } satisfies Vars;

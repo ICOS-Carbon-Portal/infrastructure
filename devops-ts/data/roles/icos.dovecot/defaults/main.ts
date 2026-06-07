@@ -5,12 +5,12 @@ export default {
   "dovecot_port": 60993,
   "dovecot_lmtp": "/var/spool/postfix/private/lmtp-dovecot",
   "dovecot_domains": [
-    "test.icos-cp.eu"
+    "test.icos-cp.eu",
   ],
   "dovecot_domains_file": "/etc/postfix/relay_domains",
   "dovecot_auth_file": "icos-users.conf.ext",
   "dovecot_cert_file": "icos-certs.conf.ext",
   "dovecot_vmail_name": "vmail",
   "dovecot_vmail_home": "/var/vmail",
-  "dovecot_log_file": "/var/log/dovecot.log"
+  "dovecot_log_file": "/var/log/dovecot.log",
 } satisfies Vars;

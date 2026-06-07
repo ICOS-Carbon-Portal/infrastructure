@@ -9,13 +9,14 @@ export default {
       "path": "/",
       "type": "disk",
       "pool": V.lxd_vm_root_pool,
-      "size": V.lxd_vm_root_size
-    }
+      "size": V.lxd_vm_root_size,
+    },
   },
   "lxd_vm_default_profiles": [
-    "default"
+    "default",
   ],
   "__base_config": {},
-  "__docker_config": tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"security.nesting": "true"} ${jinja`{% else %}`}{}${jinja`{% endif -%}`}`,
-  "lxd_vm_default_config": V.__base_config.combine(V.__docker_config)
+  "__docker_config":
+    tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"security.nesting": "true"} ${jinja`{% else %}`}{}${jinja`{% endif -%}`}`,
+  "lxd_vm_default_config": V.__base_config.combine(V.__docker_config),
 } satisfies VarsFile;

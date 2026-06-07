@@ -8,7 +8,12 @@ import { V, type Vars } from "../../../../roles/icos.conmon/_ctx.ts";
 export default {
   "conmon_version_install": "2.1.4",
   "conmon_local_version_ok": jinja`{{ ${conmon_local_version} and
-   ${conmon_local_version} is ${register("version").ref}(${conmon_min_version}, ">=") }}`,
-  "conmon_apt_version_ok": jinja`{{ conmon_apt_version is ${register("version").ref}(${conmon_min_version}, ">=") }}`,
-  "conmon_url": tmpl`https://github.com/containers/conmon/archive/refs/tags/v${V.conmon_version_install}.tar.gz`
+   ${conmon_local_version} is ${
+    register("version").ref
+  }(${conmon_min_version}, ">=") }}`,
+  "conmon_apt_version_ok": jinja`{{ conmon_apt_version is ${
+    register("version").ref
+  }(${conmon_min_version}, ">=") }}`,
+  "conmon_url":
+    tmpl`https://github.com/containers/conmon/archive/refs/tags/v${V.conmon_version_install}.tar.gz`,
 } satisfies Vars;

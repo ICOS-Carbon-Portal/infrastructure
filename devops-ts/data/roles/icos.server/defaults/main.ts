@@ -5,7 +5,8 @@ export default {
   "fail2ban_config_files": [
     {
       "dest": "/etc/fail2ban/jail.d/sshd-allports.local",
-      "content": "# Since we're running ssh on different ports that fail2ban is used to,\n# block all ports.\n[sshd]\nbanaction = iptables-allports\n"
-    }
-  ]
+      "content":
+        "# Since we're running ssh on different ports that fail2ban is used to,\n# block all ports.\n[sshd]\nbanaction = iptables-allports\n",
+    },
+  ],
 } satisfies Vars;

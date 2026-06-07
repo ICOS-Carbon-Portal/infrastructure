@@ -42,7 +42,7 @@ export interface SharedVars {
   zfsdocker_zvol: unknown;
 }
 
-import { type VarRef, varProxy } from "./template.ts";
+import { varProxy, type VarRef } from "./template.ts";
 const vref = <K extends keyof SharedVars>(k: K): VarRef<SharedVars[K]> =>
   varProxy(k) as VarRef<SharedVars[K]>;
 

@@ -8,5 +8,5 @@ export default {
   "nginxauth_file": tmpl`/etc/nginx/auth/${nginxauth_name}`,
   "nginxauth_conf": tmpl`auth_basic "${V.nginxauth_title}";
 auth_basic_user_file ${V.nginxauth_file};
-`
+`,
 } satisfies Vars;

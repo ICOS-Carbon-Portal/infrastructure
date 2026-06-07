@@ -4,5 +4,5 @@ import { type Globals } from "../../../../lib/globals.ts";
 import { type Vars } from "../../../../roles/icos.lxd_guest/_ctx.ts";
 
 export default {
-  "lxd_guest_root_keys": null
+  "lxd_guest_root_keys": null,
 } satisfies Vars & Restated<Globals, "lxd_guest_root_keys">;

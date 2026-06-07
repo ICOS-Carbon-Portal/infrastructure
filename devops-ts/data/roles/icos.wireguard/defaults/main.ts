@@ -4,5 +4,5 @@ import { type Vars } from "../../../../roles/icos.wireguard/_ctx.ts";
 export default {
   "wireguard_update": false,
   "wireguard_reresolve_script": "/usr/local/sbin/wireguard-reresolve-dns.sh",
-  "_wg_is_installed": false
+  "_wg_is_installed": false,
 } satisfies Vars;

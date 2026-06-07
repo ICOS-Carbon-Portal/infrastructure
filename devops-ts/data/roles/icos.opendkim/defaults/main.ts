@@ -5,5 +5,5 @@ export default {
   "opendkim_user": "opendkim",
   "opendkim_keys": "/etc/opendkim/keys",
   "opendkim_domains_testkeys": [],
-  "opendkim_sock": "/var/spool/postfix/opendkim/opendkim.sock"
+  "opendkim_sock": "/var/spool/postfix/opendkim/opendkim.sock",
 } satisfies Vars;

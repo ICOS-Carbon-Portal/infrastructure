@@ -223,7 +223,7 @@ export interface ParamVars {
 // (no flat all-role-vars union needed).
 
 // === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
-import { type VarRef, varProxy } from "./template.ts";
+import { varProxy, type VarRef } from "./template.ts";
 const vref = <K extends keyof ParamVars>(k: K): VarRef<ParamVars[K]> =>
   varProxy(k) as VarRef<ParamVars[K]>;
 

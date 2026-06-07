@@ -79,81 +79,73 @@ export class Template {
   // knows which engine each one comes from.)
 
   /** Append `| <text>`; valid only on a single-ref template (e.g. `V.x`). */
-  private filter(text: string): Template {
-    const p = this.parts;
-    if (p.length !== 1 || p[0].kind !== "ref") {
-      throw new Error(`Jinja filter applied to a non-ref template: "${this}"`);
-    }
-    return new Template([{ kind: "ref", jinja: `${p[0].jinja} | ${text}` }]);
-  }
-
   // -- Jinja2 built-in filters --
   /** `| default(...)`; pass `V.omit` for `default(omit)`, a ref for a var. */
   default(fallback: FilterArg): Template {
-    return this.filter(`default(${filterArgText(fallback)})`);
+    return applyFilter(this, `default(${filterArgText(fallback)})`);
   }
   /** `| int` — convert to an integer. */
   int(): Template {
-    return this.filter("int");
+    return applyFilter(this, "int");
   }
   /** `| lower` — lowercase a string. */
   lower(): Template {
-    return this.filter("lower");
+    return applyFilter(this, "lower");
   }
   /** `| first` — the first element of a list. */
   first(): Template {
-    return this.filter("first");
+    return applyFilter(this, "first");
   }
   /** `| join(sep)` — join a list into a string. */
   join(sep: string): Template {
-    return this.filter(`join('${sep}')`);
+    return applyFilter(this, `join('${sep}')`);
   }
   /** `| map(attribute='attr')` — pluck an attribute from each list item. */
   mapAttr(attr: string): Template {
-    return this.filter(`map(attribute='${attr}')`);
+    return applyFilter(this, `map(attribute='${attr}')`);
   }
 
   // -- Ansible `ansible.builtin` filter plugins --
   // https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html#filter-plugins
   /** `| bool` — interpret a value (`"yes"`, `1`, ...) as a boolean. */
   bool(): Template {
-    return this.filter("bool");
+    return applyFilter(this, "bool");
   }
   /** `| dirname` — the directory portion of a path. */
   dirname(): Template {
-    return this.filter("dirname");
+    return applyFilter(this, "dirname");
   }
   /** `| basename` — the final component of a path. */
   basename(): Template {
-    return this.filter("basename");
+    return applyFilter(this, "basename");
   }
   /** `| splitext` — split a path into `(root, ext)`. */
   splitext(): Template {
-    return this.filter("splitext");
+    return applyFilter(this, "splitext");
   }
   /** `| regex_escape` — escape a string for use in a regular expression. */
   regexEscape(): Template {
-    return this.filter("regex_escape");
+    return applyFilter(this, "regex_escape");
   }
   /** `| b64decode` — decode a base64 string. */
   b64decode(): Template {
-    return this.filter("b64decode");
+    return applyFilter(this, "b64decode");
   }
   /** `| combine(other)` — merge two dict-valued variables. */
   combine(other: Template): Template {
-    return this.filter(`combine(${filterArgText(other)})`);
+    return applyFilter(this, `combine(${filterArgText(other)})`);
   }
   /** `| fileglob` — expand a glob to matching paths. */
   fileglob(): Template {
-    return this.filter("fileglob");
+    return applyFilter(this, "fileglob");
   }
   /** `| difference(other)` — items in this list not in `other`. */
   difference(other: FilterArg): Template {
-    return this.filter(`difference(${filterArgText(other)})`);
+    return applyFilter(this, `difference(${filterArgText(other)})`);
   }
   /** `| regex_replace(pattern, replacement)` — regex substitution. */
   regexReplace(pattern: string, replacement: string): Template {
-    return this.filter(`regex_replace('${pattern}', '${replacement}')`);
+    return applyFilter(this, `regex_replace('${pattern}', '${replacement}')`);
   }
   /**
    * `| password_hash(scheme[, salt])` — hash a password with crypt. `scheme` is
@@ -163,7 +155,7 @@ export class Template {
     const args = salt === undefined
       ? `'${scheme}'`
       : `'${scheme}', ${filterArgText(salt)}`;
-    return this.filter(`password_hash(${args})`);
+    return applyFilter(this, `password_hash(${args})`);
   }
 
   /**
@@ -171,27 +163,19 @@ export class Template {
    *   gh.tag.ref.lstrip("v")   // {{ gh.tag.lstrip('v') }}
    */
   lstrip(chars: string): Template {
-    return this.method(`lstrip('${chars}')`);
+    return applyMethod(this, `lstrip('${chars}')`);
   }
   rstrip(chars: string): Template {
-    return this.method(`rstrip('${chars}')`);
+    return applyMethod(this, `rstrip('${chars}')`);
   }
   /** `.strip()` — strip leading/trailing whitespace. */
   strip(): Template {
-    return this.method("strip()");
+    return applyMethod(this, "strip()");
   }
   /** `.split(sep)` — split a string into a list (pass `"\\n"` for a newline). */
   split(sep: string): Template {
-    return this.method(`split('${sep}')`);
+    return applyMethod(this, `split('${sep}')`);
   }
-  private method(call: string): Template {
-    const p = this.parts;
-    if (p.length !== 1 || p[0].kind !== "ref") {
-      throw new Error(`Jinja method call on a non-ref template: "${this}"`);
-    }
-    return new Template([{ kind: "ref", jinja: `${p[0].jinja}.${call}` }]);
-  }
-
   /**
    * Checked `[key]` index access on a map-valued variable:
    *   V.borg_url_map.at(V.ansible_architecture)  // {{ borg_url_map[ansible_architecture] }}
@@ -205,6 +189,26 @@ export class Template {
       { kind: "ref", jinja: `${p[0].jinja}[${filterArgText(key)}]` },
     ]);
   }
+}
+
+// Append `| <text>` (a Jinja filter) or `.<call>` (a method) to a single-ref
+// template. Module-private (not exported, not a method) so `Template` stays
+// STRUCTURAL — `VarRef<T>` can intersect `T` (`VarRef<boolean>` assignable to
+// `boolean`) without a private member collapsing the intersection to `never`,
+// and without exposing a raw `| <anything>` filter escape hatch.
+function applyFilter(t: Template, text: string): Template {
+  const p = t.parts;
+  if (p.length !== 1 || p[0].kind !== "ref") {
+    throw new Error(`Jinja filter applied to a non-ref template: "${t}"`);
+  }
+  return new Template([{ kind: "ref", jinja: `${p[0].jinja} | ${text}` }]);
+}
+function applyMethod(t: Template, call: string): Template {
+  const p = t.parts;
+  if (p.length !== 1 || p[0].kind !== "ref") {
+    throw new Error(`Jinja method call on a non-ref template: "${t}"`);
+  }
+  return new Template([{ kind: "ref", jinja: `${p[0].jinja}.${call}` }]);
 }
 
 /**
@@ -228,14 +232,19 @@ export function varProxy(path: string): Ref {
 }
 
 /**
- * The reference type for a variable declared as `T`: a plain `Ref` for scalar
- * variables, a `Ref` that also exposes per-field refs for object-typed ones.
+ * The reference type for a variable declared as `T`. At runtime every reference
+ * is a `Ref` (a `Template` rendering `{{ name }}`); the type also carries `T` so
+ * a reference is assignable to the variable's declared type — `V.some_bool`
+ * (declared `boolean`) satisfies a `boolean` field, while still rendering as the
+ * `{{ }}` reference Ansible resolves at runtime. For an object-typed variable
+ * the per-field refs are exposed instead (each recursing through `VarRef`).
  * `[T] extends [object]` (no distribution) so unions and `unknown` stay plain
- * `Ref`s.
+ * `Ref`s (`Ref & unknown = Ref`).
  */
 export type VarRef<T> = [T] extends [object]
   ? Ref & { readonly [K in keyof T]-?: VarRef<T[K]> }
-  : Ref;
+  : [T] extends [null | undefined] ? Ref // `Ref & null` would be `never`
+  : Ref & T;
 
 /**
  * A verbatim template fragment: renders its exact text (incl. braces/spacing).

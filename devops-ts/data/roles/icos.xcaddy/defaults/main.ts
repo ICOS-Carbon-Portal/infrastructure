@@ -3,5 +3,5 @@ import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { type Vars } from "../../../../roles/icos.xcaddy/_ctx.ts";
 
 export default {
-  "xcaddy_upgrade": upgrade_everything.default(false).bool()
+  "xcaddy_upgrade": upgrade_everything.default(false).bool(),
 } satisfies Vars;

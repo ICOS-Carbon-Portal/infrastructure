@@ -9,18 +9,18 @@ export default {
     "vars": {
       "bbserver_host": tmpl`${inventory_hostname_short}.nebula`,
       "bbserver_user": "bbserver",
-      "bbserver_port": iptables_ssh_port
+      "bbserver_port": iptables_ssh_port,
     },
     "hosts": {
       "icos1": {
-        "bbserver_home": "/pool/bbserver"
+        "bbserver_home": "/pool/bbserver",
       },
       "cdb": {
-        "bbserver_home": "/disk/data/bbserver"
+        "bbserver_home": "/disk/data/bbserver",
       },
       "fsicos2": {
-        "bbserver_home": "/disk/data/bbserver"
-      }
-    }
-  }
+        "bbserver_home": "/disk/data/bbserver",
+      },
+    },
+  },
 } satisfies Inventory;

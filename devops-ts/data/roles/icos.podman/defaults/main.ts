@@ -7,5 +7,5 @@ export default {
   "podman_src_dir": tmpl`/tmp/podman_v${V.podman_version}_src`,
   "conmon_min_version": "2.0.24",
   "golang_min_version": 1.16,
-  "podman_docker": false
+  "podman_docker": false,
 } satisfies Partial<Vars>;

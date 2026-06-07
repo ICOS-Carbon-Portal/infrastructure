@@ -7,5 +7,5 @@ export default {
   "jarservice_keep_n_old": 10,
   "jarservice_jar": tmpl`${jarservice_home}/${jarservice_name}.jar`,
   "jarservice_jar_enable": true,
-  "jarservice_restart": true
+  "jarservice_restart": true,
 } satisfies Vars;

@@ -11,7 +11,7 @@ export default {
   "nextcloud_domain": "fileshare.icos-cp.eu",
   "nextcloud_certbot_enable": true,
   "certbot_domains": [
-    V.nextcloud_domain
+    V.nextcloud_domain,
   ],
   "certbot_name": "nextcloud",
   "nextcloud_volume_nextcloud": tmpl`${V.nextcloud_home}/volumes/nextcloud`,
@@ -19,8 +19,9 @@ export default {
   "nextcloud_db_name": "nextcloud",
   "nextcloud_db_user": "nextcloud",
   "nextcloud_db_host": "db",
-  "nextcloud_exporter_conf_host": tmpl`${V.nextcloud_home}/nextcloud-exporter.conf`,
+  "nextcloud_exporter_conf_host":
+    tmpl`${V.nextcloud_home}/nextcloud-exporter.conf`,
   "nextcloud_exporter_user": "nextcloud-exporter",
   "nextcloud_exporter_port": 9205,
-  "nextcloud_volumes": []
+  "nextcloud_volumes": [],
 } satisfies Vars;

@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.pve_guest/_ctx.ts";
 
 export default {
-  "upgrade_everything": false
+  "upgrade_everything": false,
 } satisfies Vars;

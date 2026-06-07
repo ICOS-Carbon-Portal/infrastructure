@@ -4,5 +4,5 @@ import { hostvar } from "../../../../lib/vars.ts";
 import { type Vars } from "../../../../roles/icos.lxd_forward/_ctx.ts";
 
 export default {
-  "lxd_forward_port": hostvar(lxd_forward_name).ansible_port
+  "lxd_forward_port": hostvar(lxd_forward_name).ansible_port,
 } satisfies Vars;

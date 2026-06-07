@@ -6,7 +6,8 @@ import { V, type Vars } from "../../../../roles/icos.stiltrun/_ctx.ts";
 export default {
   "stiltrun_image_id": "721eb2cdb9b5",
   "stiltrun_image_name": "stiltcustom",
-  "stiltrun_image_url": tmpl`https://static.icos-cp.eu/share/docker/stilt/stiltcustom-${V.stiltrun_image_id}.tgz`,
+  "stiltrun_image_url":
+    tmpl`https://static.icos-cp.eu/share/docker/stilt/stiltcustom-${V.stiltrun_image_id}.tgz`,
   "stiltrun_input_dir": stilt_input_dir,
-  "stiltrun_user": "stiltcluster"
+  "stiltrun_user": "stiltcluster",
 } satisfies Vars;

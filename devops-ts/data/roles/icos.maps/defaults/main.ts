@@ -5,9 +5,9 @@ import { type Vars } from "../../../../roles/icos.maps/_ctx.ts";
 export default {
   "maps_domains": [
     "maps.icos-cp.eu",
-    "maps.fieldsites.se"
+    "maps.fieldsites.se",
   ],
   "maps_lantmateriet_loc": "lm",
   "maps_lantmateriet_url": "https://maps.lantmateriet.se/",
-  "maps_lantmateriet_auth": vault_maps_lantmateriet_auth
+  "maps_lantmateriet_auth": vault_maps_lantmateriet_auth,
 } satisfies Vars;

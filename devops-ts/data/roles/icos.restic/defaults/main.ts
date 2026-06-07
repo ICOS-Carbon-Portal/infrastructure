@@ -11,9 +11,13 @@ export default {
   "restic_architecture": fake_architecture.default(ansible_architecture),
   "restic_version": hostvar("localhost").restic_version,
   "restic_url_map": {
-    "armv6l": tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
-    "armv7l": tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
-    "aarch64": tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm64.bz2`,
-    "x86_64": tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_amd64.bz2`
-  }
+    "armv6l":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
+    "armv7l":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
+    "aarch64":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm64.bz2`,
+    "x86_64":
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_amd64.bz2`,
+  },
 } satisfies Vars;

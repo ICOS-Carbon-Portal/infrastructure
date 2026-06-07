@@ -7,5 +7,5 @@ export default {
   "iptables_forward": false,
   "iptables_mdns": false,
   "iptables_upnp": false,
-  "iptables_ssh_port": 22
+  "iptables_ssh_port": 22,
 } satisfies Vars & Restated<Globals, "iptables_forward">;

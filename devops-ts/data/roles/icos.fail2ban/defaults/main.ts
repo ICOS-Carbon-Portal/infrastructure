@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.fail2ban/_ctx.ts";
 
 export default {
-  "fail2ban_config_files": []
+  "fail2ban_config_files": [],
 } satisfies Vars;

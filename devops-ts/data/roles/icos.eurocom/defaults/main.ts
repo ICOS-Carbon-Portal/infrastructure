@@ -5,5 +5,5 @@ export default {
   "eurocom_domain": "eurocom.icos-cp.eu",
   "eurocom_web_root": "/usr/share/nginx/eurocom",
   "eurocom_data_home": "/pool/ute/eurocom",
-  "eurocom_auth_file": "/etc/nginx/auth/eurocom"
+  "eurocom_auth_file": "/etc/nginx/auth/eurocom",
 } satisfies Vars;

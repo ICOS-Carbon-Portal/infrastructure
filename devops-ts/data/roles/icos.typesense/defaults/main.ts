@@ -8,6 +8,6 @@ export default {
   "base_urls": {
     "cp": "https://www.icos-cp.eu/",
     "demo": "https://demo.icos-cp.eu/",
-    "sites": "https://www.fieldsites.se/"
-  }
+    "sites": "https://www.fieldsites.se/",
+  },
 } satisfies Vars;

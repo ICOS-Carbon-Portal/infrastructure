@@ -3,12 +3,12 @@ import { type VarsFile } from "../../lib/data.ts";
 
 export default {
   "caddy_modules": [
-    "github.com/caddyserver/replace-response"
+    "github.com/caddyserver/replace-response",
   ],
   "caddy_global_conf": "{\n    order replace after encode\n}\n",
   "ansible_hostname": "icos1.gis.lu.se",
   "ansible_port": 60022,
   "iptables_ssh_port": 60022,
   "lxd_vm_variant": "zfs",
-  "icosdata_exports": "/pool/flexextract *.nebula(rw)\n"
+  "icosdata_exports": "/pool/flexextract *.nebula(rw)\n",
 } satisfies VarsFile;

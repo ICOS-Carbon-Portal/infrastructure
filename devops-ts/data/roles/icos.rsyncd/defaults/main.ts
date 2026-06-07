@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.rsyncd/_ctx.ts";
 
 export default {
-  "rsyncd_enable": true
+  "rsyncd_enable": true,
 } satisfies Vars;

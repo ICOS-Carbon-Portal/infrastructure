@@ -9,15 +9,21 @@ export default {
   "dive_architecture": fake_architecture.default(ansible_architecture),
   "dive_version": hostvar("localhost").dive_version,
   "dive_url_map": {
-    "aarch64": tmpl`https://github.com/wagoodman/dive/releases/download/v${V.dive_version}/dive_${V.dive_version}_linux_arm64.deb`,
-    "x86_64": tmpl`https://github.com/wagoodman/dive/releases/download/v${V.dive_version}/dive_${V.dive_version}_linux_amd64.deb`
+    "aarch64":
+      tmpl`https://github.com/wagoodman/dive/releases/download/v${V.dive_version}/dive_${V.dive_version}_linux_arm64.deb`,
+    "x86_64":
+      tmpl`https://github.com/wagoodman/dive/releases/download/v${V.dive_version}/dive_${V.dive_version}_linux_amd64.deb`,
   },
   "lazydocker_architecture": fake_architecture.default(ansible_architecture),
   "lazydocker_version": hostvar("localhost").lazydocker_version,
   "lazydocker_url_map": {
-    "armv6l": tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_armv6.tar.gz`,
-    "armv7l": tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_armv7.tar.gz`,
-    "aarch64": tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_arm64.tar.gz`,
-    "x86_64": tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_x86_64.tar.gz  `
-  }
+    "armv6l":
+      tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_armv6.tar.gz`,
+    "armv7l":
+      tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_armv7.tar.gz`,
+    "aarch64":
+      tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_arm64.tar.gz`,
+    "x86_64":
+      tmpl`https://github.com/jesseduffield/lazydocker/releases/download/v${V.lazydocker_version}/lazydocker_${V.lazydocker_version}_Linux_x86_64.tar.gz  `,
+  },
 } satisfies Vars;

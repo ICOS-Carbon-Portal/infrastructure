@@ -9,9 +9,9 @@ export default {
   "trusted_host": "^www\\.actris\\.se$",
   "ssl_domains": [
     "actris.se",
-    "www.actris.se"
+    "www.actris.se",
   ],
   "drupal_modules": [
-    "bartik"
-  ]
+    "bartik",
+  ],
 } satisfies VarsFile;

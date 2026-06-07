@@ -4,6 +4,6 @@ import { type Inventory } from "../../../lib/data.ts";
 export default {
   "ansible_port": 60565,
   "bbclient_remotes": [
-    "cdb"
-  ]
+    "cdb",
+  ],
 } satisfies Inventory;

@@ -3,13 +3,13 @@ import { type VarsFile } from "../../lib/data.ts";
 
 export default {
   "icosdata_mkdirs": [
-    "/data/dataAppStorage"
+    "/data/dataAppStorage",
   ],
   "icosdata_nfs_mounts": [
     {
       "src": "fsicos2.nebula:/disk/data/dataAppStorage",
       "path": "/data/dataAppStorage",
-      "opts": "ro,hard,x-systemd.after=nebula.service"
-    }
-  ]
+      "opts": "ro,hard,x-systemd.after=nebula.service",
+    },
+  ],
 } satisfies VarsFile;

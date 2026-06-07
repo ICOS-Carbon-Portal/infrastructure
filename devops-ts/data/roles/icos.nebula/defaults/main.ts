@@ -35,9 +35,22 @@ export default {
   "nebula_ssh_port": 2346,
   "nebula_version": hostvar("localhost").nebula_version,
   "nebula_url_map": {
-    "armv6l": tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm-6.tar.gz`,
-    "armv7l": tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm-7.tar.gz`,
-    "x86_64": tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-amd64.tar.gz`,
-    "aarch64": tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm64.tar.gz`
-  }
-} satisfies Vars & Restated<Globals, "nebula_interface" | "nebula_cert_copy" | "nebula_port" | "nebula_hosts_block" | "nebula_ssh_enable">;
+    "armv6l":
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm-6.tar.gz`,
+    "armv7l":
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm-7.tar.gz`,
+    "x86_64":
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-amd64.tar.gz`,
+    "aarch64":
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm64.tar.gz`,
+  },
+} satisfies
+  & Vars
+  & Restated<
+    Globals,
+    | "nebula_interface"
+    | "nebula_cert_copy"
+    | "nebula_port"
+    | "nebula_hosts_block"
+    | "nebula_ssh_enable"
+  >;

@@ -9,7 +9,7 @@ export default {
   "trusted_host": "^www\\.icos-switzerland\\.ch$",
   "ssl_domains": [
     "switzerland.icos-cp.eu",
-    "www.icos-switzerland.ch"
+    "www.icos-switzerland.ch",
   ],
   "drupal_modules": [
     "bartik",
@@ -18,6 +18,6 @@ export default {
     "pathauto",
     "redirect",
     "smtp",
-    "webform"
-  ]
+    "webform",
+  ],
 } satisfies VarsFile;

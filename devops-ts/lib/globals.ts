@@ -160,7 +160,7 @@ export interface Globals {
 }
 
 // === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
-import { type VarRef, varProxy } from "./template.ts";
+import { varProxy, type VarRef } from "./template.ts";
 const vref = <K extends keyof Globals>(k: K): VarRef<Globals[K]> =>
   varProxy(k) as VarRef<Globals[K]>;
 
@@ -295,8 +295,12 @@ export const staging_lxd_ip = vref("staging_lxd_ip");
 export const stiltcluster_fetch_host = vref("stiltcluster_fetch_host");
 export const stiltcluster_fetch_path = vref("stiltcluster_fetch_path");
 export const stiltcluster_hostname = vref("stiltcluster_hostname");
-export const stiltcluster_stiltweb_hostname = vref("stiltcluster_stiltweb_hostname");
-export const stiltweb_atmoaccess_user_password = vref("stiltweb_atmoaccess_user_password");
+export const stiltcluster_stiltweb_hostname = vref(
+  "stiltcluster_stiltweb_hostname",
+);
+export const stiltweb_atmoaccess_user_password = vref(
+  "stiltweb_atmoaccess_user_password",
+);
 export const stiltweb_domains = vref("stiltweb_domains");
 export const stiltweb_statedir = vref("stiltweb_statedir");
 export const stiltweb_stiltdir = vref("stiltweb_stiltdir");

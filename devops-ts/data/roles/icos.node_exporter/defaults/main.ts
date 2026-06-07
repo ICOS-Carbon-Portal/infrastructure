@@ -16,11 +16,12 @@ export default {
   "node_exporter_listen": 9100,
   "node_exporter_bindto": "lo",
   "node_exporter_allow": false,
-  "node_exporter_arch": V.node_exporter_arch_map.at(ansible_architecture).default(ansible_architecture),
+  "node_exporter_arch": V.node_exporter_arch_map.at(ansible_architecture)
+    .default(ansible_architecture),
   "node_exporter_arch_map": {
     "armv6l": "armv6",
     "armv7l": "armv7",
-    "x86_64": "amd64"
+    "x86_64": "amd64",
   },
   "dirsize_enable": false,
   "dirsize_home": tmpl`${V.node_exporter_home}/directory-size`,
@@ -31,5 +32,5 @@ export default {
   "dockermon_enable": false,
   "dockermon_home": tmpl`${V.node_exporter_home}/dockermon`,
   "dockermon_prom": tmpl`${V.node_exporter_textfiles}/dockermon.prom`,
-  "lxdmon_enable": false
+  "lxdmon_enable": false,
 } satisfies Vars & Restated<Globals, "dirsize_enable">;

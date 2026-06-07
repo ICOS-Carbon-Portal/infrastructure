@@ -8,9 +8,14 @@ export default {
   "golang_version_install": "1.21.1",
   "golang_min_version": V.golang_version_install,
   "golang_local_version_ok": jinja`{{ ${golang_local_version} and
-   ${golang_local_version} is ${register("version").ref}(${V.golang_min_version}, ">=") }}`,
-  "golang_apt_version_ok": jinja`{{ golang_apt_version is ${register("version").ref}(${V.golang_min_version}, ">=") }}`,
-  "golang_url": tmpl`https://go.dev/dl/go${V.golang_version_install}.linux-amd64.tar.gz  `,
+   ${golang_local_version} is ${
+    register("version").ref
+  }(${V.golang_min_version}, ">=") }}`,
+  "golang_apt_version_ok": jinja`{{ golang_apt_version is ${
+    register("version").ref
+  }(${V.golang_min_version}, ">=") }}`,
+  "golang_url":
+    tmpl`https://go.dev/dl/go${V.golang_version_install}.linux-amd64.tar.gz  `,
   "golang_opt_dir": tmpl`/opt/golang-${V.golang_version_install}`,
-  "golang_bin_dir": tmpl`${V.golang_opt_dir}/go/bin`
+  "golang_bin_dir": tmpl`${V.golang_opt_dir}/go/bin`,
 } satisfies Vars;

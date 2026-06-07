@@ -12,7 +12,7 @@ export default {
   "ssl_domains": [
     "demo.fieldsites.se",
     "fieldsites.se",
-    "www.fieldsites.se"
+    "www.fieldsites.se",
   ],
   "drupal_modules": [
     "antibot",
@@ -32,6 +32,6 @@ export default {
     "svg",
     "token",
     "twig_tweak",
-    "webform"
-  ]
+    "webform",
+  ],
 } satisfies VarsFile;

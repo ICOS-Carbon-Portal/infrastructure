@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.postfix/_ctx.ts";
 
 export default {
-  "postfix_config_list": []
+  "postfix_config_list": [],
 } satisfies Vars;

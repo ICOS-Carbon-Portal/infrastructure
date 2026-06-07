@@ -8,5 +8,5 @@ export default {
   "jarservice_keep_n_old": 10,
   "jarservice_jar": tmpl`${register("_user").home.ref}/${servicename}.jar`,
   "extra_groups": "",
-  "certbot_disabled": false
+  "certbot_disabled": false,
 } satisfies Vars;

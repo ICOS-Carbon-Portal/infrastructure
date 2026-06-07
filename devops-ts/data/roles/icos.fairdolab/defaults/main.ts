@@ -3,5 +3,5 @@ import { type Vars } from "../../../../roles/icos.fairdolab/_ctx.ts";
 
 export default {
   "fairdolab_home": "/opt/fairdolab",
-  "fairdolab_docker_listen": "127.0.0.1:"
+  "fairdolab_docker_listen": "127.0.0.1:",
 } satisfies Vars;

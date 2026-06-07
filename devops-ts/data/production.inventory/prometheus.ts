@@ -9,24 +9,24 @@ export default {
       "vmagent_remote": "https://prom.icos-cp.eu/api/v1/write",
       "vmagent_auth": vault_vmagent_auth,
       "smartmon_enable": true,
-      "dirsize_enable": true
+      "dirsize_enable": true,
     },
     "hosts": {
       "cdb": null,
       "icos1": {
         "dockermon_enable": true,
-        "lxdmon_enable": true
+        "lxdmon_enable": true,
       },
       "fsicos2": {
         "dockermon_enable": true,
         "dirsize_initial": [
           "/disk/data/nextcloud",
-          "/var/log"
-        ]
+          "/var/log",
+        ],
       },
       "fsicos3": {
-        "lxdmon_enable": true
-      }
-    }
-  }
+        "lxdmon_enable": true,
+      },
+    },
+  },
 } satisfies Inventory;

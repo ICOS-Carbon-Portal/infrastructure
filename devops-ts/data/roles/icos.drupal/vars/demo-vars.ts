@@ -31,6 +31,6 @@ export default {
     "toc_js",
     "token",
     "webform",
-    "webform_views"
-  ]
+    "webform_views",
+  ],
 } satisfies VarsFile;

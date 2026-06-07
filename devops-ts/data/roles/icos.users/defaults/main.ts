@@ -2,5 +2,5 @@
 import { type Vars } from "../../../../roles/icos.users/_ctx.ts";
 
 export default {
-  "user_disable_coredump": false
+  "user_disable_coredump": false,
 } satisfies Vars;

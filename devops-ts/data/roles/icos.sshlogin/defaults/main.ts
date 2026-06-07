@@ -12,11 +12,12 @@ export default {
   "sshlogin_dst_ssh_dir": tmpl`${register("_dst_user").home.ref}/.ssh`,
   "sshlogin_dst_known_hosts": tmpl`${V.sshlogin_dst_ssh_dir}/known_hosts`,
   "sshlogin_dst_key_file": tmpl`${V.sshlogin_dst_ssh_dir}/id_rsa`,
-  "sshlogin_dst_key_options": jinja`{{ ${V._sshlogin_opt_list} | select('ne', '') | join(',') }}`,
+  "sshlogin_dst_key_options":
+    jinja`{{ ${V._sshlogin_opt_list} | select('ne', '') | join(',') }}`,
   "_sshlogin_opt_list": [
     tmpl`${jinja`{% if ${V.sshlogin_dst_command} -%}`} command="${V.sshlogin_dst_command}" ${jinja`{%- endif -%}`}`,
     tmpl`${jinja`{% if ${V.sshlogin_dst_from} == 'srcip' -%}`} from="${sshlogin_src_ip}" ${jinja`{%- elif ${V.sshlogin_dst_from} -%}`} from="${V.sshlogin_dst_from}" ${jinja`{%- endif -%}`}`,
-    tmpl`${jinja`{% if ${V.sshlogin_dst_restrict} -%}`} restrict ${jinja`{%- endif -%}`}`
+    tmpl`${jinja`{% if ${V.sshlogin_dst_restrict} -%}`} restrict ${jinja`{%- endif -%}`}`,
   ],
   "sshlogin_src_dst": sshlogin_dst,
   "sshlogin_src_ssh_dir": tmpl`${register("_src_user").home.ref}/.ssh`,
@@ -24,6 +25,8 @@ export default {
   "sshlogin_src_known_hosts": tmpl`${V.sshlogin_src_ssh_dir}/known_hosts`,
   "sshlogin_src_key_file": tmpl`${V.sshlogin_src_ssh_dir}/id_rsa`,
   "sshlogin_src_dst_name": sshlogin_dst,
-  "sshlogin_src_dst_host": hostvar(sshlogin_dst).ansible_host.default(sshlogin_dst),
-  "sshlogin_src_dst_port": hostvar(sshlogin_dst).ansible_port.default(22)
+  "sshlogin_src_dst_host": hostvar(sshlogin_dst).ansible_host.default(
+    sshlogin_dst,
+  ),
+  "sshlogin_src_dst_port": hostvar(sshlogin_dst).ansible_port.default(22),
 } satisfies Vars;

@@ -5,5 +5,5 @@ export default {
   "mtail_logs": [],
   "mtail_port": 3903,
   "mtail_host": "localhost",
-  "mtail_programs": []
+  "mtail_programs": [],
 } satisfies Vars;

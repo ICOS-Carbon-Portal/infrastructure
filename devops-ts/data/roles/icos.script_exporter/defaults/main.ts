@@ -7,12 +7,15 @@ export default {
   "sexp_home": "/opt/script_exporter",
   "sexp_config_file": tmpl`${V.sexp_home}/config.yaml`,
   "sexp_listen": "localhost:9469",
-  "sexp_arch": V.sexp_arch_map.at(ansible_architecture).default(ansible_architecture),
+  "sexp_arch": V.sexp_arch_map.at(ansible_architecture).default(
+    ansible_architecture,
+  ),
   "sexp_arch_map": {
     "armv7l": "armv7",
-    "x86_64": "amd64"
+    "x86_64": "amd64",
   },
   "sexp_scripts_venv": tmpl`${V.sexp_home}/scripts-venv`,
-  "sexp_scripts_repo": tmpl`${V.sexp_home}/node-exporter-textfile-collector-scripts`,
-  "sexp_scripts_enable": []
+  "sexp_scripts_repo":
+    tmpl`${V.sexp_home}/node-exporter-textfile-collector-scripts`,
+  "sexp_scripts_enable": [],
 } satisfies Vars;

@@ -65,7 +65,7 @@ export interface BuiltinVars {
 }
 
 // === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
-import { type VarRef, varProxy } from "./template.ts";
+import { varProxy, type VarRef } from "./template.ts";
 const vref = <K extends keyof BuiltinVars>(k: K): VarRef<BuiltinVars[K]> =>
   varProxy(k) as VarRef<BuiltinVars[K]>;
 
@@ -75,10 +75,18 @@ export const ansible_date_time = vref("ansible_date_time");
 export const ansible_default_ipv4 = vref("ansible_default_ipv4");
 export const ansible_default_ipv6 = vref("ansible_default_ipv6");
 export const ansible_distribution = vref("ansible_distribution");
-export const ansible_distribution_file_variety = vref("ansible_distribution_file_variety");
-export const ansible_distribution_major_version = vref("ansible_distribution_major_version");
-export const ansible_distribution_release = vref("ansible_distribution_release");
-export const ansible_distribution_version = vref("ansible_distribution_version");
+export const ansible_distribution_file_variety = vref(
+  "ansible_distribution_file_variety",
+);
+export const ansible_distribution_major_version = vref(
+  "ansible_distribution_major_version",
+);
+export const ansible_distribution_release = vref(
+  "ansible_distribution_release",
+);
+export const ansible_distribution_version = vref(
+  "ansible_distribution_version",
+);
 export const ansible_env = vref("ansible_env");
 export const ansible_facts = vref("ansible_facts");
 export const ansible_fqdn = vref("ansible_fqdn");
@@ -93,7 +101,9 @@ export const ansible_play_hosts = vref("ansible_play_hosts");
 export const ansible_port = vref("ansible_port");
 export const ansible_processor_vcpus = vref("ansible_processor_vcpus");
 export const ansible_python = vref("ansible_python");
-export const ansible_ssh_host_key_ecdsa_public = vref("ansible_ssh_host_key_ecdsa_public");
+export const ansible_ssh_host_key_ecdsa_public = vref(
+  "ansible_ssh_host_key_ecdsa_public",
+);
 export const ansible_user = vref("ansible_user");
 export const group_names = vref("group_names");
 export const groups = vref("groups");

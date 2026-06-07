@@ -9,9 +9,9 @@ export default {
   "jupyter_hub_config_defaults": {
     "user_volumes": {},
     "admin_users": [],
-    "image": "registry.icos-cp.eu/icosbase"
+    "image": "registry.icos-cp.eu/icosbase",
   },
   "jupyter_hub_config": {},
   "jusers_home": "/opt/jusers",
-  "jusers_venv": tmpl`${V.jusers_home}/venv`
+  "jusers_venv": tmpl`${V.jusers_home}/venv`,
 } satisfies Vars;

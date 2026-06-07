@@ -12,5 +12,5 @@ export default {
   "vm_graf_url": "http://grafana.local",
   "vm_graf_plugins": tmpl`${V.vm_home}/grafana/data/plugins`,
   "vm_graf_image": "grafana/grafana",
-  "vm_promlens_port": 3001
+  "vm_promlens_port": 3001,
 } satisfies Vars;

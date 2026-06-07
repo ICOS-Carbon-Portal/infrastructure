@@ -16,10 +16,10 @@ export default {
   "geoip_nginx_allow_deny": vault_geoip_nginx_allow_deny,
   "geoip_python_version": "3.10",
   "certbot_domains": [
-    "geoip.icos-cp.eu"
+    "geoip.icos-cp.eu",
   ],
   "certbot_name": "geoip",
   "nginxsite_name": "geoip",
   "nginxsite_file": "geoip.conf",
-  "geoip_domain": "geoip.icos-cp.eu"
+  "geoip_domain": "geoip.icos-cp.eu",
 } satisfies Vars;

@@ -4,5 +4,5 @@ import { V, type Vars } from "../../../../roles/icos.pve_server/_ctx.ts";
 
 export default {
   "pve_dnat_bridge": "vmbr0",
-  "pve_dnat_leases": tmpl`/var/lib/misc/dnsmasq.${V.pve_dnat_bridge}.leases`
+  "pve_dnat_leases": tmpl`/var/lib/misc/dnsmasq.${V.pve_dnat_bridge}.leases`,
 } satisfies Vars;

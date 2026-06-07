@@ -12,5 +12,10 @@ export default {
   "restheart_bind_port": 8088,
   "restheart_host": restheart_bind_host,
   "restheart_port": V.restheart_bind_port,
-  "restheart_nginxsite_name": "restheart"
-} satisfies Vars & Restated<Globals, "restheart_bind_host" | "restheart_host" | "restheart_nginxsite_name">;
+  "restheart_nginxsite_name": "restheart",
+} satisfies
+  & Vars
+  & Restated<
+    Globals,
+    "restheart_bind_host" | "restheart_host" | "restheart_nginxsite_name"
+  >;

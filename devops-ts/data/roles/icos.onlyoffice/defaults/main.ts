@@ -7,5 +7,5 @@ export default {
   "onlyoffice_port": 8201,
   "onlyoffice_home": "/docker/onlyoffice",
   "onlyoffice_build_dir": tmpl`${V.onlyoffice_home}/build`,
-  "onlyoffice_domain": "onlyoffice.icos-cp.eu"
+  "onlyoffice_domain": "onlyoffice.icos-cp.eu",
 } satisfies Vars;

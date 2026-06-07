@@ -7,11 +7,11 @@ export default {
   "nexus_home": tmpl`${docker_compose_home.default("/docker")}/nexus`,
   "nexus_host_port": 8881,
   "nexus_domains": [
-    "repo.icos-cp.eu"
+    "repo.icos-cp.eu",
   ],
   "nexus_version": "2.15.2",
   "certbot_name": "nexus",
   "certbot_domains": V.nexus_domains,
   "nginxsite_name": "nexus",
-  "nginxsite_file": "nexus-nginx.conf"
+  "nginxsite_file": "nexus-nginx.conf",
 } satisfies Vars;
