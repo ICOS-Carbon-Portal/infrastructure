@@ -36,7 +36,7 @@
 
 - name: Start/restart script-exporter.service
   systemd:
-    daemon-reload: "{{ 'yes' if _sysd.changed else 'no' }}"
+    daemon-reload: "{{ _sysd.changed }}"
     name: script-exporter.service
     enabled: true
     state: started

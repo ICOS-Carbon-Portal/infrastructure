@@ -6,7 +6,7 @@ import {
   dbin__vers,
   dbin_download_base,
 } from "../../../lib/sharedvars.ts";
-import { iff, lookup, tmpl } from "../../../lib/template.ts";
+import { lookup, tmpl } from "../../../lib/template.ts";
 
 const _sysd = register("_sysd");
 
@@ -56,7 +56,7 @@ export default [
   {
     name: "Start/restart script-exporter.service",
     systemd: {
-      "daemon-reload": iff(_sysd.changed, "yes", "no"),
+      "daemon-reload": _sysd.changed.ref,
       name: "script-exporter.service",
       enabled: true,
       state: "started",

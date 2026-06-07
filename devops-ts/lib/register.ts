@@ -18,14 +18,17 @@
 // (`_r.stdout.endswith(V.podman_version)`), so those conditions no longer need
 // raw() either.
 import type { Expr } from "./vars.ts";
-import { type Ref, Template } from "./template.ts";
+import { type Ref, Template, type VarRef } from "./template.ts";
 
 /**
- * One field of a result: an `Expr` (renders bare, for when-positions) whose
- * `.ref` is the value-position `Template` reference ("{{ <path> }}"). The
- * `Template` filter methods are then available: `r.stdout.ref.first()`.
+ * One field of a result holding a value of type `T`: an `Expr` (renders bare,
+ * for when-positions — `failed_when: r.failed`) whose `.ref` is the
+ * value-position reference (`{{ <path> }}`), a `VarRef<T>` so it both carries
+ * the field's type (a `boolean` field's `.ref` fits a `boolean` arg) and exposes
+ * the `Template` filter methods (`r.stdout.ref.first()`). `T` defaults to
+ * `unknown` (a plain `Ref`) for fields not given a more specific type.
  */
-export type Field = Expr & { readonly ref: Ref };
+export type Field<T = unknown> = Expr & { readonly ref: VarRef<T> };
 
 /**
  * An argument to a Python string method: a string LITERAL (rendered `'quoted'`)
@@ -43,7 +46,7 @@ export type StrArg = string | Ref | Expr;
  *   _r.msg.find("crontab")                  // an int — compare with eq/ne
  *   _r.stderr.lower()                       // a Python string (chainable)
  */
-export interface PyStr extends Field {
+export interface PyStr extends Field<string> {
   endswith(suffix: StrArg): Expr;
   startswith(prefix: StrArg): Expr;
   /** Index of `sub` (or -1); compare with eq/ne. */
@@ -62,44 +65,44 @@ export interface PyStrList extends Field {
 
 /** A registered `.stat` sub-result (the `stat` module). */
 export interface StatResult extends Expr {
-  exists: Field;
-  isdir: Field;
-  checksum: Field;
-  uid: Field;
-  gid: Field;
+  exists: Field<boolean>;
+  isdir: Field<boolean>;
+  checksum: Field<string>;
+  uid: Field<number>;
+  gid: Field<number>;
 }
 
 /** A registered `.status` sub-result (the `systemd` module's status dict). */
 export interface SystemdStatus extends Field {
-  ActiveState: Field;
+  ActiveState: Field<string>;
 }
 
 /** The common fields of an Ansible task result. */
 export interface Result {
-  changed: Field;
-  failed: Field;
-  rc: Field;
+  changed: Field<boolean>;
+  failed: Field<boolean>;
+  rc: Field<number>;
   stdout: PyStr;
   stderr: PyStr;
   stdout_lines: PyStrList;
   status: SystemdStatus;
   msg: PyStr;
-  dest: Field;
-  path: Field;
+  dest: Field<string>;
+  path: Field<string>;
   content: PyStr;
-  backup_file: Field;
-  restart_required: Field;
+  backup_file: Field<string>;
+  restart_required: Field<boolean>;
   stat: StatResult;
   // Module-specific result fields (user, github_release, lxd, find, ...).
-  home: Field;
-  uid: Field;
-  group: Field;
-  ssh_public_key: Field;
-  tag: Field;
-  files: Field;
-  ip: Field;
-  devices: Field;
-  addresses: { eth0: Field };
+  home: Field<string>;
+  uid: Field<number>;
+  group: Field<string>;
+  ssh_public_key: Field<string>;
+  tag: Field<string>;
+  files: Field; // a list — left `unknown`
+  ip: Field<string>;
+  devices: Field; // a dict — left `unknown`
+  addresses: { eth0: Field<string> };
 }
 
 /** A `register:` handle: the name string plus typed result-field accessors. */

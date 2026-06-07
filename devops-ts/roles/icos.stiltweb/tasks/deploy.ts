@@ -50,7 +50,7 @@ export default [
     systemd: {
       name: "stiltweb.service",
       enabled: true,
-      "daemon-reload": iff(_service.changed, "yes", "no"),
+      "daemon-reload": _service.changed.ref,
       state: iff(
         or(_jarfile.changed, _config.changed),
         "restarted",

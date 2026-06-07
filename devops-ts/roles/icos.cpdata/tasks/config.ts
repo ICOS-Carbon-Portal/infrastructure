@@ -27,11 +27,7 @@ export default [
     systemd: {
       name: "cpdata.service",
       enabled: true,
-      "daemon-reload": iff(
-        truthy(_service.changed).default(false),
-        "yes",
-        "no",
-      ),
+      "daemon-reload": truthy(_service.changed).default(false).asValue(),
       state: iff(
         or(truthy(_jarfile.changed).default(false), _config.changed),
         "restarted",

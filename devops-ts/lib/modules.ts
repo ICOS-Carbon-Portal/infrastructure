@@ -7,8 +7,6 @@
 import type { VarValue } from "./ansible/values.ts";
 import type { Tmpl } from "./template.ts";
 
-/** A boolean that may be written as a Jinja template (`"{{ x }}"`). */
-export type Flag = boolean | Tmpl;
 /** A file mode: `"0644"` or `0644`. */
 export type Mode = Tmpl | number;
 /** A package/name field that may be one name or a list. */
@@ -57,7 +55,7 @@ export type SystemdArgs = {
   enabled?: boolean;
   status?: Tmpl;
   daemon_reload?: boolean;
-  "daemon-reload"?: Flag;
+  "daemon-reload"?: boolean;
 };
 export type ServiceArgs =
   | Tmpl
