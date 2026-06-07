@@ -15,7 +15,7 @@ export interface Vars {
   wg_hub_peer: Tmpl;
   wg_hub_port: Tmpl;
   wg_hub_reresolve: Tmpl;
-  wg_hub_self: unknown;
+  wg_hub_self: Tmpl;
 }
 
 const vref = <K extends keyof Vars>(k: K): VarRef<Vars[K]> =>
@@ -30,3 +30,4 @@ export const wg_hub_key_dir = vref("wg_hub_key_dir");
 export const wg_hub_peer = vref("wg_hub_peer");
 export const wg_hub_port = vref("wg_hub_port");
 export const wg_hub_reresolve = vref("wg_hub_reresolve");
+export const wg_hub_self = vref("wg_hub_self");

@@ -91,6 +91,8 @@ export interface VaultVars {
   vault_virtuoso_dba_pass: string;
   vault_vmagent_auth: { username: string; password: string };
   vault_vm_graf_pass: string;
+  // icos.restheart (cities): basic-auth credentials (vault).
+  city_restheart_basic_auth: { username: string; password: string };
 }
 
 // === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
@@ -98,6 +100,7 @@ import { varProxy, type VarRef } from "./template.ts";
 const vref = <K extends keyof VaultVars>(k: K): VarRef<VaultVars[K]> =>
   varProxy(k) as VarRef<VaultVars[K]>;
 
+export const city_restheart_basic_auth = vref("city_restheart_basic_auth");
 export const vault_amalthea_ssh_keys = vref("vault_amalthea_ssh_keys");
 export const vault_aquanet_form_git_repo = vref("vault_aquanet_form_git_repo");
 export const vault_callisto_admins = vref("vault_callisto_admins");

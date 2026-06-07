@@ -1,6 +1,6 @@
 import { wg_hub_intf, wg_hub_ishub } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
-import { wg_hub_config } from "../../../lib/shapes.ts";
+import { wg_hub_config } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
 

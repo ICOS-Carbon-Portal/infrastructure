@@ -37,14 +37,14 @@ import type { Globals } from "./globals.ts";
 import type { SharedVars } from "./sharedvars.ts";
 import type { ParamVars } from "./paramvars.ts";
 import type { VaultVars } from "./vaultvars.ts";
-import type { VarShapes } from "./shapes.ts";
 import { type Ref, Template, varProxy, type VarRef } from "./template.ts";
 
 // The full set of statically-known variables a playbook may reference: the
 // hand-curated `Vars` above, plus globals/inventory vars, Ansible built-ins,
 // the cross-role shared surface (lib/sharedvars.ts), role caller-params / play
-// vars (lib/paramvars.ts), vault-defined names (lib/vaultvars.ts), and object
-// shapes (lib/shapes.ts). Ansible variable names are a single flat namespace,
+// vars (lib/paramvars.ts), and vault-defined names (lib/vaultvars.ts). Object
+// shapes live with their variable in the owning registry (globals/vaultvars/the
+// role's _ctx). Ansible variable names are a single flat namespace,
 // so a name defined anywhere is the same variable everywhere — referencing it
 // through a checked `V.x` (not `expr("x")`) catches typos.
 // The generated registries declare every value as `unknown`, so a name that is
@@ -56,8 +56,7 @@ type AllKnown =
   & BuiltinVars
   & SharedVars
   & ParamVars
-  & VaultVars
-  & VarShapes;
+  & VaultVars;
 type KnownName = keyof AllKnown & string;
 
 // Re-exported for convenience (the canonical definitions live in template.ts).

@@ -144,6 +144,18 @@ export interface Globals {
   vmagent_auth: { username: string; password: string };
   vmagent_pathprefix: string;
   vmagent_remote: string;
+  // icos.users / icos.lxd_guest: user roster (inventory group_vars).
+  user_conf: { create_users: string; remove_users: string };
+  // icos.wg_hub: per-host wireguard config (inventory group_vars), whose fields
+  // the role's templates navigate.
+  wg_hub_config: {
+    name: string;
+    allow_all: string;
+    allowed_ips: string;
+    reresolve: string;
+    peers: string;
+    hub: { addr: string; peer: string; port: string };
+  };
 }
 
 // === auto-generated variable bindings (gen-bindings.ts); do not edit below ===
@@ -291,9 +303,11 @@ export const stiltweb_atmoaccess_user_password = vref(
 export const stiltweb_domains = vref("stiltweb_domains");
 export const stiltweb_statedir = vref("stiltweb_statedir");
 export const stiltweb_stiltdir = vref("stiltweb_stiltdir");
+export const user_conf = vref("user_conf");
 export const virtuoso_dba_pass = vref("virtuoso_dba_pass");
 export const virtuoso_enable = vref("virtuoso_enable");
 export const vm_fsicos4_test = vref("vm_fsicos4_test");
 export const vmagent_auth = vref("vmagent_auth");
 export const vmagent_pathprefix = vref("vmagent_pathprefix");
 export const vmagent_remote = vref("vmagent_remote");
+export const wg_hub_config = vref("wg_hub_config");

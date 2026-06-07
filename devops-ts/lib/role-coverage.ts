@@ -10,7 +10,6 @@ import type { Globals } from "./globals.ts";
 import type { BuiltinVars } from "./builtins.ts";
 import type { SharedVars } from "./sharedvars.ts";
 import type { VaultVars } from "./vaultvars.ts";
-import type { VarShapes } from "./shapes.ts";
 import type { Vars as V_icos_bbclient2 } from "../roles/icos.bbclient2/_ctx.ts";
 import type { Vars as V_icos_bbserver } from "../roles/icos.bbserver/_ctx.ts";
 import type { Vars as V_icos_borg } from "../roles/icos.borg/_ctx.ts";
@@ -121,8 +120,7 @@ type Reg =
   | keyof Globals
   | keyof BuiltinVars
   | keyof SharedVars
-  | keyof VaultVars
-  | keyof VarShapes;
+  | keyof VaultVars;
 // Parameters a role's roles.ts schema declares (minus the envelope keys);
 // a schema with an index signature (string keys) declares none to check.
 type Params<R extends string> = R extends keyof Roles

@@ -16,9 +16,9 @@ import {
   restheart_icos_db_name,
   restheart_sites_db_name,
 } from "../../lib/globals.ts";
-import { city_restheart_basic_auth } from "../../lib/shapes.ts";
 import { restheart_bind_port } from "../../lib/sharedvars.ts";
 import { tmpl } from "../../lib/template.ts";
+import { city_restheart_basic_auth } from "../../lib/vaultvars.ts";
 
 export default {
   "all": {

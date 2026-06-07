@@ -2,7 +2,7 @@ import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { jbuild_force, virtualenv_recreate } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { jbuild_registry } from "../../../lib/shapes.ts";
+import { jbuild_registry } from "../_ctx.ts";
 import { truthy } from "../../../lib/vars.ts";
 
 const _user = register("_user");

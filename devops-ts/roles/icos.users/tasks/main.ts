@@ -1,7 +1,7 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { loopOverVar } from "../../../lib/loop.ts";
-import { user_conf } from "../../../lib/shapes.ts";
+import { user_conf } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
 

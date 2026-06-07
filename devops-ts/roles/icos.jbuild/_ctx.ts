@@ -10,7 +10,7 @@ export interface Vars {
   jbuild_edctl_host_port: Tmpl;
   jbuild_jyctl_host_name: Tmpl;
   jbuild_jyctl_host_port: Tmpl;
-  jbuild_registry: unknown;
+  jbuild_registry: Record<string, Tmpl>;
   jbuild_rrsync_bin: string;
   jbuild_rsync_host_name: Tmpl;
   jbuild_rsync_host_port: Tmpl;
@@ -24,6 +24,7 @@ export const jbuild_edctl_host_name = vref("jbuild_edctl_host_name");
 export const jbuild_edctl_host_port = vref("jbuild_edctl_host_port");
 export const jbuild_jyctl_host_name = vref("jbuild_jyctl_host_name");
 export const jbuild_jyctl_host_port = vref("jbuild_jyctl_host_port");
+export const jbuild_registry = vref("jbuild_registry");
 export const jbuild_rrsync_bin = vref("jbuild_rrsync_bin");
 export const jbuild_rsync_host_name = vref("jbuild_rsync_host_name");
 export const jbuild_rsync_host_port = vref("jbuild_rsync_host_port");

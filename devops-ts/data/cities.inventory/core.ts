@@ -9,9 +9,9 @@ import {
   restheart_cities_db_name,
   restheart_cities_domain,
 } from "../../lib/globals.ts";
-import { city_restheart_basic_auth } from "../../lib/shapes.ts";
 import { cpmeta_home, restheart_bind_port } from "../../lib/sharedvars.ts";
 import { tmpl } from "../../lib/template.ts";
+import { city_restheart_basic_auth } from "../../lib/vaultvars.ts";
 
 export default {
   "all": {

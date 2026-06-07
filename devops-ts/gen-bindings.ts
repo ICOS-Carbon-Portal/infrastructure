@@ -1,9 +1,10 @@
 // Generate the named variable bindings for each names-only registry module.
 //
-// Each registry (lib/globals.ts, builtins.ts, paramvars.ts, vaultvars.ts,
-// shapes.ts) declares an interface of variable NAMES. This emits, into a
-// trailing auto-generated region of each file, one `export const <name>`
-// bound to a `VarRef` so files reference Ansible variables the normal TS way —
+// Each registry (lib/globals.ts, builtins.ts, paramvars.ts, vaultvars.ts)
+// declares an interface of variable NAMES (some typed as object shapes whose
+// fields a template navigates). This emits, into a trailing auto-generated
+// region of each file, one `export const <name>` bound to a `VarRef` so files
+// reference Ansible variables the normal TS way —
 // `import { ansible_architecture } from "../../lib/builtins.ts"` — instead of a
 // `V` proxy. The binding renders `{{ <name> }}` in value position and bare in a
 // `when:` subject, exactly as the old `V.<name>` did.
@@ -17,7 +18,6 @@ const MODS: Array<{ file: string; iface: string }> = [
   { file: "builtins.ts", iface: "BuiltinVars" },
   { file: "paramvars.ts", iface: "ParamVars" },
   { file: "vaultvars.ts", iface: "VaultVars" },
-  { file: "shapes.ts", iface: "VarShapes" },
 ];
 
 const SENTINEL =

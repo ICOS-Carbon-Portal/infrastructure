@@ -6,7 +6,7 @@ import {
 } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
-import { wg_hub_config } from "../../../lib/shapes.ts";
+import { wg_hub_config } from "../../../lib/globals.ts";
 import { iff, tmpl } from "../../../lib/template.ts";
 import { and, not, or, truthy } from "../../../lib/vars.ts";
 

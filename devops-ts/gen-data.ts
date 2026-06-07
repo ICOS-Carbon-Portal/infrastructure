@@ -40,7 +40,6 @@ const SHAREDVARS = ifaceNames("./lib/sharedvars.ts");
 // registries; see lib/paramvars.ts and lib/vaultvars.ts).
 const PARAMVARS = ifaceNames("./lib/paramvars.ts");
 const VAULTVARS = ifaceNames("./lib/vaultvars.ts");
-const SHAPES = ifaceNames("./lib/shapes.ts");
 // A role's own variable names, read from its generated `_ctx.ts` `Vars`
 // interface (the source of truth that `satisfies Vars` checks against). Null if
 // the role has no _ctx (then its defaults stay a plain VarsFile).
@@ -70,8 +69,11 @@ const SIMPLE_FILTERS = new Set([
   "splitext",
   "b64decode",
 ]);
-// Object-shaped variables (lib/shapes.ts + hand-declared facts) whose dotted
-// paths are checked: name -> allowed paths.
+// Object-typed variables (typed as objects in their owning module —
+// globals.ts/vaultvars.ts/builtins.ts, or a role's _ctx) whose dotted paths
+// convert to checked field refs: name -> allowed paths. A name absent here (or
+// whose static type is a plain string/Tmpl, e.g. a templated default) keeps its
+// dotted access as a verbatim jinja escape.
 const SHAPED = new Map<string, Set<string>>([
   ["ansible_lsb", new Set(["id", "codename", "release", "major_release"])],
   ["ansible_default_ipv4", new Set(["gateway"])],
@@ -89,7 +91,6 @@ const SHAPED = new Map<string, Set<string>>([
       "hub.port",
     ]),
   ],
-  ["wg_hub_self", new Set(["addr", "port"])],
   ["jbuild_registry", new Set(["url", "username", "password"])],
   ["city_restheart_basic_auth", new Set(["username", "password"])],
   ["user_conf", new Set(["create_users", "remove_users"])],
@@ -257,7 +258,6 @@ for (const rel of await dataYmls()) {
     ...BUILTINS,
     ...PARAMVARS,
     ...VAULTVARS,
-    ...SHAPES,
   ]);
   // Self excludes names already in Globals/BuiltinVars (avoid intersection
   // collapsing to `never`); they remain reachable via the widening.
@@ -544,15 +544,15 @@ for (const rel of await dataYmls()) {
       if (HELPER_MODULE[h]) addImp(`${ups}lib/${HELPER_MODULE[h]}`, h);
     }
     // Each referenced variable, resolved to its owning module by precedence:
-    // shape > own-role > globals > builtins > params > vault > shared.
+    // own-role > globals > builtins > params > vault > shared. Object-shaped
+    // names live in their owning module (globals/vault/_ctx), typed as objects.
     const usedNames = [
       ...new Set(
         [...literal.matchAll(/\bV\.([A-Za-z_]\w*)/g)].map((m) => m[1]),
       ),
     ];
     for (const n of usedNames) {
-      if (SHAPES.has(n)) addImp(`${ups}lib/shapes.ts`, n);
-      else if (selfVarSet.has(n)) {
+      if (selfVarSet.has(n)) {
         if (dataRole) addImp(`${ups}roles/${dataRole}/_ctx.ts`, n);
         else localSelf.push(n);
       } else if (GLOBALS.has(n)) addImp(`${ups}lib/globals.ts`, n);

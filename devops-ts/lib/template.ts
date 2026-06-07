@@ -210,8 +210,9 @@ export class Template {
 /**
  * A nested variable reference: a single-ref `Template` whose property access
  * yields a deeper reference (`varProxy("a").b` -> `{{ a.b }}`). This is the
- * runtime behind `V.x.y` for object-shaped variables (lib/shapes.ts) — the
- * TYPE (`VarRef`) decides which fields exist; the proxy serves any of them.
+ * runtime behind `x.y` for object-typed variables (typed as objects in their
+ * owning registry) — the TYPE (`VarRef`) decides which fields exist; the proxy
+ * serves any of them.
  * `Template`'s own members (parts, filters, `at`) pass through to the base.
  */
 export function varProxy(path: string): Ref {
@@ -228,9 +229,9 @@ export function varProxy(path: string): Ref {
 
 /**
  * The reference type for a variable declared as `T`: a plain `Ref` for scalar
- * variables, a `Ref` that also exposes per-field refs for object-shaped ones
- * (see lib/shapes.ts). `[T] extends [object]` (no distribution) so unions and
- * `unknown` stay plain `Ref`s.
+ * variables, a `Ref` that also exposes per-field refs for object-typed ones.
+ * `[T] extends [object]` (no distribution) so unions and `unknown` stay plain
+ * `Ref`s.
  */
 export type VarRef<T> = [T] extends [object]
   ? Ref & { readonly [K in keyof T]-?: VarRef<T[K]> }
