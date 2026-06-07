@@ -6,7 +6,7 @@
 import { type Tmpl, varProxy, type VarRef } from "../../lib/template.ts";
 
 export interface Vars {
-  _sftp_create_home: Tmpl;
+  _sftp_create_home: boolean;
   _sftp_parent_dir: Tmpl;
   sftp_user_group: Tmpl;
   sftp_user_hostdesc: Tmpl;

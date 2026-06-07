@@ -8,7 +8,7 @@ import { type Tmpl, varProxy, type VarRef } from "../../lib/template.ts";
 export interface Vars {
   borg_libc_map: Record<string, Record<string, string>>;
   borg_libc_version: Tmpl;
-  borg_upgrade: Tmpl;
+  borg_upgrade: boolean;
   borg_url_map: Record<string, Tmpl>;
   borg_version: Tmpl;
 }

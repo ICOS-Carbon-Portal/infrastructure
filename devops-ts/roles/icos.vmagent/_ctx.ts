@@ -23,7 +23,7 @@ export interface Vars {
   vmagent_home: string;
   vmagent_listen: string;
   vmagent_proxy: string;
-  vmagent_upgrade: Tmpl;
+  vmagent_upgrade: boolean;
 }
 
 export const V: { readonly [K in keyof Vars]: VarRef<Vars[K]> } = new Proxy(

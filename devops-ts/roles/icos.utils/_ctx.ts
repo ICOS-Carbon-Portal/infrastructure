@@ -13,7 +13,7 @@ export interface Vars {
   fd_url_map: Record<string, Tmpl>;
   fd_version: Tmpl;
   lazygit_architecture: Tmpl;
-  lazygit_upgrade: Tmpl;
+  lazygit_upgrade: boolean;
   lazygit_url_map: Record<string, Tmpl>;
   lazygit_version: Tmpl;
   ncdu_arch_map: Record<string, string>;

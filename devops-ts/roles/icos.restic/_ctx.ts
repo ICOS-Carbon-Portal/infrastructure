@@ -7,7 +7,7 @@ import { type Tmpl, varProxy, type VarRef } from "../../lib/template.ts";
 
 export interface Vars {
   restic_architecture: Tmpl;
-  restic_upgrade: Tmpl;
+  restic_upgrade: boolean;
   restic_url_map: Record<string, Tmpl>;
   restic_version: Tmpl;
 }

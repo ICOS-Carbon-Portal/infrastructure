@@ -12,7 +12,7 @@ export interface Vars {
   restic_server_home: string;
   restic_server_htpasswd: Tmpl;
   restic_server_listen: number;
-  restic_server_upgrade: Tmpl;
+  restic_server_upgrade: boolean;
   restic_server_url_map: Record<string, Tmpl>;
   restic_server_user: string;
   restic_server_users: unknown;

@@ -7,7 +7,7 @@ import { type Tmpl, varProxy, type VarRef } from "../../lib/template.ts";
 
 export interface Vars {
   httm_architecture: Tmpl;
-  httm_upgrade: Tmpl;
+  httm_upgrade: boolean;
   httm_url_map: Record<string, Tmpl>;
   httm_version: Tmpl;
 }

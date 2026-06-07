@@ -56,7 +56,7 @@ export type SystemdArgs = {
   state?: Tmpl;
   enabled?: boolean;
   status?: Tmpl;
-  daemon_reload?: Flag;
+  daemon_reload?: boolean;
   "daemon-reload"?: Flag;
 };
 export type ServiceArgs =
@@ -108,7 +108,7 @@ export type GetUrlArgs = {
   url: Tmpl;
   dest: Tmpl;
   mode?: Mode;
-  force?: Flag;
+  force?: boolean;
 };
 export type UnarchiveArgs = {
   src: Tmpl;

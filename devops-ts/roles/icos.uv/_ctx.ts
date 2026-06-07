@@ -8,7 +8,7 @@ import { type Tmpl, varProxy, type VarRef } from "../../lib/template.ts";
 export interface Vars {
   uv_architecture: Tmpl;
   uv_home: string;
-  uv_upgrade: Tmpl;
+  uv_upgrade: boolean;
   uv_url_map: Record<string, Tmpl>;
   uv_version: Tmpl;
 }

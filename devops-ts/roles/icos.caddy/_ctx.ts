@@ -11,7 +11,7 @@ export interface Vars {
   caddy_global_conf: string;
   caddy_modules: unknown;
   caddy_site_state: string;
-  caddy_upgrade: Tmpl;
+  caddy_upgrade: boolean;
   caddy_via_xcaddy: string;
   xcaddy_upgrade: Tmpl;
 }

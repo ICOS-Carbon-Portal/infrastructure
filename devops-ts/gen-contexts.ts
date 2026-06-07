@@ -52,7 +52,14 @@ function inferType(v: unknown): string {
   const t = typeof v;
   if (t === "boolean") return "boolean";
   if (t === "number") return "number";
-  if (t === "string") return isTemplated(v as string) ? "Tmpl" : "string";
+  if (t === "string") {
+    const s = v as string;
+    // A `{{ x | bool }}` default is boolean-valued (the trailing `bool` filter),
+    // so type it `boolean`, not `Tmpl`. gen-data emits it as a `.bool()` chain,
+    // which is `VarRef<boolean>` -- it satisfies `boolean` and renders the same.
+    if (/^\{\{.*\|\s*bool\s*\}\}$/.test(s.trim())) return "boolean";
+    return isTemplated(s) ? "Tmpl" : "string";
+  }
   // Arrays stay `unknown`: `VarRef<T[]>` intersects the array's `filter` with
   // Template's PRIVATE `filter`, collapsing the whole ref to `never`. Records
   // are fine — they add an index signature, not a conflicting named member.

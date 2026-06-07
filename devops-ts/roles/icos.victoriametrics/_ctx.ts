@@ -13,7 +13,7 @@ export interface Vars {
   vm_home: string;
   vm_promlens_port: number;
   vm_scrape_conf: string;
-  vm_upgrade: Tmpl;
+  vm_upgrade: boolean;
   vm_vm_port: number;
 }
 

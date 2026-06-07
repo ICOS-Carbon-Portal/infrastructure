@@ -23,7 +23,7 @@ export interface Vars {
   nebula_ssh_port: number;
   nebula_stats_enable: boolean;
   nebula_stats_port: number;
-  nebula_upgrade: Tmpl;
+  nebula_upgrade: boolean;
   nebula_url_map: Record<string, Tmpl>;
   nebula_user: string;
   nebula_version: Tmpl;
