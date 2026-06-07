@@ -16,7 +16,7 @@ export default [
       state: "present",
       shell: "/bin/bash",
       groups: iff(V.stiltcluster_docker, "docker", omit),
-      append: iff(V.stiltcluster_docker, "yes", omit),
+      append: iff(V.stiltcluster_docker, true, omit),
     },
   },
   {

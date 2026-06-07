@@ -280,14 +280,32 @@ export type Tmpl = string | Template;
  * The condition renders bare — pass a `when:`-style `Expr` (`eq`/`isIn`, `and`/
  * `or`, a register field like `_r.changed`) or a single-ref `Template` (`V.x`).
  * The branches are filter-args: a string becomes a `'quoted'` Jinja literal,
- * `V.x` / `V.omit` render bare, numbers and booleans as-is.
+ * `V.x` / `V.omit` render bare, numbers as-is, and a BOOLEAN as Ansible's
+ * `'yes'`/`'no'` literal (the idiom for boolean module args).
  *
- *   iff(V.caddy_upgrade, "latest", "present")     // {{ 'latest' if caddy_upgrade else 'present' }}
- *   iff(eq(V.where, "EOF"), "EOF", V.omit)        // {{ 'EOF' if where == 'EOF' else omit }}
+ * The "value-or-omit" pattern is MODELLED by the return type: `iff(cond, value,
+ * omit)` sets the field to `value` when `cond` holds and drops it otherwise; the
+ * result carries `value`'s type, so it satisfies the field whatever that type is
+ * (`string`, `number`, `boolean`, ...). A `value` that is itself a ref/template
+ * stays a plain `Template` (fits `Tmpl` fields).
+ *
+ *   iff(V.caddy_upgrade, "latest", "present")  // {{ 'latest' if caddy_upgrade else 'present' }}
+ *   iff(eq(V.where, "EOF"), "EOF", omit)       // {{ 'EOF' if where == 'EOF' else omit }}
+ *   iff(V.docker, true, omit)                  // {{ 'yes' if docker else omit }} — typed boolean
  *
  * Replaces the stringly-typed `expr("'a' if cond else 'b'")`: the branches are
  * type-checked, and a `V.x`/register condition is checked too.
  */
+export function iff(
+  cond: Expr | Template,
+  then: Template | ReadonlyArray<string | number | Template>,
+  otherwise: FilterArg,
+): Template;
+export function iff<T extends string | number | boolean>(
+  cond: Expr | Template,
+  then: T,
+  otherwise: FilterArg,
+): VarRef<T>;
 export function iff(
   cond: Expr | Template,
   then: FilterArg,
@@ -296,8 +314,16 @@ export function iff(
   const c = cond instanceof Template ? filterArgText(cond) : String(cond);
   return new Template([{
     kind: "ref",
-    jinja: `${filterArgText(then)} if ${c} else ${filterArgText(otherwise)}`,
+    jinja: `${branchText(then)} if ${c} else ${branchText(otherwise)}`,
   }]);
+}
+
+// An `iff` branch's Jinja text. A boolean renders as Ansible's `'yes'`/`'no'`
+// (a boolean in value position is a module-arg flag), everything else as a
+// filter-arg (`'string'`, number, bare ref, `omit`).
+function branchText(v: FilterArg): string {
+  if (typeof v === "boolean") return v ? "'yes'" : "'no'";
+  return filterArgText(v);
 }
 
 /** The bare Jinja text of an interpolated value: a ref renders as its expression

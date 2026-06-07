@@ -68,7 +68,7 @@ export type AptArgs = {
   update_cache?: boolean;
   deb?: Tmpl;
   cache_valid_time?: Tmpl | number;
-  upgrade?: Flag;
+  upgrade?: string | boolean;
   purge?: boolean;
   autoclean?: boolean;
   autoremove?: boolean;
@@ -81,7 +81,7 @@ export type UserArgs = {
   shell?: Tmpl;
   groups?: Names;
   group?: Tmpl;
-  append?: Flag;
+  append?: boolean;
   create_home?: Flag;
   state?: Tmpl;
   password?: Tmpl;
