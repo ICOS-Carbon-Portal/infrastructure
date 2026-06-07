@@ -1,4 +1,4 @@
-import { httm_architecture, httm_url_map, httm_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -17,7 +17,7 @@ export default [
     when: ne(ansible_architecture, "x86_64"),
   },
   {
-    when: isNotDefined(httm_version),
+    when: isNotDefined(V.httm_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -44,7 +44,7 @@ export default [
   {
     name: "Install httm",
     apt: {
-      deb: httm_url_map.at(httm_architecture),
+      deb: V.httm_url_map.at(V.httm_architecture),
     },
   },
   {
@@ -52,12 +52,12 @@ export default [
     shell: "httm --version",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(httm_version)),
+    failed_when: not(_r.stdout.endswith(V.httm_version)),
   },
   {
     name: "Which version of httm was installed",
     debug: {
-      msg: tmpl`Installed ${httm_version}`,
+      msg: tmpl`Installed ${V.httm_version}`,
     },
   },
 ] satisfies TaskFile;

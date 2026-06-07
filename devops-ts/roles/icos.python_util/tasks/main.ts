@@ -1,8 +1,4 @@
-import {
-  python_util_install_dir,
-  python_util_install_prefix,
-  python_util_python_executable,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { python_util_src } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -15,7 +11,7 @@ export default [
     name: "Copying python utility",
     copy: {
       src: python_util_src,
-      dest: python_util_install_prefix,
+      dest: V.python_util_install_prefix,
     },
     register: "_util",
   },
@@ -23,10 +19,10 @@ export default [
     name: "Installing python utility",
     "community.general.pipx": {
       executable: "pipx-global",
-      python: python_util_python_executable,
+      python: V.python_util_python_executable,
       editable: true,
       // name can be a pypi name or - in this case - a filesystem path
-      name: python_util_install_dir,
+      name: V.python_util_install_dir,
     },
     register: _pipx,
     // pipx seems to always report changed when installing editable from file

@@ -1,4 +1,4 @@
-import { dovecot_domains_file } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
@@ -8,7 +8,7 @@ export default [
   {
     name: "Create domains file",
     blockinfile: {
-      path: dovecot_domains_file,
+      path: V.dovecot_domains_file,
       create: true,
       insertbefore: "BOF",
       marker: "# {mark} ansible - icos.dovecot",
@@ -37,7 +37,7 @@ export default [
     loop: [
       "/etc/postfix/transport",
       "/etc/postfix/virtual",
-      dovecot_domains_file,
+      V.dovecot_domains_file,
     ],
   },
   loopOver<{ append?: boolean; param: Tmpl; value: Tmpl }>(
@@ -48,8 +48,8 @@ export default [
       // relay_domains.
       { param: "virtual_alias_domains", value: "", append: false },
       { param: "virtual_alias_maps", value: "hash:/etc/postfix/virtual" },
-      { param: "transport_maps", value: tmpl`hash:${dovecot_domains_file}` },
-      { param: "relay_domains", value: tmpl`hash:${dovecot_domains_file}` },
+      { param: "transport_maps", value: tmpl`hash:${V.dovecot_domains_file}` },
+      { param: "relay_domains", value: tmpl`hash:${V.dovecot_domains_file}` },
     ],
     (item) => ({
       name: "Configure postfix to use database files",

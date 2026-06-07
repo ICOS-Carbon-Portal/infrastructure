@@ -1,4 +1,4 @@
-import { eurocom_auth_file, eurocom_domain } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { eurocom_users } from "../../../lib/paramvars.ts";
 import { isDefined } from "../../../lib/vars.ts";
@@ -7,16 +7,16 @@ export default [
   {
     include_role: "name=icos.certbot2",
     vars: {
-      certbot_name: eurocom_domain,
+      certbot_name: V.eurocom_domain,
       certbot_domains: [
-        eurocom_domain,
+        V.eurocom_domain,
       ],
     },
   },
   {
     include_role: "name=icos.nginxauth",
     vars: {
-      nginxauth_file: eurocom_auth_file,
+      nginxauth_file: V.eurocom_auth_file,
       nginxauth_users: eurocom_users,
     },
     when: isDefined(eurocom_users),

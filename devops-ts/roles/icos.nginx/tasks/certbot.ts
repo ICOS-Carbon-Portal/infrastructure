@@ -1,4 +1,4 @@
-import { nginx_certbot_bin } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
@@ -15,7 +15,7 @@ export default [
     name: "Add job to renew certificates",
     cron: {
       name: "Certbot renewal",
-      job: tmpl`${nginx_certbot_bin} renew -q`,
+      job: tmpl`${V.nginx_certbot_bin} renew -q`,
       special_time: "daily",
     },
   },

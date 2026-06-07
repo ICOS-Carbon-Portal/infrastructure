@@ -1,4 +1,4 @@
-import { docker_periodic_cleanup } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_distribution } from "../../../lib/builtins.ts";
 import { eq, notIn, truthy } from "../../../lib/vars.ts";
@@ -66,7 +66,7 @@ export default [
   {
     import_tasks: "cleanup.yml",
     tags: "docker_cleanup",
-    when: truthy(docker_periodic_cleanup),
+    when: truthy(V.docker_periodic_cleanup),
   },
   {
     import_role: "name=icos.docker_utils",

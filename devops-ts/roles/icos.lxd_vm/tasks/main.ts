@@ -1,10 +1,4 @@
-import {
-  __lxd_vm_config,
-  __lxd_vm_devices,
-  __lxd_vm_profiles,
-  lxd_source,
-  lxd_vm_forward,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { lxd_vm_root_keys } from "../../../lib/globals.ts";
 import {
@@ -37,10 +31,10 @@ export default [
     lxd_container: {
       name: lxd_vm_name,
       state: "started",
-      profiles: __lxd_vm_profiles,
-      source: lxd_source,
-      config: __lxd_vm_config,
-      devices: __lxd_vm_devices,
+      profiles: V.__lxd_vm_profiles,
+      source: V.lxd_source,
+      config: V.__lxd_vm_config,
+      devices: V.__lxd_vm_devices,
       wait_for_ipv4_addresses: true,
       wait_for_ipv4_interfaces: "eth0",
       timeout: 600,
@@ -77,6 +71,6 @@ export default [
   {
     import_tasks: "forward.yml",
     tags: "lxd_vm_forward",
-    when: truthy(lxd_vm_forward),
+    when: truthy(V.lxd_vm_forward),
   },
 ] satisfies TaskFile;

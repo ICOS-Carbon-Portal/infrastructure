@@ -1,4 +1,4 @@
-import { nginxsite_state } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { eq } from "../../../lib/vars.ts";
 
@@ -10,11 +10,11 @@ export default [
   {
     name: "add site",
     include_tasks: { file: "present.yml" },
-    when: eq(nginxsite_state, "present"),
+    when: eq(V.nginxsite_state, "present"),
   },
   {
     name: "remove site",
     include_tasks: { file: "absent.yml" },
-    when: eq(nginxsite_state, "absent"),
+    when: eq(V.nginxsite_state, "absent"),
   },
 ] satisfies TaskFile;

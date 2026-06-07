@@ -1,9 +1,4 @@
-import {
-  restic_architecture,
-  restic_upgrade,
-  restic_url_map,
-  restic_version,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -14,7 +9,7 @@ const gh = register("gh");
 
 export default [
   {
-    when: isNotDefined(restic_version),
+    when: isNotDefined(V.restic_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -41,10 +36,10 @@ export default [
   {
     name: "Download restic",
     "ansible.builtin.shell": tmpl`curl -L --silent ${
-      restic_url_map.at(restic_architecture)
+      V.restic_url_map.at(V.restic_architecture)
     } | bunzip2 > /usr/local/bin/restic && chmod +x /usr/local/bin/restic`,
     args: {
-      creates: iff(restic_upgrade, omit, "/usr/local/bin/restic"),
+      creates: iff(V.restic_upgrade, omit, "/usr/local/bin/restic"),
       executable: "/bin/bash",
     },
   },
@@ -58,7 +53,7 @@ export default [
   {
     name: "Which version of restic was installed",
     debug: {
-      msg: tmpl`Installed ${restic_version}`,
+      msg: tmpl`Installed ${V.restic_version}`,
     },
   },
 ] satisfies TaskFile;

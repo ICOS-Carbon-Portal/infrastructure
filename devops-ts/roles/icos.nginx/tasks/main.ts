@@ -1,4 +1,4 @@
-import { nginx_metrics_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { truthy } from "../../../lib/vars.ts";
 
@@ -9,6 +9,6 @@ export default [
   {
     import_tasks: "metrics.yml",
     tags: "nginx_metrics",
-    when: truthy(nginx_metrics_enable),
+    when: truthy(V.nginx_metrics_enable),
   },
 ] satisfies TaskFile;

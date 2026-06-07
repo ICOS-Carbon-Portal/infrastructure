@@ -1,11 +1,11 @@
-import { nebula_fw_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { nebula_interface, nebula_port } from "../../../lib/globals.ts";
 import { not, truthy } from "../../../lib/vars.ts";
 
 export default [
   {
-    when: truthy(nebula_fw_enable),
+    when: truthy(V.nebula_fw_enable),
     block: [
       {
         name: "Install iptables",
@@ -50,7 +50,7 @@ export default [
   },
   // i.e proxmox
   {
-    when: not(nebula_fw_enable),
+    when: not(V.nebula_fw_enable),
     name: "Display note about manual firewall rules",
     debug: {
       msg: `Please manually add the following firewall rules:

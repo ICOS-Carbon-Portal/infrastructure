@@ -1,4 +1,4 @@
-import { vm_graf_plugins, vm_upgrade } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { grafana_datasource_version } from "../../../lib/paramvars.ts";
@@ -37,7 +37,7 @@ export default [
   {
     name: "Create grafana plugin directory",
     file: {
-      path: vm_graf_plugins,
+      path: V.vm_graf_plugins,
       state: "directory",
     },
   },
@@ -50,12 +50,12 @@ export default [
         }/victoriametrics-metrics-datasource-v${
           hostvar("localhost").grafana_datasource_version
         }.zip`,
-      dest: vm_graf_plugins,
+      dest: V.vm_graf_plugins,
       remote_src: true,
       creates: iff(
-        vm_upgrade,
+        V.vm_upgrade,
         omit,
-        concat(vm_graf_plugins, "/victoriametrics-datasource"),
+        concat(V.vm_graf_plugins, "/victoriametrics-datasource"),
       ),
     },
     diff: false,

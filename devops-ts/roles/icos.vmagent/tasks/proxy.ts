@@ -1,4 +1,4 @@
-import { vmagent_proxy } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { inventory_hostname } from "../../../lib/builtins.ts";
 import { vmagent_auth } from "../../../lib/globals.ts";
@@ -7,7 +7,7 @@ import { eq, notIn, truthy } from "../../../lib/vars.ts";
 
 export default [
   {
-    when: eq(vmagent_proxy, "probe"),
+    when: eq(V.vmagent_proxy, "probe"),
     name: "Probe for vmagent_proxy fact",
     check_mode: false,
     shellfact: {
@@ -16,22 +16,22 @@ export default [
     },
   },
   {
-    when: notIn(vmagent_proxy, ["nginx", "caddy"]),
+    when: notIn(V.vmagent_proxy, ["nginx", "caddy"]),
     check_mode: false,
     name: "Fail if we can't figure out which proxy server is used",
     fail: {
-      msg: tmpl`Unknown proxy server "${vmagent_proxy}".\n`,
+      msg: tmpl`Unknown proxy server "${V.vmagent_proxy}".\n`,
     },
   },
   {
-    when: eq(vmagent_proxy, "nginx"),
+    when: eq(V.vmagent_proxy, "nginx"),
     name: "Setup nginx proxy for vmagent",
     include_role: {
       name: "icos.nginxsite",
     },
   },
   {
-    when: eq(vmagent_proxy, "caddy"),
+    when: eq(V.vmagent_proxy, "caddy"),
     name: "Setup caddy proxy for vmagent",
     include_role: {
       name: "icos.caddy",

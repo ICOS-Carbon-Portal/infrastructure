@@ -1,4 +1,4 @@
-import { telegraf_smart_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { truthy } from "../../../lib/vars.ts";
 
@@ -7,7 +7,7 @@ export default [
   {
     import_tasks: "smart.yml",
     tags: "telegraf_smart",
-    when: truthy(telegraf_smart_enable),
+    when: truthy(V.telegraf_smart_enable),
   },
   { import_tasks: "config.yml", tags: "telegraf_config" },
   { import_tasks: "just.yml", tags: "telegraf_just" },

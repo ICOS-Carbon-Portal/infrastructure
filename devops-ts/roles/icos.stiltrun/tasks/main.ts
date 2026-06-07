@@ -1,9 +1,4 @@
-import {
-  stiltrun_image_id,
-  stiltrun_image_name,
-  stiltrun_image_url,
-  stiltrun_user,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -16,19 +11,19 @@ const docker_images = register("docker_images");
 export default [
   {
     name: "List docker images matching the stiltrun image",
-    command: tmpl`docker images -qa ${stiltrun_image_name}`,
+    command: tmpl`docker images -qa ${V.stiltrun_image_name}`,
     register: docker_images,
     changed_when: false,
   },
   {
-    when: notIn(stiltrun_image_id, docker_images.stdout),
-    become: ne(stiltrun_user, "root").asValue(),
-    become_user: stiltrun_user,
+    when: notIn(V.stiltrun_image_id, docker_images.stdout),
+    become: ne(V.stiltrun_user, "root").asValue(),
+    become_user: V.stiltrun_user,
     block: [
       {
         name: "Download stilt docker image",
         get_url: {
-          url: stiltrun_image_url,
+          url: V.stiltrun_image_url,
           dest: "/tmp",
         },
         register: _get_url,
@@ -40,12 +35,12 @@ export default [
       },
       {
         name: "Check that stiltrun_image was properly loaded",
-        shell: tmpl`docker images -q | grep ${stiltrun_image_id} -q`,
+        shell: tmpl`docker images -q | grep ${V.stiltrun_image_id} -q`,
         changed_when: false,
       },
       {
         name: "Tag the stiltrun image",
-        shell: tmpl`docker tag ${stiltrun_image_id} ${stiltrun_image_name}`,
+        shell: tmpl`docker tag ${V.stiltrun_image_id} ${V.stiltrun_image_name}`,
         changed_when: false,
       },
     ],

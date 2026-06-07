@@ -1,9 +1,4 @@
-import {
-  sshlogin_dst_key_options,
-  sshlogin_src_dst,
-  sshlogin_src_known_hosts,
-  sshlogin_src_ssh_config,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item, omit } from "../../../lib/builtins.ts";
 import {
@@ -97,8 +92,8 @@ export default [
       {
         name: "Update known_hosts",
         known_hosts: {
-          path: sshlogin_src_known_hosts,
-          name: sshlogin_src_dst,
+          path: V.sshlogin_src_known_hosts,
+          name: V.sshlogin_src_dst,
           key: item,
         },
         loop: sshlogin_dst_host_keys.strip().split("\\n"),
@@ -108,7 +103,7 @@ export default [
         blockinfile: {
           marker: tmpl`# {mark} ansible / sshlogin ${sshlogin_dst}`,
           create: true,
-          path: sshlogin_src_ssh_config,
+          path: V.sshlogin_src_ssh_config,
           block: `Host {{ sshlogin_src_dst_name }}
   Hostname {{ sshlogin_src_dst_host }}
   Port {{ sshlogin_src_dst_port }}
@@ -136,7 +131,7 @@ export default [
           user: sshlogin_dst_user,
           state: "present",
           key: _src_user.ssh_public_key.ref,
-          key_options: sshlogin_dst_key_options,
+          key_options: V.sshlogin_dst_key_options,
         },
       },
     ],

@@ -6,20 +6,17 @@ import {
   stiltcluster_fetch_host,
 } from "../../../../lib/globals.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
-import {
-  stiltcluster_home,
-  type Vars,
-} from "../../../../roles/icos.stiltcluster/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.stiltcluster/_ctx.ts";
 
 export default {
   "stiltcluster_username": "stiltcluster",
   "stiltcluster_servicename": "stiltcluster",
   "stiltcluster_home": "/home/stiltcluster",
-  "stiltcluster_bindir": tmpl`${stiltcluster_home}/bin`,
+  "stiltcluster_bindir": tmpl`${V.stiltcluster_home}/bin`,
   "stiltcluster_fetch_host": null,
   "stiltcluster_fetch_path":
     tmpl`${jinja`{{ ${hostvars}[${stiltcluster_fetch_host}].stiltcluster_home
-  | default(${stiltcluster_home}) }}`}/stiltcluster.jar"`,
+  | default(${V.stiltcluster_home}) }}`}/stiltcluster.jar"`,
   "stiltcluster_hostname": inventory_hostname,
   "stiltcluster_stiltweb_hostname": inventory_hostname,
   "stiltcluster_stiltweb_port": 2550,

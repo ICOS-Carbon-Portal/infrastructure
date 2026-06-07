@@ -1,4 +1,4 @@
-import { caddy_site_state } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { caddy_conf, caddy_name } from "../../../lib/paramvars.ts";
@@ -22,7 +22,7 @@ export default [
     vars: {
       block: caddy_conf,
       marker: caddy_name,
-      state: caddy_site_state,
+      state: V.caddy_site_state,
       where: "EOF",
     },
   },

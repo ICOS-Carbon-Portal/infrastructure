@@ -1,4 +1,4 @@
-import { podman_src_dir, podman_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_kernel } from "../../../lib/builtins.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -53,15 +53,15 @@ export default [
     name: "Clone podman",
     git: {
       repo: "https://github.com/containers/podman",
-      version: tmpl`v${podman_version}`,
-      dest: podman_src_dir,
+      version: tmpl`v${V.podman_version}`,
+      dest: V.podman_src_dir,
     },
     diff: false,
   },
   {
     name: "Build podman",
     make: {
-      chdir: podman_src_dir,
+      chdir: V.podman_src_dir,
       target: "default",
       params: { BUILDTAGS: "seccomp selinux systemd" },
     },
@@ -69,7 +69,7 @@ export default [
   {
     name: "Install podman",
     make: {
-      chdir: podman_src_dir,
+      chdir: V.podman_src_dir,
       target: "install",
     },
   },

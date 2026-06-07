@@ -2,18 +2,14 @@
 import { docker_compose_home } from "../../../../lib/paramvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { vault_geoip_nginx_allow_deny } from "../../../../lib/vaultvars.ts";
-import {
-  geoip_build_dir,
-  geoip_home,
-  type Vars,
-} from "../../../../roles/icos.geoip/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.geoip/_ctx.ts";
 
 export default {
   "geoip_user": "geoip",
   "geoip_home": tmpl`${docker_compose_home.default("/docker")}/geoip`,
-  "geoip_build_dir": tmpl`${geoip_home}/build`,
-  "geoip_repo_dir": tmpl`${geoip_build_dir}/repo`,
-  "geoip_db_dir": tmpl`${geoip_home}/volumes/db`,
+  "geoip_build_dir": tmpl`${V.geoip_home}/build`,
+  "geoip_repo_dir": tmpl`${V.geoip_build_dir}/repo`,
+  "geoip_db_dir": tmpl`${V.geoip_home}/volumes/db`,
   "geoip_git_repo": "https://github.com/ICOS-Carbon-Portal/data",
   "geoip_git_version": "master",
   "geoip_host_port": 8447,

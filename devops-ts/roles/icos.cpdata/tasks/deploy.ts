@@ -1,4 +1,4 @@
-import { cpdata_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { cpdata_domains } from "../../../lib/globals.ts";
 import { cpdata_jar_file } from "../../../lib/paramvars.ts";
@@ -22,7 +22,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: cpdata_jar_file,
-      dest: tmpl`${cpdata_home}/cpdata.jar`,
+      dest: tmpl`${V.cpdata_home}/cpdata.jar`,
       backup: true,
     },
     register: "_jarfile",
@@ -32,7 +32,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: cpdata_home },
+    args: { chdir: V.cpdata_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },

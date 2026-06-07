@@ -1,4 +1,4 @@
-import { cpmeta_home, cpmeta_user } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   cpmeta_filestorage_target,
@@ -13,8 +13,8 @@ export default [
   {
     name: "Create cpmeta user",
     user: {
-      name: cpmeta_user,
-      home: cpmeta_home,
+      name: V.cpmeta_user,
+      home: V.cpmeta_home,
       shell: "/bin/bash",
     },
   },
@@ -22,9 +22,9 @@ export default [
     name: "Copy SSL certs and private key for Handle.net client",
     copy: {
       src: "ssl",
-      dest: tmpl`${cpmeta_home}/`,
-      owner: cpmeta_user,
-      group: cpmeta_user,
+      dest: tmpl`${V.cpmeta_home}/`,
+      owner: V.cpmeta_user,
+      group: V.cpmeta_user,
     },
   },
   {
@@ -32,8 +32,8 @@ export default [
     file: {
       path: cpmeta_filestorage_target,
       state: "directory",
-      owner: cpmeta_user,
-      group: cpmeta_user,
+      owner: V.cpmeta_user,
+      group: V.cpmeta_user,
       recurse: true,
     },
   },
@@ -42,8 +42,8 @@ export default [
     file: {
       path: cpmeta_rdfstorage_path,
       state: "directory",
-      owner: cpmeta_user,
-      group: cpmeta_user,
+      owner: V.cpmeta_user,
+      group: V.cpmeta_user,
       recurse: true,
     },
   },

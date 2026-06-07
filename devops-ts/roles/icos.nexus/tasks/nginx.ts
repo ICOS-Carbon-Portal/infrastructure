@@ -1,4 +1,4 @@
-import { nexus_host_port } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { nexus_certbot_enable } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -18,7 +18,7 @@ export default [
   {
     name: "Check that nexus responds with correct version",
     uri: {
-      url: tmpl`http://127.0.0.1:${nexus_host_port}/service/local/status`,
+      url: tmpl`http://127.0.0.1:${V.nexus_host_port}/service/local/status`,
       return_content: true,
     },
     register: r,

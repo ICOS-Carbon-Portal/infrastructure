@@ -1,4 +1,4 @@
-import { stiltweb_certbot_name, stiltweb_nginxsite_name } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { stiltweb_domains } from "../../../lib/globals.ts";
 
@@ -12,7 +12,7 @@ export default [
       public: true,
     },
     vars: {
-      certbot_name: stiltweb_certbot_name,
+      certbot_name: V.stiltweb_certbot_name,
       certbot_domains: stiltweb_domains,
     },
   },
@@ -20,7 +20,7 @@ export default [
     name: "Add stiltweb nginx config",
     include_role: { name: "icos.nginxsite" },
     vars: {
-      nginxsite_name: stiltweb_nginxsite_name,
+      nginxsite_name: V.stiltweb_nginxsite_name,
       nginxsite_file: "stiltweb-nginx.conf",
     },
   },

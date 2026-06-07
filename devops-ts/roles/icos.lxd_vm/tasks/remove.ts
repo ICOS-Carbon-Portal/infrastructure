@@ -1,4 +1,4 @@
-import { lxd_vm_port, lxd_vm_root_pool } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { inventory_hostname, item } from "../../../lib/builtins.ts";
 import { lxd_vm_name, lxd_vm_variant } from "../../../lib/paramvars.ts";
@@ -28,7 +28,7 @@ export default [
     name: "Remove local known_host",
     local_action: {
       module: "known_hosts",
-      name: tmpl`[${inventory_hostname}]:${lxd_vm_port}`,
+      name: tmpl`[${inventory_hostname}]:${V.lxd_vm_port}`,
       state: "absent",
     },
   },
@@ -46,7 +46,7 @@ export default [
     block: [
       {
         name: "Delete storage pool",
-        shell: tmpl`/snap/bin/lxc storage delete ${lxd_vm_root_pool} || :\n`,
+        shell: tmpl`/snap/bin/lxc storage delete ${V.lxd_vm_root_pool} || :\n`,
         register: _r,
         changed_when: _r.stdout.endswith("deleted"),
       },

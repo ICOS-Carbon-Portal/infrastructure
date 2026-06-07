@@ -1,4 +1,4 @@
-import { stiltcluster_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { inventory_hostname } from "../../../lib/builtins.ts";
 import {
@@ -63,7 +63,7 @@ export default [
     when: isDefined(stiltcluster_jar_file),
     copy: {
       src: stiltcluster_jar_file,
-      dest: tmpl`${stiltcluster_home}/stiltcluster.jar`,
+      dest: tmpl`${V.stiltcluster_home}/stiltcluster.jar`,
       backup: true,
     },
     notify: "restart stiltcluster",
@@ -73,7 +73,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: stiltcluster_home },
+    args: { chdir: V.stiltcluster_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },

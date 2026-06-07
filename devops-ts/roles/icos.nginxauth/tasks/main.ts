@@ -1,4 +1,4 @@
-import { nginxauth_file } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { loopOverVar } from "../../../lib/loop.ts";
@@ -24,7 +24,7 @@ export default [
   {
     name: "Create directory for auth file",
     file: {
-      path: nginxauth_file.dirname(),
+      path: V.nginxauth_file.dirname(),
       state: "directory",
     },
   },
@@ -33,7 +33,7 @@ export default [
     (item) => ({
       name: "Add basic auth users",
       htpasswd: {
-        path: nginxauth_file,
+        path: V.nginxauth_file,
         name: item.username,
         password: item.password,
       },

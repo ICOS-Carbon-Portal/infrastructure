@@ -1,8 +1,4 @@
-import {
-  mailman_certbot_name,
-  mailman_nginxsite_file,
-  mailman_nginxsite_name,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { mailman_domains } from "../../../lib/paramvars.ts";
 
@@ -11,7 +7,7 @@ export default [
     name: "Create mailman certificate",
     include_role: { name: "icos.certbot2", public: true },
     vars: {
-      certbot_name: mailman_certbot_name,
+      certbot_name: V.mailman_certbot_name,
       certbot_domains: mailman_domains,
     },
   },
@@ -19,8 +15,8 @@ export default [
     name: "Create mailmain nginx config",
     include_role: "name=icos.nginxsite",
     vars: {
-      nginxsite_name: mailman_nginxsite_name,
-      nginxsite_file: mailman_nginxsite_file,
+      nginxsite_name: V.mailman_nginxsite_name,
+      nginxsite_file: V.mailman_nginxsite_file,
     },
   },
 ] satisfies TaskFile;

@@ -3,10 +3,7 @@ import { type Restated } from "../../../../lib/data.ts";
 import { type Globals, restheart_bind_host } from "../../../../lib/globals.ts";
 import { docker_compose_home } from "../../../../lib/paramvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
-import {
-  restheart_bind_port,
-  type Vars,
-} from "../../../../roles/icos.restheart/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.restheart/_ctx.ts";
 
 export default {
   "restheart_user": "restheart",
@@ -14,7 +11,7 @@ export default {
   "restheart_bind_host": "127.0.0.1",
   "restheart_bind_port": 8088,
   "restheart_host": restheart_bind_host,
-  "restheart_port": restheart_bind_port,
+  "restheart_port": V.restheart_bind_port,
   "restheart_nginxsite_name": "restheart",
 } satisfies
   & Vars

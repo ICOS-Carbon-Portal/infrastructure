@@ -1,4 +1,4 @@
-import { caddy_dropin_path } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 // If we've been running xcaddy before this then we might have installed our
@@ -7,7 +7,7 @@ export default [
   {
     name: "Remove caddy dropin directory",
     file: {
-      name: caddy_dropin_path.dirname(),
+      name: V.caddy_dropin_path.dirname(),
       state: "absent",
     },
     notify: "restart caddy",

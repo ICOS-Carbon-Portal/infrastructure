@@ -1,4 +1,4 @@
-import { rdflog_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   rdflog_backup_enable,
@@ -14,7 +14,7 @@ export default [
     vars: {
       bbclient_user: "root",
       bbclient_name: rdflog_bbclient_name,
-      bbclient_home: tmpl`${rdflog_home}/bbclient`,
+      bbclient_home: tmpl`${V.rdflog_home}/bbclient`,
       bbclient_timer_conf: "OnCalendar=00/6:11",
       bbclient_timer_content: `#!/bin/bash
 set -eu

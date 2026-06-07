@@ -1,4 +1,4 @@
-import { _wg_is_installed } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   ansible_distribution,
@@ -19,7 +19,7 @@ export default [
     name: "Include install tasks for raspbian",
     include_tasks: "wireguard-raspbian-zero.yml",
     when: [
-      not(_wg_is_installed),
+      not(V._wg_is_installed),
       eq(ansible_distribution, "Debian"),
       eq(ansible_lsb.id, "Raspbian"),
       eq(ansible_machine, "armv6l"),
@@ -29,7 +29,7 @@ export default [
     name: "Include install tasks for raspbian",
     include_tasks: "wireguard-raspbian.yml",
     when: [
-      not(_wg_is_installed),
+      not(V._wg_is_installed),
       eq(ansible_distribution, "Debian"),
       eq(ansible_lsb.id, "Raspbian"),
       ne(ansible_machine, "armv6l"),
@@ -39,7 +39,7 @@ export default [
     name: "Include install tasks for ubuntu",
     include_tasks: "wireguard-ubuntu.yml",
     when: [
-      not(_wg_is_installed),
+      not(V._wg_is_installed),
       eq(ansible_distribution, "Ubuntu"),
     ],
   },
@@ -49,6 +49,6 @@ export default [
       msg:
         tmpl`Couldn't install wireguard for ${ansible_distribution}/${ansible_lsb.id}`,
     },
-    when: not(_wg_is_installed),
+    when: not(V._wg_is_installed),
   },
 ] satisfies TaskFile;

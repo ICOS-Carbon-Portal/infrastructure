@@ -2,14 +2,7 @@
 import { type VarsFile } from "../../../../lib/data.ts";
 import { zfsdocker_zvol } from "../../../../lib/sharedvars.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
-import {
-  __base_config,
-  __docker_config,
-  __docker_device,
-  __root_device,
-  lxd_vm_docker,
-  lxd_vm_root_size,
-} from "../../../../roles/icos.lxd_vm/_ctx.ts";
+import { V } from "../../../../roles/icos.lxd_vm/_ctx.ts";
 
 export default {
   "__root_device": {
@@ -17,21 +10,21 @@ export default {
       "path": "/",
       "type": "disk",
       "pool": "default",
-      "size": lxd_vm_root_size,
+      "size": V.lxd_vm_root_size,
     },
   },
-  "__docker_device": tmpl`${jinja`{% if ${lxd_vm_docker} -%}`} {"docker": {
+  "__docker_device": tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"docker": {
   "path": "/var/lib/docker",
   "source": "${zfsdocker_zvol}",
   "type": "disk",
   "raw.mount.options": "user_subvol_rm_allowed" }}
 ${jinja`{% else -%}`}{}${jinja`{% endif -%}`}`,
-  "lxd_vm_default_devices": __root_device.combine(__docker_device),
+  "lxd_vm_default_devices": V.__root_device.combine(V.__docker_device),
   "lxd_vm_default_profiles": [
     "default",
   ],
   "__base_config": {},
   "__docker_config":
-    tmpl`${jinja`{% if ${lxd_vm_docker} -%}`} {"security.nesting": "true"} ${jinja`{% else %}`}{}${jinja`{% endif -%}`}`,
-  "lxd_vm_default_config": __base_config.combine(__docker_config),
+    tmpl`${jinja`{% if ${V.lxd_vm_docker} -%}`} {"security.nesting": "true"} ${jinja`{% else %}`}{}${jinja`{% endif -%}`}`,
+  "lxd_vm_default_config": V.__base_config.combine(V.__docker_config),
 } satisfies VarsFile;

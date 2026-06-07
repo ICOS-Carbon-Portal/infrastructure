@@ -1,4 +1,4 @@
-import { exploredata_home, exploredata_notebook_image } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { registry_domain } from "../../../lib/globals.ts";
@@ -16,7 +16,7 @@ export default [
   {
     name: "Copy files",
     copy: {
-      dest: tmpl`${exploredata_home}/`,
+      dest: tmpl`${V.exploredata_home}/`,
       src: item,
     },
     loop: ["build.hub", "jupyterhub_home", "docker-compose.yml"],
@@ -25,7 +25,7 @@ export default [
     name: "Copy jupyterhub_config.py",
     template: {
       src: "jupyterhub_config.py",
-      dest: tmpl`${exploredata_home}/jupyterhub_home/`,
+      dest: tmpl`${V.exploredata_home}/jupyterhub_home/`,
       backup: true,
       validate: "python3 -m py_compile %s",
     },
@@ -33,7 +33,7 @@ export default [
   {
     name: "Install runtime environment file",
     copy: {
-      dest: tmpl`${exploredata_home}/.env`,
+      dest: tmpl`${V.exploredata_home}/.env`,
       content: `NETWORK_NAME={{ exploredata_network }}
 HUB_PORT={{ exploredata_port }}
 HUB_RESTART=always
@@ -56,14 +56,14 @@ PASSWORD={{ exploredata_password[exploredata_type] }}
   {
     name: "Make sure that the notebook images are present",
     "community.docker.docker_image": {
-      name: exploredata_notebook_image,
+      name: V.exploredata_notebook_image,
       source: "pull",
     },
   },
   {
     name: "Build and start the hub image",
     docker_compose: {
-      project_src: exploredata_home,
+      project_src: V.exploredata_home,
       build: true,
     },
   },

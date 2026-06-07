@@ -4,23 +4,13 @@ import { fake_architecture } from "../../../../lib/paramvars.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  btop_version,
-  fd_version,
-  lazygit_version,
-  ncdu_arch_map,
-  ncdu_version,
-  ripgrep_version,
-  trippy_version,
-  type Vars,
-  watchexec_version,
-} from "../../../../roles/icos.utils/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.utils/_ctx.ts";
 
 export default {
   "ripgrep_version": hostvar("localhost").ripgrep_version,
   "ripgrep_url_map": {
     "x86_64":
-      tmpl`https://github.com/BurntSushi/ripgrep/releases/download/${ripgrep_version}/ripgrep_${ripgrep_version}-1_amd64.deb`,
+      tmpl`https://github.com/BurntSushi/ripgrep/releases/download/${V.ripgrep_version}/ripgrep_${V.ripgrep_version}-1_amd64.deb`,
   },
   "ncdu_version": 2.3,
   "ncdu_arch_map": {
@@ -28,63 +18,64 @@ export default {
     "x86_64": "x86_64",
     "aarch64": "aarch64",
   },
-  "ncdu_url": tmpl`https://dev.yorhel.nl/download/ncdu-${ncdu_version}-linux-${
-    ncdu_arch_map.at(ansible_architecture)
-  }.tar.gz`,
+  "ncdu_url":
+    tmpl`https://dev.yorhel.nl/download/ncdu-${V.ncdu_version}-linux-${
+      V.ncdu_arch_map.at(ansible_architecture)
+    }.tar.gz`,
   "fd_architecture": fake_architecture.default(ansible_architecture),
   "fd_version": hostvar("localhost").fd_version,
   "fd_url_map": {
     "armv6l":
-      tmpl`https://github.com/sharkdp/fd/releases/download/v${fd_version}/fd-v${fd_version}-arm-unknown-linux-gnueabihf.tar.gz`,
+      tmpl`https://github.com/sharkdp/fd/releases/download/v${V.fd_version}/fd-v${V.fd_version}-arm-unknown-linux-gnueabihf.tar.gz`,
     "armv7l":
-      tmpl`https://github.com/sharkdp/fd/releases/download/v${fd_version}/fd-v${fd_version}-arm-unknown-linux-gnueabihf.tar.gz`,
+      tmpl`https://github.com/sharkdp/fd/releases/download/v${V.fd_version}/fd-v${V.fd_version}-arm-unknown-linux-gnueabihf.tar.gz`,
     "aarch64":
-      tmpl`https://github.com/sharkdp/fd/releases/download/v${fd_version}/fd-v${fd_version}-aarch64-unknown-linux-gnu.tar.gz`,
+      tmpl`https://github.com/sharkdp/fd/releases/download/v${V.fd_version}/fd-v${V.fd_version}-aarch64-unknown-linux-gnu.tar.gz`,
     "x86_64":
-      tmpl`https://github.com/sharkdp/fd/releases/download/v${fd_version}/fd-musl_${fd_version}_amd64.deb`,
+      tmpl`https://github.com/sharkdp/fd/releases/download/v${V.fd_version}/fd-musl_${V.fd_version}_amd64.deb`,
   },
   "watchexec_architecture": fake_architecture.default(ansible_architecture),
   "watchexec_version": hostvar("localhost").watchexec_version,
   "watchexec_url_map": {
     "armv7l":
-      tmpl`https://github.com/watchexec/watchexec/releases/download/v${watchexec_version}/watchexec-${watchexec_version}-armv7-unknown-linux-gnueabihf.deb`,
+      tmpl`https://github.com/watchexec/watchexec/releases/download/v${V.watchexec_version}/watchexec-${V.watchexec_version}-armv7-unknown-linux-gnueabihf.deb`,
     "aarch64":
-      tmpl`https://github.com/watchexec/watchexec/releases/download/v${watchexec_version}/watchexec-${watchexec_version}-aarch64-unknown-linux-gnu.deb`,
+      tmpl`https://github.com/watchexec/watchexec/releases/download/v${V.watchexec_version}/watchexec-${V.watchexec_version}-aarch64-unknown-linux-gnu.deb`,
     "x86_64":
-      tmpl`https://github.com/watchexec/watchexec/releases/download/v${watchexec_version}/watchexec-${watchexec_version}-x86_64-unknown-linux-musl.deb`,
+      tmpl`https://github.com/watchexec/watchexec/releases/download/v${V.watchexec_version}/watchexec-${V.watchexec_version}-x86_64-unknown-linux-musl.deb`,
   },
   "btop_version": hostvar("localhost").btop_version,
   "btop_home": "/opt",
   "btop_url_map": {
     "armv6l":
-      tmpl`https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-armv5l-linux-musleabi.tbz`,
+      tmpl`https://github.com/aristocratos/btop/releases/download/v${V.btop_version}/btop-armv5l-linux-musleabi.tbz`,
     "armv7l":
-      tmpl`https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-armv7l-linux-musleabihf.tbz`,
+      tmpl`https://github.com/aristocratos/btop/releases/download/v${V.btop_version}/btop-armv7l-linux-musleabihf.tbz`,
     "aarch64":
-      tmpl`https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-aarch64-linux-musl.tbz`,
+      tmpl`https://github.com/aristocratos/btop/releases/download/v${V.btop_version}/btop-aarch64-linux-musl.tbz`,
     "x86_64":
-      tmpl`https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-x86_64-linux-musl.tbz`,
+      tmpl`https://github.com/aristocratos/btop/releases/download/v${V.btop_version}/btop-x86_64-linux-musl.tbz`,
   },
   "trippy_version": hostvar("localhost").trippy_version,
   "trippy_url_map": {
     "armv7l":
-      tmpl`https://github.com/fujiapple852/trippy/releases/download/${trippy_version}/trippy-${trippy_version}-armv7-unknown-linux-musleabi.tar.gz`,
+      tmpl`https://github.com/fujiapple852/trippy/releases/download/${V.trippy_version}/trippy-${V.trippy_version}-armv7-unknown-linux-musleabi.tar.gz`,
     "aarch64":
-      tmpl`https://github.com/fujiapple852/trippy/releases/download/${trippy_version}/trippy-${trippy_version}-aarch64-unknown-linux-musl.tar.gz`,
+      tmpl`https://github.com/fujiapple852/trippy/releases/download/${V.trippy_version}/trippy-${V.trippy_version}-aarch64-unknown-linux-musl.tar.gz`,
     "x86_64":
-      tmpl`https://github.com/fujiapple852/trippy/releases/download/${trippy_version}/trippy-${trippy_version}-x86_64-unknown-linux-gnu.tar.gz`,
+      tmpl`https://github.com/fujiapple852/trippy/releases/download/${V.trippy_version}/trippy-${V.trippy_version}-x86_64-unknown-linux-gnu.tar.gz`,
   },
   "lazygit_upgrade": upgrade_everything.default(false).bool(),
   "lazygit_architecture": fake_architecture.default(ansible_architecture),
   "lazygit_version": hostvar("localhost").lazygit_version,
   "lazygit_url_map": {
     "armv6l":
-      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_armv6.tar.gz`,
+      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${V.lazygit_version}/lazygit_${V.lazygit_version}_Linux_armv6.tar.gz`,
     "armv7l":
-      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_armv6.tar.gz`,
+      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${V.lazygit_version}/lazygit_${V.lazygit_version}_Linux_armv6.tar.gz`,
     "aarch64":
-      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_arm64.tar.gz`,
+      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${V.lazygit_version}/lazygit_${V.lazygit_version}_Linux_arm64.tar.gz`,
     "x86_64":
-      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz`,
+      tmpl`https://github.com/jesseduffield/lazygit/releases/download/v${V.lazygit_version}/lazygit_${V.lazygit_version}_Linux_x86_64.tar.gz`,
   },
 } satisfies Vars;

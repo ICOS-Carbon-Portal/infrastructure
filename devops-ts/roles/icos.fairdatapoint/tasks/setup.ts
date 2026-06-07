@@ -1,4 +1,4 @@
-import { fdp_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { fdp_jar_file } from "../../../lib/paramvars.ts";
@@ -16,7 +16,7 @@ export default [
   {
     name: "Create fairdatapoint directory",
     file: {
-      path: tmpl`${fdp_home}/`,
+      path: tmpl`${V.fdp_home}/`,
       state: "directory",
     },
   },
@@ -24,7 +24,7 @@ export default [
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: fdp_home,
+      dest: V.fdp_home,
       lstrip_blocks: true,
     },
     register: _compose,
@@ -33,7 +33,7 @@ export default [
     name: "Copy Dockerfile",
     template: {
       src: "Dockerfile",
-      dest: fdp_home,
+      dest: V.fdp_home,
     },
     register: _dockerfile,
   },
@@ -42,7 +42,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: fdp_jar_file,
-      dest: tmpl`${fdp_home}/fdp.jar`,
+      dest: tmpl`${V.fdp_home}/fdp.jar`,
     },
     register: _jarfile,
   },
@@ -50,7 +50,7 @@ export default [
     name: "Copy application.yml",
     template: {
       src: "application.yml",
-      dest: tmpl`${fdp_home}/`,
+      dest: tmpl`${V.fdp_home}/`,
       lstrip_blocks: true,
     },
     register: _config,
@@ -58,7 +58,7 @@ export default [
   {
     name: "Copy files",
     copy: {
-      dest: fdp_home,
+      dest: V.fdp_home,
       src: item,
     },
     loop: ["eh-next_logo.png", "_variables.scss"],
@@ -66,7 +66,7 @@ export default [
   {
     name: "Start fairdatapoint",
     icos_docker_compose: {
-      chdir: fdp_home,
+      chdir: V.fdp_home,
       force_recreate: or(
         _config.changed,
         _compose.changed,

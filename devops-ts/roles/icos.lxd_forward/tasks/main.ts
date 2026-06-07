@@ -1,4 +1,4 @@
-import { lxd_forward_port } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { lxd_forward_ip, lxd_forward_name } from "../../../lib/paramvars.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -12,9 +12,9 @@ export default [
       name: tmpl`forward_ssh_to_${lxd_forward_name}`,
       table: "nat",
       rules:
-        tmpl`-A PREROUTING -p tcp --dport ${lxd_forward_port} -j DNAT --to-destination ${lxd_forward_ip}:22`,
+        tmpl`-A PREROUTING -p tcp --dport ${V.lxd_forward_port} -j DNAT --to-destination ${lxd_forward_ip}:22`,
     },
-    when: truthy(lxd_forward_port),
+    when: truthy(V.lxd_forward_port),
   },
   {
     name: "Modify /etc/hosts to add lxd_forward_name.lxd",

@@ -1,4 +1,4 @@
-import { ripgrep_url_map, ripgrep_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { type When } from "../../../lib/ansible/task.ts";
 import { ansible_architecture } from "../../../lib/builtins.ts";
@@ -17,7 +17,7 @@ export default [
     // the list structure rather than collapsing to a single `a and b` string.
     when: [
       eq(ansible_architecture, "x86_64"),
-      isNotDefined(ripgrep_version),
+      isNotDefined(V.ripgrep_version),
     ] as unknown as When,
     run_once: true,
     check_mode: false,
@@ -45,7 +45,7 @@ export default [
   {
     when: eq(ansible_architecture, "x86_64"),
     name: "Install ripgrep using .deb from github",
-    apt: { deb: ripgrep_url_map.at(ansible_architecture) },
+    apt: { deb: V.ripgrep_url_map.at(ansible_architecture) },
   },
   // Hope that some version of ripgrep is bundled with OS.
   {

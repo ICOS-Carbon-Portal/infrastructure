@@ -1,4 +1,4 @@
-import { postgresql_pg_stat_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { truthy } from "../../../lib/vars.ts";
 
@@ -14,7 +14,7 @@ export default [
   {
     import_tasks: "pg_stat.yml",
     tags: "postgresql_pg_stat",
-    when: truthy(postgresql_pg_stat_enable),
+    when: truthy(V.postgresql_pg_stat_enable),
   },
   {
     import_tasks: "util.yml",

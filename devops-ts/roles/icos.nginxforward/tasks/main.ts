@@ -1,9 +1,4 @@
-import {
-  nginxforward_enable,
-  nginxforward_file,
-  nginxforward_path_available,
-  nginxforward_path_enabled,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import {
@@ -40,19 +35,19 @@ export default [
   {
     name: tmpl`Copy config for ${nginxforward_name}`,
     template: {
-      src: nginxforward_file,
-      dest: nginxforward_path_available,
+      src: V.nginxforward_file,
+      dest: V.nginxforward_path_available,
     },
     notify: "reload nginx config",
   },
   {
     name: "Create symlink to sites-enabled",
     file: {
-      dest: nginxforward_path_enabled,
-      src: nginxforward_path_available,
-      state: iff(nginxforward_enable, "link", "absent"),
+      dest: V.nginxforward_path_enabled,
+      src: V.nginxforward_path_available,
+      state: iff(V.nginxforward_enable, "link", "absent"),
     },
-    when: truthy(nginxforward_enable),
+    when: truthy(V.nginxforward_enable),
     notify: "reload nginx config",
   },
 ] satisfies TaskFile;

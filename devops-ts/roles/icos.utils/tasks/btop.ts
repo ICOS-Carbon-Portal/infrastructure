@@ -1,4 +1,4 @@
-import { btop_url_map, btop_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_architecture } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -12,7 +12,7 @@ const unarchive = register("unarchive");
 
 export default [
   {
-    when: isNotDefined(btop_version),
+    when: isNotDefined(V.btop_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -40,7 +40,7 @@ export default [
     name: "Unarchive btop",
     unarchive: {
       remote_src: true,
-      src: btop_url_map.at(ansible_architecture),
+      src: V.btop_url_map.at(ansible_architecture),
       dest: "/opt",
     },
     register: unarchive,

@@ -1,9 +1,4 @@
-import {
-  postgresql_confd,
-  postgresql_listen_addresses,
-  postgresql_postgres_password,
-  postgresql_ssh_keys,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 import { truthy } from "../../../lib/vars.ts";
@@ -16,20 +11,20 @@ export default [
     become_user: "postgres",
     postgresql_user: {
       name: "postgres",
-      password: postgresql_postgres_password,
+      password: V.postgresql_postgres_password,
       login_unix_socket: "/var/run/postgresql",
     },
-    when: [truthy(postgresql_postgres_password)],
+    when: [truthy(V.postgresql_postgres_password)],
   },
   {
     name: "Change with addresses postgresql listens to",
     copy: {
-      dest: tmpl`${postgresql_confd}/listen.conf`,
+      dest: tmpl`${V.postgresql_confd}/listen.conf`,
       content: `listen_addresses = {{ postgresql_listen_addresses }}
 `,
     },
     notify: "restart postgresql",
-    when: truthy(postgresql_listen_addresses),
+    when: truthy(V.postgresql_listen_addresses),
   },
   {
     name: "Install public keys for postgres user",
@@ -37,8 +32,8 @@ export default [
     authorized_key: {
       user: "postgres",
       state: "present",
-      key: postgresql_ssh_keys,
+      key: V.postgresql_ssh_keys,
     },
-    when: truthy(postgresql_ssh_keys),
+    when: truthy(V.postgresql_ssh_keys),
   },
 ] satisfies TaskFile;

@@ -4,40 +4,33 @@ import { type Restated } from "../../../../lib/data.ts";
 import { type Globals } from "../../../../lib/globals.ts";
 import { node_exporter_scripts } from "../../../../lib/paramvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
-import {
-  dirsize_home,
-  node_exporter_arch_map,
-  node_exporter_home,
-  node_exporter_textfiles,
-  type Vars,
-} from "../../../../roles/icos.node_exporter/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.node_exporter/_ctx.ts";
 
 export default {
   "node_exporter_user": "node_exporter",
   "node_exporter_home": "/opt/node_exporter",
-  "node_exporter_download": tmpl`${node_exporter_home}/download`,
-  "node_exporter_textfiles": tmpl`${node_exporter_home}/textfiles`,
-  "node_exporter_environ": tmpl`${node_exporter_home}/environ`,
+  "node_exporter_download": tmpl`${V.node_exporter_home}/download`,
+  "node_exporter_textfiles": tmpl`${V.node_exporter_home}/textfiles`,
+  "node_exporter_environ": tmpl`${V.node_exporter_home}/environ`,
   "node_exporter_bin": "/usr/local/sbin/node_exporter",
   "node_exporter_listen": 9100,
   "node_exporter_bindto": "lo",
   "node_exporter_allow": false,
-  "node_exporter_arch": node_exporter_arch_map.at(ansible_architecture).default(
-    ansible_architecture,
-  ),
+  "node_exporter_arch": V.node_exporter_arch_map.at(ansible_architecture)
+    .default(ansible_architecture),
   "node_exporter_arch_map": {
     "armv6l": "armv6",
     "armv7l": "armv7",
     "x86_64": "amd64",
   },
   "dirsize_enable": false,
-  "dirsize_home": tmpl`${node_exporter_home}/directory-size`,
+  "dirsize_home": tmpl`${V.node_exporter_home}/directory-size`,
   "dirsize_sh": tmpl`${node_exporter_scripts}/directory-size.sh`,
-  "dirsize_dirnames": tmpl`${dirsize_home}/dirnames.txt`,
-  "dirsize_prom": tmpl`${node_exporter_textfiles}/directory-size.prom`,
+  "dirsize_dirnames": tmpl`${V.dirsize_home}/dirnames.txt`,
+  "dirsize_prom": tmpl`${V.node_exporter_textfiles}/directory-size.prom`,
   "dirsize_initial": [],
   "dockermon_enable": false,
-  "dockermon_home": tmpl`${node_exporter_home}/dockermon`,
-  "dockermon_prom": tmpl`${node_exporter_textfiles}/dockermon.prom`,
+  "dockermon_home": tmpl`${V.node_exporter_home}/dockermon`,
+  "dockermon_prom": tmpl`${V.node_exporter_textfiles}/dockermon.prom`,
   "lxdmon_enable": false,
 } satisfies Vars & Restated<Globals, "dirsize_enable">;

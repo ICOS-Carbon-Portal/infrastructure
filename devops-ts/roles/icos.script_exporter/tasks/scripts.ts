@@ -1,4 +1,4 @@
-import { sexp_scripts_repo, sexp_scripts_venv } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { sexp_exporters } from "../../../lib/paramvars.ts";
@@ -12,14 +12,14 @@ export default [
       repo:
         "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts",
       version: "master",
-      dest: sexp_scripts_repo,
+      dest: V.sexp_scripts_repo,
     },
     diff: false,
   },
   {
     name: "Create virtual env for scripts",
     pip: {
-      virtualenv: sexp_scripts_venv,
+      virtualenv: V.sexp_scripts_venv,
       name: [
         "prometheus_client",
         iff(isIn("smartmon", sexp_exporters), "docker", omit),

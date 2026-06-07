@@ -1,4 +1,4 @@
-import { jarservice_jar, jarservice_keep_n_old } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { destjarfile, jarfile, servicename } from "../../../lib/paramvars.ts";
@@ -58,7 +58,7 @@ export default [
     name: tmpl`Create the ${servicename} jar symlink used by systemd`,
     file: {
       src: destjarfile,
-      dest: jarservice_jar,
+      dest: V.jarservice_jar,
       state: "link",
     },
     notify: tmpl`restart ${servicename}`,
@@ -66,7 +66,7 @@ export default [
   {
     name: "Keep the jarfiles directory from filling up",
     shell:
-      tmpl`ls -1t ${jardir.path.ref}/*.jar-* 2>/dev/null | sed '1,${jarservice_keep_n_old}d'`,
+      tmpl`ls -1t ${jardir.path.ref}/*.jar-* 2>/dev/null | sed '1,${V.jarservice_keep_n_old}d'`,
     register: oldjarfiles,
     changed_when: false,
   },

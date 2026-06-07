@@ -1,4 +1,4 @@
-import { bbserver_home, bbserver_repo_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { bbserver_user } from "../../../lib/globals.ts";
@@ -9,19 +9,19 @@ export default [
     name: "Create bbserver user",
     user: {
       name: bbserver_user,
-      home: bbserver_home.default(omit),
+      home: V.bbserver_home.default(omit),
       create_home: true,
       shell: "/usr/bin/bash",
     },
   },
   {
     name: "Change access rights on bbserver_home",
-    file: { path: bbserver_home, mode: 0o700 },
+    file: { path: V.bbserver_home, mode: 0o700 },
   },
   {
     name: "Create repo directory",
     file: {
-      path: bbserver_repo_home,
+      path: V.bbserver_repo_home,
       state: "directory",
       owner: bbserver_user,
       group: bbserver_user,
@@ -35,7 +35,7 @@ export default [
     },
     vars: {
       timer_user: bbserver_user,
-      timer_home: tmpl`${bbserver_home}/bbserver-compact`,
+      timer_home: tmpl`${V.bbserver_home}/bbserver-compact`,
       timer_name: "bbserver-compact",
       timer_conf: `OnCalendar=weekly
 RandomizedDelaySec=3h

@@ -1,4 +1,4 @@
-import { stiltweb_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { stiltweb_domains } from "../../../lib/globals.ts";
 import { stiltweb_jar_file } from "../../../lib/paramvars.ts";
@@ -23,7 +23,7 @@ export default [
   },
   {
     name: "Create configuration file",
-    template: { dest: tmpl`${stiltweb_home}/local.conf`, src: "local.conf" },
+    template: { dest: tmpl`${V.stiltweb_home}/local.conf`, src: "local.conf" },
     register: _config,
   },
   {
@@ -31,7 +31,7 @@ export default [
     when: isDefined(stiltweb_jar_file),
     copy: {
       src: stiltweb_jar_file,
-      dest: tmpl`${stiltweb_home}/stiltweb.jar`,
+      dest: tmpl`${V.stiltweb_home}/stiltweb.jar`,
       backup: true,
     },
     register: _jarfile,
@@ -41,7 +41,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: stiltweb_home },
+    args: { chdir: V.stiltweb_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },

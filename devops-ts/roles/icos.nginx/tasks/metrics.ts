@@ -1,4 +1,4 @@
-import { nginx_metrics_url } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
@@ -26,7 +26,7 @@ export default [
   {
     name: "Check that nginx /metrics respond",
     uri: {
-      url: nginx_metrics_url,
+      url: V.nginx_metrics_url,
     },
     retries: 10,
   },

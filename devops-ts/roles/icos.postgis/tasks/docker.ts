@@ -1,10 +1,4 @@
-import {
-  postgis_db_name,
-  postgis_db_pass,
-  postgis_db_user,
-  postgis_package,
-  postgis_postgres_version,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import {
@@ -19,14 +13,14 @@ export default [
     name: "Ensure the postgis PostgreSQL container is present",
     "community.general.docker_container": {
       name: postgis_container_name,
-      image: tmpl`postgres:${postgis_postgres_version}`,
+      image: tmpl`postgres:${V.postgis_postgres_version}`,
       state: "started",
       recreate: false,
       shm_size: "500M",
       env: {
-        POSTGRES_USER: postgis_db_user,
-        POSTGRES_PASSWORD: postgis_db_pass,
-        POSTGRES_DB: postgis_db_name,
+        POSTGRES_USER: V.postgis_db_user,
+        POSTGRES_PASSWORD: V.postgis_db_pass,
+        POSTGRES_DB: V.postgis_db_name,
       },
       published_ports: [tmpl`127.0.0.1:${postgis_db_port}:5432`],
       volumes: [tmpl`${postgis_container_name}:/var/lib/postgresql/data`],
@@ -47,7 +41,7 @@ export default [
     "community.docker.docker_container_exec": {
       container: postgis_container_name,
       command:
-        tmpl`/bin/bash -c "apt-get update && apt-get -y install ${postgis_package}"`,
+        tmpl`/bin/bash -c "apt-get update && apt-get -y install ${V.postgis_package}"`,
       chdir: "/root",
     },
   },
@@ -61,11 +55,11 @@ export default [
     name: "Create postgis databases",
     postgresql_db: {
       name: item,
-      login_user: postgis_db_user,
-      login_password: postgis_db_pass,
+      login_user: V.postgis_db_user,
+      login_password: V.postgis_db_pass,
       login_host: "127.0.0.1",
       login_port: postgis_db_port,
-      maintenance_db: postgis_db_name,
+      maintenance_db: V.postgis_db_name,
     },
     loop: postgis_dbs,
   },

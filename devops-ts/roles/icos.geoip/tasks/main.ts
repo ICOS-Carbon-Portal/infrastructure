@@ -1,4 +1,4 @@
-import { geoip_domain } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
@@ -9,7 +9,7 @@ export default [
     import_role: "name=icos.nginxsite",
     tags: "geoip_nginx",
     vars: {
-      nginxsite_domains: [geoip_domain],
+      nginxsite_domains: [V.geoip_domain],
     },
   },
 ] satisfies TaskFile;

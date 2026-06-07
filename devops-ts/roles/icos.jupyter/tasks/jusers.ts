@@ -1,4 +1,4 @@
-import { jusers_home, jusers_venv } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { virtualenv_recreate } from "../../../lib/paramvars.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -10,7 +10,7 @@ export default [
   {
     name: "Remove virtual env",
     file: {
-      path: jusers_venv,
+      path: V.jusers_venv,
       state: "absent",
     },
     when: truthy(virtualenv_recreate).default(false).bool(),
@@ -18,7 +18,7 @@ export default [
   {
     name: "Create virtual env",
     pip: {
-      virtualenv: jusers_venv,
+      virtualenv: V.jusers_venv,
       name: ["ruamel.yaml", "click", "pandas", "requests"],
       state: "present",
     },
@@ -27,7 +27,7 @@ export default [
     name: "Copy jusers.py",
     template: {
       src: "jusers.py",
-      dest: tmpl`${jusers_home}/jusers.py`,
+      dest: tmpl`${V.jusers_home}/jusers.py`,
       mode: "+x",
       backup: true,
     },
@@ -36,7 +36,7 @@ export default [
     name: "Copy plugins",
     copy: {
       src: "plugins",
-      dest: tmpl`${jusers_home}/`,
+      dest: tmpl`${V.jusers_home}/`,
     },
   },
   {
@@ -51,7 +51,7 @@ export default [
     name: "Create /usr/local/sbin/jusers symlink",
     file: {
       dest: "/usr/local/sbin/jusers",
-      src: tmpl`${jusers_home}/jusers.py`,
+      src: tmpl`${V.jusers_home}/jusers.py`,
       state: "link",
     },
   },

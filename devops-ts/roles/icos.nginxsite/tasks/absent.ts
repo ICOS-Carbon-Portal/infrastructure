@@ -1,8 +1,4 @@
-import {
-  nginxsite_path_available,
-  nginxsite_path_confd,
-  nginxsite_path_enable,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -24,9 +20,9 @@ export default [
       state: "absent",
     },
     loop: [
-      nginxsite_path_enable,
-      nginxsite_path_available,
-      nginxsite_path_confd,
+      V.nginxsite_path_enable,
+      V.nginxsite_path_available,
+      V.nginxsite_path_confd,
     ],
   },
   {

@@ -1,4 +1,4 @@
-import { nebula_resolve_type } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_distribution, ansible_lsb } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -22,7 +22,7 @@ const _r = register("_r");
 export default [
   // DHCPCD
   {
-    when: eq(nebula_resolve_type, "probe"),
+    when: eq(V.nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for dhcpcd",
@@ -38,7 +38,7 @@ export default [
   },
   // NETWORK MANAGER
   {
-    when: eq(nebula_resolve_type, "probe"),
+    when: eq(V.nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for NetworkManager",
@@ -54,7 +54,7 @@ export default [
   },
   // SYSTEMD-NETWORKD
   {
-    when: eq(nebula_resolve_type, "probe"),
+    when: eq(V.nebula_resolve_type, "probe"),
     block: [
       {
         name: "Query systemd for systemd-networkd",
@@ -71,7 +71,7 @@ export default [
   // DEBIAN
   {
     when: [
-      eq(nebula_resolve_type, "probe"),
+      eq(V.nebula_resolve_type, "probe"),
       eq(ansible_distribution, "Debian"),
     ],
     set_fact: {
@@ -82,7 +82,7 @@ export default [
   },
   // UNKNOWN
   {
-    when: eq(nebula_resolve_type, "probe"),
+    when: eq(V.nebula_resolve_type, "probe"),
     set_fact: {
       name: "Set nebula_resolve_type to unknown",
       nebula_resolve_type: "unknown",
@@ -94,7 +94,7 @@ export default [
     name: "Inform about the client dns resolution setup",
     debug: {
       msg:
-        tmpl`nebula_resolve_type == ${nebula_resolve_type} for ${ansible_lsb.id}/${ansible_lsb.major_release}`,
+        tmpl`nebula_resolve_type == ${V.nebula_resolve_type} for ${ansible_lsb.id}/${ansible_lsb.major_release}`,
     },
   },
 ] satisfies TaskFile;

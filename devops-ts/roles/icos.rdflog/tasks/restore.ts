@@ -1,4 +1,4 @@
-import { rdflog_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { rdflog_restore_file } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -11,7 +11,7 @@ export default [
   {
     name: "List tables in the rdflog database",
     command: "./psql.sh -c '\\d' rdflog",
-    args: { chdir: rdflog_home, creates: "/some/file" },
+    args: { chdir: V.rdflog_home, creates: "/some/file" },
     register: _r,
     changed_when: false,
   },
@@ -31,7 +31,7 @@ export default [
     name: "Restore database from file",
     "ansible.builtin.shell": tmpl`zcat ${rdflog_restore_file} | ./psql.sh
 `,
-    args: { chdir: rdflog_home },
+    args: { chdir: V.rdflog_home },
     register: _r,
     when: [
       eq(_r.stderr, "Did not find any relations."),

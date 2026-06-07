@@ -1,4 +1,4 @@
-import { plausible_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
@@ -7,7 +7,7 @@ export default [
     include_role: { name: "icos.bbclient2", public: true },
     vars: {
       bbclient_name: "plausible",
-      bbclient_home: tmpl`${plausible_home}/.bbclient`,
+      bbclient_home: tmpl`${V.plausible_home}/.bbclient`,
       bbclient_timer_content: `#!/bin/bash
 set -Eueo pipefail
 

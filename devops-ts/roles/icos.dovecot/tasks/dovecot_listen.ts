@@ -1,4 +1,4 @@
-import { dovecot_port } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
@@ -7,8 +7,8 @@ export default [
     name: "Change listening port",
     lineinfile: {
       path: "/etc/dovecot/conf.d/10-master.conf",
-      regex: tmpl`(?:#port = 993$)|(?:^    port = ${dovecot_port}$)`,
-      line: tmpl`    port = ${dovecot_port}`,
+      regex: tmpl`(?:#port = 993$)|(?:^    port = ${V.dovecot_port}$)`,
+      line: tmpl`    port = ${V.dovecot_port}`,
       state: "present",
     },
   },
@@ -17,7 +17,7 @@ export default [
     iptables_raw: {
       name: "allow_dovecot",
       rules:
-        tmpl`-A INPUT -p tcp --dport ${dovecot_port} -j ACCEPT -m comment --comment 'dovecot'`,
+        tmpl`-A INPUT -p tcp --dport ${V.dovecot_port} -j ACCEPT -m comment --comment 'dovecot'`,
     },
   },
   {

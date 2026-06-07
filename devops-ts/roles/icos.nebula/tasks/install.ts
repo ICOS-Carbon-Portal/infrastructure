@@ -1,9 +1,4 @@
-import {
-  nebula_bin_dir,
-  nebula_etc_dir,
-  nebula_upgrade,
-  nebula_user,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_check_mode } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -23,7 +18,7 @@ export default [
   {
     name: "Create nebula user",
     user: {
-      name: nebula_user,
+      name: V.nebula_user,
       shell: "/usr/sbin/nologin",
       system: true,
       create_home: false,
@@ -32,22 +27,22 @@ export default [
   {
     name: "Create etc directory",
     file: {
-      path: nebula_etc_dir,
-      owner: nebula_user,
-      group: nebula_user,
+      path: V.nebula_etc_dir,
+      owner: V.nebula_user,
+      group: V.nebula_user,
       state: "directory",
       mode: 0o700,
     },
   },
   {
     name: "Check whether nebula is already installed",
-    stat: { path: tmpl`${nebula_bin_dir}/nebula` },
+    stat: { path: tmpl`${V.nebula_bin_dir}/nebula` },
     register: _r,
   },
   {
     name: "Download and unpack nebula",
     include_tasks: "download.yml",
-    when: or(not(_r.stat.exists), truthy(nebula_upgrade)),
+    when: or(not(_r.stat.exists), truthy(V.nebula_upgrade)),
   },
   {
     name: "Check that nebula runs",

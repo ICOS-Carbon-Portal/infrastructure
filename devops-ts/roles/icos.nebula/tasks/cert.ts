@@ -1,4 +1,4 @@
-import { nebula_cert_min_days, nebula_hostname } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { nebula_cert_sign, nebula_netmask } from "../../../lib/globals.ts";
 import { nebula_ip, nebula_passphrase } from "../../../lib/paramvars.ts";
@@ -13,7 +13,7 @@ const status = register("status");
 export default [
   {
     name: "Check status of certificate",
-    command: tmpl`ops-nebula cert-check ${nebula_cert_min_days}`,
+    command: tmpl`ops-nebula cert-check ${V.nebula_cert_min_days}`,
     changed_when: false,
     register: status,
   },
@@ -45,7 +45,7 @@ export default [
           chdir: nebula_cert_sign.fileglob().first().dirname(),
           // Create new certificate with a duration 1 second less than the CA's.
           command:
-            tmpl`/bin/bash -c 'nebula-cert sign -ca-crt ${nebula_cert_sign.basename()} -ca-key ${nebula_cert_sign.basename().splitext().first()}.key -in-pub <(echo "${newpub.content.ref.b64decode()}") -ip ${nebula_ip}${nebula_netmask} -name ${nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
+            tmpl`/bin/bash -c 'nebula-cert sign -ca-crt ${nebula_cert_sign.basename()} -ca-key ${nebula_cert_sign.basename().splitext().first()}.key -in-pub <(echo "${newpub.content.ref.b64decode()}") -ip ${nebula_ip}${nebula_netmask} -name ${V.nebula_hostname} -out-crt crt.sign && cat crt.sign && rm crt.sign'`,
           // We default to an empty passphrase, so it'll work by default for keys
           // with no password.
           responses: {
@@ -63,7 +63,7 @@ export default [
       },
       {
         name: "Pick up new status",
-        command: tmpl`ops-nebula cert-check ${nebula_cert_min_days}`,
+        command: tmpl`ops-nebula cert-check ${V.nebula_cert_min_days}`,
         register: "status",
         changed_when: 'status.stdout_lines[-1] == "need to restart"',
         notify: "restart nebula",

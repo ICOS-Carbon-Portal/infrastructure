@@ -2,15 +2,12 @@
 import { type Restated } from "../../../../lib/data.ts";
 import { type Globals } from "../../../../lib/globals.ts";
 import { tmpl } from "../../../../lib/template.ts";
-import {
-  bbserver_home,
-  type Vars,
-} from "../../../../roles/icos.bbserver/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.bbserver/_ctx.ts";
 
 export default {
   "bbserver_user": "bbserver",
   "bbserver_home": "/home/bbserver",
-  "bbserver_repo_home": tmpl`${bbserver_home}/repos`,
-  "bbserver_monitor_home": tmpl`${bbserver_home}/monitor`,
+  "bbserver_repo_home": tmpl`${V.bbserver_home}/repos`,
+  "bbserver_monitor_home": tmpl`${V.bbserver_home}/monitor`,
   "bbserver_textfiles": "/opt/node_exporter/textfiles",
 } satisfies Vars & Restated<Globals, "bbserver_user">;

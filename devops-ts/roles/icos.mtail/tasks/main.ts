@@ -1,4 +1,4 @@
-import { mtail_host, mtail_logs, mtail_port, mtail_programs } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
@@ -16,9 +16,9 @@ export default [
   },
   loopOver<{ key: Tmpl; val: Tmpl }>(
     [
-      { key: "LOGS", val: mtail_logs.join(",") },
-      { key: "PORT", val: mtail_port },
-      { key: "HOST", val: mtail_host },
+      { key: "LOGS", val: V.mtail_logs.join(",") },
+      { key: "PORT", val: V.mtail_port },
+      { key: "HOST", val: V.mtail_host },
     ],
     (item) => ({
       name: "Configure mtail",
@@ -40,14 +40,14 @@ export default [
       validate: "mtail --compile_only -port 0 --progs %s",
     },
     notify: "reload mtail",
-    loop: mtail_programs,
+    loop: V.mtail_programs,
   },
   {
     name: "Find unconfigured icos programs",
     find: {
       paths: "/etc/mtail",
       patterns: "icos-*.mtail",
-      excludes: mtail_programs,
+      excludes: V.mtail_programs,
     },
     register: _find,
   },
@@ -71,7 +71,7 @@ export default [
   {
     name: "Check that the mtail http server is responding",
     uri: {
-      url: tmpl`http://${mtail_host}:${mtail_port}`,
+      url: tmpl`http://${V.mtail_host}:${V.mtail_port}`,
     },
     retries: 10,
   },

@@ -1,4 +1,4 @@
-import { wg_hub_intf, wg_hub_ishub } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { wg_hub_config } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -8,7 +8,7 @@ export default [
   {
     name: "Stop and disable wg-quick",
     systemd: {
-      name: tmpl`wg-quick@${wg_hub_intf}.service`,
+      name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
       enabled: false,
       state: "stopped",
     },
@@ -22,7 +22,7 @@ export default [
   },
   {
     name: "Remove - Allow wireguard through firewall",
-    when: truthy(wg_hub_ishub),
+    when: truthy(V.wg_hub_ishub),
     iptables_raw: {
       name: tmpl`wireguard_${wg_hub_config.name}`,
       state: "absent",
@@ -39,7 +39,7 @@ export default [
   {
     name: "Remove wireguard config",
     file: {
-      path: tmpl`/etc/wireguard/${wg_hub_intf}.conf`,
+      path: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       state: "absent",
     },
   },

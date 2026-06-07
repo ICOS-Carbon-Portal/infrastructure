@@ -9,41 +9,32 @@ import {
 import { register } from "../../../../lib/register.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
 import {
-  _dbin_name,
-  _dbin_path,
-  _dbin_unar,
-  dbin__down,
-  dbin__plat,
-  dbin__vers,
-  dbin_arch,
-  dbin_default_url,
-  dbin_download_base,
-  dbin_download_dest,
+  V,
   type Vars,
 } from "../../../../roles/icos.github_download_bin/_ctx.ts";
 
 export default {
   "dbin_download_base": "/opt/downloads",
-  "dbin_download_dest": tmpl`${dbin_download_base}/${_dbin_name}`,
+  "dbin_download_dest": tmpl`${V.dbin_download_base}/${V._dbin_name}`,
   "dbin_bin_dir": "/usr/local/bin",
   "dbin_default_url":
-    tmpl`${dbin__down}/v${dbin__vers}/${dbin_repo}-${dbin__vers}.${dbin__plat}.tar.gz`,
+    tmpl`${V.dbin__down}/v${V.dbin__vers}/${dbin_repo}-${V.dbin__vers}.${V.dbin__plat}.tar.gz`,
   "dbin_arch": "amd64",
-  "_dbin_url": dbin_url.default(dbin_default_url),
+  "_dbin_url": dbin_url.default(V.dbin_default_url),
   "_dbin_unar": dbin_unar.default(true),
   "_dbin_path": dbin_path.default(dbin_repo),
-  "_dbin_name": _dbin_path.basename(),
+  "_dbin_name": V._dbin_path.basename(),
   "_dbin_src": tmpl`${jinja`{% if dbin_src is defined -%}`}
-${dbin_download_dest}/${jinja`{{ dbin_src -}}`}
-${jinja`{% elif ${_dbin_unar} -%}`}
-${dbin_download_dest}/${
+${V.dbin_download_dest}/${jinja`{{ dbin_src -}}`}
+${jinja`{% elif ${V._dbin_unar} -%}`}
+${V.dbin_download_dest}/${
     register("_unar").files.ref.at(0).rstrip("/")
-  }/${jinja`{{ ${_dbin_name} -}}`}
+  }/${jinja`{{ ${V._dbin_name} -}}`}
 ${jinja`{%- else %}`}
 ${jinja`{{- ${register("dbin_download").dest.ref} }}`}
 ${jinja`{%- endif %}`}`,
   "dbin__down":
     tmpl`https://github.com/${dbin_user}/${dbin_repo}/releases/download`,
   "dbin__vers": register("_release").tag.ref.lstrip("v"),
-  "dbin__plat": tmpl`linux-${dbin_arch}`,
+  "dbin__plat": tmpl`linux-${V.dbin_arch}`,
 } satisfies Vars;

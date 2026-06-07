@@ -1,4 +1,4 @@
-import { nebula_resolve_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { nebula_ssh_enable } from "../../../lib/globals.ts";
 import { nebula_ssh_public } from "../../../lib/paramvars.ts";
@@ -22,7 +22,7 @@ export default [
   { import_tasks: "service.yml", tags: "nebula_service" },
   { import_tasks: "hosts.yml", tags: "nebula_hosts" },
   {
-    when: truthy(nebula_resolve_enable),
+    when: truthy(V.nebula_resolve_enable),
     import_tasks: "resolve.yml",
     tags: "nebula_resolve",
   },

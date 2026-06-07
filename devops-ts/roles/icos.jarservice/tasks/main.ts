@@ -1,4 +1,4 @@
-import { certbot_disabled, extra_groups } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import {
@@ -20,7 +20,7 @@ export default [
     name: tmpl`Add ${username} user`,
     user: {
       name: username,
-      groups: extra_groups,
+      groups: V.extra_groups,
       append: true,
       shell: "/bin/bash",
     },
@@ -48,7 +48,7 @@ export default [
     // Our nginx config template is dependent on a variable set by
     // certbot. This means that if the certbot role is disabled, we
     // cannot deploy the config.
-    when: and(isDefined(nginxconfig), not(certbot_disabled)),
+    when: and(isDefined(nginxconfig), not(V.certbot_disabled)),
     notify: "reload nginx config",
   },
   {

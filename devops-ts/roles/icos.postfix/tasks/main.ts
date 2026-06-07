@@ -1,4 +1,4 @@
-import { postfix_config_list } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { loopOverVar } from "../../../lib/loop.ts";
@@ -27,7 +27,7 @@ export default [
       separator: string;
       value: string;
     }
-  >(postfix_config_list, (item) => ({
+  >(V.postfix_config_list, (item) => ({
     name: "Set configuration parameters",
     postconf: {
       param: item.param,

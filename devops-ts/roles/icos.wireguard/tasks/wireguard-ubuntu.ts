@@ -1,4 +1,4 @@
-import { wireguard_reresolve_script } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
@@ -12,7 +12,7 @@ export default [
   {
     name: "Create wireguard-reresolve-dns.sh symlink",
     file: {
-      dest: wireguard_reresolve_script,
+      dest: V.wireguard_reresolve_script,
       src:
         "/usr/share/doc/wireguard-tools/examples/reresolve-dns/reresolve-dns.sh",
       state: "link",

@@ -1,10 +1,4 @@
-import {
-  _sftp_parent_dir,
-  sftp_user_group,
-  sftp_user_owner,
-  sftp_user_password,
-  sftp_user_pubkey,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item, omit } from "../../../lib/builtins.ts";
 import { sftp_user_dir, sftp_user_login } from "../../../lib/paramvars.ts";
@@ -31,14 +25,14 @@ export default [
   },
   {
     name: "Check whether sftp parent directory exists",
-    stat: { path: _sftp_parent_dir },
+    stat: { path: V._sftp_parent_dir },
     check_mode: false,
     register: _parent,
   },
   {
     name: "Create sftp parent directory",
     file: {
-      path: _sftp_parent_dir,
+      path: V._sftp_parent_dir,
       state: "directory",
       owner: "root",
       group: "root",
@@ -50,11 +44,11 @@ export default [
     user: {
       name: sftp_user_login,
       password: iff(
-        sftp_user_password,
-        sftp_user_password.passwordHash("sha512", vault_pw_salt),
+        V.sftp_user_password,
+        V.sftp_user_password.passwordHash("sha512", vault_pw_salt),
         omit,
       ),
-      create_home: isTruthy(sftp_user_pubkey).asValue(),
+      create_home: isTruthy(V.sftp_user_pubkey).asValue(),
       shell: "/usr/sbin/nologin",
     },
     register: "_user",
@@ -63,19 +57,19 @@ export default [
     name: "Install public key",
     authorized_key: {
       user: sftp_user_login,
-      key: sftp_user_pubkey,
+      key: V.sftp_user_pubkey,
     },
-    when: truthy(sftp_user_pubkey),
+    when: truthy(V.sftp_user_pubkey),
   },
   {
     name: "Stat parent directory again",
-    stat: { path: _sftp_parent_dir },
+    stat: { path: V._sftp_parent_dir },
     check_mode: false,
     register: _parent,
   },
   {
     name: "Fail if parent directory isn't owned by root",
-    fail: { msg: tmpl`${_sftp_parent_dir} must be owned by root` },
+    fail: { msg: tmpl`${V._sftp_parent_dir} must be owned by root` },
     when: or(ne(_parent.stat.uid, 0), ne(_parent.stat.gid, 0)),
   },
   {
@@ -83,8 +77,8 @@ export default [
     file: {
       path: sftp_user_dir,
       state: "directory",
-      owner: sftp_user_owner,
-      group: sftp_user_group,
+      owner: V.sftp_user_owner,
+      group: V.sftp_user_group,
     },
   },
   {

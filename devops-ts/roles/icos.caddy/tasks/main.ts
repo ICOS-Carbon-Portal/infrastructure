@@ -1,4 +1,4 @@
-import { caddy_bin, caddy_modules } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { caddy_name } from "../../../lib/paramvars.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -13,7 +13,7 @@ export default [
   {
     name: "Install plain caddy",
     include_tasks: "plain.yml",
-    when: not(caddy_modules),
+    when: not(V.caddy_modules),
   },
   // If any modules are needed we need xcaddy instead.
   {
@@ -22,11 +22,11 @@ export default [
       apply: { tags: "caddy_modules" },
     },
     tags: "caddy_xcaddy",
-    when: truthy(caddy_modules),
+    when: truthy(V.caddy_modules),
   },
   {
     name: "Check that caddy was properly installed",
-    "ansible.builtin.shell": tmpl`${caddy_bin} version`,
+    "ansible.builtin.shell": tmpl`${V.caddy_bin} version`,
     changed_when: false,
   },
   {

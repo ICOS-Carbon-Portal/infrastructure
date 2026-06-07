@@ -1,11 +1,11 @@
-import { nextcloud_exporter_conf_host } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
   {
     name: "Create nextcloud-exporter config file",
     copy: {
-      dest: nextcloud_exporter_conf_host,
+      dest: V.nextcloud_exporter_conf_host,
       mode: "og-w",
       content:
         `# https://github.com/xperimental/nextcloud-exporter#configuration-file

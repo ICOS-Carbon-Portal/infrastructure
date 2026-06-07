@@ -1,4 +1,4 @@
-import { project_dir } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
@@ -15,7 +15,7 @@ export default [
   { import_tasks: "nginx.yml", tags: "nginx" },
   {
     name: "Create project directory",
-    file: { path: project_dir, state: "directory", recurse: true },
+    file: { path: V.project_dir, state: "directory", recurse: true },
     tags: ["repo", "pull"],
   },
   { import_tasks: "bitbucket.yml", tags: "repo" },

@@ -1,4 +1,4 @@
-import { python3_version_list } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_distribution, ansible_python } from "../../../lib/builtins.ts";
 import { _builtin_version, _version } from "../../../lib/paramvars.ts";
@@ -37,7 +37,7 @@ export default [
       name: tmpl`python${_version}-venv`,
     },
     when: ne(_builtin_version, _version),
-    loop: python3_version_list,
+    loop: V.python3_version_list,
     loop_control: {
       loop_var: "_version",
     },

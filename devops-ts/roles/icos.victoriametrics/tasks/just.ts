@@ -1,4 +1,4 @@
-import { vm_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 
@@ -10,7 +10,7 @@ export default [
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: vm_home,
+      dest: V.vm_home,
       mode: "+x",
       variable_start_string: "((",
       variable_end_string: "))",

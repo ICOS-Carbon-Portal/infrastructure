@@ -1,4 +1,4 @@
-import { caddy_bin } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { block, marker, state, where } from "../../../lib/paramvars.ts";
@@ -33,7 +33,7 @@ export default [
       },
       {
         name: "Run validation",
-        command: tmpl`${caddy_bin} validate`,
+        command: tmpl`${V.caddy_bin} validate`,
         args: { chdir: "/etc/caddy" },
         changed_when: _r.changed,
         notify: "reload caddy",

@@ -9,19 +9,14 @@ import { type Globals } from "../../../../lib/globals.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { lookup, tmpl } from "../../../../lib/template.ts";
 import { vault_vmagent_auth } from "../../../../lib/vaultvars.ts";
-import {
-  type Vars,
-  vmagent_arch_map,
-  vmagent_fsd,
-  vmagent_home,
-} from "../../../../roles/icos.vmagent/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.vmagent/_ctx.ts";
 
 export default {
   "vmagent_home": "/opt/vmagent",
-  "vmagent_fsd": tmpl`${vmagent_home}/file_sd_configs`,
-  "vmagent_bin": tmpl`${vmagent_home}/bin`,
-  "vmagent_configs": tmpl`${vmagent_home}/configs`,
-  "vmagent_environ": tmpl`${vmagent_home}/environ`,
+  "vmagent_fsd": tmpl`${V.vmagent_home}/file_sd_configs`,
+  "vmagent_bin": tmpl`${V.vmagent_home}/bin`,
+  "vmagent_configs": tmpl`${V.vmagent_home}/configs`,
+  "vmagent_environ": tmpl`${V.vmagent_home}/environ`,
   "vmagent_conf":
     tmpl`# We'll dynamically (using ansible and scripts) create config files and then
 # reload them by HUP:ing vmagent.
@@ -33,14 +28,14 @@ scrape_configs:
 - job_name: file
   file_sd_configs:
   - files:
-    - "${vmagent_fsd}/*.yaml"
-    - "${vmagent_fsd}/*.json"
+    - "${V.vmagent_fsd}/*.yaml"
+    - "${V.vmagent_fsd}/*.json"
 `,
   "vmagent_auth": null,
   "vmagent_pathprefix": null,
   "vmagent_listen": "127.0.0.1:8429",
   "vmagent_upgrade": upgrade_everything.default(false).bool(),
-  "vmagent_arch": vmagent_arch_map.at(ansible_architecture),
+  "vmagent_arch": V.vmagent_arch_map.at(ansible_architecture),
   "vmagent_arch_map": {
     "armv7l": "arm",
     "armv6l": "arm",

@@ -1,4 +1,4 @@
-import { podman_docker, podman_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { isUndefined, not, or, truthy } from "../../../lib/vars.ts";
@@ -34,14 +34,14 @@ export default [
     name: "Installing podman",
     import_tasks: "install.yml",
     tags: "podman_install",
-    when: not(_podman.stdout.endswith(podman_version)),
+    when: not(_podman.stdout.endswith(V.podman_version)),
   },
   {
     name: "Podman is installed and the correct version.",
     // _podman will be undefined if we use the podman_configure tag
     when: or(
       isUndefined(_podman.ref),
-      _podman.stdout.endswith(podman_version),
+      _podman.stdout.endswith(V.podman_version),
     ),
     block: [
       {
@@ -70,7 +70,7 @@ export default [
   },
   {
     name: "Emulate docker",
-    when: truthy(podman_docker),
+    when: truthy(V.podman_docker),
     tags: "podman_docker",
     import_tasks: "docker.yml",
   },

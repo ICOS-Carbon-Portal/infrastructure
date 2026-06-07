@@ -5,21 +5,11 @@ import { lxd_vm_name } from "../../../../lib/paramvars.ts";
 import { register } from "../../../../lib/register.ts";
 import { concat, jinja } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  lxd_vm_config,
-  lxd_vm_default_config,
-  lxd_vm_default_devices,
-  lxd_vm_default_profiles,
-  lxd_vm_devices,
-  lxd_vm_inventory_hostname,
-  lxd_vm_profiles,
-  lxd_vm_ubuntu_version,
-  type Vars,
-} from "../../../../roles/icos.lxd_vm/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.lxd_vm/_ctx.ts";
 
 export default {
   "lxd_vm_ip": register("_lxd_static_ip").ip.ref,
-  "lxd_vm_port": hostvar(lxd_vm_inventory_hostname).ansible_port,
+  "lxd_vm_port": hostvar(V.lxd_vm_inventory_hostname).ansible_port,
   "lxd_vm_inventory_hostname": lxd_vm_name,
   "lxd_vm_forward": true,
   "lxd_vm_root_keys": null,
@@ -30,19 +20,19 @@ export default {
   "lxd_vm_profiles": [],
   "lxd_vm_devices": {},
   "lxd_vm_config": {},
-  "__lxd_vm_profiles": concat(lxd_vm_default_profiles, lxd_vm_profiles),
-  "__lxd_vm_devices": jinja`{{ ${lxd_vm_default_devices} | combine(${
+  "__lxd_vm_profiles": concat(V.lxd_vm_default_profiles, V.lxd_vm_profiles),
+  "__lxd_vm_devices": jinja`{{ ${V.lxd_vm_default_devices} | combine(${
     register("_static_ip_info").devices.ref
-  }) | combine(${lxd_vm_devices})  }}`,
+  }) | combine(${V.lxd_vm_devices})  }}`,
   "__lxd_vm_config":
-    jinja`{{ ${lxd_vm_default_config} | combine(${lxd_vm_config})  }}`,
+    jinja`{{ ${V.lxd_vm_default_config} | combine(${V.lxd_vm_config})  }}`,
   "lxd_vm_ubuntu_version": "22.04",
   "lxd_source": {
     "type": "image",
     "mode": "pull",
     "server": "https://cloud-images.ubuntu.com/releases",
     "protocol": "simplestreams",
-    "alias": lxd_vm_ubuntu_version,
+    "alias": V.lxd_vm_ubuntu_version,
   },
   "zfsdocker_name": lxd_vm_name,
 } satisfies Partial<Vars> & Restated<Globals, "lxd_vm_root_keys">;

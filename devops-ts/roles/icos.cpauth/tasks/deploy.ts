@@ -1,4 +1,4 @@
-import { cpauth_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { cpauth_domains } from "../../../lib/globals.ts";
 import { cpauth_jar_file } from "../../../lib/paramvars.ts";
@@ -24,7 +24,7 @@ export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: tmpl`${cpauth_home}/application.conf`,
+      dest: tmpl`${V.cpauth_home}/application.conf`,
       content: `{% for item in cpauth_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}
@@ -38,7 +38,7 @@ export default [
     name: "Copy jarfile",
     copy: {
       src: cpauth_jar_file,
-      dest: tmpl`${cpauth_home}/cpauth.jar`,
+      dest: tmpl`${V.cpauth_home}/cpauth.jar`,
       backup: true,
     },
     register: _jarfile,
@@ -48,7 +48,7 @@ export default [
     "ansible.builtin.shell":
       `ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
 `,
-    args: { chdir: cpauth_home },
+    args: { chdir: V.cpauth_home },
     register: _r,
     changed_when: _r.stdout.startswith("removed"),
   },

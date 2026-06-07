@@ -1,11 +1,11 @@
-import { stiltweb_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
 export default [
   {
     name: "Remove old stiltweb justfile",
-    file: { name: tmpl`${stiltweb_home}/justfile`, state: "absent" },
+    file: { name: tmpl`${V.stiltweb_home}/justfile`, state: "absent" },
   },
   {
     name: "Copy justfile",

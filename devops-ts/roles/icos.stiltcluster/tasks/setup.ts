@@ -1,9 +1,4 @@
-import {
-  stiltcluster_bindir,
-  stiltcluster_docker,
-  stiltcluster_home,
-  stiltcluster_username,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -16,12 +11,12 @@ export default [
   {
     name: "Create stiltcluster user",
     user: {
-      name: stiltcluster_username,
-      home: stiltcluster_home,
+      name: V.stiltcluster_username,
+      home: V.stiltcluster_home,
       state: "present",
       shell: "/bin/bash",
-      groups: iff(stiltcluster_docker, "docker", omit),
-      append: iff(stiltcluster_docker, "yes", omit),
+      groups: iff(V.stiltcluster_docker, "docker", omit),
+      append: iff(V.stiltcluster_docker, "yes", omit),
     },
   },
   {
@@ -33,7 +28,7 @@ export default [
   {
     name: "Create bin directory",
     file: {
-      path: stiltcluster_bindir,
+      path: V.stiltcluster_bindir,
       state: "directory",
     },
   },

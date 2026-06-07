@@ -1,4 +1,4 @@
-import { nebula_resolve_servers, nebula_resolve_test } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { nebula_ping_host } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -11,7 +11,7 @@ export default [
     meta: "flush_handlers",
   },
   {
-    when: [truthy(nebula_resolve_servers), truthy(nebula_resolve_test)],
+    when: [truthy(V.nebula_resolve_servers), truthy(V.nebula_resolve_test)],
     block: [
       {
         name: "Install dnsutils",
@@ -23,7 +23,7 @@ export default [
       },
       {
         name: "Check that nebula dns resolution works",
-        shell: tmpl`dig ${nebula_resolve_test}`,
+        shell: tmpl`dig ${V.nebula_resolve_test}`,
         changed_when: false,
       },
     ],

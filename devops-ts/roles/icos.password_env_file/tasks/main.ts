@@ -1,4 +1,4 @@
-import { length } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { file, file_var, set_fact } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -19,7 +19,7 @@ export default [
   {
     name: "Generate password file",
     shell:
-      tmpl`umask 0077; openssl rand -hex ${length} | awk '{ print \"${file_var}=\" $1 }' > ${file}`,
+      tmpl`umask 0077; openssl rand -hex ${V.length} | awk '{ print \"${file_var}=\" $1 }' > ${file}`,
     args: {
       creates: file,
     },

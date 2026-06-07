@@ -1,9 +1,4 @@
-import {
-  flexpart_export_output_to,
-  flexpart_image,
-  flexpart_output_directory,
-  flexpart_user,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
@@ -22,7 +17,7 @@ export default [
   {
     name: "Create flexpart user",
     user: {
-      name: flexpart_user,
+      name: V.flexpart_user,
       state: "present",
       groups: "docker",
       append: true,
@@ -32,13 +27,13 @@ export default [
   {
     name: "Create the flexpart output directory",
     file: {
-      path: flexpart_output_directory,
+      path: V.flexpart_output_directory,
       state: "directory",
     },
   },
   {
     become: true,
-    become_user: flexpart_user,
+    become_user: V.flexpart_user,
     block: [
       {
         name: "Create flexpart build dir",
@@ -61,7 +56,7 @@ export default [
       {
         name: "Authorize our own ssh key",
         authorized_key: {
-          user: flexpart_user,
+          user: V.flexpart_user,
           state: "present",
           key: lookup("file", "roles/icos.flexpart/files/flexpart.pub"),
           key_options: tmpl`command="${_user.home.ref}/flexpart_ssh.sh"`,
@@ -95,7 +90,7 @@ export default [
         name: "Build flexpart image",
         docker_image: {
           source: "build",
-          name: flexpart_image,
+          name: V.flexpart_image,
           build: {
             path: _build.path.ref,
           },
@@ -118,7 +113,7 @@ export default [
     }),
   ),
   {
-    when: ne(flexpart_export_output_to, ""),
+    when: ne(V.flexpart_export_output_to, ""),
     block: [
       {
         name: "Install ssh server",

@@ -4,12 +4,7 @@ import {
   nginxforward_name,
 } from "../../../../lib/paramvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
-import {
-  nginxforward_cert_path,
-  nginxforward_key_path,
-  nginxforward_site_path,
-  type Vars,
-} from "../../../../roles/icos.nginxforward/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.nginxforward/_ctx.ts";
 
 export default {
   "nginxforward_host": "127.0.0.1",
@@ -20,10 +15,10 @@ export default {
   "nginxforward_path_enabled":
     tmpl`/etc/nginx/sites-enabled/${nginxforward_name}.conf`,
   "nginxforward_site_path": tmpl`/etc/letsencrypt/live/${nginxforward_cert}`,
-  "nginxforward_cert_path": tmpl`${nginxforward_site_path}/fullchain.pem`,
-  "nginxforward_key_path": tmpl`${nginxforward_site_path}/privkey.pem`,
-  "nginxforward_cert_conf": tmpl`ssl_certificate ${nginxforward_cert_path};
-ssl_certificate_key ${nginxforward_key_path};
+  "nginxforward_cert_path": tmpl`${V.nginxforward_site_path}/fullchain.pem`,
+  "nginxforward_key_path": tmpl`${V.nginxforward_site_path}/privkey.pem`,
+  "nginxforward_cert_conf": tmpl`ssl_certificate ${V.nginxforward_cert_path};
+ssl_certificate_key ${V.nginxforward_key_path};
 `,
   "nginxforward_user_file":
     tmpl`/etc/nginx/passwords/${nginxforward_name}.pass`,

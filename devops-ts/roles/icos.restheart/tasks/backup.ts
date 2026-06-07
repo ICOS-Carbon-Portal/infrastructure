@@ -1,4 +1,4 @@
-import { restheart_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { restheart_bbclient_name } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -8,7 +8,7 @@ export default [
     include_role: { name: "icos.bbclient2" },
     vars: {
       bbclient_user: "root",
-      bbclient_home: tmpl`${restheart_home}/bbclient`,
+      bbclient_home: tmpl`${V.restheart_home}/bbclient`,
       bbclient_name: restheart_bbclient_name,
       bbclient_timer_conf: "OnCalendar=00/6:36",
       bbclient_timer_content: `#!/bin/bash

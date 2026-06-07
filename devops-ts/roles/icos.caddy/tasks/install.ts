@@ -1,4 +1,4 @@
-import { caddy_upgrade } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { iff } from "../../../lib/template.ts";
 
@@ -25,7 +25,7 @@ export default [
     name: "Install caddy",
     apt: {
       name: "caddy",
-      state: iff(caddy_upgrade, "latest", "present"),
+      state: iff(V.caddy_upgrade, "latest", "present"),
     },
     notify: "restart caddy",
   },

@@ -4,7 +4,7 @@ import { fake_architecture } from "../../../../lib/paramvars.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import { httm_version, type Vars } from "../../../../roles/ops.zfs/_ctx.ts";
+import { V, type Vars } from "../../../../roles/ops.zfs/_ctx.ts";
 
 export default {
   "httm_upgrade": upgrade_everything.default(false).bool(),
@@ -12,6 +12,6 @@ export default {
   "httm_version": hostvar("localhost").httm_version,
   "httm_url_map": {
     "x86_64":
-      tmpl`https://github.com/kimono-koans/httm/releases/download/${httm_version}/httm_${httm_version}-1_amd64.deb`,
+      tmpl`https://github.com/kimono-koans/httm/releases/download/${V.httm_version}/httm_${V.httm_version}-1_amd64.deb`,
   },
 } satisfies Vars;

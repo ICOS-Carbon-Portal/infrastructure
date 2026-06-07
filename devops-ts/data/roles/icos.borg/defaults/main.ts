@@ -8,19 +8,14 @@ import { type Globals } from "../../../../lib/globals.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  borg_libc_map,
-  borg_libc_version,
-  borg_version,
-  type Vars,
-} from "../../../../roles/icos.borg/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.borg/_ctx.ts";
 
 export default {
   "borg_upgrade": upgrade_everything.default(false).bool(),
   "borg_version": hostvar("localhost").borg_version,
   "borg_url_map": {
     "x86_64":
-      tmpl`https://github.com/borgbackup/borg/releases/download/${borg_version}/borg-linux-glibc${borg_libc_version}`,
+      tmpl`https://github.com/borgbackup/borg/releases/download/${V.borg_version}/borg-linux-glibc${V.borg_libc_version}`,
   },
   "borg_bin": "/usr/local/bin/borg",
   "borg_libc_map": {
@@ -30,5 +25,5 @@ export default {
     },
   },
   "borg_libc_version":
-    jinja`{{ ${borg_libc_map}[${ansible_distribution}][${ansible_distribution_version}] }}`,
+    jinja`{{ ${V.borg_libc_map}[${ansible_distribution}][${ansible_distribution_version}] }}`,
 } satisfies Vars & Restated<Globals, "borg_bin">;

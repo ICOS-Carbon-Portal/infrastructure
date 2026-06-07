@@ -2,15 +2,10 @@
 import { type VarsFile } from "../../../../lib/data.ts";
 import { website } from "../../../../lib/paramvars.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
-import {
-  domain,
-  drupal_home,
-  nginx_conf_name,
-  ssl_domains,
-} from "../../../../roles/icos.drupal/_ctx.ts";
+import { V } from "../../../../roles/icos.drupal/_ctx.ts";
 
 export default {
-  "project_dir": tmpl`${drupal_home}/${website}/drupal`,
-  "certbot_domains": jinja`{{ ${ssl_domains} | default([${domain}]) }}`,
-  "certbot_conf_name": nginx_conf_name,
+  "project_dir": tmpl`${V.drupal_home}/${website}/drupal`,
+  "certbot_domains": jinja`{{ ${V.ssl_domains} | default([${V.domain}]) }}`,
+  "certbot_conf_name": V.nginx_conf_name,
 } satisfies VarsFile;

@@ -2,7 +2,7 @@ import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { jbuild_force, virtualenv_recreate } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
-import { jbuild_registry } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { truthy } from "../../../lib/vars.ts";
 
 const _user = register("_user");
@@ -40,9 +40,9 @@ export default [
     become: true,
     become_user: "jyctl",
     "community.general.docker_login": {
-      registry_url: jbuild_registry.url,
-      username: jbuild_registry.username,
-      password: jbuild_registry.password,
+      registry_url: V.jbuild_registry.url,
+      username: V.jbuild_registry.username,
+      password: V.jbuild_registry.password,
     },
   },
   {

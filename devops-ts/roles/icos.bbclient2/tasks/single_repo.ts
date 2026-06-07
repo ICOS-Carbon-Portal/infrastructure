@@ -1,12 +1,4 @@
-import {
-  bbclient_remote_repo,
-  bbclient_remote_user,
-  bbclient_repo_url,
-  bbclient_ssh_hosts,
-  bbclient_ssh_key,
-  bbclient_user,
-  bbclient_wrapper,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   bbclient_key_data,
@@ -25,7 +17,7 @@ export default [
     name: "Read the public key",
     check_mode: false,
     slurpfact: {
-      path: tmpl`${bbclient_ssh_key}.pub`,
+      path: tmpl`${V.bbclient_ssh_key}.pub`,
       fact: "bbclient_key_data",
     },
   },
@@ -52,11 +44,11 @@ export default [
       {
         name: "Install public key",
         authorized_key: {
-          user: bbclient_remote_user,
+          user: V.bbclient_remote_user,
           state: "present",
           key: bbclient_key_data,
           key_options:
-            tmpl`command="/usr/local/bin/borg serve --restrict-to-path ${bbclient_remote_repo}",restrict`,
+            tmpl`command="/usr/local/bin/borg serve --restrict-to-path ${V.bbclient_remote_repo}",restrict`,
         },
       },
     ],
@@ -66,13 +58,13 @@ export default [
   {
     name: "Configure local - bbclient - host",
     become: true,
-    become_user: bbclient_user,
+    become_user: V.bbclient_user,
     block: [
       {
         name: "Update known_hosts",
         blockinfile: {
           create: true,
-          path: bbclient_ssh_hosts,
+          path: V.bbclient_ssh_hosts,
           marker: tmpl`# {mark} ${bbclient_remote}`,
           block: tmpl`${bbclient_remote_keys}
 `,
@@ -81,7 +73,7 @@ export default [
       {
         name: "Initialize repo",
         command:
-          tmpl`${bbclient_wrapper} init ${bbclient_repo_url} --encryption=none\n`,
+          tmpl`${V.bbclient_wrapper} init ${V.bbclient_repo_url} --encryption=none\n`,
         register: r,
         changed_when: [eq(r.rc, 0)],
         failed_when: [

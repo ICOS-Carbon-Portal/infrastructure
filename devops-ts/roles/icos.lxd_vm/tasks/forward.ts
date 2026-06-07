@@ -1,4 +1,4 @@
-import { lxd_vm_ip, lxd_vm_port } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { inventory_hostname } from "../../../lib/builtins.ts";
 import { lxd_vm_name } from "../../../lib/paramvars.ts";
@@ -13,16 +13,16 @@ export default [
     include_role: { name: "icos.lxd_forward" },
     vars: {
       lxd_forward_name: lxd_vm_name,
-      lxd_forward_ip: lxd_vm_ip,
-      lxd_forward_port: lxd_vm_port,
+      lxd_forward_ip: V.lxd_vm_ip,
+      lxd_forward_port: V.lxd_vm_port,
     },
   },
   {
     name: "Add local known_host",
     delegate_to: "localhost",
     known_hosts: {
-      name: tmpl`[${inventory_hostname}]:${lxd_vm_port}`,
-      key: tmpl`[${inventory_hostname}]:${lxd_vm_port} ${_key.stdout.ref}`,
+      name: tmpl`[${inventory_hostname}]:${V.lxd_vm_port}`,
+      key: tmpl`[${inventory_hostname}]:${V.lxd_vm_port} ${_key.stdout.ref}`,
     },
   },
   {
@@ -33,7 +33,7 @@ export default [
       hostname: inventory_hostname,
       remote_user: "root",
       host: lxd_vm_name,
-      port: lxd_vm_port,
+      port: V.lxd_vm_port,
       state: "present",
     },
   },

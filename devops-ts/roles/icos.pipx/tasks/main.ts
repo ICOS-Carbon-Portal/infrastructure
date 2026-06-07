@@ -1,4 +1,4 @@
-import { pipx_home, pipx_upgrade } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { iff, tmpl } from "../../../lib/template.ts";
 
@@ -9,8 +9,8 @@ export default [
     name: "Install pipx",
     pip: {
       name: "pipx",
-      virtualenv: tmpl`${pipx_home}/.venv`,
-      state: iff(pipx_upgrade, "latest", "present"),
+      virtualenv: tmpl`${V.pipx_home}/.venv`,
+      state: iff(V.pipx_upgrade, "latest", "present"),
     },
   },
   {

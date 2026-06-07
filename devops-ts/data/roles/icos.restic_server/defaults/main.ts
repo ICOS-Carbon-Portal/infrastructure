@@ -4,32 +4,27 @@ import { fake_architecture } from "../../../../lib/paramvars.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  restic_server_data,
-  restic_server_home,
-  restic_server_version,
-  type Vars,
-} from "../../../../roles/icos.restic_server/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.restic_server/_ctx.ts";
 
 export default {
   "restic_server_data": null,
   "restic_server_listen": 8900,
   "restic_server_users": [],
-  "restic_server_htpasswd": tmpl`${restic_server_data}/.htpasswd`,
+  "restic_server_htpasswd": tmpl`${V.restic_server_data}/.htpasswd`,
   "restic_server_home": "/opt/restic-server",
-  "restic_server_exec": tmpl`${restic_server_home}/bin/rest-server`,
+  "restic_server_exec": tmpl`${V.restic_server_home}/bin/rest-server`,
   "restic_server_user": "restic-server",
   "restic_server_upgrade": upgrade_everything.default(false).bool(),
   "restic_server_architecture": fake_architecture.default(ansible_architecture),
   "restic_server_version": hostvar("localhost").restic_server_version,
   "restic_server_url_map": {
     "armv6l":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${restic_server_version}/rest-server_${restic_server_version}_linux_armv6.tar.gz`,
+      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_armv6.tar.gz`,
     "armv7l":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${restic_server_version}/rest-server_${restic_server_version}_linux_armv7.tar.gz`,
+      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_armv7.tar.gz`,
     "aarch64":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${restic_server_version}/rest-server_${restic_server_version}_linux_arm64.tar.gz`,
+      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_arm64.tar.gz`,
     "x86_64":
-      tmpl`https://github.com/restic/rest-server/releases/download/v${restic_server_version}/rest-server_${restic_server_version}_linux_amd64.tar.gz`,
+      tmpl`https://github.com/restic/rest-server/releases/download/v${V.restic_server_version}/rest-server_${V.restic_server_version}_linux_amd64.tar.gz`,
   },
 } satisfies Vars;

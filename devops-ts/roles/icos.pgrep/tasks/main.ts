@@ -1,4 +1,4 @@
-import { pgrep_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item, omit } from "../../../lib/builtins.ts";
 import { pgrep_peer_cert } from "../../../lib/globals.ts";
@@ -9,7 +9,7 @@ export default [
   {
     name: "Create pgrep directories",
     file: {
-      path: tmpl`${pgrep_home}/volumes`,
+      path: tmpl`${V.pgrep_home}/volumes`,
       state: "directory",
       mode: "0700",
     },
@@ -18,7 +18,7 @@ export default [
     name: "Install peer certificate",
     copy: {
       src: pgrep_peer_cert,
-      dest: tmpl`${pgrep_home}/peer.crt`,
+      dest: tmpl`${V.pgrep_home}/peer.crt`,
     },
   },
   loopOver<{ src: Tmpl; mode?: Tmpl }>(
@@ -35,7 +35,7 @@ export default [
       name: "Install runtime files",
       template: {
         src: item.src,
-        dest: pgrep_home,
+        dest: V.pgrep_home,
         mode: item.mode.default(omit),
       },
     }),
@@ -43,12 +43,12 @@ export default [
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": {
-      project_src: pgrep_home,
+      project_src: V.pgrep_home,
     },
   },
   {
     name: "Check that psql wrappers works",
-    shell: tmpl`${pgrep_home}/${item} -c 'select version()'\n`,
+    shell: tmpl`${V.pgrep_home}/${item} -c 'select version()'\n`,
     changed_when: false,
     register: "_r",
     failed_when: [

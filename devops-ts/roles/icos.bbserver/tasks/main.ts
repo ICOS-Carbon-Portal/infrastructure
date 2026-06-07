@@ -1,4 +1,4 @@
-import { bbserver_textfiles } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -9,9 +9,9 @@ export default [
   { import_tasks: "setup.yml", tags: "bbserver_setup" },
   { import_tasks: "cli.yml", tags: "bbserver_cli" },
   {
-    name: tmpl`Check whether ${bbserver_textfiles} exists`,
+    name: tmpl`Check whether ${V.bbserver_textfiles} exists`,
     tags: "bbserver_monitor",
-    stat: { path: bbserver_textfiles },
+    stat: { path: V.bbserver_textfiles },
     register: _textfiles,
   },
   {

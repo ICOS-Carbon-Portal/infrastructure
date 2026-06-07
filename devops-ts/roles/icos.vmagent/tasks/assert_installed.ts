@@ -1,4 +1,4 @@
-import { vmagent_configs } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { not } from "../../../lib/vars.ts";
@@ -9,7 +9,7 @@ export default [
   {
     name: "Check whether vmagent is installed",
     stat: {
-      path: vmagent_configs,
+      path: V.vmagent_configs,
     },
     register: _r,
   },

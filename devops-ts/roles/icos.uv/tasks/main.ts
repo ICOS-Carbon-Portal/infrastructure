@@ -1,4 +1,4 @@
-import { uv_upgrade } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_check_mode } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -21,7 +21,7 @@ export default [
     },
     when: or(
       not(_r.stat.exists),
-      truthy(uv_upgrade),
+      truthy(V.uv_upgrade),
       not(ansible_check_mode),
     ),
   },

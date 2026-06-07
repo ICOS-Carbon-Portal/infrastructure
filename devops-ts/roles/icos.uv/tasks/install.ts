@@ -1,4 +1,4 @@
-import { uv_architecture, uv_url_map, uv_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -9,7 +9,7 @@ const _r = register("_r");
 
 export default [
   {
-    when: isNotDefined(uv_version),
+    when: isNotDefined(V.uv_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -39,7 +39,7 @@ export default [
       owner: "root",
       group: "root",
       remote_src: true,
-      src: uv_url_map.at(uv_architecture),
+      src: V.uv_url_map.at(V.uv_architecture),
       // Only two binaries, uv and uvx
       dest: "/usr/local/bin",
       extra_opts: [
@@ -55,12 +55,12 @@ export default [
     shell: "/usr/local/bin/uv version",
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(uv_version)),
+    failed_when: not(_r.stdout.endswith(V.uv_version)),
   },
   {
     name: "Which version of uv was installed",
     debug: {
-      msg: tmpl`Installed ${uv_version}`,
+      msg: tmpl`Installed ${V.uv_version}`,
     },
   },
 ] satisfies TaskFile;

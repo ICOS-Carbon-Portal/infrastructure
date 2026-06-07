@@ -4,10 +4,7 @@ import { fake_architecture } from "../../../../lib/paramvars.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  restic_version,
-  type Vars,
-} from "../../../../roles/icos.restic/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.restic/_ctx.ts";
 
 export default {
   "restic_upgrade": upgrade_everything.default(false).bool(),
@@ -15,12 +12,12 @@ export default {
   "restic_version": hostvar("localhost").restic_version,
   "restic_url_map": {
     "armv6l":
-      tmpl`https://github.com/restic/restic/releases/download/v${restic_version}/restic_${restic_version}_linux_arm.bz2`,
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
     "armv7l":
-      tmpl`https://github.com/restic/restic/releases/download/v${restic_version}/restic_${restic_version}_linux_arm.bz2`,
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm.bz2`,
     "aarch64":
-      tmpl`https://github.com/restic/restic/releases/download/v${restic_version}/restic_${restic_version}_linux_arm64.bz2`,
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_arm64.bz2`,
     "x86_64":
-      tmpl`https://github.com/restic/restic/releases/download/v${restic_version}/restic_${restic_version}_linux_amd64.bz2`,
+      tmpl`https://github.com/restic/restic/releases/download/v${V.restic_version}/restic_${V.restic_version}_linux_amd64.bz2`,
   },
 } satisfies Vars;

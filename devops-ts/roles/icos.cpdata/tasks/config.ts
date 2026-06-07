@@ -1,4 +1,4 @@
-import { cpdata_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { iff, tmpl } from "../../../lib/template.ts";
@@ -12,7 +12,7 @@ export default [
   {
     name: "Create application.conf",
     copy: {
-      dest: tmpl`${cpdata_home}/application.conf`,
+      dest: tmpl`${V.cpdata_home}/application.conf`,
       content: `{% for item in cpdata_config_files %}
 # {{ item }}
 {{ lookup('template', item) }}

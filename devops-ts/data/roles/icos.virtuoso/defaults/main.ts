@@ -4,17 +4,13 @@ import { type Globals } from "../../../../lib/globals.ts";
 import { docker_compose_home } from "../../../../lib/paramvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { vault_virtuoso_dba_pass } from "../../../../lib/vaultvars.ts";
-import {
-  type Vars,
-  virtuoso_bind_host,
-  virtuoso_http_port,
-} from "../../../../roles/icos.virtuoso/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.virtuoso/_ctx.ts";
 
 export default {
   "virtuoso_home": tmpl`${docker_compose_home.default("/docker")}/virtuoso`,
   "virtuoso_bind_host": "127.0.0.1",
   "virtuoso_http_port": 8890,
-  "virtuoso_host": virtuoso_bind_host,
-  "virtuoso_port": virtuoso_http_port,
+  "virtuoso_host": V.virtuoso_bind_host,
+  "virtuoso_port": V.virtuoso_http_port,
   "virtuoso_dba_pass": vault_virtuoso_dba_pass,
 } satisfies Vars & Restated<Globals, "virtuoso_dba_pass">;

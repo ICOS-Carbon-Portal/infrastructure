@@ -1,4 +1,4 @@
-import { caddy_dropin_path, caddy_modules, caddy_via_xcaddy } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { jinjaFor, tmpl } from "../../../lib/template.ts";
 
@@ -9,27 +9,27 @@ export default [
   // into caddy.
   {
     name: "Compile caddy using xcaddy",
-    command: tmpl`xcaddy build --output ${caddy_via_xcaddy} ${
-      jinjaFor<string>("module", caddy_modules, (module) =>
+    command: tmpl`xcaddy build --output ${V.caddy_via_xcaddy} ${
+      jinjaFor<string>("module", V.caddy_modules, (module) =>
         tmpl` --with ${module} `)
     }`,
     args: {
       chdir: "/tmp",
-      creates: caddy_via_xcaddy,
+      creates: V.caddy_via_xcaddy,
     },
     notify: "restart caddy",
   },
   {
     name: "Create caddy systemd drop-in directory",
     file: {
-      path: caddy_dropin_path.dirname(),
+      path: V.caddy_dropin_path.dirname(),
       state: "directory",
     },
   },
   {
     name: "Create caddy systemd drop-in file",
     copy: {
-      dest: caddy_dropin_path,
+      dest: V.caddy_dropin_path,
       // These were copied from the standard caddy service
       content: `[Service]
 ExecStart=

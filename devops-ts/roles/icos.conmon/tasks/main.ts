@@ -1,4 +1,4 @@
-import { conmon_apt_version_ok, conmon_local_version_ok } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { conmon_local_version } from "../../../lib/paramvars.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -27,19 +27,19 @@ done
     debug: {
       msg: tmpl`Version (${conmon_local_version}) is sufficient`,
     },
-    when: truthy(conmon_local_version_ok),
+    when: truthy(V.conmon_local_version_ok),
   },
   // Otherwise, attempt to install by using apt.
   {
     import_tasks: "apt_install.yml",
-    when: not(conmon_local_version_ok),
+    when: not(V.conmon_local_version_ok),
   },
   // Finally, fall back to downloading and installing.
   {
     import_tasks: "download_install.yml",
     when: [
-      not(conmon_local_version_ok),
-      not(conmon_apt_version_ok),
+      not(V.conmon_local_version_ok),
+      not(V.conmon_apt_version_ok),
     ],
   },
 ] satisfies TaskFile;

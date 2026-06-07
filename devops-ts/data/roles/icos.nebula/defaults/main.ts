@@ -6,11 +6,7 @@ import { nebula_cert_files } from "../../../../lib/paramvars.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  nebula_etc_dir,
-  nebula_version,
-  type Vars,
-} from "../../../../roles/icos.nebula/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.nebula/_ctx.ts";
 
 export default {
   "nebula_is_lighthouse": false,
@@ -35,18 +31,18 @@ export default {
   "nebula_resolve_servers": null,
   "nebula_resolve_test": null,
   "nebula_ssh_enable": false,
-  "nebula_ssh_key": tmpl`${nebula_etc_dir}/admin`,
+  "nebula_ssh_key": tmpl`${V.nebula_etc_dir}/admin`,
   "nebula_ssh_port": 2346,
   "nebula_version": hostvar("localhost").nebula_version,
   "nebula_url_map": {
     "armv6l":
-      tmpl`https://github.com/slackhq/nebula/releases/download/v${nebula_version}/nebula-linux-arm-6.tar.gz`,
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm-6.tar.gz`,
     "armv7l":
-      tmpl`https://github.com/slackhq/nebula/releases/download/v${nebula_version}/nebula-linux-arm-7.tar.gz`,
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm-7.tar.gz`,
     "x86_64":
-      tmpl`https://github.com/slackhq/nebula/releases/download/v${nebula_version}/nebula-linux-amd64.tar.gz`,
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-amd64.tar.gz`,
     "aarch64":
-      tmpl`https://github.com/slackhq/nebula/releases/download/v${nebula_version}/nebula-linux-arm64.tar.gz`,
+      tmpl`https://github.com/slackhq/nebula/releases/download/v${V.nebula_version}/nebula-linux-arm64.tar.gz`,
   },
 } satisfies
   & Vars

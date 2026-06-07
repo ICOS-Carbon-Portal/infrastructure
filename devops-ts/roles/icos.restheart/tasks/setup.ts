@@ -1,4 +1,4 @@
-import { restheart_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -10,26 +10,26 @@ export default [
       path: item,
       state: "directory",
     },
-    loop: [tmpl`${restheart_home}/volumes/mongo.db`],
+    loop: [tmpl`${V.restheart_home}/volumes/mongo.db`],
   },
   {
     name: "Copy restheart.yml",
     template: {
       src: "../templates/restheart.yml",
-      dest: restheart_home,
+      dest: V.restheart_home,
     },
   },
   {
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: restheart_home,
+      dest: V.restheart_home,
     },
   },
   {
     name: "Build and start the images",
     "community.docker.docker_compose_v2": {
-      project_src: restheart_home,
+      project_src: V.restheart_home,
       build: true,
     },
   },

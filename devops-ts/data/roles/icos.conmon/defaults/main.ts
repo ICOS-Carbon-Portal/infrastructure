@@ -3,10 +3,7 @@ import { conmon_local_version } from "../../../../lib/paramvars.ts";
 import { register } from "../../../../lib/register.ts";
 import { conmon_min_version } from "../../../../lib/sharedvars.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
-import {
-  conmon_version_install,
-  type Vars,
-} from "../../../../roles/icos.conmon/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.conmon/_ctx.ts";
 
 export default {
   "conmon_version_install": "2.1.4",
@@ -18,5 +15,5 @@ export default {
     register("version").ref
   }(${conmon_min_version}, ">=") }}`,
   "conmon_url":
-    tmpl`https://github.com/containers/conmon/archive/refs/tags/v${conmon_version_install}.tar.gz`,
+    tmpl`https://github.com/containers/conmon/archive/refs/tags/v${V.conmon_version_install}.tar.gz`,
 } satisfies Vars;

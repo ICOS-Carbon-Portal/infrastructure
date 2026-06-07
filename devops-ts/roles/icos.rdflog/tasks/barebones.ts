@@ -1,4 +1,4 @@
-import { rdflog_db_name, rdflog_db_port, rdflog_db_user } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   rdflog_db_pass,
@@ -15,11 +15,11 @@ export default [
       state: "started",
       recreate: false,
       env: {
-        POSTGRES_USER: rdflog_db_user,
+        POSTGRES_USER: V.rdflog_db_user,
         POSTGRES_PASSWORD: rdflog_db_pass,
-        POSTGRES_DB: rdflog_db_name,
+        POSTGRES_DB: V.rdflog_db_name,
       },
-      published_ports: [tmpl`127.0.0.1:${rdflog_db_port}:5432`],
+      published_ports: [tmpl`127.0.0.1:${V.rdflog_db_port}:5432`],
       volumes: ["/docker/rdflog/volumes/data:/var/lib/postgresql/data"],
       restart_policy: "always",
     },
@@ -28,7 +28,7 @@ export default [
     name: "Wait for rdflog db to become available",
     wait_for: {
       host: "127.0.0.1",
-      port: rdflog_db_port,
+      port: V.rdflog_db_port,
       delay: 5,
       timeout: 60,
     },

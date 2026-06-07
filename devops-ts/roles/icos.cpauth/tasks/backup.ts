@@ -1,4 +1,4 @@
-import { cpauth_home, cpauth_user } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
@@ -7,8 +7,8 @@ export default [
     include_role: { name: "icos.bbclient2" },
     vars: {
       bbclient_name: "cpauth",
-      bbclient_user: cpauth_user,
-      bbclient_home: tmpl`${cpauth_home}/.bbclient`,
+      bbclient_user: V.cpauth_user,
+      bbclient_home: tmpl`${V.cpauth_home}/.bbclient`,
       bbclient_timer_conf: `OnCalendar=daily
 RandomizedDelaySec=1h
 `,

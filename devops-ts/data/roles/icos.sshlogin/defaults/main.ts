@@ -3,35 +3,27 @@ import { sshlogin_dst, sshlogin_src_ip } from "../../../../lib/paramvars.ts";
 import { register } from "../../../../lib/register.ts";
 import { jinja, tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  _sshlogin_opt_list,
-  sshlogin_dst_command,
-  sshlogin_dst_from,
-  sshlogin_dst_restrict,
-  sshlogin_dst_ssh_dir,
-  sshlogin_src_ssh_dir,
-  type Vars,
-} from "../../../../roles/icos.sshlogin/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.sshlogin/_ctx.ts";
 
 export default {
   "sshlogin_dst_from": null,
   "sshlogin_dst_command": null,
   "sshlogin_dst_restrict": null,
   "sshlogin_dst_ssh_dir": tmpl`${register("_dst_user").home.ref}/.ssh`,
-  "sshlogin_dst_known_hosts": tmpl`${sshlogin_dst_ssh_dir}/known_hosts`,
-  "sshlogin_dst_key_file": tmpl`${sshlogin_dst_ssh_dir}/id_rsa`,
+  "sshlogin_dst_known_hosts": tmpl`${V.sshlogin_dst_ssh_dir}/known_hosts`,
+  "sshlogin_dst_key_file": tmpl`${V.sshlogin_dst_ssh_dir}/id_rsa`,
   "sshlogin_dst_key_options":
-    jinja`{{ ${_sshlogin_opt_list} | select('ne', '') | join(',') }}`,
+    jinja`{{ ${V._sshlogin_opt_list} | select('ne', '') | join(',') }}`,
   "_sshlogin_opt_list": [
-    tmpl`${jinja`{% if ${sshlogin_dst_command} -%}`} command="${sshlogin_dst_command}" ${jinja`{%- endif -%}`}`,
-    tmpl`${jinja`{% if ${sshlogin_dst_from} == 'srcip' -%}`} from="${sshlogin_src_ip}" ${jinja`{%- elif ${sshlogin_dst_from} -%}`} from="${sshlogin_dst_from}" ${jinja`{%- endif -%}`}`,
-    tmpl`${jinja`{% if ${sshlogin_dst_restrict} -%}`} restrict ${jinja`{%- endif -%}`}`,
+    tmpl`${jinja`{% if ${V.sshlogin_dst_command} -%}`} command="${V.sshlogin_dst_command}" ${jinja`{%- endif -%}`}`,
+    tmpl`${jinja`{% if ${V.sshlogin_dst_from} == 'srcip' -%}`} from="${sshlogin_src_ip}" ${jinja`{%- elif ${V.sshlogin_dst_from} -%}`} from="${V.sshlogin_dst_from}" ${jinja`{%- endif -%}`}`,
+    tmpl`${jinja`{% if ${V.sshlogin_dst_restrict} -%}`} restrict ${jinja`{%- endif -%}`}`,
   ],
   "sshlogin_src_dst": sshlogin_dst,
   "sshlogin_src_ssh_dir": tmpl`${register("_src_user").home.ref}/.ssh`,
-  "sshlogin_src_ssh_config": tmpl`${sshlogin_src_ssh_dir}/config`,
-  "sshlogin_src_known_hosts": tmpl`${sshlogin_src_ssh_dir}/known_hosts`,
-  "sshlogin_src_key_file": tmpl`${sshlogin_src_ssh_dir}/id_rsa`,
+  "sshlogin_src_ssh_config": tmpl`${V.sshlogin_src_ssh_dir}/config`,
+  "sshlogin_src_known_hosts": tmpl`${V.sshlogin_src_ssh_dir}/known_hosts`,
+  "sshlogin_src_key_file": tmpl`${V.sshlogin_src_ssh_dir}/id_rsa`,
   "sshlogin_src_dst_name": sshlogin_dst,
   "sshlogin_src_dst_host": hostvar(sshlogin_dst).ansible_host.default(
     sshlogin_dst,

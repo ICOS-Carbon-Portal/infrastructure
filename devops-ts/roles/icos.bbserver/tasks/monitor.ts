@@ -1,4 +1,4 @@
-import { bbserver_monitor_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { bbserver_user } from "../../../lib/globals.ts";
 import { lookup } from "../../../lib/template.ts";
@@ -17,7 +17,7 @@ export default [
     include_role: { name: "icos.timer" },
     vars: {
       timer_user: "bbserver",
-      timer_home: bbserver_monitor_home,
+      timer_home: V.bbserver_monitor_home,
       timer_name: "bbserver-borgmon",
       timer_conf: "OnCalendar=*:0/5",
       timer_envs: [

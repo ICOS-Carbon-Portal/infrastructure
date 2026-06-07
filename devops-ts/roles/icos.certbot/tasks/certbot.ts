@@ -1,4 +1,4 @@
-import { certbot_fake_certificate } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   certbot_conf_name,
@@ -10,11 +10,11 @@ import { not, truthy } from "../../../lib/vars.ts";
 export default [
   {
     import_tasks: "certbot_live.yml",
-    when: not(certbot_fake_certificate),
+    when: not(V.certbot_fake_certificate),
   },
   {
     import_tasks: "certbot_fake.yml",
-    when: truthy(certbot_fake_certificate),
+    when: truthy(V.certbot_fake_certificate),
   },
   // The certbot_nginx_conf variable is set by either the live or fake path.
   {

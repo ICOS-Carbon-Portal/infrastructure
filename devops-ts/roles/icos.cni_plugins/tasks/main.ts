@@ -1,4 +1,4 @@
-import { cni_plugin_url } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 
@@ -23,7 +23,7 @@ export default [
   {
     name: "Download cni plugins",
     get_url: {
-      url: cni_plugin_url,
+      url: V.cni_plugin_url,
       dest: "/opt/cni/download/plugins.tgz",
     },
   },

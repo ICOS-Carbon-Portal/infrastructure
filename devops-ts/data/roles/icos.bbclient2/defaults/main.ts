@@ -5,11 +5,7 @@ import { bbclient_remote } from "../../../../lib/paramvars.ts";
 import { bbclient_name } from "../../../../lib/sharedvars.ts";
 import { randomInt, tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import {
-  bbclient_bin_dir,
-  bbclient_ssh_dir,
-  type Vars,
-} from "../../../../roles/icos.bbclient2/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.bbclient2/_ctx.ts";
 
 export default {
   "bbclient_user": "root",
@@ -19,15 +15,15 @@ export default {
   "bbclient_ssh_dir": tmpl`${bbclient_home}/ssh`,
   "bbclient_bin_dir": tmpl`${bbclient_home}/bin`,
   "bbclient_borg_dir": tmpl`${bbclient_home}/borg`,
-  "bbclient_ssh_bin": tmpl`${bbclient_bin_dir}/ssh`,
-  "bbclient_ssh_config": tmpl`${bbclient_ssh_dir}/config`,
-  "bbclient_ssh_hosts": tmpl`${bbclient_ssh_dir}/known_hosts`,
-  "bbclient_ssh_key": tmpl`${bbclient_ssh_dir}/bbclient.rsa`,
+  "bbclient_ssh_bin": tmpl`${V.bbclient_bin_dir}/ssh`,
+  "bbclient_ssh_config": tmpl`${V.bbclient_ssh_dir}/config`,
+  "bbclient_ssh_hosts": tmpl`${V.bbclient_ssh_dir}/known_hosts`,
+  "bbclient_ssh_key": tmpl`${V.bbclient_ssh_dir}/bbclient.rsa`,
   "bbclient_repo_url": tmpl`${bbclient_remote}:repos/${bbclient_name}.repo`,
   "bbclient_repo_file": tmpl`${bbclient_home}/repos`,
-  "bbclient_wrapper": tmpl`${bbclient_bin_dir}/borg`,
-  "bbclient_one": tmpl`${bbclient_bin_dir}/bbclient`,
-  "bbclient_all": tmpl`${bbclient_bin_dir}/bbclient-all`,
+  "bbclient_wrapper": tmpl`${V.bbclient_bin_dir}/borg`,
+  "bbclient_one": tmpl`${V.bbclient_bin_dir}/bbclient`,
+  "bbclient_all": tmpl`${V.bbclient_bin_dir}/bbclient-all`,
   "bbclient_remote_user": hostvar(bbclient_remote).bbserver_user,
   "bbclient_remote_repo": tmpl`${
     hostvar(bbclient_remote).bbserver_home

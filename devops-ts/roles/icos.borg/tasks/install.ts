@@ -1,4 +1,4 @@
-import { borg_upgrade, borg_url_map, borg_version } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_architecture } from "../../../lib/builtins.ts";
 import { borg_bin } from "../../../lib/globals.ts";
@@ -11,7 +11,7 @@ const _r = register("_r");
 
 export default [
   {
-    when: isNotDefined(borg_version),
+    when: isNotDefined(V.borg_version),
     run_once: true,
     check_mode: false,
     delegate_to: "localhost",
@@ -45,9 +45,9 @@ export default [
   {
     name: "Download borg",
     get_url: {
-      url: borg_url_map.at(ansible_architecture),
+      url: V.borg_url_map.at(ansible_architecture),
       dest: borg_bin,
-      force: borg_upgrade,
+      force: V.borg_upgrade,
       mode: "+x",
     },
   },
@@ -56,12 +56,12 @@ export default [
     shell: tmpl`${borg_bin} --version`,
     changed_when: false,
     register: _r,
-    failed_when: not(_r.stdout.endswith(borg_version)),
+    failed_when: not(_r.stdout.endswith(V.borg_version)),
   },
   {
     name: "Which version of borg is installed",
     debug: {
-      msg: tmpl`Installed ${borg_version}`,
+      msg: tmpl`Installed ${V.borg_version}`,
     },
   },
 ] satisfies TaskFile;

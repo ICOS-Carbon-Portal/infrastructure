@@ -1,4 +1,4 @@
-import { cpmeta_host, cpmeta_port } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
@@ -10,7 +10,7 @@ export default [
         name: "Tell cpmeta to switch to readonly mode",
         uri: {
           url:
-            tmpl`http://${cpmeta_host}}:${cpmeta_port}/admin/switchToReadonlyMode`,
+            tmpl`http://${V.cpmeta_host}}:${V.cpmeta_port}/admin/switchToReadonlyMode`,
         },
       },
       {

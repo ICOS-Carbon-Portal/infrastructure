@@ -1,4 +1,4 @@
-import { jarservice_jar_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   jarservice_check,
@@ -17,7 +17,7 @@ export default [
   {
     import_tasks: "jarfile.yml",
     tags: "jarservice_jarfile",
-    when: truthy(jarservice_jar_enable).bool(),
+    when: truthy(V.jarservice_jar_enable).bool(),
   },
   {
     name: tmpl`Add systemd ${jarservice_name} servicefile`,

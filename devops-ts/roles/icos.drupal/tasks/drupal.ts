@@ -1,4 +1,4 @@
-import { project_dir, robots_txt, update } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { git_version, website } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -12,7 +12,7 @@ export default [
   {
     name: "Create project directory",
     file: {
-      path: project_dir,
+      path: V.project_dir,
       state: "directory",
     },
   },
@@ -21,46 +21,47 @@ export default [
     git: {
       repo: "https://github.com/ICOS-Carbon-Portal/drupal",
       version: git_version.default("master"),
-      dest: project_dir,
+      dest: V.project_dir,
       force: true,
     },
   },
   {
-    name: tmpl`Create ${project_dir}/config/ directory`,
-    file: tmpl`path=${project_dir}/config/ state=directory recurse=yes`,
+    name: tmpl`Create ${V.project_dir}/config/ directory`,
+    file: tmpl`path=${V.project_dir}/config/ state=directory recurse=yes`,
   },
   {
     name: "Copy uploads config",
     copy: {
       src: "uploads.ini",
-      dest: tmpl`${project_dir}/config/uploads.ini`,
+      dest: tmpl`${V.project_dir}/config/uploads.ini`,
     },
   },
   {
-    name: tmpl`Create ${project_dir}/files/private/ directory`,
-    file: tmpl`path=${project_dir}/files/private/ state=directory recurse=yes`,
+    name: tmpl`Create ${V.project_dir}/files/private/ directory`,
+    file:
+      tmpl`path=${V.project_dir}/files/private/ state=directory recurse=yes`,
   },
   {
-    name: tmpl`Create ${project_dir}/files/default/files/ directory`,
+    name: tmpl`Create ${V.project_dir}/files/default/files/ directory`,
     file:
-      tmpl`path=${project_dir}/files/default/files/ state=directory recurse=yes`,
+      tmpl`path=${V.project_dir}/files/default/files/ state=directory recurse=yes`,
   },
   {
     name: "Copy settings.php",
     template: {
       src: "settings.php.j2",
-      dest: tmpl`${project_dir}/files/default/settings.php`,
+      dest: tmpl`${V.project_dir}/files/default/settings.php`,
     },
   },
   {
-    name: tmpl`Create ${project_dir}/docker/ directory`,
-    file: tmpl`path=${project_dir}/docker/ state=directory recurse=yes`,
+    name: tmpl`Create ${V.project_dir}/docker/ directory`,
+    file: tmpl`path=${V.project_dir}/docker/ state=directory recurse=yes`,
   },
   {
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml.j2",
-      dest: tmpl`${project_dir}/docker/docker-compose.yml`,
+      dest: tmpl`${V.project_dir}/docker/docker-compose.yml`,
     },
     register: "docker_compose_yml",
   },
@@ -68,37 +69,37 @@ export default [
     name: "Copy environment file",
     template: {
       src: "env.j2",
-      dest: tmpl`${project_dir}/docker/.env`,
+      dest: tmpl`${V.project_dir}/docker/.env`,
     },
   },
   {
-    name: tmpl`Create ${project_dir}/composer/ directory`,
-    file: tmpl`path=${project_dir}/composer/ state=directory recurse=yes`,
+    name: tmpl`Create ${V.project_dir}/composer/ directory`,
+    file: tmpl`path=${V.project_dir}/composer/ state=directory recurse=yes`,
   },
   {
     name: "Copy composer.json",
     template: {
       src: "composer.json.j2",
-      dest: tmpl`${project_dir}/composer/composer.json`,
+      dest: tmpl`${V.project_dir}/composer/composer.json`,
     },
   },
   {
     name: "Copy robots.txt",
     copy: {
-      src: robots_txt,
-      dest: tmpl`${project_dir}/composer/robots.txt.append`,
+      src: V.robots_txt,
+      dest: tmpl`${V.project_dir}/composer/robots.txt.append`,
     },
-    when: isDefined(robots_txt),
+    when: isDefined(V.robots_txt),
   },
   {
     name: "Enable maintenance mode",
     command: tmpl`docker exec ${website}_drupal_1 drush maint:set 1`,
-    when: truthy(update).bool(),
+    when: truthy(V.update).bool(),
   },
   {
     name: "(Re)start docker containers",
     "community.docker.docker_compose_v2": {
-      project_src: tmpl`${project_dir}/docker`,
+      project_src: tmpl`${V.project_dir}/docker`,
       state: "present",
       pull: "always",
     },
@@ -132,19 +133,19 @@ export default [
   {
     name: "Composer update",
     command: tmpl`docker exec ${website}_drupal_1 composer update`,
-    when: truthy(update).bool(),
+    when: truthy(V.update).bool(),
     register: "result",
     changed_when: '"Package operations" in result.stderr',
   },
   {
     name: "Update database",
     command: tmpl`docker exec ${website}_drupal_1 drush updb`,
-    when: truthy(update).bool(),
+    when: truthy(V.update).bool(),
   },
   {
     name: "Disable maintenance mode",
     command: tmpl`docker exec ${website}_drupal_1 drush maint:set 0`,
-    when: truthy(update).bool(),
+    when: truthy(V.update).bool(),
   },
   {
     name: "Clear caches",

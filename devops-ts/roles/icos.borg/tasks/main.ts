@@ -1,4 +1,4 @@
-import { borg_upgrade } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { borg_bin } from "../../../lib/globals.ts";
 import { register } from "../../../lib/register.ts";
@@ -19,7 +19,7 @@ export default [
     include_tasks: {
       file: "install.yml",
     },
-    when: or(not(_r.stat.exists), truthy(borg_upgrade)),
+    when: or(not(_r.stat.exists), truthy(V.borg_upgrade)),
   },
   {
     import_tasks: "just.yml",

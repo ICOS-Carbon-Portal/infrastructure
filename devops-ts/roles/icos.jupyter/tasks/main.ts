@@ -1,4 +1,4 @@
-import { jupyter_jusers_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { truthy } from "../../../lib/vars.ts";
 
@@ -8,7 +8,7 @@ export default [
   {
     import_tasks: "jusers.yml",
     tags: "jupyter_jusers",
-    when: truthy(jupyter_jusers_enable),
+    when: truthy(V.jupyter_jusers_enable),
   },
   { import_tasks: "just.yml", tags: "jupyter_just" },
 ] satisfies TaskFile;

@@ -5,14 +5,11 @@ import {
   sftp_user_dir,
   sftp_user_login,
 } from "../../../../lib/paramvars.ts";
-import {
-  sftp_user_owner,
-  type Vars,
-} from "../../../../roles/icos.sftp_user/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.sftp_user/_ctx.ts";
 
 export default {
   "sftp_user_owner": sftp_user_login,
-  "sftp_user_group": sftp_user_owner,
+  "sftp_user_group": V.sftp_user_owner,
   "sftp_user_password": null,
   "sftp_user_pubkey": null,
   "sftp_user_hostdesc": inventory_hostname,

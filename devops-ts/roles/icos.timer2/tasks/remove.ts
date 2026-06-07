@@ -1,4 +1,4 @@
-import { timer_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { timer_name } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -20,9 +20,9 @@ export default [
   },
   {
     name: "Remove home directory",
-    when: ne(timer_home, "/etc/systemd/systemd"),
+    when: ne(V.timer_home, "/etc/systemd/systemd"),
     file: {
-      path: timer_home,
+      path: V.timer_home,
       state: "absent",
     },
   },

@@ -1,4 +1,4 @@
-import { dnsmasq_config_dir } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { dnsmasq_instance } from "../../../lib/paramvars.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -27,7 +27,7 @@ DNSMASQ_EXCEPT="lo"
   {
     name: "Create /etc/dnsmasq.INSTANCE.d directory",
     file: {
-      path: dnsmasq_config_dir,
+      path: V.dnsmasq_config_dir,
       state: "directory",
     },
   },

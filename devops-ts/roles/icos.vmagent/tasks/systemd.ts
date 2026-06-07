@@ -1,4 +1,4 @@
-import { vmagent_conf, vmagent_environ, vmagent_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
@@ -6,15 +6,15 @@ export default [
   {
     name: "Create prometheus.yml",
     copy: {
-      dest: tmpl`${vmagent_home}/prometheus.yml`,
-      content: vmagent_conf,
+      dest: tmpl`${V.vmagent_home}/prometheus.yml`,
+      content: V.vmagent_conf,
     },
     notify: "reload vmagent",
   },
   {
     name: "Create vmagent environ file",
     template: {
-      dest: vmagent_environ,
+      dest: V.vmagent_environ,
       src: "vmagent.environ",
       mode: "0600",
       lstrip_blocks: true,
@@ -24,7 +24,7 @@ export default [
   {
     name: "Create vmagent service file",
     template: {
-      dest: tmpl`${vmagent_home}/vmagent.service`,
+      dest: tmpl`${V.vmagent_home}/vmagent.service`,
       lstrip_blocks: true,
       src: "vmagent.service",
     },
@@ -32,7 +32,7 @@ export default [
   },
   {
     name: "Link service",
-    command: tmpl`systemctl link ${vmagent_home}/vmagent.service`,
+    command: tmpl`systemctl link ${V.vmagent_home}/vmagent.service`,
     args: {
       creates: "/etc/systemd/system/vmagent.service",
     },

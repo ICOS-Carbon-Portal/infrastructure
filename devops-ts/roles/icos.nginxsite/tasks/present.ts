@@ -1,8 +1,4 @@
-import {
-  nginxsite_path_available,
-  nginxsite_path_confd,
-  nginxsite_path_enable,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import {
@@ -41,7 +37,7 @@ export default [
         name: "Copy config",
         template: {
           src: nginxsite_file,
-          dest: nginxsite_path_confd,
+          dest: V.nginxsite_path_confd,
           backup: true,
         },
         register: update,
@@ -49,14 +45,14 @@ export default [
       {
         name: "Remove old config file from sites-available",
         file: {
-          dest: nginxsite_path_available,
+          dest: V.nginxsite_path_available,
           state: "absent",
         },
       },
       {
         name: "Remove old symlink sites-enabled",
         file: {
-          dest: nginxsite_path_enable,
+          dest: V.nginxsite_path_enable,
           state: "absent",
         },
       },

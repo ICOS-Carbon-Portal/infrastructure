@@ -1,4 +1,4 @@
-import { cpdata_home, cpdata_jre_package, cpdata_user } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { cpdata_filestorage_target } from "../../../lib/globals.ts";
 
@@ -6,14 +6,14 @@ export default [
   {
     name: "Install jre",
     apt: {
-      name: cpdata_jre_package,
+      name: V.cpdata_jre_package,
     },
   },
   {
     name: "Create cpdata user",
     user: {
-      name: cpdata_user,
-      home: cpdata_home,
+      name: V.cpdata_user,
+      home: V.cpdata_home,
       shell: "/bin/bash",
     },
   },
@@ -22,8 +22,8 @@ export default [
     file: {
       path: cpdata_filestorage_target,
       state: "directory",
-      owner: cpdata_user,
-      group: cpdata_user,
+      owner: V.cpdata_user,
+      group: V.cpdata_user,
     },
   },
   {

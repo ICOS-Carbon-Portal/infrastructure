@@ -4,7 +4,7 @@ import { fake_architecture } from "../../../../lib/paramvars.ts";
 import { upgrade_everything } from "../../../../lib/sharedvars.ts";
 import { tmpl } from "../../../../lib/template.ts";
 import { hostvar } from "../../../../lib/vars.ts";
-import { uv_version, type Vars } from "../../../../roles/icos.uv/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.uv/_ctx.ts";
 
 export default {
   "uv_home": "/opt/uv",
@@ -13,12 +13,12 @@ export default {
   "uv_version": hostvar("localhost").uv_version,
   "uv_url_map": {
     "armv6l":
-      tmpl`https://github.com/astral-sh/uv/releases/download/${uv_version}/uv-arm-unknown-linux-musleabihf.tar.gz`,
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-arm-unknown-linux-musleabihf.tar.gz`,
     "armv7l":
-      tmpl`https://github.com/astral-sh/uv/releases/download/${uv_version}/uv-armv7-unknown-linux-gnueabihf.tar.gz`,
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-armv7-unknown-linux-gnueabihf.tar.gz`,
     "aarch64":
-      tmpl`https://github.com/astral-sh/uv/releases/download/${uv_version}/uv-aarch64-unknown-linux-gnu.tar.gz`,
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-aarch64-unknown-linux-gnu.tar.gz`,
     "x86_64":
-      tmpl`https://github.com/astral-sh/uv/releases/download/${uv_version}/uv-x86_64-unknown-linux-gnu.tar.gz`,
+      tmpl`https://github.com/astral-sh/uv/releases/download/${V.uv_version}/uv-x86_64-unknown-linux-gnu.tar.gz`,
   },
 } satisfies Vars;

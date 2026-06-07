@@ -1,4 +1,4 @@
-import { iptables_ssh_port } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { iptables_forward } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -67,7 +67,7 @@ export default [
     iptables_raw: {
       name: "allow_ssh",
       rules:
-        tmpl`-A INPUT -p tcp --dport ${iptables_ssh_port} -j ACCEPT -m comment --comment 'ssh'`,
+        tmpl`-A INPUT -p tcp --dport ${V.iptables_ssh_port} -j ACCEPT -m comment --comment 'ssh'`,
     },
   },
 ] satisfies TaskFile;

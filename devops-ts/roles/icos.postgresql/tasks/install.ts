@@ -1,8 +1,4 @@
-import {
-  postgresql_bin,
-  postgresql_home,
-  postgresql_postgis_enable,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { ansible_distribution_release } from "../../../lib/builtins.ts";
 import { postgresql_version } from "../../../lib/paramvars.ts";
@@ -41,7 +37,7 @@ export default [
     apt: {
       name: pct("postgresql-%s-postgis-3", postgresql_version),
     },
-    when: truthy(postgresql_postgis_enable),
+    when: truthy(V.postgresql_postgis_enable),
   },
   // Needed for ansible's postgresql_* modules
   {
@@ -53,9 +49,9 @@ export default [
   },
   // We'll keep various scripts in $HOME/bin
   {
-    name: tmpl`Create ${postgresql_bin} directory`,
+    name: tmpl`Create ${V.postgresql_bin} directory`,
     file: {
-      path: postgresql_bin,
+      path: V.postgresql_bin,
       state: "directory",
       owner: "postgres",
       group: "postgres",
@@ -67,7 +63,7 @@ export default [
       owner: "postgres",
       group: "postgres",
       create: true,
-      path: tmpl`${postgresql_home}/.profile`,
+      path: tmpl`${V.postgresql_home}/.profile`,
       regex: "^PATH=",
       line: "PATH=$HOME/bin:$PATH",
       state: "present",

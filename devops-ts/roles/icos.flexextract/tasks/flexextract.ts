@@ -1,8 +1,4 @@
-import {
-  flexextract_download_host,
-  flexextract_home,
-  flexextract_user,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   flexextract_docker_build,
@@ -17,7 +13,7 @@ export default [
     tags: "flexextract_sync",
     synchronize: {
       src: tmpl`${flexextract_src_dir}/`,
-      dest: tmpl`${flexextract_home}/build`,
+      dest: tmpl`${V.flexextract_home}/build`,
     },
   },
   {
@@ -29,7 +25,7 @@ export default [
 | tee -a build.log
 `,
     args: {
-      chdir: flexextract_home,
+      chdir: V.flexextract_home,
       executable: "/bin/bash",
     },
     register: "_output",
@@ -41,22 +37,22 @@ export default [
     become: true,
     become_user: "root",
     file: {
-      path: flexextract_download_host,
+      path: V.flexextract_download_host,
       state: "directory",
-      owner: flexextract_user,
-      group: flexextract_user,
+      owner: V.flexextract_user,
+      group: V.flexextract_user,
     },
   },
   {
     name: "Create a link to the download directory in home directory",
     file: {
-      dest: tmpl`${flexextract_home}/download`,
-      src: flexextract_download_host,
+      dest: tmpl`${V.flexextract_home}/download`,
+      src: V.flexextract_download_host,
       state: "link",
     },
     when: ne(
-      flexextract_download_host,
-      concat(flexextract_home, "/download"),
+      V.flexextract_download_host,
+      concat(V.flexextract_home, "/download"),
     ),
   },
   {

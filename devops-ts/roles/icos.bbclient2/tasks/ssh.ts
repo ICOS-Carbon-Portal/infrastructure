@@ -1,9 +1,4 @@
-import {
-  bbclient_ssh_bin,
-  bbclient_ssh_config,
-  bbclient_ssh_dir,
-  bbclient_ssh_key,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { inventory_hostname } from "../../../lib/builtins.ts";
 import { bbclient_name } from "../../../lib/sharedvars.ts";
@@ -13,21 +8,21 @@ export default [
   {
     name: "Create ssh directory",
     file: {
-      path: bbclient_ssh_dir,
+      path: V.bbclient_ssh_dir,
       state: "directory",
       mode: 0o700,
     },
   },
   {
     name: "Generate RSA keys",
-    args: { creates: bbclient_ssh_key },
+    args: { creates: V.bbclient_ssh_key },
     command:
-      tmpl`ssh-keygen -q -t rsa -f ${bbclient_ssh_key} -N ""\n  -C "bbclient_${bbclient_name}@${inventory_hostname}"`,
+      tmpl`ssh-keygen -q -t rsa -f ${V.bbclient_ssh_key} -N ""\n  -C "bbclient_${bbclient_name}@${inventory_hostname}"`,
   },
   {
     name: "Create ssh config",
     copy: {
-      dest: bbclient_ssh_config,
+      dest: V.bbclient_ssh_config,
       content: `UserKnownHostsFile {{ bbclient_ssh_hosts }}
 Identityfile {{ bbclient_ssh_key }}
 
@@ -45,7 +40,7 @@ Host {{ bbclient_remote }}
     name: "Add ssh wrapper",
     copy: {
       mode: "+x",
-      dest: bbclient_ssh_bin,
+      dest: V.bbclient_ssh_bin,
       content: `#!/usr/bin/bash
 exec ssh -F {{ bbclient_ssh_config }} "$@"
 `,

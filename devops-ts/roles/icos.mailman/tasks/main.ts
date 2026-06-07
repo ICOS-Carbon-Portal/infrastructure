@@ -1,11 +1,4 @@
-import {
-  mailman_home,
-  mailman_postfix_config,
-  mailman_rest_user,
-  mailman_user,
-  mailman_volume_core,
-  mailman_volume_web,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { loopOver, loopOverVar } from "../../../lib/loop.ts";
@@ -20,7 +13,7 @@ export default [
   loopOver(["core", "web"], (item) => ({
     name: "Create build directories",
     file: {
-      path: tmpl`${mailman_home}/build/mailman-${item}`,
+      path: tmpl`${V.mailman_home}/build/mailman-${item}`,
       state: "directory",
     },
   })),
@@ -29,11 +22,11 @@ export default [
       { src: "logrotate.conf" },
       { src: "bbclient-down-hook", mode: "+x" },
       { src: "docker-compose.yml", mode: "0600" },
-      { dest: mailman_volume_core, src: "mailman-extra.cfg" },
-      { dest: mailman_volume_web, src: "settings_local.py" },
-      { dest: mailman_volume_web, src: "Dockerfile.web" },
+      { dest: V.mailman_volume_core, src: "mailman-extra.cfg" },
+      { dest: V.mailman_volume_web, src: "settings_local.py" },
+      { dest: V.mailman_volume_web, src: "Dockerfile.web" },
       {
-        dest: tmpl`${mailman_home}/build/mailman-core/Dockerfile`,
+        dest: tmpl`${V.mailman_home}/build/mailman-core/Dockerfile`,
         src: "Dockerfile.core",
       },
     ],
@@ -41,7 +34,7 @@ export default [
       name: "Copy mailman files",
       template: {
         // item.src is typed (loop element key); the filtered forms stay raw.
-        dest: item.dest.default(mailman_home),
+        dest: item.dest.default(V.mailman_home),
         src: item.src,
         mode: item.mode.default(omit),
       },
@@ -51,7 +44,7 @@ export default [
   {
     name: "Start containers",
     "community.docker.docker_compose_v2": {
-      project_src: mailman_home,
+      project_src: V.mailman_home,
       build: "always",
     },
   },
@@ -59,7 +52,7 @@ export default [
     name: "Test the REST API",
     uri: {
       url: tmpl`https://${mailman_domains.first()}/rest/3.0/domains`,
-      user: mailman_rest_user,
+      user: V.mailman_rest_user,
       password: mailman_rest_pass,
     },
     register: r,
@@ -72,7 +65,7 @@ export default [
     until: not(r.failed),
   },
   loopOverVar<{ append: string; param: string; value: string }>(
-    mailman_postfix_config,
+    V.mailman_postfix_config,
     (item) => ({
       name: "Set postfix parameters",
       postconf: {
@@ -95,7 +88,7 @@ export default [
         (item) => ({
           name: "Copy mailman_delete_spam files",
           template: {
-            dest: item.dest.default(mailman_home),
+            dest: item.dest.default(V.mailman_home),
             src: item.src,
             mode: item.mode.default(omit),
           },
@@ -105,7 +98,7 @@ export default [
       {
         name: "Write config.ini file",
         copy: {
-          dest: tmpl`${mailman_home}/config.ini`,
+          dest: tmpl`${V.mailman_home}/config.ini`,
           mode: 0o644,
           content: `[mm_settings]
 url    = https://{{ mailman_domains | first }}/rest/3.0/
@@ -119,17 +112,17 @@ hyperkittypass = {{ vault_mailman_hyperkitty_pass }}
       {
         name: "Install required modules into Python virtual environment",
         "ansible.builtin.pip": {
-          virtualenv: tmpl`${mailman_home}/mailman-web-venv`,
+          virtualenv: tmpl`${V.mailman_home}/mailman-web-venv`,
           virtualenv_command: "python3 -m venv",
-          requirements: tmpl`${mailman_home}/requirements.txt`,
+          requirements: tmpl`${V.mailman_home}/requirements.txt`,
         },
       },
       {
         name: "Install mailman-delete-spam timer",
         include_role: { name: "icos.timer" },
         vars: {
-          timer_user: mailman_user,
-          timer_home: mailman_home,
+          timer_user: V.mailman_user,
+          timer_home: V.mailman_home,
           timer_name: "mailman-delete-spam",
           timer_conf: `OnCalendar=*-*-* 4:05:00
 `,

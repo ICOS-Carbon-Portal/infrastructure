@@ -1,4 +1,4 @@
-import { cpmeta_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { cpmeta_bbclient_name } from "../../../lib/globals.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -16,7 +16,7 @@ export default [
   {
     name: "Remove old backup script",
     file: {
-      path: tmpl`${cpmeta_home}/backup.sh`,
+      path: tmpl`${V.cpmeta_home}/backup.sh`,
       state: "absent",
     },
   },
@@ -27,7 +27,7 @@ export default [
     },
     vars: {
       bbclient_name: cpmeta_bbclient_name,
-      bbclient_home: tmpl`${cpmeta_home}/.bbclient`,
+      bbclient_home: tmpl`${V.cpmeta_home}/.bbclient`,
       bbclient_timer_conf: `OnCalendar=hourly
 RandomizedDelaySec=10m
 `,

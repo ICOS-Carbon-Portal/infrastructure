@@ -2,19 +2,16 @@
 import { exploredata_type } from "../../../../lib/paramvars.ts";
 import { iff, tmpl } from "../../../../lib/template.ts";
 import { eq } from "../../../../lib/vars.ts";
-import {
-  exploredata_name,
-  type Vars,
-} from "../../../../roles/icos.exploredata/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.exploredata/_ctx.ts";
 
 export default {
   "exploredata_port": iff(eq(exploredata_type, "test"), 4567, 4566),
   "exploredata_name": tmpl`exploredata.${exploredata_type}`,
-  "exploredata_home": tmpl`/docker/${exploredata_name}`,
-  "exploredata_network": exploredata_name,
-  "exploredata_hub_image": tmpl`${exploredata_name}.hub`,
-  "exploredata_hub_container": tmpl`${exploredata_name}.hub`,
+  "exploredata_home": tmpl`/docker/${V.exploredata_name}`,
+  "exploredata_network": V.exploredata_name,
+  "exploredata_hub_image": tmpl`${V.exploredata_name}.hub`,
+  "exploredata_hub_container": tmpl`${V.exploredata_name}.hub`,
   "exploredata_notebook_image":
-    tmpl`registry.icos-cp.eu/${exploredata_name}.notebook`,
+    tmpl`registry.icos-cp.eu/${V.exploredata_name}.notebook`,
   "exploredata_max_notebooks": 50,
 } satisfies Vars;

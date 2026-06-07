@@ -1,4 +1,4 @@
-import { vmagent_fsd } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { fsd_name, fsd_path, fsd_target } from "../../../lib/paramvars.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -15,7 +15,7 @@ export default [
   {
     name: "Install scrape config",
     copy: {
-      dest: tmpl`${vmagent_fsd}/${fsd_name}.yaml`,
+      dest: tmpl`${V.vmagent_fsd}/${fsd_name}.yaml`,
       content: `# {{ fsd_name }}
 - targets:
   - {{ fsd_target }}

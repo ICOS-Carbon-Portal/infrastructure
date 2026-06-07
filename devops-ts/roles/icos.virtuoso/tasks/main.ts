@@ -1,4 +1,4 @@
-import { virtuoso_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { register } from "../../../lib/register.ts";
@@ -16,14 +16,14 @@ export default [
       state: "directory",
     },
     loop: [
-      tmpl`${virtuoso_home}/volumes/virtuoso.db`,
+      tmpl`${V.virtuoso_home}/volumes/virtuoso.db`,
     ],
   },
   {
     name: "Copy virtuoso.ini",
     template: {
       src: "virtuoso.ini",
-      dest: tmpl`${virtuoso_home}/volumes/virtuoso.db/virtuoso.ini`,
+      dest: tmpl`${V.virtuoso_home}/volumes/virtuoso.db/virtuoso.ini`,
     },
     register: _virtuoso_ini,
   },
@@ -31,14 +31,14 @@ export default [
     name: "Copy docker-compose.yml",
     template: {
       src: "docker-compose.yml",
-      dest: virtuoso_home,
+      dest: V.virtuoso_home,
     },
     register: _virtuoso_compose,
   },
   {
     name: "Start Virtuoso",
     "community.docker.docker_compose_v2": {
-      project_src: virtuoso_home,
+      project_src: V.virtuoso_home,
       state: "present",
       pull: "always",
     },
@@ -46,7 +46,7 @@ export default [
   {
     name: "Restart Virtuoso if config changed",
     "community.docker.docker_compose_v2": {
-      project_src: virtuoso_home,
+      project_src: V.virtuoso_home,
       state: "restarted",
     },
     when: or(_virtuoso_ini.changed, _virtuoso_compose.changed),

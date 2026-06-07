@@ -1,10 +1,4 @@
-import {
-  _timer_sysd_service,
-  _timer_sysd_timer,
-  timer_dest,
-  timer_home,
-  timer_state,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import {
   timer_config,
@@ -27,14 +21,14 @@ export default [
   {
     name: "Create home directory",
     file: {
-      path: timer_home,
+      path: V.timer_home,
       state: "directory",
     },
   },
   {
     name: "Create timer script",
     copy: {
-      dest: timer_dest,
+      dest: V.timer_dest,
       mode: "+x",
       content: timer_content,
     },
@@ -43,7 +37,7 @@ export default [
   {
     name: "Create systemd timer",
     copy: {
-      dest: _timer_sysd_timer,
+      dest: V._timer_sysd_timer,
       content: timer_config,
     },
     notify: "restart icos timer",
@@ -51,15 +45,16 @@ export default [
   {
     name: "Create systemd service",
     copy: {
-      dest: _timer_sysd_service,
+      dest: V._timer_sysd_service,
       content: timer_service,
     },
   },
   {
     name: "Link systemd files",
-    when: ne(timer_home, "/etc/systemd/system"),
+    when: ne(V.timer_home, "/etc/systemd/system"),
     // noqa: command-instead-of-module
-    command: tmpl`systemctl link ${_timer_sysd_timer} ${_timer_sysd_service}`,
+    command:
+      tmpl`systemctl link ${V._timer_sysd_timer} ${V._timer_sysd_service}`,
     register: "_r",
     failed_when: "_r.rc != 0",
     changed_when: '"Created" in _r.stdout',
@@ -69,7 +64,7 @@ export default [
     systemd: {
       name: tmpl`${timer_name}.timer`,
       enabled: true,
-      state: timer_state,
+      state: V.timer_state,
       daemon_reload: true,
     },
   },

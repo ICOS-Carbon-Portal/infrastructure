@@ -1,4 +1,4 @@
-import { upgrade_everything } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { truthy } from "../../../lib/vars.ts";
@@ -41,7 +41,7 @@ export default [
       autoclean: true,
       autoremove: true,
     },
-    when: truthy(upgrade_everything),
+    when: truthy(V.upgrade_everything),
     notify: "reboot",
   },
 ] satisfies TaskFile;

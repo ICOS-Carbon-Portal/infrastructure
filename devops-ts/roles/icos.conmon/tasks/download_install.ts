@@ -1,4 +1,4 @@
-import { conmon_url, conmon_version_install } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -34,7 +34,7 @@ export default [
   {
     name: "Download conmon sources",
     get_url: {
-      url: conmon_url,
+      url: V.conmon_url,
       dest: "/tmp",
     },
     register: _download,
@@ -51,7 +51,7 @@ export default [
   {
     name: "Build conmon",
     make: {
-      chdir: tmpl`/tmp/conmon-${conmon_version_install}`,
+      chdir: tmpl`/tmp/conmon-${V.conmon_version_install}`,
       target: "podman",
     },
   },

@@ -1,4 +1,4 @@
-import { dovecot_cert_file } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { omit } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
@@ -6,9 +6,9 @@ import { type Tmpl, tmpl } from "../../../lib/template.ts";
 
 export default [
   {
-    name: tmpl`Copy ${dovecot_cert_file}`,
+    name: tmpl`Copy ${V.dovecot_cert_file}`,
     template: {
-      src: dovecot_cert_file,
+      src: V.dovecot_cert_file,
       dest: "/etc/dovecot/conf.d/",
     },
   },
@@ -30,7 +30,7 @@ export default [
       },
 
       // include our own certificates
-      { line: tmpl`!include ${dovecot_cert_file}` },
+      { line: tmpl`!include ${V.dovecot_cert_file}` },
     ],
     (item) => ({
       name: "Configure dovecot ssl",

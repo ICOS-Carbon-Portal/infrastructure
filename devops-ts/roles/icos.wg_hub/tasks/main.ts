@@ -1,9 +1,4 @@
-import {
-  wg_hub_allow_all,
-  wg_hub_intf,
-  wg_hub_ishub,
-  wg_hub_reresolve,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { wg_hub_config } from "../../../lib/globals.ts";
@@ -30,10 +25,10 @@ export default [
   },
   {
     name: "Install wireguard hub config",
-    when: truthy(wg_hub_ishub),
+    when: truthy(V.wg_hub_ishub),
     register: _hub_conf,
     copy: {
-      dest: tmpl`/etc/wireguard/${wg_hub_intf}.conf`,
+      dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       mode: 0o600,
       content: `[Interface]
 Address = {{ wg_hub_self.addr }}
@@ -55,10 +50,10 @@ PersistentKeepalive = 25
   },
   {
     name: "Install wireguard spoke config",
-    when: not(wg_hub_ishub),
+    when: not(V.wg_hub_ishub),
     register: _spoke_conf,
     copy: {
-      dest: tmpl`/etc/wireguard/${wg_hub_intf}.conf`,
+      dest: tmpl`/etc/wireguard/${V.wg_hub_intf}.conf`,
       mode: 0o600,
       content: `[Interface]
 Address = {{ wg_hub_self.addr }}
@@ -92,7 +87,7 @@ PersistentKeepalive = 25
   },
   {
     name: "Allow wireguard through firewall",
-    when: truthy(wg_hub_ishub),
+    when: truthy(V.wg_hub_ishub),
     iptables_raw: {
       name: tmpl`wireguard_${wg_hub_config.name}`,
       rules: `-A INPUT -p udp --dport {{ wg_hub_port }} -j ACCEPT
@@ -104,23 +99,23 @@ PersistentKeepalive = 25
     name: "Allow all inbound traffic on the wireguard interface",
     iptables_raw: {
       name: tmpl`wireguard_${wg_hub_config.name}_allow_all`,
-      state: iff(wg_hub_allow_all, "present", "absent"),
+      state: iff(V.wg_hub_allow_all, "present", "absent"),
       rules: `-A INPUT -i {{ wg_hub_intf }} -j ACCEPT
 `,
     },
   },
   {
     name: "Setup reresolve dependency",
-    when: and(truthy(wg_hub_reresolve), not(wg_hub_ishub)),
+    when: and(truthy(V.wg_hub_reresolve), not(V.wg_hub_ishub)),
     command:
-      tmpl`systemctl add-wants wg-quick@${wg_hub_intf}.service wg-reresolve@${wg_hub_intf}.timer`,
+      tmpl`systemctl add-wants wg-quick@${V.wg_hub_intf}.service wg-reresolve@${V.wg_hub_intf}.timer`,
     register: _reresolve,
     changed_when: _reresolve.stderr.startswith("Created symlink"),
   },
   {
     name: "Start wg-quick service",
     systemd: {
-      name: tmpl`wg-quick@${wg_hub_intf}.service`,
+      name: tmpl`wg-quick@${V.wg_hub_intf}.service`,
       state: iff(
         or(_hub_conf.changed, _spoke_conf.changed, _reresolve.changed),
         "restarted",
@@ -131,7 +126,7 @@ PersistentKeepalive = 25
   },
   {
     name: "Ping hub",
-    command: tmpl`ping -c 1 -w 10 "${wg_hub_config.hub.peer}.${wg_hub_intf}"`,
+    command: tmpl`ping -c 1 -w 10 "${wg_hub_config.hub.peer}.${V.wg_hub_intf}"`,
     tags: "wg_hub_ping",
     changed_when: false,
   },

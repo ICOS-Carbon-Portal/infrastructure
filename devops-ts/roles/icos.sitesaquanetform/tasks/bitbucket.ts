@@ -1,4 +1,4 @@
-import { project_dir } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { lookup, tmpl } from "../../../lib/template.ts";
@@ -9,19 +9,19 @@ const bitbucket_known_hosts = register("bitbucket_known_hosts");
 export default [
   {
     name: "Create ssh directory",
-    file: { path: tmpl`${project_dir}/.ssh`, state: "directory" },
+    file: { path: tmpl`${V.project_dir}/.ssh`, state: "directory" },
   },
   {
     name: "Copy SSH public key",
     copy: {
       src: "id_rsa.pub",
-      dest: tmpl`${project_dir}/.ssh/`,
+      dest: tmpl`${V.project_dir}/.ssh/`,
       mode: 0o644,
     },
   },
   {
     name: "Copy SSH private key",
-    copy: { src: "id_rsa", dest: tmpl`${project_dir}/.ssh/`, mode: 0o600 },
+    copy: { src: "id_rsa", dest: tmpl`${V.project_dir}/.ssh/`, mode: 0o600 },
   },
   {
     name: "Check if known_hosts contains bitbucket",

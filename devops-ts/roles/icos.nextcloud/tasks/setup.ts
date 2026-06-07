@@ -1,4 +1,4 @@
-import { nextcloud_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { loopOver } from "../../../lib/loop.ts";
@@ -8,7 +8,7 @@ export default [
   {
     name: "Create nextcloud docker directory",
     file: {
-      path: nextcloud_home,
+      path: V.nextcloud_home,
       state: "directory",
       mode: "og-rw",
     },
@@ -16,12 +16,12 @@ export default [
   loopOver<{ file: Tmpl; set_fact: Tmpl; file_var: Tmpl }>(
     [
       {
-        file: tmpl`${nextcloud_home}/.pg-root-pass`,
+        file: tmpl`${V.nextcloud_home}/.pg-root-pass`,
         set_fact: "nextcloud_db_root_pass",
         file_var: "POSTGRES_PASSWORD",
       },
       {
-        file: tmpl`${nextcloud_home}/.pg-nextcloud-pass`,
+        file: tmpl`${V.nextcloud_home}/.pg-nextcloud-pass`,
         set_fact: "nextcloud_db_pass",
         file_var: "NEXTCLOUD_PASSWORD",
       },
@@ -39,7 +39,7 @@ export default [
     name: "Copy files",
     template: {
       src: item,
-      dest: nextcloud_home,
+      dest: V.nextcloud_home,
     },
     loop: [
       "nextcloud.env",
@@ -55,7 +55,7 @@ export default [
   {
     name: "Check docker-compose config",
     command: "docker-compose config",
-    args: { chdir: nextcloud_home },
+    args: { chdir: V.nextcloud_home },
     changed_when: false,
   },
   // This is the recommended way of doing scheduled jobs in large nextcloud
@@ -64,7 +64,7 @@ export default [
     name: "Add nextcloud cron to crontab",
     cron: {
       job:
-        tmpl`cd ${nextcloud_home} && docker compose exec -T -u www-data app php -f /var/www/html/cron.php || :`,
+        tmpl`cd ${V.nextcloud_home} && docker compose exec -T -u www-data app php -f /var/www/html/cron.php || :`,
       hour: "*",
       minute: "*/5",
       name: "nextcloud_cron",

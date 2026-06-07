@@ -1,4 +1,4 @@
-import { rsyncd_enable } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { rsyncd_conf } from "../../../lib/paramvars.ts";
 import { register } from "../../../lib/register.ts";
@@ -33,8 +33,8 @@ export default [
     name: "Start rsync service",
     systemd: {
       name: "rsync",
-      enabled: rsyncd_enable,
-      state: iff(rsyncd_enable, "started", "stopped"),
+      enabled: V.rsyncd_enable,
+      state: iff(V.rsyncd_enable, "started", "stopped"),
     },
   },
   {

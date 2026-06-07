@@ -1,4 +1,4 @@
-import { kc_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { loopOver } from "../../../lib/loop.ts";
 import { kc_hostname } from "../../../lib/paramvars.ts";
@@ -11,7 +11,7 @@ export default [
   {
     name: "Create keycloak directory",
     file: {
-      path: tmpl`${kc_home}/conf`,
+      path: tmpl`${V.kc_home}/conf`,
       state: "directory",
     },
   },
@@ -19,9 +19,9 @@ export default [
     [
       {
         src: "docker-compose.yml",
-        dest: tmpl`${kc_home}/docker-compose.yml`,
+        dest: tmpl`${V.kc_home}/docker-compose.yml`,
       },
-      { src: "keycloak.conf", dest: tmpl`${kc_home}/conf/keycloak.conf` },
+      { src: "keycloak.conf", dest: tmpl`${V.kc_home}/conf/keycloak.conf` },
     ],
     (item) => ({
       name: "Copy files",
@@ -36,7 +36,7 @@ export default [
   {
     name: "Build and start keycloak",
     docker_compose: {
-      project_src: kc_home,
+      project_src: V.kc_home,
       restarted: _config.changed.ref,
     },
   },

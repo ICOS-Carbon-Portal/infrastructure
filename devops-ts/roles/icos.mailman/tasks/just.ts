@@ -1,4 +1,4 @@
-import { mailman_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -10,7 +10,7 @@ export default [
   {
     name: "Remove Makefile",
     file: {
-      name: tmpl`${mailman_home}/Makefile`,
+      name: tmpl`${V.mailman_home}/Makefile`,
       state: "absent",
     },
   },
@@ -18,7 +18,7 @@ export default [
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: tmpl`${mailman_home}/justfile`,
+      dest: tmpl`${V.mailman_home}/justfile`,
       mode: "+x",
       variable_start_string: "((",
       variable_end_string: "))",

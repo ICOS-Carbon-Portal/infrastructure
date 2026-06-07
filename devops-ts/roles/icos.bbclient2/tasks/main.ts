@@ -1,9 +1,4 @@
-import {
-  bbclient_patterns,
-  bbclient_patterns_path,
-  bbclient_timer_conf,
-  bbclient_user,
-} from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { bbclient_home } from "../../../lib/globals.ts";
 import {
@@ -20,27 +15,27 @@ export default [
     tags: "bbclient_ssh",
     import_tasks: "ssh.yml",
     become: true,
-    become_user: bbclient_user,
+    become_user: V.bbclient_user,
   },
   {
     name: "Install bbclient shell-scripts",
     tags: "bbclient_scripts",
     import_tasks: "scripts.yml",
     become: true,
-    become_user: bbclient_user,
+    become_user: V.bbclient_user,
   },
   { import_tasks: "repos.yml", tags: "bbclient_repos" },
   {
     name: "Create patterns.lst",
     copy: {
-      dest: bbclient_patterns_path,
-      content: bbclient_patterns,
+      dest: V.bbclient_patterns_path,
+      content: V.bbclient_patterns,
     },
   },
   {
     import_tasks: "coldbackup.yml",
     become: true,
-    become_user: bbclient_user,
+    become_user: V.bbclient_user,
     tags: "bbclient_coldbackup",
     when: isDefined(bbclient_coldbackup),
   },
@@ -50,7 +45,7 @@ export default [
     vars: {
       timer_home: tmpl`${bbclient_home}/timer`,
       timer_name: tmpl`bbclient-${bbclient_name}`,
-      timer_conf: bbclient_timer_conf,
+      timer_conf: V.bbclient_timer_conf,
       timer_content: bbclient_timer_content,
     },
     tags: "bbclient_timer",

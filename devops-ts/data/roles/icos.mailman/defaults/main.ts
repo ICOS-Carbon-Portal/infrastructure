@@ -7,14 +7,7 @@ import {
   vault_mailman_postgres_password,
   vault_mailman_web_secret_key,
 } from "../../../../lib/vaultvars.ts";
-import {
-  mailman_core_ipv4,
-  mailman_home,
-  mailman_volume_core,
-  mailman_volume_web,
-  mailman_web_ipv4,
-  type Vars,
-} from "../../../../roles/icos.mailman/_ctx.ts";
+import { V, type Vars } from "../../../../roles/icos.mailman/_ctx.ts";
 
 export default {
   "mailman_user": "mailman",
@@ -26,12 +19,12 @@ export default {
   "mailman_hyperkitty_api_key": vault_mailman_hyperkitty_api_key,
   "mailman_web_secret_key": vault_mailman_web_secret_key,
   "mailman_admin_email": vault_mailman_admin_email,
-  "mailman_volume_core": tmpl`${mailman_home}/volumes/core`,
-  "mailman_volume_web": tmpl`${mailman_home}/volumes/web`,
-  "mailman_volume_database": tmpl`${mailman_home}/volumes/database`,
-  "mailman_build_core": tmpl`${mailman_home}/build/core`,
-  "mailman_build_web": tmpl`${mailman_home}/build/web`,
-  "mailman_django_settings": tmpl`${mailman_volume_web}/settings_local.py`,
+  "mailman_volume_core": tmpl`${V.mailman_home}/volumes/core`,
+  "mailman_volume_web": tmpl`${V.mailman_home}/volumes/web`,
+  "mailman_volume_database": tmpl`${V.mailman_home}/volumes/database`,
+  "mailman_build_core": tmpl`${V.mailman_home}/build/core`,
+  "mailman_build_web": tmpl`${V.mailman_home}/build/web`,
+  "mailman_django_settings": tmpl`${V.mailman_volume_web}/settings_local.py`,
   "mailman_subnet": "172.19.199.0/24",
   "mailman_host_ipv4": "172.19.199.1",
   "mailman_core_ipv4": "172.19.199.2",
@@ -52,27 +45,27 @@ export default {
     },
     {
       "param": "transport_maps",
-      "value": tmpl`regexp:${mailman_volume_core}/var/data/postfix_lmtp`,
+      "value": tmpl`regexp:${V.mailman_volume_core}/var/data/postfix_lmtp`,
       "append": true,
     },
     {
       "param": "local_recipient_maps",
-      "value": tmpl`regexp:${mailman_volume_core}/var/data/postfix_lmtp`,
+      "value": tmpl`regexp:${V.mailman_volume_core}/var/data/postfix_lmtp`,
       "append": true,
     },
     {
       "param": "relay_domains",
-      "value": tmpl`regexp:${mailman_volume_core}/var/data/postfix_domains`,
+      "value": tmpl`regexp:${V.mailman_volume_core}/var/data/postfix_domains`,
       "append": true,
     },
     {
       "param": "mynetworks",
-      "value": mailman_core_ipv4,
+      "value": V.mailman_core_ipv4,
       "append": true,
     },
     {
       "param": "mynetworks",
-      "value": mailman_web_ipv4,
+      "value": V.mailman_web_ipv4,
       "append": true,
     },
   ],

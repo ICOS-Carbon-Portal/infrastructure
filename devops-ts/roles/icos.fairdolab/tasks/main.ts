@@ -1,11 +1,11 @@
-import { fairdolab_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
   {
     name: "Create  directory",
     file: {
-      path: fairdolab_home,
+      path: V.fairdolab_home,
       state: "directory",
     },
   },
@@ -13,7 +13,7 @@ export default [
     name: "Clone fairdolab",
     git: {
       repo: "https://github.com/kit-data-manager/FAIR-DO-Lab",
-      dest: fairdolab_home,
+      dest: V.fairdolab_home,
       update: false,
     },
     diff: false,
@@ -21,14 +21,14 @@ export default [
   {
     name: "Create docker-compose.yml",
     template: {
-      dest: fairdolab_home,
+      dest: V.fairdolab_home,
       src: "docker-compose.yml",
     },
   },
   {
     name: "Build and start",
     docker_compose: {
-      project_src: fairdolab_home,
+      project_src: V.fairdolab_home,
       build: true,
     },
   },

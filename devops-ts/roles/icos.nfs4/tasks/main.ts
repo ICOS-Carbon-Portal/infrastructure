@@ -1,4 +1,4 @@
-import { nfs4_interface } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { item } from "../../../lib/builtins.ts";
 import { iff, pct, tmpl } from "../../../lib/template.ts";
@@ -13,11 +13,11 @@ export default [
   },
   {
     name: "Allow nfs through firewall",
-    when: truthy(nfs4_interface),
+    when: truthy(V.nfs4_interface),
     iptables_raw: {
       name: "allow_nfs4",
       rules: tmpl`-A INPUT ${
-        iff(nfs4_interface, pct("-i %s", nfs4_interface), "")
+        iff(V.nfs4_interface, pct("-i %s", V.nfs4_interface), "")
       } -p tcp --dport 2049 -j ACCEPT`,
     },
   },

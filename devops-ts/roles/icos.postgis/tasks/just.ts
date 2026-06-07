@@ -1,4 +1,4 @@
-import { postgis_home } from "../_ctx.ts";
+import { V } from "../_ctx.ts";
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { register } from "../../../lib/register.ts";
 import { tmpl } from "../../../lib/template.ts";
@@ -11,7 +11,7 @@ export default [
     name: "Copy justfile",
     template: {
       src: "justfile",
-      dest: tmpl`${postgis_home}/`,
+      dest: tmpl`${V.postgis_home}/`,
       mode: "+x",
       variable_start_string: "((",
       variable_end_string: "))",
