@@ -14,6 +14,7 @@ new_synonyms = [
     ["observation", "measurement"],
     ["join", "joining"],
     ["Czechia", "Czech Republic"],
+    ["cite", "citation", "citing"]
     # Abbreviations
     ["14C", "radiocarbon"],
     ["ATC", "Atmosphere Thematic Centre"],
