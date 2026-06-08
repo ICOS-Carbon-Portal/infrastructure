@@ -9,7 +9,11 @@
 // output has the same set of .yml files as devops. Pass --rendered-only to emit
 // just the rendered files (assets/ then not needed at all).
 //
-//   deno run --allow-read --allow-write render-all.ts [outdir] [--rendered-only]
+// Playbooks are rendered by running each as its own process (--allow-run), so
+// their module-level variable usage stays isolated; roles/data are imported and
+// rendered in-process.
+//
+//   deno run --allow-read --allow-write --allow-env --allow-run render-all.ts [outdir] [--rendered-only]
 //   deno task render-all ../devops-rendered
 import { render } from "./lib/ansible/render.ts";
 import { collectUnits } from "./lib/units.ts";
@@ -47,12 +51,30 @@ await Deno.mkdir(outDir, { recursive: true });
 
 const units = await collectUnits();
 
+/**
+ * Render a playbook by running its module as its own process: each playbook is
+ * self-executable and prints its YAML to stdout (see lib/ansible/playbook.ts).
+ * Running it in isolation is the point — module-level variable usage stays
+ * scoped to the one playbook instead of leaking across a shared import graph.
+ */
+async function renderPlaybook(ts: URL): Promise<string> {
+  const { success, stdout, stderr } = await new Deno.Command(Deno.execPath(), {
+    args: ["run", "--allow-read", "--allow-env", ts.href],
+    stdout: "piped",
+    stderr: "piped",
+  }).output();
+  if (!success) throw new Error(new TextDecoder().decode(stderr).trim());
+  return new TextDecoder().decode(stdout);
+}
+
 let rendered = 0;
 const failures: string[] = [];
 for (const unit of units) {
   try {
-    const mod = await import(unit.ts.href);
-    await writeOut(unit.rel, await render(mod.default));
+    const text = unit.kind === "playbook"
+      ? await renderPlaybook(unit.ts)
+      : await render((await import(unit.ts.href)).default);
+    await writeOut(unit.rel, text);
     rendered++;
   } catch (e) {
     failures.push(`${unit.label}: ${e instanceof Error ? e.message : e}`);
@@ -62,27 +84,27 @@ for (const unit of units) {
 // Copy the vendored un-portable .yml (assets/) verbatim to complete the mirror.
 // Sourced from assets/, so no devops/ dependency.
 let copied = 0;
-if (!renderedOnly) {
-  async function walk(dir: URL, rel: string) {
-    let entries: Deno.DirEntry[] = [];
-    try {
-      for await (const e of Deno.readDir(dir)) entries.push(e);
-    } catch {
-      return; // assets/ not vendored yet
-    }
-    for (const e of entries) {
-      const childRel = rel ? `${rel}/${e.name}` : e.name;
-      if (e.isDirectory) {
-        await walk(new URL(`${e.name}/`, dir), childRel);
-      } else if (e.isFile && e.name.endsWith(".yml")) {
-        await writeOut(
-          childRel,
-          await Deno.readTextFile(new URL(childRel, assetsDir)),
-        );
-        copied++;
-      }
+async function walk(dir: URL, rel: string) {
+  let entries: Deno.DirEntry[] = [];
+  try {
+    for await (const e of Deno.readDir(dir)) entries.push(e);
+  } catch {
+    return; // assets/ not vendored yet
+  }
+  for (const e of entries) {
+    const childRel = rel ? `${rel}/${e.name}` : e.name;
+    if (e.isDirectory) {
+      await walk(new URL(`${e.name}/`, dir), childRel);
+    } else if (e.isFile && e.name.endsWith(".yml")) {
+      await writeOut(
+        childRel,
+        await Deno.readTextFile(new URL(childRel, assetsDir)),
+      );
+      copied++;
     }
   }
+}
+if (!renderedOnly) {
   await walk(assetsDir, "");
 }
 

@@ -1,8 +1,8 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { pattern } from "../lib/hosts.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     // Space-separated host pattern: "fsicos2 fsicos3 cdb".
     hosts: pattern("fsicos2", "fsicos3", "cdb"),
@@ -10,4 +10,4 @@ export default [
       role("icos.lxd_server"),
     ],
   },
-] satisfies Playbook;
+]);

@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { item, omit } from "../lib/builtins.ts";
 import { loopOverVar } from "../lib/loop.ts";
 import { icosdata_bind_mounts, icosdata_mkdirs } from "../lib/paramvars.ts";
@@ -9,7 +9,7 @@ import {
   tmpl,
 } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   // ZFS
   {
     hosts: ["fsicos3"],
@@ -151,4 +151,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

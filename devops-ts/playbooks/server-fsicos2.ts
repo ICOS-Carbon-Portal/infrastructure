@@ -1,9 +1,9 @@
 // Upgrade certbot
 //   icos play fsicos2 nginx_certbot -ecertbot_state=latest
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     roles: [
@@ -14,4 +14,4 @@ export default [
       role("icos.nfs4").tags("nfs"),
     ],
   },
-] satisfies Playbook;
+]);

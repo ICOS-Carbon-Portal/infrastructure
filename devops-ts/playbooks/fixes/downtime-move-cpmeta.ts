@@ -1,4 +1,4 @@
-import { type Playbook } from "../../lib/ansible/play.ts";
+import { playbook } from "../../lib/ansible/playbook.ts";
 import { role } from "../../lib/ansible/role.ts";
 import { item } from "../../lib/builtins.ts";
 import {
@@ -10,7 +10,7 @@ import { cpmeta_home } from "../../lib/sharedvars.ts";
 import { tmpl } from "../../lib/vars.ts";
 import { vault_rdflog_rep_pass } from "../../lib/vaultvars.ts";
 
-export default [
+export default playbook(import.meta, [
   // ### FSICOS2 ###
   {
     hosts: "fsicos2",
@@ -197,4 +197,4 @@ export default [
       }).tags("cpmeta"),
     ],
   },
-] satisfies Playbook;
+]);

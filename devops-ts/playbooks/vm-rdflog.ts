@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { rdflog_vm_name } from "../lib/paramvars.ts";
 
@@ -6,7 +6,7 @@ import { rdflog_vm_name } from "../lib/paramvars.ts";
 //   icos play rdflog pgrep
 
 // RDFLOG
-export default [
+export default playbook(import.meta, [
   {
     hosts: "rdflog_server",
     tags: "rdflog",
@@ -37,4 +37,4 @@ export default [
       role("icos.pgrep").tags("pgrep"),
     ],
   },
-] satisfies Playbook;
+]);

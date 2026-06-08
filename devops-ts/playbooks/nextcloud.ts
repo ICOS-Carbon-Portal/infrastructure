@@ -6,7 +6,7 @@
 //
 // Deploy new version of onlyoffic
 //   icos play nextcloud onlyoffice
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { nextcloud_home } from "../lib/sharedvars.ts";
 import { tmpl } from "../lib/vars.ts";
@@ -16,7 +16,7 @@ import {
   vault_onlyoffice_secret,
 } from "../lib/vaultvars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     roles: [
@@ -50,4 +50,4 @@ R /docker/nextcloud/volumes
       }).tags("bbclient"),
     ],
   },
-] satisfies Playbook;
+]);

@@ -1,11 +1,10 @@
 // NOTE: This is an Ansible Galaxy requirements file, NOT a playbook. It renders
-// to a top-level YAML *mapping* (`collections: [...]`), whereas the renderer in
-// lib/ansible/render.ts only emits a top-level *sequence* of plays. The data below is
-// faithful to ../devops/requirements.yml, but `render()` cannot currently emit a
-// mapping (its `for (const play of clean)` loop requires an array), so this file
-// cannot be made to verify OK without a renderer change. See NOTES in the report.
+// to a top-level YAML *mapping* (`collections: [...]`) rather than a sequence of
+// plays, so it can't use the typed `playbook()` wrapper. It self-renders via the
+// same underlying `renderToStdout` helper instead.
+import { renderToStdout } from "../lib/ansible/playbook.ts";
 
-export default {
+const requirements = {
   collections: [
     { name: "community.general", version: ">=9.0.0" },
     { name: "ansible.posix" },
@@ -15,3 +14,7 @@ export default {
     { name: "community.crypto" },
   ],
 };
+
+renderToStdout(import.meta, requirements);
+
+export default requirements;

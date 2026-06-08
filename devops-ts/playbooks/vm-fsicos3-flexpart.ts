@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { jupyter_domains } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
@@ -10,7 +10,7 @@ import {
 
 const _lxd = register("_lxd");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -192,4 +192,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

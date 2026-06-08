@@ -1,9 +1,9 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { bbclient_home } from "../lib/globals.ts";
 import { tmpl } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -36,4 +36,4 @@ echo "Compacting"
       }).tags("bbclient"),
     ],
   },
-] satisfies Playbook;
+]);

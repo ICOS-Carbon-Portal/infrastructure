@@ -4,13 +4,13 @@
 // Redeploy backup script and bbclient
 //   icos play postgis backup
 
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { postgis_admin_pass } from "../lib/globals.ts";
 import { loopOverVar } from "../lib/loop.ts";
 import { postgis_cplog_users, postgresql_hba_file } from "../lib/paramvars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "postgis_server",
     roles: [
@@ -105,4 +105,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

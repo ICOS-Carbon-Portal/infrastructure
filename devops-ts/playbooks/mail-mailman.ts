@@ -10,7 +10,7 @@
 // Redeploy proxy configuration
 //   icos play mailman proxy
 
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { mailman_home } from "../lib/sharedvars.ts";
 import { tmpl } from "../lib/vars.ts";
@@ -19,7 +19,7 @@ import {
   vault_mailman_rest_pass,
 } from "../lib/vaultvars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -59,4 +59,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

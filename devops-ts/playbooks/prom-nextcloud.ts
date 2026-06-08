@@ -1,6 +1,6 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     tasks: [
@@ -19,4 +19,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

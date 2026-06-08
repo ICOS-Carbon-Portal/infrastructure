@@ -9,7 +9,13 @@ const dataDir = new URL("data/", root);
 const origDir = new URL("../devops/", root);
 
 /** A renderable unit: its TS module, the original YAML, and the devops-relative path. */
-export type Unit = { label: string; ts: URL; yml: URL; rel: string };
+export type Unit = {
+  kind: "playbook" | "role" | "data";
+  label: string;
+  ts: URL;
+  yml: URL;
+  rel: string;
+};
 
 /**
  * Playbooks: playbooks/<rel>.ts → <rel>.yml (recurses, so playbooks/fixes/<n>.ts
@@ -25,6 +31,7 @@ async function collectPlaybooks(): Promise<Unit[]> {
       } else if (e.isFile && e.name.endsWith(".ts")) {
         const base = childRel.replace(/\.ts$/, "");
         units.push({
+          kind: "playbook",
           label: base,
           ts: new URL(e.name, dir),
           yml: new URL(`${base}.yml`, origDir),
@@ -56,6 +63,7 @@ async function collectRoles(): Promise<Unit[]> {
           const base = f.name.replace(/\.ts$/, "");
           const rel = `roles/${role.name}/${sub}/${base}.yml`;
           units.push({
+            kind: "role",
             label: `${role.name}/${sub}/${base}`,
             ts: new URL(f.name, subDir),
             yml: new URL(rel, origDir),
@@ -85,6 +93,7 @@ async function collectData(): Promise<Unit[]> {
       } else if (e.isFile && e.name.endsWith(".ts")) {
         const base = childRel.replace(/\.ts$/, "");
         units.push({
+          kind: "data",
           label: `data/${base}`,
           ts: new URL(e.name, dir),
           yml: new URL(`${base}.yml`, origDir),

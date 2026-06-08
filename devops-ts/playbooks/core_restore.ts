@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import {
   corebackup_host,
   postgis_backup_location,
@@ -9,7 +9,7 @@ import {
   rdflog_user,
 } from "../lib/globals.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "core_host",
     connection: "local",
@@ -64,4 +64,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

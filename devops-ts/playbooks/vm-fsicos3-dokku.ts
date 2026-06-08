@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import {
   dokku_redirect_domains,
@@ -6,7 +6,7 @@ import {
 } from "../lib/paramvars.ts";
 import { concat } from "../lib/template.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -61,4 +61,4 @@ export default [
       role("icos.dokku").tags("dokku"),
     ],
   },
-] satisfies Playbook;
+]);

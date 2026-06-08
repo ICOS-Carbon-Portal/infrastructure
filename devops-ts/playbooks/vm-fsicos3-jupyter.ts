@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { item } from "../lib/builtins.ts";
 import { jupyter_domains } from "../lib/paramvars.ts";
@@ -18,7 +18,7 @@ const _lxd = register("_lxd");
 // Redeploy jusers:
 //   icos play jupyter jupyter_jusers -evirtualenv_recreate=True
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -187,4 +187,4 @@ export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
       },
     ],
   },
-] satisfies Playbook;
+]);

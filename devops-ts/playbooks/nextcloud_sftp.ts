@@ -1,6 +1,6 @@
 // display instructions
 //   run nextcloud_sftp.yml howto
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { loopOverVar } from "../lib/loop.ts";
 import {
   groupfolder_dir,
@@ -17,7 +17,7 @@ import {
   vault_pw_salt,
 } from "../lib/vaultvars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -260,4 +260,4 @@ sftp -P 60022 -oPreferredAuthentications=password {{ sftp_user }}@fsicos2.icos-c
       },
     ],
   },
-] satisfies Playbook;
+]);

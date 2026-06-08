@@ -6,7 +6,7 @@
 //
 // Deploy filedrop website
 //  icos play callisto filedrop -lfsicos3
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { callisto_ip } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
@@ -24,7 +24,7 @@ import {
 
 const _lxd = register("_lxd");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -253,4 +253,4 @@ echo "Compacting"
       },
     ],
   },
-] satisfies Playbook;
+]);

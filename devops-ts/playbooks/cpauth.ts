@@ -11,12 +11,12 @@
 //
 // Deploy bbclient and cpauth's backup script
 //   $ icos play cpauth bbclient cpauth_backup
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { cpauth_domains } from "../lib/globals.ts";
 import { cpauth_cert_name } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     roles: [
@@ -35,4 +35,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

@@ -2,12 +2,12 @@
 //  Each host having been installed with docker etc.
 //  Each host being part of the nebula network.
 
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { stilt_input_dir } from "../lib/paramvars.ts";
 import { isDefined, stilt_input_mount } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     handlers: [
@@ -66,4 +66,4 @@ export default [
       role("icos.stiltcluster").tags("stiltcluster"),
     ],
   },
-] satisfies Playbook;
+]);

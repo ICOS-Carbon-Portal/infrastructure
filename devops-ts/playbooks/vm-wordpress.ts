@@ -1,8 +1,8 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { wordpress_domains } from "../lib/paramvars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -65,4 +65,4 @@ if ( $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' )
       },
     ],
   },
-] satisfies Playbook;
+]);

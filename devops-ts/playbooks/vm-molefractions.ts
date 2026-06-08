@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { username } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
@@ -6,7 +6,7 @@ import { tmpl } from "../lib/vars.ts";
 
 const _lxd = register("_lxd");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     pre_tasks: [
@@ -139,4 +139,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

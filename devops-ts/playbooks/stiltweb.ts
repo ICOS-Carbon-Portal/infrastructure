@@ -1,7 +1,7 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "core_server",
     tags: "server",
@@ -23,4 +23,4 @@ export default [
       role("icos.stiltweb").tags("stiltweb"),
     ],
   },
-] satisfies Playbook;
+]);

@@ -1,8 +1,8 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { root_keys } from "../lib/globals.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "all",
     roles: [
@@ -21,4 +21,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

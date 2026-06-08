@@ -1,7 +1,7 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos4",
     roles: [
@@ -70,4 +70,4 @@ hosts allow = fsicos2.nebula,fsicos3.nebula,icos1.nebula
       }).tags("rsyncd"),
     ],
   },
-] satisfies Playbook;
+]);

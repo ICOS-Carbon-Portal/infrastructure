@@ -1,7 +1,7 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "cupcake",
     roles: [
@@ -11,4 +11,4 @@ export default [
       role("icos.docker2").tags("docker"),
     ],
   },
-] satisfies Playbook;
+]);

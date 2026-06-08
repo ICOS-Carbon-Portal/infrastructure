@@ -5,7 +5,7 @@
     "check-braces": "deno run --allow-read check-braces.ts",
     "verify": "deno run --allow-read --allow-env verify.ts",
     "render": "deno run --quiet --allow-all render.ts",
-    "render-all": "deno run --allow-read --allow-write --allow-env render-all.ts",
+    "render-all": "deno run --allow-read --allow-write --allow-env --allow-run render-all.ts",
     "gen-contexts": "deno run --allow-read --allow-write --allow-env gen-contexts.ts",
     "gen-bindings": "deno run --allow-read --allow-write gen-bindings.ts",
     "gen-data": "deno run --allow-read --allow-write --allow-env gen-data.ts",

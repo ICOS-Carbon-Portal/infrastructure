@@ -1,13 +1,13 @@
 // This playbook can be used to:
 //   1. Find out which hosts run a specific distribution of ubuntu.
 //   2. Dist-upgrade those hosts.
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { ansible_distribution_release, item } from "../lib/builtins.ts";
 import { docker_prevent_upgrade } from "../lib/sharedvars.ts";
 import { iff } from "../lib/template.ts";
 import { tmpl, truthy } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "all",
     tasks: [
@@ -87,4 +87,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

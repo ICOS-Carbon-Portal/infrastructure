@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { amalthea_ip } from "../lib/paramvars.ts";
 import { register } from "../lib/register.ts";
@@ -8,7 +8,7 @@ import { vault_amalthea_ssh_keys } from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -116,4 +116,4 @@ Host {{ inventory_hostname }}
       },
     ],
   },
-] satisfies Playbook;
+]);

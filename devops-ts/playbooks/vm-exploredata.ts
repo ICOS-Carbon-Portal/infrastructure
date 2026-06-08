@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { ansible_check_mode } from "../lib/builtins.ts";
 import { exploredata_ip } from "../lib/paramvars.ts";
@@ -9,7 +9,7 @@ import { vault_exploredata_password } from "../lib/vaultvars.ts";
 
 const _lxd = register("_lxd");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -145,4 +145,4 @@ export default [
       role("icos.node_exporter").tags("node_exporter"),
     ],
   },
-] satisfies Playbook;
+]);

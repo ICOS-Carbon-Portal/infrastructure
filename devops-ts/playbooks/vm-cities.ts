@@ -1,6 +1,6 @@
 // Create the ICOS Cities VM.
 
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { item } from "../lib/builtins.ts";
 import { cities_datafast_path } from "../lib/globals.ts";
@@ -13,7 +13,7 @@ import {
 } from "../lib/paramvars.ts";
 import { tmpl } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -103,4 +103,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

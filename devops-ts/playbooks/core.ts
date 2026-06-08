@@ -1,4 +1,4 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import {
   cpauth_domains,
@@ -8,7 +8,7 @@ import {
 } from "../lib/globals.ts";
 import { isDefined, jre_apt_package } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "core_server",
     tasks: [
@@ -77,7 +77,7 @@ export default [
       ),
     ],
   },
-] satisfies Playbook;
+]);
 
 // After this playbook has ran, deploy the jar-files of cpmeta, cpdata and (if
 // needed) cpauth and doi using sbt

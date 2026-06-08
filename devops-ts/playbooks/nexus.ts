@@ -1,9 +1,9 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { nexus_home } from "../lib/sharedvars.ts";
 import { tmpl } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     roles: [
@@ -16,4 +16,4 @@ export default [
       }).tags("bbclient"),
     ],
   },
-] satisfies Playbook;
+]);

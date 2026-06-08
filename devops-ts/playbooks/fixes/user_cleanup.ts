@@ -11,12 +11,12 @@
 //
 // Remove keys
 //  icos play user_cleanup remove
-import { type Playbook } from "../../lib/ansible/play.ts";
+import { playbook } from "../../lib/ansible/playbook.ts";
 import { item } from "../../lib/builtins.ts";
 import { pattern } from "../../lib/hosts.ts";
 import { lockuser, remove_keys } from "../../lib/paramvars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: pattern("physical_servers", "fsicos2_vms", "fsicos3_vms"),
     vars: {
@@ -52,4 +52,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

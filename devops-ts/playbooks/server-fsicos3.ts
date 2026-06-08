@@ -1,10 +1,10 @@
 // icos play fsicos3 nginx_certbot
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { ansible_check_mode } from "../lib/builtins.ts";
 import { not } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     roles: [
@@ -15,4 +15,4 @@ export default [
       role("ops.zfs").tags("zfs"),
     ],
   },
-] satisfies Playbook;
+]);

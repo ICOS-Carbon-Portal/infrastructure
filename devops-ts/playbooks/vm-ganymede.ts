@@ -7,7 +7,7 @@
 //
 // Recreate virtual environments, i.e after do-release-upgrade:
 //   icos play ganymede jbuild -evirtualenv_recreate=True
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { loopOverVar } from "../lib/loop.ts";
 import {
@@ -28,7 +28,7 @@ import {
 
 const _lxd = register("_lxd");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos3",
     vars: {
@@ -189,4 +189,4 @@ export default [
       ),
     ],
   },
-] satisfies Playbook;
+]);

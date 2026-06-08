@@ -1,9 +1,9 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { lxd_vm_name } from "../lib/paramvars.ts";
 import { nginxsite_name } from "../lib/sharedvars.ts";
 import { tmpl } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -23,4 +23,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);

@@ -1,7 +1,7 @@
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     vars: {
@@ -57,4 +57,4 @@ export default [
       //     - icos1
     ],
   },
-] satisfies Playbook;
+]);

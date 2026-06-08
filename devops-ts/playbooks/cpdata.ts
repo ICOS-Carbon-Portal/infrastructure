@@ -2,12 +2,12 @@
 // icos play cpdata cpdata_config
 //
 // Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
-import { type Playbook } from "../lib/ansible/play.ts";
+import { playbook } from "../lib/ansible/playbook.ts";
 import { role } from "../lib/ansible/role.ts";
 import { cpdata_domains } from "../lib/globals.ts";
 import { cpdata_cert_name } from "../lib/vars.ts";
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "fsicos2",
     roles: [
@@ -28,4 +28,4 @@ export default [
       role("icos.dataold").tags("dataold"),
     ],
   },
-] satisfies Playbook;
+]);

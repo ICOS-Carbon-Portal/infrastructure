@@ -1,4 +1,4 @@
-import { type Playbook } from "../../lib/ansible/play.ts";
+import { playbook } from "../../lib/ansible/playbook.ts";
 import { new_name, old_name, ssh_port } from "../../lib/paramvars.ts";
 import { register } from "../../lib/register.ts";
 import { eq, hostvar, ne, notIn, tmpl } from "../../lib/vars.ts";
@@ -6,7 +6,7 @@ import { eq, hostvar, ne, notIn, tmpl } from "../../lib/vars.ts";
 const ip = register("ip");
 const r = register("r");
 
-export default [
+export default playbook(import.meta, [
   {
     hosts: "cdb",
     vars: {
@@ -75,4 +75,4 @@ export default [
       },
     ],
   },
-] satisfies Playbook;
+]);
