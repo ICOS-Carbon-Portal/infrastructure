@@ -1,0 +1,15 @@
+- name: Read last 50 lines of populate log
+  command: tail -50 {{ cpmeta_home }}/populate.log
+  register: _populate_log
+  changed_when: false
+  ignore_errors: true
+
+- name: Show populate log
+  debug:
+    msg: "{{ _populate_log.stdout_lines }}"
+  when: _populate_log is succeeded
+
+- name: No log file found
+  debug:
+    msg: "No populate log found at {{ cpmeta_home }}/populate.log"
+  when: _populate_log is not succeeded

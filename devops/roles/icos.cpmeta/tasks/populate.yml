@@ -1,0 +1,47 @@
+- name: Check for existing populate job
+  slurp:
+    src: "{{ cpmeta_home }}/.populate_job_id"
+  register: _existing_job_id
+  ignore_errors: true
+
+- name: Check existing populate job status
+  async_status:
+    jid: "{{ _existing_job_id.content | b64decode | trim }}"
+  become: true
+  become_user: "{{ cpmeta_user }}"
+  register: _existing_job_status
+  failed_when: false
+  when: _existing_job_id is succeeded
+
+- name: Fail if a populate job is already running
+  fail:
+    msg: >-
+      A populate job is already running (job ID: {{ _existing_job_id.content | b64decode | trim }}).
+      Check status with: ansible-playbook cpmeta.yml -t cpmeta_populate_status
+  when:
+    - _existing_job_id is succeeded
+    - _existing_job_status is not skipped
+    - not (_existing_job_status.finished | default(true))
+
+- name: Populate triplestore (async)
+  shell: java -jar cpmeta.jar populateTriplestore > populate.log 2>&1
+  args:
+    chdir: "{{ cpmeta_home }}"
+  become: true
+  become_user: "{{ cpmeta_user }}"
+  async: 86400
+  poll: 0
+  register: _populate_job
+
+- name: Save job ID to file
+  copy:
+    content: "{{ _populate_job.ansible_job_id }}"
+    dest: "{{ cpmeta_home }}/.populate_job_id"
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
+
+- name: Show job ID
+  debug:
+    msg: >-
+      Triplestore population started with job ID {{ _populate_job.ansible_job_id }}.
+      Check status with: ansible-playbook cpmeta.yml -t cpmeta_populate_status

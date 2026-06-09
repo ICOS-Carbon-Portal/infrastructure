@@ -1,0 +1,12 @@
+services:
+  virtuoso:
+    # Most specific tag of recent opensource virtuoso version
+    image: openlink/virtuoso-opensource-7:7.2.17
+    environment:
+      DBA_PASSWORD: "{{ virtuoso_dba_pass }}"
+    ports:
+      - "{{ virtuoso_bind_host }}:{{ virtuoso_http_port }}:8890"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "{{ virtuoso_home }}/volumes/virtuoso.db:/database"
+    restart: unless-stopped

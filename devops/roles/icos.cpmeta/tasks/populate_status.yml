@@ -1,0 +1,25 @@
+- name: Read saved job ID
+  slurp:
+    src: "{{ cpmeta_home }}/.populate_job_id"
+  register: _job_id_file
+
+- import_tasks: populate_log.yml
+
+- name: Check populate job status
+  async_status:
+    jid: "{{ _job_id_file.content | b64decode | trim }}"
+  become: true
+  become_user: "{{ cpmeta_user }}"
+  register: _populate_status
+  failed_when: false
+
+- name: Show populate job status
+  debug:
+    msg: >-
+      {% if _populate_status.finished is defined and _populate_status.finished %}
+      Triplestore population FINISHED (rc={{ _populate_status.rc | default('?') }}).
+      {% elif _populate_status.failed is defined and _populate_status.failed %}
+      Triplestore population FAILED: {{ _populate_status.msg | default('unknown error') }}
+      {% else %}
+      Triplestore population is STILL RUNNING.
+      {% endif %}

@@ -1,0 +1,14 @@
+- name: Stop populate process
+  command: pkill -f 'java -jar cpmeta.jar populateTriplestore'
+  register: _pkill
+  failed_when: _pkill.rc not in [0, 1]
+  changed_when: _pkill.rc == 0
+
+- name: Show result
+  debug:
+    msg: >-
+      {% if _pkill.rc == 0 %}
+      Populate process killed.
+      {% else %}
+      No populate process found.
+      {% endif %}
