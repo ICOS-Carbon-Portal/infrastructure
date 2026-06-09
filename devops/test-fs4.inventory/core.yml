@@ -7,7 +7,8 @@ all:
     # for the server (to set up proxy)
     cpauth_icos_domain: cpauth.fs4vm.icos-cp.eu
 
-    cpmeta_icos_domain: meta.fs4vm.icos-cp.eu
+    cpmeta_icos_domain: meta-virtuoso.fs4vm.icos-cp.eu
+    cpmeta_port: 9095
 
     cpdata_icos_domain: data.fs4vm.icos-cp.eu
 
