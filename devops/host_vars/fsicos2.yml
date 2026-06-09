@@ -13,6 +13,52 @@ fail2ban_config_files:
       [sshd]
       banaction = iptables-allports
 
+
+  - dest: /etc/fail2ban/filter.d/nginx-webshell-scan.conf
+    content: |
+      [Definition]
+      # Matches web shell scanning — single PHP files in root
+      # Common shell names: wso, c99, r57, b374k, webshell etc
+      # Pattern: GET /[short-name].php returning 4xx or 5xx
+      failregex = ^<HOST> .* "GET /[a-zA-Z0-9_\-]{1,20}\.php(\?[^ ]*)? HTTP/[0-9\.]+" (4[0-9][0-9]|5[0-9][0-9]) .*$
+                  ^<HOST> .* "POST /[a-zA-Z0-9_\-]{1,20}\.php(\?[^ ]*)? HTTP/[0-9\.]+" (4[0-9][0-9]|5[0-9][0-9]) .*$
+
+      ignoreregex =
+
+  - dest: /etc/fail2ban/filter.d/nginx-wordpress-bruteforce.conf
+    content: |
+      [Definition]
+      failregex = ^<HOST> .* "POST /wp-login.php HTTP.*" 5[0-9][0-9]
+                  ^<HOST> .* "POST /wp-admin/index.php HTTP.*" 5[0-9][0-9]
+      ignoreregex =
+
+
+  - dest: /etc/fail2ban/jail.d/nginx-webshell-scan.conf
+    content: |
+      [nginx-webshell-scan]
+      enabled   = true
+      port      = http,https
+      filter    = nginx-webshell-scan
+      logpath   = /var/log/nginx/access.log
+      maxretry  = 5
+      findtime  = 60
+      bantime   = 604800
+      action    = iptables-multiport[name=nginx-webshell-scan, port="http,https"]
+
+
+  - dest: /etc/fail2ban/jail.d/nginx-wordpress-bruteforce.conf
+    content: |
+      [nginx-wordpress-bruteforce]
+      enabled  = true
+      port     = http,https
+      filter   = nginx-wordpress-bruteforce
+      logpath  = /var/log/nginx/wordpress.log
+      maxretry = 5
+      findtime = 3600
+      bantime  = 604800
+      action   = iptables-multiport[name=nginx-wordpress-bruteforce, port="http,https"]
+
+
   - dest: /etc/fail2ban/jail.local
     content: |
       [DEFAULT]
@@ -184,10 +230,13 @@ icosdata_exports: |
   /disk/data/nextcloud/data/__groupfolders/27 fsicos3(ro,no_root_squash,no_subtree_check)
 
   /disk/data/flexextract            fsicos3(rw,no_subtree_check)
+  /disk/data/flexextract            fsicos4-flexpart.nebula(rw,no_subtree_check)
   /disk/data/project                fsicos3(ro,no_subtree_check)
   /disk/data/flexpart/meteo         fsicos3(ro,no_subtree_check)
+  /disk/data/flexpart/meteo         fsicos4-flexpart.nebula(ro,no_subtree_check)
   /disk/data/dataAppStorage         fsicos3(ro,no_subtree_check)
   /disk/data/stiltweb               fsicos3(ro,no_subtree_check)
+  /disk/data/stiltweb               fsicos4-flexpart.nebula(ro,no_subtree_check)
   /disk/data/obspack                fsicos3(ro,no_subtree_check)
   /disk/data/stilt                  fsicos3(ro,no_subtree_check)
   /disk/data/common/netcdf/dataDemo fsicos3(rw)
@@ -246,3 +295,5 @@ icosdata_nfs_mounts:
   - path: /data/flexpart/output
     src: fsicos3.nebula:/data/flexpart/output
     opts: "ro,soft"
+
+
