@@ -2,13 +2,20 @@ jupyter_home: /docker/jupyter
 jupyter_port: 8000
 jupyter_jusers_enable: false
 
+# Optional local directory of custom hub templates (login.html, about.html,
+# etc). When set, its contents are copied into the hub's template_paths dir.
+# Left empty so consuming playbooks opt in individually.
+jupyter_hub_templates_src: ""
+
 jupyter_hub_config_defaults:
   user_volumes: {}
+  extra_volumes: {}
+  collaborative: false
   admin_users: []
-  image: 'registry.icos-cp.eu/icosbase'
+  image: 'registry.icos-cp.eu/stratos.icosbase:0.1.1'
   # If specified, users will be presented with a form from which they can
   # select an image to run.
-  # allowed_images: {'python3': 'registry.icos-cp.eu/icosbase'}
+  # allowed_images: {'python3': 'registry.icos-cp.eu/stratos.icosbase:0.1.1'}
 
 jupyter_hub_config: {}
 jusers_home: /opt/jusers

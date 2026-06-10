@@ -32,6 +32,12 @@
     conf: "{{ jupyter_hub_config_defaults | combine(jupyter_hub_config) }}"
   register: _config
 
+- name: Copy custom hub templates
+  copy:
+    src: "{{ jupyter_hub_templates_src }}/"
+    dest: "{{ jupyter_home }}/jupyterhub_home/templates/"
+  when: jupyter_hub_templates_src | length > 0
+
 - name: Start proxy and hub
   community.docker.docker_compose_v2:
     project_src: "{{ jupyter_home }}"
