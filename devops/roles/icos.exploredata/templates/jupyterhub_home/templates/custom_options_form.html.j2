@@ -34,8 +34,8 @@
 {% for n in exploredata_notebooks if n.section == section.key %}
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="env"
-                           id="{{ n.slug }}" value="{{ n.image }}:{{ n.tag }}&nb={{ n.slug }}">
-                    <label class="form-check-label" for="{{ n.slug }}"{% if n.tooltip %} data-bs-toggle="tooltip" data-bs-placement="right"
+                           id="{{ n.id }}" value="{{ n.image }}:{{ n.tag }}&nb={{ n.id }}">
+                    <label class="form-check-label" for="{{ n.id }}"{% if n.tooltip %} data-bs-toggle="tooltip" data-bs-placement="right"
                            title="{{ n.tooltip }}"{% endif %}>
                         {{ n.label }}{% if n.doi is defined %}
                         (<a href="https://doi.org/{{ n.doi }}" target="_blank">{{ n.doi }}</a>){% endif %}</label>

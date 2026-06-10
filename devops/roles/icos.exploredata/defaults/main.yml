@@ -15,10 +15,10 @@ exploredata_max_notebooks: 50
 exploredata_images:
   - key: icosbase
     image: icosbase
-    tags: [0.1.3, 0.1.0]
+    tags: [0.1.1, 0.1.0]
   - key: examples
     image: examples
-    tags: [0.1.4]
+    tags: [0.1.1]
   - key: icos-notebooks
     image: icos-notebooks
     tags: [0.1.0]
@@ -69,7 +69,7 @@ exploredata_sections:
 
 exploredata_notebooks:
   # Explore ICOS Data
-  - slug: noaa-curve-fit
+  - id: noaa-curve-fit
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -82,7 +82,7 @@ exploredata_notebooks:
       follow the filtering, fitting, and growth-rate steps to reproduce
       the full workflow.
 
-  - slug: atm-obs-stats
+  - id: atm-obs-stats
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -94,7 +94,7 @@ exploredata_notebooks:
       Explore ICOS atmosphere observations through summary statistics and
       interactive visuals, and compare results across different stations.
 
-  - slug: atm-station-char
+  - id: atm-station-char
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -107,7 +107,7 @@ exploredata_notebooks:
       along with emissions, biogenic-flux, and ancillary data, and
       analyze any point available in the STILT domain.
 
-  - slug: fossil-co2
+  - id: fossil-co2
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -121,18 +121,18 @@ exploredata_notebooks:
       concentration time series for applicable stations.
 
   # Examples
-  - slug: ex1
+  - id: ex1
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex1 - Access a Single Dataset.ipynb"
     section: examples
     label: "ex1 - Access a Single Dataset"
     tooltip: >-
       Access ICOS observations and extract data and metadata information.
 
-  - slug: ex1a
+  - id: ex1a
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex1a - Work with Atmospheric Data.ipynb"
     section: examples
     label: "ex1a - Work with Atmospheric Data"
@@ -140,9 +140,9 @@ exploredata_notebooks:
       Access atmospheric ICOS observations and extract data and metadata
       information.
 
-  - slug: ex1b
+  - id: ex1b
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex1b - Work with Ecosystem Data.ipynb"
     section: examples
     label: "ex1b - Work with Ecosystem Data"
@@ -150,9 +150,9 @@ exploredata_notebooks:
       Access ecosystem ICOS observations and extract data and metadata
       information.
 
-  - slug: ex1c
+  - id: ex1c
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex1c - Work with Ocean Data.ipynb"
     section: examples
     label: "ex1c - Work with Ocean Data"
@@ -160,9 +160,9 @@ exploredata_notebooks:
       Access oceanic ICOS observations and extract data and metadata
       information.
 
-  - slug: ex2
+  - id: ex2
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex2 - Explore ICOS Stations.ipynb"
     section: examples
     label: "ex2 - Explore ICOS Stations"
@@ -170,9 +170,9 @@ exploredata_notebooks:
       Access, extract, and process data and metadata information for ICOS
       stations.
 
-  - slug: ex3
+  - id: ex3
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex3 - Combine ICOS & PANGAEA Data.ipynb"
     section: examples
     label: "ex3 - Combine ICOS & PANGAEA Data"
@@ -181,17 +181,17 @@ exploredata_notebooks:
       ICOS Carbon Portal and one from PANGAEA, both containing ocean
       observations from Europe to South America.
 
-  - slug: ex4
+  - id: ex4
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex4 - Access Collection Data & Metadata.ipynb"
     section: examples
     label: "ex4 - Access Collection Data & Metadata"
     tooltip: "Access data and metadata of ICOS collections."
 
-  - slug: ex5
+  - id: ex5
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex5 - Query Metadata with SPARQL.ipynb"
     section: examples
     label: "ex5 - Query Metadata with SPARQL"
@@ -199,17 +199,17 @@ exploredata_notebooks:
       Access data and metadata for ICOS stations and observations using
       SPARQL queries.
 
-  - slug: ex6a
+  - id: ex6a
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex6a - Search STILT Stations.ipynb"
     section: examples
     label: "ex6a - Search STILT Stations"
     tooltip: "Search for stations with available STILT model results."
 
-  - slug: ex6b
+  - id: ex6b
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex6b - Animate STILT Footprints.ipynb"
     section: examples
     label: "ex6b - Animate STILT Footprints"
@@ -217,9 +217,9 @@ exploredata_notebooks:
       Search for STILT stations, load modeled data, and create simple
       visualizations and animations.
 
-  - slug: ex6c
+  - id: ex6c
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex6c - Plot STILT Time Series & Footprints.ipynb"
     section: examples
     label: "ex6c - Plot STILT Time Series & Footprints"
@@ -227,9 +227,9 @@ exploredata_notebooks:
       Load STILT time series data and footprints, and create plots and
       maps using Holoviews and Geoviews.
 
-  - slug: ex7
+  - id: ex7
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex7 - Read ObsPack Collections.ipynb"
     section: examples
     label: "ex7 - Read ObsPack Collections"
@@ -237,9 +237,9 @@ exploredata_notebooks:
       Read and explore the European ObsPack compilation and related ICOS
       data products.
 
-  - slug: ex8
+  - id: ex8
     image: examples
-    tag: 0.1.4
+    tag: 0.1.1
     path: "/lab/tree/ex8 - Authenticate for Remote Data Access.ipynb"
     section: examples
     label: "ex8 - Authenticate for Remote Data Access"
@@ -248,7 +248,7 @@ exploredata_notebooks:
       Cities, and SITES data portals.
 
   # Notebooks with DOI
-  - slug: city-char
+  - id: city-char
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -262,7 +262,7 @@ exploredata_notebooks:
       analyses used in the study.
     doi: "10.18160/P8SV-B99F"
 
-  - slug: eco-anomaly
+  - id: eco-anomaly
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -276,7 +276,7 @@ exploredata_notebooks:
       effects from weather, crop cycles, or land-use changes.
     doi: "10.18160/4QPK-2N7W"
 
-  - slug: network-view
+  - id: network-view
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -290,7 +290,7 @@ exploredata_notebooks:
       explore both current, future, or user-defined station networks.
     doi: "10.18160/AMET-9KWT"
 
-  - slug: flask-sampling
+  - id: flask-sampling
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -304,7 +304,7 @@ exploredata_notebooks:
       an automated sampler.
     doi: "10.18160/FSS2-SH26"
 
-  - slug: radiocarbon
+  - id: radiocarbon
     image: icos-notebooks
     tag: 0.1.0
     path: "/lab/tree/icos-jupyter-notebooks/Radiocarbon.ipynb"
@@ -317,7 +317,7 @@ exploredata_notebooks:
     doi: "10.18160/GATA-SGZ5"
 
   # Education
-  - slug: envrifair-ws
+  - id: envrifair-ws
     image: icos-notebooks
     tag: 0.1.0
     path: >-
@@ -328,7 +328,7 @@ exploredata_notebooks:
       ENVRIFAIR Winterschool notebooks showing how to load ICOS data
       products and build interactive maps.
 
-  - slug: otc-workshop
+  - id: otc-workshop
     image: icos-notebooks
     tag: 0.1.0
     path: "/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
@@ -338,7 +338,7 @@ exploredata_notebooks:
       Ocean Thematic Centre workshop exercises on calibrating and
       processing instrument-based oceanic CO₂ measurements.
 
-  - slug: ocean-carbon
+  - id: ocean-carbon
     image: ocean-carbon-course
     tag: 0.1.0
     path: ""
@@ -349,7 +349,7 @@ exploredata_notebooks:
       guiding users through key concepts using interactive analysis and
       real datasets.
 
-  - slug: summer-school
+  - id: summer-school
     image: summer-school
     tag: 0.1.0
     path: ""
@@ -361,7 +361,7 @@ exploredata_notebooks:
       annual ICOS Summer School.
 
   # Classic
-  - slug: classic
+  - id: classic
     image: classic
     tag: 0.1.0
     path: ""

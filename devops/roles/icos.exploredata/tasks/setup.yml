@@ -15,13 +15,13 @@
         item.image) | first).tags
       - item.section in (exploredata_sections | map(attribute='key') | list)
     fail_msg: >-
-      notebook '{{ item.slug }}' references {{ item.image }}:{{ item.tag }}
+      notebook '{{ item.id }}' references {{ item.image }}:{{ item.tag }}
       in section '{{ item.section }}'; the image:tag must be in
       exploredata_images and the section in exploredata_sections.
     quiet: true
   loop: "{{ exploredata_notebooks }}"
   loop_control:
-    label: "{{ item.slug }}"
+    label: "{{ item.id }}"
 
 - name: Copy files
   ansible.builtin.copy:

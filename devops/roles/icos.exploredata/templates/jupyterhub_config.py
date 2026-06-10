@@ -70,7 +70,7 @@ c.Spawner.cpu_limit = 1
 
 notebook_map = {
 {% for n in exploredata_notebooks %}
-    '{{ n.slug }}': '{{ n.path }}',
+    '{{ n.id }}': '{{ n.path }}',
 {% endfor %}
 }
 
