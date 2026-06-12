@@ -16,7 +16,8 @@ all:
     core_host:
       hosts:
         otc-meta:
-          ansible_host: otc-meta
+          ansible_host: fsicos4.icos-cp.eu
+          ansible_port: 60609
           ansible_user: root
 
       vars:
