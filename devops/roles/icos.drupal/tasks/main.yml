@@ -1,28 +1,51 @@
-- name: Check that all parameters are defined
+---
+- name: Check selected website
   fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - website
+    msg: "{{ drupal_website | default('undefined') }} is not a valid website. Valid values: {{ drupal_websites | join(', ') }}"
+  when: drupal_website is undefined or drupal_website is not string or drupal_website not in drupal_websites
   tags: [drupal, drupal_nginx]
 
-- name: Include {{ website }} vars
-  include_vars: "{{ website }}-vars.yml"
+- name: Include {{ drupal_website }} vars
+  include_vars:
+    file: "{{ drupal_website }}-vars.yml"
+    name: drupal_website_vars
   tags: [drupal, drupal_nginx]
 
-- name: Include {{ website }} vault
-  include_vars: "{{ website }}-vault.yml"
+- name: Include {{ drupal_website }} vault
+  include_vars:
+    file: "{{ drupal_website }}-vault.yml"
+    name: drupal_website_vault
   tags: [drupal, drupal_nginx]
 
-- name: Include vars
-  include_vars: drupal.yml
-  tags: [drupal, drupal_nginx]
+- block:
+    - include_tasks:
+        file: nginx.yml
+        apply:
+          tags: drupal_nginx
+      tags: [never, drupal_nginx]
 
-- import_tasks: nginx.yml
-  tags: drupal_nginx
-
-- import_tasks: drupal.yml
-  tags: drupal
-
-- import_tasks: backup.yml
-  tags: drupal_backup
+    - include_tasks:
+        file: drupal.yml
+        apply:
+          tags: drupal
+      tags: drupal
+  vars:
+    nginx_conf_name: "{{ drupal_website_vars.nginx_conf_name }}"
+    drupal_docker_port: "{{ drupal_website_vars.drupal_docker_port }}"
+    mysql_docker_port: "{{ drupal_website_vars.mysql_docker_port }}"
+    domain: "{{ drupal_website_vars.domain }}"
+    trusted_host: "{{ drupal_website_vars.trusted_host }}"
+    ssl_domains: "{{ drupal_website_vars.ssl_domains | default([drupal_website_vars.domain]) }}"
+    drupal_modules: "{{ drupal_website_vars.drupal_modules }}"
+    robots_txt: "{{ drupal_website_vars.robots_txt | default('') }}"
+    database_name: "{{ drupal_website_vars.database_name | default('icos') }}"
+    database_user: "{{ drupal_website_vars.database_user | default('icos') }}"
+    database_prefix: "{{ drupal_website_vars.database_prefix | default('') }}"
+    git_version: "{{ drupal_website_vars.git_version | default('master') }}"
+    vault_mysql_root_password: "{{ drupal_website_vault.vault_mysql_root_password }}"
+    vault_mysql_icos_password: "{{ drupal_website_vault.vault_mysql_icos_password }}"
+    vault_hash_salt: "{{ drupal_website_vault.vault_hash_salt }}"
+    vault_drupal_sync_directory: "{{ drupal_website_vault.vault_drupal_sync_directory }}"
+    project_dir: "{{ drupal_home }}/{{ drupal_website }}/drupal"
+    certbot_domains: "{{ drupal_website_vars.ssl_domains | default([drupal_website_vars.domain]) }}"
+    certbot_conf_name: "{{ drupal_website_vars.nginx_conf_name }}"
