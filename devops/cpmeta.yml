@@ -9,5 +9,13 @@
 
 - hosts: core_host
   tags: host
+  pre_tasks:
+    - name: Setup java
+      tags:
+        - java
+        - cpmeta_setup
+      import_role:
+        name: icos.java
+
   roles:
     - role: icos.cpmeta

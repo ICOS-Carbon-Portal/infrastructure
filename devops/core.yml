@@ -43,16 +43,15 @@
       when: doi_certbot_name is defined
 
 - hosts: core_host
-  vars:
-    # these are global vars, shared by all deployment targets
-    # to avoid repeating them in the inventories, they are put here
-    jre_apt_package: openjdk-21-jre-headless
-    java_path: /usr/lib/jvm/java-21-openjdk-amd64/bin/java
-
   pre_tasks:
-    - name: Install jre
-      apt:
-        name: "{{ jre_apt_package }}"
+    - name: Setup java
+      tags:
+        - java
+        - cpmeta_setup
+        - cpdata_setup
+        - cpauth_setup
+      import_role:
+        name: icos.java
 
     - name: Setup rdflog
       tags: rdflog
