@@ -13,7 +13,7 @@ The Drupal playbook requires a `website` parameter. It can be one website short 
 Deploy one website:
 
 ```sh
-icos play drupal -ewebsite=ac -tdrupal
+icos play drupal -e "website=ac" -t drupal -DC
 ```
 
 Equivalent Ansible command:
