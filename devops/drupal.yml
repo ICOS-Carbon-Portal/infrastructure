@@ -1,3 +1,47 @@
 - hosts: fsicos2
-  roles:
-    - role: icos.drupal
+  vars_files:
+    - roles/icos.drupal/defaults/main.yml
+  tasks:
+    - name: Check that website is defined
+      fail:
+        msg: "website needs to be defined"
+      when: website is undefined
+      tags: [drupal, drupal_nginx]
+
+    - name: Check that website is a string or list
+      fail:
+        msg: "website must be one website string, a list of website strings, or 'all'"
+      when: not (website is string or website is sequence)
+      tags: [drupal, drupal_nginx]
+
+    - name: Normalize selected websites
+      set_fact:
+        drupal_selected_websites: "{{ drupal_websites if website == 'all' else ([website] if website is string else website) }}"
+      tags: [drupal, drupal_nginx]
+
+    - name: Check that at least one website was selected
+      fail:
+        msg: "variable 'website' must contain at least one website"
+      when: drupal_selected_websites | length == 0
+      tags: [drupal, drupal_nginx]
+
+    - name: Check selected websites
+      fail:
+        msg: "{{ item }} is not a valid website. Valid values: {{ drupal_websites | join(', ') }}"
+      when: item is not string or item not in drupal_websites
+      loop: "{{ drupal_selected_websites }}"
+      tags: [drupal, drupal_nginx]
+
+    - name: Run Drupal role for selected websites
+      include_role:
+        name: icos.drupal
+      vars:
+        drupal_website: "{{ item }}"
+      loop: "{{ drupal_selected_websites }}"
+      tags: [drupal, drupal_nginx]
+
+    - name: Configure Drupal backups
+      include_role:
+        name: icos.drupal
+        tasks_from: backup.yml
+      tags: [never, drupal_backup]

@@ -4,7 +4,7 @@ server {
 
   {{ certbot_nginx_conf | indent(2) }}
 
-{% if website == "cp" %}
+{% if drupal_website == "cp" %}
   location = /license {
     return 301 https://data.icos-cp.eu/licence;
   }
@@ -44,7 +44,7 @@ server {
   }
 }
 
-{% if ssl_domains is defined and ssl_domains|length > 1 %}
+{% if ssl_domains | length > 1 %}
 server {
   listen       80;
   server_name  {{ ssl_domains | join(" ") }};
