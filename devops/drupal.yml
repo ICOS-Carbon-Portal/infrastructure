@@ -21,7 +21,7 @@
 
     - name: Check that at least one website was selected
       fail:
-        msg: "website must contain at least one website"
+        msg: "variable 'website' must contain at least one website"
       when: drupal_selected_websites | length == 0
       tags: [drupal, drupal_nginx]
 
