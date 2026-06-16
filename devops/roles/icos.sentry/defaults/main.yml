@@ -1,11 +1,11 @@
 sentry_version: "26.2.1"
 sentry_home: /opt/sentry-self-hosted
 sentry_repo: https://github.com/getsentry/self-hosted.git
-# Do not rewrite working upstream config unless explicitly requested. The
-# existing sentry VM is currently served through https://sentry.icos-cp.eu/ with
-# upstream defaults for system.url-prefix and SENTRY_BIND.
+# The canonical external URL and the current working Docker port binding.
 sentry_url: https://sentry.icos-cp.eu
-sentry_bind: "9000"
+sentry_port: 9000
+sentry_bind: "{{ sentry_port }}"
+sentry_health_url: "http://127.0.0.1:{{ sentry_port }}/_health/"
 sentry_manage_url_prefix: true
 sentry_manage_bind: true
 sentry_run_install: false

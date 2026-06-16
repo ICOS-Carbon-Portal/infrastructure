@@ -24,7 +24,6 @@ fi
 # Move existing Sentry install and Docker volume payloads out of the way before
 # extracting. They are kept for manual rollback until the restore is verified.
 if [[ -e "$sentry_home" ]]; then
-  mkdir -p "$restore_root/opt"
   mv "$sentry_home" "$restore_root/sentry-self-hosted.previous"
 fi
 
@@ -51,6 +50,6 @@ cd /
 
 cd "$sentry_home"
 docker compose up -d --wait
-curl -fsS http://127.0.0.1:9000/_health/ >/dev/null
+curl -fsS {{ sentry_health_url | quote }} >/dev/null
 
 echo "Sentry restored from $archive. Previous data moved to $restore_root"

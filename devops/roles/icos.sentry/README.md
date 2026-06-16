@@ -4,8 +4,7 @@ Installs and updates Sentry self-hosted and configures cold Borg backups through
 
 ## Install/update
 
-The role keeps `/opt/sentry-self-hosted` checked out at `sentry_version` and runs Sentry's upstream `install.sh` when the checkout or managed config changes. For an explicit upgrade, change `sentry_version` and run the playbook after taking a VM snapshot and a fresh backup.
-
+The role keeps `/opt/sentry-self-hosted` checked out at `sentry_version`. It runs Sentry's upstream `install.sh` only on first install, when the checkout changes, or when `sentry_run_install=true`. For an explicit upgrade, change `sentry_version` and run the playbook after taking a VM snapshot and a fresh backup.
 
 ```bash
 icos play vm-fsicos4-sentry sentry

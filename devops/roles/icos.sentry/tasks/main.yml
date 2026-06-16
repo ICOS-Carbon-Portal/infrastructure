@@ -87,7 +87,7 @@
 
 - name: Verify Sentry health endpoint
   uri:
-    url: http://127.0.0.1:9000/_health/
+    url: "{{ sentry_health_url }}"
     status_code: 200
   register: sentry_health
   retries: 12
