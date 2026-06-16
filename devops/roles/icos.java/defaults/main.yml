@@ -1,0 +1,2 @@
+jre_apt_package: openjdk-21-jre-headless
+java_path: /usr/lib/jvm/java-21-openjdk-amd64/bin/java

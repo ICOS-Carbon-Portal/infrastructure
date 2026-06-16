@@ -1,0 +1,35 @@
+all:
+  vars:
+    fsicos4_ip: 130.235.92.135
+    otc_meta_domain: otc-meta.icos-cp.eu
+    cpmeta_icos_domain: "{{ otc_meta_domain }}"
+    cpauth_icos_domain: cpauth.icos-cp.eu
+
+    cpmeta_domains:
+      - "{{ otc_meta_domain }}"
+
+    showUnderConstruction: "true"
+    showCarbonBadge: "false"
+    environmentName: "otc-meta"
+
+  children:
+    core_host:
+      hosts:
+        otc-meta:
+          ansible_host: fsicos4.icos-cp.eu
+          ansible_port: 60609
+          ansible_user: root
+
+      vars:
+        coreapp_bind_addr: 0.0.0.0
+
+        # cpmeta - application
+        cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
+        cpmeta_db_port: 5432
+        cpmeta_backup_enable: false
+        cpmeta_config_files:
+          - application_production.conf
+          - application_production_sensitive.conf
+          - application_staging_amendment.conf
+
+

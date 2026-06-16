@@ -1,0 +1,1 @@
+rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
