@@ -11,6 +11,17 @@
     name: Europe/Stockholm
   notify: restart cron
 
+- name: Prioritize qemu guest agent
+  copy:
+    dest: /etc/systemd/system/qemu-guest-agent.service.d/priority.conf
+    content: |
+      [Service]
+      Nice=-5
+      CPUWeight=8000
+      IOWeight=8000
+      OOMScoreAdjust=-800
+  notify: reload systemd
+
 - name: Generate locale
   locale_gen:
     name: "{{ item }}"

@@ -11,5 +11,11 @@ ExecReload=/bin/kill -HUP $MAINPID
 ExecStart={{ nebula_bin_dir }}/nebula -config {{ nebula_etc_dir }}/config.yml
 Restart=always
 
+# Keep the overlay network responsive under calculation/VM load.
+Nice=-10
+CPUWeight=10000
+IOWeight=10000
+OOMScoreAdjust=-900
+
 [Install]
 WantedBy=multi-user.target
