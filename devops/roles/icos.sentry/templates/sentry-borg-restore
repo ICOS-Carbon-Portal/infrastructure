@@ -1,0 +1,56 @@
+#!/bin/bash
+# Restore Sentry self-hosted from a Borg archive created by icos.sentry.
+# Usage: sentry-borg-restore ARCHIVE_NAME
+
+set -Eueo pipefail
+
+archive=${1:-}
+if [[ -z "$archive" ]]; then
+  echo "usage: sentry-borg-restore ARCHIVE_NAME" >&2
+  echo "available archives:" >&2
+  {{ bbclient_all | default('/opt/bbclient-' ~ sentry_backup_name ~ '/bin/bbclient-all') }} list --short || true
+  exit 1
+fi
+
+sentry_home={{ sentry_home | quote }}
+restore_root=/root/sentry-restore.$(date -u +%Y%m%dT%H%M%SZ)
+mkdir -p "$restore_root"
+
+if [[ -d "$sentry_home" ]]; then
+  cd "$sentry_home"
+  docker compose down || true
+fi
+
+# Move existing Sentry install and Docker volume payloads out of the way before
+# extracting. They are kept for manual rollback until the restore is verified.
+if [[ -e "$sentry_home" ]]; then
+  mkdir -p "$restore_root/opt"
+  mv "$sentry_home" "$restore_root/sentry-self-hosted.previous"
+fi
+
+mapfile -t volume_paths < <(
+  docker volume ls --format '{{ "{{" }}.Name{{ "}}" }}' |
+  grep -E '^({{ sentry_backup_volume_prefixes | map('regex_escape') | join('|') }})' |
+  while read -r volume; do
+    docker volume inspect -f '{{ "{{" }}.Mountpoint{{ "}}" }}' "$volume"
+  done |
+  sort -u
+)
+
+for path in "${volume_paths[@]}"; do
+  if [[ -d "$path" ]]; then
+    mkdir -p "$restore_root/volumes"
+    safe_name=$(echo "$path" | tr / _)
+    mv "$path" "$restore_root/volumes/$safe_name"
+    mkdir -p "$path"
+  fi
+done
+
+cd /
+{{ bbclient_all | default('/opt/bbclient-' ~ sentry_backup_name ~ '/bin/bbclient-all') }} extract "::$archive"
+
+cd "$sentry_home"
+docker compose up -d --wait
+curl -fsS http://127.0.0.1:9000/_health/ >/dev/null
+
+echo "Sentry restored from $archive. Previous data moved to $restore_root"

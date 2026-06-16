@@ -1,0 +1,105 @@
+- name: Install packages required by Sentry self-hosted
+  apt:
+    update_cache: true
+    name:
+      - ca-certificates
+      - curl
+      - git
+      - gzip
+      - tar
+
+- name: Check whether Sentry is already installed
+  stat:
+    path: "{{ sentry_home }}/docker-compose.yml"
+  register: sentry_compose_file
+
+- name: Clone/update Sentry self-hosted
+  git:
+    repo: "{{ sentry_repo }}"
+    dest: "{{ sentry_home }}"
+    version: "{{ sentry_version }}"
+    depth: 1
+    force: "{{ sentry_git_force }}"
+  register: sentry_git
+
+- name: Configure Sentry URL prefix
+  lineinfile:
+    path: "{{ sentry_home }}/sentry/config.yml"
+    regexp: '^#?\s*system\.url-prefix:'
+    line: "system.url-prefix: '{{ sentry_url }}'"
+  register: sentry_config_url
+  when: sentry_manage_url_prefix
+
+- name: Keep Sentry URL prefix unchanged
+  set_fact:
+    sentry_config_url:
+      changed: false
+  when: not sentry_manage_url_prefix
+
+- name: Configure Sentry nginx bind address
+  lineinfile:
+    path: "{{ sentry_home }}/.env"
+    regexp: '^SENTRY_BIND='
+    line: "SENTRY_BIND={{ sentry_bind }}"
+    create: true
+  register: sentry_config_bind
+  when: sentry_manage_bind
+
+- name: Keep Sentry nginx bind address unchanged
+  set_fact:
+    sentry_config_bind:
+      changed: false
+  when: not sentry_manage_bind
+
+- name: Run Sentry installer for first install or requested update
+  command: >-
+    ./install.sh
+    {% if sentry_skip_user_creation %}--skip-user-creation{% endif %}
+    {% if not sentry_report_self_hosted_issues %}--no-report-self-hosted-issues{% endif %}
+    {% if sentry_skip_commit_check %}--skip-commit-check{% endif %}
+  args:
+    chdir: "{{ sentry_home }}"
+  when: >-
+    sentry_run_install or
+    not sentry_compose_file.stat.exists or
+    sentry_git.changed
+  register: sentry_install
+
+- name: Start Sentry
+  command: docker compose up -d --wait
+  args:
+    chdir: "{{ sentry_home }}"
+  changed_when: "'Started' in sentry_up.stdout or 'Created' in sentry_up.stdout or 'Recreated' in sentry_up.stdout"
+  register: sentry_up
+
+- name: Create initial admin user when password is provided
+  command: >-
+    docker compose run --rm web createuser --superuser
+    --email {{ sentry_admin_email | quote }}
+    --password {{ sentry_admin_password | quote }}
+    --no-input
+  args:
+    chdir: "{{ sentry_home }}"
+  no_log: true
+  when:
+    - sentry_admin_password is defined
+    - not sentry_compose_file.stat.exists
+
+- name: Verify Sentry health endpoint
+  uri:
+    url: http://127.0.0.1:9000/_health/
+    status_code: 200
+  register: sentry_health
+  retries: 12
+  delay: 10
+  until: sentry_health.status == 200
+
+- name: Report Sentry version
+  command: docker compose run --rm web sentry --version
+  args:
+    chdir: "{{ sentry_home }}"
+  changed_when: false
+  register: sentry_version_cmd
+
+- debug:
+    msg: "{{ sentry_version_cmd.stdout }}"
