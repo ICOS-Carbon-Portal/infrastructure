@@ -3,7 +3,7 @@ import { quince_domains, quince_name } from "../../../lib/paramvars.ts";
 
 export default [
   {
-    import_role: "name=icos.nginxsite",
+    import_role: { name: "icos.nginxsite" },
     vars: {
       nginxsite_name: quince_name,
       nginxsite_file: "quince.conf",

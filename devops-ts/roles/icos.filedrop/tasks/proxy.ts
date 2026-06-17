@@ -16,7 +16,7 @@ export default [
     ],
   },
   {
-    include_role: "name=icos.certbot2",
+    include_role: { name: "icos.certbot2" },
     vars: {
       certbot_name: filedrop_domain,
       certbot_domains: [
@@ -25,7 +25,7 @@ export default [
     },
   },
   {
-    include_role: "name=icos.nginxsite",
+    include_role: { name: "icos.nginxsite" },
     vars: {
       nginxsite_file: "filedrop-nginx.conf",
     },

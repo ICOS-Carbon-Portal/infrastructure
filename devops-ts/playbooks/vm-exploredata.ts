@@ -87,8 +87,7 @@ export default playbook(import.meta, [
         },
       },
       {
-        // deno-lint-ignore no-explicit-any
-        include_role: "name=icos.certbot2" as any,
+        include_role: { name: "icos.certbot2" },
         tags: ["cert"],
         vars: {
           certbot_name: "exploredata",

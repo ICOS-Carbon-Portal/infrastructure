@@ -5,7 +5,7 @@ import { isDefined } from "../../../lib/vars.ts";
 
 export default [
   {
-    include_role: "name=icos.certbot2",
+    include_role: { name: "icos.certbot2" },
     vars: {
       certbot_name: V.eurocom_domain,
       certbot_domains: [
@@ -14,7 +14,7 @@ export default [
     },
   },
   {
-    include_role: "name=icos.nginxauth",
+    include_role: { name: "icos.nginxauth" },
     vars: {
       nginxauth_file: V.eurocom_auth_file,
       nginxauth_users: eurocom_users,
@@ -22,7 +22,7 @@ export default [
     when: isDefined(eurocom_users),
   },
   {
-    include_role: "name=icos.nginxsite",
+    include_role: { name: "icos.nginxsite" },
     vars: {
       nginxsite_name: "eurocom",
       nginxsite_file: "roles/icos.eurocom/templates/eurocom.conf",

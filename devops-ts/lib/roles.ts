@@ -242,6 +242,7 @@ export interface Roles {
   "icos.uv": NoVars;
 
   // roles referenced only via import_tasks/include_role (no role() call site)
+  "icos.certbot": NoVars;
   "icos.cni_plugins": NoVars;
   "icos.conmon": NoVars;
   "icos.docker_utils": NoVars;
@@ -254,6 +255,7 @@ export interface Roles {
   "icos.quince": NoVars;
   "icos.timer": NoVars;
   "icos.timer2": NoVars;
+  "icos.xcaddy": NoVars;
   "icos.zfsdocker": NoVars;
 
   // monitoring / exporters

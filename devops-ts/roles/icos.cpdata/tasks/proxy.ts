@@ -8,7 +8,7 @@ import {
 export default [
   {
     name: "Create cpdata certificate",
-    include_role: "name=icos.certbot2",
+    include_role: { name: "icos.certbot2" },
     vars: {
       certbot_name: cpdata_certbot_name,
       certbot_domains: cpdata_domains,
@@ -16,7 +16,7 @@ export default [
   },
   {
     name: "Add cpdata nginx config",
-    include_role: "name=icos.nginxsite",
+    include_role: { name: "icos.nginxsite" },
     vars: {
       nginxsite_name: cpdata_nginxsite_name,
       nginxsite_file: "cpdata.conf",

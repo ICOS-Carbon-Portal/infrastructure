@@ -8,7 +8,7 @@ import { truthy } from "../../../lib/vars.ts";
 const _user = register("_user");
 
 export default [
-  { import_role: "name=icos.python3" },
+  { import_role: { name: "icos.python3" } },
   {
     name: "Create jyctl user",
     user: {

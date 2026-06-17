@@ -34,7 +34,7 @@ export default playbook(import.meta, [
     ],
     tasks: [
       {
-        include_role: "name=icos.postgresql",
+        include_role: { name: "icos.postgresql" },
         tags: "postgresql",
         vars: {
           postgresql_postgis_enable: true,

@@ -8,7 +8,7 @@ import {
 export default [
   {
     name: "Create doi certificate",
-    include_role: "name=icos.certbot2",
+    include_role: { name: "icos.certbot2" },
     vars: {
       certbot_name: doi_certbot_name,
       certbot_domains: doi_domains,
@@ -16,7 +16,7 @@ export default [
   },
   {
     name: "Add doi nginx config",
-    include_role: "name=icos.nginxsite",
+    include_role: { name: "icos.nginxsite" },
     vars: {
       nginxsite_name: doi_nginxsite_name,
       nginxsite_file: "doi.conf",

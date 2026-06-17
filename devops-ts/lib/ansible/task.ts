@@ -75,10 +75,12 @@ export interface Task {
   args?: Record<string, VarValue>;
   vars?: Record<string, VarValue>;
 
-  import_role?: string | { name: RoleName; tasks_from?: string };
-  include_role?:
-    | string
-    | {
+  // A bare `{ name }` (no other keys) is the common case; the fuller object adds
+  // tasks_from etc. Both forms type the role name against the registry. Ansible
+  // also accepts the free-form `name=<role>` string, but we always write the
+  // object form (verify.ts treats the two as equivalent).
+  import_role?: { name: RoleName; tasks_from?: string };
+  include_role?: {
       name: RoleName;
       tasks_from?: string;
       apply?: { tags?: Tags };

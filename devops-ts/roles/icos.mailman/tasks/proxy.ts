@@ -13,7 +13,7 @@ export default [
   },
   {
     name: "Create mailmain nginx config",
-    include_role: "name=icos.nginxsite",
+    include_role: { name: "icos.nginxsite" },
     vars: {
       nginxsite_name: V.mailman_nginxsite_name,
       nginxsite_file: V.mailman_nginxsite_file,

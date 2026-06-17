@@ -41,7 +41,7 @@ export default [
   },
   {
     name: "Install bbclient backup script",
-    include_role: "name=icos.timer",
+    include_role: { name: "icos.timer" },
     vars: {
       timer_home: tmpl`${bbclient_home}/timer`,
       timer_name: tmpl`bbclient-${bbclient_name}`,

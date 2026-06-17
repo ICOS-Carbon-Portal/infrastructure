@@ -3,7 +3,7 @@ import { type TaskFile } from "../../../lib/ansible/play.ts";
 import { tmpl } from "../../../lib/template.ts";
 
 export default [
-  { include_role: "name=icos.certbot" },
+  { include_role: { name: "icos.certbot" } },
   {
     name: tmpl`Copy nginx ${V.nginx_conf_name}.conf`,
     template: {

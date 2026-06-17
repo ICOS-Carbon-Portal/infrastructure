@@ -4,7 +4,7 @@ import { jinjaFor, tmpl } from "../../../lib/template.ts";
 
 export default [
   // First install the xcaddy tool.
-  { import_role: "name=icos.xcaddy" },
+  { import_role: { name: "icos.xcaddy" } },
   // Running "caddy list-modules" should list any non-standard modules compiled
   // into caddy.
   {

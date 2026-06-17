@@ -9,11 +9,11 @@ const r = register("r");
 
 export default [
   {
-    import_role: "name=icos.certbot2",
+    import_role: { name: "icos.certbot2" },
     when: truthy(nexus_certbot_enable).default(true),
   },
   {
-    import_role: "name=icos.nginxsite",
+    import_role: { name: "icos.nginxsite" },
   },
   {
     name: "Check that nexus responds with correct version",

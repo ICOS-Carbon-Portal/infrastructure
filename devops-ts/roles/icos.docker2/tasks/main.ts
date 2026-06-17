@@ -69,7 +69,7 @@ export default [
     when: truthy(V.docker_periodic_cleanup),
   },
   {
-    import_role: "name=icos.docker_utils",
+    import_role: { name: "icos.docker_utils" },
     tags: "docker_utils",
   },
   { import_tasks: "test.yml", tags: "docker_test" },

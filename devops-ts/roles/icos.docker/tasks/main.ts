@@ -55,5 +55,5 @@ export default [
     tags: "docker_cleanup",
     when: truthy(V.docker_periodic_cleanup),
   },
-  { import_role: "name=icos.docker_utils", tags: "docker_utils" },
+  { import_role: { name: "icos.docker_utils" }, tags: "docker_utils" },
 ] satisfies TaskFile;

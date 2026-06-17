@@ -1,7 +1,7 @@
 import { type TaskFile } from "../../../lib/ansible/play.ts";
 
 export default [
-  { include_role: "name=icos.certbot" },
+  { include_role: { name: "icos.certbot" } },
   {
     name: "Copy nginx conf",
     template: {

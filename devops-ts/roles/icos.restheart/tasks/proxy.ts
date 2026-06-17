@@ -8,14 +8,14 @@ import {
 
 export default [
   {
-    include_role: "name=icos.certbot2",
+    include_role: { name: "icos.certbot2" },
     vars: {
       certbot_name: restheart_certbot_name,
       certbot_domains: restheart_domains,
     },
   },
   {
-    include_role: "name=icos.nginxsite",
+    include_role: { name: "icos.nginxsite" },
     vars: {
       nginxauth_conf: `auth_basic "Login required";
 auth_basic_user_file "/etc/nginx/auth/{{ restheart_nginxsite_name }}";

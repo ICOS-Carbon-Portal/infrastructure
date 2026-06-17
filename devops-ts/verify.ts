@@ -14,7 +14,38 @@ import { collectUnits } from "./lib/units.ts";
 // Ansible parses with PyYAML (YAML 1.1), where `yes`/`no`/`on`/`off` are
 // booleans. npm:yaml defaults to 1.2, where they are plain strings. Parse both
 // sides as 1.1 so the comparison reflects what Ansible actually sees.
-const parse = (text: string): unknown => parseYaml(text, { version: "1.1" });
+const parse = (text: string): unknown =>
+  normalize(parseYaml(text, { version: "1.1" }));
+
+// `import_role`/`include_role` accept both Ansible's free-form `name=<role>`
+// string and an equivalent `{ name: <role> }` mapping. The TS source always
+// emits the mapping; legacy hand-written YAML uses either. Normalize the
+// free-form string to the mapping on both sides so the comparison sees them as
+// equal (which is exactly how Ansible treats them).
+function normalize(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(normalize);
+  if (v && typeof v === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+      out[k] = (k === "import_role" || k === "include_role") &&
+          typeof val === "string"
+        ? parseFreeform(val)
+        : normalize(val);
+    }
+    return out;
+  }
+  return v;
+}
+
+/** Parse Ansible free-form `key=value [key=value...]` args into a mapping. */
+function parseFreeform(s: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const tok of s.trim().split(/\s+/)) {
+    const eq = tok.indexOf("=");
+    if (eq > 0) out[tok.slice(0, eq)] = tok.slice(eq + 1);
+  }
+  return out;
+}
 
 /** Recursively compare parsed YAML; returns the first differing path, or null. */
 function diff(a: unknown, b: unknown, path = "$"): string | null {

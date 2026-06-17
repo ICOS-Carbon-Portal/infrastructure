@@ -52,6 +52,6 @@ export default [
     },
   },
   {
-    import_role: "name=icos.fail2ban",
+    import_role: { name: "icos.fail2ban" },
   },
 ] satisfies TaskFile;
