@@ -1,13 +1,13 @@
 - name: Add iptables rule to forward lxd_forward_port
   tags: iptables
   iptables_raw:
-    name: "forward_ssh_to_{{ lxd_forward_name }}"
+    name: "forward_ssh_to_{{ lxd_forward_name | replace('-', '_') }}"
     table: nat
     rules: >-
       -A PREROUTING -p tcp
       --dport {{ lxd_forward_port }}
       -j DNAT --to-destination {{ lxd_forward_ip }}:22
-  when: lxd_forward_port
+  when: lxd_forward_port is defined and lxd_forward_port | int > 0
 
 - name: Modify /etc/hosts to add lxd_forward_name.lxd
   lineinfile:

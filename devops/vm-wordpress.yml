@@ -2,8 +2,6 @@
   vars:
     wordpress_domains:
       - www.ingos-infrastructure.eu
-      - eric-forum.eu
-      - www.eric-forum.eu
       - www.icos-summerschool.eu
       - www.envriplus.eu
       - avengers-project.eu
@@ -12,6 +10,10 @@
       - www.george-project.eu
       - kadi-project.eu
       - www.kadi-project.eu
+    wordpress_eric_forum_domains:
+      - eric-forum.eu
+      - www.eric-forum.eu
+    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains }}"
   roles:
     - role: icos.lxd_vm
       tags: lxd
@@ -24,15 +26,37 @@
     - role: icos.certbot2
       tags: cert
       certbot_name: wordpress
-      certbot_domains: "{{ wordpress_domains }}"
+      certbot_domains: "{{ wordpress_cert_domains }}"
 
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: wordpress
       nginxsite_file: files/wordpress.conf
+      wp_site_domains: "{{ wordpress_domains }}"
+      wp_site_upstream: wordpress.lxd
+      wp_site_log: wordpress
+      wp_site_rate_zone: wp_login
+
+    - role: icos.lxd_vm
+      tags: lxd
+      lxd_vm_name: wordpress-eric-forum
+      lxd_vm_root_size: "500GB"
+      lxd_vm_ubuntu_version: "24.04"
+      lxd_vm_config:
+        limits.cpu: "4"
+        limits.memory: "8GB"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: eric-forum
+      nginxsite_file: files/wordpress.conf
+      wp_site_domains: "{{ wordpress_eric_forum_domains }}"
+      wp_site_upstream: wordpress-eric-forum.lxd
+      wp_site_log: eric-forum
+      wp_site_rate_zone: wp_login_ef
 
 
-- hosts: wordpress
+- hosts: wordpress,wordpress-eric-forum
   roles:
     - role: icos.lxd_guest
       tags: guest

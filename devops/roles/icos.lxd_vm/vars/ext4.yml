@@ -21,4 +21,4 @@ __docker_config: >-
   {% else %}{}{% endif -%}
 
 lxd_vm_default_config: >-
-  {{ __base_config | combine(__docker_config) }}
+  {{ __base_config | combine(__docker_config | from_yaml) }}

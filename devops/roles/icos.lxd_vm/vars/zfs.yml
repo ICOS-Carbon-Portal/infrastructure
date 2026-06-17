@@ -16,7 +16,7 @@ __docker_device: >-
   {% else -%}{}{% endif -%}
 
 lxd_vm_default_devices: >-
-  {{ __root_device | combine(__docker_device) }}
+  {{ __root_device | combine(__docker_device | from_yaml) }}
 
 
 # PROFILES
@@ -33,4 +33,4 @@ __docker_config: >-
   {% else %}{}{% endif -%}
 
 lxd_vm_default_config: >-
-  {{ __base_config | combine(__docker_config) }}
+  {{ __base_config | combine(__docker_config | from_yaml) }}
