@@ -4,11 +4,17 @@
     dest: /etc/systemd/system/stiltweb.service
   register: _service
 
-- name: Create configuration file
+- name: Create local configuration file
   template:
     dest: "{{ stiltweb_home }}/local.conf"
     src: local.conf
-  register: _config
+  register: _config_local
+
+- name: Create application configuration file
+  template:
+    dest: "{{ stiltweb_home }}/application.conf"
+    src: application.conf
+  register: _config_app
 
 - name: Copy jarfile
   when: stiltweb_jar_file is defined
@@ -32,7 +38,7 @@
     enabled: yes
     daemon-reload: "{{ 'yes' if _service.changed else 'no' }}"
     state: >-
-      {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
+      {{ 'restarted' if _jarfile.changed or _config_local.changed or _config_app.changed else 'started' }}
 
 - name: Check that the service responds
   uri:
