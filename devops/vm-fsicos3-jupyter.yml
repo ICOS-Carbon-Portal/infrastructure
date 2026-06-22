@@ -105,10 +105,17 @@
       tags: jupyter
       jupyter_hub_config:
         admin_users: "{{ vault_jupyter_admins }}"
+        image: registry.icos-cp.eu/stratos.collaboration:0.1.0
+        allowed_images:
+          stratos_collaboration: registry.icos-cp.eu/stratos.collaboration:0.1.0
+        collaborative: true
         mem_limit: "100G"
         cpu_limit: 40
+        extra_volumes:
+          /data/fit_ic: /data/fit_ic
       jupyter_admins:
       jupyter_jusers_enable: true
+      jupyter_hub_templates_src: files/jupyter-collab/templates
 
     - role: icos.bbclient2
       tags: bbclient

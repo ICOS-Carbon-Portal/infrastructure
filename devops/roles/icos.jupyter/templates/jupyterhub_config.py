@@ -104,10 +104,14 @@ c.DockerSpawner.read_only_volumes = {
     '/data'          : '/data'
 }
 
-c.DockerSpawner.volumes = {'/project': '/project'}
+c.DockerSpawner.volumes = {{ {'/project': '/project'} | combine(conf.extra_volumes) }}
 
 {% if conf.allowed_images is defined %}
 c.DockerSpawner.allowed_images = {{ conf.allowed_images }}
+{% endif %}
+
+{% if conf.collaborative %}
+c.DockerSpawner.LabApp.collaborative = True
 {% endif %}
 
 # https://github.com/jupyterhub/dockerspawner/commit/83c4770c17a8fbd1e2f8f42068552937c5ff0eee

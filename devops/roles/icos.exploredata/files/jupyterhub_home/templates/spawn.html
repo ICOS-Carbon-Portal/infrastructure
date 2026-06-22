@@ -1,0 +1,75 @@
+{% extends "page.html" %}
+{% if announcement_spawn is string %}
+{% set announcement = announcement_spawn %}
+{% endif %}
+{% block main %}
+<style>
+    [data-bs-theme=dark] #icos-logo {
+        content:url("https://www.icos-cp.eu/sites/default/files/ICOS-logo.svg");
+    }
+
+    [data-bs-theme=light] #icos-logo {
+        content:url("https://www.icos-cp.eu/sites/default/files/2020-04/ICOS%20RI_logo_rgb.png");
+    }
+
+    #icos-logo {
+        position: absolute;
+        padding: 0.5rem 1rem;
+        box-sizing: content-box;
+        z-index: -1;
+        margin-top: -1rem;
+    }
+
+    @media only screen and (max-width: 767px) {
+        #icos-logo {
+            position: relative;
+            margin: 0 auto 1rem;
+            display: block;
+        }
+    }
+</style>
+<div class="container">
+    {% block heading %}
+    <img id="icos-logo"
+         src="https://www.icos-cp.eu/sites/default/files/ICOS-logo.svg"
+         alt="ICOS: Integrated Carbon Observation System"
+         style="height:55px;">
+    <div class="text-center mb-4">
+        <h1>ExploreData</h1>
+    </div>
+    <div class="row text-center">
+        <p>
+            Exploredata is a multi-purpose research platform designed for showcasing ICOS scientific output through
+            interactive Jupyter notebooks. It allows users to test, explore, and visualize ICOS data in an
+            interactive environment where results are not stored permanently. Each session runs in a temporary
+            container that is deleted after logout or an hour of inactivity.
+        </p>
+    </div>
+</div>
+{% endblock heading %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        {% if for_user and user.name != for_user.name -%}
+        <p>Spawning server for {{ for_user.name }}</p>
+        {% endif -%}
+        {% if error_message -%}<p class="spawn-error-msg alert alert-danger">Error: {{ error_message }}</p>{% endif %}
+        <form enctype="multipart/form-data"
+              id="spawn_form"
+              action="{{ url | safe }}"
+              method="post"
+              role="form">
+            {{ spawner_options_form | safe }}
+            <br>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-jupyter" style="min-width:220px;padding:0.7rem 1.8rem;font-size:1.1rem;">
+                    Start
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock main %}
+{% block script %}
+{{ super() }}
+{% endblock script %}

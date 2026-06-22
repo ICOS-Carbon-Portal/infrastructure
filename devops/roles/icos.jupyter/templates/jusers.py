@@ -222,10 +222,6 @@ def sync_homedirs(yaml):
             continue
 
         home = pwd.getpwnam(login).pw_dir
-        pcom = join(PROJECT, 'common')
-        if readlink(home, 'common') != pcom:
-            yield 'ln -sf %s %s' % (pcom, home)
-
         project = join(home, 'project')
         if not exists(project):
             yield 'mkdir -pm 0755 %s' % project
