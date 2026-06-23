@@ -114,14 +114,20 @@
       tags: guest
       user_conf: "{{ vault_ganymede_user_conf }}"
 
-    - role: icos.docker
+    - role: icos.docker2
       tags: docker
-      docker_periodic_cleanup: True
 
     - role: icos.jupyter
       tags: jupyter
       jupyter_admins: "{{ vault_ganymede_jupyter_admins }}"
       jupyter_backup_enable: False
+      jupyter_hub_config:
+        image: registry.icos-cp.eu/stratos.collaboration:0.1.0
+        allowed_images:
+          stratos_collaboration: registry.icos-cp.eu/stratos.collaboration:0.1.0
+        collaborative: true
+        extra_volumes:
+          /data/fit_ic: /data/fit_ic
 
     - role: icos.jbuild
       tags: jbuild

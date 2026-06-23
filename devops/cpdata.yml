@@ -4,6 +4,14 @@
 # Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 
 - hosts: fsicos2
+  pre_tasks:
+    - name: Setup java
+      tags:
+        - java
+        - cpdata_setup
+      import_role:
+        name: icos.java
+
   roles:
     - role: icos.certbot2
       tags: cert

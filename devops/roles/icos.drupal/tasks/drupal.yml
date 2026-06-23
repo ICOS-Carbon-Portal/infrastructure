@@ -7,7 +7,7 @@
 - name: Pull source code from git
   git:
     repo: https://github.com/ICOS-Carbon-Portal/drupal
-    version: "{{ git_version | default('master') }}"
+    version: "{{ git_version }}"
     dest: "{{ project_dir }}"
     force: yes
 
@@ -56,11 +56,11 @@
   copy:
     src: "{{ robots_txt }}"
     dest: "{{ project_dir }}/composer/robots.txt.append"
-  when: robots_txt is defined
+  when: drupal_website_vars.robots_txt is defined
 
 - name: Enable maintenance mode
-  command: docker exec {{website}}_drupal_1 drush maint:set 1
-  when: update
+  command: docker exec {{ drupal_website }}_drupal_1 drush maint:set 1
+  when: update | bool
 
 - name: (Re)start docker containers
   community.docker.docker_compose_v2:
@@ -69,36 +69,36 @@
     pull: always
 
 - name: Check private directory owner
-  command: docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/
+  command: docker exec {{ drupal_website }}_drupal_1 stat -c '%U' /var/www/private/
   register: private_directory_owner
   changed_when: false
 
 - name: Change private directory owner
-  command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/private/
+  command: docker exec {{ drupal_website }}_drupal_1 chown -R www-data:www-data /var/www/private/
   when: private_directory_owner.stdout != "www-data"
 
 - name: Check files directory owner
-  command: docker exec {{website}}_drupal_1 stat -c '%U' /var/www/private/
+  command: docker exec {{ drupal_website }}_drupal_1 stat -c '%U' /var/www/private/
   register: files_directory_owner
   changed_when: false
 
 - name: Change files directory owner
-  command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
+  command: docker exec {{ drupal_website }}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
   when: files_directory_owner.stdout != "www-data"
 
 - name: Composer update
-  command: docker exec {{website}}_drupal_1 composer update
-  when: update
+  command: docker exec {{ drupal_website }}_drupal_1 composer update
+  when: update | bool
   register: result
   changed_when: '"Package operations" in result.stderr'
 
 - name: Update database
-  command: docker exec {{website}}_drupal_1 drush updb
-  when: update
+  command: docker exec {{ drupal_website }}_drupal_1 drush updb
+  when: update | bool
 
 - name: Disable maintenance mode
-  command: docker exec {{website}}_drupal_1 drush maint:set 0
-  when: update
+  command: docker exec {{ drupal_website }}_drupal_1 drush maint:set 0
+  when: update | bool
 
 - name: Clear caches
-  command: docker exec {{website}}_drupal_1 drush cr
+  command: docker exec {{ drupal_website }}_drupal_1 drush cr

@@ -17,4 +17,5 @@
   command: "{{ bbclient_all }} info"
   environment:
     BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK: y
+    BORG_RELOCATED_REPO_ACCESS_IS_OK: y
   changed_when: no

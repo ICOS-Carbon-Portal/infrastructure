@@ -34,6 +34,8 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 	import AssemblyPlugin.autoImport.assembly
 	import BuildInfoPlugin.autoImport._
 
+	private val sentryUploadProp = "cp.deploy.sentryUpload"
+
 	lazy val gitChecksTask = Def.task {
 		val log = streams.value.log
 
@@ -72,7 +74,13 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 		// The full path of the "fat" jarfile. The jarfile contains the
 		// entire application and this is the file we will deploy.
-		val jarPath = assembly.value.getAbsolutePath
+		val shouldUploadToSentry = (!check && inventory == "production").toString
+		System.setProperty(sentryUploadProp, shouldUploadToSentry)
+		val jarPath = try {
+			assembly.value.getAbsolutePath
+		} finally {
+			System.clearProperty(sentryUploadProp)
+		}
 
 		// The name used by Ansible to identify this core service, e.g. 'cpdata', 'cpmeta', 'cpauth'
 		val target = cpDeployTarget.value

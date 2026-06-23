@@ -47,7 +47,8 @@ CMD_IPTABLES_SAVE = "/usr/sbin/iptables-save"
 ICOS_CHAIN = "ICOS-DNAT"
 
 DNAT = namedtuple("DNAT", ["hport", "comment", "ip", "dport", "line"])
-QM = namedtuple("QM", ["id", "name", "status", "port"])
+Lease = namedtuple("Lease", ["mac", "ip", "name"])
+QM = namedtuple("QM", ["id", "name", "status", "port", "mac"])
 
 
 DEFAULTS = {
@@ -212,15 +213,20 @@ def file_is_stale(path, age=timedelta(hours=6)):
     return None
 
 
-def parse_dnsmasq_leases(path):
+def parse_dnsmasq_lease_rows(path):
     # We don't want to take any actions if dnsmasq for some reason isn't
     # running or if we're looking at the wrong lease file.
     if m := file_is_stale(path):
         raise RuntimeError(f"{path} is too old, mtime = {m}")
     for line in open(path):
         line = line.strip()  # noqa: PLW2901
-        _, _, ip, name, _ = line.split()
-        yield (ip, name)
+        _, mac, ip, name, _ = line.split()
+        yield Lease(mac.lower(), ip, name)
+
+
+def parse_dnsmasq_leases(path):
+    for lease in parse_dnsmasq_lease_rows(path):
+        yield (lease.ip, lease.name)
 
 
 # QM
@@ -251,6 +257,13 @@ def qm_vmid_to_port(vmid):
 
 
 @cache
+def qm_vmid_to_mac(vmid):
+    config = qm_vmid_to_config(vmid)
+    if m := re.search(r"(?:^|=)([0-9a-f:]{17})(?:,|$)", config.get("net0", ""), re.I):
+        return m.group(1).lower()
+
+
+@cache
 def qm_vmid_to_config(vmid):
     output = check_output([CMD_QM, "config", vmid], text=1)  # noqa: S603
     return dict(
@@ -274,7 +287,8 @@ def qm_list():
         if config.get("template", "0") == "1":
             continue
         port = qm_vmid_to_port(qid)
-        result.append(QM(qid, name, status, port))
+        mac = qm_vmid_to_mac(qid)
+        result.append(QM(qid, name, status, port, mac))
     return result
 
 
@@ -336,12 +350,13 @@ def cli(ctx, dry_run, config, interface, bridge):
 @click.pass_context
 def cli_show(ctx):
     """Show running VMs and their ip and ports"""
-    leases = list(parse_dnsmasq_leases(ctx.obj.lease_file))
-    name2ip = {name: ip for ip, name in leases}
+    leases = list(parse_dnsmasq_lease_rows(ctx.obj.lease_file))
+    name2ip = {lease.name: lease.ip for lease in leases}
+    mac2ip = {lease.mac: lease.ip for lease in leases}
     ip2port = {r.ip: r.hport for r in parse_icos_dnat()}
 
     for qm in qm_list():
-        fwip = name2ip.get(qm.name)
+        fwip = name2ip.get(qm.name) or mac2ip.get(qm.mac)
         fwport = ip2port.get(fwip)
         print(
             f"{qm.name:<15} - configured port {qm.port!s:<5}"
@@ -374,15 +389,17 @@ def cli_leases(ctx):
 @click.pass_context
 def cli_run(ctx):
     """Check and add iptables rules."""
-    leases = list(parse_dnsmasq_leases(ctx.obj.lease_file))
+    leases = list(parse_dnsmasq_lease_rows(ctx.obj.lease_file))
 
-    ip2name = {ip: name for ip, name in leases}  # noqa: C416
-    name2ip = {name: ip for ip, name in leases}
+    ip2name = {lease.ip: lease.name for lease in leases}
+    name2ip = {lease.name: lease.ip for lease in leases}
+    mac2ip = {lease.mac: lease.ip for lease in leases}
+    ip2qmname = {mac2ip[qm.mac]: qm.name for qm in qm_list() if qm.mac in mac2ip}
     ip2port = {}
 
     print("parsing firewall rules, looking at vms")
     for r in parse_icos_dnat():
-        name = ip2name.get(r.ip)
+        name = ip2qmname.get(r.ip) or ip2name.get(r.ip)
         if not name:
             print(f"  found rule for {r.ip} but no lease, removing rule.")
             iptables_del_dnat(r)
@@ -408,7 +425,7 @@ def cli_run(ctx):
         elif qm.port is None:
             print(f"  {qm.name:<20} no port configured")
         else:
-            ip = name2ip.get(qm.name)
+            ip = name2ip.get(qm.name) or mac2ip.get(qm.mac)
             if ip is None:
                 print(f"  {qm.name:<20} has no assigned ip!")
                 continue

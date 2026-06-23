@@ -1,15 +1,4 @@
 
-- name: Create application.conf
-  copy:
-    dest: "{{ cpmeta_home }}/application.conf"
-    content: |
-      {% for item in cpmeta_config_files %}
-      # {{ item }}
-      {{ lookup('template', item) }}
-
-      {% endfor %}
-  register: _config
-
 - name: Copy jarfile
   copy:
     src: "{{ cpmeta_jar_file }}"
@@ -25,40 +14,6 @@
   register: _r
   changed_when: _r.stdout.startswith("removed")
 
-- name: Temporarily switch cpmeta to readonly mode before restart
-  uri:
-    method: "POST"
-    url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
-  # if meta is not responding, it should still be possible to deploy
-  failed_when: no
-  when:
-    - _jarfile.changed or _config.changed
-
-- name: Start/restart service
-  systemd:
-    name: cpmeta.service
-    enabled: yes
-    state: >-
-      {{ 'restarted' if _jarfile.changed or _config.changed else 'started' }}
-
-- name: Check that the service responds
-  uri:
-    url: "https://{{ cpmeta_domains | first }}/buildInfo"
-    return_content: yes
-  register: r
-  failed_when: r.failed
-  retries: 30
-  delay: 10
-  until: not r.failed
-
-- name: Leave cpmeta in readonly mode
-  uri:
-    method: "POST"
-    url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
-  register: r
-  failed_when: r.failed
-  retries: 30
-  delay: 10
-  until: not r.failed
-  when:
-    - cpmeta_readonly_mode
+- include_tasks: restart.yml
+  vars:
+    _restart_needed: "{{ _config.changed or _jarfile.changed }}"

@@ -1,5 +1,8 @@
 # core-service-related variables reused by different inventories (production, staging, cities)
 
+jre_apt_package: openjdk-21-jre-headless
+java_path: /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+
 restheart_icos_db_name: db
 restheart_sites_db_name: sitesdb
 restheart_cities_db_name: pauldb

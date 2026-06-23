@@ -10,6 +10,7 @@
     nginxsite_file: plausible-nginx.conf
     nginxsite_domains:
       - "{{ plausible_domain }}"
+      - plausible.st4ris.eu
 
 - name: Copy clickhouse-config.xml
   copy:

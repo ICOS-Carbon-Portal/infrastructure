@@ -3,7 +3,7 @@
 # upgrade to latest docker versions
 # icos play vict prom -evm_upgrade=true -D
 
-- hosts: cdb.nateko.lu.se
+- hosts: cdb
   roles:
     - role: icos.docker2
       tags: docker

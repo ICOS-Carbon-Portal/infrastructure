@@ -13,15 +13,14 @@
   block:
 
   - name: Find the latest release of watchexec
-    github_release:
-      user: watchexec
-      repo: watchexec
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/watchexec/watchexec/releases/latest
+      return_content: true
     register: gr
 
   - name: Set watchexec_version fact
     set_fact:
-      watchexec_version: "{{ gr.tag.lstrip('v') }}"
+      watchexec_version: "{{ gr.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 - name: Install watchexec

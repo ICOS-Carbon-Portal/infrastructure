@@ -1,0 +1,90 @@
+{# Rendered from exploredata_sections + exploredata_notebooks in defaults/main.yml. #}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<style>
+    .tooltip-inner {
+        max-width: 300px;
+        text-align: left;
+    }
+
+    .form-check-input[type="radio"] {
+        border-color: #aaa;
+    }
+</style>
+
+<div class="container text-center my-4">
+    <p>Please choose one of the available notebook environments:</p>
+
+    <div class="row text-start g-3">
+{% for section in exploredata_sections %}
+
+        <!-- {{ section.title }} Section -->
+        <div class="col-lg-6">
+            <h4 class="fw-bold text-success d-flex align-items-center" style="cursor: pointer;"
+                data-bs-toggle="collapse" data-bs-target="#{{ section.key }}-list" aria-expanded="false" aria-controls="{{ section.key }}-list">
+                <i class="bi bi-caret-right-fill me-2 rotate-icon" style="transition: transform 0.2s;"></i>
+                {{ section.title }}
+                <span class="custom-tooltip ms-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                      title="{{ section.tooltip }}"
+                      style="cursor: pointer;">
+                    <i class="bi bi-question-circle"></i>
+                </span>
+            </h4>
+            <div class="collapse mt-2 ps-2" id="{{ section.key }}-list">
+{% for n in exploredata_notebooks if n.section == section.key %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="env"
+                           id="{{ n.id }}" value="{{ n.image }}:{{ n.tag }}&nb={{ n.id }}">
+                    <label class="form-check-label" for="{{ n.id }}"{% if n.tooltip %} data-bs-toggle="tooltip" data-bs-placement="right"
+                           title="{{ n.tooltip }}"{% endif %}>
+                        {{ n.label }}{% if n.doi is defined %}
+                        (<a href="https://doi.org/{{ n.doi }}" target="_blank">{{ n.doi }}</a>){% endif %}</label>
+                </div>
+{% endfor %}
+            </div>
+        </div>
+{% endfor %}
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize span tooltips without delay enabled
+        const tooltipSpanTriggerList = document.querySelectorAll('span[data-bs-toggle="tooltip"]');
+        tooltipSpanTriggerList.forEach(el => new bootstrap.Tooltip(el));
+
+        // Initialize label tooltips with delay enabled
+        const tooltipLabelTriggerList = document.querySelectorAll('label[data-bs-toggle="tooltip"]');
+        tooltipLabelTriggerList.forEach(el => new bootstrap.Tooltip(el, {delay: { show: 500, hide: 100 }}));
+
+        // Handle collapse arrow rotation for all categories
+        const collapsibleHeaders = document.querySelectorAll('[data-bs-toggle="collapse"]');
+
+        collapsibleHeaders.forEach(header => {
+            const targetSelector = header.getAttribute('data-bs-target');
+            const collapseEl = document.querySelector(targetSelector);
+            const arrowIcon = header.querySelector('.rotate-icon');
+
+            // Rotate arrow on collapse show
+            collapseEl.addEventListener('show.bs.collapse', () => {
+                arrowIcon.style.transform = 'rotate(90deg)';
+            });
+
+            // Rotate arrow back on collapse hide
+            collapseEl.addEventListener('hide.bs.collapse', () => {
+                arrowIcon.style.transform = 'rotate(0deg)';
+            });
+        });
+
+        // Disable start button by default, then enable once selection made
+        const startButton = document.querySelector('button[type="submit"]');
+        startButton.disabled = true;
+
+        document.addEventListener("change", (e) => {
+            if (startButton.disabled && e.target.name == "env") {
+                startButton.disabled = false;
+            }
+        });
+    });
+</script>

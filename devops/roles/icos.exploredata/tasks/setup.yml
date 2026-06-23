@@ -1,11 +1,32 @@
+---
 - name: Check type of deployment
-  assert:
+  ansible.builtin.assert:
     that: exploredata_type in ('prod', 'test')
     quiet: true
 
+- name: >-
+    Check every notebook references an image:tag that will be pulled and
+    a known section
+  ansible.builtin.assert:
+    that:
+      - item.image in (exploredata_images | map(attribute='key') | list)
+      - >-
+        item.tag in (exploredata_images | selectattr('key', 'equalto',
+        item.image) | first).tags
+      - item.section in (exploredata_sections | map(attribute='key') | list)
+    fail_msg: >-
+      notebook '{{ item.id }}' references {{ item.image }}:{{ item.tag }}
+      in section '{{ item.section }}'; the image:tag must be in
+      exploredata_images and the section in exploredata_sections.
+    quiet: true
+  loop: "{{ exploredata_notebooks }}"
+  loop_control:
+    label: "{{ item.id }}"
+
 - name: Copy files
-  copy:
+  ansible.builtin.copy:
     dest: "{{ exploredata_home }}/"
+    mode: preserve
     src: "{{ item }}"
   loop:
     - build.hub
@@ -13,22 +34,30 @@
     - docker-compose.yml
 
 - name: Copy jupyterhub_config.py
-  template:
+  ansible.builtin.template:
     src: jupyterhub_config.py
     dest: "{{ exploredata_home }}/jupyterhub_home/"
     backup: true
+    mode: "0644"
     validate: python3 -m py_compile %s
 
+- name: Render the notebook selection form
+  ansible.builtin.template:
+    src: jupyterhub_home/templates/custom_options_form.html.j2
+    dest: "{{ exploredata_templates_dir }}/custom_options_form.html"
+    backup: true
+    mode: "0644"
+
 - name: Install runtime environment file
-  copy:
+  ansible.builtin.copy:
     dest: "{{ exploredata_home }}/.env"
+    mode: "0600"
     content: |
       NETWORK_NAME={{ exploredata_network }}
       HUB_PORT={{ exploredata_port }}
       HUB_RESTART=always
       HUB_IMAGE={{ exploredata_hub_image }}
       HUB_CONTAINER_NAME={{ exploredata_hub_container }}
-      NOTEBOOK_IMAGE={{ exploredata_notebook_image }}
       PASSWORD={{ exploredata_password[exploredata_type] }}
 
 - name: Login to registry
@@ -40,10 +69,15 @@
 
 - name: Make sure that the notebook images are present
   community.docker.docker_image:
-    name: "{{ exploredata_notebook_image }}"
+    name: >-
+      {{ exploredata_registry }}/{{ exploredata_image_namespace }}.{{
+      item.0.image }}:{{ item.1 }}
     source: pull
+  loop: "{{ exploredata_images | subelements('tags') }}"
+  loop_control:
+    label: "{{ item.0.image }}:{{ item.1 }}"
 
 - name: Build and start the hub image
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ exploredata_home }}"
-    build: yes
+    build: always

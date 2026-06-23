@@ -6,15 +6,14 @@
   block:
 
   - name: Find the latest release of dive
-    github_release:
-      user: wagoodman
-      repo: dive
-      action: latest_release
+    uri:
+      url: https://api.github.com/repos/wagoodman/dive/releases/latest
+      return_content: true
     register: gh
 
   - name: Set dive_version fact
     set_fact:
-      dive_version: "{{ gh.tag.lstrip('v') }}"
+      dive_version: "{{ gh.json.tag_name.lstrip('v') }}"
       cacheable: true
 
 # FIXME: Remove in 2025

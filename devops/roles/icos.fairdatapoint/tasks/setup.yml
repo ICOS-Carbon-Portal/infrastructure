@@ -2,7 +2,7 @@
 
 - name: Create fairdatapoint directory
   file:
-    path: "{{ fdp_home }}/volumes/"
+    path: "{{ fdp_home }}/"
     state: directory
 
 
@@ -14,28 +14,38 @@
   register: _compose
 
 
-- name: Generate JWT secret
-  include_role:
-    name: icos.password_env_file
-  vars:
-      file: "{{ item.file }}"
-      set_fact: "{{ item.set_fact }}"
-      file_var: "{{ item.file_var }}"
-  loop:
-    - file: "{{ fdp_home }}/jwt-secret"
-      set_fact: fdp_jwt_secret
-      file_var: FDP_JWT_SECRET
+- name: Copy Dockerfile
+  template:
+    src: Dockerfile
+    dest: "{{ fdp_home }}"
+  register: _dockerfile
+
+# either get a copy of the jar in production or package the FAIRDataPoint project anew (https://github.com/ICOS-Carbon-Portal/FAIRDataPoint)
+- name: Copy jarfile
+  copy:
+    src: "{{ fdp_jar_file }}"
+    dest: "{{ fdp_home }}/fdp.jar"
+  register: _jarfile
 
 
 - name: Copy application.yml
   template:
     src: application.yml
-    dest: "{{ fdp_home }}/volumes/"
+    dest: "{{ fdp_home }}/"
     lstrip_blocks: yes
   register: _config
+
+
+- name: Copy files
+  copy:
+    dest: "{{ fdp_home }}"
+    src: "{{ item }}"
+  loop:
+    - eh-next_logo.png
+    - _variables.scss
 
 
 - name: Start fairdatapoint
   icos_docker_compose:
     chdir: "{{ fdp_home }}"
-    force_recreate: "{{ _config.changed or _compose.changed }}"
+    force_recreate: "{{ _config.changed or _compose.changed or _jarfile.changed or _dockerfile.changed }}"

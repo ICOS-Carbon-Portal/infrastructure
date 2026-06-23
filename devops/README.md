@@ -8,10 +8,35 @@ for testing.
 
 ## Deploying Drupal websites
 
-The drupal playbook requires a `website` parameter with the short name of the website. It can be used with the justfile shim.
+The Drupal playbook requires a `website` parameter. It can be one website short name, a list of short names, or `all`.
 
-`icos play drupal -ewebsite=ac -tdrupal`
+Deploy one website:
 
-which is equivalent to
+```sh
+icos play drupal -e "website=ac" -t drupal -DC
+```
 
-`ansible-playbook -i production.inventory -t drupal -e "website=ac" drupal.yml`
+Equivalent Ansible command:
+
+```sh
+ansible-playbook -i production.inventory -t drupal -e "website=ac" drupal.yml
+```
+
+Deploy several websites:
+
+```sh
+ansible-playbook -i production.inventory -t drupal -e '{"website":["fi","nl"]}' drupal.yml
+```
+
+Deploy all websites from `roles/icos.drupal/defaults/main.yml`:
+
+```sh
+ansible-playbook -i production.inventory -t drupal -e website=all drupal.yml
+```
+
+Nginx and backup tasks are opt-in only:
+
+```sh
+ansible-playbook -i production.inventory -t drupal_nginx -e website=all drupal.yml
+ansible-playbook -i production.inventory -t drupal_backup drupal.yml
+```

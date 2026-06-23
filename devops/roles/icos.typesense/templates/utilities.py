@@ -36,6 +36,14 @@ def is_in_main(link):
         return True
     return is_in_main(link.parent)
 
+def get_category(url):
+    if "/news-and-events/news/" in url:
+        return "news"
+    elif "/news-and-events/events/" in url or "/event/" in url:
+        return "events"
+    else:
+        return "main_website"
+
 # unused, but may be useful in the future
 def is_in_menu(url, soup):
     url_path = url[len(base_url)-1:]
@@ -154,11 +162,19 @@ def timestamp():
 ## Main functions for importing
 def update_page(doc, verbose=False):
     url = doc["url"]
-    updated_doc = {"id": doc["id"], "url": doc["url"]}
-    doc_status = {"changed": False, "doc": updated_doc}
+    updated_doc = {"id": doc["id"], "url": url, "category": get_category(doc["url"])}
+    doc_status = {"changed": False, "doc": updated_doc, "no_index": False}
 
-    # return unmodified doc_status if we should not index this page
+    # return doc_status with no_index and proper links if we should not index this page
     if not index_page(url):
+        doc_status["no_index"] = True
+        resp = requests.get(url)
+        if resp.status_code != 200:
+            print(timestamp() + "[update_page] Not indexing; non-200 status (GET): " + url + " with status=" + str(resp.status_code))
+            doc_status["status"] = resp.status_code
+            return doc_status
+        soup = get_soup_with_iframes(resp.text)
+        doc_status["links"] = get_links_on_page(soup, url)
         return doc_status
 
     head = requests.head(url)
@@ -174,7 +190,8 @@ def update_page(doc, verbose=False):
         else:
             updated_doc["etag"] = curr_etag
     elif head.status_code == 301:
-        print(timestamp() + "[update_page] Redirect from " + url)
+        if verbose:
+            print(timestamp() + "[update_page] Redirect from " + url)
         doc_status["status"] = 301
         doc_status["dest"] = head.headers["location"]
         return doc_status
@@ -195,7 +212,7 @@ def update_page(doc, verbose=False):
         return doc_status
 
     soup = get_soup_with_iframes(resp.text)
-    updated_doc["title"] = soup.find("h1", attrs={"class":"page-title"}).text
+    updated_doc["title"] = soup.find("h1", attrs={"class":"title"}).text
     doc_status["links"] = get_links_on_page(soup, url)
     updated_doc["content"] = get_page_content(soup)
 
@@ -277,8 +294,9 @@ def get_all_pages(verbose=False):
             page = {}
             page["url"] = current_url
             page["etag"] = reqs.headers["etag"] if "etag" in reqs.headers else None
-            page["title"] = soup.find("h1", attrs={"class":"page-title"}).text
+            page["title"] = soup.find("h1", attrs={"class":"title"}).text
             page["content"] = get_page_content(soup)
+            page["category"] = get_category(current_url)
             all_pages.append(page)
 
         final_urls.add(current_url)
@@ -308,6 +326,45 @@ def get_analytics():
                     + "module=API&"
                     + "method=Actions.getPageUrls&"
                     + "idSite=" + matomo_site_id + "&"
+                    + "period=range&"
+                    + "date=" + one_year_ago + "," + today + "&"
+                    + "module=API&"
+                    + "format=json&"
+                    + "showColumns=nb_visits&"
+                    + "flat=1&"
+                    + "filter_limit=-1&" #can use filter_limit and filter_offset for pagination
+                    # limit to Europe and NA to avoid bot traffic
+                    + "continentCode==eur,continentCode==amn&"
+                    + "token_auth=" + matomo_token
+                )
+
+    matomo_req = requests.get(matomo_url)
+
+    url_data = matomo_req.json()
+
+    url_views = {}
+    for page in url_data:
+        url_views[page["label"]] = page["nb_visits"]
+    return url_views
+
+def get_analytics_stations():
+    # Get analytics data
+    if matomo_site_id == "0":
+        return {} # SITES, use Plausible API
+    station_site_id = "3"
+
+    today = datetime.today().strftime('%Y-%m-%d')
+    one_year_ago = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
+
+    # prepare to match analytics data with typesense data
+
+    # get analytics data
+    matomo_token = matomo_api_key
+
+    matomo_url = ("https://matomo.icos-cp.eu/?"
+                    + "module=API&"
+                    + "method=Actions.getPageUrls&"
+                    + "idSite=" + station_site_id + "&"
                     + "period=range&"
                     + "date=" + one_year_ago + "," + today + "&"
                     + "module=API&"

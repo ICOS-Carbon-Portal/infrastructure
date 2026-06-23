@@ -6,6 +6,9 @@ domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 drupal_modules: [
   bartik,
+  better_exposed_filters,
+  bootstrap,
+  ckeditor5_plugin_pack,
   color_field,
   conflict,
   editor_advanced_link,
@@ -26,6 +29,8 @@ drupal_modules: [
   smtp,
   toc_js,
   token,
-  webform
+  views_infinite_scroll,
+  webform,
+  webform_views
 ]
 robots_txt: cp-robots.txt

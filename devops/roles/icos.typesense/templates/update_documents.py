@@ -42,11 +42,14 @@ links_seen = [base_url]
 counter = 0
 for line in documents:
     doc = json.loads(line)
+    # Skip stations
+    if doc["category"] == "station":
+        continue
     doc_status = update_page(doc)
     links_seen.append(doc["url"])
     if "status" in doc_status:
         status = doc_status["status"]
-        if status == 404:
+        if status == 404 or status == 403:
             documents_to_remove.append(doc)
         elif status == 301:
             documents_to_remove.append(doc)
@@ -65,17 +68,23 @@ for line in documents:
 for link in links_to_check:
     if link not in links_seen:
         links_seen.append(link)
-        # need to freshly index this page
-        doc_stub = {"id": url_to_id(link), "url": link}
-        doc_status = update_page(doc_stub)
-        if "status" in doc_status:
-            if doc_status["status"] == 301:
-                if doc_status["dest"] not in links_seen:
-                    links_to_check.append(doc_status["dest"])
-        elif doc_status["changed"]:
-            documents_to_update_content.append(doc_status["doc"])
-            links_to_check += doc_status["links"]
-        time.sleep(0.25)
+        if link.startswith("/"): # guard for relative links
+            new_link = base_url + link[1:]
+            links_to_check.append(new_link)
+        else:
+            # need to freshly index this page
+            doc_stub = {"id": url_to_id(link), "url": link}
+            doc_status = update_page(doc_stub)
+            if doc_status["no_index"]: # we will not index this page, but include its links
+                links_to_check += doc_status["links"]
+            elif "status" in doc_status: # we tried to request this page and failed
+                if doc_status["status"] == 301:
+                    if doc_status["dest"] not in links_seen:
+                        links_to_check.append(doc_status["dest"])
+            elif doc_status["changed"]: # we will update the page
+                documents_to_update_content.append(doc_status["doc"])
+                links_to_check += doc_status["links"]
+            time.sleep(0.25)
 
 
 # Add analytics data
@@ -96,7 +105,16 @@ updates_success = client.collections[collection_name].documents.import_(document
 success_count = sum(d['success'] for d in updates_success)
 
 print(timestamp() + f"[update_documents] Updated documents for {schema['name']}: " + 
-      f"{success_count}/{len(updates_success)} updates succeeded, of {len(documents)} total documents.")
+      f"{success_count}/{len(updates_success)} updates succeeded, of {len(documents)} (pre-update) total documents.")
+
+def find_failure(x):
+    return not x["success"]
+
+if success_count < len(updates_success):
+    failures = list(filter(find_failure, updates_success))
+    for failure in failures:
+        print(timestamp() + f"[update_documents] Update failed with error {failure['error']}")
+
 if len(documents_to_remove) > 0:
     print(timestamp() + f"[update_documents] Removing documents for {schema['name']}:" + 
           f"{len(documents_to_remove)} documents to remove.")

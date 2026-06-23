@@ -13,6 +13,14 @@
 #   $ icos play cpauth bbclient cpauth_backup
 
 - hosts: fsicos2
+  pre_tasks:
+    - name: Setup java
+      tags:
+        - java
+        - cpauth_setup
+      import_role:
+        name: icos.java
+
   roles:
     - role: icos.certbot2
       tags: cert

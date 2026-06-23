@@ -1,7 +1,3 @@
-- name: Install jre
-  apt:
-    name: "{{ cpdata_jre_package }}"
-
 - name: Create cpdata user
   user:
     name: "{{ cpdata_user }}"
@@ -14,3 +10,8 @@
     state: directory
     owner: "{{ cpdata_user }}"
     group: "{{ cpdata_user }}"
+
+- name: Set up logrotate for ETC facade
+  copy:
+    src: etc-facade
+    dest: /etc/logrotate.d/etc-facade

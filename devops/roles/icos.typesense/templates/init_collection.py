@@ -50,24 +50,8 @@ if "name" in search_success:
 else:
     print(timestamp() + f"[init_collection] Collection creation for schema name = {search_schema['name']} failed.")
 
-popular_success = client.collections.create(popular_schema)
-nohits_success = client.collections.create(nohits_schema)
-
 popular_rule_name =  popular_schema["name"] + "-aggregation"
 nohits_rule_name =  nohits_schema["name"] + "-aggregation"
-
-
-if "name" in popular_success:
-    print(timestamp() + f"[init_collection] Popular queries collection with name={popular_success['name']} created successfully.")
-else:
-    print(timestamp() + f"[init_collection] Popular queries collection with name={popular_schema['name']} already exists, no need to create.")
-    client.analytics.rules(popular_rule_name).delete()
-
-if "name" in nohits_success:
-    print(timestamp() + f"[init_collection] No hits queries collection with name={nohits_success['name']} created successfully.")
-else:
-    print(timestamp() + f"[init_collection] No hits queries collection with name={nohits_schema['name']} already exists, no need to create.")
-    client.analytics.rules(nohits_rule_name).delete()
 
 popular_rule_config = {
   "type": "popular_queries",
@@ -97,5 +81,20 @@ nohits_rule_config = {
   }
 }
 
-client.analytics.rules.upsert(popular_rule_name, popular_rule_config)
-client.analytics.rules.upsert(nohits_rule_name, nohits_rule_config)
+try:
+    client.collections[popular_schema["name"]].retrieve()
+except:
+    popular_success = client.collections.create(popular_schema)
+    print(timestamp() + f"[init_collection] Popular queries collection with name={popular_success['name']} created successfully.")
+    client.analytics.rules.upsert(popular_rule_name, popular_rule_config)
+else:
+    print(timestamp() + f"[init_collection] Popular queries collection with name={popular_schema['name']} already exists, no need to create.")
+
+try:
+    client.collections[nohits_schema["name"]].retrieve()
+except:
+    nohits_success = client.collections.create(nohits_schema)
+    print(timestamp() + f"[init_collection] No hits queries collection with name={nohits_success['name']} created successfully.")
+    client.analytics.rules.upsert(popular_rule_name, popular_rule_config)
+else:
+    print(timestamp() + f"[init_collection] No hits queries collection with name={nohits_schema['name']} already exists, no need to create.")

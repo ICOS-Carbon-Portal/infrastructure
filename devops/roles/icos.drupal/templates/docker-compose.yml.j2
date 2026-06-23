@@ -1,13 +1,13 @@
 services:
   drupal:
-    image: drupal:{{ drupal_version }}
+    image: drupal:{{ drupal_version }}-php8.3
     links:
       - mariadb
     ports:
       - "127.0.0.1:{{ drupal_docker_port }}:80"
     volumes:
       - ../composer/composer.json:/opt/drupal/composer.json
-{% if robots_txt is defined %}
+{% if drupal_website_vars.robots_txt is defined %}
       - ../composer/robots.txt.append:/opt/drupal/robots.txt.append
 {% endif %}
       - vendor:/opt/drupal/vendor
@@ -18,7 +18,7 @@ services:
       - ../files/repo:/var/www/html/repo/:rw
       - ../files/private:/var/www/private/
       - ../config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-{% if website == "cp" %}
+{% if drupal_website == "cp" %}
       - ../../RINGO:/var/www/html/sites/default/files/RINGO
     external_links:
       - restheart_restheart_1:restheart
@@ -27,13 +27,13 @@ services:
   mariadb:
     # When bumping version, uncomment 'MARIADB_AUTO_UPGRADE: 1' bellow to run mariadb-upgrade⁠
     image: mariadb:11.6
-    command: --transaction-isolation=READ-COMMITTED
+    command: --transaction-isolation=READ-COMMITTED --collation-server=utf8mb4_general_ci --character_set_collations='utf8mb4=utf8mb4_general_ci'
     ports:
       - "127.0.0.1:{{ mysql_docker_port }}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: {{ vault_mysql_root_password }}
-      MYSQL_DATABASE: {{ database_name | default("icos") }}
-      MYSQL_USER: {{ database_user | default("icos") }}
+      MYSQL_DATABASE: {{ database_name }}
+      MYSQL_USER: {{ database_user }}
       MYSQL_PASSWORD: {{ vault_mysql_icos_password }}
       # MARIADB_AUTO_UPGRADE: 1
     volumes:

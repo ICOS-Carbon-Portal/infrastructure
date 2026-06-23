@@ -12,7 +12,7 @@ services:
     ports:
       - "8000:8000"
     command: >-
-      configurable-http-proxy --ip 0.0.0.0 --port 8000 --api-ip 0.0.0.0 --api-port 8001 --error-target http://hub:8081/hub/error
+      --ip 0.0.0.0 --port 8000 --api-ip 0.0.0.0 --api-port 8001 --error-target http://hub:8081/hub/error
     env_file:
       - auth_token.env
     networks:

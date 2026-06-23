@@ -8,7 +8,7 @@
 # If we're not using any extra modules, then we're mostly done.
 - name: Install plain caddy
   include_tasks: plain.yml
-  when: not caddy_modules
+  when: caddy_modules | length == 0
 
 # If any modules are needed we need xcaddy instead.
 - include_tasks:
@@ -16,7 +16,7 @@
     apply:
       tags: caddy_modules
   tags: caddy_xcaddy
-  when: caddy_modules
+  when: caddy_modules | length > 0
 
 - name: Check that caddy was properly installed
   ansible.builtin.shell: "{{ caddy_bin }} version"
