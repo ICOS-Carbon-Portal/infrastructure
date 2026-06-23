@@ -478,12 +478,11 @@ class LXDContainerManagement(object):
 
         self.type = self.module.params['type']
 
-        # LXD Rest API provides additional endpoints for creating containers and virtual-machines.
-        self.api_endpoint = None
-        if self.type == 'container':
-            self.api_endpoint = '/1.0/containers'
-        elif self.type == 'virtual-machine':
-            self.api_endpoint = '/1.0/virtual-machines'
+        # LXD Rest API historically provided separate /containers and
+        # /virtual-machines endpoints. Newer LXD versions use /instances for
+        # both; the old endpoints can return 404 even though the instance
+        # exists. Use the common endpoint so existing containers are found.
+        self.api_endpoint = '/1.0/instances'
 
         self.key_file = self.module.params.get('client_key')
         if self.key_file is None:

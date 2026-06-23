@@ -29,6 +29,12 @@
     name: "{{ lxd_vm_name }}"
   register: _static_ip_info
 
+- name: Check whether container exists
+  command: lxc info {{ lxd_vm_name | quote }}
+  register: _lxd_container_info
+  failed_when: false
+  changed_when: false
+
 - name: Create container
   lxd_container:
     name: "{{ lxd_vm_name }}"
@@ -41,6 +47,20 @@
     wait_for_ipv4_interfaces: eth0
     timeout: 600
   register: _lxd
+  when: _lxd_container_info.rc != 0
+
+- name: Configure existing container
+  lxd_container:
+    name: "{{ lxd_vm_name }}"
+    state: started
+    profiles: "{{ __lxd_vm_profiles }}"
+    config: "{{ __lxd_vm_config }}"
+    devices: "{{ __lxd_vm_devices }}"
+    wait_for_ipv4_addresses: true
+    wait_for_ipv4_interfaces: eth0
+    timeout: 600
+  register: _lxd
+  when: _lxd_container_info.rc == 0
 
 - name: Set static lxd IP
   lxd_static_ip:
@@ -50,7 +70,7 @@
 - name: Extract host_ecdsa_key from the VM
   check_mode: False
   command: >-
-    lxc exec {{ lxd_vm_name }}
+    lxc exec {{ lxd_vm_name | quote }}
     awk '{print $1, $2}' /etc/ssh/ssh_host_ecdsa_key.pub
   register: _key
   changed_when: no
@@ -60,7 +80,7 @@
 
 - name: Inject ssh root keys into the VM
   command: >-
-    lxc exec {{ lxd_vm_name }} --
+    lxc exec {{ lxd_vm_name | quote }} --
     bash -c "[ -s '{{ file }}' ] || {
                echo '{{ keys }}' >> {{ file }};
                echo added;
