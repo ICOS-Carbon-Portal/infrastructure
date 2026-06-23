@@ -31,12 +31,14 @@ cp example_configs/meta_application.conf ../../meta/application.conf
 ```
 
 - You should run `lxd init` before proceeding. To run this, you probably need to add yourself to the lxd group
-  (`sudo adduser USERNAME lxd`) and change your primary group to lxd (`newgrp lxd`).
-- Note: if using Ubuntu through WSL on Windows, you will need to enable IPv4 forwarding by editing the
-  `/etc/sysctl.d/99-sysctl.conf` file and restarting the wsl service; otherwise the lxd container will not be
-  able to fetch files from the internet. Additionally, you may need to change the binding addresses for
-  data/meta to use 0.0.0.0 instead of 127.0.0.1 by editing the `application.conf` files and adding the
-  appropriate line to each service.
+  (`sudo adduser USERNAME lxd`) and change your primary group to lxd (`newgrp lxd`). You can use the defaults
+  for each question asked.
+- Note: You will probably run into a conflict between Docker and LXD, preventing networking from working
+  properly inside LXD containers. To fix this, edit `/etc/sysctl.d/99-sysctl.conf` file and enable the line
+  `net.ipv4.ip_forward=1`, which enables IPv4 forwarding, then restart your machine.
+- Note: On Windows/WSL Ubuntu, you may need to change the binding addresses for data/meta to use 0.0.0.0
+  instead of 127.0.0.1 by editing the `application.conf` files and adding the appropriate line to each
+  service.
 
 ### Running
 
@@ -47,15 +49,26 @@ just create-vm run-playbooks
 If this succeeds, an LXC container with the required services should now be running, and you should be able to
 run both the `meta` and `data` services.
 
+- Note: If you have permission issues on `.vault_password` after it's copied, set the correct permissions via
+  `lxc exec icos-devops chown ubuntu:ubuntu /home/ubuntu/.vault_password`
+
 Next, you need to set up nginx to work as a proxy, using the datalocal.icos-cp.eu and metalocal.icos-cp.eu
 domains. Unfortunately nginx must currently be run from outside of the container, on the local machine.
 
-1. Copy the contents of `nginx/hosts` to your `etc/hosts` file.
+1. Append the contents of `nginx/hosts` to your `etc/hosts` file.
 2. Change directory to the nginx folder, then run the `make_certs.sh` script.
-3. Run nginx: `nginx -c /absolute/path/to/infrastructure/local_dev/nginx/nginx.conf`
+3. Place nginx config in `/etc/nginx/conf.d` and reload nginx, after testing the config:
+```bash
+sudo mv nginx.conf /etc/nginx/conf.d
+sudo nginx -t
+sudo systemctl reload nginx
+```
+4. Alternatively, if you use the `nginx` command to start and stop the service, you can run
+  `nginx -c /absolute/path/to/infrastructure/local_dev/nginx/nginx.conf`
 
 Now, if you navigate to `datalocal.icos-cp.eu` from the machine after starting the data app, you should be
-able to access the front-end properly.
+able to access the front-end properly. (Even without running the data app, you should get an nginx 502 Bad
+Gateway page, instead of a "The provided host name is not valid for this server." warning.)
 
 
 ### Development/Testing
@@ -73,8 +86,8 @@ To start the container completely from scratch, use `just reset-vm` or `just des
 ### Restoring backups
 
 To properly use rdflog and restheart, you will need to restore a backup from the server. Instructions here are
-from the main README.md file for the repository, but tailored for this containerized approach and put into the
-justfile.
+from the main `README.md` file for the repository, but tailored for this containerized approach and put into
+the justfile.
 
 rdflog:
 
@@ -89,15 +102,15 @@ data types, but we have not yet constructed this.
 Instead, we can reduce the size of the rdflog database to be more reasonable by deleting the most recent data
 from the largest tables:
 
-bash:
-```
+bash, one at a time:
+```bash
 lxc exec icos-devops bash
 docker exec -it rdflog bash
 psql -U rdflog
 ```
 
 Inside psql shell:
-```
+```sql
 DELETE FROM atmprodcsv WHERE tstamp > NOW() - INTERVAL '36 months';
 DELETE FROM etccsv WHERE tstamp > NOW() - INTERVAL '36 months';
 DELETE FROM etcprodcsv WHERE tstamp > NOW() - INTERVAL '36 months';
@@ -109,7 +122,7 @@ VACUUM FULL atmprodcsv;
 ```
 
 Extend interval as desired if it is still too large. You can examine the largest tables with:
-```
+```sql
 SELECT
   relname AS "Table",
   pg_size_pretty(pg_total_relation_size(relid)) AS "Size"
@@ -145,4 +158,6 @@ just clean-container-backups
 
 - If `data` will not run because the Postgis client can't connect, ensure the passwords are in the
   `application.conf` file located at the root of the repository.
+- If unable to connect to the network from inside an LXD container, see the note above about enabling IPv4
+  forwarding.
 
