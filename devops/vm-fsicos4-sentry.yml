@@ -1,0 +1,43 @@
+- hosts: fsicos4
+  roles:
+    - role: icos.pve_server
+      tags: pve_server
+  tasks:
+    - name: Synchronize VM SSH port forwarding
+      tags: guest
+      command: icos-auto-dnat run
+      register: _sentry_auto_dnat
+      changed_when: >-
+        'adding port' in _sentry_auto_dnat.stdout or
+        'removing rule' in _sentry_auto_dnat.stdout
+
+- hosts: sentry
+  vars:
+    sentry_url: https://sentry.icos-cp.eu
+    sentry_version: "26.2.1"
+    sentry_backup_name: sentry
+    sentry_backup_remotes:
+      - icos1
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.docker2
+      tags: docker
+      # Sentry is large; keep images/volumes unless cleanup is explicitly run.
+      docker_periodic_cleanup: false
+
+    - role: icos.nebula
+      tags: nebula
+
+    - role: icos.sentry
+      tags: sentry
+
+  tasks:
+    - name: Install Sentry Borg backup
+      tags: backup
+      include_role:
+        name: icos.sentry
+        tasks_from: backup
+        apply:
+          tags: backup
