@@ -11,5 +11,12 @@ RestartSec=30
 WorkingDirectory={{ stiltcluster_home }}
 LimitNOFILE=65536
 
+# Keep the Akka control process responsive while STILT workers are busy.
+# The Docker/STILT calculation processes are managed separately by Docker.
+Nice=-5
+CPUWeight=5000
+IOWeight=5000
+OOMScoreAdjust=-500
+
 [Install]
 WantedBy=multi-user.target
