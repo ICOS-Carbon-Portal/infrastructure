@@ -102,3 +102,8 @@
 
 - name: Clear caches
   command: docker exec {{ drupal_website }}_drupal_1 drush cr
+
+- name: Warm up Drupal cache
+  uri:
+    url: "https://{{ domain }}/"
+  changed_when: false
