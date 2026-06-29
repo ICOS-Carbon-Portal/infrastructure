@@ -10,6 +10,7 @@ borg_bin: "/usr/local/bin/borg"
 # https://github.com/borgbackup/borg/issues/8323#issuecomment-2270803532
 borg_libc_map:
   "Ubuntu":
+    "20.04": "glibc231-x86_64"
     "22.04": "glibc231-x86_64"
     "24.04": "glibc235-x86_64-gh"
 borg_linux_asset: "{{ borg_libc_map[ansible_distribution][ansible_distribution_version] }}"
