@@ -8,8 +8,15 @@ all:
         corebackup_host: cdb
 
         borg_bin: ~/.local/bin/borg
+        borg_install_ops_borg: false
+
+        docker_compose_home: "{{ ansible_env.HOME }}/docker"
+        rdflog_home: "{{ ansible_env.HOME }}/docker/rdflog"
+        restheart_become: false
+        restheart_restore_script_dir: "{{ ansible_env.HOME }}/.local/bin"
 
         postgis_container_name: postgis
+        postgis_init_db: false
         postgis_backup_location: ~bbserver/repos/postgis.repo
         postgis_user: postgres
         postgis_db_port: 5438
@@ -18,7 +25,7 @@ all:
         rdflog_user: rdflog
 
         restheart_backup_location: ~bbserver/repos/restheart.repo
-        restheart_container_name: restheart_mongodb_1
+        restheart_container_name: restheart-mongodb-1
         restheart_dbs:
           - "{{ restheart_icos_db_name }}"
           - "{{ restheart_sites_db_name }}"

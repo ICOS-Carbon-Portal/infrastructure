@@ -7,8 +7,8 @@
 
 - name: Installing python utility
   community.general.pipx:
-    executable: pipx-global
-    python: "{{ python_util_python_executable }}"
+    executable: "{{ python_util_pipx_executable }}"
+    python: "{{ python_util_python_executable if python_util_python_executable else omit }}"
     editable: true
     # name can be a pypi name or - in this case - a filesystem path
     name: "{{ python_util_install_dir }}"
@@ -16,5 +16,5 @@
   # pipx seems to always report changed when installing editable from file
   changed_when:
     - _pipx.changed
-    - _pipx.stdout
+    - _pipx.stdout | length > 0
     - _pipx.stdout.find('already seems to be installed') == -1

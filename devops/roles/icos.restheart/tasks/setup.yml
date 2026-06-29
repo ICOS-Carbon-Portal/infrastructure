@@ -18,13 +18,13 @@
 - name: Build and start the images
   community.docker.docker_compose_v2:
     project_src: "{{ restheart_home }}"
-    build: yes
+    build: always
 
 - name: Install restore script
   tags: restheart_restore_script
   template:
     src: restore_restheart_db.py
-    dest: /usr/local/bin
+    dest: "{{ restheart_restore_script_dir | default('/usr/local/bin') }}"
     mode: +x
 
 # - name: Test Restheart

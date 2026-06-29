@@ -1,8 +1,12 @@
 # This is the directory that the pipx-global script will set PIPX_BIN_DIR to.
 python_util_bin_dir: "/usr/local/bin"
 
+# pipx-global installs to /usr/local/bin (server default).
+# Override to "pipx" for dev machines where pipx-global is not available.
+python_util_pipx_executable: "pipx-global"
+
 # We don't want the default system python (the one ansible uses), but
-# something more modern.
+# something more modern. Set to "" to use pipx's default.
 python_util_python_executable: "python3.11"
 
 # This is where we'll copy the script directory, pipx-global will then create
@@ -11,4 +15,4 @@ python_util_install_prefix: "/opt/"
 
 # e.g "/opt/nextcloud_util"
 python_util_install_dir: >-
-  {{ python_util_install_prefix }}/{{ python_util_src | basename }}
+  {{ python_util_install_prefix.rstrip('/') }}/{{ python_util_src | basename }}

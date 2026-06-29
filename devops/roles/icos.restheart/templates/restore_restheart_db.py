@@ -17,7 +17,7 @@ def get_latest_backup_date(host, location):
 
 def restore_backup(host, location, backup_date):
     extract_backup = f"borg extract --stdout {host}:{location}::{backup_date}".split()
-    exec_container = f"docker exec -i restheart_mongodb_1 mongorestore --archive --drop".split()
+    exec_container = f"docker exec -i {{ restheart_container_name }} mongorestore --archive --drop".split()
 
     extracted_backup = check_output(extract_backup)
 

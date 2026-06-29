@@ -10,3 +10,4 @@
 
 - import_tasks: just.yml
   tags: borg_just
+  when: borg_install_ops_borg | default(true) | bool

@@ -116,6 +116,49 @@ vault-diff:
 
 
 
+# ENVIRONMENTS
+# run a command against staging
+[group('environments')]
+staging *args:
+    ANSIBLE_INVENTORY=staging.inventory just {{args}}
+
+# run a command against test-fs4
+[group('environments')]
+test-fs4 *args:
+    ANSIBLE_INVENTORY=test-fs4.inventory just {{args}}
+
+# run a command against cities
+[group('environments')]
+cities *args:
+    ANSIBLE_INVENTORY=cities.inventory just {{args}}
+
+
+
+# DEV
+# setup rdflog locally and restore from backup
+[group('dev')]
+dev-rdflog:
+    ansible-playbook -i dev.inventory -t rdflog core.yml
+    ansible-playbook -i dev.inventory -t rdflog core_restore.yml
+
+# setup restheart+mongodb locally and restore from backup
+[group('dev')]
+dev-restheart:
+    ansible-playbook -i dev.inventory -t restheart_setup core.yml
+    ansible-playbook -i dev.inventory -t restheart core_restore.yml
+
+# setup postgis locally and restore from backup
+[group('dev')]
+dev-postgis:
+    ansible-playbook -i dev.inventory -t postgis_setup core.yml
+    ansible-playbook -i dev.inventory -t postgis core_restore.yml
+
+# setup all local dev services and restore from backup
+[group('dev')]
+dev-setup: dev-rdflog dev-restheart dev-postgis
+
+
+
 # MODULES
 # nebula mesh vpn
 [group('modules')]

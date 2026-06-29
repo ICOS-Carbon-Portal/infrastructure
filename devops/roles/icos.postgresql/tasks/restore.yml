@@ -1,4 +1,18 @@
-- name: Extract "{{ postgresql_container_name }}" backup
+- name: Get latest borg archive for {{ postgresql_container_name }}
   ansible.builtin.shell:
-    cmd: /usr/local/bin/restore_{{ postgresql_container_name }}_db.py --host={{ postgresql_backup_host }} --location={{ postgresql_backup_location }}
-    # executable: /usr/bin/python3
+    cmd: >-
+      BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=y
+      BORG_RELOCATED_REPO_ACCESS_IS_OK=y
+      BORG_REPO={{ postgresql_backup_host }}:{{ postgresql_backup_location }}
+      {{ borg_bin }} list --short --last 1
+  register: _archive
+
+- name: Restore "{{ postgresql_container_name }}" database from backup
+  ansible.builtin.shell:
+    cmd: >-
+      BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=y
+      BORG_RELOCATED_REPO_ACCESS_IS_OK=y
+      BORG_REPO={{ postgresql_backup_host }}:{{ postgresql_backup_location }}
+      {{ borg_bin }} extract --stdout ::{{ _archive.stdout }}
+      {{ "| egrep -v '^(CREATE|ALTER) ROLE'" if postgresql_norole | default(false) else '' }}
+      | docker exec -i {{ postgresql_container_name }} psql -U {{ postgresql_user }}

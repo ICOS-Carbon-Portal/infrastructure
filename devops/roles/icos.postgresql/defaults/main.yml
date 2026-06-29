@@ -1,3 +1,5 @@
+postgresql_norole: false
+
 # Set any of these to enable optional features.
 postgresql_postgis_enable: false
 postgresql_pg_stat_enable: true

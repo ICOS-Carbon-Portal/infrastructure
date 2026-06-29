@@ -33,8 +33,11 @@
     chdir: /root
 
 - name: Install psycopg2 for Ansible to be able to create postgresql dbs and users
-  pip: name=psycopg2-binary
+  ansible.builtin.apt:
+    name: python3-psycopg2
+    state: present
   become: yes
+  when: postgis_init_db | default(true)
 
 - name: Create postgis databases
   postgresql_db:
@@ -45,9 +48,11 @@
     login_port: "{{ postgis_db_port }}"
     maintenance_db: "{{ postgis_db_name }}"
   loop: "{{ postgis_dbs }}"
+  when: postgis_init_db | default(true)
 
 - name: Create users in each postgis database
   include_tasks: users.yml
   loop: "{{ postgis_dbs }}"
   loop_control:
     loop_var: db_name
+  when: postgis_init_db | default(true)

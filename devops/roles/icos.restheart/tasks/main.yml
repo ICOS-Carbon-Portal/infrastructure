@@ -1,5 +1,5 @@
 - import_tasks: setup.yml
-  become: yes
+  become: "{{ restheart_become | default(true) }}"
   become_user: root
   tags: restheart_setup
 
