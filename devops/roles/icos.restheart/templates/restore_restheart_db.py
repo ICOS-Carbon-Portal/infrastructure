@@ -15,9 +15,17 @@ def get_latest_backup_date(host, location):
     return check_output(["tail", "-1"], input=all_backups).strip().decode("utf-8")
 
 
+def restheart_mongo_container():
+    names = check_output(["docker", "ps", "--format", "{{ '{{' }}.Names{{ '}}' }}"]).decode("utf-8").splitlines()
+    for name in ("restheart_mongodb_1", "restheart-mongodb-1"):
+        if name in names:
+            return name
+    raise RuntimeError(f"Could not find RestHeart MongoDB container among: {names}")
+
+
 def restore_backup(host, location, backup_date):
     extract_backup = f"borg extract --stdout {host}:{location}::{backup_date}".split()
-    exec_container = f"docker exec -i restheart_mongodb_1 mongorestore --archive --drop".split()
+    exec_container = ["docker", "exec", "-i", restheart_mongo_container(), "mongorestore", "--archive", "--drop"]
 
     extracted_backup = check_output(extract_backup)
 

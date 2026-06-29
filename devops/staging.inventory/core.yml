@@ -7,30 +7,24 @@ all:
     # for the server (to set up proxy)
     cpauth_icos_domain: cpauthstaging.icos-cp.eu
     cpauth_sites_domain: authstaging.fieldsites.se
-    cpauth_cities_domain: cityauthstaging.icos-cp.eu
 
     cpmeta_icos_domain: metastaging.icos-cp.eu
     cpmeta_sites_domain: metastaging.fieldsites.se
-    cpmeta_cities_domain: citymetastaging.icos-cp.eu
 
     cpdata_icos_domain: datastaging.icos-cp.eu
     cpdata_sites_domain: datastaging.fieldsites.se
-    cpdata_cities_domain: citydatastaging.icos-cp.eu
 
     cpauth_domains:
       - "{{ cpauth_icos_domain }}"
       - "{{ cpauth_sites_domain }}"
-      - "{{ cpauth_cities_domain }}"
 
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
       - "{{ cpmeta_sites_domain }}"
-      - "{{ cpmeta_cities_domain }}"
 
     cpdata_domains:
       - "{{ cpdata_icos_domain }}"
       - "{{ cpdata_sites_domain }}"
-      - "{{ cpdata_cities_domain }}"
 
     doi_domains:
       - doistaging.icos-cp.eu

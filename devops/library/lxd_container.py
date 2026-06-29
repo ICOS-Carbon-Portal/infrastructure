@@ -420,7 +420,10 @@ import os
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.general.plugins.module_utils.lxd import LXDClient, LXDClientException
+try:
+    from ansible_collections.community.general.plugins.module_utils.lxd import LXDClient, LXDClientException
+except ImportError:
+    from ansible_collections.community.general.plugins.module_utils._lxd import LXDClient, LXDClientException
 from ansible.module_utils.six.moves.urllib.parse import urlencode
 
 # LXD_ANSIBLE_STATES is a map of states that contain values of methods used

@@ -1,0 +1,7 @@
+{
+     "default-address-pools": [{"base":"172.22.0.0/16", "size":24}],
+{% if not docker2_containerd_snapshotter %}
+     "features": {"containerd-snapshotter": false},
+{% endif %}
+     "live-restore": true
+}
