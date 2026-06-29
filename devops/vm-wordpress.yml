@@ -13,7 +13,10 @@
     wordpress_eric_forum_domains:
       - eric-forum.eu
       - www.eric-forum.eu
-    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains }}"
+    wordpress_envri_domains:
+      - envri.eu
+      - www.envri.eu
+    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains + wordpress_envri_domains }}"
   roles:
     - role: icos.lxd_vm
       tags: lxd
@@ -55,11 +58,77 @@
       wp_site_log: eric-forum
       wp_site_rate_zone: wp_login_ef
 
+    - role: icos.lxd_vm
+      tags: lxd
+      lxd_vm_name: wordpress-envri
+      lxd_vm_root_size: "500GB"
+      lxd_vm_ubuntu_version: "24.04"
+      lxd_vm_config:
+        limits.cpu: "4"
+        limits.memory: "8GB"
 
-- hosts: wordpress,wordpress-eric-forum
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: envri
+      nginxsite_file: files/wordpress-canonical.conf
+      wp_site_canonical_domain: envri.eu
+      wp_site_redirect_domains:
+        - www.envri.eu
+      wp_site_upstream: wordpress-envri.lxd
+      wp_site_log: envri
+      wp_site_rate_zone: wp_login_envri
+
+
+- hosts: wordpress,wordpress-eric-forum,wordpress-envri
   roles:
     - role: icos.lxd_guest
       tags: guest
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_name: "{{ inventory_hostname }}"
+      bbclient_remotes:
+        - fsicos2
+        - icos1
+      bbclient_timer_conf: |
+        OnCalendar=*-*-* 02:00:00
+        RandomizedDelaySec=1h
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -Eueo pipefail
+
+        backup_dir="{{ bbclient_home }}/backup"
+
+        cleanup() {
+          rm -rf "$backup_dir"
+        }
+        trap cleanup EXIT
+
+        rm -rf "$backup_dir"
+        mkdir -p "$backup_dir/mysql"
+
+        mysql_cmd=$(command -v mariadb || command -v mysql)
+        dump_cmd=$(command -v mariadb-dump || command -v mysqldump)
+
+        "$mysql_cmd" -NBe 'SHOW DATABASES' \
+          | grep -Ev '^(information_schema|mysql|performance_schema|sys)$' \
+          | while IFS= read -r db; do
+              "$dump_cmd" \
+                --single-transaction \
+                --quick \
+                --routines \
+                --events \
+                --triggers \
+                --databases "$db" > "$backup_dir/mysql/$db.sql"
+            done
+
+        {{ bbclient_all }} create --stats --verbose "::{now}" \
+          /var/www/html \
+          "$backup_dir" \
+          /etc/nginx/sites-available \
+          /etc/nginx/sites-enabled
+        {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
+        {{ bbclient_all }} compact --verbose
 
   tasks:
     - name: Print wp-config warning

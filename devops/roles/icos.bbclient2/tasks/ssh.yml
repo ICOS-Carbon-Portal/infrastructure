@@ -26,10 +26,15 @@
 
       {% endfor %}
 
+- name: Create bin directory for ssh wrapper
+  file:
+    path: "{{ bbclient_bin_dir }}"
+    state: directory
+
 - name: Add ssh wrapper
   copy:
     mode: +x
     dest: "{{ bbclient_ssh_bin }}"
     content: |
-      #!/usr/bin/bash
+      #!/bin/bash
       exec ssh -F {{ bbclient_ssh_config }} "$@"
