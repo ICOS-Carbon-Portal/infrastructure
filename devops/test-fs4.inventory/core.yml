@@ -17,6 +17,8 @@ all:
     cpdata_sites_domain: data.fs4vm.fielsites.se
     cpdata_cities_domain: citydata.fs4vm.icos-cp.eu
 
+    cpmeta_virtuoso_domain: meta-virtuoso.fs4vm.icos-cp.eu
+
     cpauth_domains:
       - "{{ cpauth_icos_domain }}"
 
@@ -102,11 +104,29 @@ all:
     core_server:
       hosts:
         fsicos4:
-          ansible_port: 60608
 
       vars:
-        coreapp_httpproxy_host: fsicos4
+        core_proxy: caddy
+        coreapp_httpproxy_host: staging-test
         coreapp_host_ip: "{{ fsicos4_ip }}"
+
+        core_caddy_name: core-test-fs4
+        core_caddy_conf: |
+          {{ cpmeta_icos_domain }} {
+                  reverse_proxy {{ coreapp_httpproxy_host }}:9094
+          }
+
+          {{ cpmeta_virtuoso_domain }} {
+                  reverse_proxy {{ coreapp_httpproxy_host }}:9095
+          }
+
+          {{ cpauth_icos_domain }} {
+                  reverse_proxy {{ coreapp_httpproxy_host }}:8080
+          }
+
+          {{ cpdata_icos_domain }} {
+                  reverse_proxy {{ coreapp_httpproxy_host }}:9011
+          }
 
         # cpmeta - proxy
         cpmeta_nginxsite_name: cpmeta-test
@@ -121,7 +141,7 @@ all:
         cpauth_nginxsite_name: cpauth-test
 
         # restheart - proxy
-        restheart_host: vm_fsicos4_test
+        restheart_host: "{{ coreapp_httpproxy_host }}"
         restheart_nginxsite_name: restheart-test
         restheart_certbot_name: restheart-test
         restheart_domains:
