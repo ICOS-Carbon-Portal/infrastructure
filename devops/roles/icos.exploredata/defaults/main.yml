@@ -19,8 +19,11 @@ exploredata_images:
   - key: examples
     image: examples
     tags: [0.1.1]
-  - key: icos-notebooks
-    image: icos-notebooks
+  - key: explore-icos-data
+    image: explore-icos-data
+    tags: [0.1.0]
+  - key: notebooks-with-doi
+    image: notebooks-with-doi
     tags: [0.1.0]
   - key: summer-school
     image: summer-school
@@ -40,12 +43,11 @@ exploredata_sections:
       interactive visualizations (plots, maps, tables), and showcase
       scientific outputs from ICOS projects and educational workshops.
 
-  - key: examples
-    title: "Examples"
+  - key: education
+    title: "Education"
     tooltip: >-
-      This is a good place to start exploring ICOS data. Notebooks under
-      this category showcase how to use the ICOS Carbon Portal Python
-      libraries which give you access to data products provided by ICOS.
+      Here we provide specific collections of notebooks for workshops or
+      university courses.
 
   - key: doi
     title: "Notebooks with DOI"
@@ -55,12 +57,6 @@ exploredata_sections:
       interactive tools, showcasing how to compute and analyze the data,
       and create the figures published in the manuscript.
 
-  - key: education
-    title: "Education"
-    tooltip: >-
-      Here we provide specific collections of notebooks for workshops or
-      university courses.
-
   - key: classic
     title: "Classic Environment"
     tooltip: >-
@@ -69,8 +65,19 @@ exploredata_sections:
 
 exploredata_notebooks:
   # Explore ICOS Data
+  - id: examples
+    image: examples
+    tag: 0.1.1
+    path: "/lab/tree"
+    section: explore
+    label: "Examples for using ICOS Python library"
+    tooltip: >-
+      This is a good place to start exploring ICOS data. These example
+      notebooks showcase how to use the ICOS Carbon Portal Python libraries
+      which give you access to data products provided by ICOS.
+
   - id: noaa-curve-fit
-    image: icos-notebooks
+    image: explore-icos-data
     tag: 0.1.0
     path: >-
       /lab/tree/icos-jupyter-notebooks/NOAA Curve Fitting for ObsPack
@@ -83,7 +90,7 @@ exploredata_notebooks:
       the full workflow.
 
   - id: atm-obs-stats
-    image: icos-notebooks
+    image: explore-icos-data
     tag: 0.1.0
     path: >-
       /lab/tree/icos-jupyter-notebooks/ICOS Atmospheric Observation
@@ -95,7 +102,7 @@ exploredata_notebooks:
       interactive visuals, and compare results across different stations.
 
   - id: atm-station-char
-    image: icos-notebooks
+    image: explore-icos-data
     tag: 0.1.0
     path: >-
       /lab/tree/icos-jupyter-notebooks/Characterization of Atmospheric
@@ -108,7 +115,7 @@ exploredata_notebooks:
       analyze any point available in the STILT domain.
 
   - id: fossil-co2
-    image: icos-notebooks
+    image: explore-icos-data
     tag: 0.1.0
     path: >-
       /lab/tree/project-jupyter-notebooks/RINGO-T1.3/High Fossil CO2
@@ -120,140 +127,12 @@ exploredata_notebooks:
       using ICOS measurement time series and STILT footprints and
       concentration time series for applicable stations.
 
-  # Examples
-  - id: ex1
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex1 - Access a Single Dataset.ipynb"
-    section: examples
-    label: "ex1 - Access a Single Dataset"
-    tooltip: >-
-      Access ICOS observations and extract data and metadata information.
-
-  - id: ex1a
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex1a - Work with Atmospheric Data.ipynb"
-    section: examples
-    label: "ex1a - Work with Atmospheric Data"
-    tooltip: >-
-      Access atmospheric ICOS observations and extract data and metadata
-      information.
-
-  - id: ex1b
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex1b - Work with Ecosystem Data.ipynb"
-    section: examples
-    label: "ex1b - Work with Ecosystem Data"
-    tooltip: >-
-      Access ecosystem ICOS observations and extract data and metadata
-      information.
-
-  - id: ex1c
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex1c - Work with Ocean Data.ipynb"
-    section: examples
-    label: "ex1c - Work with Ocean Data"
-    tooltip: >-
-      Access oceanic ICOS observations and extract data and metadata
-      information.
-
-  - id: ex2
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex2 - Explore ICOS Stations.ipynb"
-    section: examples
-    label: "ex2 - Explore ICOS Stations"
-    tooltip: >-
-      Access, extract, and process data and metadata information for ICOS
-      stations.
-
-  - id: ex3
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex3 - Combine ICOS & PANGAEA Data.ipynb"
-    section: examples
-    label: "ex3 - Combine ICOS & PANGAEA Data"
-    tooltip: >-
-      Combine information from two independent data sets, one from the
-      ICOS Carbon Portal and one from PANGAEA, both containing ocean
-      observations from Europe to South America.
-
-  - id: ex4
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex4 - Access Collection Data & Metadata.ipynb"
-    section: examples
-    label: "ex4 - Access Collection Data & Metadata"
-    tooltip: "Access data and metadata of ICOS collections."
-
-  - id: ex5
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex5 - Query Metadata with SPARQL.ipynb"
-    section: examples
-    label: "ex5 - Query Metadata with SPARQL"
-    tooltip: >-
-      Access data and metadata for ICOS stations and observations using
-      SPARQL queries.
-
-  - id: ex6a
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex6a - Search STILT Stations.ipynb"
-    section: examples
-    label: "ex6a - Search STILT Stations"
-    tooltip: "Search for stations with available STILT model results."
-
-  - id: ex6b
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex6b - Animate STILT Footprints.ipynb"
-    section: examples
-    label: "ex6b - Animate STILT Footprints"
-    tooltip: >-
-      Search for STILT stations, load modeled data, and create simple
-      visualizations and animations.
-
-  - id: ex6c
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex6c - Plot STILT Time Series & Footprints.ipynb"
-    section: examples
-    label: "ex6c - Plot STILT Time Series & Footprints"
-    tooltip: >-
-      Load STILT time series data and footprints, and create plots and
-      maps using Holoviews and Geoviews.
-
-  - id: ex7
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex7 - Read ObsPack Collections.ipynb"
-    section: examples
-    label: "ex7 - Read ObsPack Collections"
-    tooltip: >-
-      Read and explore the European ObsPack compilation and related ICOS
-      data products.
-
-  - id: ex8
-    image: examples
-    tag: 0.1.1
-    path: "/lab/tree/ex8 - Authenticate for Remote Data Access.ipynb"
-    section: examples
-    label: "ex8 - Authenticate for Remote Data Access"
-    tooltip: >-
-      Authenticate and accept required licenses to access ICOS, ICOS
-      Cities, and SITES data portals.
-
   # Notebooks with DOI
   - id: city-char
-    image: icos-notebooks
+    image: notebooks-with-doi
     tag: 0.1.0
     path: >-
-      /lab/tree/project-jupyter-notebooks/city-characterization-tool/City
-      Characterization Tool.ipynb
+      /lab/tree/city-characterization-tool/City Characterization Tool.ipynb
     section: doi
     label: "City Characterization Tool"
     tooltip: >-
@@ -263,10 +142,10 @@ exploredata_notebooks:
     doi: "10.18160/P8SV-B99F"
 
   - id: eco-anomaly
-    image: icos-notebooks
+    image: notebooks-with-doi
     tag: 0.1.0
     path: >-
-      /lab/tree/icos-jupyter-notebooks/Ecosystem Site Anomaly
+      /lab/tree/ecosystem-site-anomaly-visualization/Ecosystem Site Anomaly
       Visualization.ipynb
     section: doi
     label: "Ecosystem Site Anomaly Visualization"
@@ -277,11 +156,10 @@ exploredata_notebooks:
     doi: "10.18160/4QPK-2N7W"
 
   - id: network-view
-    image: icos-notebooks
+    image: notebooks-with-doi
     tag: 0.1.0
     path: >-
-      /lab/tree/project-jupyter-notebooks/network-view-tool/Network View
-      Tool.ipynb
+      /lab/tree/network-view-tool/Network View Tool.ipynb
     section: doi
     label: "Network View Tool"
     tooltip: >-
@@ -291,11 +169,10 @@ exploredata_notebooks:
     doi: "10.18160/AMET-9KWT"
 
   - id: flask-sampling
-    image: icos-notebooks
+    image: notebooks-with-doi
     tag: 0.1.0
     path: >-
-      /lab/tree/project-jupyter-notebooks/RINGO-T1.3/RINGO
-      Flask-Sampling(Task 1.3).ipynb
+      /lab/tree/RINGO-T1.3/RINGO Flask-Sampling(Task 1.3).ipynb
     section: doi
     label: "RINGO Flask-Sampling(Task 1.3)"
     tooltip: >-
@@ -305,9 +182,9 @@ exploredata_notebooks:
     doi: "10.18160/FSS2-SH26"
 
   - id: radiocarbon
-    image: icos-notebooks
+    image: notebooks-with-doi
     tag: 0.1.0
-    path: "/lab/tree/icos-jupyter-notebooks/Radiocarbon.ipynb"
+    path: "/lab/tree/radiocarbon/Radiocarbon.ipynb"
     section: doi
     label: "Radiocarbon"
     tooltip: >-
@@ -318,7 +195,7 @@ exploredata_notebooks:
 
   # Education
   - id: envrifair-ws
-    image: icos-notebooks
+    image: explore-icos-data
     tag: 0.1.0
     path: >-
       /lab/tree/project-jupyter-notebooks/envrifair-winterschool/map
@@ -329,7 +206,7 @@ exploredata_notebooks:
       products and build interactive maps.
 
   - id: otc-workshop
-    image: icos-notebooks
+    image: explore-icos-data
     tag: 0.1.0
     path: "/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
     section: education
