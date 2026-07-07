@@ -1,6 +1,5 @@
 # Standard library imports
 import os
-import re
 import sys
 
 # Related third party imports
@@ -99,15 +98,9 @@ class CustomDockerSpawner(DockerSpawner):
         if 'notebook' in self.user_options.keys():
             self.default_url = self.user_options['notebook']
 
-        info = await self.docker('inspect_image', self.image)
-        description = ((info.get('Config') or {}).get('Labels') or {}).get(
-            'org.opencontainers.image.description', '')
-        match = re.search(r'Based on (.+?)(?:,|$)', description)
-        base_image = match.group(1).strip() if match else description.strip()
-        if base_image:
-            environment = dict(self.environment)
-            environment['BASE_IMAGE'] = base_image
-            self.environment = environment
+        environment = dict(self.environment)
+        environment['IMAGE_REF'] = self.image
+        self.environment = environment
 
         return await super().start()
 
