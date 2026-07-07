@@ -31,8 +31,8 @@ exploredata_images:
   - key: ocean-carbon-course
     image: ocean-carbon-course
     tags: [0.1.0]
-  - key: classic
-    image: classic
+  - key: timecapsule
+    image: timecapsule
     tags: [0.1.0]
 
 exploredata_sections:
@@ -57,10 +57,10 @@ exploredata_sections:
       interactive tools, showcasing how to compute and analyze the data,
       and create the figures published in the manuscript.
 
-  - key: classic
-    title: "Classic Environment"
+  - key: timecapsule
+    title: "Timecapsule"
     tooltip: >-
-      Launch the Classic environment, with all notebooks through November
+      Launch the Timecapsule environment, with all notebooks through November
       2025 available in a single environment.
 
 exploredata_notebooks:
@@ -237,11 +237,11 @@ exploredata_notebooks:
       ICOS data through lectures and hands-on training offered at the
       annual ICOS Summer School.
 
-  # Classic
-  - id: classic
-    image: classic
+  # Timecapsule
+  - id: timecapsule
+    image: timecapsule
     tag: 0.1.0
     path: ""
-    section: classic
-    label: "Classic Environment"
+    section: timecapsule
+    label: "Timecapsule"
     tooltip: ""
