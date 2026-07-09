@@ -13,10 +13,12 @@
     wordpress_eric_forum_domains:
       - eric-forum.eu
       - www.eric-forum.eu
+    wordpress_eric_forum_dev_domains:
+      - dev.eric-forum.eu
     wordpress_envri_domains:
       - envri.eu
       - www.envri.eu
-    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains + wordpress_envri_domains }}"
+    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains + wordpress_eric_forum_dev_domains + wordpress_envri_domains }}"
   roles:
     - role: icos.lxd_vm
       tags: lxd
@@ -60,6 +62,24 @@
 
     - role: icos.lxd_vm
       tags: lxd
+      lxd_vm_name: wordpress-eric-forum-dev
+      lxd_vm_root_size: "500GB"
+      lxd_vm_ubuntu_version: "24.04"
+      lxd_vm_config:
+        limits.cpu: "4"
+        limits.memory: "8GB"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: eric-forum-dev
+      nginxsite_file: files/wordpress.conf
+      wp_site_domains: "{{ wordpress_eric_forum_dev_domains }}"
+      wp_site_upstream: wordpress-eric-forum-dev.lxd
+      wp_site_log: eric-forum-dev
+      wp_site_rate_zone: wp_login_ef_dev
+
+    - role: icos.lxd_vm
+      tags: lxd
       lxd_vm_name: wordpress-envri
       lxd_vm_root_size: "500GB"
       lxd_vm_ubuntu_version: "24.04"
@@ -79,7 +99,7 @@
       wp_site_rate_zone: wp_login_envri
 
 
-- hosts: wordpress,wordpress-eric-forum,wordpress-envri
+- hosts: wordpress,wordpress-eric-forum,wordpress-eric-forum-dev,wordpress-envri
   roles:
     - role: icos.lxd_guest
       tags: guest
