@@ -1,7 +1,6 @@
 - hosts: fsicos4
   vars:
     wordpress_domains:
-      - envri.eu
       - st4ris.eu
     wordpress_enable_production_domains: true
   roles:
@@ -39,42 +38,6 @@
   vars:
     wordpress_home: /docker/wordpress
     wordpress_sites:
-      - name: envri
-        domains:
-          - envri.eu
-        db_name: envri
-        db_user: envri
-        db_password: "{{ vault_wordpress_envri_db_password }}"
-        db_root_password: "{{ vault_wordpress_envri_db_root_password }}"
-        static_files:
-          - path: .well-known/security.txt
-            content: |
-              Contact: mailto:security@envri.eu
-              Expires: 2027-04-14T00:00:00.000Z
-              Preferred-Languages: en
-              Canonical: https://envri.eu/.well-known/security.txt
-              Policy: https://envri.eu/.well-known/security-policy.html
-          - path: .well-known/security-policy.html
-            content: |
-              <!doctype html>
-              <html lang="en">
-              <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>ENVRI Security Policy</title>
-              </head>
-              <body>
-                <main>
-                  <h1>ENVRI Security Policy</h1>
-                  <p>The ENVRI consortium takes the security of its systems and data seriously. If you believe you have found a security vulnerability in any ENVRI-operated service, we encourage you to report it responsibly.</p>
-                  <p>How to report: Send your findings to <a class="autolink" href="mailto:security@envri.eu">security@envri.eu</a>. Please include a description of the vulnerability, steps to reproduce, and any supporting evidence (screenshots, logs, URLs).</p>
-                  <p>What to expect: We will acknowledge receipt within 5 business days and aim to provide an initial assessment within 15 business days.</p>
-                  <p>Scope: All services and applications under *.envri.eu.</p>
-                  <p>Important: ENVRI does not currently operate a bug bounty program and cannot offer financial rewards. However, all responsibly disclosed findings are welcome and appreciated. </p>
-                  <p>We ask that you: Do not access or modify data belonging to other users. Do not degrade the availability of our services. Allow reasonable time for remediation before public disclosure.</p>
-                </main>
-              </body>
-              </html>
       - name: st4ris
         domains:
           - st4ris.eu
