@@ -213,12 +213,14 @@
 
 - name: Start wordpress site containers
   community.docker.docker_compose_v2:
-    project_src: "{{ wordpress_home }}/sites/{{ item.name }}"
+    project_src: "{{ wordpress_home }}/sites/{{ compose_result.item.name }}"
     state: present
     pull: always
-  loop: "{{ wordpress_site_configs }}"
+    recreate: "{{ 'always' if compose_result.changed else 'auto' }}"
+  loop: "{{ _wordpress_site_compose.results }}"
   loop_control:
-    label: "{{ item.name }}"
+    loop_var: compose_result
+    label: "{{ compose_result.item.name }}"
 
 - name: Wait for wordpress database containers
   shell: |
