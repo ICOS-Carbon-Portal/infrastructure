@@ -65,6 +65,7 @@
       lxd_vm_name: wordpress-eric-forum-dev
       lxd_vm_root_size: "500GB"
       lxd_vm_ubuntu_version: "24.04"
+      lxd_vm_docker: true
       lxd_vm_config:
         limits.cpu: "4"
         limits.memory: "8GB"
@@ -104,6 +105,14 @@
     - role: icos.lxd_guest
       tags: guest
 
+    - role: icos.docker2
+      tags: docker
+      when: wordpress_docker | default(false)
+
+    - role: icos.wordpress
+      tags: wordpress
+      when: wordpress_docker | default(false)
+
     - role: icos.bbclient2
       tags: bbclient
       bbclient_name: "{{ inventory_hostname }}"
@@ -117,6 +126,32 @@
         #!/bin/bash
         set -Eueo pipefail
 
+        {% if wordpress_docker | default(false) %}
+        cd {{ wordpress_home }}
+
+        compose_down() {
+          for project in proxy sites/*; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose down)
+            fi
+          done
+        }
+
+        compose_up() {
+          for project in sites/* proxy; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose up -d)
+            fi
+          done
+        }
+
+        trap compose_up EXIT
+
+        compose_down
+        {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
+        {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
+        {{ bbclient_all }} compact --verbose
+        {% else %}
         backup_dir="{{ bbclient_home }}/backup"
 
         cleanup() {
@@ -149,6 +184,7 @@
           /etc/nginx/sites-enabled
         {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
         {{ bbclient_all }} compact --verbose
+        {% endif %}
 
   tasks:
     - name: Print wp-config warning

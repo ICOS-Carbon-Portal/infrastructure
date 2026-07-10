@@ -1,1 +1,3 @@
 docker_periodic_cleanup: True
+docker_extra_packages: []
+docker_restart_on_config_change: false
