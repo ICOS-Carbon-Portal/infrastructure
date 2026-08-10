@@ -37,6 +37,15 @@ services:
             define('WP_HOME', 'https://' . $$_SERVER['HTTP_HOST']);
             define('WP_SITEURL', 'https://' . $$_SERVER['HTTP_HOST']);
         }
+{% if item.document_root | default('') | length > 0 %}
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        sed -ri -e 's!/var/www/html!/var/www/html/{{ item.document_root }}!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+        apache2-foreground
+{% endif %}
     volumes:
       - ./html:/var/www/html
     networks:

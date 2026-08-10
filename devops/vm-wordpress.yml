@@ -56,7 +56,7 @@
       nginxsite_name: eric-forum
       nginxsite_file: files/wordpress.conf
       wp_site_domains: "{{ wordpress_eric_forum_domains }}"
-      wp_site_upstream: wordpress-eric-forum.lxd
+      wp_site_upstream: wordpress-eric-forum-dev.lxd
       wp_site_log: eric-forum
       wp_site_rate_zone: wp_login_ef
 
