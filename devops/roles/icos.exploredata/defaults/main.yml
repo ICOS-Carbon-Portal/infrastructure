@@ -15,7 +15,7 @@ exploredata_max_notebooks: 50
 exploredata_images:
   - key: icosbase
     image: icosbase
-    tags: [0.1.1, 0.1.0]
+    tags: [0.1.2, 0.1.1, 0.1.0]
   - key: explore-icos-data
     image: explore-icos-data
     tags: [0.1.0]
@@ -27,6 +27,9 @@ exploredata_images:
     tags: [0.1.0]
   - key: ocean-carbon-course
     image: ocean-carbon-course
+    tags: [0.1.0]
+  - key: upscaling-carbon-phd-course
+    image: upscaling-carbon-phd-course
     tags: [0.1.0]
   - key: timecapsule
     image: timecapsule
@@ -233,6 +236,17 @@ exploredata_notebooks:
       Learn about greenhouse gas measurements, carbon cycle science, and
       ICOS data through lectures and hands-on training offered at the
       annual ICOS Summer School.
+
+  - id: upscaling-carbon
+    image: upscaling-carbon-phd-course
+    tag: 0.1.0
+    path: ""
+    section: education
+    label: "Upscaling Carbon PhD Course"
+    tooltip: >-
+      PhD course exercises on the carbon cycle, covering ICOS observations,
+      vegetation and inversion model comparison, upscaling eddy-covariance
+      GPP with remote sensing, and estimating national carbon budgets.
 
   # Timecapsule
   - id: timecapsule
