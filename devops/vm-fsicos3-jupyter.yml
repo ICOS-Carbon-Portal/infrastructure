@@ -105,9 +105,9 @@
       tags: jupyter
       jupyter_hub_config:
         admin_users: "{{ vault_jupyter_admins }}"
-        image: registry.icos-cp.eu/stratos.jupyter-collaboration:0.1.0
+        image: registry.icos-cp.eu/stratos.jupyter-collaboration:0.1.1
         allowed_images:
-          stratos_jupyter_collaboration: registry.icos-cp.eu/stratos.jupyter-collaboration:0.1.0
+          stratos_jupyter_collaboration: registry.icos-cp.eu/stratos.jupyter-collaboration:0.1.1
         collaborative: true
         mem_limit: "100G"
         cpu_limit: 40

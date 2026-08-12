@@ -12,10 +12,10 @@ jupyter_hub_config_defaults:
   extra_volumes: {}
   collaborative: false
   admin_users: []
-  image: 'registry.icos-cp.eu/stratos.icosbase:0.1.1'
+  image: 'registry.icos-cp.eu/stratos.icosbase:0.1.2'
   # If specified, users will be presented with a form from which they can
   # select an image to run.
-  # allowed_images: {'python3': 'registry.icos-cp.eu/stratos.icosbase:0.1.1'}
+  # allowed_images: {'python3': 'registry.icos-cp.eu/stratos.icosbase:0.1.2'}
 
 jupyter_hub_config: {}
 jusers_home: /opt/jusers

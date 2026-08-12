@@ -23,6 +23,6 @@
     - role: icos.jupyter
       tags: jupyter
       jupyter_hub_config:
-        image: registry.icos-cp.eu/stratos.icosbase:0.1.1
+        image: registry.icos-cp.eu/stratos.icosbase:0.1.2
         admin_users: "{{ vault_flexpart_admins }}"
       jupyter_backup_enable: false
