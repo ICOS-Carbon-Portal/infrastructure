@@ -18,7 +18,7 @@ exploredata_images:
     tags: [0.1.2, 0.1.1, 0.1.0]
   - key: explore-icos-data
     image: explore-icos-data
-    tags: [0.1.0]
+    tags: [0.1.1, 0.1.0]
   - key: notebooks-with-doi
     image: notebooks-with-doi
     tags: [0.1.0]
@@ -28,8 +28,8 @@ exploredata_images:
   - key: ocean-carbon-course
     image: ocean-carbon-course
     tags: [0.1.0]
-  - key: upscaling-carbon-phd-course
-    image: upscaling-carbon-phd-course
+  - key: climbeco-course
+    image: climbeco-course
     tags: [0.1.0]
   - key: timecapsule
     image: timecapsule
@@ -67,7 +67,7 @@ exploredata_notebooks:
   # Explore ICOS Data
   - id: examples
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: "/lab/tree/examples"
     section: explore
     label: "Examples for using ICOS Python library"
@@ -78,7 +78,7 @@ exploredata_notebooks:
 
   - id: noaa-curve-fit
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: >-
       /lab/tree/icos-jupyter-notebooks/NOAA Curve Fitting for ObsPack
       CO2.ipynb
@@ -91,7 +91,7 @@ exploredata_notebooks:
 
   - id: atm-obs-stats
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: >-
       /lab/tree/icos-jupyter-notebooks/ICOS Atmospheric Observation
       Statistics.ipynb
@@ -103,7 +103,7 @@ exploredata_notebooks:
 
   - id: atm-station-char
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: >-
       /lab/tree/icos-jupyter-notebooks/Characterization of Atmospheric
       Measurement Stations.ipynb
@@ -116,7 +116,7 @@ exploredata_notebooks:
 
   - id: fossil-co2
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: >-
       /lab/tree/project-jupyter-notebooks/RINGO-T1.3/High Fossil CO2
       Events at ICOS Stations.ipynb
@@ -196,7 +196,7 @@ exploredata_notebooks:
   # Education
   - id: envrifair-ws
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: >-
       /lab/tree/project-jupyter-notebooks/envrifair-winterschool/map
     section: education
@@ -207,7 +207,7 @@ exploredata_notebooks:
 
   - id: otc-workshop
     image: explore-icos-data
-    tag: 0.1.0
+    tag: 0.1.1
     path: "/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
     section: education
     label: "OTC Data Reduction Workshop"
@@ -237,16 +237,19 @@ exploredata_notebooks:
       ICOS data through lectures and hands-on training offered at the
       annual ICOS Summer School.
 
-  - id: upscaling-carbon
-    image: upscaling-carbon-phd-course
+  - id: climbeco-course
+    image: climbeco-course
     tag: 0.1.0
     path: ""
     section: education
-    label: "Upscaling Carbon PhD Course"
+    label: "ClimBEco carbon PhD course"
     tooltip: >-
-      PhD course exercises on the carbon cycle, covering ICOS observations,
-      vegetation and inversion model comparison, upscaling eddy-covariance
-      GPP with remote sensing, and estimating national carbon budgets.
+      The course introduces the concept of assessing the carbon balance of a
+      geographical region by utilizing in-situ measurements and how this can
+      be used as a tool to support national carbon accounting. The course
+      will focus on the user perspective and different ways of upscaling the
+      carbon dioxide exchange to assess the carbon budget of a larger region
+      (e.g. Sweden).
 
   # Timecapsule
   - id: timecapsule
