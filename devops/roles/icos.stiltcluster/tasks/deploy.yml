@@ -12,6 +12,7 @@
   template:
     src: stiltcluster.service
     dest: /etc/systemd/system/stiltcluster.service
+  notify: restart stiltcluster
 
 # scenario 1, we retrieve stiltcluster.jar and set the stiltcluster_jar_file
 # variable temporarily.

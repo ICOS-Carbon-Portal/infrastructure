@@ -1,3 +1,12 @@
+- name: reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: restart qemu-guest-agent
+  service:
+    name: qemu-guest-agent
+    state: restarted
+
 - name: restart cron
   service:
     name: cron
