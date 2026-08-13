@@ -14,6 +14,7 @@ Restart=always
 # Keep the overlay network responsive under calculation/VM load.
 Nice=-10
 CPUWeight=10000
+CPUQuota=200%
 IOWeight=10000
 OOMScoreAdjust=-900
 

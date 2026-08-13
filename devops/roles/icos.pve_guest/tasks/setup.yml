@@ -11,16 +11,25 @@
     name: Europe/Stockholm
   notify: restart cron
 
+- name: Create qemu guest agent service override directory
+  file:
+    path: /etc/systemd/system/qemu-guest-agent.service.d
+    state: directory
+    mode: "0755"
+
 - name: Prioritize qemu guest agent
   copy:
     dest: /etc/systemd/system/qemu-guest-agent.service.d/priority.conf
+    mode: "0644"
     content: |
       [Service]
       Nice=-5
       CPUWeight=8000
       IOWeight=8000
       OOMScoreAdjust=-800
-  notify: reload systemd
+  notify:
+    - reload systemd
+    - restart qemu-guest-agent
 
 - name: Generate locale
   locale_gen:
