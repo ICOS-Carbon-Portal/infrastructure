@@ -62,7 +62,9 @@
   when: >-
     sentry_run_install or
     not sentry_compose_file.stat.exists or
-    sentry_git.changed
+    sentry_git.changed or
+    sentry_config_url.changed or
+    sentry_config_bind.changed
   register: sentry_install
 
 - name: Start Sentry
