@@ -1,0 +1,6 @@
+- name: Install borg for manual restore
+  include_role:
+    name: icos.borg
+
+- name: Install bbclient configuration and restore helper
+  include_tasks: backup.yml

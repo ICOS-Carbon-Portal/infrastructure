@@ -1,0 +1,57 @@
+- name: Create Sentry bbclient bin directory
+  file:
+    path: "/opt/bbclient-{{ sentry_backup_name }}/bin"
+    state: directory
+    mode: "0755"
+
+- include_role:
+    name: icos.bbclient2
+    public: yes
+  vars:
+    bbclient_name: "{{ sentry_backup_name }}"
+    bbclient_home: "/opt/bbclient-{{ sentry_backup_name }}"
+    bbclient_remotes: "{{ sentry_backup_remotes }}"
+    bbclient_timer_conf: |
+      OnCalendar=*-*-* {{ '%02d' | format(sentry_backup_hour | int) }}:{{ '%02d' | format(sentry_backup_minute | int) }}:00
+      RandomizedDelaySec=30m
+    bbclient_timer_content: |
+      #!/bin/bash
+      set -Eueo pipefail
+
+      sentry_home={{ sentry_home | quote }}
+      cd "$sentry_home"
+
+      compose_up() {
+        docker compose up -d --wait
+      }
+
+      trap compose_up EXIT
+
+      {% if sentry_backup_create_logical_export %}
+      mkdir -p sentry
+      # Supplemental logical export. Disaster recovery relies on the cold Borg
+      # backup below because Sentry also stores state in ClickHouse, Kafka,
+      # Redis, SeaweedFS/blob storage and Docker volumes.
+      ./scripts/backup.sh global
+      {% endif %}
+
+      mapfile -t volume_paths < <(
+        docker volume ls --format '{{ "{{" }}.Name{{ "}}" }}' |
+        grep -E '^({{ sentry_backup_volume_prefixes | map('regex_escape') | join('|') }})' |
+        while read -r volume; do
+          docker volume inspect -f '{{ "{{" }}.Mountpoint{{ "}}" }}' "$volume"
+        done |
+        sort -u
+      )
+
+      docker compose down
+
+      {{ bbclient_all }} create --stats --verbose "::{now}" "$sentry_home" "${volume_paths[@]}"
+      {{ bbclient_all }} prune --stats --list --keep-within={{ sentry_backup_keep_within }} --keep-daily={{ sentry_backup_keep_daily }} --keep-weekly={{ sentry_backup_keep_weekly }}
+      {{ bbclient_all }} compact --verbose
+
+- name: Install Sentry restore helper
+  template:
+    src: sentry-borg-restore
+    dest: /usr/local/sbin/sentry-borg-restore
+    mode: "0750"

@@ -63,3 +63,7 @@ nebula_hosts:
     fsicos4-wordpress:
       nebula_ip: "100.100.4.10"
       nebula_port: 60714
+
+    sentry:
+      nebula_ip: "100.100.4.11"
+      nebula_port: 60712

@@ -1,0 +1,28 @@
+sentry_version: "26.2.1"
+sentry_home: /opt/sentry-self-hosted
+sentry_repo: https://github.com/getsentry/self-hosted.git
+# The canonical external URL and the current working Docker port binding.
+sentry_url: https://sentry.icos-cp.eu
+sentry_port: 9000
+sentry_bind: "{{ sentry_port }}"
+sentry_health_url: "http://127.0.0.1:{{ sentry_port }}/_health/"
+sentry_manage_url_prefix: true
+sentry_manage_bind: true
+sentry_run_install: false
+sentry_git_force: false
+sentry_report_self_hosted_issues: false
+sentry_skip_commit_check: true
+sentry_skip_user_creation: true
+sentry_admin_email: admin@local.invalid
+sentry_backup_name: sentry
+sentry_backup_remotes:
+  - icos1
+sentry_backup_hour: 2
+sentry_backup_minute: 30
+sentry_backup_keep_within: 7d
+sentry_backup_keep_daily: 30
+sentry_backup_keep_weekly: 150
+sentry_backup_create_logical_export: true
+sentry_backup_volume_prefixes:
+  - sentry-
+  - sentry-self-hosted_
