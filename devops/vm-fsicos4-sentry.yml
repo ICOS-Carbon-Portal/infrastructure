@@ -12,6 +12,7 @@
         'removing rule' in _sentry_auto_dnat.stdout
 
 - hosts: sentry
+  become: true
   vars:
     sentry_url: https://sentry.icos-cp.eu
     sentry_version: "26.2.1"
