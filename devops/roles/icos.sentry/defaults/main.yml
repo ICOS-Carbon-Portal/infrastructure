@@ -1,4 +1,4 @@
-sentry_version: "26.2.1"
+sentry_version: "26.7.2"
 sentry_home: /opt/sentry-self-hosted
 sentry_repo: https://github.com/getsentry/self-hosted.git
 # The canonical external URL and the current working Docker port binding.
@@ -12,6 +12,7 @@ sentry_run_install: false
 sentry_git_force: false
 sentry_report_self_hosted_issues: false
 sentry_skip_commit_check: true
+sentry_apply_automatic_config_updates: true
 sentry_skip_user_creation: true
 sentry_admin_email: admin@local.invalid
 sentry_backup_name: sentry

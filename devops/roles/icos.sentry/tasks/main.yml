@@ -57,6 +57,7 @@
     {% if sentry_skip_user_creation %}--skip-user-creation{% endif %}
     {% if not sentry_report_self_hosted_issues %}--no-report-self-hosted-issues{% endif %}
     {% if sentry_skip_commit_check %}--skip-commit-check{% endif %}
+    {% if sentry_apply_automatic_config_updates %}--apply-automatic-config-updates{% endif %}
   args:
     chdir: "{{ sentry_home }}"
   when: >-

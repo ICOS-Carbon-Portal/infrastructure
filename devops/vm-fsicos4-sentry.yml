@@ -13,12 +13,6 @@
 
 - hosts: sentry
   become: true
-  vars:
-    sentry_url: https://sentry.icos-cp.eu
-    sentry_version: "26.2.1"
-    sentry_backup_name: sentry
-    sentry_backup_remotes:
-      - icos1
   roles:
     - role: icos.pve_guest
       tags: guest
