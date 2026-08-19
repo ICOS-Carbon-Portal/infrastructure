@@ -31,14 +31,14 @@
 # https://docs.docker.com/engine/install/debian/
 - name: Install docker and docker-compose
   apt:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-buildx-plugin
-      # Installing "docker-compose" gives us Version 1 which is EOL
-      # 2023-07. Installing docker-compose-plugin gives us V2.
-      - docker-compose-plugin
+    name: >-
+      {{ [
+        'docker-ce',
+        'docker-ce-cli',
+        'containerd.io',
+        'docker-buildx-plugin',
+        'docker-compose-plugin'
+      ] + docker_extra_packages }}
 
 - name: Make sure docker is started
   systemd:
@@ -46,11 +46,31 @@
     state: started
     enabled: yes
 
-- name: Install docker configuration
+- name: Install default docker configuration
   copy:
     src: daemon.json
     dest: /etc/docker/
+  register: _docker_daemon_config_default
   notify: reload docker
+  when: docker_daemon_config is not defined
+
+- name: Install custom docker configuration
+  copy:
+    content: "{{ docker_daemon_config | to_nice_json }}\n"
+    dest: /etc/docker/daemon.json
+  register: _docker_daemon_config_custom
+  notify: reload docker
+  when: docker_daemon_config is defined
+
+- name: Restart docker after configuration changes
+  service:
+    name: docker
+    state: restarted
+  when:
+    - docker_restart_on_config_change
+    - >-
+      _docker_daemon_config_default.changed | default(false) or
+      _docker_daemon_config_custom.changed | default(false)
 
 - import_tasks: cleanup.yml
   tags: docker_cleanup

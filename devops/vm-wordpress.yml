@@ -13,10 +13,12 @@
     wordpress_eric_forum_domains:
       - eric-forum.eu
       - www.eric-forum.eu
+    wordpress_eric_forum_dev_domains:
+      - dev.eric-forum.eu
     wordpress_envri_domains:
       - envri.eu
       - www.envri.eu
-    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains + wordpress_envri_domains }}"
+    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains + wordpress_eric_forum_dev_domains + wordpress_envri_domains }}"
   roles:
     - role: icos.lxd_vm
       tags: lxd
@@ -54,9 +56,28 @@
       nginxsite_name: eric-forum
       nginxsite_file: files/wordpress.conf
       wp_site_domains: "{{ wordpress_eric_forum_domains }}"
-      wp_site_upstream: wordpress-eric-forum.lxd
+      wp_site_upstream: wordpress-eric-forum-dev.lxd
       wp_site_log: eric-forum
       wp_site_rate_zone: wp_login_ef
+
+    - role: icos.lxd_vm
+      tags: lxd
+      lxd_vm_name: wordpress-eric-forum-dev
+      lxd_vm_root_size: "500GB"
+      lxd_vm_ubuntu_version: "24.04"
+      lxd_vm_docker: true
+      lxd_vm_config:
+        limits.cpu: "4"
+        limits.memory: "8GB"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: eric-forum-dev
+      nginxsite_file: files/wordpress.conf
+      wp_site_domains: "{{ wordpress_eric_forum_dev_domains }}"
+      wp_site_upstream: wordpress-eric-forum-dev.lxd
+      wp_site_log: eric-forum-dev
+      wp_site_rate_zone: wp_login_ef_dev
 
     - role: icos.lxd_vm
       tags: lxd
@@ -79,10 +100,18 @@
       wp_site_rate_zone: wp_login_envri
 
 
-- hosts: wordpress,wordpress-eric-forum,wordpress-envri
+- hosts: wordpress,wordpress-eric-forum,wordpress-eric-forum-dev,wordpress-envri
   roles:
     - role: icos.lxd_guest
       tags: guest
+
+    - role: icos.docker2
+      tags: docker
+      when: wordpress_docker | default(false)
+
+    - role: icos.wordpress
+      tags: wordpress
+      when: wordpress_docker | default(false)
 
     - role: icos.bbclient2
       tags: bbclient
@@ -97,6 +126,32 @@
         #!/bin/bash
         set -Eueo pipefail
 
+        {% if wordpress_docker | default(false) %}
+        cd {{ wordpress_home }}
+
+        compose_down() {
+          for project in proxy sites/*; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose down)
+            fi
+          done
+        }
+
+        compose_up() {
+          for project in sites/* proxy; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose up -d)
+            fi
+          done
+        }
+
+        trap compose_up EXIT
+
+        compose_down
+        {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
+        {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
+        {{ bbclient_all }} compact --verbose
+        {% else %}
         backup_dir="{{ bbclient_home }}/backup"
 
         cleanup() {
@@ -129,6 +184,7 @@
           /etc/nginx/sites-enabled
         {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
         {{ bbclient_all }} compact --verbose
+        {% endif %}
 
   tasks:
     - name: Print wp-config warning
