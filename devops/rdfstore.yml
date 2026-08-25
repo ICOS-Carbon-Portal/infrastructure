@@ -1,0 +1,32 @@
+# Deployment of rdfStore, the RDF4J store/SPARQL service split out of cpmeta.
+# This is the playbook meta's build.sbt points its rdfStore project at
+# (cpDeployPlaybook := "rdfstore.yml", cpDeployTarget := "cpmetardfstore"), so
+# `sbt "project rdfStore" "cpDeploy to <inventory>"` ends up here.
+#
+# The public https://<meta host>/sparql route lives in cpmeta's nginx config (it is a location
+# on the meta server block), so proxy changes are made through core.yml/cpmeta.yml; this
+# playbook only manages the rdfStore application itself.
+- hosts: core_host
+  tags: host
+  pre_tasks:
+    # For now rdfStore is only deployed on the test-fs4 VM. Every other deployment still runs
+    # the meta that owns its RDF store in-process, and starting a second owner of the same
+    # RDF logs there would be actively harmful.
+    - name: Refuse to deploy rdfStore to an inventory that has not enabled it
+      assert:
+        that: cpmetardfstore_enable | default(False)
+        fail_msg: >-
+          rdfStore is not enabled for this inventory. It is currently only deployed on
+          test-fs4; see cpmetardfstore_enable in group_vars/all/core.yml.
+      tags:
+        - always
+
+    - name: Setup java
+      tags:
+        - java
+        - cpmetardfstore_setup
+      import_role:
+        name: icos.java
+
+  roles:
+    - role: icos.cpmetardfstore

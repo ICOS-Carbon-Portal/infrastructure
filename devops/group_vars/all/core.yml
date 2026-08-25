@@ -13,6 +13,16 @@ postgis_icos_db_name: cplog
 postgis_sites_db_name: siteslog
 postgis_cities_db_name: paullog
 
+# rdfStore, the RDF4J store/SPARQL service split out of cpmeta. Only deployed on the test-fs4
+# VM for now: it requires a meta jar built from the split codebase, so enabling it against a
+# deployment running the old, embedded-store meta would break that deployment. The flag also
+# switches the corresponding cpmeta bits (remote repository config, /sparql proxy target,
+# ownership of the RDF storage directory, service ordering), which is why it has to be
+# readable both on core_host and on core_server.
+cpmetardfstore_enable: false
+cpmetardfstore_port: 9095
+cpmetardfstore_host: "{{ coreapp_httpproxy_host }}"
+
 postgis_container_name: postgis
 rdflog_container_name: rdflog
 

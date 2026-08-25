@@ -6,6 +6,49 @@ install software) on our different servers.
 The framework is based around Ansible for provisioning and Vagrant/VirtualBox
 for testing.
 
+## rdfStore (the RDF store of meta)
+
+The RDF4J store, its files and the SPARQL protocol endpoints are a service of their own,
+separate from `cpmeta` (see `docs/rdf-store-split.md` in the `meta` repository). It is
+deployed by role `icos.cpmetardfstore`, which `core.yml` runs on `core_host` just before
+`icos.cpmeta`, and by `rdfstore.yml` for jar deployment.
+
+**Only the test-fs4 VM runs this so far** (`cpmetardfstore_enable`, set in
+`test-fs4.inventory`). It needs a `meta` built from the split codebase, and it also flips
+`cpmeta` over to using the remote store, so it cannot be turned on for a deployment running
+the old meta. Every other inventory keeps the embedded store, and `rdfstore.yml` refuses to
+run against them.
+
+```sh
+ansible-playbook -i test-fs4.inventory -t cpmetardfstore_deploy -e cpmetardfstore_jar_file=... rdfstore.yml
+```
+
+meta's `rdfStore` sbt project deploys through the same playbook
+(`cpDeployTarget := "cpmetardfstore"`, `cpDeployPlaybook := "rdfstore.yml"`), but its
+`cpDeployPermittedInventories` does not list `test-fs4`, so `cpDeploy to test-fs4` is rejected
+until that is added on the meta side; use the ansible command above meanwhile.
+
+Points to keep in mind:
+
+- rdfStore owns the RDF storage directory (`cpmetardfstore_rdfstorage_path`) and runs as its
+  own user; `cpmeta` has no access to it and no longer creates it.
+- `cpmeta` reaches rdfStore over loopback (`cpmeta.remoteRdfRepository` in
+  `roles/icos.cpmeta/templates/application_production.conf`). It runs a readiness query at
+  startup, so `cpmeta.service` is ordered after `cpmetardfstore.service`.
+- The public `<meta host>/sparql` is proxied straight to rdfStore by the meta nginx site
+  (`roles/icos.cpmeta/templates/cpmeta.conf`). Everything else rdfStore exposes -
+  `/internal/sparql`, `/internal/derived/*`, `/admin/read-only` - is unauthenticated and must
+  never be reachable from outside the host.
+- Which RDF logs get restored into which named graph is `rdfStore.rdfLogs`, and it is rdfStore's
+  config, not meta's. The application's own defaults cover ICOS and SITES; test-fs4 also serves
+  ICOS Cities and adds those logs through `application_rdfstore_staging_amendment.conf`, which
+  has to be kept in sync with the instance servers in cpmeta's config.
+- On a fresh (empty) storage directory, rdfStore replays every configured RDF log from the
+  `rdflog` database and then stays **read-only** on purpose. Verify the restore and run
+  `ansible-playbook -i <inv> -t cpmetardfstore_restart rdfstore.yml` to get a writable,
+  indexed store. Seeding from a store snapshot instead is described under "Data migration and
+  cutover" in `docs/rdf-store-split.md`.
+
 ## Deploying Drupal websites
 
 The Drupal playbook requires a `website` parameter. It can be one website short name, a list of short names, or `all`.

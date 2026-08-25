@@ -19,6 +19,8 @@
     group: "{{ cpmeta_user }}"
     recurse: yes
 
+# Where rdfStore is deployed, the RDF storage directory belongs to it (role
+# icos.cpmetardfstore) and meta must not have access to it.
 - name: Create rdfStorage directory (if not present), take ownership
   file:
     path: "{{ cpmeta_rdfstorage_path }}"
@@ -26,6 +28,7 @@
     owner: "{{ cpmeta_user }}"
     group: "{{ cpmeta_user }}"
     recurse: yes
+  when: not (cpmetardfstore_enable | default(False))
 
 - name: Add systemd service
   template:

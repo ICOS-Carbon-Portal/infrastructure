@@ -1,5 +1,7 @@
 cpmeta_user: cpmeta
 cpmeta_home: /home/cpmeta
+# Only used where the RDF store is still embedded in meta, i.e. everywhere
+# cpmetardfstore_enable is false; the rdfStore service has a path setting of its own.
 cpmeta_rdfstorage_path: "./rdfStorage"
 
 cpmeta_servicename: cpmeta
