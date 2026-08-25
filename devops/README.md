@@ -43,11 +43,10 @@ Points to keep in mind:
   (`roles/icos.cpmeta/templates/cpmeta.conf`). Everything else rdfStore exposes -
   `/internal/sparql`, `/internal/derived/*`, `/admin/read-only` - is unauthenticated and must
   never be reachable from outside the host.
-- Which RDF logs get restored into which named graph is `rdfStore.rdfLogs`, and it is rdfStore's
-  config, not meta's. The application's own defaults cover ICOS and SITES; test-fs4 also serves
-  ICOS Cities and adds those logs through `application_rdfstore_staging_amendment.conf`, which
-  has to be kept in sync with the instance servers in cpmeta's config. The cities inventory
-  needs an amendment of its own (it has no ICOS/SITES logs at all).
+- Which RDF logs get restored into which named graph, and any partial replay offsets, are derived
+  from the shared `cpmeta.instanceServers` configuration. `test-fs4` reuses meta's
+  `application_staging_amendment.conf` through `application_rdfstore_staging_amendment.conf`, so
+  its ICOS Cities log bindings and citation graph scopes cannot drift between the two services.
 - On a fresh (empty) storage directory, rdfStore replays every configured RDF log from the
   `rdflog` database and then stays **read-only** on purpose. Verify the restore and run
   `ansible-playbook -i <inv> -t cpmeta_rdfstore_restart rdfstore.yml` to get a writable,
