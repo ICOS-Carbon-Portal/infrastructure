@@ -17,6 +17,8 @@
         caddy_conf: "{{ core_caddy_conf }}"
       when: core_proxy | default('nginx') == 'caddy'
 
+    # The meta nginx site proxies /sparql to rdfStore, so it goes together with the split
+    # meta and is restricted to the same inventory (meta_permitted_inventory).
     - name: Setup cpmeta proxy
       tags:
         - proxy
@@ -24,7 +26,9 @@
       import_role:
         name: icos.cpmeta
         tasks_from: proxy.yml
-      when: core_proxy | default('nginx') == 'nginx'
+      when:
+        - core_proxy | default('nginx') == 'nginx'
+        - meta_deploy_permitted
 
     - name: Setup cpdata proxy
       tags:
@@ -96,9 +100,13 @@
     - role: icos.restheart
     # rdfStore owns the RDF4J store and must be up before cpmeta, which runs a readiness
     # query against it at startup (meta's docs/rdf-store-split.md, "Startup and readiness").
+    # Both are restricted to meta_permitted_inventory for now (group_vars/all/core.yml);
+    # they are skipped elsewhere so that the rest of core.yml can still be deployed there.
     - role: icos.cpmetardfstore
       tags: cpmetardfstore
+      when: meta_deploy_permitted
     - role: icos.cpmeta
+      when: meta_deploy_permitted
     - role: icos.cpdata
     - role: icos.cpauth
       when: cpauth_envries is defined

@@ -14,16 +14,23 @@ deployed by role `icos.cpmetardfstore`, which `core.yml` runs on `core_host` jus
 `icos.cpmeta`, and by `rdfstore.yml` for jar deployment.
 
 This branch deploys the split codebase only: `cpmeta` always talks to a remote store and no
-longer has an embedded one, so every inventory needs a `meta` built from the split codebase.
+longer has an embedded one, so it needs a `meta` built from the split codebase.
+
+**Deployment of meta is therefore restricted to `test-fs4` for now**, by
+`meta_permitted_inventory` in `group_vars/all/core.yml`. Moving another deployment over means
+migrating its RDF store first ("Data migration and cutover" in `docs/rdf-store-split.md`), and
+changing that setting. `cpmeta.yml` and `rdfstore.yml` refuse to run against a non-permitted
+inventory; `core.yml` skips the two meta roles and the meta nginx site there, so the rest of
+core (postgis, rdflog, restheart, cpdata, cpauth, doi) can still be deployed as usual.
 
 ```sh
-ansible-playbook -i <inventory> -t cpmetardfstore_deploy -e cpmetardfstore_jar_file=... rdfstore.yml
+ansible-playbook -i test-fs4.inventory -t cpmetardfstore_deploy -e cpmetardfstore_jar_file=... rdfstore.yml
 ```
 
 meta's `rdfStore` sbt project deploys through the same playbook
 (`cpDeployTarget := "cpmetardfstore"`, `cpDeployPlaybook := "rdfstore.yml"`), so
-`sbt "project rdfStore" "cpDeploy to <inventory>"` does the same, for the inventories listed in
-its `cpDeployPermittedInventories`; use the ansible command above for the others.
+`sbt "project rdfStore" "cpDeploy to <inventory>"` does the same for the inventories listed in
+its own `cpDeployPermittedInventories`; use the ansible command above for the others.
 
 Points to keep in mind:
 

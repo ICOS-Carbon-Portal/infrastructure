@@ -9,6 +9,19 @@
 - hosts: core_host
   tags: host
   pre_tasks:
+    # meta is restricted to the meta_permitted_inventory inventory for now; see
+    # group_vars/all/core.yml.
+    - name: Check that meta may be deployed to this inventory
+      assert:
+        that: meta_deploy_permitted
+        fail_msg: >-
+          meta may not be deployed to the "{{ meta_inventory_name }}" inventory: this branch
+          deploys only the store-split codebase, and moving a deployment over to it requires
+          migrating its RDF store first. Only "{{ meta_permitted_inventory }}" may be
+          deployed to; see meta_permitted_inventory in group_vars/all/core.yml.
+      tags:
+        - always
+
     - name: Setup java
       tags:
         - java
