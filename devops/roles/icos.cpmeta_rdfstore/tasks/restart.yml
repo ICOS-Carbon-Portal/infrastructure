@@ -1,12 +1,12 @@
 - name: Create application.conf
   copy:
-    dest: "{{ cpmetardfstore_home }}/application.conf"
-    owner: "{{ cpmetardfstore_user }}"
-    group: "{{ cpmetardfstore_user }}"
+    dest: "{{ cpmeta_rdfstore_home }}/application.conf"
+    owner: "{{ cpmeta_rdfstore_user }}"
+    group: "{{ cpmeta_rdfstore_user }}"
     # contains the rdflog database password
     mode: "0600"
     content: |
-      {% for item in cpmetardfstore_config_files %}
+      {% for item in cpmeta_rdfstore_config_files %}
       # {{ item }}
       {{ lookup('template', item) }}
 
@@ -15,17 +15,17 @@
 
 - name: Start/restart service
   systemd:
-    name: cpmetardfstore.service
+    name: cpmeta_rdfstore.service
     enabled: yes
     state: "{{ 'restarted' if _restart_needed else 'started' }}"
 
 # Startup can take a long time: on a fresh store the RDF logs are replayed from PostgreSQL and
 # the SPARQL indexes are rebuilt before the HTTP listener is bound (docs/rdf-store-split.md,
 # "Startup and readiness"). A freshly restored store is left read-only on purpose - verify the
-# restore, then run this role again with -t cpmetardfstore_restart to get a writable store.
+# restore, then run this role again with -t cpmeta_rdfstore_restart to get a writable store.
 - name: Check that the service responds
   uri:
-    url: "http://127.0.0.1:{{ cpmetardfstore_port }}/health"
+    url: "http://127.0.0.1:{{ cpmeta_rdfstore_port }}/health"
     return_content: yes
   register: r
   failed_when: r.failed

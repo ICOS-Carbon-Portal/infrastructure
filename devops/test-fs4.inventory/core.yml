@@ -65,7 +65,7 @@ all:
           - application_virtuoso_amendment.conf
 
         # rdfStore - application (the RDF4J store, split out of cpmeta)
-        cpmetardfstore_config_files:
+        cpmeta_rdfstore_config_files:
           - application_rdfstore.conf
           - application_rdfstore_staging_amendment.conf
 

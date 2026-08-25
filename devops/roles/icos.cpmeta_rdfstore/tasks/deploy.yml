@@ -1,9 +1,9 @@
 - name: Copy jarfile
   copy:
-    src: "{{ cpmetardfstore_jar_file }}"
-    dest: "{{ cpmetardfstore_home }}/cpmetardfstore.jar"
-    owner: "{{ cpmetardfstore_user }}"
-    group: "{{ cpmetardfstore_user }}"
+    src: "{{ cpmeta_rdfstore_jar_file }}"
+    dest: "{{ cpmeta_rdfstore_home }}/cpmeta_rdfstore.jar"
+    owner: "{{ cpmeta_rdfstore_user }}"
+    group: "{{ cpmeta_rdfstore_user }}"
     backup: true
   register: _jarfile
 
@@ -11,7 +11,7 @@
   ansible.builtin.shell: |
     ls -1tr *.jar*~ 2>/dev/null | tail +6 | xargs rm -fv --
   args:
-    chdir: "{{ cpmetardfstore_home }}"
+    chdir: "{{ cpmeta_rdfstore_home }}"
   register: _r
   changed_when: _r.stdout.startswith("removed")
 

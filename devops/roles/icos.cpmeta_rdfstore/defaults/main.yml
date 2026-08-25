@@ -2,36 +2,36 @@
 # It exclusively owns the LMDB/NativeStore files, the SPARQL protocol endpoints and the
 # Carbon Portal query indexes. cpmeta talks to it over HTTP with RDF4J's SPARQLRepository.
 #
-# The ansible "target" name of this service is cpmetardfstore (see cpDeployTarget in meta's
+# The ansible "target" name of this service is cpmeta_rdfstore (see cpDeployTarget in meta's
 # build.sbt), hence the variable/tag prefix.
 
-cpmetardfstore_user: cpmetardfstore
-cpmetardfstore_home: /home/cpmetardfstore
+cpmeta_rdfstore_user: cpmeta_rdfstore
+cpmeta_rdfstore_home: /home/cpmeta_rdfstore
 
-cpmetardfstore_servicename: cpmetardfstore
+cpmeta_rdfstore_servicename: cpmeta_rdfstore
 
 # The public /sparql endpoint is proxied to this service by nginx running on core_server,
 # which in the lxd-based inventories is a different machine than core_host - so this follows
 # cpmeta's bind address rather than being pinned to loopback. Everything else this service
 # exposes (/internal/sparql, /internal/derived, /admin/read-only) is unauthenticated and must
 # not be reachable from outside the host: nginx only proxies =/sparql, and no other route to
-# port {{ cpmetardfstore_port }} may be opened. Service authentication for the internal routes
+# port {{ cpmeta_rdfstore_port }} may be opened. Service authentication for the internal routes
 # is still an open item in docs/rdf-store-split.md.
-cpmetardfstore_bind_addr: "{{ coreapp_bind_addr }}"
+cpmeta_rdfstore_bind_addr: "{{ coreapp_bind_addr }}"
 
 # Where the RDF4J store keeps its files. cpmeta must NOT have access to this directory.
-cpmetardfstore_rdfstorage_path: "{{ cpmetardfstore_home }}/rdfStorage"
+cpmeta_rdfstore_rdfstorage_path: "{{ cpmeta_rdfstore_home }}/rdfStorage"
 
 # rdflog PostgreSQL, same database cpmeta appends its RDF updates to; rdfStore only reads it,
 # and only when restoring a fresh store or performing a configured partial replay.
-cpmetardfstore_db_host: localhost
-cpmetardfstore_db_name: rdflog
-cpmetardfstore_db_user: rdflog
-cpmetardfstore_db_port: 2345
-cpmetardfstore_db_pass: "{{ rdflog_db_pass }}"
+cpmeta_rdfstore_db_host: localhost
+cpmeta_rdfstore_db_name: rdflog
+cpmeta_rdfstore_db_user: rdflog
+cpmeta_rdfstore_db_port: 2345
+cpmeta_rdfstore_db_pass: "{{ rdflog_db_pass }}"
 
-cpmetardfstore_java_opts: ""
+cpmeta_rdfstore_java_opts: ""
 
 # Config file templates, concatenated into application.conf in the order given.
-cpmetardfstore_config_files:
+cpmeta_rdfstore_config_files:
   - application_rdfstore.conf

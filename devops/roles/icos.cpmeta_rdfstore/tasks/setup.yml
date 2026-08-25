@@ -1,28 +1,28 @@
-- name: Create cpmetardfstore user
+- name: Create cpmeta_rdfstore user
   user:
-    name: "{{ cpmetardfstore_user }}"
-    home: "{{ cpmetardfstore_home }}"
+    name: "{{ cpmeta_rdfstore_user }}"
+    home: "{{ cpmeta_rdfstore_home }}"
     shell: /bin/bash
 
 - name: Create rdfStorage directory (if not present), take ownership
   file:
-    path: "{{ cpmetardfstore_rdfstorage_path }}"
+    path: "{{ cpmeta_rdfstore_rdfstorage_path }}"
     state: directory
-    owner: "{{ cpmetardfstore_user }}"
-    group: "{{ cpmetardfstore_user }}"
+    owner: "{{ cpmeta_rdfstore_user }}"
+    group: "{{ cpmeta_rdfstore_user }}"
     # only rdfStore may read/write the store files
     mode: "0700"
     recurse: yes
 
 - name: Add systemd service
   template:
-    src: cpmetardfstore.service
-    dest: /etc/systemd/system/cpmetardfstore.service
+    src: cpmeta_rdfstore.service
+    dest: /etc/systemd/system/cpmeta_rdfstore.service
   register: _service
 
 - name: Restart systemd service daemon
   systemd:
-    name: cpmetardfstore.service
+    name: cpmeta_rdfstore.service
     enabled: yes
     daemon-reload: yes
   when: _service.changed

@@ -102,8 +102,8 @@
     # query against it at startup (meta's docs/rdf-store-split.md, "Startup and readiness").
     # Both are restricted to meta_permitted_inventory for now (group_vars/all/core.yml);
     # they are skipped elsewhere so that the rest of core.yml can still be deployed there.
-    - role: icos.cpmetardfstore
-      tags: cpmetardfstore
+    - role: icos.cpmeta_rdfstore
+      tags: cpmeta_rdfstore
       when: meta_deploy_permitted
     - role: icos.cpmeta
       when: meta_deploy_permitted

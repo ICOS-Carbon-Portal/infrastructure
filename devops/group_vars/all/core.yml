@@ -16,8 +16,8 @@ postgis_cities_db_name: paullog
 # rdfStore, the RDF4J store/SPARQL service split out of cpmeta. cpmeta needs these to reach
 # it and to proxy the public /sparql to it, so they have to be readable both on core_host and
 # on core_server.
-cpmetardfstore_port: 9095
-cpmetardfstore_host: "{{ coreapp_httpproxy_host }}"
+cpmeta_rdfstore_port: 9095
+cpmeta_rdfstore_host: "{{ coreapp_httpproxy_host }}"
 
 # meta (both cpmeta and rdfStore) may only be deployed to this inventory for now. This branch
 # deploys the store-split codebase exclusively, and switching an existing deployment over needs

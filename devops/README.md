@@ -10,7 +10,7 @@ for testing.
 
 The RDF4J store, its files and the SPARQL protocol endpoints are a service of their own,
 separate from `cpmeta` (see `docs/rdf-store-split.md` in the `meta` repository). It is
-deployed by role `icos.cpmetardfstore`, which `core.yml` runs on `core_host` just before
+deployed by role `icos.cpmeta_rdfstore`, which `core.yml` runs on `core_host` just before
 `icos.cpmeta`, and by `rdfstore.yml` for jar deployment.
 
 This branch deploys the split codebase only: `cpmeta` always talks to a remote store and no
@@ -24,21 +24,21 @@ inventory; `core.yml` skips the two meta roles and the meta nginx site there, so
 core (postgis, rdflog, restheart, cpdata, cpauth, doi) can still be deployed as usual.
 
 ```sh
-ansible-playbook -i test-fs4.inventory -t cpmetardfstore_deploy -e cpmetardfstore_jar_file=... rdfstore.yml
+ansible-playbook -i test-fs4.inventory -t cpmeta_rdfstore_deploy -e cpmeta_rdfstore_jar_file=... rdfstore.yml
 ```
 
 meta's `rdfStore` sbt project deploys through the same playbook
-(`cpDeployTarget := "cpmetardfstore"`, `cpDeployPlaybook := "rdfstore.yml"`), so
+(`cpDeployTarget := "cpmeta_rdfstore"`, `cpDeployPlaybook := "rdfstore.yml"`), so
 `sbt "project rdfStore" "cpDeploy to <inventory>"` does the same for the inventories listed in
 its own `cpDeployPermittedInventories`; use the ansible command above for the others.
 
 Points to keep in mind:
 
-- rdfStore owns the RDF storage directory (`cpmetardfstore_rdfstorage_path`) and runs as its
+- rdfStore owns the RDF storage directory (`cpmeta_rdfstore_rdfstorage_path`) and runs as its
   own user; `cpmeta` has no access to it and does not create it.
 - `cpmeta` reaches rdfStore over loopback (`cpmeta.remoteRdfRepository` in
   `roles/icos.cpmeta/templates/application_production.conf`). It runs a readiness query at
-  startup, so `cpmeta.service` is ordered after `cpmetardfstore.service`.
+  startup, so `cpmeta.service` is ordered after `cpmeta_rdfstore.service`.
 - The public `<meta host>/sparql` is proxied straight to rdfStore by the meta nginx site
   (`roles/icos.cpmeta/templates/cpmeta.conf`). Everything else rdfStore exposes -
   `/internal/sparql`, `/internal/derived/*`, `/admin/read-only` - is unauthenticated and must
@@ -50,7 +50,7 @@ Points to keep in mind:
   needs an amendment of its own (it has no ICOS/SITES logs at all).
 - On a fresh (empty) storage directory, rdfStore replays every configured RDF log from the
   `rdflog` database and then stays **read-only** on purpose. Verify the restore and run
-  `ansible-playbook -i <inv> -t cpmetardfstore_restart rdfstore.yml` to get a writable,
+  `ansible-playbook -i <inv> -t cpmeta_rdfstore_restart rdfstore.yml` to get a writable,
   indexed store. Seeding from a store snapshot instead is described under "Data migration and
   cutover" in `docs/rdf-store-split.md`.
 

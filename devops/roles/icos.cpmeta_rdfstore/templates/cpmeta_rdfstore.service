@@ -4,11 +4,11 @@ After=network.target
 
 [Service]
 Type=simple
-User={{ cpmetardfstore_user }}
-ExecStart={{ java_path }} {{ cpmetardfstore_java_opts }} -jar cpmetardfstore.jar
+User={{ cpmeta_rdfstore_user }}
+ExecStart={{ java_path }} {{ cpmeta_rdfstore_java_opts }} -jar cpmeta_rdfstore.jar
 Restart=always
 RestartSec=30
-WorkingDirectory={{ cpmetardfstore_home }}
+WorkingDirectory={{ cpmeta_rdfstore_home }}
 # The store needs time to flush and close LMDB cleanly on shutdown
 TimeoutStopSec=300
 
