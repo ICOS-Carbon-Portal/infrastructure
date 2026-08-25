@@ -29,7 +29,7 @@ all:
 
     #Fast data storage (including RDF db)
     cities_datafast_path: /data_fast
-    cpmeta_rdfstorage_path: "{{ cities_datafast_path }}/rdfStorage"
+    cpmetardfstore_rdfstorage_path: "{{ cities_datafast_path }}/rdfStorage"
 
     showUnderConstruction: "false"
     showCarbonBadge: "true"

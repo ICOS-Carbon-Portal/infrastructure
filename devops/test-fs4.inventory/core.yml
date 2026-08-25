@@ -47,11 +47,6 @@ all:
 
     activity_log_ignore_ips: []
 
-    # The RDF store runs as its own service here (role icos.cpmetardfstore), which also
-    # switches cpmeta over to talking to it instead of owning an embedded store. test-fs4 is
-    # the only deployment doing this so far; it needs a meta jar built from the split codebase.
-    cpmetardfstore_enable: true
-
   children:
     core_host:
       hosts:

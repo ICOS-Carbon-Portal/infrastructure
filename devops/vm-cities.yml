@@ -10,7 +10,7 @@
     # we want /var/lib/docker inside the VM to be on the fast M.2 drive
     # this also works around the bug with 'docker pull postgres' not working
     docker_path: /disk/cities_docker
-    # we want a place for fast data storage (e.g. for RDF4J in cpmeta's rdfStorage folder)
+    # we want a place for fast data storage (e.g. for RDF4J in rdfStore's rdfStorage folder)
     data_fast_path: /disk/cities_data_fast
   pre_tasks:
     # We typically use one pool per VM on ext4, because reasons.

@@ -1,12 +1,8 @@
 [Unit]
 Description=ICOS metadata service
-{% if cpmetardfstore_enable | default(False) %}
 # meta runs a readiness query against rdfStore at startup, so the store has to come up first
 After=network.target cpmetardfstore.service
 Wants=cpmetardfstore.service
-{% else %}
-After=network.target
-{% endif %}
 
 [Service]
 Type=simple

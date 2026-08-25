@@ -96,10 +96,8 @@
     - role: icos.restheart
     # rdfStore owns the RDF4J store and must be up before cpmeta, which runs a readiness
     # query against it at startup (meta's docs/rdf-store-split.md, "Startup and readiness").
-    # Only the test-fs4 inventory enables it so far.
     - role: icos.cpmetardfstore
       tags: cpmetardfstore
-      when: cpmetardfstore_enable | default(False)
     - role: icos.cpmeta
     - role: icos.cpdata
     - role: icos.cpauth

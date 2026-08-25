@@ -10,19 +10,6 @@
       {% endfor %}
   register: _config
 
-# This protects the embedded RDF store while meta shuts down. Where rdfStore is deployed, meta
-# has no embedded store, and the call would instead forward to rdfStore's /admin/read-only and
-# leave the *shared store* read-only until rdfStore itself is restarted - so it is skipped
-# there; rdfStore keeps its own store consistent.
-- name: Temporarily switch cpmeta to readonly mode before restart
-  uri:
-    method: "POST"
-    url: "http://127.0.0.1:{{ cpmeta_port }}/admin/switchToReadonlyMode"
-  failed_when: no
-  when:
-    - _restart_needed
-    - not (cpmetardfstore_enable | default(False))
-
 - name: Start/restart service
   systemd:
     name: cpmeta.service
@@ -39,9 +26,9 @@
   delay: 10
   until: not r.failed
 
-# NB: where rdfStore is deployed, this switches the shared store into read-only mode, not just
-# this meta instance, and it stays that way until rdfStore is restarted. Only for hosts
-# dedicated to read-only serving (cpmeta_readonly_mode), which is what it was always meant for.
+# NB: the store is shared with (and owned by) rdfStore, so this switches the whole store into
+# read-only mode, not just this meta instance, and it stays that way until rdfStore is
+# restarted. Only for hosts dedicated to read-only serving (cpmeta_readonly_mode).
 - name: Leave cpmeta in readonly mode
   uri:
     method: "POST"

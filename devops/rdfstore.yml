@@ -9,18 +9,6 @@
 - hosts: core_host
   tags: host
   pre_tasks:
-    # For now rdfStore is only deployed on the test-fs4 VM. Every other deployment still runs
-    # the meta that owns its RDF store in-process, and starting a second owner of the same
-    # RDF logs there would be actively harmful.
-    - name: Refuse to deploy rdfStore to an inventory that has not enabled it
-      assert:
-        that: cpmetardfstore_enable | default(False)
-        fail_msg: >-
-          rdfStore is not enabled for this inventory. It is currently only deployed on
-          test-fs4; see cpmetardfstore_enable in group_vars/all/core.yml.
-      tags:
-        - always
-
     - name: Setup java
       tags:
         - java
