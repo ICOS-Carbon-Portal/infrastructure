@@ -27,6 +27,14 @@
     group: "{{ cpmeta_user }}"
     recurse: yes
 
+- name: Create cpmeta log directory
+  file:
+    path: /var/log/cpmeta
+    state: directory
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
+    mode: "0755"
+
 - name: Add systemd service
   template:
     src: cpmeta.service
