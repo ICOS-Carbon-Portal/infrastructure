@@ -101,3 +101,28 @@
         {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
         {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
         {{ bbclient_all }} compact --verbose
+
+  tasks:
+    - name: Pull ST4RIS WordPress theme from GitHub
+      tags: st4ris_theme
+      git:
+        repo: https://github.com/ICOS-Carbon-Portal/ST4RIS-WordPress-Theme.git
+        dest: "{{ wordpress_home }}/sites/st4ris/html/wp-content/themes/st4ris"
+        version: main
+        update: true
+        force: false
+      environment:
+        GIT_CONFIG_COUNT: "1"
+        GIT_CONFIG_KEY_0: safe.directory
+        GIT_CONFIG_VALUE_0: "{{ wordpress_home }}/sites/st4ris/html/wp-content/themes/st4ris"
+      register: _st4ris_theme_git
+
+    - name: Set ST4RIS WordPress theme ownership
+      tags: st4ris_theme
+      file:
+        path: "{{ wordpress_home }}/sites/st4ris/html/wp-content/themes/st4ris"
+        owner: "{{ wordpress_web_owner }}"
+        group: "{{ wordpress_web_group }}"
+        state: directory
+        recurse: true
+      when: _st4ris_theme_git.changed
