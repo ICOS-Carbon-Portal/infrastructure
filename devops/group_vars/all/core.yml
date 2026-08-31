@@ -19,12 +19,10 @@ postgis_cities_db_name: paullog
 cpmeta_rdfstore_port: 9095
 cpmeta_rdfstore_host: "{{ coreapp_httpproxy_host }}"
 
-# Configuration shared by meta and rdfStore. Both services parse these same cpmeta.* paths
-# (meta repo, docs/rdf-store-split.md, "Configuration"), so the values are defined once here
-# and rendered into both services' application.conf from roles/icos.rdf_common/templates.
-meta_shared_config_files:
-  - application_shared.conf
-
+# Configuration shared by meta and rdfStore: both services parse these same cpmeta.* paths
+# (meta repo, docs/rdf-store-split.md, "Configuration") from
+# roles/icos.rdf_common/templates/application_shared.conf.
+#
 # The rdflog PostgreSQL database as seen by its two clients: meta appends RDF updates to it,
 # rdfStore reads them back when restoring a fresh store. The server itself is the icos.rdflog
 # role, which has its own variables.

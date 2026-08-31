@@ -10,14 +10,10 @@ module that owns the same configuration in the meta repository.
 hosts and the instance-server/graph layout. See `docs/rdf-store-split.md` in the meta
 repository, section "Configuration", for which paths are shared and why.
 
-Neither service may include the other's templates, so each shared value lives here instead,
-in `application_shared.conf`, plus one file per deployment flavour for the graphs and instance
-servers that differ between them (`application_cities_servers.conf`,
-`application_cities_only_servers.conf`).
-
-`meta_shared_config_files` (defaults in `group_vars/all/core.yml`, overridden per inventory)
-picks which of them apply. Both services render that same list into their generated
-`application.conf`, so their views of the shared configuration cannot drift.
+Neither service may include the other's templates. `application_shared.conf` is the one
+template both include in their generated `application.conf`, so their views of the shared
+configuration cannot drift. Deployment-specific configuration remains in the owning service's
+own template.
 
 `application_metacore.conf` is the one topic kept in its own file: `icos.cpdata` needs the
 ENVRI hosts without the rest of the shared configuration, so it includes that file directly

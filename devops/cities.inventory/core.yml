@@ -56,11 +56,6 @@ all:
           - application_cities_amendment.conf
           - application_cities_sensitive.conf
 
-        # cpmeta + rdfStore - the configuration the two services share
-        meta_shared_config_files:
-          - application_shared.conf
-          - application_cities_only_servers.conf
-
         # rdfStore - application (the RDF4J store, split out of cpmeta)
         cpmeta_rdfstore_citations_eager_warmup: false
 

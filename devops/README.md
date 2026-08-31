@@ -47,11 +47,8 @@ Points to keep in mind:
   `roles/icos.cpmeta_rdfstore/templates/application_rdfstore.conf`: the `rdfStore` section it
   alone owns, plus `roles/icos.rdf_common/templates/application_shared.conf`, which holds the
   values it shares with `cpmeta` - the `rdflog` database, the DataCite credential and the ENVRI
-  hosts - and one further template for the instance-server/graph layout of the deployment
-  flavour at hand. `meta_shared_config_files` (`group_vars/all/core.yml`, overridden per
-  inventory) picks that shared list, and both services render the same list into their generated
-  `application.conf`, so their views cannot drift. Neither service includes templates from the
-  other's role.
+  hosts. Both services include that same template in their generated `application.conf`, so their
+  views cannot drift. Neither service includes templates from the other's role.
 - Which RDF logs get restored into which named graph, and any partial replay offsets, are derived
   from that shared `cpmeta.instanceServers` configuration, so an instance server added for meta
   is picked up by rdfStore's replay automatically.
