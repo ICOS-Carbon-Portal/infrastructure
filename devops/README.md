@@ -43,10 +43,18 @@ Points to keep in mind:
   (`roles/icos.cpmeta/templates/cpmeta.conf`). Everything else rdfStore exposes -
   `/internal/sparql`, `/internal/derived/*`, `/admin/read-only` - is unauthenticated and must
   never be reachable from outside the host.
+- rdfStore has exactly one configuration template,
+  `roles/icos.cpmeta_rdfstore/templates/application_rdfstore.conf`: the `rdfStore` section it
+  alone owns, plus `roles/icos.rdf_common/templates/application_shared.conf`, which holds the
+  values it shares with `cpmeta` - the `rdflog` database, the DataCite credential and the ENVRI
+  hosts - and one further template for the instance-server/graph layout of the deployment
+  flavour at hand. `meta_shared_config_files` (`group_vars/all/core.yml`, overridden per
+  inventory) picks that shared list, and both services render the same list into their generated
+  `application.conf`, so their views cannot drift. Neither service includes templates from the
+  other's role.
 - Which RDF logs get restored into which named graph, and any partial replay offsets, are derived
-  from the shared `cpmeta.instanceServers` configuration. `test-fs4` reuses meta's
-  `application_staging_amendment.conf` through `application_rdfstore_staging_amendment.conf`, so
-  its ICOS Cities log bindings and citation graph scopes cannot drift between the two services.
+  from that shared `cpmeta.instanceServers` configuration, so an instance server added for meta
+  is picked up by rdfStore's replay automatically.
 - On a fresh (empty) storage directory, rdfStore replays every configured RDF log from the
   `rdflog` database and then stays **read-only** on purpose. Verify the restore and run
   `ansible-playbook -i <inv> -t cpmeta_rdfstore_restart rdfstore.yml` to get a writable,

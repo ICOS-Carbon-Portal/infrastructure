@@ -3,12 +3,11 @@
 # Carbon Portal query indexes. cpmeta talks to it over HTTP with RDF4J's SPARQLRepository.
 #
 # The ansible "target" name of this service is cpmeta_rdfstore (see cpDeployTarget in meta's
-# build.sbt), hence the variable/tag prefix.
+# build.sbt), hence the variable/tag prefix. The configuration this service shares with cpmeta
+# is in group_vars/all/core.yml and roles/icos.rdf_common/templates.
 
 cpmeta_rdfstore_user: cpmeta_rdfstore
 cpmeta_rdfstore_home: /home/cpmeta_rdfstore
-
-cpmeta_rdfstore_servicename: cpmeta_rdfstore
 
 # The public /sparql endpoint is proxied to this service by nginx running on core_server,
 # which in the lxd-based inventories is a different machine than core_host - so this follows
@@ -22,16 +21,8 @@ cpmeta_rdfstore_bind_addr: "{{ coreapp_bind_addr }}"
 # Where the RDF4J store keeps its files. cpmeta must NOT have access to this directory.
 cpmeta_rdfstore_rdfstorage_path: "{{ cpmeta_rdfstore_home }}/rdfStorage"
 
-# rdflog PostgreSQL, same database cpmeta appends its RDF updates to; rdfStore only reads it,
-# and only when restoring a fresh store or performing a configured partial replay.
-cpmeta_rdfstore_db_host: localhost
-cpmeta_rdfstore_db_name: rdflog
-cpmeta_rdfstore_db_user: rdflog
-cpmeta_rdfstore_db_port: 2345
-cpmeta_rdfstore_db_pass: "{{ rdflog_db_pass }}"
+# Whether to fetch the citation metadata of every known data object at startup instead of
+# on demand. Turned off in the test/staging deployments, as it was before the split.
+cpmeta_rdfstore_citations_eager_warmup: true
 
 cpmeta_rdfstore_java_opts: ""
-
-# Config file templates, concatenated into application.conf in the order given.
-cpmeta_rdfstore_config_files:
-  - application_rdfstore.conf

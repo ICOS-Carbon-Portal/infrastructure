@@ -19,6 +19,24 @@ postgis_cities_db_name: paullog
 cpmeta_rdfstore_port: 9095
 cpmeta_rdfstore_host: "{{ coreapp_httpproxy_host }}"
 
+# Configuration shared by meta and rdfStore. Both services parse these same cpmeta.* paths
+# (meta repo, docs/rdf-store-split.md, "Configuration"), so the values are defined once here
+# and rendered into both services' application.conf from roles/icos.rdf_common/templates.
+meta_shared_config_files:
+  - application_shared.conf
+
+# The rdflog PostgreSQL database as seen by its two clients: meta appends RDF updates to it,
+# rdfStore reads them back when restoring a fresh store. The server itself is the icos.rdflog
+# role, which has its own variables.
+cpmeta_db_host: localhost
+cpmeta_db_name: rdflog
+cpmeta_db_user: rdflog
+cpmeta_db_port: 2345
+cpmeta_db_pass: "{{ rdflog_db_pass }}"
+
+# DataCite credential, used by meta to mint DOIs and by rdfStore to render citations
+doi_password_icos: "{{ vault_doi_password }}"
+
 meta_permitted_inventory: test-fs4
 
 # Temporary restriction, in order to prevent accidental deploy of new split meta into production.

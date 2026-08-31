@@ -1,16 +1,11 @@
 - name: Create application.conf
-  copy:
+  template:
+    src: application_rdfstore.conf
     dest: "{{ cpmeta_rdfstore_home }}/application.conf"
     owner: "{{ cpmeta_rdfstore_user }}"
     group: "{{ cpmeta_rdfstore_user }}"
-    # contains the rdflog database password
+    # contains the rdflog database password and the DataCite credential
     mode: "0600"
-    content: |
-      {% for item in cpmeta_rdfstore_config_files %}
-      # {{ item }}
-      {{ lookup('template', item) }}
-
-      {% endfor %}
   register: _config
 
 - name: Start/restart service

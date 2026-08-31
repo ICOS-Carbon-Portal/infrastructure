@@ -64,10 +64,13 @@ all:
           - application_staging_amendment.conf
           - application_virtuoso_amendment.conf
 
+        # cpmeta + rdfStore - the configuration the two services share
+        meta_shared_config_files:
+          - application_shared.conf
+          - application_cities_servers.conf
+
         # rdfStore - application (the RDF4J store, split out of cpmeta)
-        cpmeta_rdfstore_config_files:
-          - application_rdfstore.conf
-          - application_rdfstore_staging_amendment.conf
+        cpmeta_rdfstore_citations_eager_warmup: false
 
         # cpdata - application
         cpdata_filestorage_target: "/data/dataAppStorage"
