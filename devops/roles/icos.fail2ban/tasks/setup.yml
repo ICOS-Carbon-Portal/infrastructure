@@ -4,6 +4,7 @@
     state: present
 
 - name: Enable fail2ban
+  when: not ansible_check_mode
   service:
     name: fail2ban
     state: started
