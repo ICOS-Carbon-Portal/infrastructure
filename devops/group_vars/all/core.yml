@@ -19,14 +19,9 @@ postgis_cities_db_name: paullog
 cpmeta_rdfstore_port: 9095
 cpmeta_rdfstore_host: "{{ coreapp_httpproxy_host }}"
 
-# meta (both cpmeta and rdfStore) may only be deployed to this inventory for now. This branch
-# deploys the store-split codebase exclusively, and switching an existing deployment over needs
-# a migration of the RDF store (see "Data migration and cutover" in meta's
-# docs/rdf-store-split.md), so every other deployment is off limits until it has been done.
-# core.yml skips the meta roles for other inventories (so the rest of core can still be
-# deployed there); cpmeta.yml and rdfstore.yml fail outright.
 meta_permitted_inventory: test-fs4
 
+# Temporary restriction, in order to prevent accidental deploy of new split meta into production.
 # The name of the inventory currently being run, e.g. "test-fs4" for -i test-fs4.inventory
 meta_inventory_name: "{{ inventory_dir | basename | regex_replace('\\.inventory$', '') }}"
 meta_deploy_permitted: "{{ meta_inventory_name == meta_permitted_inventory }}"

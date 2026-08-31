@@ -17,8 +17,6 @@
         caddy_conf: "{{ core_caddy_conf }}"
       when: core_proxy | default('nginx') == 'caddy'
 
-    # The meta nginx site proxies /sparql to rdfStore, so it goes together with the split
-    # meta and is restricted to the same inventory (meta_permitted_inventory).
     - name: Setup cpmeta proxy
       tags:
         - proxy
