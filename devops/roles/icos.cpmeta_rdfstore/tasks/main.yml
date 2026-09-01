@@ -1,0 +1,11 @@
+- import_tasks: setup.yml
+  tags: cpmeta_rdfstore_setup
+
+- import_tasks: deploy.yml
+  tags: cpmeta_rdfstore_deploy
+  when: cpmeta_rdfstore_jar_file is defined
+
+- import_tasks: restart.yml
+  tags: cpmeta_rdfstore_restart
+  vars:
+    _restart_needed: true
