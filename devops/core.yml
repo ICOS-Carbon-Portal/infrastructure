@@ -1,5 +1,22 @@
 - hosts: core_server
   tasks:
+    - name: Setup core caddy proxy
+      tags:
+        - proxy
+        - caddy
+        - core_caddy_proxy
+        - cpmeta_proxy
+        - cpdata_proxy
+        - cpauth_proxy
+        - restheart_proxy
+        - doi_proxy
+      import_role:
+        name: icos.caddy
+      vars:
+        caddy_name: "{{ core_caddy_name }}"
+        caddy_conf: "{{ core_caddy_conf }}"
+      when: core_proxy | default('nginx') == 'caddy'
+
     - name: Setup cpmeta proxy
       tags:
         - proxy
@@ -7,6 +24,7 @@
       import_role:
         name: icos.cpmeta
         tasks_from: proxy.yml
+      when: core_proxy | default('nginx') == 'nginx'
 
     - name: Setup cpdata proxy
       tags:
@@ -15,6 +33,7 @@
       import_role:
         name: icos.cpdata
         tasks_from: proxy.yml
+      when: core_proxy | default('nginx') == 'nginx'
 
     - name: Setup cpauth proxy
       tags:
@@ -23,7 +42,9 @@
       import_role:
         name: icos.cpauth
         tasks_from: proxy.yml
-      when: cpauth_domains is defined
+      when:
+        - core_proxy | default('nginx') == 'nginx'
+        - cpauth_domains is defined
 
     - name: Setup restheart proxy
       tags:
@@ -32,6 +53,7 @@
       import_role:
         name: icos.restheart
         tasks_from: proxy.yml
+      when: core_proxy | default('nginx') == 'nginx'
 
     - name: Setup doi proxy
       tags:
@@ -40,7 +62,9 @@
       import_role:
         name: icos.doi
         tasks_from: proxy.yml
-      when: doi_certbot_name is defined
+      when:
+        - core_proxy | default('nginx') == 'nginx'
+        - doi_certbot_name is defined
 
 - hosts: core_host
   pre_tasks:
