@@ -1,53 +1,58 @@
-- hosts: fsicos2
+- hosts: fsicos4
   roles:
-    - name: Create the flexextract VM
-      tags: vm
-      role: icos.lxd_vm
-      lxd_vm_name: flexextract
-      lxd_vm_docker: true
-      lxd_vm_config:
-        limits.cpu: "14"
-        limits.memory: "55GB"
-      lxd_vm_devices:
-        flexextract:
-          path: /data/flexextract
-          source: /disk/data/flexextract
-          type: disk
-          recursive: "true"
-        flexextract_meteo:
-          path: /data/flexextract/meteo
-          source: /nfs/flexextract_meteo
-          type: disk
-        flexpart_output:
-          path: /data/flexpart/output
-          source: /data/flexpart/output
-          type: disk
-          readonly: "False"
+    - role: icos.pve_server
+      tags: pve_server
 
-    - role: icos.certbot2
-      tags: cert
-      certbot_name: flexextract
-      certbot_domains:
-        - flexextract.icos-cp.eu
+    - role: icos.caddy
+      tags: caddy
+      caddy_name: flexextract
+      caddy_conf: |
+        flexextract.icos-cp.eu {
+            handle /meteo/latest* {
+                root * /mnt/icos1/pool/flexextract/meteo
+                uri strip_prefix /meteo
+                header Access-Control-Allow-Origin *
+                file_server browse
+            }
 
-    - role: icos.nginxsite
-      tags: nginx
-      nginxsite_name: flexextract
-      nginxsite_file: files/flexextract.conf
+            handle /heatmap* {
+                root * /tank/flexextract
+                file_server browse
+            }
+
+            handle {
+                respond 403
+            }
+        }
+
+  tasks:
+    - name: Synchronize VM SSH port forwarding
+      tags: guest
+      command: icos-auto-dnat run
+      register: _flexextract_auto_dnat
+      changed_when: >-
+        'adding port' in _flexextract_auto_dnat.stdout or
+        'removing rule' in _flexextract_auto_dnat.stdout
 
 
 - hosts: flexextract
   roles:
-    - role: icos.lxd_guest
+    - role: icos.pve_guest
       tags: guest
 
-    - role: icos.docker
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
       tags: docker
 
     - role: icos.flexextract
       tags: flexextract
       flexextract_src_dir: /tmp/docker_flexextract_7.1.0
-      flexextract_download_host: /disk/data/flexextract_download
+      flexextract_download_host: /data/flexextract4
 
     - role: icos.sshlogin
       tags: sshlogin
