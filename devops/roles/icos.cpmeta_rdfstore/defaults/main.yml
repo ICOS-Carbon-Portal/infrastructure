@@ -9,13 +9,13 @@
 cpmeta_rdfstore_user: cpmeta_rdfstore
 cpmeta_rdfstore_home: /home/cpmeta_rdfstore
 
-# The public /sparql endpoint is proxied to this service by nginx running on core_server,
-# which in the lxd-based inventories is a different machine than core_host - so this follows
-# cpmeta's bind address rather than being pinned to loopback. Everything else this service
-# exposes (/internal/sparql, /internal/derived, /admin/read-only) is unauthenticated and must
-# not be reachable from outside the host: nginx only proxies =/sparql, and no other route to
-# port {{ cpmeta_rdfstore_port }} may be opened. Service authentication for the internal routes
-# is still an open item in docs/rdf-store-split.md.
+# The public /sparql endpoint is proxied to this service by the proxy on core_server, which in
+# the lxd-based inventories is a different machine than core_host - so this follows cpmeta's
+# bind address rather than being pinned to loopback. Everything else this service exposes
+# (/internal/sparql, /internal/derived, /admin/read-only) is unauthenticated and must not be
+# reachable from outside the host: the proxy only routes the exact /sparql path, and no other
+# route to port {{ cpmeta_rdfstore_port }} may be opened. Service authentication for the
+# internal routes is still an open item in docs/rdf-store-split.md.
 cpmeta_rdfstore_bind_addr: "{{ coreapp_bind_addr }}"
 
 # Where the RDF4J store keeps its files. cpmeta must NOT have access to this directory.

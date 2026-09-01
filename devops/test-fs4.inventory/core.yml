@@ -116,11 +116,21 @@ all:
         core_caddy_name: core-test-fs4
         core_caddy_conf: |
           {{ cpmeta_icos_domain }} {
-                  reverse_proxy {{ coreapp_httpproxy_host }}:9094
+                  # rdfStore rejects public queries without the trusted client address.
+                  # An exact matcher keeps its unauthenticated internal routes private.
+                  handle /sparql {
+                          reverse_proxy {{ cpmeta_rdfstore_host }}:{{ cpmeta_rdfstore_port }} {
+                                  header_up X-Forwarded-For {remote_host}
+                          }
+                  }
+
+                  handle {
+                          reverse_proxy {{ coreapp_httpproxy_host }}:9094
+                  }
           }
 
           {{ cpmeta_virtuoso_domain }} {
-                  reverse_proxy {{ coreapp_httpproxy_host }}:9095
+                  reverse_proxy {{ coreapp_httpproxy_host }}:9100
           }
 
           {{ cpauth_icos_domain }} {

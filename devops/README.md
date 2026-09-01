@@ -20,7 +20,7 @@ longer has an embedded one, so it needs a `meta` built from the split codebase.
 `meta_permitted_inventory` in `group_vars/all/core.yml`. Moving another deployment over means
 migrating its RDF store first ("Data migration and cutover" in `docs/rdf-store-split.md`), and
 changing that setting. `cpmeta.yml` and `rdfstore.yml` refuse to run against a non-permitted
-inventory; `core.yml` skips the two meta roles and the meta nginx site there, so the rest of
+inventory; `core.yml` skips the two meta roles and the meta proxy there, so the rest of
 core (postgis, rdflog, restheart, cpdata, cpauth, doi) can still be deployed as usual.
 
 ```sh
@@ -39,8 +39,8 @@ Points to keep in mind:
 - `cpmeta` reaches rdfStore over loopback (`cpmeta.remoteRdfRepository` in
   `roles/icos.cpmeta/templates/application_production.conf`). It runs a readiness query at
   startup, so `cpmeta.service` is ordered after `cpmeta_rdfstore.service`.
-- The public `<meta host>/sparql` is proxied straight to rdfStore by the meta nginx site
-  (`roles/icos.cpmeta/templates/cpmeta.conf`). Everything else rdfStore exposes -
+- The public `<meta host>/sparql` is proxied straight to rdfStore by the core Caddy site
+  (`core_caddy_conf` in `test-fs4.inventory/core.yml`). Everything else rdfStore exposes -
   `/internal/sparql`, `/internal/derived/*`, `/admin/read-only` - is unauthenticated and must
   never be reachable from outside the host.
 - rdfStore has exactly one configuration template,

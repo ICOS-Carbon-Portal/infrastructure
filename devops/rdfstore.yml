@@ -3,8 +3,7 @@
 # (cpDeployPlaybook := "rdfstore.yml", cpDeployTarget := "cpmeta_rdfstore"), so
 # `sbt "project rdfStore" "cpDeploy to <inventory>"` ends up here.
 #
-# The public https://<meta host>/sparql route lives in cpmeta's nginx config (it is a location
-# on the meta server block), so proxy changes are made through core.yml/cpmeta.yml; this
+# The public https://<meta host>/sparql route lives in the core reverse-proxy config, so this
 # playbook only manages the rdfStore application itself.
 - hosts: core_host
   tags: host
