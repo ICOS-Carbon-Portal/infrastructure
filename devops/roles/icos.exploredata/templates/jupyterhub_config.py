@@ -98,10 +98,6 @@ class CustomDockerSpawner(DockerSpawner):
         if 'notebook' in self.user_options.keys():
             self.default_url = self.user_options['notebook']
 
-        environment = dict(self.environment)
-        environment['IMAGE_REF'] = self.image
-        self.environment = environment
-
         return await super().start()
 
 
