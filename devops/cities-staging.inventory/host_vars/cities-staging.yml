@@ -1,0 +1,3 @@
+ansible_host: fsicos2
+ansible_port: 60566
+ansible_user: root
