@@ -19,6 +19,9 @@ exploredata_images:
   - key: explore-icos-data
     image: explore-icos-data
     tags: [0.1.2, 0.1.1, 0.1.0]
+  - key: examples
+    image: examples
+    tags: [0.1.0]
   - key: notebooks-with-doi
     image: notebooks-with-doi
     tags: [0.1.0]
@@ -66,9 +69,9 @@ exploredata_sections:
 exploredata_notebooks:
   # Explore ICOS Data
   - id: examples
-    image: explore-icos-data
-    tag: 0.1.2
-    path: "/lab/tree/examples"
+    image: examples
+    tag: 0.1.0
+    path: ""
     section: explore
     label: "Examples for using ICOS Python library"
     tooltip: >-
