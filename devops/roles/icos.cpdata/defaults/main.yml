@@ -18,5 +18,6 @@ cpdata_pgreslog_admin_pass:  "{{ postgis_admin_pass }}"
 cpdata_pgreslog_writer_pass: "{{ postgis_writer_pass }}"
 cpdata_pgreslog_reader_pass: "{{ postgis_reader_pass }}"
 cpdata_netcdf_folder:
+cpdata_netcdf_preview_folder:
 
 cpdata_jre_package: openjdk-11-jre-headless
