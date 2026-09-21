@@ -22,8 +22,8 @@ for station in stations:
         continue
     try:
         station_info = meta.get_station_meta(station)
-    except:
-        print(timestamp()  + f"[update_stations] Exception when fetching station info for {station.uri}")
+    except Exception as e:
+        print(timestamp()  + f"[update_stations] Exception when fetching station info for {station.uri}: {e!r}")
     else:
         if (station_info.specificInfo.stationClass is None):
             continue
