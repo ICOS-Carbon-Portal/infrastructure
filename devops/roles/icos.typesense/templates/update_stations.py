@@ -3,7 +3,7 @@
 # Uses station metadata from icoscp_core
 # Note that webforms do not have ETags, so they will be re-checked every time
 
-import typesense, json, yaml
+import typesense, json, time, yaml
 from utilities import timestamp, get_analytics_stations
 from icoscp_core.icos import meta
 
@@ -17,6 +17,7 @@ stations = meta.list_stations()
 stations_info = list()
 
 for station in stations:
+    time.sleep(0.25)
     if station.uri == 'http://meta.icos-cp.eu/resources/icos/ES_FA-Lso':
         continue
     try:
