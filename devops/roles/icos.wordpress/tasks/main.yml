@@ -224,7 +224,8 @@
   shell: |
     set -Eueo pipefail
     root_password=$(docker exec wordpress_{{ item.name }}_db printenv MARIADB_ROOT_PASSWORD)
-    docker exec -e MYSQL_PWD="$root_password" wordpress_{{ item.name }}_db mariadb-admin ping -uroot --silent
+    docker exec -e MYSQL_PWD="$root_password" wordpress_{{ item.name }}_db \
+      mariadb -uroot --protocol=TCP -h 127.0.0.1 --batch --skip-column-names -e 'SELECT 1'
   args:
     executable: /bin/bash
   loop: "{{ wordpress_site_configs }}"
