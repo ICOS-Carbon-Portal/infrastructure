@@ -148,7 +148,7 @@
       when: _st4ris_theme_git.changed
 
     - name: Pull JOHN Project WordPress theme from GitHub
-      tags: john_project_theme
+      tags: john_theme
       git:
         repo: https://github.com/ICOS-Carbon-Portal/john-project-wp-theme.git
         dest: "{{ wordpress_home }}/sites/john-project/html/wp-content/themes/john-project"
@@ -159,14 +159,14 @@
         GIT_CONFIG_COUNT: "1"
         GIT_CONFIG_KEY_0: safe.directory
         GIT_CONFIG_VALUE_0: "{{ wordpress_home }}/sites/john-project/html/wp-content/themes/john-project"
-      register: _john_project_theme_git
+      register: _john_theme_git
 
     - name: Set JOHN Project WordPress theme ownership
-      tags: john_project_theme
+      tags: john_theme
       file:
         path: "{{ wordpress_home }}/sites/john-project/html/wp-content/themes/john-project"
         owner: "{{ wordpress_web_owner }}"
         group: "{{ wordpress_web_group }}"
         state: directory
         recurse: true
-      when: _john_project_theme_git.changed
+      when: _john_theme_git.changed
