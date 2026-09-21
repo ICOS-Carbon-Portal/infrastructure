@@ -11,7 +11,6 @@
     nginxsite_domains:
       - "{{ plausible_domain }}"
       - plausible.st4ris.eu
-      - plausible.john-project.eu
 
 - name: Copy clickhouse-config.xml
   copy:
