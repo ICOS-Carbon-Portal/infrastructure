@@ -3,3 +3,8 @@
   register: _r
   failed_when: _r.rc != 0 or "OK" not in _r.stdout
   changed_when: false
+
+- name: fail2ban reload result
+  debug:
+    msg: "fail2ban reloaded successfully: {{ _r.stdout }}"
+  when: _r.stdout is defined
