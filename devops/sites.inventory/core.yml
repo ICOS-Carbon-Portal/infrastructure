@@ -1,0 +1,94 @@
+all:
+  vars:
+    fsicos4_ip: 130.235.92.135
+
+    # Separate SITES core VM on fsicos4.
+    cpauth_sites_domain: auth.fieldsites.se
+    cpmeta_sites_domain: meta.fieldsites.se
+    cpdata_sites_domain: data.fieldsites.se
+
+    cpauth_domains:
+      - "{{ cpauth_sites_domain }}"
+
+    cpmeta_domains:
+      - "{{ cpmeta_sites_domain }}"
+
+    cpdata_domains:
+      - "{{ cpdata_sites_domain }}"
+
+    doi_domains:
+      - doi.fieldsites.se
+
+    postgis_dbs:
+      - "{{ postgis_sites_db_name }}"
+
+    restheart_dbs:
+      - "{{ restheart_sites_db_name }}"
+
+    showUnderConstruction: "false"
+    showCarbonBadge: "true"
+
+    activity_log_ignore_ips: []
+
+    # DOI application
+    doi_envri: SITES
+    doi_meta_domain: "{{ cpmeta_sites_domain }}"
+
+  children:
+    core_host:
+      hosts:
+        sites:
+          ansible_host: fsicos4.icos-cp.eu
+          ansible_port: 60619
+          ansible_user: root
+
+      vars:
+        # Services bind to all VM interfaces because the reverse proxy runs on the fsicos4 host.
+        coreapp_bind_addr: 0.0.0.0
+
+        # cpmeta - application
+        cpmeta_filestorage_target: /disk/data/metaAppStorage
+        cpmeta_backup_enable: true
+        cpmeta_config_files:
+          - application_production.conf
+          - application_production_sensitive.conf
+
+        rdflog_backup_enable: true
+        rdflog_postgres_version: 10
+
+        # cpdata - application
+        cpdata_filestorage_target: /disk/data/dataAppStorage
+        cpdata_config_files:
+          - application_production.conf
+
+        # cpauth - application
+        cpauth_config_files:
+          - application_production.conf
+
+        postgis_db_port: 5438
+        postgis_hostname: 127.0.0.1
+        postgis_backup_enable: true
+
+        cpauth_envries:
+          - name: SITES
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name }}"
+
+        data_envries:
+          - name: SITES
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_sites_db_name }}"
+            postgis_db_name: "{{ postgis_sites_db_name }}"
+
+    core_server:
+      hosts:
+        fsicos4:
+
+      vars:
+        core_proxy: caddy
+        coreapp_httpproxy_host: sites
+        coreapp_host_ip: "{{ fsicos4_ip }}"
+
+        core_caddy_name: core-sites-fs4
+        core_caddy_conf: |
+          {{ doi_domains | first }} {
+                  reverse_proxy {{ coreapp_httpproxy_host }}:8079
+          }
