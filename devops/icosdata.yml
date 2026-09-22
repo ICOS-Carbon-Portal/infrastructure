@@ -18,6 +18,7 @@
 - hosts:
     - fsicos2
     - fsicos3
+    - fsicos4
     - icos1
     - cupcake
     - pancake
