@@ -1,0 +1,114 @@
+- name: Check that the data directory is on its own mount
+  assert:
+    that:
+      - mapproxy_data_mount in ansible_mounts | map(attribute='mount')
+      - mapproxy_data.startswith(mapproxy_data_mount ~ '/')
+    fail_msg: "{{ mapproxy_data_mount }} is not mounted; downloads would fill the root disk"
+
+- name: Install wget
+  apt:
+    name: wget
+
+- name: Create mapproxy user
+  user:
+    name: "{{ mapproxy_user }}"
+    state: present
+    system: yes
+    create_home: no
+    home: "{{ mapproxy_home }}"
+  register: _mapproxy_user
+
+- name: Create mapproxy directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ mapproxy_home }}"
+    - "{{ mapproxy_data }}"
+
+- name: Create mapproxy config directory
+  file:
+    path: "{{ mapproxy_home }}/config"
+    state: directory
+    owner: "{{ _mapproxy_user.uid }}"
+    group: "{{ _mapproxy_user.group }}"
+
+- name: Create layer directories
+  file:
+    path: "{{ mapproxy_data }}/{{ item.dir }}"
+    state: directory
+  loop: "{{ mapproxy_layers }}"
+  loop_control:
+    label: "{{ item.dir }}"
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ mapproxy_home }}/docker-compose.yml"
+  notify: restart mapproxy
+
+- name: Copy mapproxy.yaml
+  template:
+    src: mapproxy.yaml
+    dest: "{{ mapproxy_home }}/config/mapproxy.yaml"
+    owner: "{{ _mapproxy_user.uid }}"
+    group: "{{ _mapproxy_user.group }}"
+  notify: restart mapproxy
+
+- name: Copy refresh.json
+  template:
+    src: refresh.json
+    dest: "{{ mapproxy_home }}/refresh.json"
+
+- name: Copy refresh.py
+  copy:
+    src: refresh.py
+    dest: "{{ mapproxy_home }}/refresh.py"
+    mode: +x
+
+- name: Create refresh timer
+  include_role:
+    name: icos.timer
+  vars:
+    timer_name: mapproxy-refresh
+    timer_conf: |
+      OnCalendar={{ mapproxy_refresh_time }}
+      Persistent=true
+    timer_exec: /usr/bin/python3 {{ mapproxy_home }}/refresh.py {{ mapproxy_home }}/refresh.json
+
+- name: Check which layers have been downloaded
+  stat:
+    path: "{{ mapproxy_data }}/{{ item.dir }}/current.gpkg"
+  loop: "{{ mapproxy_layers }}"
+  loop_control:
+    label: "{{ item.dir }}"
+  register: _mapproxy_current
+
+- name: Record whether every layer has been downloaded
+  set_fact:
+    # MapProxy fails to start while any configured GeoPackage is missing.
+    _mapproxy_ready: "{{ _mapproxy_current.results | map(attribute='stat.exists') is all }}"
+
+- name: Cold start
+  debug:
+    msg: "No GeoPackages yet; run 'ops-mapproxy refresh' and MapProxy starts once all layers are in."
+  when: not _mapproxy_ready
+
+- name: Start mapproxy
+  community.docker.docker_compose_v2:
+    project_src: "{{ mapproxy_home }}"
+  when: _mapproxy_ready
+
+- import_tasks: just.yml
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Check that every layer serves its GeoPackage's tiles
+  command: ops-mapproxy verify
+  register: _mapproxy_verify
+  until: _mapproxy_verify.rc == 0
+  retries: 12
+  delay: 5
+  changed_when: no
+  when: _mapproxy_ready and not ansible_check_mode

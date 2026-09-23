@@ -1,0 +1,40 @@
+mapproxy_home: /docker/mapproxy
+mapproxy_data: /data/mapproxy
+mapproxy_data_mount: /data
+mapproxy_user: mapproxy
+mapproxy_port: 8080
+mapproxy_image: kartoza/mapproxy:7.0.0--v2026.08.31
+mapproxy_title: Lantmäteriet Topografisk webbkarta
+
+mapproxy_ftp_host: download-opendata.lantmateriet.se
+mapproxy_refresh_time: "*-*-* 02:00:00"
+mapproxy_refresh_reserve_gib: 20
+mapproxy_refresh_sample_tiles: 200
+# The VM downloads at ~110 MB/s unthrottled, enough to crowd out other traffic on the host.
+mapproxy_refresh_rate_limit_mb: 50
+
+# Tile over Lund, used to check that each layer is served after a deploy or refresh.
+mapproxy_verify_tile:
+  zoom: 6
+  col: 96
+  row: 141
+
+mapproxy_grid:
+  name: lm_3006
+  srs: EPSG:3006
+  srs_id: 3006
+  bbox: [-1200000, 4305696, 2994304, 8500000]
+  tile_size: [256, 256]
+  res: [4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5]
+
+mapproxy_layers:
+  - name: topowebb
+    title: Topografisk webbkarta
+    dir: topowebb_color
+    table_name: topowebb
+    remote_dir: /Topografisk_webbkarta_raster/Farg_05m_sweref
+  - name: topowebb_nedtonad
+    title: Topografisk webbkarta, nedtonad
+    dir: topowebb_gray
+    table_name: topowebb_nedtonad
+    remote_dir: /Topografisk_webbkarta_raster/Nedtonad_05m_sweref

@@ -1,0 +1,39 @@
+services:
+  demo:
+  wms:
+    # Only the native SRS; anything else would make MapProxy reproject the tiles.
+    srs: ['{{ mapproxy_grid.srs }}']
+    md:
+      title: {{ mapproxy_title | to_json(ensure_ascii=False) }}
+  tms:
+    use_grid_names: true
+  wmts:
+
+layers:
+{% for layer in mapproxy_layers %}
+  - name: {{ layer.name }}
+    title: {{ layer.title | to_json(ensure_ascii=False) }}
+    sources: [{{ layer.name }}_cache]
+{% endfor %}
+
+caches:
+{% for layer in mapproxy_layers %}
+  {{ layer.name }}_cache:
+    grids: [{{ mapproxy_grid.name }}]
+    # No upstream: only what is in the GeoPackage is served.
+    sources: []
+    format: image/png
+    cache:
+      type: geopackage
+      filename: /mapproxy/data/{{ layer.dir }}/current.gpkg
+      table_name: {{ layer.table_name }}
+{% endfor %}
+
+grids:
+  {{ mapproxy_grid.name }}:
+    srs: '{{ mapproxy_grid.srs }}'
+    origin: 'nw'
+    bbox: {{ mapproxy_grid.bbox | to_json }}
+    bbox_srs: '{{ mapproxy_grid.srs }}'
+    tile_size: {{ mapproxy_grid.tile_size | to_json }}
+    res: {{ mapproxy_grid.res | to_json }}
