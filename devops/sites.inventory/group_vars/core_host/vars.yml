@@ -4,6 +4,9 @@ postgis_reader_pass: "{{ vault_postgis_reader_pass }}"
 
 rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
 
-# TODO: add vault_sites_doi_password to this inventory's vault.
 doi_password: "{{ vault_sites_doi_password }}"
 doi_admins: "{{ vault_doi_admins }}"
+doi_to_addresses: "{{ vault_doi_to_addresses }}"
+doi_from_address: "{{ vault_doi_from_address }}"
+doi_smtp_host: "{{ vault_doi_smtp_host }}"
+doi_smtp_username: "{{ vault_doi_smtp_username }}"

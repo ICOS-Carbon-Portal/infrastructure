@@ -6,3 +6,4 @@ doi_bind_addr: "{{ coreapp_bind_addr }}"
 doi_host: "{{ coreapp_httpproxy_host }}"
 doi_meta_domain: "{{ cpmeta_icos_domain }}"
 doi_envri: ICOS
+doi_smtp_password: "{{ vault_doi_email_password }}"
