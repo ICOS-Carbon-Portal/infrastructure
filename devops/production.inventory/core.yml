@@ -57,6 +57,7 @@ all:
 
         # cpdata - application
         cpdata_filestorage_target: /disk/data/dataAppStorage
+        cpdata_netcdf_preview_folder: /disk/data/netcdfPreviews
         cpdata_config_files:
           - application_production.conf
 

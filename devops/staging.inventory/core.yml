@@ -65,6 +65,8 @@ all:
         # when running in an lxd VM, bind all interfaces so that we're reachable
         # from the host.
         cpdata_filestorage_target: "/data/dataAppStorage"
+        cpdata_netcdf_folder: "/data/netcdf/dataDemo"
+        cpdata_netcdf_preview_folder: "/data/netcdf/previews"
         cpdata_b2safe_dry_run: true
         cpdata_config_files:
           - application_production.conf
