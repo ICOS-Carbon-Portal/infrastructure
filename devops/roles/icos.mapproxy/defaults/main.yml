@@ -5,6 +5,7 @@ mapproxy_user: mapproxy
 mapproxy_port: 8080
 mapproxy_image: kartoza/mapproxy:7.0.0--v2026.08.31
 mapproxy_title: Lantmäteriet Topografisk webbkarta
+mapproxy_tile_expires_hours: 24
 
 mapproxy_ftp_host: download-opendata.lantmateriet.se
 mapproxy_refresh_time: "*-*-* 02:00:00"

@@ -1,7 +1,7 @@
 - name: Check that the data directory is on its own mount
   assert:
     that:
-      - mapproxy_data_mount in ansible_mounts | map(attribute='mount')
+      - mapproxy_data_mount in ansible_facts['mounts'] | map(attribute='mount')
       - mapproxy_data.startswith(mapproxy_data_mount ~ '/')
     fail_msg: "{{ mapproxy_data_mount }} is not mounted; downloads would fill the root disk"
 

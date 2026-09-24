@@ -29,6 +29,10 @@ caches:
       table_name: {{ layer.table_name }}
 {% endfor %}
 
+globals:
+  tiles:
+    expires_hours: {{ mapproxy_tile_expires_hours }}
+
 grids:
   {{ mapproxy_grid.name }}:
     srs: '{{ mapproxy_grid.srs }}'
