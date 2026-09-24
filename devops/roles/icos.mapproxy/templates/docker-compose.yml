@@ -1,0 +1,21 @@
+services:
+  mapproxy:
+    image: {{ mapproxy_image }}
+    container_name: mapproxy
+    restart: unless-stopped
+    ports:
+      - "{{ mapproxy_port }}:8080"
+    environment:
+      RECREATE_CONFIG: "false"
+      # Must own ./config, otherwise the entrypoint runs chown -R over /mapproxy, data included.
+      MAPPROXY_USER_ID: "{{ _mapproxy_user.uid }}"
+      MAPPROXY_GROUP_ID: "{{ _mapproxy_user.group }}"
+    volumes:
+      - ./config:/mapproxy
+      # MapProxy rewrites a GeoPackage whose metadata disagrees with the config.
+      - {{ mapproxy_data }}:/mapproxy/data:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
