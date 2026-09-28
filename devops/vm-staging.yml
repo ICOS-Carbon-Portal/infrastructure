@@ -1,9 +1,17 @@
 - hosts: staging_server
   pre_tasks:
-    - name: Create  directory
+    - name: Create staging directory
       tags: vm
       file:
         path: "/disk/data/staging"
+        state: directory
+        owner: 1000000
+        group: 1000000
+
+    - name: Create NetCDF preview directory
+      tags: vm
+      file:
+        path: "/disk/data/staging/netcdfPreviews"
         state: directory
         owner: 1000000
         group: 1000000
@@ -20,6 +28,15 @@
           source: /disk/data/dataAppStorage/
           type: disk
           readonly: "true"
+        netcdf_demo:
+          path: /data/netcdf/dataDemo
+          source: /disk/data/common/netcdf/dataDemo
+          type: disk
+          readonly: "true"
+        netcdf_previews:
+          path: /data/netcdf/previews
+          source: /disk/data/staging/netcdfPreviews
+          type: disk
         staging:
           path: /data/staging
           source: /disk/data/staging
