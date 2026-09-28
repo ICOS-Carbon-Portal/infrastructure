@@ -4,14 +4,13 @@ mapproxy_data_mount: /data
 mapproxy_user: mapproxy
 mapproxy_port: 8080
 mapproxy_image: kartoza/mapproxy:7.0.0--v2026.08.31
-mapproxy_title: Lantmäteriet Topografisk webbkarta
+mapproxy_title: ICOS/SITES map tiles
 mapproxy_tile_expires_hours: 24
 
 mapproxy_ftp_host: download-opendata.lantmateriet.se
 mapproxy_refresh_time: "*-*-* 02:00:00"
 mapproxy_refresh_reserve_gib: 20
 mapproxy_refresh_sample_tiles: 200
-# The VM downloads at ~110 MB/s unthrottled, enough to crowd out other traffic on the host.
 mapproxy_refresh_rate_limit_mb: 50
 
 # Tile over Lund, used to check that each layer is served after a deploy or refresh.
