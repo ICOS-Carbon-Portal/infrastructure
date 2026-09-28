@@ -1,0 +1,66 @@
+#!/usr/bin/env -S just --working-directory ((mapproxy_home)) --justfile
+
+set shell := ['/bin/bash', '-cu']
+dc := "docker compose"
+data := "((mapproxy_data))"
+layers := "{% for layer in mapproxy_layers %}((layer.dir)) {% endfor %}"
+
+
+@_default:
+    just --list --unsorted --justfile {{justfile()}}
+
+
+# run docker-compose
+dc *args:
+    {{dc}} {{args}}
+
+# timer, installed generations and disk usage
+status:
+    #!/bin/bash
+    systemctl list-timers --no-pager mapproxy-refresh.timer
+    systemctl status --no-pager --lines=0 mapproxy-refresh.service
+    for layer in {{layers}}; do
+        echo; echo "== $layer: $(readlink {{data}}/$layer/current.gpkg)"
+        cat {{data}}/$layer/seen.json 2>/dev/null
+        ls -l {{data}}/$layer/*/
+    done
+    echo; df -h {{data}}
+    echo; {{dc}} ps
+
+# follow the refresh log
+logs:
+    journalctl -u mapproxy-refresh.service -f
+
+# run the refresh now, in the background
+refresh:
+    systemctl start --no-block mapproxy-refresh.service
+    @echo "started; follow with: ops-mapproxy logs"
+
+# point a layer (e.g. ((mapproxy_layers[0].dir))) at another generation on disk
+rollback layer generation:
+    #!/bin/bash
+    set -euo pipefail
+    cd {{data}}/{{layer}}
+    target=$(ls {{generation}}/*.gpkg)
+    ln -s "$target" current.gpkg.tmp
+    mv -T current.gpkg.tmp current.gpkg
+    cd ((mapproxy_home)) && {{dc}} up -d --force-recreate mapproxy
+    echo "{{layer}} -> $target"
+
+# check that the served reference tile is identical to the one in each GeoPackage
+verify:
+    #!/usr/bin/env python3
+    import sqlite3, sys, urllib.request
+    zoom, col, row = ((mapproxy_verify_tile.zoom)), ((mapproxy_verify_tile.col)), ((mapproxy_verify_tile.row))
+    failed = False
+    {% for layer in mapproxy_layers %}
+    db = sqlite3.connect("file:{{data}}/((layer.dir))/current.gpkg?mode=ro", uri=True)
+    stored = db.execute(
+        "SELECT tile_data FROM ((layer.table_name)) WHERE zoom_level=? AND tile_column=? AND tile_row=?",
+        (zoom, col, row),
+    ).fetchone()[0]
+    served = urllib.request.urlopen(f"http://localhost:((mapproxy_port))/wmts/((layer.name))/((mapproxy_grid.name))/{zoom}/{col}/{row}.png").read()
+    print("((layer.name)):", "OK" if served == stored else "DIFFERENT")
+    failed |= served != stored
+    {% endfor %}
+    sys.exit(failed)

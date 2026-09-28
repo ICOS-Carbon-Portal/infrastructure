@@ -1,0 +1,13 @@
+{{ {
+  "home": mapproxy_home,
+  "data": mapproxy_data,
+  "data_mount": mapproxy_data_mount,
+  "port": mapproxy_port,
+  "ftp_host": mapproxy_ftp_host,
+  "reserve_gib": mapproxy_refresh_reserve_gib,
+  "sample_tiles": mapproxy_refresh_sample_tiles,
+  "rate_limit_mb": mapproxy_refresh_rate_limit_mb,
+  "verify_tile": mapproxy_verify_tile,
+  "grid": mapproxy_grid,
+  "layers": mapproxy_layers,
+} | to_nice_json }}
