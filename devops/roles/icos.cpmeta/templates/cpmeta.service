@@ -1,6 +1,8 @@
 [Unit]
 Description=ICOS metadata service
-After=network.target
+# meta runs a readiness query against rdfStore at startup, so the store has to come up first
+After=network.target cpmeta_rdfstore.service
+Wants=cpmeta_rdfstore.service
 
 [Service]
 Type=simple

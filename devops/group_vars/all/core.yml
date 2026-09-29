@@ -13,6 +13,35 @@ postgis_icos_db_name: cplog
 postgis_sites_db_name: siteslog
 postgis_cities_db_name: paullog
 
+# rdfStore, the RDF4J store/SPARQL service split out of cpmeta. cpmeta needs these to reach
+# it and to proxy the public /sparql to it, so they have to be readable both on core_host and
+# on core_server.
+cpmeta_rdfstore_port: 9095
+cpmeta_rdfstore_host: "{{ coreapp_httpproxy_host }}"
+
+# Configuration shared by meta and rdfStore: both services parse these same cpmeta.* paths
+# (meta repo, docs/rdf-store-split.md, "Configuration") from
+# roles/icos.rdf_common/templates/application_shared.conf.
+#
+# The rdflog PostgreSQL database as seen by its two clients: meta appends RDF updates to it,
+# rdfStore reads them back when restoring a fresh store. The server itself is the icos.rdflog
+# role, which has its own variables.
+cpmeta_db_host: localhost
+cpmeta_db_name: rdflog
+cpmeta_db_user: rdflog
+cpmeta_db_port: 2345
+cpmeta_db_pass: "{{ rdflog_db_pass }}"
+
+# DataCite credential, used by meta to mint DOIs and by rdfStore to render citations
+doi_password_icos: "{{ vault_doi_password }}"
+
+meta_permitted_inventory: test-fs4
+
+# Temporary restriction, in order to prevent accidental deploy of new split meta into production.
+# The name of the inventory currently being run, e.g. "test-fs4" for -i test-fs4.inventory
+meta_inventory_name: "{{ inventory_dir | basename | regex_replace('\\.inventory$', '') }}"
+meta_deploy_permitted: "{{ meta_inventory_name == meta_permitted_inventory }}"
+
 postgis_container_name: postgis
 rdflog_container_name: rdflog
 
