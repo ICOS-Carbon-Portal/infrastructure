@@ -8,14 +8,6 @@
         owner: 1000000
         group: 1000000
 
-    - name: Create NetCDF preview directory
-      tags: vm
-      file:
-        path: "/disk/data/staging/netcdfPreviews"
-        state: directory
-        owner: 1000000
-        group: 1000000
-
   roles:
     - role: icos.lxd_vm
       tags: vm
@@ -35,8 +27,9 @@
           readonly: "true"
         netcdf_previews:
           path: /data/netcdf/previews
-          source: /disk/data/staging/netcdfPreviews
+          source: /disk/data/netcdfPreviews
           type: disk
+          readonly: "true"
         staging:
           path: /data/staging
           source: /disk/data/staging
