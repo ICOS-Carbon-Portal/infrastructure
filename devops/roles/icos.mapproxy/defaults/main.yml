@@ -11,30 +11,57 @@ mapproxy_ftp_host: download-opendata.lantmateriet.se
 mapproxy_refresh_time: "*-*-* 02:00:00"
 mapproxy_refresh_reserve_gib: 20
 mapproxy_refresh_sample_tiles: 200
-mapproxy_refresh_rate_limit_mb: 50
+mapproxy_refresh_rate_limit_mb: 10
 
-# Tile over Lund, used to check that each layer is served after a deploy or refresh.
-mapproxy_verify_tile:
-  zoom: 6
-  col: 96
-  row: 141
+# Each grid's verify_tile is a tile over Lund, used to check that its layers are served after a
+# deploy or refresh.
+mapproxy_grids:
+  lm_3006:
+    srs: EPSG:3006
+    srs_id: 3006
+    bbox: [-1200000, 4305696, 2994304, 8500000]
+    tile_size: [256, 256]
+    res: [4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5]
+    verify_tile: {zoom: 6, col: 96, row: 141}
+  webmercator:
+    srs: EPSG:3857
+    srs_id: 3857
+    bbox: [-20037508.342789248, -20037508.342789248, 20037508.342789248, 20037508.342789248]
+    tile_size: [256, 256]
+    # As in Lantmäteriet's gpkg_tile_matrix, which refresh.py compares against.
+    res: [156543.033928041, 78271.51696402048, 39135.75848201023, 19567.87924100512,
+          9783.93962050256, 4891.96981025128, 2445.98490512564, 1222.99245256282,
+          611.49622628141, 305.7481131407048, 152.8740565703525, 76.43702828517624,
+          38.21851414258813, 19.10925707129406, 9.554628535647032, 4.777314267823516,
+          2.388657133911758, 1.194328566955879]
+    verify_tile: {zoom: 11, col: 1099, row: 640}
 
-mapproxy_grid:
-  name: lm_3006
-  srs: EPSG:3006
-  srs_id: 3006
-  bbox: [-1200000, 4305696, 2994304, 8500000]
-  tile_size: [256, 256]
-  res: [4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5]
+mapproxy_wms_grid: lm_3006
 
+# One entry per GeoPackage delivery. Entries with the same name are served as one layer, with a
+# tile matrix set per grid.
 mapproxy_layers:
   - name: topowebb
     title: Topografisk webbkarta
+    grid: lm_3006
     dir: topowebb_color
     table_name: topowebb
     remote_dir: /Topografisk_webbkarta_raster/Farg_05m_sweref
   - name: topowebb_nedtonad
     title: Topografisk webbkarta, nedtonad
+    grid: lm_3006
     dir: topowebb_gray
     table_name: topowebb_nedtonad
     remote_dir: /Topografisk_webbkarta_raster/Nedtonad_05m_sweref
+  - name: topowebb
+    title: Topografisk webbkarta
+    grid: webmercator
+    dir: topowebb_color_mercator
+    table_name: topowebb
+    remote_dir: /Topografisk_webbkarta_raster/Farg_05m_mercator
+  - name: topowebb_nedtonad
+    title: Topografisk webbkarta, nedtonad
+    grid: webmercator
+    dir: topowebb_gray_mercator
+    table_name: topowebb_nedtonad
+    remote_dir: /Topografisk_webbkarta_raster/Nedtonad_05m_mercator

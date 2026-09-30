@@ -47,12 +47,33 @@
     dest: "{{ mapproxy_home }}/docker-compose.yml"
   notify: restart mapproxy
 
+- name: Check which layers have been downloaded
+  stat:
+    path: "{{ mapproxy_data }}/{{ item.dir }}/current.gpkg"
+  loop: "{{ mapproxy_layers }}"
+  loop_control:
+    label: "{{ item.dir }}"
+  register: _mapproxy_current
+
+- name: Record whether every layer has been downloaded
+  set_fact:
+    # MapProxy fails to start while any configured GeoPackage is missing.
+    _mapproxy_ready: "{{ _mapproxy_current.results | map(attribute='stat.exists') is all }}"
+
+- name: Waiting for GeoPackages
+  debug:
+    msg: >-
+      Not all GeoPackages are downloaded, so mapproxy.yaml is left as it is. Run
+      'ops-mapproxy refresh', then the playbook again once it has finished.
+  when: not _mapproxy_ready
+
 - name: Copy mapproxy.yaml
   template:
     src: mapproxy.yaml
     dest: "{{ mapproxy_home }}/config/mapproxy.yaml"
     owner: "{{ _mapproxy_user.uid }}"
     group: "{{ _mapproxy_user.group }}"
+  when: _mapproxy_ready
   notify: restart mapproxy
 
 - name: Copy refresh.json
@@ -75,24 +96,6 @@
       OnCalendar={{ mapproxy_refresh_time }}
       Persistent=true
     timer_exec: /usr/bin/python3 {{ mapproxy_home }}/refresh.py {{ mapproxy_home }}/refresh.json
-
-- name: Check which layers have been downloaded
-  stat:
-    path: "{{ mapproxy_data }}/{{ item.dir }}/current.gpkg"
-  loop: "{{ mapproxy_layers }}"
-  loop_control:
-    label: "{{ item.dir }}"
-  register: _mapproxy_current
-
-- name: Record whether every layer has been downloaded
-  set_fact:
-    # MapProxy fails to start while any configured GeoPackage is missing.
-    _mapproxy_ready: "{{ _mapproxy_current.results | map(attribute='stat.exists') is all }}"
-
-- name: Cold start
-  debug:
-    msg: "No GeoPackages yet; run 'ops-mapproxy refresh' and MapProxy starts once all layers are in."
-  when: not _mapproxy_ready
 
 - name: Start mapproxy
   community.docker.docker_compose_v2:
