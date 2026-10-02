@@ -34,6 +34,9 @@ exploredata_images:
   - key: climbeco-course
     image: climbeco-course
     tags: [0.1.0]
+  - key: soil-exercise
+    image: soil-exercise
+    tags: [0.1.0]
   - key: timecapsule
     image: timecapsule
     tags: [0.1.0]
@@ -197,49 +200,6 @@ exploredata_notebooks:
     doi: "10.18160/GATA-SGZ5"
 
   # Education
-  - id: envrifair-ws
-    image: explore-icos-data
-    tag: 0.1.2
-    path: >-
-      /lab/tree/project-jupyter-notebooks/envrifair-winterschool/map
-    section: education
-    label: "Envrifair Winter School"
-    tooltip: >-
-      ENVRIFAIR Winterschool notebooks showing how to load ICOS data
-      products and build interactive maps.
-
-  - id: otc-workshop
-    image: explore-icos-data
-    tag: 0.1.2
-    path: "/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
-    section: education
-    label: "OTC Data Reduction Workshop"
-    tooltip: >-
-      Ocean Thematic Centre workshop exercises on calibrating and
-      processing instrument-based oceanic CO₂ measurements.
-
-  - id: ocean-carbon
-    image: ocean-carbon-course
-    tag: 0.1.0
-    path: ""
-    section: education
-    label: "Ocean carbon practicals 2025"
-    tooltip: >-
-      A collection of teaching notebooks for ocean carbon science,
-      guiding users through key concepts using interactive analysis and
-      real datasets.
-
-  - id: summer-school
-    image: summer-school
-    tag: 0.1.0
-    path: ""
-    section: education
-    label: "Summer School 2025"
-    tooltip: >-
-      Learn about greenhouse gas measurements, carbon cycle science, and
-      ICOS data through lectures and hands-on training offered at the
-      annual ICOS Summer School.
-
   - id: climbeco-course
     image: climbeco-course
     tag: 0.1.0
@@ -253,6 +213,61 @@ exploredata_notebooks:
       will focus on the user perspective and different ways of upscaling the
       carbon dioxide exchange to assess the carbon budget of a larger region
       (e.g. Sweden).
+
+  - id: envrifair-ws
+    image: explore-icos-data
+    tag: 0.1.2
+    path: >-
+      /lab/tree/project-jupyter-notebooks/envrifair-winterschool/map
+    section: education
+    label: "Envrifair Winter School"
+    tooltip: >-
+      ENVRIFAIR Winterschool notebooks showing how to load ICOS data
+      products and build interactive maps.
+
+  - id: ocean-carbon
+    image: ocean-carbon-course
+    tag: 0.1.0
+    path: ""
+    section: education
+    label: "Ocean carbon practicals 2025"
+    tooltip: >-
+      A collection of teaching notebooks for ocean carbon science,
+      guiding users through key concepts using interactive analysis and
+      real datasets.
+
+  - id: otc-workshop
+    image: explore-icos-data
+    tag: 0.1.2
+    path: "/lab/tree/project-jupyter-notebooks/otc-data-reduction-workshop"
+    section: education
+    label: "OTC Data Reduction Workshop"
+    tooltip: >-
+      Ocean Thematic Centre workshop exercises on calibrating and
+      processing instrument-based oceanic CO₂ measurements.
+
+  - id: soil-exercise
+    image: soil-exercise
+    tag: 0.1.0
+    path: "/lab/tree/soil_exercise.ipynb"
+    section: education
+    label: "Soil CO₂ Diffusion Exercise (NGEN16)"
+    tooltip: >-
+      A university-level teaching notebook on how CO₂ is produced and
+      spreads through the soil, worked through step by step with a
+      simple diffusion model: soil temperature, CO₂ production, and
+      diffusion, with plots of the results.
+
+  - id: summer-school
+    image: summer-school
+    tag: 0.1.0
+    path: ""
+    section: education
+    label: "Summer School 2025"
+    tooltip: >-
+      Learn about greenhouse gas measurements, carbon cycle science, and
+      ICOS data through lectures and hands-on training offered at the
+      annual ICOS Summer School.
 
   # Timecapsule
   - id: timecapsule
