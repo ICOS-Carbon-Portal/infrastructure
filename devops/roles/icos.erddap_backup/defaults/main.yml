@@ -1,0 +1,29 @@
+---
+erddap_backup_remote: icos1
+erddap_backup_remote_user: "{{ hostvars[erddap_backup_remote].bbserver_user }}"
+erddap_backup_remote_host: "{{ hostvars[erddap_backup_remote].bbserver_host }}"
+erddap_backup_remote_port: "{{ hostvars[erddap_backup_remote].bbserver_port }}"
+erddap_backup_remote_repo: "{{ hostvars[erddap_backup_remote].bbserver_home }}/repos/erddap-essential.repo"
+erddap_backup_user: ubuntu
+erddap_backup_home: /home/ubuntu/erddap.icos-cp.eu
+erddap_backup_config_dir: /etc/erddap-backup
+erddap_backup_state_dir: /var/lib/erddap-backup
+erddap_backup_calendar: "*-*-* 02:30:00"
+erddap_backup_keep_daily: 14
+erddap_backup_keep_weekly: 8
+erddap_backup_keep_monthly: 12
+
+# Intentionally excludes runtime releases, CSVs, caches, generated datasets.xml,
+# log history, and local tar archives. Paths are preserved below rootfs/ in Borg.
+erddap_backup_required_paths:
+  - /home/ubuntu/.icoscp/cpauthToken_auth_conf.json
+  - "{{ erddap_backup_home }}/content/erddap/setup.xml"
+  - "{{ erddap_backup_home }}/icos-erddap/erddap_transfer/config.toml"
+erddap_backup_optional_paths:
+  - "{{ erddap_backup_home }}/content/erddap/images"
+  - "{{ erddap_backup_home }}/bigParent/subscriptionsV1.txt"
+  - "{{ erddap_backup_home }}/update_erddap.sh"
+  - /home/ubuntu/cleanup_logs.sh
+  - /home/ubuntu/update_erddap.sh
+  - /home/ubuntu/backup.sh
+  - /etc/systemd/system/erddap.service

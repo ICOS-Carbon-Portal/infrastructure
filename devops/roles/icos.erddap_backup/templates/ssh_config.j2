@@ -1,0 +1,10 @@
+Host erddap-backup
+    HostName {{ erddap_backup_remote_host }}
+    Port {{ erddap_backup_remote_port }}
+    User {{ erddap_backup_remote_user }}
+    IdentityFile {{ erddap_backup_config_dir }}/id_ed25519
+    IdentitiesOnly yes
+    UserKnownHostsFile {{ erddap_backup_config_dir }}/known_hosts
+    StrictHostKeyChecking yes
+    BatchMode yes
+    ConnectTimeout 20

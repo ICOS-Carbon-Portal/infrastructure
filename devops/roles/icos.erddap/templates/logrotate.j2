@@ -1,0 +1,13 @@
+# ERDDAP rotates its own log; Tomcat's JULI handlers retain dated logs.
+# This covers the role-managed ingestion entrypoint's redirected output.
+"{{ erddap_home }}/ingestion.log" {
+    daily
+    maxsize 100M
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    su {{ erddap_user }} {{ erddap_group }}
+}

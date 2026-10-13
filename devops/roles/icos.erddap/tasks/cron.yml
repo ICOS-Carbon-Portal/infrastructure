@@ -1,0 +1,9 @@
+---
+- name: Apply the explicit ingestion scheduling setting after health checks
+  ansible.builtin.cron:
+    name: ICOS ERDDAP ingestion
+    user: "{{ erddap_user }}"
+    minute: "{{ erddap_ingestion_minute }}"
+    hour: "{{ erddap_ingestion_hour }}"
+    job: "/usr/bin/flock -n {{ erddap_home }}/.ingestion.lock {{ erddap_home }}/update_erddap.sh >> {{ erddap_home }}/ingestion.log 2>&1"
+    state: "{{ 'present' if erddap_ingestion_enabled | bool else 'absent' }}"

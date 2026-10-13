@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Managed by Ansible. Edit inventory settings, not this generated file. -->
+<erddapSetup>
+{% for name, value in erddap_setup.items() %}
+  <{{ name }}>{{ (value | string | lower) if value is boolean else (value | string | e) }}</{{ name }}>
+{% endfor %}
+  <emailUserName>{{ erddap_email_username | string | e }}</emailUserName>
+  <emailPassword>{{ erddap_email_password | string | e }}</emailPassword>
+  <flagKeyKey>{{ erddap_flag_key | string | e }}</flagKeyKey>
+  <!-- Google and ORCID authentication are not configured. -->
+  <googleClientID></googleClientID>
+  <orcidClientID></orcidClientID>
+  <orcidClientSecret></orcidClientSecret>
+</erddapSetup>

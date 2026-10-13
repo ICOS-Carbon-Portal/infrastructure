@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+export BORG_REPO={{ ('erddap-backup:' ~ erddap_backup_remote_repo) | quote }}
+export BORG_RSH={{ ('ssh -F ' ~ erddap_backup_config_dir ~ '/ssh_config') | quote }}
+export BORG_REMOTE_PATH=/usr/local/bin/borg
+export BORG_BASE_DIR={{ (erddap_backup_state_dir ~ '/borg') | quote }}
+export BORG_PASSCOMMAND={{ ('/usr/bin/cat ' ~ erddap_backup_config_dir ~ '/passphrase') | quote }}
+export BORG_LOCK_WAIT=60
+export BORG_DISPLAY_PASSPHRASE=no
+exec /usr/bin/borg "$@"

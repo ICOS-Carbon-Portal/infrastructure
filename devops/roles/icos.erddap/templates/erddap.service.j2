@@ -1,0 +1,20 @@
+[Unit]
+Description=ERDDAP web application
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User={{ erddap_user }}
+Group={{ erddap_group }}
+WorkingDirectory={{ erddap_home }}
+ExecStart={{ erddap_home }}/apache-tomcat/bin/catalina.sh run
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=120
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
