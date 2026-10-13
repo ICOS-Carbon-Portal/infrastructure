@@ -119,6 +119,7 @@
   ansible.builtin.command: /usr/local/sbin/erddap-borg info --json
   register: _erddap_backup_repo_info
   changed_when: false
+  check_mode: false
 
 - name: Refuse an unencrypted or unexpected repository
   ansible.builtin.assert:
@@ -129,6 +130,7 @@
   ansible.builtin.command: /usr/local/sbin/erddap-borg key export
   register: _erddap_backup_exported_key
   changed_when: false
+  check_mode: false
   no_log: true
 
 - name: Create recovery key directory on the controller
