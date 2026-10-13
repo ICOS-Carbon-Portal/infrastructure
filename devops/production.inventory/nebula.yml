@@ -54,7 +54,7 @@ nebula_hosts:
 
     fsicos4-stiltcluster:
       nebula_ip: "100.100.4.8"
-      nebula_port: 60705
+      nebula_port: 60715
 
     pancake:
       nebula_ip: "100.100.4.9"
