@@ -1,0 +1,197 @@
+---
+- name: Validate backup scope
+  ansible.builtin.assert:
+    that:
+      - inventory_hostname == 'erddap-next'
+      - erddap_backup_remote != inventory_hostname
+      - erddap_backup_remote_repo.endswith('/erddap-essential.repo')
+
+- name: Require a recoverable encryption passphrase from Vault
+  ansible.builtin.assert:
+    that:
+      - erddap_backup_passphrase is defined
+      - erddap_backup_passphrase is string
+      - erddap_backup_passphrase | length >= 32
+  no_log: true
+
+- name: Install backup prerequisites
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - borgbackup
+      - openssh-client
+      - sqlite3
+    state: present
+
+- name: Create private backup directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  loop:
+    - "{{ erddap_backup_config_dir }}"
+    - "{{ erddap_backup_state_dir }}"
+
+- name: Install encryption passphrase
+  ansible.builtin.copy:
+    content: "{{ erddap_backup_passphrase }}\n"
+    dest: "{{ erddap_backup_config_dir }}/passphrase"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  diff: false
+
+- name: Generate dedicated backup SSH key
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/ssh-keygen
+      - -q
+      - -t
+      - ed25519
+      - -f
+      - "{{ erddap_backup_config_dir }}/id_ed25519"
+      - -N
+      - ""
+      - -C
+      - erddap-essential-backup
+    creates: "{{ erddap_backup_config_dir }}/id_ed25519"
+
+- name: Read backup public key
+  ansible.builtin.slurp:
+    src: "{{ erddap_backup_config_dir }}/id_ed25519.pub"
+  register: _erddap_backup_ssh_key
+
+- name: Authorize only the dedicated repository on the off-host server
+  ansible.posix.authorized_key:
+    user: "{{ erddap_backup_remote_user }}"
+    key: "{{ _erddap_backup_ssh_key.content | b64decode }}"
+    key_options: 'command="/usr/local/bin/borg serve --restrict-to-path {{ erddap_backup_remote_repo }}",restrict'
+    state: present
+  delegate_to: "{{ erddap_backup_remote }}"
+
+- name: Retrieve server host key over the existing trusted Ansible connection
+  ansible.builtin.slurp:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+  delegate_to: "{{ erddap_backup_remote }}"
+  register: _erddap_backup_host_key
+
+- name: Pin the backup server SSH host key
+  ansible.builtin.known_hosts:
+    path: "{{ erddap_backup_config_dir }}/known_hosts"
+    name: "[{{ erddap_backup_remote_host }}]:{{ erddap_backup_remote_port }}"
+    key: "[{{ erddap_backup_remote_host }}]:{{ erddap_backup_remote_port }} {{ _erddap_backup_host_key.content | b64decode | trim }}"
+
+- name: Install SSH configuration
+  ansible.builtin.template:
+    src: ssh_config.j2
+    dest: "{{ erddap_backup_config_dir }}/ssh_config"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Install encrypted Borg wrapper
+  ansible.builtin.template:
+    src: borg.j2
+    dest: /usr/local/sbin/erddap-borg
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Check whether the dedicated remote repository is initialized
+  ansible.builtin.stat:
+    path: "{{ erddap_backup_remote_repo }}/config"
+  delegate_to: "{{ erddap_backup_remote }}"
+  register: _erddap_backup_remote_config
+
+- name: Initialize encrypted repository if absent
+  ansible.builtin.command:
+    argv:
+      - /usr/local/sbin/erddap-borg
+      - init
+      - --encryption=repokey-blake2
+  when: not _erddap_backup_remote_config.stat.exists
+  changed_when: true
+
+- name: Read repository encryption metadata
+  ansible.builtin.command: /usr/local/sbin/erddap-borg info --json
+  register: _erddap_backup_repo_info
+  changed_when: false
+  check_mode: false
+
+- name: Refuse an unencrypted or unexpected repository
+  ansible.builtin.assert:
+    that:
+      - (_erddap_backup_repo_info.stdout | from_json).encryption.mode == 'repokey-blake2'
+
+- name: Export the passphrase-protected repository key
+  ansible.builtin.command: /usr/local/sbin/erddap-borg key export
+  register: _erddap_backup_exported_key
+  changed_when: false
+  check_mode: false
+  no_log: true
+
+- name: Create recovery key directory on the controller
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/.config/icos"
+    state: directory
+    mode: "0700"
+  delegate_to: localhost
+  become: false
+
+- name: Save encrypted recovery key on the controller separately from the container
+  ansible.builtin.copy:
+    content: "{{ _erddap_backup_exported_key.stdout }}\n"
+    dest: "{{ lookup('env', 'HOME') }}/.config/icos/erddap-backup-repokey-{{ (_erddap_backup_repo_info.stdout | from_json).repository.id }}.txt"
+    mode: "0600"
+  delegate_to: localhost
+  become: false
+  no_log: true
+  diff: false
+
+- name: Ensure ingestion lock remains writable by the application user
+  ansible.builtin.file:
+    path: "{{ erddap_backup_home }}/.ingestion.lock"
+    state: touch
+    owner: "{{ erddap_backup_user }}"
+    group: "{{ erddap_backup_user }}"
+    mode: "0640"
+    access_time: preserve
+    modification_time: preserve
+
+- name: Install SQLite snapshot and Borg commands
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: /usr/local/sbin/erddap-essential-backup
+    owner: root
+    group: root
+    mode: "0700"
+    validate: /bin/bash -n %s
+
+- name: Install backup service and timer
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - erddap-essential-backup.service
+    - erddap-essential-backup.timer
+  register: _erddap_backup_units
+
+# Exercise the real service on deployment; recovery testing is documented separately.
+- name: Run a Borg backup with the installed service
+  ansible.builtin.systemd_service:
+    name: erddap-essential-backup.service
+    daemon_reload: true
+    state: started
+
+- name: Enable daily encrypted backups
+  ansible.builtin.systemd_service:
+    name: erddap-essential-backup.timer
+    daemon_reload: true
+    enabled: true
+    state: "{{ 'restarted' if _erddap_backup_units is changed else 'started' }}"

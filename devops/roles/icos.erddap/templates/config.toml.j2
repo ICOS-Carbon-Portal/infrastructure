@@ -1,0 +1,4 @@
+# Managed by Ansible.
+log_level = "INFO"
+datasets_dir = {{ (erddap_home ~ '/icos_datasets') | to_json }}
+datasets_xml_location = {{ (erddap_home ~ '/content/erddap/datasets.xml') | to_json }}

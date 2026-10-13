@@ -1,0 +1,65 @@
+---
+# Production application settings. Retain the erddap-next container name.
+# Host nginx is deployed separately; see docs/erddap/README.md.
+erddap_service_enabled: true
+erddap_state_ready: true
+erddap_ingestion_enabled: true
+erddap_checker_enabled: false
+
+# Define these vault_* variables in an encrypted vault.yml alongside this file.
+# See README.md for the required keys, including intentionally empty values.
+erddap_email_username: "{{ vault_erddap_email_username }}"
+erddap_email_password: "{{ vault_erddap_email_password }}"
+erddap_flag_key: "{{ vault_erddap_flag_key }}"
+# Used by the icos.erddap_backup role; preserve this Vault value for recovery.
+erddap_backup_passphrase: "{{ vault_erddap_backup_passphrase }}"
+
+# Non-secret setup.xml fields for the production endpoint.
+# Keys are ERDDAP XML element names. Values are escaped by the XML template.
+erddap_setup:
+  bigParentDirectory: "{{ erddap_home }}/bigParent/"
+  baseUrl: https://erddap.icos-cp.eu
+  baseHttpsUrl: https://erddap.icos-cp.eu
+  emailEverythingTo: steve.jones@vliz.be
+  emailFromAddress: steve.jones@vliz.be
+  emailProperties: ""
+  emailSmtpHost: "10.189.225.1"
+  emailSmtpPort: "25"
+  adminInstitution: ICOS OTC
+  adminInstitutionUrl: https://www.icos-otc.org/
+  adminIndividualName: Steve Jones
+  adminPosition: ERDDAP administrator
+  adminPhone: None
+  adminAddress: None
+  adminCity: None
+  adminStateOrProvince: None
+  adminPostalCode: None
+  adminCountry: None
+  adminEmail: steve.jones@vliz.be
+  subscribeToRemoteErddapDataset: "true"
+  fontFamily: DejaVu Sans
+  logMaxSizeMB: "20"
+  datasetsRegex: ".*"
+  quickRestart: "true"
+  authentication: ""
+  passwordEncoding: UEPSHA256
+  listPrivateDatasets: "false"
+  searchEngine: original
+  accessConstraints: NONE
+  accessRequiresAuthorization: only accessible to authorized users
+  fees: NONE
+  keywords: earth science, atmosphere, ocean, biosphere, biology, environment
+  units_standard: UDUNITS
+  fgdcActive: "true"
+  iso19115Active: "true"
+  filesActive: "true"
+  defaultAccessibleViaFiles: "true"
+  dataProviderFormActive: "true"
+  subscriptionSystemActive: "true"
+  convertersActive: "true"
+  slideSorterActive: "true"
+  highResLogoImageFile: noaa_simple.gif
+  lowResLogoImageFile: noaa20.gif
+  googleEarthLogoFile: nlogo.gif
+  variablesMustHaveIoosCategory: "true"
+  categoryAttributes: global:cdm_data_type, global:institution, ioos_category, global:keywords, long_name, standard_name, variableName

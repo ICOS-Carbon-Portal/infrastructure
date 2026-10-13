@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily ERDDAP essential-state backup
+
+[Timer]
+OnCalendar={{ erddap_backup_calendar }}
+RandomizedDelaySec=5m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

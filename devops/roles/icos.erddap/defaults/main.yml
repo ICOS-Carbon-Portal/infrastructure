@@ -1,0 +1,41 @@
+---
+# Pinned releases for the replacement. Change version AND checksum together;
+# release directories are immutable once extracted.
+erddap_version: "2.31.1"
+# /version omits the patch number; /version_string includes it (also for 2.27).
+erddap_version_string: "{{ erddap_version ~ ('.0' if erddap_version.split('.') | length == 2 else '') }}"
+erddap_war_url: "https://github.com/ERDDAP/erddap/releases/download/v{{ erddap_version }}/ERDDAP-{{ erddap_version }}.war"
+erddap_war_checksum: sha256:40c02b456be26ba8e7cdd559c4b9becb3d561d2336c81e409b1be1d1dc08f5ed
+erddap_tomcat_version: "10.1.60"
+erddap_tomcat_url: "https://archive.apache.org/dist/tomcat/tomcat-10/v{{ erddap_tomcat_version }}/bin/apache-tomcat-{{ erddap_tomcat_version }}.tar.gz"
+erddap_tomcat_checksum: sha512:aa06508300ca137a023b74b8600f2c1b3248412eb85d4fc5e2f337c6c4d3776f4491e272f79856ac541cfab0fc35537111ae4f3cfcd0bbe702c0a3610a61bd04
+
+erddap_user: ubuntu
+erddap_group: ubuntu
+erddap_home: /home/ubuntu/erddap.icos-cp.eu
+erddap_release_dir: "{{ erddap_home }}/releases/tomcat-{{ erddap_tomcat_version }}-erddap-{{ erddap_version }}"
+erddap_tomcat_home: "{{ erddap_release_dir }}/apache-tomcat-{{ erddap_tomcat_version }}"
+# ERDDAP >= 2.29 requires Java 25. Keep Java distribution-managed.
+erddap_java_version: 25
+erddap_java_home: "/usr/lib/jvm/java-{{ erddap_java_version }}-openjdk-amd64"
+erddap_heap: 8000M
+erddap_http_port: 8080
+# nginx runs on the LXD host; trust forwarded headers only from its bridge IP.
+erddap_proxy_address: "{{ ansible_default_ipv4.gateway }}"
+
+# Non-secret XML fields come from host inventory. Credentials/keys have no
+# defaults: host_vars maps erddap_* credential variables to encrypted vault_*.
+erddap_setup: {}
+# Provisioning installs the service stopped/disabled until state is restored.
+erddap_service_enabled: false
+erddap_state_ready: false
+
+erddap_ingestion_repo: https://github.com/quince-science/icos-erddap.git
+erddap_ingestion_revision: 6b815d87e65e3b43da145f734c50342c09c0860f
+erddap_ingestion_dir: "{{ erddap_home }}/icos-erddap/erddap_transfer"
+erddap_ingestion_enabled: false
+# dataset_checker.py queries production, not the replacement. Opt in only
+# after cutover and after reviewing its destructive SQLite cleanup behavior.
+erddap_checker_enabled: false
+erddap_ingestion_hour: "1"
+erddap_ingestion_minute: "5"
