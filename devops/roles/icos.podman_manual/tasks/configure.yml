@@ -46,5 +46,6 @@
 - name: Configure storage for LXD + ZFS
   import_tasks: zfs-and-lxd.yml
   when:
-    - icos.inside_lxd
-    - icos.root_is_zfs
+    - ansible_facts['virtualization_type'] == 'lxc'
+    - ansible_facts['virtualization_role'] == 'guest'
+    - (ansible_facts['mounts'] | selectattr('mount', 'equalto', '/') | first).fstype == 'zfs'
