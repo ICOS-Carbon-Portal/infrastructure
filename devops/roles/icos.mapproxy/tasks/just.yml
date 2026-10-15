@@ -6,12 +6,11 @@
     variable_start_string: "(("
     variable_end_string: "))"
     lstrip_blocks: yes
-  register: _justfile
 
 - name: Create executable symlink to justfile
   file:
     dest: "/usr/local/bin/ops-mapproxy"
-    src: "{{ _justfile.dest }}"
+    src: "{{ mapproxy_home }}/justfile"
     state: link
   register: _symlink
 
