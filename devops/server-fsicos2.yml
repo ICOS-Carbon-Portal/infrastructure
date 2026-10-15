@@ -17,3 +17,7 @@
 
     - role: icos.nfs4
       tags: nfs
+
+    - role: icos.fail2ban
+      tags: fail2ban
+   
