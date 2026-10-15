@@ -46,6 +46,9 @@ services:
       - "127.0.0.1:{{ plausible_port }}:8000"
     env_file:
       - plausible-conf.env
+    environment:
+      # Let idle Erlang schedulers sleep instead of spin, reducing idle CPU use.
+      ERL_FLAGS: "+sbwt none +sbwtdcpu none +sbwtdio none"
     volumes:
       - plausible-data:/var/lib/plausible
     ulimits:
