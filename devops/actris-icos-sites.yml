@@ -1,0 +1,26 @@
+# Joint SITES / ICOS Sweden / ACTRIS Sweden landing page.
+#   icos play actris-icos-sites            # certificate, nginx config and site files
+#   icos play actris-icos-sites -t files   # only update the site files from GitHub
+- hosts: fsicos2
+  vars:
+    actris_icos_sites_root: /usr/share/nginx/actris-icos-sites
+    actris_icos_sites_version: main
+
+  roles:
+    - role: icos.nginxsite
+      tags: nginx
+      vars:
+        nginxsite_name: actris-icos-sites
+        nginxsite_file: files/domains/actris-icos-sites.conf
+        nginxsite_domains:
+          - actris-icos-sites.se
+          - www.actris-icos-sites.se
+
+  tasks:
+    - name: Check out site files
+      tags: files
+      git:
+        repo: https://github.com/ICOS-Carbon-Portal/actris-icos-sites
+        version: "{{ actris_icos_sites_version }}"
+        dest: "{{ actris_icos_sites_root }}"
+        force: yes
