@@ -1,0 +1,34 @@
+- name: Create application.conf
+  template:
+    src: application_rdfstore.conf
+    dest: "{{ cpmeta_rdfstore_home }}/application.conf"
+    owner: "{{ cpmeta_rdfstore_user }}"
+    group: "{{ cpmeta_rdfstore_user }}"
+    # contains the rdflog database password and the DataCite credential
+    mode: "0600"
+  register: _config
+
+- name: Start/restart service
+  systemd:
+    name: cpmeta_rdfstore.service
+    enabled: yes
+    state: "{{ 'restarted' if _restart_needed else 'started' }}"
+
+# Startup can take a long time: on a fresh store the RDF logs are replayed from PostgreSQL and
+# the SPARQL indexes are rebuilt before the HTTP listener is bound (docs/rdf-store-split.md,
+# "Startup and readiness"). A freshly restored store is left read-only on purpose - verify the
+# restore, then run this role again with -t cpmeta_rdfstore_restart to get a writable store.
+- name: Check that the service responds
+  uri:
+    url: "http://127.0.0.1:{{ cpmeta_rdfstore_port }}/health"
+    return_content: yes
+  register: r
+  failed_when: r.failed
+  retries: 60
+  delay: 10
+  until: not r.failed
+
+# Deploying only rdfStore does not require restarting cpmeta: its RDF4J SPARQLRepository client
+# is stateless HTTP and reconnects on the next query. Boot ordering (cpmeta needs rdfStore up
+# to pass its startup readiness query) is handled by cpmeta.service's After=/Wants= on this
+# service.
