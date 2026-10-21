@@ -42,15 +42,6 @@
       wp_site_log: wordpress
       wp_site_rate_zone: wp_login
 
-    - role: icos.lxd_vm
-      tags: lxd
-      lxd_vm_name: wordpress-eric-forum
-      lxd_vm_root_size: "500GB"
-      lxd_vm_ubuntu_version: "24.04"
-      lxd_vm_config:
-        limits.cpu: "4"
-        limits.memory: "8GB"
-
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: eric-forum
@@ -100,7 +91,7 @@
       wp_site_rate_zone: wp_login_envri
 
 
-- hosts: wordpress,wordpress-eric-forum,wordpress-eric-forum-dev,wordpress-envri
+- hosts: wordpress,wordpress-eric-forum-dev,wordpress-envri
   roles:
     - role: icos.lxd_guest
       tags: guest
