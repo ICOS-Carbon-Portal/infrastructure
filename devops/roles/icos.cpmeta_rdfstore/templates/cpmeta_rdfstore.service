@@ -1,0 +1,16 @@
+[Unit]
+Description=ICOS metadata RDF store (SPARQL endpoint and RDF4J store)
+After=network.target
+
+[Service]
+Type=simple
+User={{ cpmeta_rdfstore_user }}
+ExecStart={{ java_path }} {{ cpmeta_rdfstore_java_opts }} -jar cpmeta_rdfstore.jar
+Restart=always
+RestartSec=30
+WorkingDirectory={{ cpmeta_rdfstore_home }}
+# The store needs time to flush and close LMDB cleanly on shutdown
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target
