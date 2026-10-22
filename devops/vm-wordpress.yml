@@ -1,9 +1,5 @@
 - hosts: fsicos2
   vars:
-    # ingos, summerschool and envriplus are now static, see wordpress-static.yml.
-    wordpress_domains:
-      - avengers-project.eu
-      - www.avengers-project.eu
     wordpress_eric_forum_domains:
       - eric-forum.eu
       - www.eric-forum.eu
@@ -12,7 +8,7 @@
     wordpress_envri_domains:
       - envri.eu
       - www.envri.eu
-    wordpress_cert_domains: "{{ wordpress_domains + wordpress_eric_forum_domains + wordpress_eric_forum_dev_domains + wordpress_envri_domains }}"
+    wordpress_cert_domains: "{{ wordpress_eric_forum_domains + wordpress_eric_forum_dev_domains + wordpress_envri_domains }}"
   roles:
     - role: icos.lxd_vm
       tags: lxd
@@ -27,14 +23,12 @@
       certbot_name: wordpress
       certbot_domains: "{{ wordpress_cert_domains }}"
 
+    # The sites of the "wordpress" container moved to fsicos4 or became static
+    # (wordpress-static.yml).
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: wordpress
-      nginxsite_file: files/wordpress.conf
-      wp_site_domains: "{{ wordpress_domains }}"
-      wp_site_upstream: wordpress.lxd
-      wp_site_log: wordpress
-      wp_site_rate_zone: wp_login
+      nginxsite_state: absent
 
     - role: icos.nginxsite
       tags: nginx
