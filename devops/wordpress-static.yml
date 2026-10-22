@@ -1,0 +1,53 @@
+# Static archives of retired WordPress sites. The HTML is not in git.
+#
+#   icos play wordpress-static              # certificates and nginx config
+#   icos play wordpress-static -t nginxsite_cert
+- hosts: fsicos2
+  vars:
+    static_sites_home: /usr/share/nginx/wordpress-static
+
+  pre_tasks:
+    - name: Copy query string maps
+      tags: [envriplus, ingos, summerschool]
+      copy:
+        src: "files/domains/{{ item }}-query-map.inc"
+        dest: "/etc/nginx/conf.d/{{ item }}-query-map.inc"
+        mode: "0644"
+      loop:
+        - envriplus
+        - ingos
+        - summerschool
+
+  roles:
+    - role: icos.nginxsite
+      tags: envriplus
+      nginxsite_name: envriplus
+      nginxsite_file: files/domains/wordpress-static.conf
+      nginxsite_domains:
+        - www.envriplus.eu
+        - envriplus.eu
+      static_site_domain: www.envriplus.eu
+      static_site_redirect_domains:
+        - envriplus.eu
+      static_site_root: "{{ static_sites_home }}/envriplus"
+
+    - role: icos.nginxsite
+      tags: ingos
+      nginxsite_name: ingos
+      nginxsite_file: files/domains/wordpress-static.conf
+      nginxsite_domains:
+        - www.ingos-infrastructure.eu
+        - ingos-infrastructure.eu
+      static_site_domain: www.ingos-infrastructure.eu
+      static_site_redirect_domains:
+        - ingos-infrastructure.eu
+      static_site_root: "{{ static_sites_home }}/ingos"
+
+    - role: icos.nginxsite
+      tags: summerschool
+      nginxsite_name: summerschool
+      nginxsite_file: files/domains/wordpress-static.conf
+      nginxsite_domains:
+        - www.icos-summerschool.eu
+      static_site_domain: www.icos-summerschool.eu
+      static_site_root: "{{ static_sites_home }}/summerschool"

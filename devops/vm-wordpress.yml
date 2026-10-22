@@ -1,9 +1,7 @@
 - hosts: fsicos2
   vars:
+    # ingos, summerschool and envriplus are now static, see wordpress-static.yml.
     wordpress_domains:
-      - www.ingos-infrastructure.eu
-      - www.icos-summerschool.eu
-      - www.envriplus.eu
       - avengers-project.eu
       - www.avengers-project.eu
       - george-project.eu
