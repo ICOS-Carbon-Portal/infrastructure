@@ -175,7 +175,10 @@ def download(host, path, part, size, rate_limit_mb):
     if offset > size:
         raise RuntimeError(f"{part} is larger than the remote file; delete it to start over")
     if offset < size:
-        log.info("downloading %s from %.1f GiB of %.1f GiB", path, offset / GIB, size / GIB)
+        if offset:
+            log.info("downloading %s, resuming at %.1f of %.1f GiB", path, offset / GIB, size / GIB)
+        else:
+            log.info("downloading %s (%.1f GiB)", path, size / GIB)
         subprocess.run(
             [
                 "wget", "--continue", "--no-verbose",
@@ -203,15 +206,15 @@ def make_room(layer_dir, keep):
 
 
 def tile_url(cfg, layer):
-    tile = cfg["verify_tile"]
+    tile = cfg["grids"][layer["grid"]]["verify_tile"]
     return (
-        f"http://localhost:{cfg['port']}/wmts/{layer['name']}/{cfg['grid']['name']}"
+        f"http://localhost:{cfg['port']}/wmts/{layer['name']}/{layer['grid']}"
         f"/{tile['zoom']}/{tile['col']}/{tile['row']}.png"
     )
 
 
 def stored_tile(cfg, layer):
-    tile = cfg["verify_tile"]
+    tile = cfg["grids"][layer["grid"]]["verify_tile"]
     db = sqlite3.connect(f"file:{cfg['data']}/{layer['dir']}/current.gpkg?mode=ro", uri=True)
     try:
         return db.execute(
@@ -223,30 +226,24 @@ def stored_tile(cfg, layer):
         db.close()
 
 
-def restart_mapproxy(cfg):
-    missing = [l["dir"] for l in cfg["layers"] if not (Path(cfg["data"]) / l["dir"] / "current.gpkg").exists()]
-    if missing:
-        # MapProxy fails to start while any configured GeoPackage is missing.
-        log.info("not starting MapProxy yet, no current.gpkg for %s", ", ".join(missing))
-        return
+def restart_mapproxy(cfg, layer):
     subprocess.run(
         ["docker", "compose", "-f", f"{cfg['home']}/docker-compose.yml", "up", "-d", "--force-recreate", "mapproxy"],
         check=True,
     )
     deadline = time.monotonic() + 120
-    for layer in cfg["layers"]:
-        expected = stored_tile(cfg, layer)
-        while True:
-            try:
-                with urllib.request.urlopen(tile_url(cfg, layer), timeout=10) as response:
-                    if response.read() == expected:
-                        break
-            except OSError:
-                pass
-            if time.monotonic() > deadline:
-                raise RuntimeError(f"MapProxy is not serving {layer['name']}; see ops-mapproxy rollback")
-            time.sleep(5)
-    log.info("MapProxy is serving all layers")
+    expected = stored_tile(cfg, layer)
+    while True:
+        try:
+            with urllib.request.urlopen(tile_url(cfg, layer), timeout=10) as response:
+                if response.read() == expected:
+                    break
+        except OSError:
+            pass
+        if time.monotonic() > deadline:
+            raise RuntimeError(f"MapProxy is not serving {layer['dir']}; see ops-mapproxy rollback")
+        time.sleep(5)
+    log.info("%s: MapProxy is serving it", layer["dir"])
 
 
 def write_seen(path, **seen):
@@ -256,7 +253,7 @@ def write_seen(path, **seen):
 
 
 def refresh_layer(cfg, layer):
-    grid, table_name = cfg["grid"], layer["table_name"]
+    grid, table_name = cfg["grids"][layer["grid"]], layer["table_name"]
     layer_dir = Path(cfg["data"]) / layer["dir"]
     current = layer_dir / "current.gpkg"
     seen_path = layer_dir / "seen.json"
@@ -265,7 +262,7 @@ def refresh_layer(cfg, layer):
 
     path, mdtm, size = remote_file(cfg["ftp_host"], layer["remote_dir"])
     if (seen.get("mdtm"), seen.get("size")) == (mdtm, size):
-        log.info("%s: %s", layer["name"], "previously rejected" if seen.get("rejected") else "up to date")
+        log.info("%s: %s", layer["dir"], "previously rejected" if seen.get("rejected") else "up to date")
         return False
 
     try:
@@ -274,11 +271,11 @@ def refresh_layer(cfg, layer):
         write_seen(seen_path, mdtm=mdtm, size=size, generation=None, rejected=True)
         raise
     if generation == installed:
-        log.info("%s: republished with unchanged content (%s)", layer["name"], generation)
+        log.info("%s: republished with unchanged content (%s)", layer["dir"], generation)
         write_seen(seen_path, mdtm=mdtm, size=size, generation=generation, rejected=False)
         return False
 
-    log.info("%s: new generation %s (installed: %s)", layer["name"], generation, installed)
+    log.info("%s: new generation %s (installed: %s)", layer["dir"], generation, installed)
     make_room(layer_dir, keep={installed, generation})
     gen_dir = layer_dir / generation
     gen_dir.mkdir(exist_ok=True)
@@ -310,7 +307,11 @@ def refresh_layer(cfg, layer):
     os.symlink(final.relative_to(layer_dir), tmp_link)
     os.replace(tmp_link, current)
     write_seen(seen_path, mdtm=mdtm, size=size, generation=generation, rejected=False)
-    log.info("%s: installed %s", layer["name"], generation)
+    log.info("%s: installed %s", layer["dir"], generation)
+    if installed is None:
+        # The playbook leaves this layer out of mapproxy.yaml until its first GeoPackage is here.
+        log.info("%s: first delivery; run the playbook to start serving it", layer["dir"])
+        return False
     return True
 
 
@@ -326,9 +327,9 @@ def main():
     for layer in cfg["layers"]:
         try:
             if refresh_layer(cfg, layer):
-                restart_mapproxy(cfg)
+                restart_mapproxy(cfg, layer)
         except Exception:
-            log.exception("%s: failed", layer["name"])
+            log.exception("%s: failed", layer["dir"])
             failed = True
     return 1 if failed else 0
 
