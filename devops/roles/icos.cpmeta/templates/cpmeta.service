@@ -9,6 +9,7 @@ ExecStart={{ java_path }} -jar cpmeta.jar
 Restart=always
 RestartSec=30
 WorkingDirectory=/home/{{ cpmeta_user }}
+Environment=SPARQL_QUERY_LOG_FILE=/var/log/cpmeta/sparql-query.log
 
 [Install]
 WantedBy=multi-user.target
