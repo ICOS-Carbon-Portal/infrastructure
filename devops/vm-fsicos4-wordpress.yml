@@ -3,9 +3,12 @@
     wordpress_domains:
       - st4ris.eu
       - john-project.eu
+      - george-project.eu
     wordpress_redirect_domains:
       - from: www.john-project.eu
         to: john-project.eu
+      - from: www.george-project.eu
+        to: george-project.eu
     wordpress_enable_production_domains: true
   roles:
     - role: icos.pve_server
@@ -65,6 +68,13 @@
         db_user: john_project
         db_password: "{{ vault_wordpress_johnproject_db_password }}"
         db_root_password: "{{ vault_wordpress_johnproject_db_root_password }}"
+      - name: george
+        domains:
+          - george-project.eu
+        db_name: george
+        db_user: george
+        db_password: "{{ vault_wordpress_george_db_password }}"
+        db_root_password: "{{ vault_wordpress_george_db_root_password }}"
   roles:
     - role: icos.pve_guest
       tags: guest

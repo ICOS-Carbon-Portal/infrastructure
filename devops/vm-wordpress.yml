@@ -4,8 +4,6 @@
     wordpress_domains:
       - avengers-project.eu
       - www.avengers-project.eu
-      - george-project.eu
-      - www.george-project.eu
       - kadi-project.eu
       - www.kadi-project.eu
     wordpress_eric_forum_domains:
