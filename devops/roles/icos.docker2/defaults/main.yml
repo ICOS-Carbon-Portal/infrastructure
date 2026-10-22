@@ -3,3 +3,6 @@ docker_periodic_cleanup: True
 # Docker 29's containerd snapshotter can fail in nested LXD/btrfs setups.
 # Keep it enabled by default for existing non-LXD hosts.
 docker2_containerd_snapshotter: true
+
+docker_extra_packages: []
+docker_restart_on_config_change: false

@@ -11,6 +11,10 @@
       - item.db_user | default(item.name ~ '_wordpress') is match('^[a-z0-9][a-z0-9_]*$')
       - item.domains is defined
       - item.domains | length > 0
+      - item.document_root | default('') is not match('^/')
+      - item.document_root | default('') is not search('(^|/)\.\.(/|$)')
+      - item.wp_config_path | default('wp-config.php') is not match('^/')
+      - item.wp_config_path | default('wp-config.php') is not search('(^|/)\.\.(/|$)')
       - item.db_password is defined
       - item.db_root_password is defined
     fail_msg: "Each wordpress site needs name, domains, db_password, and db_root_password"
@@ -30,6 +34,8 @@
         'db_name': _db_name,
         'db_user': _db_user,
         'db_host': _db_host,
+        'document_root': item.document_root | default(''),
+        'wp_config_path': item.wp_config_path | default('wp-config.php'),
         'static_files': item.static_files | default([]),
         'wp_db_config': [
           {'name': 'DB_NAME', 'value': _db_name},
@@ -104,7 +110,7 @@
 
 - name: Check for existing wp-config.php
   stat:
-    path: "{{ wordpress_home }}/sites/{{ item.name }}/html/wp-config.php"
+    path: "{{ wordpress_home }}/sites/{{ item.name }}/html/{{ item.wp_config_path }}"
   loop: "{{ wordpress_site_configs }}"
   loop_control:
     label: "{{ item.name }}"
@@ -112,7 +118,7 @@
 
 - name: Check for existing wp-content directories
   stat:
-    path: "{{ wordpress_home }}/sites/{{ item.name }}/html/wp-content"
+    path: "{{ wordpress_home }}/sites/{{ item.name }}/html/{{ (item.document_root ~ '/') if item.document_root | length > 0 else '' }}wp-content"
   loop: "{{ wordpress_site_configs }}"
   loop_control:
     label: "{{ item.name }}"
@@ -213,12 +219,14 @@
 
 - name: Start wordpress site containers
   community.docker.docker_compose_v2:
-    project_src: "{{ wordpress_home }}/sites/{{ item.name }}"
+    project_src: "{{ wordpress_home }}/sites/{{ compose_result.item.name }}"
     state: present
     pull: always
-  loop: "{{ wordpress_site_configs }}"
+    recreate: "{{ 'always' if compose_result.changed else 'auto' }}"
+  loop: "{{ _wordpress_site_compose.results }}"
   loop_control:
-    label: "{{ item.name }}"
+    loop_var: compose_result
+    label: "{{ compose_result.item.name }}"
 
 - name: Wait for wordpress database containers
   shell: |
