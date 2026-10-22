@@ -1,5 +1,15 @@
+# Requests that WordPress never needs to answer: XML-RPC (brute force),
+# version disclosure, dotfiles, database dumps and backup archives, and PHP
+# files uploaded to the media library.
+(blocked) {
+    @blocked path_regexp (?i)^/(xmlrpc\.php|wp-config\.php.*|readme\.html|license\.txt)$|/\.(env|git|svn|hg|htaccess|htpasswd|user\.ini|ds_store)(/|\.|$)|\.(sql|sql\.gz|sql\.zip|wpress|bak|old|orig|swp)$|^/wp-content/uploads/.*\.php|^/wp-content/(ai1wm-backups|backups-dup-lite|updraft)/
+    respond @blocked 404
+}
+
 {% for site in wordpress_site_configs %}
 {{ site.domains | map('regex_replace', '^', 'http://') | join(', ') }} {
+    import blocked
+
     reverse_proxy {{ site.name }}:80 {
         header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
         header_up X-Forwarded-Proto https
