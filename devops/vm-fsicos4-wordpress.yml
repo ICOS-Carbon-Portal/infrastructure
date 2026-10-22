@@ -5,6 +5,7 @@
       - john-project.eu
       - george-project.eu
       - kadi-project.eu
+      - avengers-project.eu
     wordpress_redirect_domains:
       - from: www.john-project.eu
         to: john-project.eu
@@ -12,6 +13,8 @@
         to: george-project.eu
       - from: www.kadi-project.eu
         to: kadi-project.eu
+      - from: www.avengers-project.eu
+        to: avengers-project.eu
     wordpress_enable_production_domains: true
   roles:
     - role: icos.pve_server
@@ -85,6 +88,13 @@
         db_user: kadi
         db_password: "{{ vault_wordpress_kadi_db_password }}"
         db_root_password: "{{ vault_wordpress_kadi_db_root_password }}"
+      - name: avengers
+        domains:
+          - avengers-project.eu
+        db_name: avengers
+        db_user: avengers
+        db_password: "{{ vault_wordpress_avengers_db_password }}"
+        db_root_password: "{{ vault_wordpress_avengers_db_root_password }}"
   roles:
     - role: icos.pve_guest
       tags: guest
