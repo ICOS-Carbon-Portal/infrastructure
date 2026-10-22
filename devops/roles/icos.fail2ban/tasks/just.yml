@@ -2,9 +2,4 @@
   copy:
     src: ops-fail2ban
     dest: /usr/local/bin/ops-fail2ban
-    mode: +x
-  register: _justfile
-
-- name: Check that the justfile is executable
-  shell: "{{ _justfile.dest }}"
-  changed_when: no
+    mode: '0755'
