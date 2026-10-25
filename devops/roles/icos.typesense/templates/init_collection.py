@@ -95,6 +95,6 @@ try:
 except:
     nohits_success = client.collections.create(nohits_schema)
     print(timestamp() + f"[init_collection] No hits queries collection with name={nohits_success['name']} created successfully.")
-    client.analytics.rules.upsert(popular_rule_name, popular_rule_config)
+    client.analytics.rules.upsert(nohits_rule_name, nohits_rule_config)
 else:
     print(timestamp() + f"[init_collection] No hits queries collection with name={nohits_schema['name']} already exists, no need to create.")

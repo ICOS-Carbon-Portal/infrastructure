@@ -75,7 +75,10 @@ def get_soup_with_iframes(text: str) -> BeautifulSoup:
 def get_page_content(soup: BeautifulSoup):
     main_content = soup.select("main")[0]
     # Remove h1, as it is already in title
-    main_content.find("h1").decompose()
+    title_tag = main_content.find("h1", attrs={"class":"title"})
+    if title_tag is not None:
+        title_tag.decompose()
+
     # Remove elements and children with specific classes
     classes_to_remove = ["toc-js",
                          "block-field-blocknodepagefield-side-links",
@@ -212,7 +215,19 @@ def update_page(doc, verbose=False):
         return doc_status
 
     soup = get_soup_with_iframes(resp.text)
-    updated_doc["title"] = soup.find("h1", attrs={"class":"title"}).text
+
+    title_tag = soup.find("h1", attrs={"class":"title"})
+    if title_tag is None:
+        print(timestamp() + "[update_page] No h1.title for: " + url)
+        doc_status["status"] = "no_title"
+        return doc_status
+
+    if not soup.select("main"):
+        print(timestamp() + "[update_page] No main for: " + url)
+        doc_status["status"] = "no_main"
+        return doc_status
+
+    updated_doc["title"] = title_tag.text
     doc_status["links"] = get_links_on_page(soup, url)
     updated_doc["content"] = get_page_content(soup)
 
@@ -289,12 +304,21 @@ def get_all_pages(verbose=False):
                 + timestamp() + f"[get_all_pages] Checked {len(checked_urls)} URLs.\n"
                 + timestamp() + f"[get_all_pages] Have {len(to_check_urls)} to go.\n")
 
+        title_tag = soup.find("h1", attrs={"class":"title"})
+        if title_tag is None:
+            print(timestamp() + "[get_all_pages] No h1.title for: " + current_url + " ; skipping")
+            index_url = False
+
+        if not soup.select("main"):
+            print(timestamp() + "[get_all_pages] No main for: " + current_url + " ; skipping")
+            index_url = False
+
         # add to all_pages unless skip_index
         if index_url:
             page = {}
             page["url"] = current_url
             page["etag"] = reqs.headers["etag"] if "etag" in reqs.headers else None
-            page["title"] = soup.find("h1", attrs={"class":"title"}).text
+            page["title"] = title_tag.text
             page["content"] = get_page_content(soup)
             page["category"] = get_category(current_url)
             all_pages.append(page)
