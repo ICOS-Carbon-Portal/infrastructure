@@ -4,11 +4,7 @@
     dest: /etc/systemd/system/doi.service
   register: _service
 
-- name: Create application.conf
-  template:
-    dest: "{{ doi_home }}/application.conf"
-    src: application.conf
-  register: _config
+- import_tasks: config.yml
 
 - name: Copy jarfile
   copy:
