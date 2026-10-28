@@ -5,15 +5,20 @@ configuration templates that are shared between `icos.cpmeta` (the `meta` servic
 `icos.cpmeta_rdfstore` (the `rdfStore` service), and is named after the `rdfCommon` build
 module that owns the same configuration in the meta repository.
 
-`meta` and `rdfStore` are two independently deployed applications that read parts of the same
-`cpmeta.*` configuration contract - the RDF log database, the DataCite credentials, the ENVRI
-hosts and the instance-server/graph layout. See `docs/rdf-store-split.md` in the meta
-repository, section "Configuration", for which paths are shared and why.
+`meta` and `rdfStore` are two independently deployed applications that read the same
+`cpmeta.*` configuration, whose packaged defaults are in `rdf-common/src/main/resources/application.conf`
+in the meta repository. Both read rdfStore's address (`cpmeta.rdfStore`), the RDF log database,
+the DataCite credentials, the ENVRI hosts and the instance-server/graph layout.
 
 Neither service may include the other's templates. `application_shared.conf` is the one
 template both include in their generated `application.conf`, so their views of the shared
 configuration cannot drift. Deployment-specific configuration remains in the owning service's
 own template.
+
+`application_staging_amendment.conf` amends the instance-server layout (and the upload
+servers and ENVRI hosts) for the test/staging deployments. It is listed both in
+`cpmeta_config_files` and `cpmeta_rdfstore_config_files` of those inventories, because
+rdfStore restores and serves the same instance servers that meta writes to.
 
 `application_metacore.conf` is the one topic kept in its own file: `icos.cpdata` needs the
 ENVRI hosts without the rest of the shared configuration, so it includes that file directly

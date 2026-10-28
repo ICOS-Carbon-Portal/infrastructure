@@ -65,10 +65,14 @@ all:
         cpmeta_config_files:
           - application_production.conf
           - application_production_sensitive.conf
-          - application_staging_amendment.conf
+          - roles/icos.rdf_common/templates/application_staging_amendment.conf
 
         # rdfStore - application (the RDF4J store, split out of cpmeta)
         cpmeta_rdfstore_citations_eager_warmup: false
+        # rdfStore restores and serves the same instance servers as cpmeta
+        cpmeta_rdfstore_config_files:
+          - application_rdfstore.conf
+          - roles/icos.rdf_common/templates/application_staging_amendment.conf
 
         # cpdata - application
         # when running in an lxd VM, bind all interfaces so that we're reachable

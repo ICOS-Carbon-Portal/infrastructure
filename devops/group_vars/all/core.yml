@@ -19,8 +19,17 @@ postgis_cities_db_name: paullog
 cpmeta_rdfstore_port: 9095
 cpmeta_rdfstore_host: "{{ coreapp_httpproxy_host }}"
 
-# Configuration shared by meta and rdfStore: both services parse these same cpmeta.* paths
-# (meta repo, docs/rdf-store-split.md, "Configuration") from
+# The address rdfStore binds to, which is also where cpmeta connects to it: both read the one
+# cpmeta.rdfStore.httpBindInterface setting. The public /sparql endpoint is proxied to rdfStore
+# by the proxy on core_server, which in the lxd-based inventories is a different machine than
+# core_host, so this follows cpmeta's bind address rather than being pinned to loopback.
+# Everything else rdfStore exposes (/internal/sparql, /internal/vanilla/sparql,
+# /internal/derived/*, /admin/read-only) is unauthenticated and must not be reachable from
+# outside the host: the proxy only routes the exact /sparql path, and no other route to
+# cpmeta_rdfstore_port may be opened.
+cpmeta_rdfstore_bind_addr: "{{ coreapp_bind_addr }}"
+
+# Configuration shared by meta and rdfStore: both services parse these same cpmeta.* paths from
 # roles/icos.rdf_common/templates/application_shared.conf.
 #
 # The rdflog PostgreSQL database as seen by its two clients: meta appends RDF updates to it,

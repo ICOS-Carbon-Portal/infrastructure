@@ -96,8 +96,8 @@
       tags: postgis
 
     - role: icos.restheart
-    # rdfStore owns the RDF4J store and must be up before cpmeta, which runs a readiness
-    # query against it at startup (meta's docs/rdf-store-split.md, "Startup and readiness").
+    # rdfStore owns the RDF4J store and must be up before cpmeta, which queries it while
+    # starting up.
     # Both are skipped outside meta_permitted_inventory (group_vars/all/core.yml).
     - role: icos.cpmeta_rdfstore
       tags: cpmeta_rdfstore
