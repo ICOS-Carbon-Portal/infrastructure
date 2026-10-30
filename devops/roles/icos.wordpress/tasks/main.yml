@@ -189,6 +189,16 @@
     mode: "0644"
   register: _wordpress_proxy_compose
 
+- name: Copy site PHP settings
+  template:
+    src: php.ini.j2
+    dest: "{{ wordpress_home }}/sites/{{ item.name }}/php.ini"
+    mode: "0644"
+  loop: "{{ wordpress_site_configs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: _wordpress_site_php_ini
+
 - name: Copy site docker-compose.yml
   template:
     src: site-docker-compose.yml.j2
@@ -222,10 +232,11 @@
     project_src: "{{ wordpress_home }}/sites/{{ compose_result.item.name }}"
     state: present
     pull: always
-    recreate: "{{ 'always' if compose_result.changed else 'auto' }}"
+    recreate: "{{ 'always' if compose_result.changed or _wordpress_site_php_ini.results[compose_index].changed else 'auto' }}"
   loop: "{{ _wordpress_site_compose.results }}"
   loop_control:
     loop_var: compose_result
+    index_var: compose_index
     label: "{{ compose_result.item.name }}"
 
 - name: Wait for wordpress database containers

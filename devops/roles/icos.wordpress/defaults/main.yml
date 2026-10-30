@@ -8,4 +8,9 @@ wordpress_network_name: wordpress
 wordpress_web_owner: "33"
 wordpress_web_group: "33"
 
+# PHP defaults to 2M uploads and 8M posts. post_max_size must exceed
+# upload_max_filesize to leave room for the rest of the multipart form.
+wordpress_upload_max_filesize: 10M
+wordpress_post_max_size: 12M
+
 wordpress_sites: []
