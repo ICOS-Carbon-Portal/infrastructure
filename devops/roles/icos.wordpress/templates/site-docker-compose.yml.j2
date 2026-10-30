@@ -48,6 +48,7 @@ services:
 {% endif %}
     volumes:
       - ./html:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/zz-ansible.ini:ro
     networks:
       wordpress:
         aliases:
