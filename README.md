@@ -68,20 +68,17 @@ To install all of the above except ansible, run:
 
 `$ sudo apt install git docker.io docker-compose-v2 python3-pip`
 
-To install the latest version of ansible, first run:
+To install the latest version of ansible, [Ansible's documentation](https://docs.ansible.com/projects/ansible/latest/installation_guide/intro_installation.html#pipx-install) recommends :
 
-`$ pip3 install --user ansible==q`
+```
+sudo apt install pipx
+pipx ensurepath
+pipx install --include-deps ansible
+```
 
-This will result in an error message - since there is no version named `q`;
-however, the error message will include the available versions. Choose the
-highest version which is a proper release (e.g `5.5.0` is a proper release, but
-`5.0.0a1` is an alpha, `5.0.0b2` is a beta, and `5.0.0rc1` is a release
-candidate.)
+Reload your shell with `$ exec $SHELL -l` so the PATH change takes effect, and check that Ansible has been installed with `$ ansible --version`.
 
-`$ pip3 install --user ansible==5.5.0`
-
-Make sure `ansible-playbook` is on your path. Get the ansible-vault password
-from a colleague and place it in file `~/.vault_password`.
+Get the ansible-vault password from a colleague and place it in `~/.vault_password`.
 
 ## (Optionally) install just
 "Just is a handy way to save and run project-specific commands."
@@ -116,9 +113,21 @@ file from a colleague and place it into `~/.ivy2/` folder.
 ## Setup ssh
 
 We have several servers, each running several virtual machine containers (using
-[LXD](https://linuxcontainers.org/lxd/)). When deploying software and restoring
-backups we will access these servers using ssh. Your personal ssh key will have
-been installed on the servers.
+[LXD](https://ubuntu.com/lxd). When deploying software and restoring
+backups we will access these servers using ssh. 
+
+### Generating SSH Keys
+
+Before your SSH key can be installed on the servers, you need to generate a key pair on your local machine. 
+Follow the instructions below:
+
+1. `ssh-keygen -t ed25519 -C "your_email@example.com"` (replace with your actual email)
+2. Enter a strong passphrase (highly recommended for security)
+3. Locate your keys:
+   - Private key: ~/.ssh/id_ed25519
+   - Public key: ~/.ssh/id_ed25519.pub
+
+Copy the content of the public key and send it to the team for installation on the servers.
 
 **IMPORTANT** - it's your personal responsibility to protect your private ssh
 key, at a minimum it should be password protected.
@@ -164,7 +173,7 @@ You can use the development inventory together with `core.yml` and `core_restore
 
 1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
 
-2. Add your chosen `rdflog_db_pass` password to the `passwords.yml` file in your development inventory, as described in [README](devops/dev.inventory/group_vars/core_host/README.md)
+2. Follow the steps described in this [README](devops/dev.inventory/group_vars/core_host/README.md)
 
 3. Create the rdflog container:
 

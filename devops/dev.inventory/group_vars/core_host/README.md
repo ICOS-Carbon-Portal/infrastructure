@@ -1,6 +1,6 @@
 ## Deploying services from core.yml playbook to development machine
 
-In order to deploy the core services locally on your development machine, create a `passwords.yml` file in this directory.
+In order to deploy the core services locally on your development machine, make a copy of `example.passwords.yml` file in this directory named `passwords.yml`.
 	
 In `passwords.yml`, all passwords needed to deploy the services locally should be stored as variables in plaintext.
 
@@ -20,6 +20,9 @@ Example of passwords.yml:
 			3937
 
 Where `admin_pass`, `reader_pass` and `writer_pass` are the passwords used in your local database, and `ansible_become_pass` is your root user password.
-To encrypt a single password, use the command:
 
-	ansible-vault encrypt_string --vault-password-file .vault_password 'your_password' --name 'ansible_become_pass'
+To generate `ansible_become_pass`, request the vault password from a colleague who already has access to it, and put the content in `~/.vault_password`
+
+Then generate the encrypted string with `ansible-vault encrypt_string --vault-password-file .vault_password 'your_password' --name 'ansible_become_pass'` (replace your_password with your system's sudo password)
+
+Paste the output into the `passwords.yml` file.
