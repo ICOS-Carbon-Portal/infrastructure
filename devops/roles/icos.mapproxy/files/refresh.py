@@ -171,14 +171,15 @@ def validate(path, grid, table_name, expected_size, sample_tiles):
 
 
 def download(host, path, part, size, rate_limit_mb):
-    offset = part.stat().st_size if part.exists() else 0
-    if offset > size:
+    downloaded = part.stat().st_size if part.exists() else 0
+    if downloaded > size:
         raise RuntimeError(f"{part} is larger than the remote file; delete it to start over")
-    if offset < size:
-        if offset:
-            log.info("downloading %s, resuming at %.1f of %.1f GiB", path, offset / GIB, size / GIB)
-        else:
+    # A complete .part, left by a run that stopped before installing it, skips wget.
+    if downloaded < size:
+        if downloaded == 0:
             log.info("downloading %s (%.1f GiB)", path, size / GIB)
+        else:
+            log.info("downloading %s, resuming at %.1f of %.1f GiB", path, downloaded / GIB, size / GIB)
         subprocess.run(
             [
                 "wget", "--continue", "--no-verbose",
@@ -189,9 +190,9 @@ def download(host, path, part, size, rate_limit_mb):
             ],
             check=True,
         )
-    offset = part.stat().st_size
-    if offset != size:
-        raise RuntimeError(f"download incomplete: {offset} of {size} bytes")
+    downloaded = part.stat().st_size
+    if downloaded != size:
+        raise RuntimeError(f"download incomplete: {downloaded} of {size} bytes")
 
 
 def make_room(layer_dir, keep):
