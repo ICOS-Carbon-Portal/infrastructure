@@ -4,3 +4,16 @@
 - import_tasks: deploy.yml
   tags: doi_deploy
   when: doi_jar_file is defined
+
+- name: Update DOI configuration without deploying a JAR
+  tags:
+    - never
+    - doi_config
+  block:
+    - import_tasks: config.yml
+
+    - name: Restart DOI after configuration changes
+      systemd:
+        name: doi.service
+        state: restarted
+      when: _config.changed
