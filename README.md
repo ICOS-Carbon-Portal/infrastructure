@@ -63,10 +63,13 @@ To get started, one needs:
 - Docker compose plugin v2
 - pip
 - Ansible
+- borgbackup
 
 To install all of the above except ansible, run:
 
-`$ sudo apt install git docker.io docker-compose-v2 python3-pip`
+`$ sudo apt install git docker.io docker-compose-v2 python3-pip borgbackup`
+
+Make sure your user is in the docker group so you and Ansible can run Docker commands without sudo: `$ sudo usermod -aG docker $USER` (log out and back in afterwards for it to take effect)
 
 To install the latest version of ansible, [Ansible's documentation](https://docs.ansible.com/projects/ansible/latest/installation_guide/intro_installation.html#pipx-install) recommends :
 
@@ -141,13 +144,16 @@ The output should be:
 
 `fsicos2`
 
-If you want to save some on typing, you can create a ssh config file. Add the
-following to `~/.ssh/config`:
+If you want to save some on typing and allow Ansible backup restore playbooks to reach cdb, you can create a ssh config file. Add the following to `~/.ssh/config`:
 ```
 host fsicos2
     hostname fsicos2.icos-cp.eu
     user root
     port 60022
+
+Host cdb
+    HostName cdb.icos-cp.eu
+    User root
 ```
 
 Now you can re-run the same command in a simpler way:
@@ -168,7 +174,7 @@ a docker container. In order to retrieve a copy of the production database
 you'll need root access to the fsicos2 server, the following instructions
 depends on it.
 
-### Automatic setup and backup recovery with Ansible:
+### Option 1 : Automatic setup and backup recovery with Ansible:
 You can use the development inventory together with `core.yml` and `core_restore.yml` playbooks to setup rdflog with Ansible.
 
 1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
@@ -185,14 +191,12 @@ You can use the development inventory together with `core.yml` and `core_restore
 
     `ansible-playbook -i dev.inventory -t rdflog core_restore.yml`
 
-### Manual setup
+### Option 2 : Manual setup
 
-Please note that the following commands - even though fairly detailed - are
-meant more as a guide than a precise step-by-step manual. The important thing
-to understand is that we're dumping a postgresql database and then we're
-restoring it again. Currently the source database is in docker, but it doesn't
-have to be; currently it's on another host (requiring ssh), but it doesn't have
-to be.
+Please note that the following commands are meant for setting up rdflog without Ansible. 
+Even though they are fairly detailed, they are meant more as a guide than a precise step-by-step manual. 
+The important thing to understand is that we're dumping a postgresql database and then we're restoring it again. 
+Currently the source database is in docker, but it doesn't have to be; currently it's on another host (requiring ssh), but it doesn't have to be.
 
 #### Verify that postgres replication is working
 This step is important to perform regularly until we have a status dashboard where any problems with RDF log replication would become immediately apparent. RDF log is our solution to persistence of all data/document objects' and collections' metadata, and as such, very important.
@@ -223,39 +227,30 @@ compressed sql file which is stored as /tmp/rdflog_dump.gz on the local host.
 
 
 #### Start postgres container for rdflog
-`$ docker run -d --name rdflog -ePOSTGRES_PASSWORD=p -p 127.0.0.1:5433:5432 postgres:15`
+`$ docker run -d --name rdflog -e POSTGRES_PASSWORD=p -e POSTGRES_DB=rdflog -p 127.0.0.1:2345:5432 postgres:15`
 
-This will create a docker container or localhost. It requires that you've setup
-docker on your machine and that you have enough privileges to run docker.
+This creates a Docker container on localhost that matches the Ansible setup:
 
-The docker container will:
-* have the container name `rdflog`
-* be running in the background
-* be available on port 5433 on localhost. note that 5433 is chosen as not to
-  conflict with postgres' default port of 5432 which might be in use on
-  localhost
-* have a user named `postgres` with the password `p`
+- Name: `rdflog`
+- Available on `127.0.0.1:2345` (matching meta's default port 2345 and avoiding conflict with a host PostgreSQL instance on 5432)
+- Database `rdflog` and superuser `rdflog` with password `p` (change `p` to match your meta `application.conf`)
 
 #### Restore backup into container
-`$ zcat /tmp/rdflog_dump.gz | docker exec -i -u postgres rdflog psql -q`
+`$ zcat /tmp/rdflog_dump.gz | docker exec -i -u rdflog rdflog psql -d postgres -q`
 
-Now we extract the compressed sql file to standard output and pipe it into the
-running postgres docker container, where the `psql` command will receive it and
-execute it.
-
-It shows error messages like "ERROR:  role "rdflog" does not exist", they can be ignored.
-
+Now we extract the compressed SQL file to standard output and pipe it into the running container as user `rdflog` (connecting to the maintenance `postgres` db so `pg_dump`'s `DROP/CREATE DATABASE rdflog` can run cleanly)
 
 #### Connect to database
 (This step is only informative, so it is ok to skip)
 
 If you don't have postgres installed on host:
 
-`$ docker exec -it -u postgres rdflog psql rdflog`
+`$ docker exec -it rdflog psql -U rdflog -d rdflog`
 
 If you do have postgres installed on host:
 
-`$ psql --host localhost --port 5433 -U postgres`
+`$ psql --host localhost --port 2345 -U rdflog -d rdflog` 
+*(When prompted for a password, enter rdflog_db_pass from passwords.yml if set up via Ansible, or POSTGRES_PASSWORD if set up manually).*
 
 Likewise, if you need to connect to the postgres database using programmatic
 means, point your program to localhost:5433 (don't forget the port number which
