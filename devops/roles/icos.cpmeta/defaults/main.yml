@@ -1,19 +1,11 @@
 cpmeta_user: cpmeta
 cpmeta_home: /home/cpmeta
-cpmeta_rdfstorage_path: "./rdfStorage"
 
 cpmeta_servicename: cpmeta
 
 # Readonly mode is used to host an extra (readonly) instance of cpmeta while
 # the ordinary one is undergoing maintenance.
 cpmeta_readonly_mode: false
-
-cpmeta_db_name: rdflog
-cpmeta_db_user: rdflog
-cpmeta_db_port: 2345
-cpmeta_db_pass: "{{ rdflog_db_pass }}"
-
-doi_password_icos: "{{ vault_doi_password }}"
 
 cpmeta_backup_enable: true
 

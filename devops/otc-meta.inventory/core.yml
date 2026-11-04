@@ -30,6 +30,6 @@ all:
         cpmeta_config_files:
           - application_production.conf
           - application_production_sensitive.conf
-          - application_staging_amendment.conf
+          - roles/icos.rdf_common/templates/application_staging_amendment.conf
 
 
