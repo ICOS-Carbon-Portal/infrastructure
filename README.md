@@ -89,11 +89,11 @@ Get the ansible-vault password from a colleague and place it in `~/.vault_passwo
 
 Install it by following the instructions at https://github.com/casey/just
 
-Then navigate to infrastructure/devops and run
+Then navigate to `infrastructure/devops` and run
 
-    $ just _shim
+    $ just --unstable _install
 
-Once this done, there'll be an ```icos``` command that serves as a frontend CLI for all tasks in the infrastructure repo. Running the command without arguments will provide help.
+Once this is done, there'll be an `icos` command in `~/.local/bin/icos` that serves as a frontend CLI for all tasks in the infrastructure repo. Running the command without arguments will provide help.
 
     $ icos
 
@@ -144,12 +144,13 @@ The output should be:
 
 `fsicos2`
 
-If you want to save some on typing and allow Ansible backup restore playbooks to reach cdb, you can create a ssh config file. Add the following to `~/.ssh/config`:
+If you want to save some on typing, you can create an ssh config file. We also include `cdb` here, `cdb` is our backup server, and the Ansible backup restore playbooks (`core_restore.yml`) expect the `cdb` host alias to be configured. Add the following to `~/.ssh/config`:
+
 ```
-host fsicos2
-    hostname fsicos2.icos-cp.eu
-    user root
-    port 60022
+Host fsicos2
+    HostName fsicos2.icos-cp.eu
+    User root
+    Port 60022
 
 Host cdb
     HostName cdb.icos-cp.eu
@@ -181,17 +182,20 @@ You can use the development inventory together with `core.yml` and `core_restore
 
 2. Follow the steps described in this [README](devops/dev.inventory/group_vars/core_host/README.md)
 
-3. Create the rdflog container:
+3. Create the rdflog container (listens on `127.0.0.1:2345`, user `rdflog`, database `rdflog`):
 
     `cd infrastructure/devops`
 
     `ansible-playbook -i dev.inventory -t rdflog core.yml`
 
-4. Recover rdflog backup from BorgBackup on fsicos2:
+4. Recover rdflog backup from BorgBackup (configured via `corebackup_host` in `dev.inventory/core.yml`, which defaults to `cdb`):
 
     `ansible-playbook -i dev.inventory -t rdflog core_restore.yml`
 
 ### Option 2 : Manual setup
+
+<details>
+<summary> <strong> Click to expand </strong> </summary>
 
 Please note that the following commands are meant for setting up rdflog without Ansible. 
 Even though they are fairly detailed, they are meant more as a guide than a precise step-by-step manual. 
@@ -227,7 +231,7 @@ compressed sql file which is stored as /tmp/rdflog_dump.gz on the local host.
 
 
 #### Start postgres container for rdflog
-`$ docker run -d --name rdflog -e POSTGRES_PASSWORD=p -e POSTGRES_DB=rdflog -p 127.0.0.1:2345:5432 postgres:15`
+`$ docker run -d --name rdflog -e POSTGRES_USER=rdflog -e POSTGRES_PASSWORD=p -e POSTGRES_DB=rdflog -p 127.0.0.1:2345:5432 postgres:15`
 
 This creates a Docker container on localhost that matches the Ansible setup:
 
@@ -235,10 +239,14 @@ This creates a Docker container on localhost that matches the Ansible setup:
 - Available on `127.0.0.1:2345` (matching meta's default port 2345 and avoiding conflict with a host PostgreSQL instance on 5432)
 - Database `rdflog` and superuser `rdflog` with password `p` (change `p` to match your meta `application.conf`)
 
-#### Restore backup into container
-`$ zcat /tmp/rdflog_dump.gz | docker exec -i -u rdflog rdflog psql -d postgres -q`
+*(Note: If you initialized the container without `-e POSTGRES_USER=rdflog`, PostgreSQL creates the default `postgres` superuser instead of `rdflog`. In that case, connect with `psql -U postgres` and run `CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD '...'; GRANT ALL ON ALL TABLES IN SCHEMA public TO rdflog; GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rdflog;`)*
 
-Now we extract the compressed SQL file to standard output and pipe it into the running container as user `rdflog` (connecting to the maintenance `postgres` db so `pg_dump`'s `DROP/CREATE DATABASE rdflog` can run cleanly)
+#### Restore backup into container
+`$ zcat /tmp/rdflog_dump.gz | docker exec -i rdflog psql -U rdflog -d postgres -q`
+
+Now we extract the compressed SQL file to standard output and pipe it into the running container as user `rdflog` (connecting to the maintenance `postgres` db so `pg_dump`'s `DROP/CREATE DATABASE rdflog` can run cleanly).
+
+</details>
 
 #### Connect to database
 (This step is only informative, so it is ok to skip)
@@ -250,30 +258,11 @@ If you don't have postgres installed on host:
 If you do have postgres installed on host:
 
 `$ psql --host localhost --port 2345 -U rdflog -d rdflog` 
-*(When prompted for a password, enter rdflog_db_pass from passwords.yml if set up via Ansible, or POSTGRES_PASSWORD if set up manually).*
+*(When prompted for a password, enter `rdflog_db_pass` from `passwords.yml` if set up via Ansible, or `POSTGRES_PASSWORD` if set up manually).*
 
 Likewise, if you need to connect to the postgres database using programmatic
-means, point your program to localhost:5433 (don't forget the port number which
-is not the default one)
-
-#### Grant all on all tables in schema "public" to rdflog
-
-`docker exec -it rdflog bash`
-
-`psql -U postgres`
-
-`\c rdflog`
-
-`\d` to list all the tables
-
-`\dg`  list the roles
-
-`CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD 'Password matches your meta application.conf'; `
-
-` GRANT ALL ON ALL TABLES IN SCHEMA public TO rdflog;`
-
-` GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rdflog;`
-
+means, point your program to `localhost:2345` (don't forget the port number which
+is not the default one).
 
 #### Shutdown and remove container
 When the container is not needed any more:
@@ -283,33 +272,43 @@ When the container is not needed any more:
 Instructions on how to restore the rdflog database into the staging environment are available in a separate [wiki page](https://github.com/ICOS-Carbon-Portal/infrastructure/wiki/Backup-Recovery)
 
 
+## Optional step
+
+Make the RDF log database smaller, so that startup is faster, by dropping some large level 0 tables:
+
+```
+docker exec rdflog psql -U rdflog -d rdflog -c "DROP TABLE etccsv, etcmulti, etcbin, atmcsv;"
+```
+
+Another option is to delete portions of large tables, as described in the infrastructure project's [local_dev README](https://github.com/ICOS-Carbon-Portal/infrastructure/tree/valter/dev/local_dev).
+
+
 ## restheart
 [Restheart](https://restheart.org/) is an open source "Web API" server written
-in java. It's needed by our `data` and `cpauth` services. Restheart uses
-[MongoDB](https://www.mongodb.com/) for storage.
+in java. It's needed by our `data` and `cpauth` services. Restheart uses [MongoDB](https://www.mongodb.com/) for storage.
 
 
-### Automatic setup and backup recovery with Ansible:
+### Option 1 : Automatic setup and backup recovery with Ansible
 You can use the development inventory together with `core.yml` and `core_restore.yml` playbooks to setup restheart and mongodb with Ansible.
 
-1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
-
-2. Create the restheart and mongodb containers:
+1. Create the restheart and mongodb containers:
 
     `cd infrastructure/devops`
 
     `ansible-playbook -i dev.inventory -t restheart_setup core.yml`
 
-3. Recover restheart backup from BorgBackup on fsicos2:
+2. Recover restheart backup from BorgBackup:
 
     `ansible-playbook -i dev.inventory -t restheart core_restore.yml`
 
-### Manual setup
+### Option 2 : Manual setup
 
-We run restheart and mongodb in docker (using a docker-compose.yml file). Once
-it's up and running we'll populate mongodb by restoring a database from backup.
+<details>
+<summary> <strong> Click to expand </strong> </summary>
 
-### Retrieve files and start restheart/mongodb
+We run restheart and mongodb in docker (using a docker-compose.yml file). Once it's up and running we'll populate mongodb by restoring a database from backup.
+
+#### Retrieve files and start restheart/mongodb
 First, fetch `docker-compose.yml` and `restheart.yml` files:
 
 ```
@@ -325,7 +324,7 @@ Now restheart is up and running and talking to mongodb. Next we'll restore a
 backup of the production database and use to populate mongodb.
 
 
-### Using borgbackup to restore a copy restheart's production database
+#### Using borgbackup to restore a copy restheart's production database
 
 Each of our services backups to a borg `repository`. A borg repository is can
 be thought of as a database contained in a single directory. The borg client
@@ -404,29 +403,33 @@ that we have running in a docker container (which we started in the previous ste
 
 `$ docker exec -i restheart-mongo mongorestore --archive --drop < backup/server.archive`
 
+</details>
+
 
 ## postgis
 Used by `data` service to log object downloads and query for download stats.
 
-### Automatic setup and backup recovery with Ansible:
+### Option 1 : Automatic setup and backup recovery with Ansible:
 You can use the development inventory together with `core.yml` and `core_restore.yml` playbooks to setup postgis with Ansible.
 
-1. Make sure Ansible is installed (see [Install required utilities](#install-required-utilities))
 
-2. Add your chosen `postgis_admin_pass`, `postgis_reader_pass`, and `postgis_writer_pass` passwords to your `passwords.yml` file in your development inventory, as described in [README](devops/dev.inventory/group_vars/core_host/README.md)
+1. Add your chosen `postgis_admin_pass`, `postgis_reader_pass`, and `postgis_writer_pass` passwords to your `passwords.yml` file in your development inventory, as described in [README](devops/dev.inventory/group_vars/core_host/README.md)
 
 
-3. Create the postgis container:
+2. Create the postgis container:
 
     `cd infrastructure/devops`
 
     `ansible-playbook -i dev.inventory -t postgis_setup core.yml`
 
-4. Recover postgis' backup from BorgBackup on fsicos2:
+3. Recover postgis' backup from BorgBackup:
 
     `ansible-playbook -i dev.inventory -t postgis core_restore.yml`
 
-### Manual setup
+### Option 2 : Manual setup
+
+<details>
+<summary> <strong> Click to expand </strong> </summary>
 
 Creating Docker container and installing PostGIS in it:<br>
 `docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:15.3`
@@ -440,30 +443,33 @@ Specify the password in `data` application.conf `cpdata.postgis.admin.password`
 Either create a new database or restore a backup
 
 
-### EITHER Create the database
+#### EITHER Create the database
 - Login to postgres inside the container `psql -U postgres`
 - Create the databases `CREATE DATABASE cplog; CREATE DATABASE siteslog; CREATE DATABASE paullog;`
 - Create two roles `CREATE USER reader WITH PASSWORD 'blabla'; CREATE USER writer WITH PASSWORD 'blabla';`
 - Specify the passwords in `data` application.conf `cpdata.postgis.reader.password` and `cpdata.postgis.writer.password`
 
 
-### OR Recover postgis' backup from BorgBackup on fsicos2
+#### OR Recover postgis' backup from BorgBackup on fsicos2
 The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
 `borg list /disk/data/bbserver/repos/postgis.repo | tail`
 
 Restoring from the cluster dump made with `pg_dumpall`:<br>
 `egrep -v '^(CREATE|DROP) ROLE postgres;' ./stdin | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres`
 
+</details>
+
 ## meta
-Deploy rdflog on your development machine. Clone the repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>
+Deploy `rdflog` on your development machine (see [rdflog](#rdflog)). Clone the `meta` repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>
 ```
 cpmeta{
     rdfLog{
-        server.port: 5433
+        // Default port in meta is 2345 (matches Ansible and Manual setup above)
+        server.port: 2345
         credentials{
             db: "rdflog"
             user: "rdflog"
-            password: "as used with the command above: CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD '...'"
+            password: "your rdflog_db_pass from passwords.yml (Ansible) or POSTGRES_PASSWORD (Manual)"
         }
     }
     citations.eagerWarmUp = false
