@@ -1,3 +1,6 @@
+- name: Include vault
+  include_vars: vault.yml
+
 - name: Check that the data directory is on its own mount
   assert:
     that:
@@ -80,6 +83,8 @@
   template:
     src: refresh.json
     dest: "{{ mapproxy_home }}/refresh.json"
+    mode: "0600"
+  diff: no
 
 - name: Copy refresh.py
   copy:

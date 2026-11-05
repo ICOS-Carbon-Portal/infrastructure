@@ -7,7 +7,8 @@ mapproxy_image: kartoza/mapproxy:7.0.0--v2026.08.31
 mapproxy_title: ICOS/SITES map tiles
 mapproxy_tile_expires_hours: 24
 
-mapproxy_ftp_host: download-opendata.lantmateriet.se
+mapproxy_stac_items_url: https://api.lantmateriet.se/stac-karta/v1/collections/topowebb/items
+mapproxy_token_url: https://apimanager.lantmateriet.se/oauth2/token
 mapproxy_refresh_time: "*-*-* 02:00:00"
 mapproxy_refresh_reserve_gib: 20
 mapproxy_refresh_sample_tiles: 200
@@ -46,22 +47,22 @@ mapproxy_layers:
     grid: lm_3006
     dir: topowebb_color
     table_name: topowebb
-    remote_dir: /Topografisk_webbkarta_raster/Farg_05m_sweref
+    stac_item: topowebb-3006
   - name: topowebb_nedtonad
     title: Topografisk webbkarta, nedtonad
     grid: lm_3006
     dir: topowebb_gray
     table_name: topowebb_nedtonad
-    remote_dir: /Topografisk_webbkarta_raster/Nedtonad_05m_sweref
+    stac_item: topowebb_nedtonad-3006
   - name: topowebb
     title: Topografisk webbkarta
     grid: webmercator
     dir: topowebb_color_mercator
     table_name: topowebb
-    remote_dir: /Topografisk_webbkarta_raster/Farg_05m_mercator
+    stac_item: topowebb-3857
   - name: topowebb_nedtonad
     title: Topografisk webbkarta, nedtonad
     grid: webmercator
     dir: topowebb_gray_mercator
     table_name: topowebb_nedtonad
-    remote_dir: /Topografisk_webbkarta_raster/Nedtonad_05m_mercator
+    stac_item: topowebb_nedtonad-3857

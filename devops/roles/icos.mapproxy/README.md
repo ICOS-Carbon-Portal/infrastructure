@@ -3,7 +3,10 @@
 Serves Lantmäteriet's *Topografisk webbkarta* (colour and grey) with MapProxy, straight from their
 GeoPackage deliveries in EPSG:3006 (grid `lm_3006`) and Web Mercator (grid `webmercator`). Tiles are
 served byte for byte as delivered; nothing is reprojected. A nightly timer (`mapproxy-refresh`)
-installs new deliveries from Lantmäteriet's FTP server.
+installs new deliveries from Lantmäteriet's STAC API (STAC-karta).
+
+Downloading needs an OAuth2 key for the system account created in Lantmäteriet's API portal,
+with an application subscribed to STAC-karta. The key and secret are in `vars/vault.yml`.
 
 Played by `vm-fsicos4-mapproxy.yml`; Caddy on fsicos4 proxies `tiles.*` to the VM.
 
@@ -16,7 +19,7 @@ Played by `vm-fsicos4-mapproxy.yml`; Caddy on fsicos4 proxies `tiles.*` to the V
     <generation>/<file>.gpkg        generation = gpkg_contents.last_change
     <generation>/<file>.gpkg.part   download in progress
     current.gpkg -> <generation>/<file>.gpkg
-    seen.json                       remote MDTM/SIZE last dealt with
+    seen.json                       remote checksum and size last dealt with
 ```
 
 There is a layer directory per delivery: `topowebb_color` and `topowebb_gray` for EPSG:3006, and
@@ -31,15 +34,18 @@ the installed one and the new one.
 
 Each night, for each layer in turn:
 
-1. If the remote MDTM and SIZE match `seen.json`, stop.
+1. If the checksum and size in the layer's STAC item match `seen.json`, stop.
 2. Read `last_change` from the first 256 KiB of the remote file. If it matches the installed
    generation, it's a republication: record it and stop.
-3. Otherwise, remove older generations, download with `wget -c` (resuming a `.part` if one exists),
+3. Otherwise, remove older generations, download with `wget -c` (resuming a `.part` if one exists,
+   and with a new access token each time a token expires), check the SHA-256 against the STAC item,
    validate the file against the layer's grid, point `current.gpkg` at it, and restart MapProxy.
    After a layer's first delivery, MapProxy isn't restarted: the playbook has to run again to serve
    it.
 
-Downloads are limited to `mapproxy_refresh_rate_limit_mb` (10 MB/s), about four hours per layer.
+A run stops after the first layer that downloads a new generation or fails, so a new release is
+installed one layer per night. Downloads are limited to `mapproxy_refresh_rate_limit_mb`
+(10 MB/s), about four hours per layer.
 
 A rejected delivery is recorded in `seen.json` and is not downloaded again until Lantmäteriet
 publishes a different file.
@@ -51,9 +57,9 @@ publishes a different file.
 
 **New layers and cold start:** MapProxy fails, for every layer, while any GeoPackage in its config
 is missing. So until every layer's `current.gpkg` exists, the playbook leaves `mapproxy.yaml` as it
-is (on a cold start it doesn't start MapProxy at all). Run `ops-mapproxy refresh` (or wait for the
-02:00 timer), which downloads the missing layers one after the other, about four hours each. Then
-run the playbook again: it writes the new config and restarts MapProxy.
+is (on a cold start it doesn't start MapProxy at all). Run `ops-mapproxy refresh` once per missing
+layer, each run downloading one layer in about four hours (or let the 02:00 timer do one a night).
+Then run the playbook again: it writes the new config and restarts MapProxy.
 
 ## Gotchas
 
