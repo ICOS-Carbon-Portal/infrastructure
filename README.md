@@ -198,12 +198,17 @@ You can use the development inventory together with `core.yml` and `core_restore
 <summary> <strong> Click to expand </strong> </summary>
 
 Please note that the following commands are meant for setting up rdflog without Ansible. 
+
 Even though they are fairly detailed, they are meant more as a guide than a precise step-by-step manual. 
+
 The important thing to understand is that we're dumping a postgresql database and then we're restoring it again. 
-Currently the source database is in docker, but it doesn't have to be; currently it's on another host (requiring ssh), but it doesn't have to be.
+
+sCurrently the source database is in docker, but it doesn't have to be; currently it's on another host (requiring ssh), but it doesn't have to be.
 
 #### Verify that postgres replication is working
-This step is important to perform regularly until we have a status dashboard where any problems with RDF log replication would become immediately apparent. RDF log is our solution to persistence of all data/document objects' and collections' metadata, and as such, very important.
+This step is important to perform regularly until we have a status dashboard where any problems with RDF log replication would become immediately apparent. 
+
+RDF log is our solution to persistence of all data/document objects' and collections' metadata, and as such, very important.
 
 `$ ssh fsicos2`
 
@@ -493,7 +498,76 @@ Install Node.js according to [NodeSource](https://github.com/nodesource/distribu
 
 Install Nginx with `sudo apt install nginx`
 
-Move `/etc/nginx` folder and `/etc/hosts` file from your previous machine, or get needed config files from your fellow developers.
+Move `/etc/nginx` folder and `/etc/hosts` file from your previous machine, or get needed config files from your fellow developers. 
+
+Otherwise, set it up from scratch:
+
+1. Add local domains to `/etc/hosts`:
+    ```
+    127.0.0.1	metalocal.icos-cp.eu datalocal.icos-cp.eu metalocal.fieldsites.se datalocal.fieldsites.se
+    ```
+
+2. Generate trusted local certificates:
+    ```bash
+    sudo apt install mkcert libnss3-tools
+    mkcert -install
+    sudo mkdir -p /etc/nginx/certs
+    sudo mkcert -cert-file /etc/nginx/certs/icos-local.pem -key-file /etc/nginx/certs/icos-local-key.pem \
+      metalocal.icos-cp.eu datalocal.icos-cp.eu metalocal.fieldsites.se datalocal.fieldsites.se localhost
+    ```
+
+3. Create `/etc/nginx/conf.d/icos-local.conf` (proxies `meta` on port 9094 and `data` on port 9011):
+    ```nginx
+    server {
+        listen 80;
+        server_name metalocal.icos-cp.eu datalocal.icos-cp.eu metalocal.fieldsites.se datalocal.fieldsites.se;
+        return 301 https://$host$request_uri;
+    }
+
+    server {
+        listen 443 ssl;
+        server_name metalocal.icos-cp.eu metalocal.fieldsites.se;
+        ssl_certificate     /etc/nginx/certs/icos-local.pem;
+        ssl_certificate_key /etc/nginx/certs/icos-local-key.pem;
+        client_max_body_size 60M;
+
+        location / {
+            proxy_pass http://127.0.0.1:9094;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_read_timeout 300s;
+        }
+    }
+
+    server {
+        listen 443 ssl;
+        server_name datalocal.icos-cp.eu datalocal.fieldsites.se;
+        ssl_certificate     /etc/nginx/certs/icos-local.pem;
+        ssl_certificate_key /etc/nginx/certs/icos-local-key.pem;
+        client_max_body_size 128G;
+        proxy_http_version 1.1;
+        proxy_request_buffering off;
+
+        location / {
+            proxy_pass http://127.0.0.1:9011;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_read_timeout 200s;
+        }
+    }
+    ```
+
+4. Reload Nginx: `sudo nginx -t && sudo systemctl reload nginx`
+
+5. Point `meta` and `data` to the local domains by adding this to their `application.conf`:
+    ```
+    metacore.envriConfigs {
+        ICOS  { dataHost = "datalocal.icos-cp.eu",    metaHost = "metalocal.icos-cp.eu" }
+        SITES { dataHost = "datalocal.fieldsites.se", metaHost = "metalocal.fieldsites.se" }
+    }
+    ```
+
+Once `meta` is running, it is available at https://metalocal.icos-cp.eu.
 
 
 # Useful commands
