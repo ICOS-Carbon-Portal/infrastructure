@@ -4,7 +4,8 @@
 Usage: refresh.py refresh.json
 """
 
-import ftplib
+import base64
+import hashlib
 import json
 import logging
 import os
@@ -17,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -33,44 +35,44 @@ class Rejected(Exception):
     pass
 
 
-def ftp_connect(host):
-    ftp = ftplib.FTP(host, timeout=300)
-    ftp.login()
-    return ftp
+def access_token(cfg):
+    credentials = base64.b64encode(f"{cfg['client_id']}:{cfg['client_secret']}".encode()).decode()
+    request = urllib.request.Request(
+        cfg["token_url"],
+        data=b"grant_type=client_credentials",
+        headers={"Authorization": f"Basic {credentials}"},
+    )
+    with urllib.request.urlopen(request, timeout=60) as response:
+        return json.load(response)["access_token"]
 
 
-def remote_file(host, remote_dir):
-    ftp = ftp_connect(host)
-    try:
-        names = [posixpath.basename(n) for n in ftp.nlst(remote_dir) if n.endswith(".gpkg")]
-        if len(names) != 1:
-            raise RuntimeError(f"expected one .gpkg in {remote_dir}, found {names}")
-        path = posixpath.join(remote_dir, names[0])
-        # The server refuses SIZE in ASCII mode, and nlst() has just switched to it.
-        ftp.voidcmd("TYPE I")
-        mdtm = ftp.voidcmd(f"MDTM {path}").split()[1]
-        size = ftp.size(path)
-        ftp.quit()
-    finally:
-        ftp.close()
-    return path, mdtm, size
+def remote_file(cfg, layer):
+    with urllib.request.urlopen(cfg["stac_items_url"], timeout=60) as response:
+        items = [item for item in json.load(response)["features"] if item["id"] == layer["stac_item"]]
+    if len(items) != 1:
+        raise RuntimeError(f"expected one STAC item {layer['stac_item']!r}, found {len(items)}")
+    asset = items[0]["assets"]["data"]
+    return asset["href"], asset["file:checksum"], asset["file:size"]
 
 
-def fetch_head(host, path, nbytes):
-    ftp = ftp_connect(host)
-    data = bytearray()
-    try:
-        ftp.voidcmd("TYPE I")
-        with ftp.transfercmd(f"RETR {path}") as conn:
-            while len(data) < nbytes:
-                chunk = conn.recv(65536)
-                if not chunk:
-                    break
-                data += chunk
-    finally:
-        # The transfer was cut short, so the control connection is not reusable.
-        ftp.close()
-    return bytes(data[:nbytes])
+def fetch_head(cfg, url, nbytes):
+    request = urllib.request.Request(
+        url,
+        headers={"Authorization": f"Bearer {access_token(cfg)}", "Range": f"bytes=0-{nbytes - 1}"},
+    )
+    with urllib.request.urlopen(request, timeout=300) as response:
+        return response.read(nbytes)
+
+
+def checksum_matches(path, checksum):
+    # A multihash: 0x12 is SHA-256, 0x20 its length in bytes.
+    if not checksum.startswith("1220"):
+        raise RuntimeError(f"unsupported checksum {checksum}")
+    sha256 = hashlib.sha256()
+    with open(path, "rb") as f:
+        while chunk := f.read(1024 * 1024):
+            sha256.update(chunk)
+    return sha256.hexdigest() == checksum[4:]
 
 
 def page_size_of(header):
@@ -170,25 +172,36 @@ def validate(path, grid, table_name, expected_size, sample_tiles):
         db.close()
 
 
-def download(host, path, part, size, rate_limit_mb):
-    offset = part.stat().st_size if part.exists() else 0
-    if offset > size:
+def download(cfg, url, part, size):
+    downloaded = part.stat().st_size if part.exists() else 0
+    if downloaded > size:
         raise RuntimeError(f"{part} is larger than the remote file; delete it to start over")
-    if offset < size:
-        log.info("downloading %s from %.1f GiB of %.1f GiB", path, offset / GIB, size / GIB)
-        subprocess.run(
-            [
-                "wget", "--continue", "--no-verbose",
-                f"--limit-rate={int(rate_limit_mb * 1e6)}",
-                f"--tries={DOWNLOAD_ATTEMPTS}", "--waitretry=60",
-                f"--output-document={part}",
-                f"ftp://{host}{path}",
-            ],
-            check=True,
-        )
-    offset = part.stat().st_size
-    if offset != size:
-        raise RuntimeError(f"download incomplete: {offset} of {size} bytes")
+    # A complete .part, left by a run that stopped before installing it, skips wget.
+    # Access tokens expire after an hour, so a long download is resumed with a new one.
+    while downloaded < size:
+        if downloaded == 0:
+            log.info("downloading %s (%.1f GiB)", url, size / GIB)
+        else:
+            log.info("downloading %s, resuming at %.1f of %.1f GiB", url, downloaded / GIB, size / GIB)
+        # In a wgetrc rather than on the command line, where any user could read the token.
+        with tempfile.NamedTemporaryFile("w", suffix=".wgetrc") as wgetrc:
+            wgetrc.write(f"header = Authorization: Bearer {access_token(cfg)}\n")
+            wgetrc.flush()
+            subprocess.run(
+                [
+                    "wget", "--continue", "--no-verbose",
+                    f"--limit-rate={int(cfg['rate_limit_mb'] * 1e6)}",
+                    f"--tries={DOWNLOAD_ATTEMPTS}", "--waitretry=60",
+                    f"--output-document={part}",
+                    url,
+                ],
+                env={**os.environ, "WGETRC": wgetrc.name},
+            )
+        previous, downloaded = downloaded, part.stat().st_size if part.exists() else 0
+        if downloaded == previous:
+            raise RuntimeError(f"download stopped at {downloaded} of {size} bytes")
+    if downloaded != size:
+        raise RuntimeError(f"download incomplete: {downloaded} of {size} bytes")
 
 
 def make_room(layer_dir, keep):
@@ -203,15 +216,15 @@ def make_room(layer_dir, keep):
 
 
 def tile_url(cfg, layer):
-    tile = cfg["verify_tile"]
+    tile = cfg["grids"][layer["grid"]]["verify_tile"]
     return (
-        f"http://localhost:{cfg['port']}/wmts/{layer['name']}/{cfg['grid']['name']}"
+        f"http://localhost:{cfg['port']}/wmts/{layer['name']}/{layer['grid']}"
         f"/{tile['zoom']}/{tile['col']}/{tile['row']}.png"
     )
 
 
 def stored_tile(cfg, layer):
-    tile = cfg["verify_tile"]
+    tile = cfg["grids"][layer["grid"]]["verify_tile"]
     db = sqlite3.connect(f"file:{cfg['data']}/{layer['dir']}/current.gpkg?mode=ro", uri=True)
     try:
         return db.execute(
@@ -223,30 +236,24 @@ def stored_tile(cfg, layer):
         db.close()
 
 
-def restart_mapproxy(cfg):
-    missing = [l["dir"] for l in cfg["layers"] if not (Path(cfg["data"]) / l["dir"] / "current.gpkg").exists()]
-    if missing:
-        # MapProxy fails to start while any configured GeoPackage is missing.
-        log.info("not starting MapProxy yet, no current.gpkg for %s", ", ".join(missing))
-        return
+def restart_mapproxy(cfg, layer):
     subprocess.run(
         ["docker", "compose", "-f", f"{cfg['home']}/docker-compose.yml", "up", "-d", "--force-recreate", "mapproxy"],
         check=True,
     )
     deadline = time.monotonic() + 120
-    for layer in cfg["layers"]:
-        expected = stored_tile(cfg, layer)
-        while True:
-            try:
-                with urllib.request.urlopen(tile_url(cfg, layer), timeout=10) as response:
-                    if response.read() == expected:
-                        break
-            except OSError:
-                pass
-            if time.monotonic() > deadline:
-                raise RuntimeError(f"MapProxy is not serving {layer['name']}; see ops-mapproxy rollback")
-            time.sleep(5)
-    log.info("MapProxy is serving all layers")
+    expected = stored_tile(cfg, layer)
+    while True:
+        try:
+            with urllib.request.urlopen(tile_url(cfg, layer), timeout=10) as response:
+                if response.read() == expected:
+                    break
+        except OSError:
+            pass
+        if time.monotonic() > deadline:
+            raise RuntimeError(f"MapProxy is not serving {layer['dir']}; see ops-mapproxy rollback")
+        time.sleep(5)
+    log.info("%s: MapProxy is serving it", layer["dir"])
 
 
 def write_seen(path, **seen):
@@ -256,33 +263,33 @@ def write_seen(path, **seen):
 
 
 def refresh_layer(cfg, layer):
-    grid, table_name = cfg["grid"], layer["table_name"]
+    grid, table_name = cfg["grids"][layer["grid"]], layer["table_name"]
     layer_dir = Path(cfg["data"]) / layer["dir"]
     current = layer_dir / "current.gpkg"
     seen_path = layer_dir / "seen.json"
     seen = json.loads(seen_path.read_text()) if seen_path.exists() else {}
     installed = Path(os.readlink(current)).parts[0] if current.is_symlink() else None
 
-    path, mdtm, size = remote_file(cfg["ftp_host"], layer["remote_dir"])
-    if (seen.get("mdtm"), seen.get("size")) == (mdtm, size):
-        log.info("%s: %s", layer["name"], "previously rejected" if seen.get("rejected") else "up to date")
+    url, checksum, size = remote_file(cfg, layer)
+    if (seen.get("checksum"), seen.get("size")) == (checksum, size):
+        log.info("%s: %s", layer["dir"], "previously rejected" if seen.get("rejected") else "up to date")
         return False
 
     try:
-        generation = probe_generation(fetch_head(cfg["ftp_host"], path, PROBE_BYTES), grid, table_name)
+        generation = probe_generation(fetch_head(cfg, url, PROBE_BYTES), grid, table_name)
     except Rejected:
-        write_seen(seen_path, mdtm=mdtm, size=size, generation=None, rejected=True)
+        write_seen(seen_path, checksum=checksum, size=size, generation=None, rejected=True)
         raise
     if generation == installed:
-        log.info("%s: republished with unchanged content (%s)", layer["name"], generation)
-        write_seen(seen_path, mdtm=mdtm, size=size, generation=generation, rejected=False)
+        log.info("%s: republished with unchanged content (%s)", layer["dir"], generation)
+        write_seen(seen_path, checksum=checksum, size=size, generation=generation, rejected=False)
         return False
 
-    log.info("%s: new generation %s (installed: %s)", layer["name"], generation, installed)
+    log.info("%s: new generation %s (installed: %s)", layer["dir"], generation, installed)
     make_room(layer_dir, keep={installed, generation})
     gen_dir = layer_dir / generation
     gen_dir.mkdir(exist_ok=True)
-    final = gen_dir / posixpath.basename(path)
+    final = gen_dir / posixpath.basename(urllib.parse.urlparse(url).path)
     part = final.with_name(final.name + ".part")
 
     if not final.exists():
@@ -292,15 +299,18 @@ def refresh_layer(cfg, layer):
         if stat.f_bavail * stat.f_frsize < needed:
             raise RuntimeError(f"not enough space in {layer_dir}, need {needed / GIB:.1f} GiB")
 
-        download(cfg["ftp_host"], path, part, size, cfg["rate_limit_mb"])
-        if remote_file(cfg["ftp_host"], layer["remote_dir"]) != (path, mdtm, size):
+        download(cfg, url, part, size)
+        if remote_file(cfg, layer) != (url, checksum, size):
             part.unlink()
             raise RuntimeError("remote file changed during download, discarded")
+        if not checksum_matches(part, checksum):
+            part.unlink()
+            raise RuntimeError("checksum does not match the STAC item, discarded")
         try:
             validate(part, grid, table_name, size, cfg["sample_tiles"])
         except Rejected:
             part.unlink()
-            write_seen(seen_path, mdtm=mdtm, size=size, generation=generation, rejected=True)
+            write_seen(seen_path, checksum=checksum, size=size, generation=generation, rejected=True)
             raise
         os.rename(part, final)
 
@@ -309,8 +319,13 @@ def refresh_layer(cfg, layer):
         tmp_link.unlink()
     os.symlink(final.relative_to(layer_dir), tmp_link)
     os.replace(tmp_link, current)
-    write_seen(seen_path, mdtm=mdtm, size=size, generation=generation, rejected=False)
-    log.info("%s: installed %s", layer["name"], generation)
+    write_seen(seen_path, checksum=checksum, size=size, generation=generation, rejected=False)
+    log.info("%s: installed %s", layer["dir"], generation)
+    if installed is None:
+        # The playbook leaves this layer out of mapproxy.yaml until its first GeoPackage is here.
+        log.info("%s: first delivery; run the playbook to start serving it", layer["dir"])
+    else:
+        restart_mapproxy(cfg, layer)
     return True
 
 
@@ -322,15 +337,16 @@ def main():
         log.error("%s is not mounted", cfg["data_mount"])
         return 1
 
-    failed = False
+    # At most one download per run, so that a release is spread over several nights.
     for layer in cfg["layers"]:
         try:
             if refresh_layer(cfg, layer):
-                restart_mapproxy(cfg)
+                log.info("stopping after one download; any further layers are left for the next run")
+                return 0
         except Exception:
-            log.exception("%s: failed", layer["name"])
-            failed = True
-    return 1 if failed else 0
+            log.exception("%s: failed", layer["dir"])
+            return 1
+    return 0
 
 
 if __name__ == "__main__":
