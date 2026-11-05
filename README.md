@@ -327,11 +327,6 @@ backup of the production database and use to populate mongodb.
 
 ### Using borgbackup to restore a copy restheart's production database
 
-Many of our services use a backup software called
-[BorgBackup](https://www.borgbackup.org/). It is available as a an ubuntu package:
-
-`$ sudo apt install borgbackup`
-
 Each of our services backups to a borg `repository`. A borg repository is can
 be thought of as a database contained in a single directory. The borg client
 can interact with this repository, even over ssh.
