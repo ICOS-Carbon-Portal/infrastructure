@@ -89,6 +89,16 @@ To properly use rdflog and restheart, you will need to restore a backup from the
 from the main `README.md` file for the repository, but tailored for this containerized approach and put into
 the justfile.
 
+The `restore-*` commands restore the latest borg backups from the `cdb` host, so `cdb` must be configured in
+your `~/.ssh/config`. The first time you restore from each repository, borg will warn:
+
+```
+Warning: Attempting to access a previously unknown unencrypted repository!
+Do you want to continue? [yN]
+```
+
+This is expected; answer `y`. Borg remembers each repository afterwards and will not ask again.
+
 rdflog:
 
 ```

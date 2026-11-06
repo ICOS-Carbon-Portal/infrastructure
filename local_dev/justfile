@@ -80,25 +80,31 @@ init-vm:
 
 restore-rdflog:
   #!/usr/bin/env bash
-  ssh fsicos2 'docker exec rdflog pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz
+  set -eo pipefail
+  repo="cdb:~bbserver/repos/rdflog.repo"
+  borg extract --progress --stdout "$repo::$(borg list --short --last=1 "$repo")" | gzip -c > /tmp/rdflog_dump.gz
   lxc file push /tmp/rdflog_dump.gz icos-devops/home/ubuntu/
   lxc exec icos-devops -- bash -c "zcat /home/ubuntu/rdflog_dump.gz | docker exec -i rdflog psql -U rdflog -q"
   rm /tmp/rdflog_dump.gz
 
 restore-restheart:
   #!/usr/bin/env bash
+  set -eo pipefail
+  repo="cdb:~bbserver/repos/restheart.repo"
   mkdir -p /tmp/restheart
   cd /tmp/restheart
-  borg extract fsicos2:~bbserver/repos/restheart.repo::$(borg list --short --last=1 fsicos2:~bbserver/repos/restheart.repo)
+  borg extract --progress "$repo::$(borg list --short --last=1 "$repo")"
   lxc file push /tmp/restheart/backup/server.archive icos-devops/home/ubuntu/restheart_backup.archive
   lxc exec icos-devops -- bash -c "docker exec -i restheart-mongodb-1 mongorestore --archive --drop < /home/ubuntu/restheart_backup.archive"
   rm /tmp/restheart/backup/server.archive
 
 restore-postgis:
   #!/usr/bin/env bash
+  set -eo pipefail
+  repo="cdb:~bbserver/repos/postgis.repo"
   mkdir -p /tmp/postgis
   cd /tmp/postgis
-  borg extract fsicos2:~bbserver/repos/postgis.repo::$(borg list --short --last=1 fsicos2:~bbserver/repos/postgis.repo)
+  borg extract --progress "$repo::$(borg list --short --last=1 "$repo")"
   lxc file push /tmp/postgis/stdin icos-devops/home/ubuntu/postgis_backup.sql
   lxc exec icos-devops -- bash -c "egrep -v '^(CREATE ROLE postgres;|DROP ROLE( IF EXISTS)? postgres;)' /home/ubuntu/postgis_backup.sql | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres"
   rm /tmp/postgis/stdin
