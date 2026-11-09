@@ -5,3 +5,4 @@ pve_dnat_leases: "/var/lib/misc/dnsmasq.{{ pve_dnat_bridge }}.leases"
 # (px template-create / px vm-create). Same keys as the fsicos4_vms group.
 pve_vm_root_keys: "{{ vault_fsicos4_vms_root_keys | default('') }}"
 pve_icos_dir: /etc/icos
+pve_dnsmasq_dir: "/etc/dnsmasq.{{ pve_dnat_bridge }}.d"

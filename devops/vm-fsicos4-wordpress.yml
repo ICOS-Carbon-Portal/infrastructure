@@ -28,6 +28,18 @@
         'adding port' in _wordpress_auto_dnat.stdout or
         'removing rule' in _wordpress_auto_dnat.stdout
 
+    - name: Reserve the VM's static IP in dnsmasq
+      tags: dhcp
+      include_role:
+        name: icos.pve_server
+        tasks_from: dhcp_reservation
+        apply:
+          tags: dhcp
+      vars:
+        pve_reservation_name: wordpress
+        pve_reservation_mac: "{{ hostvars['fsicos4-wordpress'].vm_mac }}"
+        pve_reservation_ip: "{{ hostvars['fsicos4-wordpress'].vm_ip }}"
+
     - name: Configure wordpress reverse proxy
       tags: caddy
       include_role:

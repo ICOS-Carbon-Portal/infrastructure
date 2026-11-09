@@ -44,31 +44,6 @@
 
         dhcp-leasefile=/var/lib/misc/dnsmasq.{{ dnsmasq_interface }}.leases
 
-        server=8.8.8.8
-
-        # dhcp-script=/usr/local/bin/icos-dnsmasq-script
-        script-on-renewal
-
-        # Fixed addresses. Synced from the live file on 2026-11-06; keep this
-        # list complete, the role overwrites the whole file.
-        dhcp-host=BC:24:11:37:21:37,staging-test,10.10.10.54,infinite
-        dhcp-host=BC:24:11:17:BD:A5,opendap,10.10.10.99,infinite
-        dhcp-host=BC:24:11:A1:D4:62,otc-meta,10.10.10.216,infinite
-        dhcp-host=BC:24:11:47:64:F3,icos-op1,10.10.10.156,infinite
-        dhcp-host=BC:24:11:C1:4B:C6,cupcake,10.10.10.59,infinite
-        dhcp-host=BC:24:11:C8:6C:DD,flexpart,10.10.10.100,infinite
-        dhcp-host=BC:24:11:CE:30:F6,icos-bw1,10.10.10.164,infinite
-        dhcp-host=BC:24:11:4E:C5:C0,flexextract,10.10.10.165,infinite
-        dhcp-host=BC:24:11:96:E6:99,dokku,10.10.10.145,infinite
-        dhcp-host=BC:24:11:E7:3D:D2,sso-pilot,10.10.10.223,infinite   # (pilot)
-        dhcp-host=BC:24:11:87:1B:2D,nextcloud-pilot,10.10.10.224,infinite   # (pilot)
-        dhcp-host=BC:24:11:55:ED:6D,mapproxy,10.10.10.217,infinite
-
-        # These VMs have static IPs (netplan / Proxmox cloud-init) and do not
-        # use DHCP. Reserved here so dnsmasq never leases their addresses.
-        dhcp-host=BC:24:11:83:9D:A7,wordpress,10.10.10.201,infinite
-        dhcp-host=BC:24:11:8C:CC:7E,drupal,10.10.10.200,infinite
-
     # rsync -x -avz --progress ./ rsync://fsicos4.nebula/data/flexpart/
     - role: icos.rsyncd
       tags: rsyncd
