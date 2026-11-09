@@ -1,0 +1,224 @@
+- name: Set {{ site.name }} paths
+  set_fact:
+    _site_dir: "{{ drupal_home }}/sites/{{ site.name }}"
+    _site_container: "drupal_{{ site.name }}"
+    _site_db_container: "drupal_{{ site.name }}_db"
+
+- name: Create {{ site.name }} directory
+  file:
+    path: "{{ _site_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Pull {{ site.name }} source code from git
+  git:
+    repo: "{{ drupal_git_repo }}"
+    version: "{{ site.git_version | default('master') }}"
+    dest: "{{ _site_dir }}"
+    force: true
+  environment:
+    GIT_CONFIG_COUNT: "1"
+    GIT_CONFIG_KEY_0: safe.directory
+    GIT_CONFIG_VALUE_0: "{{ _site_dir }}"
+
+# All of these are gitignored in the drupal repository. Create them before
+# Compose starts, otherwise Docker creates missing bind-mount sources as
+# root-owned directories.
+- name: Create {{ site.name }} working directories
+  file:
+    path: "{{ _site_dir }}/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - composer
+    - config
+    - db
+    - docker
+    - files/default/files
+    - files/private
+    - files/repo
+    - libraries
+
+- name: Copy {{ site.name }} uploads config
+  copy:
+    src: uploads.ini
+    dest: "{{ _site_dir }}/config/uploads.ini"
+    mode: "0644"
+  register: _site_uploads_ini
+
+- name: Copy {{ site.name }} settings.php
+  template:
+    src: settings.php.j2
+    dest: "{{ _site_dir }}/files/default/settings.php"
+    mode: "0644"
+  no_log: true
+
+- name: Copy {{ site.name }} composer.json
+  template:
+    src: composer.json.j2
+    dest: "{{ _site_dir }}/composer/composer.json"
+    mode: "0644"
+  vars:
+    drupal_modules: "{{ site.modules }}"
+    robots_txt: "{{ site.robots_txt | default('') }}"
+  register: _site_composer_json
+
+- name: Copy {{ site.name }} robots.txt
+  copy:
+    src: "{{ site.robots_txt }}"
+    dest: "{{ _site_dir }}/composer/robots.txt.append"
+    mode: "0644"
+  when: site.robots_txt | default('') | length > 0
+  register: _site_robots_txt
+
+- name: Copy {{ site.name }} docker-compose.yml
+  template:
+    src: site-docker-compose.yml.j2
+    dest: "{{ _site_dir }}/docker/docker-compose.yml"
+    mode: "0600"
+  no_log: true
+
+# composer.lock is a single-file bind mount, so it has to exist before
+# Compose starts. A migrated site brings its lock file from fsicos2; a new
+# site starts from the one shipped in the image. Never overwrite it.
+- name: Check for {{ site.name }} composer.lock
+  stat:
+    path: "{{ _site_dir }}/composer/composer.lock"
+  register: _site_lock
+
+- name: Seed {{ site.name }} composer.lock from the image
+  when: not _site_lock.stat.exists
+  block:
+    - name: Read composer.lock from {{ drupal_image }}
+      command:
+        argv: [docker, run, --rm, --pull, always, --entrypoint, cat, "{{ drupal_image }}", /opt/drupal/composer.lock]
+      register: _site_image_lock
+      changed_when: false
+
+    - name: Write {{ site.name }} composer.lock
+      copy:
+        content: "{{ _site_image_lock.stdout }}\n"
+        dest: "{{ _site_dir }}/composer/composer.lock"
+        mode: "0644"
+        force: false
+
+- name: Start {{ site.name }} containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ _site_dir }}/docker"
+    state: present
+    pull: always
+    wait: true
+    wait_timeout: 180
+
+# Template/copy replace files atomically, which single-file bind mounts do not
+# follow. Recreate Drupal so it sees the current host files.
+- name: Refresh {{ site.name }} single-file bind mounts
+  community.docker.docker_compose_v2:
+    project_src: "{{ _site_dir }}/docker"
+    services: [drupal]
+    dependencies: false
+    state: present
+    recreate: always
+    wait: true
+    wait_timeout: 180
+  when: >-
+    drupal_update | bool
+    or _site_composer_json.changed
+    or _site_uploads_ini.changed
+    or _site_robots_txt.changed
+
+# The vendor and web volumes start out with only what the image ships (no
+# drush, no contrib modules). Install what composer.lock pins; a no-op when the
+# volumes already match it.
+- name: Composer install {{ site.name }}
+  command: docker exec {{ _site_container }} composer install --no-interaction
+  register: _site_composer_install
+  changed_when: '"Package operations" in _site_composer_install.stderr'
+
+- name: Count {{ site.name }} database tables
+  command:
+    argv:
+      - docker
+      - exec
+      - "{{ _site_db_container }}"
+      - sh
+      - -c
+      - >-
+        MYSQL_PWD="$MARIADB_PASSWORD" mariadb -u"$MARIADB_USER" -N -B
+        -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()"
+        "$MARIADB_DATABASE"
+  register: _site_tables
+  changed_when: false
+
+- name: "{{ site.name }}: database is empty, import it and run the play again"
+  debug:
+    msg: >-
+      The {{ site.name }} database has no tables. Import the dump from fsicos2
+      into {{ _site_db_container }}, then rerun with -e '{"drupal_only": ["{{ site.name }}"]}'.
+  when: _site_tables.stdout | int == 0
+
+- name: Configure {{ site.name }} Drupal
+  when: _site_tables.stdout | int > 0
+  block:
+    - name: Wait for {{ site.name }} Drupal to bootstrap with database access
+      command:
+        argv: [docker, exec, "{{ _site_container }}", drush, php:eval, '\Drupal::database()->query("SELECT 1")->fetchField();']
+      register: _site_ready
+      until: _site_ready.rc == 0
+      retries: 24
+      delay: 5
+      changed_when: false
+
+    - name: Make {{ site.name }} files writable by www-data
+      command:
+        argv:
+          - docker
+          - exec
+          - "{{ _site_container }}"
+          - sh
+          - -c
+          - |
+            set -eu
+            for dir in /var/www/private /var/www/html/sites/default/files; do
+              if [ "$(stat -c %U "$dir")" != www-data ]; then
+                chown -R www-data:www-data "$dir"
+                echo changed
+              fi
+            done
+      register: _site_chown
+      changed_when: "'changed' in _site_chown.stdout"
+
+    - name: Update {{ site.name }}
+      when: drupal_update | bool
+      block:
+        - name: Enable {{ site.name }} maintenance mode
+          command: docker exec {{ _site_container }} drush maint:set 1
+
+        - name: Composer update {{ site.name }}
+          command: docker exec {{ _site_container }} composer update
+          register: _site_composer
+          changed_when: '"Package operations" in _site_composer.stderr'
+
+        - name: Update {{ site.name }} database
+          command: docker exec {{ _site_container }} drush updb -y
+
+        # Drush runs in CLI PHP and cannot clear Apache's OPcache after
+        # Composer replaces dependencies.
+        - name: Restart {{ site.name }} to clear PHP OPcache
+          command: docker restart {{ _site_container }}
+
+      always:
+        - name: Disable {{ site.name }} maintenance mode
+          command: docker exec {{ _site_container }} drush maint:set 0
+          register: _site_maint_off
+          until: _site_maint_off.rc == 0
+          retries: 12
+          delay: 5
+
+    - name: Clear {{ site.name }} caches
+      command: docker exec {{ _site_container }} drush cr
+
+    - name: Record {{ site.name }} as installed
+      set_fact:
+        drupal_installed_sites: "{{ (drupal_installed_sites | default([])) + [site] }}"
+      no_log: true

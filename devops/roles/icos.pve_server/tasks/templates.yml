@@ -1,0 +1,23 @@
+# Files used by "px template-create" and "px vm-create".
+- name: Create {{ pve_icos_dir }}
+  file:
+    path: "{{ pve_icos_dir }}"
+    state: directory
+    mode: "0755"
+
+# Ubuntu cloud image signing key, fingerprint
+# D2EB 4462 6FDD C30B 513D 5BB7 1A5D 6C4C 7DB8 7C81 ("UEC Image Automatic
+# Signing Key <cdimage@ubuntu.com>"), used to verify SHA256SUMS.
+- name: Copy Ubuntu cloud image signing key
+  copy:
+    src: ubuntu-cloud-image-builder.gpg
+    dest: "{{ pve_icos_dir }}/ubuntu-cloud-image-builder.gpg"
+    mode: "0644"
+
+- name: Copy root keys for new VMs
+  copy:
+    # Proxmox --sshkeys wants only key lines, no comments or blank lines.
+    content: "{{ pve_vm_root_keys | split('\n') | map('trim') | reject('match', '^(#|$)') | join('\n') }}\n"
+    dest: "{{ pve_icos_dir }}/vm-root-keys.pub"
+    mode: "0644"
+  when: pve_vm_root_keys | trim | length > 0

@@ -13,4 +13,6 @@ borg_libc_map:
     "20.04": "glibc231-x86_64"
     "22.04": "glibc231-x86_64"
     "24.04": "glibc235-x86_64-gh"
+    # Built against glibc 2.35, runs on newer glibc.
+    "26.04": "glibc235-x86_64-gh"
 borg_linux_asset: "{{ borg_libc_map[ansible_distribution][ansible_distribution_version] }}"

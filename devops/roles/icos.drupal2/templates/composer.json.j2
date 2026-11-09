@@ -1,0 +1,122 @@
+{
+    "name": "drupal/recommended-project",
+    "description": "Project template for Drupal 9 projects with a relocated document root",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/drupal",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "composer/installers": "^2.2",
+        {{ '"drupal/bartik": "^1.0",'                   if "bartik" in drupal_modules }}
+        "drupal/core-composer-scaffold": "^{{ drupal_version }}",
+        "drupal/core-recommended": "^{{ drupal_version }}",
+        "drupal/coffee": "^2.0",
+        "drupal/seven": "^1.0",
+        {{ '"drupal/antibot": "^2.0",'                  if "antibot" in drupal_modules }}
+        {{ '"drupal/better_exposed_filters": "^7.0",'   if "better_exposed_filters" in drupal_modules }}
+        {{ '"drupal/bootstrap": "^5.0",'                if "bootstrap" in drupal_modules }}
+        {{ '"drupal/ckeditor5_plugin_pack": "^1.4",'    if "ckeditor5_plugin_pack" in drupal_modules }}
+        {{ '"drupal/color_field": "^3.0",'              if "color_field" in drupal_modules }}
+        {{ '"drupal/conflict": "^3.0@alpha",'           if "conflict" in drupal_modules }}
+        {{ '"drupal/ctools": "^4.0",'                   if "pathauto" in drupal_modules }}
+        {{ '"drupal/dropzonejs": "^2.8",'               if "media_bulk_upload" in drupal_modules }}
+        {{ '"drupal/editor_advanced_link": "^2.2",'     if "editor_advanced_link" in drupal_modules }}
+        {{ '"drupal/feeds": "^3.0@beta",'               if "feeds" in drupal_modules }}
+        {{ '"drupal/honeypot": "^2.2",'                 if "honeypot" in drupal_modules }}
+        {{ '"drupal/html_title": "^1.4",'               if "html_title" in drupal_modules }}
+        {{ '"drupal/linkit": "^7.0",'                   if "linkit" in drupal_modules }}
+        {{ '"drupal/mailchimp": "^2.2",'                if "mailchimp" in drupal_modules }}
+        {{ '"drupal/matomo": "^1.21",'                  if "matomo" in drupal_modules }}
+        {{ '"drupal/media_alias_display": "^2.0",'      if "media_alias_display" in drupal_modules }}
+        {{ '"drupal/media_bulk_upload": "^3.0",'        if "media_bulk_upload" in drupal_modules }}
+        {{ '"drupal/menu_breadcrumb": "^2.0@alpha",'    if "menu_breadcrumb" in drupal_modules }}
+        {{ '"drupal/metatag": "^2.0",'                  if "metatag" in drupal_modules }}
+        {{ '"drupal/pathauto": "^1.12",'                if "pathauto" in drupal_modules }}
+        {{ '"drupal/plausible": "^2",'                  if "plausible" in drupal_modules }}
+        {{ '"drupal/redirect": "^1.9",'                 if "redirect" in drupal_modules }}
+        {{ '"drupal/restui": "^1.20",'                  if "restui" in drupal_modules }}
+        {{ '"drupal/scheduler": "^2.0",'                if "scheduler" in drupal_modules }}
+        {{ '"drupal/simple_sitemap": "^4.0",'           if "simple_sitemap" in drupal_modules }}
+        {{ '"drupal/single_content_sync": "^1.3",'      if "single_content_sync" in drupal_modules }}
+        {{ '"drupal/smtp": "^1.0",'                     if "smtp" in drupal_modules }}
+        {{ '"drupal/svg_image_field": "^2.3",'          if "svg" in drupal_modules }}
+        {{ '"drupal/toc_js": "^3.2",'                   if "toc_js" in drupal_modules }}
+        {{ '"drupal/token": "^1.10",'                   if "token" in drupal_modules }}
+        {{ '"drupal/twig_tweak": "^3.2",'               if "twig_tweak" in drupal_modules }}
+        {{ '"drupal/views_infinite_scroll": "^2.0",'    if "views_infinite_scroll" in drupal_modules }}
+        {{ '"drupal/webform": "^6.2",'                  if "webform" in drupal_modules }}
+        {{ '"drupal/webform_views": "^5.5",'            if "webform_views" in drupal_modules }}
+        "drush/drush": "^13",
+        {{ '"enyo/dropzone": "^5.7",'                   if "media_bulk_upload" in drupal_modules }}
+        "wikimedia/composer-merge-plugin": "^2.0"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-project-message": true,
+            "drupal/core-composer-scaffold": true,
+            "wikimedia/composer-merge-plugin": true
+        }
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "web/"
+            }
+{% if robots_txt | length > 0 %}
+            ,
+            "file-mapping": {
+                "[web-root]/robots.txt": {
+                    "append": "robots.txt.append"
+                }
+            }
+{% endif %}
+        },
+        "merge-plugin": {
+            "include": [
+                "web/modules/contrib/webform/composer.libraries.json",
+                "web/modules/contrib/dropzonejs/composer.libraries.json"
+            ]
+        },
+        "installer-paths": {
+            "web/core": [
+                "type:drupal-core"
+            ],
+            "web/libraries/{$name}": [
+                "type:drupal-library"
+            ],
+            "web/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "web/profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "web/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "drush/Commands/contrib/{$name}": [
+                "type:drupal-drush"
+            ],
+            "web/modules/custom/{$name}": [
+                "type:drupal-custom-module"
+            ],
+            "web/profiles/custom/{$name}": [
+                "type:drupal-custom-profile"
+            ],
+            "web/themes/custom/{$name}": [
+                "type:drupal-custom-theme"
+            ]
+        }
+    }
+}

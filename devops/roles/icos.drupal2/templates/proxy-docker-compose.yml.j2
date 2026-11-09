@@ -1,0 +1,20 @@
+name: drupal_proxy
+
+services:
+  proxy:
+    image: {{ drupal_caddy_image }}
+    container_name: drupal_proxy
+    restart: unless-stopped
+    ports:
+      - "{{ drupal_http_port }}:80"
+    volumes:
+      # Mount the directory, not the file: template replaces the Caddyfile
+      # atomically, which a single-file bind mount would not see.
+      - ./conf:/etc/caddy:ro
+    networks:
+      - {{ drupal_network_name }}
+
+networks:
+  {{ drupal_network_name }}:
+    name: {{ drupal_network_name }}
+    external: true

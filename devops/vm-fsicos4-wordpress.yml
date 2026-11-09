@@ -23,10 +23,23 @@
     - name: Synchronize VM SSH port forwarding
       tags: guest
       command: icos-auto-dnat run
+      when: pve_auto_dnat_enabled | default(true) | bool
       register: _wordpress_auto_dnat
       changed_when: >-
         'adding port' in _wordpress_auto_dnat.stdout or
         'removing rule' in _wordpress_auto_dnat.stdout
+
+    - name: Reserve the VM's static IP in dnsmasq
+      tags: dhcp
+      include_role:
+        name: icos.pve_server
+        tasks_from: dhcp_reservation
+        apply:
+          tags: dhcp
+      vars:
+        pve_reservation_name: wordpress
+        pve_reservation_mac: "{{ hostvars['fsicos4-wordpress'].vm_mac }}"
+        pve_reservation_ip: "{{ hostvars['fsicos4-wordpress'].vm_ip }}"
 
     - name: Configure wordpress reverse proxy
       tags: caddy
@@ -39,7 +52,7 @@
         caddy_conf: |
           {% if wordpress_enable_production_domains %}
           {{ wordpress_domains | join(', ') }} {
-              reverse_proxy {{ hostvars['fsicos4-wordpress'].nebula_ip }}:80 {
+              reverse_proxy {{ hostvars['fsicos4-wordpress'].vm_ip }}:80 {
                   header_up X-Forwarded-For {remote_host}
                   header_up X-Real-IP {remote_host}
               }

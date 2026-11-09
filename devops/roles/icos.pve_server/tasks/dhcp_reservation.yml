@@ -1,0 +1,78 @@
+# Reserve a VM's static IP in the dnsmasq that serves pve_dnat_bridge, so it
+# is never leased to another VM. Each VM gets its own file in dnsmasq's
+# conf-dir; the main config there is maintained by hand and left alone,
+# except that a hand-written dhcp-host line for the same MAC is removed.
+#
+#   - include_role:
+#       name: icos.pve_server
+#       tasks_from: dhcp_reservation
+#     vars:
+#       pve_reservation_name: drupal
+#       pve_reservation_mac: BC:24:11:8C:CC:7E
+#       pve_reservation_ip: 10.10.10.200
+
+- name: Check {{ pve_reservation_name }} reservation variables
+  assert:
+    that:
+      - pve_reservation_name is match('^[a-z0-9][a-z0-9-]*$')
+      - pve_reservation_mac is match('^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$')
+      - pve_reservation_ip is match('^([0-9]{1,3}\.){3}[0-9]{1,3}$')
+
+- name: Set {{ pve_reservation_name }} reservation paths
+  set_fact:
+    _pve_reservation_file: "{{ pve_dnsmasq_dir }}/static-{{ pve_reservation_name }}"
+    _pve_reservation_backup: "/root/dnsmasq-backups/{{ pve_reservation_name }}-{{ now(fmt='%Y%m%dT%H%M%S') }}"
+    _pve_reservation_mac_re: "^dhcp-host=({{ pve_reservation_mac | upper | regex_escape }}|{{ pve_reservation_mac | lower | regex_escape }}),"
+
+# Backups go outside the conf-dir: dnsmasq reads every file in it.
+- name: Back up dnsmasq configuration
+  shell: |
+    set -eu
+    mkdir -p {{ _pve_reservation_backup }}
+    cp -a {{ pve_dnsmasq_dir }}/. {{ _pve_reservation_backup }}/
+  check_mode: false
+  changed_when: false
+
+- block:
+    - name: Reserve {{ pve_reservation_ip }} for {{ pve_reservation_name }}
+      copy:
+        dest: "{{ _pve_reservation_file }}"
+        content: |
+          # Managed by Ansible (icos.pve_server dhcp_reservation).
+          # {{ pve_reservation_name }} has a static IP; reserved so it is never leased.
+          dhcp-host={{ pve_reservation_mac | upper }},{{ pve_reservation_name }},{{ pve_reservation_ip }},infinite
+        mode: "0644"
+      register: _pve_reservation_copy
+
+    # dnsmasq refuses to start when two dhcp-host lines claim the same MAC
+    # or IP.
+    - name: Remove hand-written dhcp-host line for {{ pve_reservation_name }}
+      lineinfile:
+        path: "{{ pve_dnsmasq_dir }}/config"
+        regexp: "{{ _pve_reservation_mac_re }}"
+        state: absent
+      register: _pve_reservation_config
+
+    - name: Validate dnsmasq configuration
+      command: dnsmasq --test -7 {{ pve_dnsmasq_dir }},.dpkg-dist,.dpkg-old,.dpkg-new
+      changed_when: false
+      when: not ansible_check_mode
+
+  rescue:
+    - name: Restore dnsmasq configuration
+      shell: |
+        set -eu
+        rm -f {{ _pve_reservation_file }}
+        cp -a {{ _pve_reservation_backup }}/. {{ pve_dnsmasq_dir }}/
+
+    - name: Fail after restoring dnsmasq configuration
+      fail:
+        msg: >-
+          dnsmasq rejected the configuration; restored it from
+          {{ _pve_reservation_backup }}.
+
+- name: Restart dnsmasq for {{ pve_dnat_bridge }}
+  systemd:
+    name: "dnsmasq@{{ pve_dnat_bridge }}"
+    state: restarted
+  when: _pve_reservation_copy.changed or _pve_reservation_config.changed

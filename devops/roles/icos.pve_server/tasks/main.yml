@@ -1,5 +1,9 @@
 - import_tasks: auto_dnat.yml
   tags: auto_dnat
+  when: pve_auto_dnat_enabled | bool
 
 - import_tasks: just.yml
   tags: pve_server_just
+
+- import_tasks: templates.yml
+  tags: pve_server_templates

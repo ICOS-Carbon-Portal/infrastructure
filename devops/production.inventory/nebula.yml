@@ -64,6 +64,12 @@ nebula_hosts:
       nebula_ip: "100.100.4.10"
       nebula_port: 60714
 
+    fsicos4-drupal:
+      nebula_ip: "100.100.4.13"
+      nebula_port: 60721
+
+    # Sentry's certificate was signed for .12, not .11 (Oct 2026), and some
+    # unlisted host answers on .11. Check with ping before assigning an IP.
     sentry:
-      nebula_ip: "100.100.4.11"
+      nebula_ip: "100.100.4.12"
       nebula_port: 60712

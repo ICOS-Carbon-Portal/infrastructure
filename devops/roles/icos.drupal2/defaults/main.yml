@@ -1,0 +1,30 @@
+drupal_home: /docker/drupal
+drupal_http_port: 80
+
+drupal_version: "10.6"
+drupal_php_version: "8.3"
+drupal_image: "drupal:{{ drupal_version }}-php{{ drupal_php_version }}"
+# fsicos2 runs 11.6, a short-term release. Sites are moved with
+# mariadb-dump/import, so the new VM can start on the current LTS.
+drupal_mariadb_image: mariadb:11.8
+drupal_caddy_image: caddy:2.10-alpine
+drupal_network_name: drupal
+drupal_git_repo: https://github.com/ICOS-Carbon-Portal/drupal
+
+# Set to true (e.g. -e drupal_update=true) to run composer update and drush updb
+drupal_update: false
+
+# Restrict a run to some sites: -e '{"drupal_only": ["otctest"]}'
+drupal_only: []
+
+# Each site:
+#   name:          short name, used for directories and container names
+#   domain:        canonical domain, the only one Drupal answers to
+#   modules:       contrib modules, used to build composer.json
+#   git_version:   branch/tag of drupal_git_repo (default: master)
+#   robots_txt:    file in this role's files/ appended to robots.txt
+#   database_name, database_user, database_prefix: (default: icos, icos, '')
+#   caddy_extra:   extra Caddyfile directives for the site block
+#   secrets:       dict with mysql_root_password, mysql_icos_password,
+#                  hash_salt, drupal_sync_directory
+drupal_sites: []
