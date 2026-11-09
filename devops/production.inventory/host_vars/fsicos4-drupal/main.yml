@@ -24,6 +24,13 @@ drupal_sites:
     modules: [bartik, honeypot, linkit, media_alias_display, pathauto, redirect, smtp, webform]
     secrets: "{{ _drupal_legacy_secrets['no'] }}"
 
+  - name: otc
+    live: true
+    domain: www.icos-otc.org
+    redirect_domains: [icos-otc.org, otc.icos-cp.eu]
+    modules: [bartik, redirect]
+    secrets: "{{ _drupal_legacy_secrets['otc'] }}"
+
 # Other fields (see roles/icos.drupal2/defaults/main.yml):
 #   redirect_domains: [icos-otc.org]  # redirected to domain by the fsicos4 caddy
 #   git_version, robots_txt, database_name, database_user, database_prefix,
@@ -31,7 +38,7 @@ drupal_sites:
 
 _drupal_legacy_secrets: >-
   {%- set out = {} -%}
-  {%- for name in ['otctest', 'no'] -%}
+  {%- for name in ['otctest', 'no', 'otc'] -%}
   {%- set v = lookup('ansible.builtin.unvault', drupal_legacy_vault ~ '/' ~ name ~ '-vault.yml') | from_yaml -%}
   {%- set _ = out.update({name: {
         'mysql_root_password': v.vault_mysql_root_password,
