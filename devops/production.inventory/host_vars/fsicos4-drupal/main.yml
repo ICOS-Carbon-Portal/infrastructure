@@ -1,0 +1,42 @@
+# Drupal websites running on the fsicos4-drupal VM (vm-fsicos4-drupal.yml).
+#
+# Add a site here when it is migrated from fsicos2. A site is only served on
+# its public domains once `live: true`; before that, test it through the VM
+# directly:
+#   curl -H 'Host: test.icos-otc.org' -H 'X-Forwarded-Proto: https' http://fsicos4-drupal.nebula/
+#
+# Secrets are read from the old icos.drupal role's vault files for now, so the
+# migrated sites keep their database passwords and hash salt. Move them into
+# vault.yml next to this file once fsicos2 no longer runs the old role.
+
+drupal_legacy_vault: "{{ playbook_dir }}/roles/icos.drupal/vars"
+
+drupal_sites:
+  - name: otctest
+    live: true
+    domain: test.icos-otc.org
+    modules: [bartik, linkit, media_alias_display, pathauto, redirect, smtp]
+    secrets: "{{ _drupal_legacy_secrets['otctest'] }}"
+
+  - name: "no"
+    live: true
+    domain: no.icos-cp.eu
+    modules: [bartik, honeypot, linkit, media_alias_display, pathauto, redirect, smtp, webform]
+    secrets: "{{ _drupal_legacy_secrets['no'] }}"
+
+# Other fields (see roles/icos.drupal2/defaults/main.yml):
+#   redirect_domains: [icos-otc.org]  # redirected to domain by the fsicos4 caddy
+#   git_version, robots_txt, database_name, database_user, database_prefix,
+#   caddy_extra
+
+_drupal_legacy_secrets: >-
+  {%- set out = {} -%}
+  {%- for name in ['otctest', 'no'] -%}
+  {%- set v = lookup('ansible.builtin.unvault', drupal_legacy_vault ~ '/' ~ name ~ '-vault.yml') | from_yaml -%}
+  {%- set _ = out.update({name: {
+        'mysql_root_password': v.vault_mysql_root_password,
+        'mysql_icos_password': v.vault_mysql_icos_password,
+        'hash_salt': v.vault_hash_salt,
+        'drupal_sync_directory': v.vault_drupal_sync_directory}}) -%}
+  {%- endfor -%}
+  {{ out }}

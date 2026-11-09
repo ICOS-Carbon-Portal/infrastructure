@@ -1,0 +1,137 @@
+# Drupal websites moved from fsicos2 to a VM on fsicos4.
+#
+# Sites are defined in production.inventory/host_vars/fsicos4-drupal/main.yml.
+#
+#   icos play vm-fsicos4-drupal                       # everything
+#   icos play vm-fsicos4-drupal drupal -e '{"drupal_only": ["otctest"]}'
+#   icos play vm-fsicos4-drupal drupal -e drupal_update=true
+#   icos play vm-fsicos4-drupal caddy                 # fsicos4 routing only
+
+- hosts: fsicos4
+  vars:
+    drupal_sites: "{{ hostvars['fsicos4-drupal'].drupal_sites }}"
+    drupal_live_sites: "{{ drupal_sites | selectattr('live', 'defined') | selectattr('live') | list }}"
+  roles:
+    - role: icos.pve_server
+      tags: pve_server
+  tasks:
+    - name: Synchronize VM SSH port forwarding
+      tags: guest
+      command: icos-auto-dnat run
+      register: _drupal_auto_dnat
+      changed_when: >-
+        'adding port' in _drupal_auto_dnat.stdout or
+        'removing rule' in _drupal_auto_dnat.stdout
+
+    - name: Configure drupal reverse proxy
+      tags: caddy
+      include_role:
+        name: icos.caddy
+        apply:
+          tags: caddy
+      vars:
+        caddy_name: drupal
+        caddy_conf: |
+          {% for site in drupal_live_sites %}
+          {{ site.domain }} {
+              reverse_proxy {{ hostvars['fsicos4-drupal'].vm_ip }}:80 {
+                  header_up X-Forwarded-For {remote_host}
+                  header_up X-Real-IP {remote_host}
+              }
+          }
+          {% if site.redirect_domains | default([]) | length > 0 %}
+
+          {{ site.redirect_domains | join(', ') }} {
+              redir https://{{ site.domain }}{uri} permanent
+          }
+          {% endif %}
+
+          {% endfor %}
+
+
+- hosts: fsicos4-drupal
+  vars:
+    drupal_home: /docker/drupal
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.nebula
+      tags: nebula
+
+    - role: icos.drupal2
+      tags: drupal
+
+    - role: icos.bbclient2
+      tags: bbclient
+      # Same repo as the old icos.drupal backups on fsicos2, so each site's
+      # history continues in one place and borg deduplicates against it.
+      bbclient_name: drupal
+      bbclient_home: /opt/bbclient-drupal
+      bbclient_remotes:
+        - fsicos2
+        - icos1
+      bbclient_timer_conf: |
+        OnCalendar=*-*-* 03:30:00
+        RandomizedDelaySec=30m
+      # One site at a time: stop it so its database files are consistent on
+      # disk, archive it, start it again. Only that site is down (the proxy
+      # answers 502 for it) while the others keep serving. Each site gets its
+      # own archive series, "<site>-<date>", pruned separately. Keep the
+      # retention identical to roles/icos.drupal/templates/borgbackup.sh:
+      # prune is per prefix, so a shorter one would also thin out the
+      # archives made on fsicos2.
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -Eueo pipefail
+
+        cd {{ drupal_home }}
+
+        current=""
+        restart_current() {
+          if [[ -n "$current" ]]; then
+            (cd "sites/$current/docker" && docker compose start) || true
+          fi
+        }
+        trap restart_current EXIT
+
+        failed=()
+
+        # The proxy only holds generated config, no need to stop it.
+        {{ bbclient_all }} create --stats "::proxy-{now}" proxy || failed+=(proxy)
+        {{ bbclient_all }} prune --stats --list --glob-archives 'proxy-*' \
+          --keep-daily=90 --keep-weekly=-1 || failed+=(proxy)
+
+        for dir in sites/*/; do
+          site=$(basename "$dir")
+          if [[ ! -f "sites/$site/docker/docker-compose.yml" ]]; then
+            continue
+          fi
+
+          echo "=== $site"
+          current="$site"
+          (cd "sites/$site/docker" && docker compose stop)
+
+          # Keep going if one site fails (e.g. a remote is unreachable), so
+          # the other sites still get backed up. Report at the end.
+          {{ bbclient_all }} create --stats "::$site-{now}" "sites/$site" || failed+=("$site")
+
+          (cd "sites/$site/docker" && docker compose start)
+          current=""
+
+          {{ bbclient_all }} prune --stats --list --glob-archives "$site-*" \
+            --keep-daily=90 --keep-weekly=-1 || failed+=("$site")
+        done
+
+        {{ bbclient_all }} compact
+
+        if [[ -n "${failed[*]:-}" ]]; then
+          echo "Backup failed for: ${failed[*]}" >&2
+          exit 1
+        fi

@@ -3,3 +3,6 @@
 
 - import_tasks: just.yml
   tags: pve_server_just
+
+- import_tasks: templates.yml
+  tags: pve_server_templates

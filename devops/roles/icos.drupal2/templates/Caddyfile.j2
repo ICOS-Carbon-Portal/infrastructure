@@ -1,0 +1,37 @@
+# {{ ansible_managed }}
+#
+# TLS and www/apex redirects are handled by the fsicos4 caddy. This proxy
+# only routes plain HTTP to the right site by Host header.
+
+(blocked) {
+    # cp_external_auth logs in whoever the query string names. It was only
+    # reachable through cpauth on fsicos2 and has not been used since 2023.
+    respond /cp_login* 403
+
+    # Drupal 7 style login path
+    @legacy_user query q=user*
+    respond @legacy_user 403
+
+    @dotfiles path_regexp (?i)/\.(env|git|svn|hg|htaccess|htpasswd|user\.ini|ds_store)(/|$)
+    respond @dotfiles 404
+}
+
+{% for site in drupal_site_configs %}
+http://{{ site.domain }} {
+    import blocked
+    request_body {
+        max_size 256MB
+    }
+{% if site.caddy_extra | default('') | length > 0 %}
+
+    {{ site.caddy_extra | indent(4) }}
+{% endif %}
+
+    reverse_proxy {{ site.name }}:80 {
+        header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+        header_up X-Forwarded-Proto https
+        header_up X-Real-IP {http.request.header.X-Real-IP}
+    }
+}
+
+{% endfor %}

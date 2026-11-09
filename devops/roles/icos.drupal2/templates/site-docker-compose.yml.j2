@@ -1,0 +1,63 @@
+name: drupal_{{ site.name }}
+
+services:
+  drupal:
+    image: {{ drupal_image }}
+    container_name: drupal_{{ site.name }}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../composer/composer.json:/opt/drupal/composer.json
+      - ../composer/composer.lock:/opt/drupal/composer.lock
+      # Mount the parent so Composer can remove/replace web/core during updates.
+      - web:/opt/drupal/web
+{% if site.robots_txt | default('') | length > 0 %}
+      - ../composer/robots.txt.append:/opt/drupal/robots.txt.append
+{% endif %}
+      - vendor:/opt/drupal/vendor
+      - ../themes:/var/www/html/themes
+      - ../modules:/var/www/html/modules
+      - ../libraries:/var/www/html/libraries
+      - ../files/default:/var/www/html/sites/default/:rw
+      - ../files/repo:/var/www/html/repo/:rw
+      - ../files/private:/var/www/private/
+      - ../config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      # Only the Drupal container joins the shared network, so the proxy can
+      # reach it. The database stays on the site's private network.
+      default:
+      {{ drupal_network_name }}:
+        aliases:
+          - {{ site.name }}
+
+  db:
+    image: {{ drupal_mariadb_image }}
+    container_name: drupal_{{ site.name }}_db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 30s
+    command: --transaction-isolation=READ-COMMITTED --collation-server=utf8mb4_general_ci --character_set_collations='utf8mb4=utf8mb4_general_ci'
+    environment:
+      MARIADB_ROOT_PASSWORD: {{ site.secrets.mysql_root_password | replace('$', '$$') | to_json }}
+      MARIADB_DATABASE: {{ site.database_name | default('icos') | to_json }}
+      MARIADB_USER: {{ site.database_user | default('icos') | to_json }}
+      MARIADB_PASSWORD: {{ site.secrets.mysql_icos_password | replace('$', '$$') | to_json }}
+    volumes:
+      - ../db:/var/lib/mysql
+    networks:
+      - default
+
+volumes:
+  vendor:
+  web:
+
+networks:
+  {{ drupal_network_name }}:
+    name: {{ drupal_network_name }}
+    external: true

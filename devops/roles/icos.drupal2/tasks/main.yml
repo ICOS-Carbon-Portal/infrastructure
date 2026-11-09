@@ -1,0 +1,102 @@
+- name: Check drupal site definitions
+  assert:
+    that:
+      - drupal_sites | length > 0
+      - item.name is match('^[a-z0-9][a-z0-9_-]*$')
+      - item.domain is defined
+      - item.domain is match('^[a-z0-9.-]+$')
+      - item.modules is defined
+      - item.secrets.mysql_root_password is defined
+      - item.secrets.mysql_icos_password is defined
+      - item.secrets.hash_salt is defined
+      - item.secrets.drupal_sync_directory is defined
+    fail_msg: "Each drupal site needs name, domain, modules and secrets"
+  loop: "{{ drupal_sites }}"
+  loop_control:
+    label: "{{ item.name | default('?') }}"
+  no_log: true
+
+- name: Check that drupal_only names existing sites
+  assert:
+    that: item in (drupal_sites | map(attribute='name'))
+    fail_msg: "{{ item }} is not in drupal_sites"
+  loop: "{{ drupal_only }}"
+
+# The proxy always routes every site; drupal_only only limits which sites are
+# (re)deployed.
+- name: Select drupal sites
+  set_fact:
+    drupal_site_configs: "{{ drupal_sites }}"
+    drupal_selected_sites: >-
+      {{ drupal_sites if drupal_only | length == 0
+         else drupal_sites | selectattr('name', 'in', drupal_only) | list }}
+  no_log: true
+
+- name: Create drupal directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ drupal_home }}"
+    - "{{ drupal_home }}/proxy"
+    - "{{ drupal_home }}/proxy/conf"
+    - "{{ drupal_home }}/sites"
+
+- name: Create shared drupal network
+  community.docker.docker_network:
+    name: "{{ drupal_network_name }}"
+
+- name: Deploy drupal sites
+  include_tasks: site.yml
+  loop: "{{ drupal_selected_sites }}"
+  loop_control:
+    loop_var: site
+    label: "{{ site.name }}"
+
+- name: Copy Caddyfile
+  template:
+    src: Caddyfile.j2
+    dest: "{{ drupal_home }}/proxy/conf/Caddyfile"
+    mode: "0644"
+  register: _drupal_caddyfile
+
+- name: Copy proxy docker-compose.yml
+  template:
+    src: proxy-docker-compose.yml.j2
+    dest: "{{ drupal_home }}/proxy/docker-compose.yml"
+    mode: "0644"
+  register: _drupal_proxy_compose
+
+- name: Start drupal proxy
+  community.docker.docker_compose_v2:
+    project_src: "{{ drupal_home }}/proxy"
+    state: present
+    pull: always
+    recreate: "{{ 'always' if _drupal_proxy_compose.changed else 'auto' }}"
+  register: _drupal_proxy_up
+
+- name: Reload drupal proxy configuration
+  command: docker exec drupal_proxy caddy reload --config /etc/caddy/Caddyfile
+  when: _drupal_caddyfile.changed and not _drupal_proxy_up.changed
+
+- name: Check that each site answers through the proxy
+  uri:
+    url: "http://127.0.0.1:{{ drupal_http_port }}/"
+    headers:
+      Host: "{{ site.domain }}"
+      X-Forwarded-Proto: https
+    follow_redirects: none
+    status_code: [200]
+    return_content: true
+  register: _drupal_warmup
+  until:
+    - _drupal_warmup.status | default(-1) == 200
+    - "'Fatal error' not in (_drupal_warmup.content | default(''))"
+  retries: 12
+  delay: 5
+  loop: "{{ drupal_installed_sites | default([]) }}"
+  loop_control:
+    loop_var: site
+    label: "{{ site.domain }}"
+  changed_when: false

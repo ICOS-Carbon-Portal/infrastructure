@@ -1,0 +1,33 @@
+{# PHP single-quoted string: only backslash and quote need escaping, and $ is not interpolated #}
+{% macro php(value) %}'{{ value | string | replace('\\', '\\\\') | replace("'", "\\'") }}'{% endmacro %}
+<?php
+// {{ ansible_managed }}
+
+$databases['default']['default'] = array (
+  'database' => {{ php(site.database_name | default('icos')) }},
+  'username' => {{ php(site.database_user | default('icos')) }},
+  'password' => {{ php(site.secrets.mysql_icos_password) }},
+  'prefix' => {{ php(site.database_prefix | default('')) }},
+  'host' => 'drupal_{{ site.name }}_db',
+  'port' => '3306',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+);
+
+// Requests always arrive through the VM's caddy, which forwards the client
+// address it got from the fsicos4 caddy in X-Forwarded-For.
+$settings['reverse_proxy'] = true;
+$settings['reverse_proxy_addresses'] = array($_SERVER['REMOTE_ADDR']);
+
+$settings['trusted_host_patterns'] = array(
+  {{ php(('^' ~ (site.domain | regex_escape) ~ '$')) }},
+);
+
+$settings['container_yamls'][] = __DIR__ . '/services.yml';
+$settings['hash_salt'] = {{ php(site.secrets.hash_salt) }};
+$settings['config_sync_directory'] = {{ php(site.secrets.drupal_sync_directory) }};
+$settings['update_free_access'] = false;
+$settings['file_private_path'] = '/var/www/private';
+$settings['state_cache'] = true;
+
+ini_set('memory_limit', '256M');
