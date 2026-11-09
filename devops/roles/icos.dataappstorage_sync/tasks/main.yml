@@ -4,6 +4,14 @@
     dest: "{{ dataappstorage_sync_script }}"
     mode: "0755"
 
+# Earlier versions wrote node_exporter metrics; the runs are now followed
+# through journald (otelcol on fsicos2).
+- name: Remove old node_exporter metrics
+  file:
+    path: "/opt/node_exporter/textfiles/dataappstorage-sync-{{ item }}.prom"
+    state: absent
+  loop: [daily, full]
+
 - name: Create ssh key used for the sync
   community.crypto.openssh_keypair:
     path: "{{ dataappstorage_sync_key }}"

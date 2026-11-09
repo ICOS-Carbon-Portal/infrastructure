@@ -29,4 +29,3 @@ dataappstorage_sync_full_calendar: "Sun *-*-* 05:00"
 
 dataappstorage_sync_key: /root/.ssh/dataappstorage_sync_ed25519
 dataappstorage_sync_script: /usr/local/sbin/dataappstorage-sync
-dataappstorage_sync_textfiles: /opt/node_exporter/textfiles

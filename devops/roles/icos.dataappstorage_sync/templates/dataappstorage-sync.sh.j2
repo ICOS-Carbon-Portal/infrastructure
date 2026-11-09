@@ -17,41 +17,13 @@ esac
 
 src={{ dataappstorage_sync_src | quote }}
 dest=root@{{ dataappstorage_sync_dest_hostname }}:/
-textfiles={{ dataappstorage_sync_textfiles | quote }}
 excludes=({% for e in dataappstorage_sync_excludes %}{{ e | quote }} {% endfor %})
-
-started=$(date +%s)
-
-write_metrics() {
-    local rc=$1
-    [ -d "$textfiles" ] || return 0
-    local prom="$textfiles/dataappstorage-sync-$mode.prom"
-    {
-        echo "# HELP dataappstorage_sync_last_run_timestamp_seconds Start time of the last run."
-        echo "# TYPE dataappstorage_sync_last_run_timestamp_seconds gauge"
-        echo "dataappstorage_sync_last_run_timestamp_seconds{mode=\"$mode\"} $started"
-        echo "# HELP dataappstorage_sync_last_exit_code Exit code of the last run (0 = ok)."
-        echo "# TYPE dataappstorage_sync_last_exit_code gauge"
-        echo "dataappstorage_sync_last_exit_code{mode=\"$mode\"} $rc"
-        if [ "$rc" -eq 0 ]; then
-            last_success=$started
-        else
-            # keep the previous success time
-            last_success=$(awk '/^dataappstorage_sync_last_success_timestamp_seconds/ {print $2}' "$prom" 2>/dev/null)
-        fi
-        if [ -n "${last_success:-}" ]; then
-            echo "# HELP dataappstorage_sync_last_success_timestamp_seconds Start time of the last successful run."
-            echo "# TYPE dataappstorage_sync_last_success_timestamp_seconds gauge"
-            echo "dataappstorage_sync_last_success_timestamp_seconds{mode=\"$mode\"} $last_success"
-        fi
-    } > "$prom.tmp" && mv "$prom.tmp" "$prom"
-}
 
 # The daily and the weekly run must not overlap; wait for the other one.
 exec 9>/run/dataappstorage-sync.lock
 flock 9
 
-cd "$src" || { write_metrics 1; exit 1; }
+cd "$src" || exit 1
 
 rsync_opts=(
     -a --numeric-ids --stats
@@ -76,7 +48,6 @@ if [ "$mode" = daily ]; then
     rc=$?
     if [ $rc -ne 0 ]; then
         echo "find failed with exit code $rc" >&2
-        write_metrics $rc
         exit $rc
     fi
     echo "$(wc -l < "$list") files changed in the last {{ dataappstorage_sync_window_days }} days"
@@ -95,5 +66,4 @@ fi
 # 24: some source files vanished during the transfer; not an error here.
 [ $rc -eq 24 ] && rc=0
 
-write_metrics $rc
 exit $rc
