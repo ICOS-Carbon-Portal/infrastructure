@@ -4,3 +4,9 @@
 - import_tasks: deploy.yml
   tags: doi_deploy
   when: doi_jar_file is defined
+
+# Push application.conf and restart doi if it changed, without deploying a jar.
+- import_tasks: restart.yml
+  tags:
+    - never
+    - doi_config
