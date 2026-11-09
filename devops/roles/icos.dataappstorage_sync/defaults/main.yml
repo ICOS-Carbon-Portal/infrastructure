@@ -1,0 +1,32 @@
+# Push new files in cpdata's dataAppStorage from the host this role runs on
+# (fsicos2) to a copy on another host (fsicos4).
+#
+# Daily: rsync only files whose inode changed in the last
+#   dataappstorage_sync_window_days (cheap; local find on the source).
+# Weekly: full rsync of the whole tree, as a safety net for anything the daily
+#   run missed.
+# Neither run deletes files on the destination.
+
+dataappstorage_sync_src: /disk/data/dataAppStorage
+dataappstorage_sync_dest_host: fsicos4
+dataappstorage_sync_dest_hostname: fsicos4.nebula
+dataappstorage_sync_dest_dir: /tank/dataAppStorage
+
+# The address the source host connects from, as seen by the destination. The
+# ssh key is only accepted from this address.
+dataappstorage_sync_from: 100.100.4.4
+
+# Top-level directories that are not synced.
+dataappstorage_sync_excludes:
+  - etcFacadeStaging
+
+# Overlap between daily runs, so that a failed run is caught up by the next
+# ones. Files already present at the destination are skipped cheaply.
+dataappstorage_sync_window_days: 3
+
+dataappstorage_sync_daily_calendar: "*-*-* 03:00"
+dataappstorage_sync_full_calendar: "Sun *-*-* 05:00"
+
+dataappstorage_sync_key: /root/.ssh/dataappstorage_sync_ed25519
+dataappstorage_sync_script: /usr/local/sbin/dataappstorage-sync
+dataappstorage_sync_textfiles: /opt/node_exporter/textfiles

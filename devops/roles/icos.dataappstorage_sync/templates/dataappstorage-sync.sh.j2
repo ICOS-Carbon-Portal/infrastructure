@@ -1,0 +1,99 @@
+#!/bin/bash
+# Managed by ansible (icos.dataappstorage_sync).
+#
+# Push dataAppStorage to {{ dataappstorage_sync_dest_hostname }}:{{ dataappstorage_sync_dest_dir }}
+#   dataappstorage-sync daily  - files changed in the last {{ dataappstorage_sync_window_days }} days
+#   dataappstorage-sync full   - the whole tree
+# Extra arguments are passed on to rsync, e.g. "dataappstorage-sync daily -n -i".
+# Nothing is ever deleted at the destination.
+
+set -uo pipefail
+
+mode=${1:-}
+case "$mode" in
+    daily|full) shift ;;
+    *) echo "usage: $0 daily|full [rsync options]" >&2; exit 2 ;;
+esac
+
+src={{ dataappstorage_sync_src | quote }}
+dest=root@{{ dataappstorage_sync_dest_hostname }}:/
+textfiles={{ dataappstorage_sync_textfiles | quote }}
+excludes=({% for e in dataappstorage_sync_excludes %}{{ e | quote }} {% endfor %})
+
+started=$(date +%s)
+
+write_metrics() {
+    local rc=$1
+    [ -d "$textfiles" ] || return 0
+    local prom="$textfiles/dataappstorage-sync-$mode.prom"
+    {
+        echo "# HELP dataappstorage_sync_last_run_timestamp_seconds Start time of the last run."
+        echo "# TYPE dataappstorage_sync_last_run_timestamp_seconds gauge"
+        echo "dataappstorage_sync_last_run_timestamp_seconds{mode=\"$mode\"} $started"
+        echo "# HELP dataappstorage_sync_last_exit_code Exit code of the last run (0 = ok)."
+        echo "# TYPE dataappstorage_sync_last_exit_code gauge"
+        echo "dataappstorage_sync_last_exit_code{mode=\"$mode\"} $rc"
+        if [ "$rc" -eq 0 ]; then
+            last_success=$started
+        else
+            # keep the previous success time
+            last_success=$(awk '/^dataappstorage_sync_last_success_timestamp_seconds/ {print $2}' "$prom" 2>/dev/null)
+        fi
+        if [ -n "${last_success:-}" ]; then
+            echo "# HELP dataappstorage_sync_last_success_timestamp_seconds Start time of the last successful run."
+            echo "# TYPE dataappstorage_sync_last_success_timestamp_seconds gauge"
+            echo "dataappstorage_sync_last_success_timestamp_seconds{mode=\"$mode\"} $last_success"
+        fi
+    } > "$prom.tmp" && mv "$prom.tmp" "$prom"
+}
+
+# The daily and the weekly run must not overlap; wait for the other one.
+exec 9>/run/dataappstorage-sync.lock
+flock 9
+
+cd "$src" || { write_metrics 1; exit 1; }
+
+rsync_opts=(
+    -a --numeric-ids --stats
+    -e "ssh -i {{ dataappstorage_sync_key }} -o IdentitiesOnly=yes -o BatchMode=yes"
+)
+
+if [ "$mode" = daily ]; then
+    list=$(mktemp)
+    trap 'rm -f "$list"' EXIT
+
+    find_excludes=()
+    for e in "${excludes[@]}"; do
+        find_excludes+=(! -path "./$e/*")
+    done
+
+    # Inode change time (not mtime): also catches files that were written with
+    # an old mtime preserved (cp -p, unzip, rsync -a).
+    # -ignore_readdir_race: files removed mid-walk (e.g. finished *_upload
+    # temp files) must not fail the run.
+    find . -ignore_readdir_race -xdev -type f -cmin -$(( {{ dataappstorage_sync_window_days }} * 24 * 60 )) \
+        "${find_excludes[@]}" -printf '%P\n' > "$list"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        echo "find failed with exit code $rc" >&2
+        write_metrics $rc
+        exit $rc
+    fi
+    echo "$(wc -l < "$list") files changed in the last {{ dataappstorage_sync_window_days }} days"
+
+    rsync "${rsync_opts[@]}" --files-from="$list" "$@" ./ "$dest"
+    rc=$?
+else
+    rsync_excludes=()
+    for e in "${excludes[@]}"; do
+        rsync_excludes+=(--exclude="/$e/")
+    done
+    rsync "${rsync_opts[@]}" "${rsync_excludes[@]}" "$@" ./ "$dest"
+    rc=$?
+fi
+
+# 24: some source files vanished during the transfer; not an error here.
+[ $rc -eq 24 ] && rc=0
+
+write_metrics $rc
+exit $rc
