@@ -1,5 +1,0 @@
-- name: Create application.conf
-  template:
-    dest: "{{ doi_home }}/application.conf"
-    src: application.conf
-  register: _config

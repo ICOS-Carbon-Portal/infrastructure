@@ -1,0 +1,29 @@
+# Render application.conf and (re)start doi, then wait until it responds.
+#
+# Vars:
+#   _restart_needed: force a restart even if application.conf is unchanged
+#   _daemon_reload:  reload systemd units before (re)starting
+- name: Create application.conf
+  template:
+    dest: "{{ doi_home }}/application.conf"
+    src: application.conf
+  register: _config
+
+- name: Start/restart service
+  systemd:
+    name: doi.service
+    enabled: yes
+    daemon_reload: "{{ _daemon_reload | default(false) | bool }}"
+    state: >-
+      {{ 'restarted' if (_restart_needed | default(false) | bool) or _config.changed
+         else 'started' }}
+
+- name: Check that the service responds
+  uri:
+    url: "https://{{ doi_domains | first }}/buildInfo"
+    return_content: yes
+  register: r
+  failed_when: r.failed
+  retries: 30
+  delay: 10
+  until: not r.failed
