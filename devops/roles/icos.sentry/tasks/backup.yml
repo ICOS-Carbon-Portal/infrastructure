@@ -21,32 +21,51 @@
       sentry_home={{ sentry_home | quote }}
       cd "$sentry_home"
 
-      compose_up() {
-        docker compose up -d --wait
+      restart_needed=0
+      cleanup() {
+        rc=$?
+        trap - EXIT
+        if (( restart_needed )); then
+          docker compose up -d --wait --wait-timeout 600 || rc=1
+        fi
+        exit "$rc"
       }
-
-      trap compose_up EXIT
+      trap cleanup EXIT
 
       {% if sentry_backup_create_logical_export %}
       mkdir -p sentry
       # Supplemental logical export. Disaster recovery relies on the cold Borg
       # backup below because Sentry also stores state in ClickHouse, Kafka,
       # Redis, SeaweedFS/blob storage and Docker volumes.
-      ./scripts/backup.sh global
+      # Never prompt for telemetry or stop the stack for this optional export.
+      # Remove a possibly partial export rather than backing it up as valid.
+      if ! REPORT_SELF_HOSTED_ISSUES=0 ./scripts/backup.sh --minimize-downtime global; then
+        echo 'WARNING: logical export failed; continuing with cold Borg backup' >&2
+        rm -f sentry/backup.json
+      fi
       {% endif %}
 
-      mapfile -t volume_paths < <(
+      # Command substitution propagates discovery failures (process substitution
+      # would hide them and could produce a backup with missing volumes).
+      volume_mounts=$(
         docker volume ls --format '{{ "{{" }}.Name{{ "}}" }}' |
         grep -E '^({{ sentry_backup_volume_prefixes | map('regex_escape') | join('|') }})' |
         while read -r volume; do
-          docker volume inspect -f '{{ "{{" }}.Mountpoint{{ "}}" }}' "$volume"
+          docker volume inspect -f '{{ "{{" }}.Mountpoint{{ "}}" }}' "$volume" || exit 1
         done |
         sort -u
       )
+      test -n "$volume_mounts"
+      mapfile -t volume_paths <<< "$volume_mounts"
 
-      docker compose down
+      restart_needed=1
+      docker compose stop --timeout 120
 
       {{ bbclient_all }} create --stats --verbose "::{now}" "$sentry_home" "${volume_paths[@]}"
+
+      # Resume ingestion before potentially lengthy repository maintenance.
+      docker compose up -d --wait --wait-timeout 600
+      restart_needed=0
       {{ bbclient_all }} prune --stats --list --keep-within={{ sentry_backup_keep_within }} --keep-daily={{ sentry_backup_keep_daily }} --keep-weekly={{ sentry_backup_keep_weekly }}
       {{ bbclient_all }} compact --verbose
 

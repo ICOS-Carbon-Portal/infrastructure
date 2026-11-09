@@ -16,11 +16,13 @@ Set `sentry_run_install=true` to force the upstream installer to run without cha
 
 `tasks/backup.yml` installs a systemd timer using `icos.bbclient2`. The backup is intentionally cold:
 
-1. Optionally runs `./scripts/backup.sh global` for a supplemental logical export.
-2. Discovers Sentry Docker volumes.
-3. Stops Sentry with `docker compose down`.
+1. Optionally runs a noninteractive logical export with telemetry disabled and `--minimize-downtime`. A failed export is removed and logged, but does not block the cold backup.
+2. Discovers Sentry Docker volumes, aborting on discovery failure or an empty result.
+3. Stops Sentry with `docker compose stop --timeout 120`, preserving containers and their volume attachments.
 4. Borg-backs up `/opt/sentry-self-hosted` and the Docker volume mountpoints.
-5. Starts Sentry again via a trap.
+5. Starts Sentry and waits for health before pruning/compacting the repository. An exit trap also attempts recovery if stopping or backing up fails.
+
+Check `systemctl status bbclient-sentry.service` and `/opt/bbclient-sentry/bin/bbclient-all list --short` after deployment. A restore rehearsal is still needed to validate disaster recovery.
 
 The logical export is not considered sufficient for disaster recovery; Sentry self-hosted also stores state in ClickHouse, Kafka, Redis, SeaweedFS/blob storage and named Docker volumes.
 

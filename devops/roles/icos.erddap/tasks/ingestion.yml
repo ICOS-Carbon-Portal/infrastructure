@@ -1,0 +1,80 @@
+---
+- name: Check out the pinned ingestion code without discarding local changes
+  ansible.builtin.git:
+    repo: "{{ erddap_ingestion_repo }}"
+    dest: "{{ erddap_home }}/icos-erddap"
+    version: "{{ erddap_ingestion_revision }}"
+    force: false
+  become: true
+  become_user: "{{ erddap_user }}"
+
+- name: Install Pipfile lock conversion utility
+  ansible.builtin.copy:
+    src: locked-requirements.py
+    dest: /usr/local/bin/erddap-locked-requirements
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Generate hash-locked requirements from the committed Pipfile.lock
+  ansible.builtin.command:
+    argv:
+      - /usr/local/bin/erddap-locked-requirements
+      - "{{ erddap_ingestion_dir }}/Pipfile.lock"
+      - "{{ erddap_ingestion_dir }}/requirements.lock.txt"
+  become: true
+  become_user: "{{ erddap_user }}"
+  register: _erddap_requirements
+  changed_when: "'updated' in _erddap_requirements.stdout"
+
+- name: Install locked dependencies in a new Python 3 virtual environment
+  ansible.builtin.pip:
+    requirements: "{{ erddap_ingestion_dir }}/requirements.lock.txt"
+    virtualenv: "{{ erddap_ingestion_dir }}/venv"
+    virtualenv_command: /usr/bin/python3 -m venv
+    extra_args: --require-hashes
+  become: true
+  become_user: "{{ erddap_user }}"
+
+- name: Check that ingestion dependencies import successfully
+  ansible.builtin.command:
+    argv:
+      - "{{ erddap_ingestion_dir }}/venv/bin/python"
+      - -c
+      - "import toml, pandas, pause, requests, dateutil; from icoscp_core.icos import meta, data"
+  become: true
+  become_user: "{{ erddap_user }}"
+  changed_when: false
+
+- name: Configure ingestion paths
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: "{{ erddap_ingestion_dir }}/config.toml"
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    mode: "0600"
+
+- name: Install ingestion entrypoint without scheduling it
+  tags: ingestion_cron
+  ansible.builtin.template:
+    src: update_erddap.sh.j2
+    dest: "{{ erddap_home }}/update_erddap.sh"
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    mode: "0750"
+
+- name: Check migrated ingestion database before enabling scheduling
+  tags: ingestion_cron
+  ansible.builtin.stat:
+    path: "{{ erddap_ingestion_dir }}/erddap_transfer.sqlite"
+  register: _erddap_ingestion_db
+  when: erddap_ingestion_enabled | bool
+
+- name: Require migrated ingestion database
+  tags: ingestion_cron
+  ansible.builtin.assert:
+    that:
+      - _erddap_ingestion_db.stat.isreg | default(false)
+      - _erddap_ingestion_db.stat.size | default(0) > 0
+    fail_msg: Restore the SQLite ingestion database before enabling scheduling.
+  when: erddap_ingestion_enabled | bool

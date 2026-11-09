@@ -1,0 +1,45 @@
+#!/bin/bash
+# Managed by Ansible: consistent SQLite copy, then ordinary Borg commands.
+set -euo pipefail
+umask 077
+
+exec 9>{{ (erddap_backup_state_dir ~ '/run.lock') | quote }}
+flock -n 9
+stage=$(mktemp -d {{ (erddap_backup_state_dir ~ '/stage.XXXXXXXX') | quote }})
+trap 'rm -rf -- "$stage"' EXIT
+mkdir "$stage/rootfs"
+
+# Share the ingestion job's lock while collecting local state, not during upload.
+exec 8<>{{ (erddap_backup_home ~ '/.ingestion.lock') | quote }}
+flock -w 3600 8
+cd "$stage/rootfs"
+{% for path in erddap_backup_required_paths %}
+test -e {{ path | quote }}
+cp -a --parents -- {{ path | quote }} .
+{% endfor %}
+{% for path in erddap_backup_optional_paths %}
+if [[ -e {{ path | quote }} || -L {{ path | quote }} ]]; then
+    cp -a --parents -- {{ path | quote }} .
+fi
+{% endfor %}
+
+database={{ (erddap_backup_home ~ '/icos-erddap/erddap_transfer/erddap_transfer.sqlite') | quote }}
+test -s "$database"
+snapshot="$stage/rootfs$database"
+mkdir -p -- "$(dirname "$snapshot")"
+sqlite3 -readonly "$database" '.timeout 60000' ".backup '$snapshot'"
+test "$(sqlite3 -readonly "$snapshot" 'PRAGMA quick_check;')" = ok
+# Preserve the crontab for reference; don't automatically reinstall it on restore.
+# A missing crontab (e.g. ingestion never enabled) must not fail the backup.
+crontab -u {{ erddap_backup_user | quote }} -l > "$stage/ubuntu.crontab" || true
+flock -u 8
+
+cd "$stage"
+archive="essential-$(date -u +%Y-%m-%dT%H-%M-%SZ)-$$"
+/usr/local/sbin/erddap-borg create --stats --compression zstd,6 \
+    "::$archive" rootfs ubuntu.crontab
+/usr/local/sbin/erddap-borg prune --list --glob-archives 'essential-*' \
+    --keep-daily={{ erddap_backup_keep_daily }} \
+    --keep-weekly={{ erddap_backup_keep_weekly }} \
+    --keep-monthly={{ erddap_backup_keep_monthly }}
+/usr/local/sbin/erddap-borg compact

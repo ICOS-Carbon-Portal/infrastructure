@@ -1,0 +1,39 @@
+- hosts: fsicos2
+  pre_tasks:
+    - name: Create cities-staging directory
+      tags: vm
+      file:
+        path: "/disk/data/cities-staging"
+        state: directory
+        owner: 1000000
+        group: 1000000
+
+  roles:
+    - role: icos.lxd_vm
+      tags: vm
+      lxd_vm_name: cities-staging
+      lxd_vm_docker: True
+      lxd_vm_root_size: 200GB
+      lxd_vm_devices:
+        data:
+          path: /data
+          source: /disk/data/cities
+          type: disk
+          readonly: "true"
+        cities_staging:
+          path: /data_staging
+          source: /disk/data/cities-staging
+          type: disk
+
+
+- hosts: cities-staging
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker2
+      tags: docker
+      docker2_containerd_snapshotter: false
+
+    - role: icos.restheart
+      tags: restheart

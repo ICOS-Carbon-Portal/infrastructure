@@ -1,0 +1,259 @@
+---
+- name: Validate deployment inputs before making changes
+  tags: ingestion_cron
+  ansible.builtin.assert:
+    that:
+      - inventory_hostname == 'erddap-next'
+      - ansible_distribution == 'Ubuntu'
+      - ansible_distribution_version is version('24.04', '>=')
+      - ansible_architecture == 'x86_64'
+      - erddap_version is version('2.29', '<') or erddap_java_version | int >= 25
+      - erddap_setup is mapping
+      - erddap_setup | length > 0
+      - erddap_setup.keys() | select('match', '^[A-Za-z][A-Za-z0-9_]*$') | list | length == erddap_setup | length
+      - erddap_setup.keys() | intersect(['emailUserName', 'emailPassword', 'flagKeyKey', 'googleClientID', 'orcidClientID', 'orcidClientSecret']) | length == 0
+      - erddap_war_checksum is match('^sha256:[a-f0-9]{64}$')
+      - erddap_tomcat_checksum is match('^sha512:[a-f0-9]{128}$')
+      - not (erddap_service_enabled | bool) or (erddap_state_ready | bool)
+      - not (erddap_ingestion_enabled | bool) or (erddap_service_enabled | bool)
+      - not (erddap_checker_enabled | bool) or (erddap_ingestion_enabled | bool)
+    fail_msg: >-
+      This role targets erddap-next on Ubuntu 24.04 amd64. Supply erddap_setup
+      through host inventory, keep credentials in separate Vault variables, and
+      confirm erddap_state_ready before enabling the service or ingestion.
+
+- name: Require explicit credential settings before making changes
+  ansible.builtin.assert:
+    that:
+      - erddap_email_username is defined
+      - erddap_email_password is defined
+      - erddap_flag_key is defined
+    fail_msg: >-
+      Populate the three vault_erddap_* variables documented in
+      docs/erddap/README.md (relative to the repository root). Set unused
+      credentials explicitly to empty strings, not null.
+
+- name: Validate credential types without exposing values
+  ansible.builtin.assert:
+    that:
+      - erddap_email_username is string
+      - erddap_email_password is string
+      - erddap_flag_key is string
+      - erddap_flag_key | length > 0
+  no_log: true
+
+- name: Install application prerequisites
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - ca-certificates
+      - fonts-dejavu-core
+      - git
+      - logrotate
+      - "openjdk-{{ erddap_java_version }}-jre-headless"
+      - python3
+      - python3-packaging
+      - python3-venv
+      - unzip
+      - util-linux
+    state: present
+
+- name: Ensure the application group exists
+  ansible.builtin.group:
+    name: "{{ erddap_group }}"
+
+- name: Ensure the application owner exists
+  ansible.builtin.user:
+    name: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    home: "/home/{{ erddap_user }}"
+    shell: /bin/bash
+    create_home: true
+
+- name: Create application directories without modifying existing state
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    mode: "0755"
+  loop:
+    - "{{ erddap_home }}"
+    - "{{ erddap_home }}/downloads"
+    - "{{ erddap_release_dir }}"
+    - "{{ erddap_home }}/content/erddap/images"
+    - "{{ erddap_home }}/bigParent"
+    - "{{ erddap_home }}/icos_datasets"
+
+- name: Download checksum-verified release artifacts
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    checksum: "{{ item.checksum }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - url: "{{ erddap_tomcat_url }}"
+      checksum: "{{ erddap_tomcat_checksum }}"
+      dest: "{{ erddap_home }}/downloads/tomcat-{{ erddap_tomcat_version }}.tar.gz"
+    - url: "{{ erddap_war_url }}"
+      checksum: "{{ erddap_war_checksum }}"
+      dest: "{{ erddap_home }}/downloads/erddap-{{ erddap_version }}.war"
+
+- name: Extract the pinned Tomcat release
+  ansible.builtin.unarchive:
+    src: "{{ erddap_home }}/downloads/tomcat-{{ erddap_tomcat_version }}.tar.gz"
+    dest: "{{ erddap_release_dir }}"
+    remote_src: true
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    creates: "{{ erddap_tomcat_home }}/bin/catalina.sh"
+  register: _erddap_tomcat_extract
+  notify: Restart erddap
+
+# Must run before ROOT is populated, not as a deferred restart handler.
+- name: Remove bundled Tomcat webapps on initial extraction only # noqa: no-handler
+  ansible.builtin.file:
+    path: "{{ erddap_tomcat_home }}/webapps/{{ item }}"
+    state: absent
+  loop:
+    - ROOT
+    - docs
+    - examples
+    - host-manager
+    - manager
+  when: _erddap_tomcat_extract is changed
+
+- name: Create the ROOT webapp directory
+  ansible.builtin.file:
+    path: "{{ erddap_tomcat_home }}/webapps/ROOT"
+    state: directory
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    mode: "0755"
+
+- name: Extract ERDDAP as the ROOT webapp
+  ansible.builtin.unarchive:
+    src: "{{ erddap_home }}/downloads/erddap-{{ erddap_version }}.war"
+    dest: "{{ erddap_tomcat_home }}/webapps/ROOT"
+    remote_src: true
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    creates: "{{ erddap_tomcat_home }}/webapps/ROOT/WEB-INF/web.xml"
+  notify: Restart erddap
+
+- name: Link shared ERDDAP content outside the versioned runtime
+  ansible.builtin.file:
+    src: "{{ erddap_home }}/content"
+    dest: "{{ erddap_tomcat_home }}/content"
+    state: link
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+  notify: Restart erddap
+
+- name: Install setup.xml validator
+  ansible.builtin.copy:
+    src: validate-setup.py
+    dest: /usr/local/bin/erddap-validate-setup
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy ERDDAP configuration without exposing secrets
+  ansible.builtin.template:
+    src: setup.xml.j2
+    dest: "{{ erddap_home }}/content/erddap/setup.xml"
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    mode: "0600"
+    validate: "/usr/local/bin/erddap-validate-setup %s {{ erddap_home }}/bigParent"
+  no_log: true
+  diff: false
+  notify: Restart erddap
+
+- name: Configure Tomcat
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ erddap_tomcat_home }}/{{ item.dest }}"
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+    mode: "0644"
+  loop:
+    - src: server.xml.j2
+      dest: conf/server.xml
+    - src: context.xml.j2
+      dest: conf/context.xml
+    - src: setenv.sh.j2
+      dest: bin/setenv.sh
+  notify: Restart erddap
+
+- name: Select the runtime using the production-compatible path
+  ansible.builtin.file:
+    src: "{{ erddap_tomcat_home }}"
+    dest: "{{ erddap_home }}/apache-tomcat"
+    state: link
+    owner: "{{ erddap_user }}"
+    group: "{{ erddap_group }}"
+  notify: Restart erddap
+
+- name: Configure the ingestion pipeline
+  ansible.builtin.import_tasks: ingestion.yml
+
+- name: Rotate ingestion logs
+  ansible.builtin.template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/erddap
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/logrotate --debug %s
+
+- name: Verify migrated datasets.xml before enabling ERDDAP
+  ansible.builtin.stat:
+    path: "{{ erddap_home }}/content/erddap/datasets.xml"
+  register: _erddap_datasets
+  when: erddap_service_enabled | bool
+
+- name: Require migrated datasets before starting
+  ansible.builtin.assert:
+    that:
+      - _erddap_datasets.stat.isreg | default(false)
+      - _erddap_datasets.stat.size | default(0) > 0
+    fail_msg: Restore datasets.xml and referenced state first; this role never generates or overwrites them.
+  when: erddap_service_enabled | bool
+
+- name: Install the application service
+  ansible.builtin.template:
+    src: erddap.service.j2
+    dest: /etc/systemd/system/erddap.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart erddap
+
+- name: Apply pending application restarts before health checks
+  ansible.builtin.meta: flush_handlers
+
+- name: Apply the explicit service activation setting
+  ansible.builtin.systemd_service:
+    name: erddap
+    daemon_reload: true
+    enabled: "{{ erddap_service_enabled | bool }}"
+    state: "{{ 'started' if erddap_service_enabled | bool else 'stopped' }}"
+
+- name: Verify ERDDAP responds with the pinned version
+  tags: ingestion_cron
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ erddap_http_port }}/erddap/version_string"
+    return_content: true
+    use_proxy: false
+  register: _erddap_health
+  until: >-
+    _erddap_health.status | default(0) == 200 and
+    (_erddap_health.content | default('') | trim) == 'ERDDAP_version_string=' ~ erddap_version_string
+  retries: 60
+  delay: 10
+  when: erddap_service_enabled | bool
+
+- name: Manage ingestion scheduling
+  ansible.builtin.import_tasks: cron.yml
+  tags: ingestion_cron

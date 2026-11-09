@@ -1,4 +1,13 @@
-- name: Extract "{{ postgresql_container_name }}" backup
-  ansible.builtin.shell:
-    cmd: /usr/local/bin/restore_{{ postgresql_container_name }}_db.py --host={{ postgresql_backup_host }} --location={{ postgresql_backup_location }}
-    # executable: /usr/bin/python3
+- name: Extract latest "{{ postgresql_container_name }}" backup
+  ansible.builtin.shell: |
+    set -o pipefail
+    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=y
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=y
+    repo="{{ postgresql_backup_host }}:{{ postgresql_backup_location }}"
+    archive="$(borg list --short --last 1 "$repo")"
+    echo "Restoring $repo::$archive into {{ postgresql_container_name }}"
+    borg extract --stdout "$repo::$archive" \
+      {% if postgresql_norole | default(false) | bool %}| egrep -v '^(CREATE|ALTER) ROLE' \
+      {% endif %}| docker exec -i {{ postgresql_container_name }} psql -U {{ postgresql_user }}
+  args:
+    executable: /bin/bash

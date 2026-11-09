@@ -1,0 +1,67 @@
+---
+# Create the host file before Compose starts: otherwise a missing bind-mount
+# source becomes a directory. Never overwrite an already-persisted lock file.
+- name: Check for a persistent Composer lock file
+  stat:
+    path: "{{ project_dir }}/composer/composer.lock"
+  register: drupal_lock_file
+
+- name: Validate Composer lock mount source
+  assert:
+    that:
+      - not drupal_lock_file.stat.exists or drupal_lock_file.stat.isreg | default(false)
+    fail_msg: "{{ project_dir }}/composer/composer.lock must be a regular file"
+
+- name: Seed persistent Composer lock file
+  when: not drupal_lock_file.stat.exists
+  block:
+    - name: Find existing Drupal container
+      community.docker.docker_container_info:
+        name: "{{ drupal_website }}_drupal_1"
+      register: drupal_existing_container
+
+    # docker cp also works on stopped containers, unlike docker exec.
+    - name: Read current lock file before recreating the container
+      shell: >-
+        set -o pipefail;
+        docker cp {{ (drupal_website ~ '_drupal_1:/opt/drupal/composer.lock') | quote }} -
+        | tar -xO
+      args:
+        executable: /bin/bash
+      register: drupal_container_lock
+      changed_when: false
+      when: drupal_existing_container.exists
+
+    - name: Read initial lock file from the image for a new site
+      command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --pull
+          - always
+          - --entrypoint
+          - cat
+          - "drupal:{{ drupal_version }}-php8.3"
+          - /opt/drupal/composer.lock
+      register: drupal_image_lock
+      changed_when: false
+      when: not drupal_existing_container.exists
+
+    - name: Select captured Composer lock file
+      set_fact:
+        drupal_initial_lock: >-
+          {{ drupal_container_lock if drupal_existing_container.exists
+             else drupal_image_lock }}
+
+    - name: Validate captured Composer lock file
+      assert:
+        that:
+          - (drupal_initial_lock.stdout | from_json).packages is defined
+
+    - name: Persist Composer lock file on the host
+      copy:
+        content: "{{ drupal_initial_lock.stdout }}\n"
+        dest: "{{ project_dir }}/composer/composer.lock"
+        mode: '0644'
+        force: false

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Managed by Ansible. Never run alongside ingestion in another container.
+set -euo pipefail
+cd {{ erddap_ingestion_dir | quote }}
+{% if erddap_checker_enabled | bool %}
+# WARNING: the pinned checker queries https://erddap.icos-cp.eu and deletes
+# local SQLite records. Enable only after production traffic is cut over.
+./venv/bin/python dataset_checker.py
+{% endif %}
+./venv/bin/python update_from_icos.py
+./venv/bin/python populate_erddap.py

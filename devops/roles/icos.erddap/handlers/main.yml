@@ -1,0 +1,7 @@
+---
+- name: Restart erddap
+  ansible.builtin.systemd_service:
+    name: erddap
+    daemon_reload: true
+    state: restarted
+  when: erddap_service_enabled | bool

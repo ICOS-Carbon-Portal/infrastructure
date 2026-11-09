@@ -1,0 +1,51 @@
+- hosts: fsicos4
+  vars:
+    mapproxy_domains:
+      - tiles.icos-cp.eu
+      - tiles.fieldsites.se
+    mapproxy_upstream: 10.10.10.217:8080
+  roles:
+    - role: icos.pve_server
+      tags: pve_server
+  tasks:
+    - name: Synchronize VM SSH port forwarding
+      tags: guest
+      command: icos-auto-dnat run
+      register: _mapproxy_auto_dnat
+      changed_when: >-
+        'adding port' in _mapproxy_auto_dnat.stdout or
+        'removing rule' in _mapproxy_auto_dnat.stdout
+
+    - name: Configure mapproxy reverse proxy
+      tags: caddy
+      include_role:
+        name: icos.caddy
+        apply:
+          tags: caddy
+      vars:
+        caddy_name: mapproxy
+        caddy_conf: |
+          {{ mapproxy_domains | join(', ') }} {
+              reverse_proxy {{ mapproxy_upstream }} {
+                  header_up X-Forwarded-For {remote_host}
+                  header_up X-Real-IP {remote_host}
+              }
+          }
+
+
+- hosts: mapproxy
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.mapproxy
+      tags: mapproxy

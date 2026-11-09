@@ -1,6 +1,6 @@
 - hosts: staging_server
   pre_tasks:
-    - name: Create  directory
+    - name: Create staging directory
       tags: vm
       file:
         path: "/disk/data/staging"
@@ -18,6 +18,16 @@
         dataprod:
           path: /data/dataAppStorage/
           source: /disk/data/dataAppStorage/
+          type: disk
+          readonly: "true"
+        netcdf_demo:
+          path: /data/netcdf/dataDemo
+          source: /disk/data/common/netcdf/dataDemo
+          type: disk
+          readonly: "true"
+        netcdf_previews:
+          path: /data/netcdf/previews
+          source: /disk/data/netcdfPreviews
           type: disk
           readonly: "true"
         staging:

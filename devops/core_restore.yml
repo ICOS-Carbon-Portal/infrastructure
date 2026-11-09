@@ -1,5 +1,4 @@
 - hosts: core_host
-  connection: local
   tasks:
     - name: Make sure borg is installed
       tags:
@@ -16,10 +15,8 @@
       vars:
         postgresql_backup_host: "{{ corebackup_host }}"
         postgresql_backup_location: "{{ rdflog_backup_location }}"
-        container_name: "{{ rdflog_container_name }}"
         postgresql_user: "{{ rdflog_user }}"
-        postgresql_container_name: "rdflog"
-
+        postgresql_container_name: rdflog
 
     - name: Restore postgis backup
       tags:
@@ -30,9 +27,9 @@
       vars:
         postgresql_backup_host: "{{ corebackup_host }}"
         postgresql_backup_location: "{{ postgis_backup_location }}"
-        container_name: "{{ postgis_container_name }}"
         postgresql_user: "{{ postgis_user }}"
-        postgresql_container_name: "postgis"
+        postgresql_container_name: postgis
+        postgresql_norole: true
 
     - name: Restore restheart backup
       tags:

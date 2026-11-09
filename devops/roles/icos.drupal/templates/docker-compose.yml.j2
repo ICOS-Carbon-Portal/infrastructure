@@ -1,12 +1,16 @@
 services:
   drupal:
     image: drupal:{{ drupal_version }}-php8.3
-    links:
-      - mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
     ports:
       - "127.0.0.1:{{ drupal_docker_port }}:80"
     volumes:
       - ../composer/composer.json:/opt/drupal/composer.json
+      - ../composer/composer.lock:/opt/drupal/composer.lock
+      # Mount the parent so Composer can remove/replace web/core during updates.
+      - web:/opt/drupal/web
 {% if drupal_website_vars.robots_txt is defined %}
       - ../composer/robots.txt.append:/opt/drupal/robots.txt.append
 {% endif %}
@@ -27,6 +31,15 @@ services:
   mariadb:
     # When bumping version, uncomment 'MARIADB_AUTO_UPGRADE: 1' bellow to run mariadb-upgrade⁠
     image: mariadb:11.6
+    # Needs the healthcheck user, created when the image initialises the data
+    # directory (marked by db/.my-healthcheck.cnf). For a data directory without
+    # it, run once with MARIADB_AUTO_UPGRADE: 1, otherwise Drupal will not start.
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 30s
     command: --transaction-isolation=READ-COMMITTED --collation-server=utf8mb4_general_ci --character_set_collations='utf8mb4=utf8mb4_general_ci'
     ports:
       - "127.0.0.1:{{ mysql_docker_port }}:3306"
@@ -41,3 +54,4 @@ services:
     restart: unless-stopped
 volumes:
   vendor:
+  web:

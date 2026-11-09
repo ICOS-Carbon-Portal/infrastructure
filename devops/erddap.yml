@@ -1,0 +1,8 @@
+# Application and backup deployment. Provision with vm-erddap.yml first.
+---
+- name: Deploy the ERDDAP application
+  hosts: erddap-next
+  roles:
+    - role: icos.erddap
+    - role: icos.erddap_backup
+      tags: [backup]

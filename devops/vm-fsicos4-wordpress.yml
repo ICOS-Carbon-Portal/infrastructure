@@ -2,6 +2,19 @@
   vars:
     wordpress_domains:
       - st4ris.eu
+      - john-project.eu
+      - george-project.eu
+      - kadi-project.eu
+      - avengers-project.eu
+    wordpress_redirect_domains:
+      - from: www.john-project.eu
+        to: john-project.eu
+      - from: www.george-project.eu
+        to: george-project.eu
+      - from: www.kadi-project.eu
+        to: kadi-project.eu
+      - from: www.avengers-project.eu
+        to: avengers-project.eu
     wordpress_enable_production_domains: true
   roles:
     - role: icos.pve_server
@@ -31,6 +44,12 @@
                   header_up X-Real-IP {remote_host}
               }
           }
+          {% for redirect in wordpress_redirect_domains | default([]) %}
+
+          {{ redirect.from }} {
+              redir https://{{ redirect.to }}{uri} permanent
+          }
+          {% endfor %}
           {% endif %}
 
 
@@ -45,6 +64,37 @@
         db_user: st4ris
         db_password: "{{ vault_wordpress_st4ris_db_password }}"
         db_root_password: "{{ vault_wordpress_st4ris_db_root_password }}"
+      # www.john-project.eu is redirected to the apex by the fsicos4 caddy
+      # config above, so it must stay out of this list - domains listed here
+      # become WP_HOME/WP_SITEURL candidates.
+      - name: john-project
+        domains:
+          - john-project.eu
+        db_name: john_project
+        db_user: john_project
+        db_password: "{{ vault_wordpress_johnproject_db_password }}"
+        db_root_password: "{{ vault_wordpress_johnproject_db_root_password }}"
+      - name: george
+        domains:
+          - george-project.eu
+        db_name: george
+        db_user: george
+        db_password: "{{ vault_wordpress_george_db_password }}"
+        db_root_password: "{{ vault_wordpress_george_db_root_password }}"
+      - name: kadi
+        domains:
+          - kadi-project.eu
+        db_name: kadi
+        db_user: kadi
+        db_password: "{{ vault_wordpress_kadi_db_password }}"
+        db_root_password: "{{ vault_wordpress_kadi_db_root_password }}"
+      - name: avengers
+        domains:
+          - avengers-project.eu
+        db_name: avengers
+        db_user: avengers
+        db_password: "{{ vault_wordpress_avengers_db_password }}"
+        db_root_password: "{{ vault_wordpress_avengers_db_root_password }}"
   roles:
     - role: icos.pve_guest
       tags: guest
@@ -101,3 +151,52 @@
         {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
         {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
         {{ bbclient_all }} compact --verbose
+
+  tasks:
+    - name: Pull ST4RIS WordPress theme from GitHub
+      tags: st4ris_theme
+      git:
+        repo: https://github.com/ICOS-Carbon-Portal/ST4RIS-WordPress-Theme.git
+        dest: "{{ wordpress_home }}/sites/st4ris/html/wp-content/themes/st4ris"
+        version: main
+        update: true
+        force: false
+      environment:
+        GIT_CONFIG_COUNT: "1"
+        GIT_CONFIG_KEY_0: safe.directory
+        GIT_CONFIG_VALUE_0: "{{ wordpress_home }}/sites/st4ris/html/wp-content/themes/st4ris"
+      register: _st4ris_theme_git
+
+    - name: Set ST4RIS WordPress theme ownership
+      tags: st4ris_theme
+      file:
+        path: "{{ wordpress_home }}/sites/st4ris/html/wp-content/themes/st4ris"
+        owner: "{{ wordpress_web_owner }}"
+        group: "{{ wordpress_web_group }}"
+        state: directory
+        recurse: true
+      when: _st4ris_theme_git.changed
+
+    - name: Pull JOHN Project WordPress theme from GitHub
+      tags: john_theme
+      git:
+        repo: https://github.com/ICOS-Carbon-Portal/john-project-wp-theme.git
+        dest: "{{ wordpress_home }}/sites/john-project/html/wp-content/themes/john-project"
+        version: main
+        update: true
+        force: false
+      environment:
+        GIT_CONFIG_COUNT: "1"
+        GIT_CONFIG_KEY_0: safe.directory
+        GIT_CONFIG_VALUE_0: "{{ wordpress_home }}/sites/john-project/html/wp-content/themes/john-project"
+      register: _john_theme_git
+
+    - name: Set JOHN Project WordPress theme ownership
+      tags: john_theme
+      file:
+        path: "{{ wordpress_home }}/sites/john-project/html/wp-content/themes/john-project"
+        owner: "{{ wordpress_web_owner }}"
+        group: "{{ wordpress_web_group }}"
+        state: directory
+        recurse: true
+      when: _john_theme_git.changed

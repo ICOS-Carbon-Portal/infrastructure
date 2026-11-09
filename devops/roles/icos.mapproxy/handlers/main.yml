@@ -1,0 +1,5 @@
+- name: restart mapproxy
+  when: _mapproxy_ready and not ansible_check_mode
+  community.docker.docker_compose_v2:
+    project_src: "{{ mapproxy_home }}"
+    state: restarted

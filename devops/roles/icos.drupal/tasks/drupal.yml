@@ -18,6 +18,7 @@
   copy:
     src: uploads.ini
     dest: "{{ project_dir }}/config/uploads.ini"
+  register: drupal_uploads_config
 
 - name: Create {{ project_dir }}/files/private/ directory
   file: path={{ project_dir }}/files/private/ state=directory recurse=yes
@@ -51,12 +52,17 @@
   template:
     src: composer.json.j2
     dest: "{{ project_dir }}/composer/composer.json"
+  register: drupal_composer_config
 
 - name: Copy robots.txt
   copy:
     src: "{{ robots_txt }}"
     dest: "{{ project_dir }}/composer/robots.txt.append"
   when: drupal_website_vars.robots_txt is defined
+  register: drupal_robots_txt
+
+- name: Persist Composer lock file before container recreation
+  include_tasks: persist-lock.yml
 
 - name: Enable maintenance mode
   command: docker exec {{ drupal_website }}_drupal_1 drush maint:set 1
@@ -67,6 +73,42 @@
     project_src: "{{ project_dir }}/docker"
     state: present
     pull: always
+    wait: true
+    wait_timeout: 180
+
+# Atomic file replacement changes the inode of single-file bind mounts.
+# Recreate Drupal so it sees the current host files, including on retries.
+- name: Refresh Drupal single-file bind mounts
+  community.docker.docker_compose_v2:
+    project_src: "{{ project_dir }}/docker"
+    services: [drupal]
+    dependencies: false
+    state: present
+    recreate: always
+    wait: true
+    wait_timeout: 180
+  when: >-
+    update | bool
+    or drupal_composer_config.changed
+    or drupal_uploads_config.changed
+    or drupal_robots_txt.changed
+
+# MariaDB readiness is gated by its healthcheck; this checks that Drupal
+# bootstraps and can query its database.
+- name: Wait for Drupal to bootstrap with database access
+  command:
+    argv:
+      - docker
+      - exec
+      - "{{ drupal_website }}_drupal_1"
+      - drush
+      - php:eval
+      - '\Drupal::database()->query("SELECT 1")->fetchField();'
+  register: drupal_database_ready
+  until: drupal_database_ready.rc == 0
+  retries: 24
+  delay: 5
+  changed_when: false
 
 - name: Check private directory owner
   command: docker exec {{ drupal_website }}_drupal_1 stat -c '%U' /var/www/private/
@@ -78,7 +120,7 @@
   when: private_directory_owner.stdout != "www-data"
 
 - name: Check files directory owner
-  command: docker exec {{ drupal_website }}_drupal_1 stat -c '%U' /var/www/private/
+  command: docker exec {{ drupal_website }}_drupal_1 stat -c '%U' /var/www/html/sites/default/files
   register: files_directory_owner
   changed_when: false
 
@@ -93,7 +135,13 @@
   changed_when: '"Package operations" in result.stderr'
 
 - name: Update database
-  command: docker exec {{ drupal_website }}_drupal_1 drush updb
+  command: docker exec {{ drupal_website }}_drupal_1 drush updb -y
+  when: update | bool
+
+# Drush runs in CLI PHP and cannot clear Apache's OPcache after Composer
+# replaces dependencies. Restart the web runtime before serving updated code.
+- name: Restart Drupal to clear PHP OPcache after dependency updates
+  command: docker restart {{ drupal_website }}_drupal_1
   when: update | bool
 
 - name: Disable maintenance mode
@@ -106,4 +154,12 @@
 - name: Warm up Drupal cache
   uri:
     url: "https://{{ domain }}/"
+    status_code: 200
+    return_content: true
+  register: drupal_warmup
+  until:
+    - drupal_warmup.status | default(-1) == 200
+    - "'Fatal error' not in (drupal_warmup.content | default(''))"
+  retries: 12
+  delay: 5
   changed_when: false

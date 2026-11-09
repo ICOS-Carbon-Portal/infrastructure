@@ -1,0 +1,116 @@
+all:
+  vars:
+    fsicos2_ip: 194.47.223.139
+    cities_staging_lxd_ip: 10.189.225.34
+
+    # The domains are needed both for the host (to find the buildInfo url) and
+    # for the server (to set up proxy).
+    cpmeta_cities_domain: citymetastaging.icos-cp.eu
+    cpmeta_cities_iri_host: citymeta.icos-cp.eu
+    cpdata_cities_domain: citydatastaging.icos-cp.eu
+    cpauth_cities_domain: cityauthstaging.icos-cp.eu
+
+    cpauth_domains:
+      - "{{ cpauth_cities_domain }}"
+
+    cpmeta_domains:
+      - "{{ cpmeta_cities_domain }}"
+
+    cpdata_domains:
+      - "{{ cpdata_cities_domain }}"
+
+    postgis_dbs:
+      - "{{ postgis_cities_db_name }}"
+
+    restheart_dbs:
+      - "{{ restheart_cities_db_name }}"
+
+    activity_log_ignore_ips: []
+
+    # Restore source: latest backups from the production Cities repos.
+    corebackup_host: "{{ cdb_ip }}"
+    postgis_backup_location: ~bbserver/repos/citypostgis.repo
+    rdflog_backup_location: ~bbserver/repos/cityrdflog.repo
+    restheart_backup_location: ~bbserver/repos/cityrestheart.repo
+
+    showUnderConstruction: "true"
+    showCarbonBadge: "false"
+    environmentName: "cities-staging"
+
+  children:
+    core_host:
+      hosts:
+        cities-staging:
+
+      vars:
+        # When running in an lxd VM, bind all interfaces so that services are
+        # reachable from the host.
+        coreapp_bind_addr: 0.0.0.0
+
+        # cpmeta - application
+        cpmeta_filestorage_target: "{{ cpmeta_home }}/filestorage"
+        cpmeta_backup_enable: false
+        cpmeta_config_files:
+          - application_production.conf
+          - application_cities_amendment.conf
+          - application_cities_sensitive.conf
+
+        # cpdata - application
+        cpdata_filestorage_target: "/data/dataAppStorage"
+        cpdata_b2safe_dry_run: true
+        cpdata_config_files:
+          - application_production.conf
+          - application_staging_amendment.conf
+
+        # cpauth - application
+        cpauth_config_files:
+          - application_production.conf
+          - application_staging_amendment.conf
+        cpauth_envries:
+          - name: ICOSCities
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_cities_db_name }}"
+            restheart_username: "{{ city_restheart_basic_auth.username }}"
+            restheart_password: "{{ city_restheart_basic_auth.password }}"
+
+        postgis_db_port: 5438
+        postgis_hostname: 127.0.0.1
+
+        rdflog_postgres_version: 15
+        rdflog_user: rdflog
+
+        postgis_user: postgres
+
+        data_envries:
+          - name: ICOSCities
+            restheart_url: "http://127.0.0.1:{{ restheart_bind_port }}/{{ restheart_cities_db_name }}"
+            postgis_db_name: "{{ postgis_cities_db_name }}"
+
+    core_server:
+      hosts:
+        fsicos2:
+          ansible_port: 60022
+
+      vars:
+        coreapp_httpproxy_host: cities-staging.lxd
+        coreapp_host_ip: "{{ cities_staging_lxd_ip }}"
+
+        # cpmeta - proxy
+        cpmeta_nginxsite_name: cpmeta-cities-staging
+        cpmeta_certbot_name: cpmeta-cities-staging
+        cpmeta_proxy_host_header: "{{ cpmeta_cities_iri_host }}"
+
+        # cpdata - proxy
+        cpdata_certbot_name: cpdata-cities-staging
+        cpdata_nginxsite_name: cpdata-cities-staging
+
+        # cpauth - proxy
+        cpauth_certbot_name: cpauth-cities-staging
+        cpauth_nginxsite_name: cpauth-cities-staging
+
+        # restheart - proxy
+        restheart_host: cities-staging.lxd
+        restheart_nginxsite_name: restheart-cities-staging
+        restheart_certbot_name: restheart-cities-staging
+        restheart_basic_auth: "{{ city_restheart_basic_auth }}"
+        restheart_domains:
+          - restheartcitiesstaging.icos-cp.eu

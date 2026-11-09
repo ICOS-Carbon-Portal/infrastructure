@@ -1,0 +1,5 @@
+# Managed by Ansible. catalina.sh sources this file.
+export JAVA_HOME={{ erddap_java_home | quote }}
+export CATALINA_OPTS={{ ('-server -Djava.awt.headless=true -Xmx' ~ erddap_heap ~ ' -Xms' ~ erddap_heap) | quote }}
+export CATALINA_HOME={{ erddap_tomcat_home | quote }}
+export CATALINA_BASE={{ erddap_tomcat_home | quote }}
