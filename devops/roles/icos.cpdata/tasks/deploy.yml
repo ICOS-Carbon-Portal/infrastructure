@@ -19,15 +19,7 @@
   register: _r
   changed_when: _r.stdout.startswith("removed")
 
-- import_tasks: config.yml
-  tags: cpdata_config
-
-- name: Check that the service responds
-  uri:
-    url: "https://{{ cpdata_domains | first }}/buildInfo"
-    return_content: yes
-  register: r
-  failed_when: r.failed
-  retries: 30
-  delay: 10
-  until: not r.failed
+- import_tasks: restart.yml
+  vars:
+    _restart_needed: "{{ _jarfile.changed }}"
+    _daemon_reload: "{{ _service.changed }}"

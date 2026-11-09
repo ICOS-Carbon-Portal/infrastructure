@@ -14,6 +14,8 @@ cpdata_irods_pass:           "{{ vault_cpdata_irods_pass }}"
 cpdata_dlreporter_pass:      "{{ vault_cpdata_dlreporter_pass }}"
 cpdata_cpuser_secret_salt:   "{{ vault_cpauth_user_secret_salt }}"
 cpdata_etcfacade_secret:     "{{ vault_cpdata_etcfacade_secret }}"
+# station id -> password, replacing the derived password (e.g. after a leak)
+cpdata_etcfacade_station_overrides: {}
 cpdata_pgreslog_admin_pass:  "{{ postgis_admin_pass }}"
 cpdata_pgreslog_writer_pass: "{{ postgis_writer_pass }}"
 cpdata_pgreslog_reader_pass: "{{ postgis_reader_pass }}"

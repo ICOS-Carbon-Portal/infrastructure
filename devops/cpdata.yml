@@ -1,5 +1,7 @@
-# icos play cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
-# icos play cpdata cpdata_config
+# NB: cpdata itself is deployed through core.yml (as the sbt cpDeploy plugin does);
+# this playbook lacks vars from the other core roles (e.g. restheart_bind_port).
+#   icos play core -t cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
+#   icos play core -t cpdata_config
 #
 # Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 

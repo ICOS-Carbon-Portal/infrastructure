@@ -4,3 +4,9 @@
 - import_tasks: deploy.yml
   tags: cpdata_deploy
   when: cpdata_jar_file is defined
+
+# Push application.conf and restart cpdata if it changed, without deploying a jar.
+- import_tasks: restart.yml
+  tags:
+    - never
+    - cpdata_config

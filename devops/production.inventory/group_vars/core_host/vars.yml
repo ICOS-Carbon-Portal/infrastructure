@@ -13,3 +13,7 @@ doi_to_addresses: "{{ vault_doi_to_addresses }}"
 cpmeta_sentry_dsn: "{{ vault_cpmeta_sentry_dsn }}"
 cpdata_sentry_backend_dsn: "{{ vault_cpdata_sentry_backend_dsn }}"
 cpdata_sentry_portal_dsn: "{{ vault_cpdata_sentry_portal_dsn }}"
+
+cpdata_etcfacade_station_overrides:
+  "CZ-BK1": "{{ vault_cpdata_etcfacade_pass_cz_bk1 }}"
+  "CZ-Lnz": "{{ vault_cpdata_etcfacade_pass_cz_lnz }}"
