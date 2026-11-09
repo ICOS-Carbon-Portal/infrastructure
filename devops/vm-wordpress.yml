@@ -3,32 +3,15 @@
     wordpress_eric_forum_domains:
       - eric-forum.eu
       - www.eric-forum.eu
-    wordpress_eric_forum_dev_domains:
-      - dev.eric-forum.eu
     wordpress_envri_domains:
       - envri.eu
       - www.envri.eu
-    wordpress_cert_domains: "{{ wordpress_eric_forum_domains + wordpress_eric_forum_dev_domains + wordpress_envri_domains }}"
+    wordpress_cert_domains: "{{ wordpress_eric_forum_domains + wordpress_envri_domains }}"
   roles:
-    - role: icos.lxd_vm
-      tags: lxd
-      lxd_vm_name: wordpress
-      lxd_vm_root_size: "500GB"
-      lxd_vm_config:
-        limits.cpu: "4"
-        limits.memory: "8GB"
-
     - role: icos.certbot2
       tags: cert
       certbot_name: wordpress
       certbot_domains: "{{ wordpress_cert_domains }}"
-
-    # The sites of the "wordpress" container moved to fsicos4 or became static
-    # (wordpress-static.yml).
-    - role: icos.nginxsite
-      tags: nginx
-      nginxsite_name: wordpress
-      nginxsite_state: absent
 
     - role: icos.nginxsite
       tags: nginx
@@ -48,15 +31,6 @@
       lxd_vm_config:
         limits.cpu: "4"
         limits.memory: "8GB"
-
-    - role: icos.nginxsite
-      tags: nginx
-      nginxsite_name: eric-forum-dev
-      nginxsite_file: files/wordpress.conf
-      wp_site_domains: "{{ wordpress_eric_forum_dev_domains }}"
-      wp_site_upstream: wordpress-eric-forum-dev.lxd
-      wp_site_log: eric-forum-dev
-      wp_site_rate_zone: wp_login_ef_dev
 
     - role: icos.lxd_vm
       tags: lxd
@@ -79,7 +53,7 @@
       wp_site_rate_zone: wp_login_envri
 
 
-- hosts: wordpress,wordpress-eric-forum-dev,wordpress-envri
+- hosts: wordpress-eric-forum-dev,wordpress-envri
   roles:
     - role: icos.lxd_guest
       tags: guest
