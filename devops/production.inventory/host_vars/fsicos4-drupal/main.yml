@@ -36,6 +36,13 @@ drupal_sites:
 #   git_version, robots_txt, database_name, database_user, database_prefix,
 #   caddy_extra
 
+# Retired sites whose domains now redirect elsewhere. Every path goes to `to`;
+# the fsicos4 caddy serves these, the VM is not involved. `code` is passed to
+# caddy's redir: temporary (default), permanent or a status code.
+drupal_redirects:
+  - domains: [www.icos-netherlands.nl, icos-netherlands.nl]
+    to: https://www.icos-cp.eu/measurements/icos-countries/netherlands
+
 _drupal_legacy_secrets: >-
   {%- set out = {} -%}
   {%- for name in ['otctest', 'no', 'otc'] -%}
