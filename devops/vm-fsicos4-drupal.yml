@@ -60,6 +60,12 @@
           {% endif %}
 
           {% endfor %}
+          {% for r in hostvars['fsicos4-drupal'].drupal_redirects | default([]) %}
+          {{ r.domains | join(', ') }} {
+              redir {{ r.to }} {{ r.code | default('temporary') }}
+          }
+
+          {% endfor %}
 
 
 - hosts: fsicos4-drupal
