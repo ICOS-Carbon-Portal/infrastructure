@@ -23,6 +23,7 @@
     - name: Synchronize VM SSH port forwarding
       tags: guest
       command: icos-auto-dnat run
+      when: pve_auto_dnat_enabled | default(true) | bool
       register: _wordpress_auto_dnat
       changed_when: >-
         'adding port' in _wordpress_auto_dnat.stdout or

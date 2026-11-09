@@ -1,5 +1,6 @@
 pve_dnat_bridge: vmbr0
 pve_dnat_leases: "/var/lib/misc/dnsmasq.{{ pve_dnat_bridge }}.leases"
+pve_auto_dnat_enabled: true
 
 # Keys installed for root in VMs created from the cloud-image templates
 # (px template-create / px vm-create). Same keys as the fsicos4_vms group.
