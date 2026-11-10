@@ -59,6 +59,17 @@ drupal_sites:
     modules: [bartik, honeypot, linkit, pathauto, redirect, smtp, webform]
     secrets: "{{ _drupal_legacy_secrets['ch'] }}"
 
+  # Content and the Mailchimp settings still use demo.fieldsites.se; it
+  # redirects with the path kept.
+  - name: sites
+    live: true
+    domain: www.fieldsites.se
+    redirect_domains: [fieldsites.se, demo.fieldsites.se]
+    database_name: sites
+    database_user: sites
+    modules: [antibot, editor_advanced_link, feeds, honeypot, linkit, mailchimp, media_alias_display, menu_breadcrumb, metatag, pathauto, plausible, redirect, simple_sitemap, smtp, svg, token, twig_tweak, webform]
+    secrets: "{{ _drupal_legacy_secrets['sites'] }}"
+
 # Other fields (see roles/icos.drupal2/defaults/main.yml):
 #   redirect_domains: [icos-otc.org]  # redirected to domain by the fsicos4 caddy
 #   git_version, robots_txt, database_name, database_user, database_prefix,
@@ -73,7 +84,7 @@ drupal_redirects:
 
 _drupal_legacy_secrets: >-
   {%- set out = {} -%}
-  {%- for name in ['otctest', 'no', 'otc', 'ac', 'fi', 'se', 'ch'] -%}
+  {%- for name in ['otctest', 'no', 'otc', 'ac', 'fi', 'se', 'ch', 'sites'] -%}
   {%- set v = lookup('ansible.builtin.unvault', drupal_legacy_vault ~ '/' ~ name ~ '-vault.yml') | from_yaml -%}
   {%- set _ = out.update({name: {
         'mysql_root_password': v.vault_mysql_root_password,
