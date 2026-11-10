@@ -38,6 +38,27 @@ drupal_sites:
     modules: [bartik]
     secrets: "{{ _drupal_legacy_secrets['ac'] }}"
 
+  - name: fi
+    live: true
+    domain: www.icos-finland.fi
+    redirect_domains: [icos-finland.fi]
+    modules: [bartik, linkit, pathauto, redirect, smtp]
+    secrets: "{{ _drupal_legacy_secrets['fi'] }}"
+
+  - name: se
+    live: true
+    domain: www.icos-sweden.se
+    redirect_domains: [icos-sweden.se, sweden.icos-cp.eu]
+    modules: [bartik, honeypot, linkit, pathauto, redirect, restui, smtp, toc_js, webform]
+    secrets: "{{ _drupal_legacy_secrets['se'] }}"
+
+  - name: ch
+    live: true
+    domain: www.icos-switzerland.ch
+    redirect_domains: [switzerland.icos-cp.eu]
+    modules: [bartik, honeypot, linkit, pathauto, redirect, smtp, webform]
+    secrets: "{{ _drupal_legacy_secrets['ch'] }}"
+
 # Other fields (see roles/icos.drupal2/defaults/main.yml):
 #   redirect_domains: [icos-otc.org]  # redirected to domain by the fsicos4 caddy
 #   git_version, robots_txt, database_name, database_user, database_prefix,
@@ -52,7 +73,7 @@ drupal_redirects:
 
 _drupal_legacy_secrets: >-
   {%- set out = {} -%}
-  {%- for name in ['otctest', 'no', 'otc', 'ac'] -%}
+  {%- for name in ['otctest', 'no', 'otc', 'ac', 'fi', 'se', 'ch'] -%}
   {%- set v = lookup('ansible.builtin.unvault', drupal_legacy_vault ~ '/' ~ name ~ '-vault.yml') | from_yaml -%}
   {%- set _ = out.update({name: {
         'mysql_root_password': v.vault_mysql_root_password,
