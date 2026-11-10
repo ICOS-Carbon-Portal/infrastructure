@@ -1,0 +1,5 @@
+# Managed by cpmeta-diagnostics.yml. Takes effect on the next normal restart.
+# JDK_JAVA_OPTIONS is read by the java launcher only (not jcmd), so ExecStart
+# stays as defined by the cpmeta role.
+[Service]
+Environment="JDK_JAVA_OPTIONS=-Xlog:gc*,safepoint:file={{ cpmeta_diagnostics_gc_dir }}/gc.log:time,uptime,level,tags:filecount=5,filesize=20M"

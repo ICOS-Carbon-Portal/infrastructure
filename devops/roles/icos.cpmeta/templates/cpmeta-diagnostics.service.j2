@@ -1,0 +1,12 @@
+[Unit]
+Description=Probe cpmeta and capture diagnostics on repeated failures
+After={{ cpmeta_servicename }}.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cpmeta-diagnostics
+TimeoutStartSec=150
+UMask=0077
+Nice=10
+StandardOutput=journal
+StandardError=journal
