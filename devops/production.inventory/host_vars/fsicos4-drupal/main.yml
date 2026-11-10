@@ -70,6 +70,18 @@ drupal_sites:
     modules: [antibot, editor_advanced_link, feeds, honeypot, linkit, mailchimp, media_alias_display, menu_breadcrumb, metatag, pathauto, plausible, redirect, simple_sitemap, smtp, svg, token, twig_tweak, webform]
     secrets: "{{ _drupal_legacy_secrets['sites'] }}"
 
+  - name: cp
+    live: true
+    domain: www.icos-cp.eu
+    redirect_domains: [icos-cp.eu]
+    modules: [bartik, better_exposed_filters, bootstrap, ckeditor5_plugin_pack, color_field, conflict, editor_advanced_link, honeypot, html_title, linkit, matomo, media_alias_display, media_bulk_upload, menu_breadcrumb, metatag, pathauto, readonlymode, redirect, scheduler, simple_sitemap, single_content_sync, smtp, toc_js, token, views_infinite_scroll, webform, webform_views]
+    robots_txt: cp-robots.txt
+    caddy_extra: |
+      redir /license https://data.icos-cp.eu/licence permanent
+      redir /site https://www.icos-cp.eu permanent
+      redir /site/ https://www.icos-cp.eu permanent
+    secrets: "{{ _drupal_legacy_secrets['cp'] }}"
+
 # Other fields (see roles/icos.drupal2/defaults/main.yml):
 #   redirect_domains: [icos-otc.org]  # redirected to domain by the fsicos4 caddy
 #   git_version, robots_txt, database_name, database_user, database_prefix,
@@ -84,7 +96,7 @@ drupal_redirects:
 
 _drupal_legacy_secrets: >-
   {%- set out = {} -%}
-  {%- for name in ['otctest', 'no', 'otc', 'ac', 'fi', 'se', 'ch', 'sites'] -%}
+  {%- for name in ['otctest', 'no', 'otc', 'ac', 'fi', 'se', 'ch', 'sites', 'cp'] -%}
   {%- set v = lookup('ansible.builtin.unvault', drupal_legacy_vault ~ '/' ~ name ~ '-vault.yml') | from_yaml -%}
   {%- set _ = out.update({name: {
         'mysql_root_password': v.vault_mysql_root_password,
