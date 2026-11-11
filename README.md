@@ -84,8 +84,8 @@ Reload your shell with `$ exec $SHELL -l` so the PATH change takes effect, and c
 Get the ansible-vault password from a colleague and place it in `~/.vault_password`.
 
 ## (Optionally) install just
-"Just is a handy way to save and run project-specific commands."
 
+"Just is a handy way to save and run project-specific commands."
 
 Install it by following the instructions at https://github.com/casey/just
 
@@ -93,7 +93,7 @@ Then navigate to `infrastructure/devops` and run
 
     $ just --unstable _install
 
-Once this is done, there'll be an `icos` command in `~/.local/bin/icos` that serves as a frontend CLI for all tasks in the infrastructure repo. Running the command without arguments will provide help.
+Once this is done, there'll be an `icos` command that serves as a frontend CLI for all tasks in the infrastructure repo. Running the command without arguments will provide help.
 
     $ icos
 
@@ -122,9 +122,10 @@ backups we will access these servers using ssh.
 ### Generating SSH Keys
 
 Before your SSH key can be installed on the servers, you need to generate a key pair on your local machine. 
+
 Follow the instructions below:
 
-1. `ssh-keygen -t ed25519 -C "your_email@example.com"` (replace with your actual email)
+1. `ssh-keygen -t ed25519 -C "your.email@example.com"` (replace with your actual email)
 2. Enter a strong passphrase (highly recommended for security)
 3. Locate your keys:
    - Private key: ~/.ssh/id_ed25519
@@ -203,7 +204,7 @@ Even though they are fairly detailed, they are meant more as a guide than a prec
 
 The important thing to understand is that we're dumping a postgresql database and then we're restoring it again. 
 
-sCurrently the source database is in docker, but it doesn't have to be; currently it's on another host (requiring ssh), but it doesn't have to be.
+Currently the source database is in docker, but it doesn't have to be; currently it's on another host (requiring ssh), but it doesn't have to be.
 
 #### Verify that postgres replication is working
 This step is important to perform regularly until we have a status dashboard where any problems with RDF log replication would become immediately apparent. 
@@ -225,6 +226,7 @@ The output should be:
 After a while the report will also produce a table with the latest timestamps in each of the RDF log tables.
 
 #### Retrieve database
+
 `$ ssh fsicos2 'cd /docker/rdflog && docker-compose exec -T db pg_dump -Cc --if-exists -d rdflog | gzip -c' > /tmp/rdflog_dump.gz`
 
 This command will ssh to fsicos2, then change to the rdflog directory (in order
@@ -236,24 +238,25 @@ compressed sql file which is stored as /tmp/rdflog_dump.gz on the local host.
 
 
 #### Start postgres container for rdflog
-`$ docker run -d --name rdflog -e POSTGRES_USER=rdflog -e POSTGRES_PASSWORD=p -e POSTGRES_DB=rdflog -p 127.0.0.1:2345:5432 postgres:15`
 
-This creates a Docker container on localhost that matches the Ansible setup:
+Choose a password for this container and replace `<rdflog_passsword>` with it in the following command :
 
-- Name: `rdflog`
-- Available on `127.0.0.1:2345` (matching meta's default port 2345 and avoiding conflict with a host PostgreSQL instance on 5432)
-- Database `rdflog` and superuser `rdflog` with password `p` (change `p` to match your meta `application.conf`)
+`$ docker run -d --name rdflog -e POSTGRES_USER=rdflog -e POSTGRES_PASSWORD=<rdflog_passsword> -e POSTGRES_DB=rdflog -p 127.0.0.1:2345:5432 postgres:15`
 
-*(Note: If you initialized the container without `-e POSTGRES_USER=rdflog`, PostgreSQL creates the default `postgres` superuser instead of `rdflog`. In that case, connect with `psql -U postgres` and run `CREATE ROLE rdflog WITH LOGIN ENCRYPTED PASSWORD '...'; GRANT ALL ON ALL TABLES IN SCHEMA public TO rdflog; GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rdflog;`)*
+This creates a Docker container on localhost that matches the Ansible setup (from Option 1).
+
+Remember the password because when going back to meta, make sure to put the same `<rdflog_passsword>` in `application.conf` (under cpmeta.rdfLog.credentials.password).
 
 #### Restore backup into container
-`$ zcat /tmp/rdflog_dump.gz | docker exec -i rdflog psql -U rdflog -d postgres -q`
 
 Now we extract the compressed SQL file to standard output and pipe it into the running container as user `rdflog` (connecting to the maintenance `postgres` db so `pg_dump`'s `DROP/CREATE DATABASE rdflog` can run cleanly).
 
+`$ zcat /tmp/rdflog_dump.gz | docker exec -i rdflog psql -U rdflog -d postgres -q`
+
+
 </details>
 
-#### Connect to database
+### Connect to database
 (This step is only informative, so it is ok to skip)
 
 If you don't have postgres installed on host:
@@ -269,13 +272,12 @@ Likewise, if you need to connect to the postgres database using programmatic
 means, point your program to `localhost:2345` (don't forget the port number which
 is not the default one).
 
-#### Shutdown and remove container
+### Shutdown and remove container
 When the container is not needed any more:
 `$ docker rm -f rdflog`
 
-#### Restore rdflog backup on staging
+### Restore rdflog backup on staging
 Instructions on how to restore the rdflog database into the staging environment are available in a separate [wiki page](https://github.com/ICOS-Carbon-Portal/infrastructure/wiki/Backup-Recovery)
-
 
 ## Optional step
 

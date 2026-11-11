@@ -22,14 +22,6 @@ ansible_become_pass: !vault |
   3937
 ```
 
-### What each variable does:
-- **`rdflog_db_pass`**: Any password of your choice. Ansible uses it to initialize the `rdflog` user in your local `rdflog` PostgreSQL container (`127.0.0.1:2345`). Use this same password in your local `meta` `application.conf` under `cpmeta.rdfLog.credentials.password`.
-- **`postgis_admin_pass`, `postgis_reader_pass`, `postgis_writer_pass`**: Any passwords of your choice (only needed if setting up `postgis` for the `data` service). When running `-t postgis_setup`, Ansible creates a local `postgis` container (`127.0.0.1:5438`) and sets these passwords for the `postgres` (admin), `reader`, and `writer` database roles. When `core_restore.yml` restores the production backup, it strips out `CREATE/ALTER ROLE` statements so your chosen local passwords remain intact. If you run the `data` (`cpdata`) service locally, set these same three passwords in `data`'s `application.conf` under:
-  - `cpdata.postgis.admin.password`
-  - `cpdata.postgis.reader.password`
-  - `cpdata.postgis.writer.password`
-- **`ansible_become_pass`**: Your local Linux user's `sudo` password.
-
 ### Generating `ansible_become_pass`
 1. Request the vault password from a colleague who already has access to it, and put the content in `~/.vault_password`.
 2. Generate the encrypted string (replace `your_password` with your system's `sudo` password):
