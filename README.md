@@ -466,29 +466,6 @@ Restoring from the cluster dump made with `pg_dumpall`:<br>
 
 </details>
 
-## meta
-Deploy `rdflog` on your development machine (see [rdflog](#rdflog)). Clone the `meta` repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>
-```
-cpmeta{
-    rdfLog{
-        // Default port in meta is 2345 (matches Ansible and Manual setup above)
-        server.port: 2345
-        credentials{
-            db: "rdflog"
-            user: "rdflog"
-            password: "your rdflog_db_pass from passwords.yml (Ansible) or POSTGRES_PASSWORD (Manual)"
-        }
-    }
-    citations.eagerWarmUp = false
-}
-```
-When starting `meta` for the first time, if you don't have RDF storage folder preserved from another machine/drive, the service will go into a "fresh init" mode of initialization from RDF logs, with no indices created, neither RDF4J nor CP ones. The service will issue a warning. This mode can also be triggered by a local config:
-```
-cpmeta.rdfStorage.recreateAtStartup = true
-```
-You'll need to restart the service after the "fresh init". Initialization may take long time (~1 hour)
-
-
 # Getting started (front end apps)
 ## Nodejs and npm
 Needed for running the front-end build tools.
