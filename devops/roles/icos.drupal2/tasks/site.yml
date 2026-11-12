@@ -78,6 +78,13 @@
     mode: "0600"
   no_log: true
 
+- name: Copy {{ site.name }} refresh script
+  template:
+    src: refresh-site.sh.j2
+    dest: "{{ _site_dir }}/refresh.sh"
+    mode: "0700"
+  when: site.copy_from is defined
+
 # composer.lock is a single-file bind mount, so it has to exist before
 # Compose starts. A migrated site brings its lock file from fsicos2; a new
 # site starts from the one shipped in the image. Never overwrite it.

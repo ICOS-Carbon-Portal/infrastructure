@@ -25,6 +25,8 @@ drupal_only: []
 #   robots_txt:    file in this role's files/ appended to robots.txt
 #   database_name, database_user, database_prefix: (default: icos, icos, '')
 #   caddy_extra:   extra Caddyfile directives for the site block
+#   copy_from:     name of another site; installs sites/<name>/refresh.sh,
+#                  which replaces this site with a copy of that one
 #   secrets:       dict with mysql_root_password, mysql_icos_password,
 #                  hash_salt, drupal_sync_directory
 drupal_sites: []
