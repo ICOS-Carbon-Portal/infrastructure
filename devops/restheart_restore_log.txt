@@ -1,0 +1,168 @@
+2026-11-12T13:48:38.476+0100	preparing collections to restore from
+2026-11-12T13:48:38.483+0100	reading metadata for `db.cacheForGetSpecifications` from `archive on stdin`
+2026-11-12T13:48:38.483+0100	reading metadata for `restheart._properties` from `archive on stdin`
+2026-11-12T13:48:38.483+0100	reading metadata for `sitesdb.cacheForGetStations` from `archive on stdin`
+2026-11-12T13:48:38.483+0100	reading metadata for `db.cacheForGetThemes` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.cacheForGetDataLevels` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.cacheForGetThemes` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.cacheForGetContributors` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db._properties` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.cacheForGetDataLevels` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.sitesusers` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.cacheForGetContributors` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb._properties` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.portaluse` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.cacheForGetFormats` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.cacheForGetFormats` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.users` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `restheart.acl` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `restheart.users` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.cacheForGetSpecifications` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `sitesdb.users` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.portaluse` from `archive on stdin`
+2026-11-12T13:48:38.484+0100	reading metadata for `db.cacheForGetStations` from `archive on stdin`
+2026-11-12T13:48:38.485+0100	dropping collection `db.cacheForGetContributors` before restoring
+2026-11-12T13:48:38.499+0100	restoring `db.cacheForGetContributors` from `archive on stdin`
+2026-11-12T13:48:38.510+0100	finished restoring `db.cacheForGetContributors` (280 documents, 0 failures)
+2026-11-12T13:48:38.510+0100	dropping collection `db.cacheForGetStations` before restoring
+2026-11-12T13:48:38.522+0100	restoring `db.cacheForGetStations` from `archive on stdin`
+2026-11-12T13:48:38.544+0100	finished restoring `db.cacheForGetStations` (175 documents, 0 failures)
+2026-11-12T13:48:38.545+0100	dropping collection `sitesdb.users` before restoring
+2026-11-12T13:48:38.558+0100	restoring `sitesdb.users` from `archive on stdin`
+2026-11-12T13:48:38.568+0100	finished restoring `sitesdb.users` (151 documents, 0 failures)
+2026-11-12T13:48:38.568+0100	dropping collection `db.cacheForGetSpecifications` before restoring
+2026-11-12T13:48:38.580+0100	restoring `db.cacheForGetSpecifications` from `archive on stdin`
+2026-11-12T13:48:38.591+0100	finished restoring `db.cacheForGetSpecifications` (80 documents, 0 failures)
+2026-11-12T13:48:38.591+0100	dropping collection `sitesdb.cacheForGetSpecifications` before restoring
+2026-11-12T13:48:38.603+0100	restoring `sitesdb.cacheForGetSpecifications` from `archive on stdin`
+2026-11-12T13:48:38.614+0100	finished restoring `sitesdb.cacheForGetSpecifications` (37 documents, 0 failures)
+2026-11-12T13:48:38.614+0100	dropping collection `db.cacheForGetFormats` before restoring
+2026-11-12T13:48:38.628+0100	restoring `db.cacheForGetFormats` from `archive on stdin`
+2026-11-12T13:48:38.638+0100	finished restoring `db.cacheForGetFormats` (20 documents, 0 failures)
+2026-11-12T13:48:38.638+0100	dropping collection `sitesdb.cacheForGetStations` before restoring
+2026-11-12T13:48:38.651+0100	restoring `sitesdb.cacheForGetStations` from `archive on stdin`
+2026-11-12T13:48:38.661+0100	finished restoring `sitesdb.cacheForGetStations` (20 documents, 0 failures)
+2026-11-12T13:48:38.661+0100	dropping collection `db._properties` before restoring
+2026-11-12T13:48:38.672+0100	restoring `db._properties` from `archive on stdin`
+2026-11-12T13:48:38.688+0100	finished restoring `db._properties` (15 documents, 0 failures)
+2026-11-12T13:48:38.688+0100	dropping collection `sitesdb._properties` before restoring
+2026-11-12T13:48:38.696+0100	restoring `sitesdb._properties` from `archive on stdin`
+2026-11-12T13:48:38.716+0100	finished restoring `sitesdb._properties` (11 documents, 0 failures)
+2026-11-12T13:48:38.716+0100	dropping collection `sitesdb.cacheForGetFormats` before restoring
+2026-11-12T13:48:38.730+0100	restoring `sitesdb.cacheForGetFormats` from `archive on stdin`
+2026-11-12T13:48:38.752+0100	finished restoring `sitesdb.cacheForGetFormats` (9 documents, 0 failures)
+2026-11-12T13:48:38.753+0100	dropping collection `db.cacheForGetThemes` before restoring
+2026-11-12T13:48:38.766+0100	restoring `db.cacheForGetThemes` from `archive on stdin`
+2026-11-12T13:48:38.789+0100	finished restoring `db.cacheForGetThemes` (5 documents, 0 failures)
+2026-11-12T13:48:38.789+0100	dropping collection `db.cacheForGetDataLevels` before restoring
+2026-11-12T13:48:38.803+0100	restoring `db.cacheForGetDataLevels` from `archive on stdin`
+2026-11-12T13:48:38.813+0100	finished restoring `db.cacheForGetDataLevels` (4 documents, 0 failures)
+2026-11-12T13:48:38.813+0100	dropping collection `db.users` before restoring
+2026-11-12T13:48:38.827+0100	restoring `db.users` from `archive on stdin`
+2026-11-12T13:48:38.853+0100	dropping collection `db.sitesusers` before restoring
+2026-11-12T13:48:38.861+0100	restoring `db.sitesusers` from `archive on stdin`
+2026-11-12T13:48:38.872+0100	finished restoring `db.sitesusers` (3 documents, 0 failures)
+2026-11-12T13:48:38.872+0100	dropping collection `sitesdb.portaluse` before restoring
+2026-11-12T13:48:38.884+0100	restoring `sitesdb.portaluse` from `archive on stdin`
+2026-11-12T13:48:39.018+0100	dropping collection `db.portaluse` before restoring
+2026-11-12T13:48:39.025+0100	restoring `db.portaluse` from `archive on stdin`
+2026-11-12T13:48:39.461+0100	dropping collection `restheart._properties` before restoring
+2026-11-12T13:48:39.471+0100	restoring `restheart._properties` from `archive on stdin`
+2026-11-12T13:48:39.484+0100	finished restoring `db.users` (2303 documents, 0 failures)
+2026-11-12T13:48:39.485+0100	finished restoring `restheart._properties` (3 documents, 0 failures)
+2026-11-12T13:48:39.485+0100	dropping collection `sitesdb.cacheForGetDataLevels` before restoring
+2026-11-12T13:48:39.493+0100	restoring `sitesdb.cacheForGetDataLevels` from `archive on stdin`
+2026-11-12T13:48:39.504+0100	finished restoring `sitesdb.cacheForGetDataLevels` (2 documents, 0 failures)
+2026-11-12T13:48:39.504+0100	dropping collection `restheart.users` before restoring
+2026-11-12T13:48:39.515+0100	restoring `restheart.users` from `archive on stdin`
+2026-11-12T13:48:39.527+0100	finished restoring `restheart.users` (1 document, 0 failures)
+2026-11-12T13:48:39.527+0100	dropping collection `sitesdb.cacheForGetThemes` before restoring
+2026-11-12T13:48:39.540+0100	restoring `sitesdb.cacheForGetThemes` from `archive on stdin`
+2026-11-12T13:48:39.552+0100	finished restoring `sitesdb.cacheForGetThemes` (1 document, 0 failures)
+2026-11-12T13:48:39.552+0100	dropping collection `sitesdb.cacheForGetContributors` before restoring
+2026-11-12T13:48:39.564+0100	restoring `sitesdb.cacheForGetContributors` from `archive on stdin`
+2026-11-12T13:48:39.576+0100	finished restoring `sitesdb.cacheForGetContributors` (1 document, 0 failures)
+2026-11-12T13:48:39.731+0100	dropping collection `restheart.acl` before restoring
+2026-11-12T13:48:39.738+0100	restoring `restheart.acl` from `archive on stdin`
+2026-11-12T13:48:39.749+0100	finished restoring `restheart.acl` (0 documents, 0 failures)
+2026-11-12T13:48:41.465+0100	sitesdb.portaluse  117MB
+2026-11-12T13:48:41.465+0100	     db.portaluse  143MB
+2026-11-12T13:48:41.465+0100	
+2026-11-12T13:48:43.582+0100	sitesdb.portaluse  163MB
+2026-11-12T13:48:43.582+0100	finished restoring `sitesdb.portaluse` (209624 documents, 0 failures)
+2026-11-12T13:48:44.464+0100	db.portaluse  336MB
+2026-11-12T13:48:47.465+0100	db.portaluse  611MB
+2026-11-12T13:48:50.464+0100	db.portaluse  705MB
+2026-11-12T13:48:53.465+0100	db.portaluse  793MB
+2026-11-12T13:48:56.464+0100	db.portaluse  877MB
+2026-11-12T13:48:59.464+0100	db.portaluse  957MB
+2026-11-12T13:49:02.464+0100	db.portaluse  1.01GB
+2026-11-12T13:49:05.464+0100	db.portaluse  1.09GB
+2026-11-12T13:49:08.464+0100	db.portaluse  1.18GB
+2026-11-12T13:49:11.464+0100	db.portaluse  1.26GB
+2026-11-12T13:49:14.465+0100	db.portaluse  1.33GB
+2026-11-12T13:49:17.464+0100	db.portaluse  1.41GB
+2026-11-12T13:49:20.464+0100	db.portaluse  1.48GB
+2026-11-12T13:49:23.465+0100	db.portaluse  1.56GB
+2026-11-12T13:49:26.465+0100	db.portaluse  1.63GB
+2026-11-12T13:49:29.464+0100	db.portaluse  1.70GB
+2026-11-12T13:49:32.465+0100	db.portaluse  1.77GB
+2026-11-12T13:49:35.464+0100	db.portaluse  1.85GB
+2026-11-12T13:49:38.464+0100	db.portaluse  1.94GB
+2026-11-12T13:49:41.464+0100	db.portaluse  2.02GB
+2026-11-12T13:49:44.465+0100	db.portaluse  2.10GB
+2026-11-12T13:49:47.465+0100	db.portaluse  2.19GB
+2026-11-12T13:49:50.465+0100	db.portaluse  2.27GB
+2026-11-12T13:49:53.465+0100	db.portaluse  2.36GB
+2026-11-12T13:49:56.464+0100	db.portaluse  2.44GB
+2026-11-12T13:49:59.464+0100	db.portaluse  2.53GB
+2026-11-12T13:50:02.465+0100	db.portaluse  2.61GB
+2026-11-12T13:50:05.464+0100	db.portaluse  2.69GB
+2026-11-12T13:50:08.464+0100	db.portaluse  2.78GB
+2026-11-12T13:50:11.464+0100	db.portaluse  2.86GB
+2026-11-12T13:50:14.464+0100	db.portaluse  2.94GB
+2026-11-12T13:50:17.465+0100	db.portaluse  3.03GB
+2026-11-12T13:50:20.464+0100	db.portaluse  3.11GB
+2026-11-12T13:50:23.465+0100	db.portaluse  3.19GB
+2026-11-12T13:50:26.464+0100	db.portaluse  3.27GB
+2026-11-12T13:50:29.465+0100	db.portaluse  3.35GB
+2026-11-12T13:50:32.465+0100	db.portaluse  3.44GB
+2026-11-12T13:50:35.464+0100	db.portaluse  3.52GB
+2026-11-12T13:50:38.464+0100	db.portaluse  3.61GB
+2026-11-12T13:50:41.465+0100	db.portaluse  3.69GB
+2026-11-12T13:50:44.464+0100	db.portaluse  3.77GB
+2026-11-12T13:50:47.464+0100	db.portaluse  3.85GB
+2026-11-12T13:50:50.464+0100	db.portaluse  3.94GB
+2026-11-12T13:50:53.464+0100	db.portaluse  4.02GB
+2026-11-12T13:50:56.464+0100	db.portaluse  4.10GB
+2026-11-12T13:50:58.966+0100	db.portaluse  4.17GB
+2026-11-12T13:50:58.966+0100	finished restoring `db.portaluse` (12390059 documents, 0 failures)
+2026-11-12T13:50:58.966+0100	no indexes to restore for collection `db._properties`
+2026-11-12T13:50:58.966+0100	no indexes to restore for collection `db.cacheForGetContributors`
+2026-11-12T13:50:58.966+0100	restoring indexes for collection `db.portaluse` from metadata
+2026-11-12T13:50:58.967+0100	index: &idx.IndexDocument{Options:bson.M{"name":"previewTimeserie.params.objId_ix", "v":2}, Key:bson.D{bson.E{Key:"previewTimeserie.params.objId", Value:1}}, PartialFilterExpression:(*bson.D)(nil)}
+2026-11-12T13:50:58.967+0100	index: &idx.IndexDocument{Options:bson.M{"name":"previewNetCDF.params.objId_ix", "v":2}, Key:bson.D{bson.E{Key:"previewNetCDF.params.objId", Value:1}}, PartialFilterExpression:(*bson.D)(nil)}
+2026-11-12T13:50:58.967+0100	index: &idx.IndexDocument{Options:bson.M{"name":"previewMapGraph.objId_ix", "v":2}, Key:bson.D{bson.E{Key:"previewMapGraph.objId", Value:1}}, PartialFilterExpression:(*bson.D)(nil)}
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.cacheForGetThemes`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.sitesusers`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.cacheForGetFormats`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.users`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.cacheForGetStations`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `restheart._properties`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `restheart.acl`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `restheart.users`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.cacheForGetStations`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.cacheForGetDataLevels`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.cacheForGetContributors`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb._properties`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.cacheForGetSpecifications`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.users`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.cacheForGetThemes`
+2026-11-12T13:50:58.967+0100	restoring indexes for collection `sitesdb.portaluse` from metadata
+2026-11-12T13:50:58.967+0100	index: &idx.IndexDocument{Options:bson.M{"name":"previewTimeserie.params.objId_ix", "v":2}, Key:bson.D{bson.E{Key:"previewTimeserie.params.objId", Value:1}}, PartialFilterExpression:(*bson.D)(nil)}
+2026-11-12T13:50:58.967+0100	index: &idx.IndexDocument{Options:bson.M{"name":"previewNetCDF.params.objId_ix", "v":2}, Key:bson.D{bson.E{Key:"previewNetCDF.params.objId", Value:1}}, PartialFilterExpression:(*bson.D)(nil)}
+2026-11-12T13:50:58.967+0100	index: &idx.IndexDocument{Options:bson.M{"name":"previewMapGraph.objId_ix", "v":2}, Key:bson.D{bson.E{Key:"previewMapGraph.objId", Value:1}}, PartialFilterExpression:(*bson.D)(nil)}
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.cacheForGetSpecifications`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `sitesdb.cacheForGetFormats`
+2026-11-12T13:50:58.967+0100	no indexes to restore for collection `db.cacheForGetDataLevels`
+2026-11-12T13:51:32.458+0100	12602804 document(s) restored successfully. 0 document(s) failed to restore.

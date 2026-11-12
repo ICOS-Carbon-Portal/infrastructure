@@ -304,7 +304,7 @@ You can use the development inventory together with `core.yml` and `core_restore
 
     `ansible-playbook -i dev.inventory -t restheart_setup core.yml`
 
-2. Recover restheart backup from BorgBackup:
+2. Recover restheart backup from BorgBackup (make sure to have enough RAM available before running the command):
 
     `ansible-playbook -i dev.inventory -t restheart core_restore.yml`
 

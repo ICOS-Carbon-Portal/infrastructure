@@ -4,7 +4,15 @@ In order to deploy the core services locally on your development machine, make a
 
 In `passwords.yml`, all database passwords needed to deploy the services locally are stored as variables in plaintext (and can be any arbitrary strings of your choice), while `ansible_become_pass` is your local `sudo` password encrypted with `ansible-vault`.
 
-Example of `passwords.yml`:
+### Generating `ansible_become_pass`
+1. Request the vault password from a colleague who already has access to it, and put the content in `~/.vault_password`.
+2. Generate the encrypted string (replace `your_password` with your system's `sudo` password):
+   ```bash
+   ansible-vault encrypt_string --vault-password-file ~/.vault_password 'your_password' --name 'ansible_become_pass'
+   ```
+3. Paste the output into `passwords.yml`.
+
+### Example of `passwords.yml`
 
 ```yaml
 rdflog_db_pass: "rdflog_db_pass"
@@ -22,10 +30,11 @@ ansible_become_pass: !vault |
   3937
 ```
 
-### Generating `ansible_become_pass`
-1. Request the vault password from a colleague who already has access to it, and put the content in `~/.vault_password`.
-2. Generate the encrypted string (replace `your_password` with your system's `sudo` password):
-   ```bash
-   ansible-vault encrypt_string --vault-password-file ~/.vault_password 'your_password' --name 'ansible_become_pass'
-   ```
-3. Paste the output into `passwords.yml`.
+#### Ubuntu 25.10+
+Starting with Ubuntu 25.10, `sudo` is `sudo-rs` by default. 
+
+Check with `sudo --version`: if it prints `sudo-rs`, add this line to `passwords.yml` so Ansible uses the classic `sudo` (installed as `sudo.ws`):
+
+```yaml
+ansible_become_exe: sudo.ws
+```
