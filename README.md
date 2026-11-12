@@ -97,9 +97,11 @@ Once this is done, there'll be an `icos` command that serves as a frontend CLI f
 
     $ icos
 
-As an example, the stiltweb.yml playbook can be run as
+`icos play <playbook> [args]` is a shortcut for `ansible-playbook <playbook>.yml [args]` that can be run from any directory (it always runs from `infrastructure/devops`). Any extra arguments are passed on to `ansible-playbook`. This is useful for the Ansible setup of [rdflog](#rdflog), [restheart](#restheart) and [postgis](#postgis) further down, for example:
 
-    $ icos play stiltweb -DC
+    $ icos play core -i dev.inventory -t rdflog
+
+**IMPORTANT** - `icos` uses `production.inventory` by default. When setting up your local development environment, always pass `-i dev.inventory`, otherwise the playbook will run against the production servers.
 
 ## Install java and scala
 
@@ -189,9 +191,13 @@ You can use the development inventory together with `core.yml` and `core_restore
 
     `ansible-playbook -i dev.inventory -t rdflog core.yml`
 
+    or, if you installed [just](#optionally-install-just), from any directory: `icos play core -i dev.inventory -t rdflog`
+
 4. Recover rdflog backup from BorgBackup (configured via `corebackup_host` in `dev.inventory/core.yml`, which defaults to `cdb`):
 
     `ansible-playbook -i dev.inventory -t rdflog core_restore.yml`
+
+    or with just: `icos play core_restore -i dev.inventory -t rdflog`
 
 ### Option 2 : Manual setup
 
@@ -304,9 +310,13 @@ You can use the development inventory together with `core.yml` and `core_restore
 
     `ansible-playbook -i dev.inventory -t restheart_setup core.yml`
 
+    or with just: `icos play core -i dev.inventory -t restheart_setup`
+
 2. Recover restheart backup from BorgBackup (make sure to have enough RAM available before running the command):
 
     `ansible-playbook -i dev.inventory -t restheart core_restore.yml`
+
+    or: `icos play core_restore -i dev.inventory -t restheart`
 
 ### Option 2 : Manual setup
 
@@ -429,9 +439,13 @@ You can use the development inventory together with `core.yml` and `core_restore
 
     `ansible-playbook -i dev.inventory -t postgis_setup core.yml`
 
+    or with just: `icos play core -i dev.inventory -t postgis_setup`
+
 3. Recover postgis' backup from BorgBackup:
 
     `ansible-playbook -i dev.inventory -t postgis core_restore.yml`
+
+    or: `icos play core_restore -i dev.inventory -t postgis`
 
 ### Option 2 : Manual setup
 
@@ -546,7 +560,7 @@ Otherwise, set it up from scratch:
     }
     ```
 
-Once `meta` is running, it is available at https://metalocal.icos-cp.eu.
+Once `meta` and `data` are running, they are available at https://metalocal.icos-cp.eu and https://datalocal.icos-cp.eu.
 
 
 # Useful commands
