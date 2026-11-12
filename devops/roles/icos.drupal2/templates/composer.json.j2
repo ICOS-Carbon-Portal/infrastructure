@@ -16,7 +16,9 @@
         "drupal/core-composer-scaffold": "^{{ drupal_version }}",
         "drupal/core-recommended": "^{{ drupal_version }}",
         "drupal/coffee": "^2.0",
+{% if drupal_version is version('11', '<') %}
         "drupal/seven": "^1.0",
+{% endif %}
         {{ '"drupal/antibot": "^2.0",'                  if "antibot" in drupal_modules }}
         {{ '"drupal/better_exposed_filters": "^7.0",'   if "better_exposed_filters" in drupal_modules }}
         {{ '"drupal/bootstrap": "^5.0",'                if "bootstrap" in drupal_modules }}
@@ -67,6 +69,7 @@
             "composer/installers": true,
             "drupal/core-project-message": true,
             "drupal/core-composer-scaffold": true,
+            "symfony/runtime": true,
             "wikimedia/composer-merge-plugin": true
         }
     },
