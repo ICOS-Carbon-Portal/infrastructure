@@ -88,6 +88,7 @@ drupal_sites:
     live: true
     domain: demo.icos-cp.eu
     copy_from: cp
+    env_badge: demo
     modules: [bartik, better_exposed_filters, bootstrap, ckeditor5_plugin_pack, color_field, conflict, editor_advanced_link, honeypot, html_title, linkit, matomo, media_alias_display, media_bulk_upload, menu_breadcrumb, metatag, pathauto, readonlymode, redirect, scheduler, simple_sitemap, single_content_sync, smtp, toc_js, token, views_infinite_scroll, webform, webform_views]
     caddy_extra: |
       header X-Robots-Tag "noindex, nofollow"
@@ -96,7 +97,7 @@ drupal_sites:
 # Other fields (see roles/icos.drupal2/defaults/main.yml):
 #   redirect_domains: [icos-otc.org]  # redirected to domain by the fsicos4 caddy
 #   git_version, robots_txt, database_name, database_user, database_prefix,
-#   caddy_extra, copy_from
+#   caddy_extra, copy_from, env_badge
 
 # Retired sites whose domains now redirect elsewhere. Every path goes to `to`;
 # the fsicos4 caddy serves these, the VM is not involved. `code` is passed to
