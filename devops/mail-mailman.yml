@@ -1,14 +1,14 @@
-# Build mailman images
-#   icos play mailman mailman_build
+# Deploy mailman (config files, image build, containers, spam timer)
+#   icos play mailman -t mailman
 #
-# Copy build files but do not build nor start containers.
-#   icos play mailman mailman_build -edocker_do_build=False
+# Redeploy only the spam deletion scripts and timer
+#   icos play mailman -t mailman_delete_spam
 #
 # Redeploy backup scripts
-#   icos play mailman bbclient
+#   icos play mailman -t bbclient
 #
 # Redeploy proxy configuration
-#   icos play mailman proxy
+#   icos play mailman -t proxy
 
 - hosts: fsicos2
   vars:
