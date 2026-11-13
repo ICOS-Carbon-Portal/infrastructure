@@ -1,0 +1,13 @@
+# systemd service shared by both timers; MODE is replaced with daily/full.
+_dataappstorage_sync_service: |
+  [Unit]
+  Description=Push dataAppStorage to {{ dataappstorage_sync_dest_host }} (MODE)
+  After=network-online.target nebula.service
+  Wants=network-online.target
+
+  [Service]
+  Type=oneshot
+  ExecStart={{ dataappstorage_sync_script }} MODE
+  # Only read from the data disk when nothing else (cpdata) needs it.
+  IOSchedulingClass=idle
+  Nice=19

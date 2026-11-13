@@ -17,3 +17,8 @@
 
     - role: icos.nfs4
       tags: nfs
+
+    # Daily push of new dataAppStorage files to fsicos4:/tank/dataAppStorage
+    #   icos play fsicos2 dataappstorage_sync
+    - role: icos.dataappstorage_sync
+      tags: dataappstorage_sync

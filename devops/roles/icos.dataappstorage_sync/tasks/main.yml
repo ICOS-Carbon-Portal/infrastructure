@@ -1,0 +1,71 @@
+- name: Install sync script
+  template:
+    src: dataappstorage-sync.sh.j2
+    dest: "{{ dataappstorage_sync_script }}"
+    mode: "0755"
+
+- name: Create ssh key used for the sync
+  community.crypto.openssh_keypair:
+    path: "{{ dataappstorage_sync_key }}"
+    type: ed25519
+    comment: "dataappstorage-sync@{{ inventory_hostname }}"
+  register: _dataappstorage_sync_key
+
+# The key can only run rsync, write-only, inside the destination directory, and
+# only from the source host's address.
+- name: Authorize the ssh key at the destination
+  authorized_key:
+    user: root
+    key: "{{ _dataappstorage_sync_key.public_key }}"
+    key_options: >-
+      command="/usr/bin/rrsync -wo {{ dataappstorage_sync_dest_dir }}",restrict,from="{{ dataappstorage_sync_from }}"
+  delegate_to: "{{ dataappstorage_sync_dest_host }}"
+
+- name: Read the destination's ssh host key
+  slurp:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+  register: _dataappstorage_sync_hostkey
+  delegate_to: "{{ dataappstorage_sync_dest_host }}"
+
+- name: Add the destination's ssh host key to known_hosts
+  known_hosts:
+    path: /root/.ssh/known_hosts
+    name: "{{ dataappstorage_sync_dest_hostname }}"
+    key: >-
+      {{ dataappstorage_sync_dest_hostname }}
+      {{ (_dataappstorage_sync_hostkey.content | b64decode).split()[0:2] | join(' ') }}
+
+- name: Install daily sync timer
+  include_role:
+    name: icos.timer2
+  vars:
+    timer_name: dataappstorage-sync-daily
+    timer_config: |
+      [Unit]
+      Description=Daily push of new dataAppStorage files to {{ dataappstorage_sync_dest_host }}
+
+      [Timer]
+      OnCalendar={{ dataappstorage_sync_daily_calendar }}
+      RandomizedDelaySec=15min
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    timer_service: "{{ _dataappstorage_sync_service | replace('MODE', 'daily') }}"
+
+- name: Install weekly full sync timer
+  include_role:
+    name: icos.timer2
+  vars:
+    timer_name: dataappstorage-sync-full
+    timer_config: |
+      [Unit]
+      Description=Weekly full push of dataAppStorage to {{ dataappstorage_sync_dest_host }}
+
+      [Timer]
+      OnCalendar={{ dataappstorage_sync_full_calendar }}
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    timer_service: "{{ _dataappstorage_sync_service | replace('MODE', 'full') }}"
