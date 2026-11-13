@@ -1,0 +1,9 @@
+# Deliberately does not run the normal cpmeta role (which includes a restart).
+- hosts: core_host
+  become: true
+  tasks:
+    - name: Install cpmeta diagnostics only
+      import_role:
+        name: icos.cpmeta
+        tasks_from: diagnostics.yml
+      tags: cpmeta_diagnostics
