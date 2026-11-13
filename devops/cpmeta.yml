@@ -1,5 +1,12 @@
 - hosts: core_server
   tags: server
+  pre_tasks:
+    - name: Check that meta may be deployed to this inventory
+      assert:
+        that: meta_deploy_permitted
+      tags:
+        - always
+
   tasks:
     - name: Setup cpmeta proxy
       tags: proxy
@@ -10,6 +17,12 @@
 - hosts: core_host
   tags: host
   pre_tasks:
+    - name: Check that meta may be deployed to this inventory
+      assert:
+        that: meta_deploy_permitted
+      tags:
+        - always
+
     - name: Setup java
       tags:
         - java
