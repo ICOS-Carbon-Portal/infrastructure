@@ -16,7 +16,9 @@
         "drupal/core-composer-scaffold": "^{{ drupal_version }}",
         "drupal/core-recommended": "^{{ drupal_version }}",
         "drupal/coffee": "^2.0",
+{% if drupal_version is version('11', '<') %}
         "drupal/seven": "^1.0",
+{% endif %}
         {{ '"drupal/antibot": "^2.0",'                  if "antibot" in drupal_modules }}
         {{ '"drupal/better_exposed_filters": "^7.0",'   if "better_exposed_filters" in drupal_modules }}
         {{ '"drupal/bootstrap": "^5.0",'                if "bootstrap" in drupal_modules }}
@@ -57,6 +59,12 @@
         "wikimedia/composer-merge-plugin": "^2.0"
     },
     "conflict": {
+{% if drupal_version is version('11', '<') %}
+{# Robo 5.2.1+ calls Application::addCommand(), which needs Symfony Console
+   7.4, but still allows Symfony 6. Drupal 10 uses Symfony 6.4, so drush
+   breaks with it. #}
+        "consolidation/robo": ">=5.2.1",
+{% endif %}
         "drupal/drupal": "*"
     },
     "minimum-stability": "stable",
@@ -67,6 +75,7 @@
             "composer/installers": true,
             "drupal/core-project-message": true,
             "drupal/core-composer-scaffold": true,
+            "symfony/runtime": true,
             "wikimedia/composer-merge-plugin": true
         }
     },
@@ -87,7 +96,8 @@
         "merge-plugin": {
             "include": [
                 "web/modules/contrib/webform/composer.libraries.json",
-                "web/modules/contrib/dropzonejs/composer.libraries.json"
+                "web/modules/contrib/dropzonejs/composer.libraries.json",
+                "web/modules/contrib/color_field/composer.libraries.json"
             ]
         },
         "installer-paths": {

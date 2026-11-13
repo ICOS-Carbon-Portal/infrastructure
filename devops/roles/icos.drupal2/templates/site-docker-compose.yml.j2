@@ -2,7 +2,7 @@ name: drupal_{{ site.name }}
 
 services:
   drupal:
-    image: {{ drupal_image }}
+    image: {{ _site_image }}
     container_name: drupal_{{ site.name }}
     restart: unless-stopped
     depends_on:

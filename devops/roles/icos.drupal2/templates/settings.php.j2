@@ -29,5 +29,9 @@ $settings['config_sync_directory'] = {{ php(site.secrets.drupal_sync_directory) 
 $settings['update_free_access'] = false;
 $settings['file_private_path'] = '/var/www/private';
 $settings['state_cache'] = true;
+{% if site.env_badge is defined %}
+// Striped bar and badge on every page (cp_theme_d10), for test copies.
+$settings['env_badge'] = {{ php(site.env_badge) }};
+{% endif %}
 
 ini_set('memory_limit', '256M');

@@ -3,6 +3,8 @@
     _site_dir: "{{ drupal_home }}/sites/{{ site.name }}"
     _site_container: "drupal_{{ site.name }}"
     _site_db_container: "drupal_{{ site.name }}_db"
+    _site_drupal_version: "{{ site.drupal_version | default(drupal_version) }}"
+    _site_image: "drupal:{{ site.drupal_version | default(drupal_version) }}-php{{ site.php_version | default(drupal_php_version) }}"
 
 - name: Create {{ site.name }} directory
   file:
@@ -60,6 +62,7 @@
     mode: "0644"
   vars:
     drupal_modules: "{{ site.modules }}"
+    drupal_version: "{{ _site_drupal_version }}"
     robots_txt: "{{ site.robots_txt | default('') }}"
   register: _site_composer_json
 
@@ -78,6 +81,13 @@
     mode: "0600"
   no_log: true
 
+- name: Copy {{ site.name }} refresh script
+  template:
+    src: refresh-site.sh.j2
+    dest: "{{ _site_dir }}/refresh.sh"
+    mode: "0700"
+  when: site.copy_from is defined
+
 # composer.lock is a single-file bind mount, so it has to exist before
 # Compose starts. A migrated site brings its lock file from fsicos2; a new
 # site starts from the one shipped in the image. Never overwrite it.
@@ -89,9 +99,9 @@
 - name: Seed {{ site.name }} composer.lock from the image
   when: not _site_lock.stat.exists
   block:
-    - name: Read composer.lock from {{ drupal_image }}
+    - name: Read composer.lock from {{ _site_image }}
       command:
-        argv: [docker, run, --rm, --pull, always, --entrypoint, cat, "{{ drupal_image }}", /opt/drupal/composer.lock]
+        argv: [docker, run, --rm, --pull, always, --entrypoint, cat, "{{ _site_image }}", /opt/drupal/composer.lock]
       register: _site_image_lock
       changed_when: false
 
@@ -129,7 +139,8 @@
 
 # The vendor and web volumes start out with only what the image ships (no
 # drush, no contrib modules). Install what composer.lock pins; a no-op when the
-# volumes already match it.
+# volumes already match it. After a drupal_version change the lock no longer
+# satisfies composer.json; with drupal_update the full update below fixes it.
 - name: Composer install {{ site.name }}
   command: docker exec {{ _site_container }} composer install --no-interaction
   register: _site_composer_install
@@ -137,6 +148,7 @@
   failed_when:
     - _site_composer_install.rc != 0
     - '"is not present in the lock file" not in _site_composer_install.stderr'
+    - not (drupal_update | bool and "does not satisfy your constraint" in _site_composer_install.stderr)
 
 # A new site starts with the image's composer.lock, which lacks the site's
 # modules and drush; a migrated site's lock lacks modules added since. Resolve
@@ -148,7 +160,8 @@
     _site_missing_packages: >-
       {{ _site_composer_install.stderr
          | regex_findall('Required (?:\(in require-dev\) )?package "([^"]+)" is not present in the lock file') }}
-  when: _site_composer_install.rc != 0
+  # Without package names composer would update everything.
+  when: _site_composer_install.rc != 0 and _site_missing_packages | length > 0
   register: _site_composer_lock_update
   changed_when: true
 
