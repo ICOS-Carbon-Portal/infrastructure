@@ -59,6 +59,12 @@
         "wikimedia/composer-merge-plugin": "^2.0"
     },
     "conflict": {
+{% if drupal_version is version('11', '<') %}
+{# Robo 5.2.1+ calls Application::addCommand(), which needs Symfony Console
+   7.4, but still allows Symfony 6. Drupal 10 uses Symfony 6.4, so drush
+   breaks with it. #}
+        "consolidation/robo": ">=5.2.1",
+{% endif %}
         "drupal/drupal": "*"
     },
     "minimum-stability": "stable",
