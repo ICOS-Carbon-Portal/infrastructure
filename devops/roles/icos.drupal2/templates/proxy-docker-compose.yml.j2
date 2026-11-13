@@ -11,6 +11,10 @@ services:
       # Mount the directory, not the file: template replaces the Caddyfile
       # atomically, which a single-file bind mount would not see.
       - ./conf:/etc/caddy:ro
+    # No DNS search domain. Otherwise, while a site container is being
+    # recreated, "cp" resolves through the VM's search domain to
+    # cp.icos-cp.eu (fsicos2), and Caddy keeps reusing those connections.
+    dns_search: .
     networks:
       - {{ drupal_network_name }}
 
