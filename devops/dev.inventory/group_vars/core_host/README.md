@@ -6,9 +6,9 @@ In `passwords.yml`, all database passwords needed to deploy the services locally
 
 ### Generating `ansible_become_pass`
 1. Request the vault password from a colleague who already has access to it, and put the content in `~/.vault_password`.
-2. Generate the encrypted string (replace `your_password` with your system's `sudo` password):
+2. Generate the encrypted string; when prompted to enter a variable name, enter `ansible_become_pass`, then enter your system's sudo password:
    ```bash
-   ansible-vault encrypt_string --vault-password-file ~/.vault_password 'your_password' --name 'ansible_become_pass'
+   ansible-vault encrypt_string --vault-password-file ~/.vault_password --prompt
    ```
 3. Paste the output into `passwords.yml`.
 
@@ -23,11 +23,11 @@ postgis_writer_pass: "writer_pass"
 
 ansible_become_pass: !vault |
   $ANSIBLE_VAULT;1.1;AES256
-  64363464653533656636366538626538613330363264333436373565316266343832313933333766
-  3763336530636265663465306665393531626264353535340a313033363630333430386462626262
-  64643363373464363166333034666637353432316137343138313131656637346337363435663834
-  3139356666643839660a613662306632666637303731343731366132396538396339383534333837
-  3937
+  34303064313562653264373438666230326665313632656234633765393930323866316134653062
+  3462306362333836343037656430313838303862663635640a333534303035623636643234326139
+  32643730653832643437396638353634306565663134386430646230663938373234653135653236
+  6566626239656238320a303663363564636462386639363363313039313436646531303739306431
+  6236
 ```
 
 #### Ubuntu 25.10+
