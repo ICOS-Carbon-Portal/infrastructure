@@ -3,7 +3,6 @@ drupal_http_port: 80
 
 drupal_version: "10.6"
 drupal_php_version: "8.3"
-drupal_image: "drupal:{{ drupal_version }}-php{{ drupal_php_version }}"
 # fsicos2 runs 11.6, a short-term release. Sites are moved with
 # mariadb-dump/import, so the new VM can start on the current LTS.
 drupal_mariadb_image: mariadb:11.8
@@ -22,9 +21,17 @@ drupal_only: []
 #   domain:        canonical domain, the only one Drupal answers to
 #   modules:       contrib modules, used to build composer.json
 #   git_version:   branch/tag of drupal_git_repo (default: master)
+#   drupal_version: core version for this site (default: drupal_version);
+#                  with php_version (default: drupal_php_version), selects
+#                  the drupal:<version>-php<php> image. To
+#                  move a site to a new major, uninstall what the new core
+#                  drops, set this and deploy it with -e drupal_update=true
 #   robots_txt:    file in this role's files/ appended to robots.txt
 #   database_name, database_user, database_prefix: (default: icos, icos, '')
 #   caddy_extra:   extra Caddyfile directives for the site block
+#   env_badge:     label of the test-site badge shown by cp_theme_d10
+#   copy_from:     name of another site; installs sites/<name>/refresh.sh,
+#                  which replaces this site with a copy of that one
 #   secrets:       dict with mysql_root_password, mysql_icos_password,
 #                  hash_salt, drupal_sync_directory
 drupal_sites: []

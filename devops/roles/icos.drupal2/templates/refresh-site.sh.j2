@@ -1,0 +1,52 @@
+#!/bin/bash
+# {{ ansible_managed }}
+#
+# Replace the {{ site.name }} site with a fresh copy of {{ site.copy_from }}:
+# database, uploaded files, libraries and composer.lock. {{ site.copy_from }}
+# keeps running and is only read. Everything in {{ site.name }} is lost.
+#
+#   {{ drupal_home }}/sites/{{ site.name }}/refresh.sh
+set -Eeuo pipefail
+
+from={{ site.copy_from | quote }}
+to={{ site.name | quote }}
+sites={{ drupal_home | quote }}/sites
+
+if [[ -t 0 ]]; then
+  read -r -p "Replace $to with a copy of $from? [y/N] " answer
+  [[ $answer == [yY] ]] || exit 1
+fi
+
+restart() { (cd "$sites/$to/docker" && docker compose start drupal) || true; }
+trap restart EXIT
+
+echo "=== Stopping $to"
+(cd "$sites/$to/docker" && docker compose stop drupal)
+
+echo "=== Copying the $from database"
+db_sh='MYSQL_PWD="$MARIADB_PASSWORD"; export MYSQL_PWD'
+docker exec "drupal_${to}_db" sh -c "$db_sh"'
+  mariadb -u"$MARIADB_USER" -e "DROP DATABASE IF EXISTS \`$MARIADB_DATABASE\`; CREATE DATABASE \`$MARIADB_DATABASE\`"'
+docker exec "drupal_${from}_db" sh -c "$db_sh"'
+  mariadb-dump -u"$MARIADB_USER" --single-transaction --routines --triggers "$MARIADB_DATABASE"' \
+  | docker exec -i "drupal_${to}_db" sh -c "$db_sh"'
+  mariadb -u"$MARIADB_USER" "$MARIADB_DATABASE"'
+
+echo "=== Copying the $from files"
+for dir in files/default/files files/private files/repo libraries; do
+  rsync -a --delete "$sites/$from/$dir/" "$sites/$to/$dir/"
+done
+# composer.lock is a single-file bind mount: write it in place.
+cat "$sites/$from/composer/composer.lock" > "$sites/$to/composer/composer.lock"
+
+echo "=== Starting $to"
+trap - EXIT
+restart
+docker exec "drupal_$to" composer install --no-interaction
+docker exec "drupal_$to" drush updb -y
+docker exec "drupal_$to" drush cset -y readonlymode.settings enabled 0 2>/dev/null || true
+docker exec "drupal_$to" drush maint:set 0
+docker exec "drupal_$to" drush cr
+# Drush cannot clear Apache's OPcache.
+docker restart "drupal_$to" >/dev/null
+echo "=== $to is now a copy of $from"
