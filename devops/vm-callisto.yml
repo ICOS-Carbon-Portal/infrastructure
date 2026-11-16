@@ -140,6 +140,19 @@
       docker_periodic_cleanup: true
       docker_prevent_upgrade: true
 
+    - role: icos.users
+      tags: claudio
+      user_conf:
+        create_users:
+          - name: claudio
+            shell: /bin/bash
+            groups: [docker]
+            sudopwless: true
+            # A string or a list of public keys.
+            key: >-
+              {{ vault_claudio_ssh if vault_claudio_ssh is string
+                 else vault_claudio_ssh | join('\n') }}
+
     - role: icos.filedrop
       tags: filedrop
       filedrop_data_home: /ute/filedrop
