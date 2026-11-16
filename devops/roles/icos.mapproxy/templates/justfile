@@ -51,16 +51,17 @@ rollback layer generation:
 verify:
     #!/usr/bin/env python3
     import sqlite3, sys, urllib.request
-    zoom, col, row = ((mapproxy_verify_tile.zoom)), ((mapproxy_verify_tile.col)), ((mapproxy_verify_tile.row))
     failed = False
     {% for layer in mapproxy_layers %}
+    {% set tile = mapproxy_grids[layer.grid].verify_tile %}
+    zoom, col, row = ((tile.zoom)), ((tile.col)), ((tile.row))
     db = sqlite3.connect("file:{{data}}/((layer.dir))/current.gpkg?mode=ro", uri=True)
     stored = db.execute(
         "SELECT tile_data FROM ((layer.table_name)) WHERE zoom_level=? AND tile_column=? AND tile_row=?",
         (zoom, col, row),
     ).fetchone()[0]
-    served = urllib.request.urlopen(f"http://localhost:((mapproxy_port))/wmts/((layer.name))/((mapproxy_grid.name))/{zoom}/{col}/{row}.png").read()
-    print("((layer.name)):", "OK" if served == stored else "DIFFERENT")
+    served = urllib.request.urlopen(f"http://localhost:((mapproxy_port))/wmts/((layer.name))/((layer.grid))/{zoom}/{col}/{row}.png").read()
+    print("((layer.dir)):", "OK" if served == stored else "DIFFERENT")
     failed |= served != stored
     {% endfor %}
     sys.exit(failed)
