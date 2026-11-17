@@ -1,0 +1,8 @@
+ICOS Update to latest STILT version -> 752, November 2026
+
+original change description form STILT SVN
+r752 | cgerbig | 2024-12-02 12:46:38 +0000 (Mon, 02 Dec 2024) | 3 lines
+- Bugfix by Mike Galkowski in getmetfile.r related to short (1h) runs from trajwind.r
+  trajwind code failed for the 1st day of month at 01 and 02 UTC
+
+This change does not affect us, since we have a minimum run of one day (24 hours)
