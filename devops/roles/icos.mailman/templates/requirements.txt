@@ -1,6 +1,6 @@
 beautifulsoup4==4.12.3
 mailmanclient==3.3.5
-requests==2.32.3
+requests==2.33.0
 sacremoses==0.1.1
 sentencepiece==0.2.0
 transformers==4.48.1
