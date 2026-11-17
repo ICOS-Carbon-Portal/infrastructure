@@ -1,11 +1,5 @@
 # Deploy eurocom website
 #  icos play callisto eurocom
-#
-# Deploy a new filedrop jar file
-#  icos play callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
-#
-# Deploy filedrop website
-#  icos play callisto filedrop -lfsicos3
 
 - hosts: fsicos3
   vars:
@@ -74,6 +68,8 @@
             path: "/ute/eurocom_web_root"
             source: "/pool/ute/eurocom_web_root"
             type: disk
+          # Files left by the retired filedrop service. Remove once they are
+          # no longer needed.
           filedrop:
             path: "/ute/filedrop"
             source: "/pool/ute/filedrop"
@@ -107,16 +103,6 @@
       eurocom_data_home: /data/project/eurocom
 
   tasks:
-    - name: Proxy filedrop
-      tags: filedrop
-      include_role:
-        name: icos.filedrop
-        tasks_from: proxy
-      vars:
-        nginxsite_name: filedrop
-        filedrop_domain: filedrop.icos-cp.eu
-        filedrop_host: callisto.lxd
-
     - name: Proxy jupyter
       tags: jupyter
       include_role:
@@ -152,10 +138,6 @@
             key: >-
               {{ vault_claudio_ssh if vault_claudio_ssh is string
                  else vault_claudio_ssh | join('\n') }}
-
-    - role: icos.filedrop
-      tags: filedrop
-      filedrop_data_home: /ute/filedrop
 
     - role: icos.jupyter
       tags: jupyter
@@ -214,13 +196,3 @@
 
         echo "Compacting"
         {{ bbclient_all }} compact --verbose
-
-  tasks:
-    - name: Port forward for filedrop
-      tags: iptables
-      iptables_raw:
-        name: forward_filedrop
-        table: nat
-        rules: >-
-          -A PREROUTING -p tcp --dport {{ filedrop_port }}
-          -j DNAT --to-destination 127.0.0.1:{{ filedrop_port }}
