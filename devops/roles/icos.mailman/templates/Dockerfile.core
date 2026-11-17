@@ -1,1 +1,7 @@
 FROM maxking/mailman-core:{{ mailman_version }}
+
+# Munged From: display name becomes "[list] name" instead of "name via list".
+# Fails the build if upstream changes the line, so the patch can't silently stop applying.
+RUN dmarc_py=$(python3 -c 'import mailman.handlers.dmarc as m; print(m.__file__)') \
+ && sed -i "s/_('\${realname} via \${mlist.display_name}')/_('[\${mlist.display_name}] \${realname}')/" "$dmarc_py" \
+ && grep -qF "_('[\${mlist.display_name}] \${realname}')" "$dmarc_py"
