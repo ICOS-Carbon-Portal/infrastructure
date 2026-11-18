@@ -10,11 +10,19 @@ The main entry point is [this justfile](./justfile) and the support services are
 Before you get started, install these tools.
 
 ### Tools needed:
-- [just](https://github.com/casey/just)
+- [just](https://github.com/casey/just#installation)
 - [LXD/LXC](https://ubuntu.com/server/docs/lxd-containers)
 - nginx
 - mkcert
 - borgbackup
+
+On Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install just nginx mkcert libnss3-tools borgbackup
+sudo snap install lxd
+```
 
 ### Manual preparation
 - Clone infrastructure, data and meta repositories.
@@ -59,7 +67,7 @@ domains. Unfortunately nginx must currently be run from outside of the container
 2. Change directory to the nginx folder, then run the `make_certs.sh` script.
 3. Place nginx config in `/etc/nginx/conf.d` and reload nginx, after testing the config:
 ```bash
-sudo mv nginx.conf /etc/nginx/conf.d
+sudo mv nginx.conf /etc/nginx/conf.d/nginx.conf
 sudo nginx -t
 sudo systemctl reload nginx
 ```
