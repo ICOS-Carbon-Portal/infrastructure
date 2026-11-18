@@ -3,7 +3,7 @@ mailmanclient==3.3.5
 requests==2.32.3
 sacremoses==0.1.1
 sentencepiece==0.2.0
-transformers==4.48.1
+transformers==5.10.1
 
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.5.1
