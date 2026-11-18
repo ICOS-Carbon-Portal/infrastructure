@@ -5,3 +5,12 @@ FROM maxking/mailman-core:{{ mailman_version }}
 RUN dmarc_py=$(python3 -c 'import mailman.handlers.dmarc as m; print(m.__file__)') \
  && sed -i "s/_('\${realname} via \${mlist.display_name}')/_('[\${mlist.display_name}] \${realname}')/" "$dmarc_py" \
  && grep -qF "_('[\${mlist.display_name}] \${realname}')" "$dmarc_py"
+
+# certifi/eMudhra fix: distrust emSign G3/C1/C3 roots, upgrade pip and certifi
+RUN sed -i \
+        -e 's|^mozilla/emSign_ECC_Root_CA_-_G3.crt$|!&|' \
+        -e 's|^mozilla/emSign_Root_CA_-_C1.crt$|!&|' \
+        -e 's|^mozilla/emSign_ECC_Root_CA_-_C3.crt$|!&|' \
+        /etc/ca-certificates.conf \
+    && update-ca-certificates
+RUN python3 -m pip install --no-cache-dir -U "pip>=26.2.2" "certifi>=2026.10.19"

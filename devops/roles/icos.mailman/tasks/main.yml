@@ -21,7 +21,7 @@
       src: mailman-extra.cfg
     - dest: "{{ mailman_volume_web }}"
       src: settings_local.py
-    - dest: "{{ mailman_volume_web }}"
+    - dest: "{{ mailman_home }}/build/mailman-web/Dockerfile"
       src: Dockerfile.web
     - dest: "{{ mailman_home }}/build/mailman-core/Dockerfile"
       src: Dockerfile.core
