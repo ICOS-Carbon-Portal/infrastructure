@@ -1,11 +1,11 @@
 - name: Don't create timer script in /etc/systemd/system
   assert:
-    that: timer_home != "/etc/systemd/systemd"
+    that: timer_home != "/etc/systemd/system"
   changed_when: no
   when: timer_content is defined
 
 - name: Create home directory
-  when: timer_home != "/etc/systemd/systemd"
+  when: timer_home != "/etc/systemd/system"
   file:
     path: "{{ timer_home }}"
     state: directory
