@@ -1,0 +1,11 @@
+[Unit]
+Description=Check cpmeta every 15 seconds
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=15s
+AccuracySec=1s
+Unit=cpmeta-diagnostics.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,139 @@
+#!/usr/bin/python3
+"""Bounded, single-instance collector; systemd serializes timer invocations."""
+import datetime
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import time
+
+ROOT = Path({{ cpmeta_diagnostics_dir | to_json }})
+URL = {{ cpmeta_diagnostics_probe_url | to_json }}
+HOST = {{ cpmeta_diagnostics_probe_host | to_json }}
+SERVICE = {{ cpmeta_servicename | to_json }}
+USER = {{ cpmeta_user | to_json }}
+JCMD = {{ cpmeta_diagnostics_jcmd | to_json }}
+RETENTION = {{ cpmeta_diagnostics_retention_days | int }} * 86400
+MIN_UPTIME = {{ cpmeta_diagnostics_min_uptime | int }}
+FAILURES = 3
+COOLDOWN = 600
+os.umask(0o077)
+
+
+def run(args, timeout=10):
+    try:
+        result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+        return result.returncode, result.stdout + result.stderr
+    except subprocess.TimeoutExpired:
+        return 124, 'Diagnostic command timed out\n'
+    except OSError as exc:
+        return 127, str(exc) + '\n'
+
+
+def main_pid():
+    _, pid = run(['systemctl', 'show', SERVICE, '--property=MainPID', '--value'])
+    pid = pid.strip()
+    return pid if pid.isdigit() and int(pid) > 0 else None
+
+
+def uptime(pid):
+    """Seconds since the JVM started, or None if unknown."""
+    code, out = run(['ps', '-o', 'etimes=', '-p', pid])
+    out = out.strip()
+    return int(out) if code == 0 and out.isdigit() else None
+
+
+def probe():
+    """Return (state, details); state is healthy, down, missing or stalled.
+
+    Only "stalled" (timeouts, broken or failed responses from a listening
+    cpmeta) counts towards a capture. "down" (connection refused: stopped,
+    restarting or rebuilding its index before binding) and "missing" (the probe
+    object is gone) say nothing about a stall.
+    """
+    code, output = run(['curl', '--noproxy', '*', '-sS', '-o', '/dev/null',
+                        '--connect-timeout', '3', '--max-time', '5',
+                        '-H', 'Host: ' + HOST, '-w', '%{http_code} %{time_total}', URL], 7)
+    fields = output.split()
+    status = fields[0] if fields else ''
+    details = {'curl_exit': code, 'result': output.strip()}
+    if code == 7:
+        return 'down', details
+    if code == 0 and status == '200':
+        return 'healthy', details
+    if code == 0 and status in ('404', '410'):
+        return 'missing', details
+    return 'stalled', details
+
+
+def collect(now, pid):
+    stamp = datetime.datetime.fromtimestamp(now, datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+    target = ROOT / ('incident-' + stamp)
+    target.mkdir(mode=0o700)
+    commands = {
+        'sockets.txt': ['ss', '-lntp'],
+        'memory.txt': ['free', '-h'],
+        'vmstat.txt': ['vmstat', '1', '5'],
+        'iostat.txt': ['iostat', '-xz', '1', '3'],
+        'processes.txt': ['ps', '-eo', 'pid,ppid,comm,pcpu,pmem,rss,nlwp'],
+        'journal.txt': ['journalctl', '-u', SERVICE, '--since', '10 minutes ago',
+                        '-n', '2000', '--utc', '--no-pager'],
+    }
+    # Capture JVM state first. Never request a heap dump or trigger GC.
+    for i in range(3):
+        _, output = run(['runuser', '-u', USER, '--', JCMD, pid, 'Thread.print', '-l'])
+        (target / ('threads-%d.txt' % i)).write_text(output)
+        if i < 2:
+            time.sleep(5)
+    for name, args in commands.items():
+        _, output = run(args)
+        (target / name).write_text(output)
+    print('Incident diagnostics: ' + str(target), flush=True)
+
+
+def log(**fields):
+    fields = {'time': datetime.datetime.now(datetime.timezone.utc).isoformat(), **fields}
+    print(json.dumps(fields), flush=True)
+
+
+def main():
+    now = time.time()
+    for path in ROOT.glob('incident-*'):
+        if path.is_dir() and not path.is_symlink() and path.stat().st_mtime < now - RETENTION:
+            shutil.rmtree(path)
+    state_path = ROOT / 'state.json'
+    try:
+        state = json.loads(state_path.read_text())
+    except (OSError, ValueError):
+        state = {'failures': 0, 'last_capture': 0}
+
+    result, details = probe()
+    log(state=result, healthy=result == 'healthy', **details)
+    if result == 'stalled':
+        state['failures'] += 1
+    else:
+        if result == 'healthy' and state['failures'] >= FAILURES:
+            print('cpmeta probe recovered', flush=True)
+        state['failures'] = 0
+
+    pid = None
+    capture = state['failures'] >= FAILURES and now - state['last_capture'] >= COOLDOWN
+    if capture:
+        pid = main_pid()
+        age = uptime(pid) if pid else None
+        if pid is None or age is None or age < MIN_UPTIME:
+            log(skipped_capture='JVM not running or started %ss ago' % age, pid=pid)
+            capture = False
+    if capture:
+        state['last_capture'] = now
+
+    tmp = ROOT / 'state.json.tmp'
+    tmp.write_text(json.dumps(state))
+    tmp.replace(state_path)
+    if capture:
+        collect(now, pid)
+
+
+if __name__ == '__main__':
+    main()
