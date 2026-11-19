@@ -16,6 +16,18 @@
     respond @dotfiles 404
 }
 
+# Answer with the site's static maintenance page, maintenance/<site>.html,
+# without contacting Drupal.
+(maintenance_page) {
+    header Retry-After 120
+    header Cache-Control no-store
+    root * /srv/maintenance
+    rewrite * /{args[0]}.html
+    file_server {
+        status 503
+    }
+}
+
 {% for site in drupal_site_configs %}
 http://{{ site.domain }} {
     import blocked
@@ -27,10 +39,24 @@ http://{{ site.domain }} {
     {{ site.caddy_extra | indent(4) }}
 {% endif %}
 
+    # The play creates maintenance/{{ site.name }}.on while it updates the site.
+    @maintenance file {
+        root /srv/maintenance
+        try_files {{ site.name }}.on
+    }
+    handle @maintenance {
+        import maintenance_page {{ site.name }}
+    }
+
     reverse_proxy {{ site.name }}:80 {
         header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
         header_up X-Forwarded-Proto https
         header_up X-Real-IP {http.request.header.X-Real-IP}
+    }
+
+    # Drupal is down or restarting.
+    handle_errors 502 504 {
+        import maintenance_page {{ site.name }}
     }
 }
 

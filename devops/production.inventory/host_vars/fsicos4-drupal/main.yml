@@ -15,18 +15,21 @@ drupal_sites:
   - name: otctest
     live: true
     domain: test.icos-otc.org
+    title: "ICOS OTC (test)"
     modules: [bartik, linkit, media_alias_display, pathauto, redirect, smtp]
     secrets: "{{ _drupal_legacy_secrets['otctest'] }}"
 
   - name: "no"
     live: true
     domain: no.icos-cp.eu
+    title: "ICOS Norway"
     modules: [bartik, honeypot, linkit, media_alias_display, pathauto, redirect, smtp, webform]
     secrets: "{{ _drupal_legacy_secrets['no'] }}"
 
   - name: otc
     live: true
     domain: www.icos-otc.org
+    title: "ICOS OTC"
     redirect_domains: [icos-otc.org, otc.icos-cp.eu]
     modules: [bartik, redirect]
     secrets: "{{ _drupal_legacy_secrets['otc'] }}"
@@ -34,6 +37,7 @@ drupal_sites:
   - name: ac
     live: true
     domain: www.actris.se
+    title: "ACTRIS Sweden"
     redirect_domains: [actris.se]
     modules: [bartik]
     secrets: "{{ _drupal_legacy_secrets['ac'] }}"
@@ -41,6 +45,7 @@ drupal_sites:
   - name: fi
     live: true
     domain: www.icos-finland.fi
+    title: "ICOS Finland"
     redirect_domains: [icos-finland.fi]
     modules: [bartik, linkit, pathauto, redirect, smtp]
     secrets: "{{ _drupal_legacy_secrets['fi'] }}"
@@ -48,6 +53,7 @@ drupal_sites:
   - name: se
     live: true
     domain: www.icos-sweden.se
+    title: "ICOS Sweden"
     redirect_domains: [icos-sweden.se, sweden.icos-cp.eu]
     modules: [bartik, honeypot, linkit, pathauto, redirect, restui, smtp, toc_js, webform]
     secrets: "{{ _drupal_legacy_secrets['se'] }}"
@@ -55,6 +61,7 @@ drupal_sites:
   - name: ch
     live: true
     domain: www.icos-switzerland.ch
+    title: "ICOS Switzerland"
     redirect_domains: [switzerland.icos-cp.eu]
     modules: [bartik, honeypot, linkit, pathauto, redirect, smtp, webform]
     secrets: "{{ _drupal_legacy_secrets['ch'] }}"
@@ -64,6 +71,7 @@ drupal_sites:
   - name: sites
     live: true
     domain: www.fieldsites.se
+    title: "SITES"
     redirect_domains: [fieldsites.se, demo.fieldsites.se]
     database_name: sites
     database_user: sites
@@ -73,6 +81,7 @@ drupal_sites:
   - name: cp
     live: true
     domain: www.icos-cp.eu
+    title: "ICOS Carbon Portal"
     redirect_domains: [icos-cp.eu]
     modules: [bartik, better_exposed_filters, bootstrap, ckeditor5_plugin_pack, color_field, conflict, editor_advanced_link, honeypot, html_title, linkit, matomo, media_alias_display, media_bulk_upload, menu_breadcrumb, metatag, pathauto, readonlymode, redirect, scheduler, simple_sitemap, single_content_sync, smtp, toc_js, token, views_infinite_scroll, webform, webform_views]
     robots_txt: cp-robots.txt
@@ -87,6 +96,7 @@ drupal_sites:
   - name: demo
     live: true
     domain: demo.icos-cp.eu
+    title: "ICOS Carbon Portal (demo)"
     copy_from: cp
     # Drupal 11 trial. The drupal repo's drupal-11 branch declares the
     # custom modules and themes compatible with it.
