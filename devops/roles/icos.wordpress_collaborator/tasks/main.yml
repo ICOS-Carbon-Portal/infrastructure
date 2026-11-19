@@ -1,0 +1,205 @@
+- name: Check wordpress collaborator variables
+  assert:
+    that:
+      - wpc_user is match('^[a-z][a-z0-9-]*$')
+      - wpc_site is match('^[a-z0-9][a-z0-9_-]*$')
+      - wpc_keys | default('', true) | trim | length > 0
+      - wpc_wp_path is match('^/var/www/html(/|$)')
+
+- name: Set wordpress collaborator paths
+  set_fact:
+    _wpc_wp: "/usr/local/sbin/wp-{{ wpc_site }}"
+    _wpc_logs: "/usr/local/sbin/logs-{{ wpc_site }}"
+    _wpc_shim: "/usr/local/lib/wp-{{ wpc_site }}-mariadb"
+
+# The account owns nothing: WordPress runs as www-data (uid 33) in the
+# container, and ACLs give this user read/write on the site's files.
+- name: Create {{ wpc_user }} user
+  user:
+    name: "{{ wpc_user }}"
+    shell: /bin/bash
+    comment: "{{ wpc_comment }}"
+
+- name: Install {{ wpc_user }} SSH keys
+  authorized_key:
+    user: "{{ wpc_user }}"
+    key: "{{ wpc_keys }}"
+    exclusive: true
+
+- name: Install ACL tools
+  apt:
+    name: acl
+
+# Access ACLs for the existing files, default ACLs so new files get the same.
+# www-data gets a default entry too, so files the user creates (e.g. with git)
+# stay writable by WordPress.
+- name: Give {{ wpc_user }} and www-data read/write on the site files
+  ansible.posix.acl:
+    path: "{{ wpc_site_root }}"
+    entity: "{{ item.entity }}"
+    etype: user
+    permissions: rwX
+    default: "{{ item.default }}"
+    recursive: true
+    state: present
+  loop:
+    - {entity: "{{ wpc_user }}", default: false}
+    - {entity: "{{ wpc_user }}", default: true}
+    - {entity: "33", default: true}
+  loop_control:
+    label: "{{ item.entity }}{{ ' (default)' if item.default else '' }}"
+
+- name: Link the site files from {{ wpc_user }}'s home
+  file:
+    src: "{{ wpc_site_root }}"
+    dest: "/home/{{ wpc_user }}/{{ wpc_home_link }}"
+    state: link
+    owner: "{{ wpc_user }}"
+    group: "{{ wpc_user }}"
+    follow: false
+
+- name: Set up git for {{ wpc_user }}
+  when: wpc_git | bool
+  block:
+    - name: Install git
+      apt:
+        name: git
+
+    # The repository belongs to www-data; without this git refuses to work
+    # in it ("dubious ownership").
+    - name: Trust the site repository in {{ wpc_user }}'s git config
+      community.general.git_config:
+        scope: file
+        file: "/home/{{ wpc_user }}/.gitconfig"
+        name: safe.directory
+        value: "*"
+
+    - name: Set ownership of {{ wpc_user }}'s git config
+      file:
+        path: "/home/{{ wpc_user }}/.gitconfig"
+        owner: "{{ wpc_user }}"
+        group: "{{ wpc_user }}"
+        mode: "0644"
+
+# The wp-cli image ships a MariaDB 11.8 client, which requires TLS by
+# default; the site database (MariaDB 10.11) has none. Mounted over the
+# client binaries in the wp-cli container only. --no-defaults and friends
+# must stay the first argument.
+- name: Install MariaDB client wrapper for wp-cli
+  copy:
+    dest: "{{ _wpc_shim }}"
+    mode: "0755"
+    content: |
+      #!/bin/sh
+      # Managed by Ansible (icos.wordpress_collaborator).
+      real=/usr/bin/$(basename "$0")
+      case "$1" in
+        --no-defaults|--defaults-file=*|--defaults-extra-file=*|--defaults-group-suffix=*|--print-defaults)
+          first=$1; shift; exec "$real" "$first" --skip-ssl "$@" ;;
+      esac
+      exec "$real" --skip-ssl "$@"
+
+# wp-cli in a throwaway container next to the site, as www-data. The user
+# gets sudo for this script and the logs script only: their arguments never
+# reach docker, so they give no access to docker or root.
+- name: Install wp-cli wrapper
+  copy:
+    dest: "{{ _wpc_wp }}"
+    mode: "0755"
+    content: |
+      #!/bin/bash
+      # Managed by Ansible (icos.wordpress_collaborator).
+      set -Eeuo pipefail
+      tty=()
+      if [[ -t 0 && -t 1 ]]; then tty=(-t); fi
+      shim=()
+      for b in mariadb mariadb-dump mariadb-check mysql mysqldump mysqlcheck; do
+        shim+=(-v "{{ _wpc_shim }}:/usr/local/bin/$b:ro")
+      done
+      exec docker run --rm -i "${tty[@]}" \
+        --user 33:33 --network {{ wordpress_network_name | default('wordpress') }} \
+        --volumes-from wordpress_{{ wpc_site }} -w {{ wpc_wp_path }} -e HOME=/tmp \
+        "${shim[@]}" \
+        {{ wpc_wp_image }} wp "$@"
+
+- name: Install logs wrapper
+  copy:
+    dest: "{{ _wpc_logs }}"
+    mode: "0755"
+    content: |
+      #!/bin/bash
+      # Managed by Ansible (icos.wordpress_collaborator).
+      set -Eeuo pipefail
+      usage() { echo "usage: site-logs [web|db|proxy] [-f] [lines]" >&2; exit 2; }
+      container=wordpress_{{ wpc_site }}; follow=(); lines=200
+      for a in "$@"; do
+        case $a in
+          web) container=wordpress_{{ wpc_site }} ;;
+          db) container=wordpress_{{ wpc_site }}_db ;;
+          proxy) container=wordpress_proxy ;;
+          -f) follow=(-f) ;;
+          ''|*[!0-9]*) usage ;;
+          *) lines=$a ;;
+        esac
+      done
+      exec docker logs --tail "$lines" "${follow[@]}" "$container"
+
+- name: Install user commands
+  copy:
+    dest: "/usr/local/bin/{{ item.name }}"
+    mode: "0755"
+    content: |
+      #!/bin/sh
+      # Managed by Ansible (icos.wordpress_collaborator).
+      # {{ item.help }}
+      exec sudo {{ item.target }} "$@"
+  loop:
+    - name: wp
+      target: "{{ _wpc_wp }}"
+      help: 'wp-cli for the site, e.g. "wp plugin list", "wp db export - > dump.sql"'
+    - name: site-logs
+      target: "{{ _wpc_logs }}"
+      help: 'container logs, e.g. "site-logs", "site-logs db 50", "site-logs -f"'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Allow {{ wpc_user }} to run wp-cli and read the logs
+  copy:
+    dest: "/etc/sudoers.d/{{ wpc_user }}"
+    mode: "0440"
+    content: |
+      # Managed by Ansible (icos.wordpress_collaborator).
+      {{ wpc_user }} ALL=(root) NOPASSWD: {{ _wpc_wp }}, {{ _wpc_logs }}
+    validate: visudo -cf %s
+
+- name: Pull the wp-cli image
+  community.docker.docker_image:
+    name: "{{ wpc_wp_image }}"
+    source: pull
+
+# Outgoing traffic is otherwise allowed: plugin downloads, git over SSH.
+- name: Keep {{ wpc_user }} off the internal networks
+  iptables_raw:
+    name: "restrict_{{ wpc_user }}"
+    rules: |
+      -A OUTPUT -o {{ nebula_interface | default('nebula') }} -m owner --uid-owner {{ wpc_user }} -j REJECT
+      {% for net in wpc_blocked_networks %}
+      -A OUTPUT -d {{ net }} -m owner --uid-owner {{ wpc_user }} -j REJECT
+      {% endfor %}
+
+# The site's PHP runs in containers. Their traffic is forwarded, not sent by
+# a local user, so the rules above don't apply to it, and the user can run
+# any code there through WordPress (a plugin upload). Keep the containers off
+# the internal networks too. Replies are let through first: fsicos4's Caddy
+# connects in from 10.10.10.1.
+- name: Keep the site containers off the internal networks
+  iptables_raw:
+    name: container_egress
+    rules: |
+      -A DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN
+      {% for bridge in ['docker0', 'br-+'] %}
+      -A DOCKER-USER -i {{ bridge }} -o {{ nebula_interface | default('nebula') }} -j REJECT
+      {% for net in wpc_blocked_networks %}
+      -A DOCKER-USER -i {{ bridge }} -d {{ net }} -j REJECT
+      {% endfor %}
+      {% endfor %}

@@ -68,6 +68,15 @@ nebula_hosts:
       nebula_ip: "100.100.4.13"
       nebula_port: 60721
 
+    fsicos4-envri:
+      # .11 answers but is not in this file; ping-sweep before picking an IP.
+      nebula_ip: "100.100.4.14"
+      nebula_port: 60722
+
+    fsicos4-ericforum:
+      nebula_ip: "100.100.4.15"
+      nebula_port: 60723
+
     # Sentry's certificate was signed for .12, not .11 (Oct 2026), and some
     # unlisted host answers on .11. Check with ping before assigning an IP.
     sentry:

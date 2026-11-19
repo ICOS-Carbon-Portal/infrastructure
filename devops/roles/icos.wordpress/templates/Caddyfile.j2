@@ -1,8 +1,10 @@
 # Requests that WordPress never needs to answer: XML-RPC (brute force),
 # version disclosure, dotfiles, database dumps and backup archives, and PHP
-# files uploaded to the media library.
+# files uploaded to the media library. SIT_DUMP is SITSYSTECH's plugin that
+# dumps the whole database under the web root when its script is requested.
+# Adminer is a web database client; use wp-cli over SSH instead.
 (blocked) {
-    @blocked path_regexp (?i)^/(xmlrpc\.php|wp-config\.php.*|readme\.html|license\.txt)$|/\.(env|git|svn|hg|htaccess|htpasswd|user\.ini|ds_store)(/|\.|$)|\.(sql|sql\.gz|sql\.zip|wpress|bak|old|orig|swp)$|^/wp-content/uploads/.*\.php|^/wp-content/(ai1wm-backups|backups-dup-lite|updraft)/
+    @blocked path_regexp (?i)^/(xmlrpc\.php|wp-config\.php.*|readme\.html|license\.txt|adminer[^/]*\.php)$|/\.(env|git|svn|hg|htaccess|htpasswd|user\.ini|ds_store)(/|\.|$)|\.(sql|sql\.gz|sql\.zip|wpress|bak|old|orig|swp)$|^/wp-content/uploads/.*\.php|^/wp-content/(ai1wm-backups|backups-dup-lite|updraft)/|^/wp-content/plugins/SIT_DUMP/
     respond @blocked 404
 }
 
