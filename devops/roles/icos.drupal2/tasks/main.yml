@@ -41,7 +41,18 @@
     - "{{ drupal_home }}"
     - "{{ drupal_home }}/proxy"
     - "{{ drupal_home }}/proxy/conf"
+    - "{{ drupal_maintenance_dir }}"
     - "{{ drupal_home }}/sites"
+
+- name: Copy maintenance pages
+  template:
+    src: maintenance.html.j2
+    dest: "{{ drupal_maintenance_dir }}/{{ site.name }}.html"
+    mode: "0644"
+  loop: "{{ drupal_site_configs }}"
+  loop_control:
+    loop_var: site
+    label: "{{ site.name }}"
 
 - name: Create shared drupal network
   community.docker.docker_network:
