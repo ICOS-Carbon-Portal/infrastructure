@@ -1,0 +1,135 @@
+- name: Ensure healthchecks slug is valid
+  assert:
+    that: timer_healthcheck_slug is match('^[a-z0-9_-]{1,100}$')
+    fail_msg: >-
+      '{{ timer_healthcheck_slug }}' is not a valid healthchecks slug (a-z, 0-9,
+      hyphens and underscores, at most 100 characters). Set timer_healthcheck_slug.
+  changed_when: no
+
+- name: Extract OnCalendar and RandomizedDelaySec from timer_conf
+  set_fact:
+    _timer_hc_oncalendar_lines: "{{ timer_conf | regex_findall('^\\s*OnCalendar\\s*=\\s*(.*?)\\s*$', multiline=True) }}"
+    _timer_hc_randomized_delay_lines: "{{ timer_conf | regex_findall('^\\s*RandomizedDelaySec\\s*=\\s*(.*?)\\s*$', multiline=True) }}"
+
+- name: Ensure timer_conf has a single OnCalendar
+  assert:
+    that: _timer_hc_oncalendar_lines | length == 1
+    fail_msg: >-
+      Found {{ _timer_hc_oncalendar_lines | length }} OnCalendar lines in timer_conf
+      for {{ timer_name }}; timer_healthcheck requires exactly one.
+  changed_when: no
+
+- name: Normalize schedule
+  command: systemd-analyze calendar {{ _timer_hc_oncalendar_lines[0] | quote }}
+  check_mode: no
+  changed_when: no
+  register: _timer_hc_schedule_analyze
+
+- name: Convert RandomizedDelaySec to microseconds
+  command: systemd-analyze timespan {{ _timer_hc_randomized_delay_lines[0] | quote }}
+  check_mode: no
+  changed_when: no
+  register: _timer_hc_randomized_delay_timespan
+  when: _timer_hc_randomized_delay_lines | length > 0
+
+- name: Get host timezone
+  command: timedatectl show --property=Timezone --value
+  check_mode: no
+  changed_when: no
+  register: _timer_hc_timezone
+  failed_when: _timer_hc_timezone.rc != 0 or not _timer_hc_timezone.stdout
+
+- name: Add RandomizedDelaySec to grace
+  vars:
+    # systemd-analyze timespan prints the span in microseconds on a "us:" line
+    # (with a non-ASCII micro sign on most systems).
+    _randomized_delay_usec: >-
+      {{ (_timer_hc_randomized_delay_timespan.stdout | default('')
+          | regex_search('^\s*\S*s: (\d+)\s*$', '\1', multiline=True)
+          | default(['0'], true)) | first }}
+  set_fact:
+    _timer_hc_grace: "{{ timer_healthcheck_grace | int + (_randomized_delay_usec | int / 1000000) | round(0, 'ceil') | int }}"
+
+- name: Ensure grace is within 60..31536000 seconds
+  assert:
+    that: 60 <= _timer_hc_grace | int <= 31536000
+    fail_msg: "Grace for {{ timer_name }} must be 60..31536000 seconds, got {{ _timer_hc_grace }}"
+  changed_when: no
+
+- name: Build healthchecks API request body
+  set_fact:
+    _timer_hc_check_body:
+      name: "{{ timer_healthcheck_slug }}"
+      slug: "{{ timer_healthcheck_slug }}"
+      desc: "{{ timer_desc }}"
+      tags: "{{ inventory_hostname }}"
+      schedule: >-
+        {{ _timer_hc_schedule_analyze.stdout
+           | regex_search('Normalized form: (.*)', '\1') | first }}
+      # Etc/UTC and UTC are the same zone; plain UTC avoids display issues
+      tz: "{{ _timer_hc_timezone.stdout | regex_replace('^Etc/(UTC|Universal|Zulu)$', 'UTC') }}"
+      grace: "{{ _timer_hc_grace }}"
+      channels: "{{ timer_healthcheck_channels }}"
+      unique: [slug]
+
+- name: Install curl
+  package:
+    name: curl
+
+- name: Create healthchecks ping env file directory
+  file:
+    path: "{{ _timer_hc_ping_env_file | dirname }}"
+    state: directory
+    mode: "0755"
+
+- name: Install healthchecks ping env file
+  copy:
+    dest: "{{ _timer_hc_ping_env_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+    content: |
+      HC_PING_BASE={{ timer_healthcheck_server_url }}/ping/{{ timer_healthcheck_ping_key }}
+      HC_PING_BODY_LIMIT={{ timer_healthcheck_ping_body_limit }}
+  diff: no
+  no_log: true
+
+- name: Install healthchecks ping helper
+  template:
+    src: icos-healthcheck-ping
+    dest: "{{ _timer_hc_ping_bin }}"
+    mode: "0755"
+
+- name: Show healthchecks API request body
+  debug:
+    var: _timer_hc_check_body
+  when: ansible_check_mode
+
+# no_log hides the API key, but also the error; the next task reports it.
+- name: Create or update healthchecks check
+  uri:
+    url: "{{ timer_healthcheck_server_url }}/api/v3/checks/"
+    method: POST
+    headers:
+      X-Api-Key: "{{ timer_healthcheck_api_key }}"
+    body_format: json
+    # Before ansible-core 2.19, set_fact turns grace into a string.
+    body: "{{ _timer_hc_check_body | combine({'grace': _timer_hc_grace | int}) }}"
+    status_code: [200, 201]
+  delegate_to: localhost
+  become: no
+  no_log: true
+  register: _timer_hc_upsert_response
+  failed_when: false
+  changed_when: _timer_hc_upsert_response.status | default(0) == 201
+  when: not ansible_check_mode
+
+- name: Ensure healthchecks accepted the check
+  assert:
+    that: _timer_hc_upsert_response.status | default(0) in [200, 201]
+    fail_msg: >-
+      Creating or updating {{ timer_healthcheck_slug }} at {{ timer_healthcheck_server_url }}
+      failed with status {{ _timer_hc_upsert_response.status | default('none') }}:
+      {{ _timer_hc_upsert_response.json | default(_timer_hc_upsert_response.msg | default('')) }}
+  changed_when: no
+  when: not ansible_check_mode

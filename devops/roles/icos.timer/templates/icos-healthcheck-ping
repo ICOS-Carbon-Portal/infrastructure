@@ -1,0 +1,60 @@
+#!/bin/bash
+# Installed by the icos.timer role. Runs as ExecStartPre= and ExecStopPost= of
+# timer services that set timer_healthcheck, and reports to healthchecks.
+#
+#   icos-healthcheck-ping start SLUG
+#   icos-healthcheck-ping finish SLUG
+
+set -u
+
+if [[ $# -ne 2 || ( $1 != start && $1 != finish ) ]]; then
+    echo "usage: $0 start|finish SLUG" >&2
+    exit 2
+fi
+action=$1
+slug=$2
+
+source {{ _timer_hc_ping_env_file | quote }}
+
+ping_url="$HC_PING_BASE/$slug"
+
+# systemd's INVOCATION_ID is the same for ExecStartPre= and ExecStopPost= of a
+# run; healthchecks uses it, formatted as a UUID, to pair start with finish.
+run_id_query=
+if [[ ${INVOCATION_ID:-} =~ ^([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})$ ]]; then
+    m=("${BASH_REMATCH[@]}")
+    run_id_query="?rid=${m[1]}-${m[2]}-${m[3]}-${m[4]}-${m[5]}"
+fi
+
+ping() {
+    curl --silent --show-error --fail --max-time 10 --retry 3 \
+         --output /dev/null "$@" \
+        || echo "warning: could not report $action of $slug to healthchecks" >&2
+}
+
+if [[ $action == start ]]; then
+    ping "$ping_url/start$run_id_query"
+    exit 0
+fi
+
+# SERVICE_RESULT, EXIT_CODE and EXIT_STATUS are set by systemd for
+# ExecStopPost= commands.
+service_result=${SERVICE_RESULT:-unknown}
+fail_suffix=
+[[ $service_result == success ]] || fail_suffix=/fail
+
+status_line_headroom_bytes=1000
+journal_byte_limit=$(( HC_PING_BODY_LIMIT - status_line_headroom_bytes ))
+
+ping_body() {
+    echo "result=$service_result exit_code=${EXIT_CODE:-unknown} exit_status=${EXIT_STATUS:-unknown}"
+    echo
+    if [[ -n ${INVOCATION_ID:-} ]]; then
+        journalctl --sync 2>/dev/null
+        journalctl --no-pager --output=cat _SYSTEMD_INVOCATION_ID="$INVOCATION_ID" \
+            | tail --bytes=$journal_byte_limit
+    fi
+}
+
+ping_body | ping --data-binary @- "$ping_url$fail_suffix$run_id_query"
+exit 0

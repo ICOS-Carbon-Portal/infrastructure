@@ -1,0 +1,48 @@
+# no_log hides the API key, but also errors; the assert tasks report them.
+- name: Look up healthchecks check
+  uri:
+    url: "{{ timer_healthcheck_server_url }}/api/v3/checks/?slug={{ timer_healthcheck_slug | urlencode }}"
+    headers:
+      X-Api-Key: "{{ timer_healthcheck_api_key }}"
+  delegate_to: localhost
+  become: no
+  no_log: true
+  register: _timer_hc_lookup
+  failed_when: false
+  check_mode: no
+
+- name: Ensure healthchecks answered the lookup
+  assert:
+    that: _timer_hc_lookup.status | default(0) == 200
+    fail_msg: >-
+      Looking up {{ timer_healthcheck_slug }} at {{ timer_healthcheck_server_url }}
+      failed with status {{ _timer_hc_lookup.status | default('none') }}:
+      {{ _timer_hc_lookup.json | default(_timer_hc_lookup.msg | default('')) }}
+  changed_when: no
+
+- name: Delete healthchecks check
+  uri:
+    url: "{{ timer_healthcheck_server_url }}/api/v3/checks/{{ item.uuid }}"
+    method: DELETE
+    headers:
+      X-Api-Key: "{{ timer_healthcheck_api_key }}"
+  delegate_to: localhost
+  become: no
+  no_log: true
+  loop: "{{ _timer_hc_lookup.json.checks }}"
+  register: _timer_hc_delete
+  failed_when: false
+  changed_when: true
+  when: not ansible_check_mode
+
+- name: Ensure healthchecks deleted the check
+  assert:
+    that: item.status | default(0) == 200
+    fail_msg: >-
+      Deleting {{ timer_healthcheck_slug }} failed with status
+      {{ item.status | default('none') }}:
+      {{ item.json | default(item.msg | default('')) }}
+  loop: "{{ _timer_hc_delete.results | default([]) | rejectattr('skipped', 'defined') }}"
+  loop_control:
+    label: "{{ timer_healthcheck_slug }}"
+  changed_when: no

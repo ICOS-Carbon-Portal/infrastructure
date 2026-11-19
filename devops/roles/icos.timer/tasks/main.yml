@@ -4,6 +4,10 @@
   changed_when: no
   when: timer_content is defined
 
+- name: Install healthchecks ping helper and create or update check
+  include_tasks: healthcheck.yml
+  when: timer_healthcheck | bool
+
 - name: Create home directory
   when: timer_home != "/etc/systemd/system"
   file:
@@ -41,7 +45,13 @@
       [Service]
       User={{ timer_user }}
       Type=oneshot
+      {% if timer_healthcheck | bool %}
+      ExecStartPre=-+{{ _timer_hc_ping_bin }} start {{ timer_healthcheck_slug }}
+      {% endif %}
       ExecStart={{ timer_exec }}
+      {% if timer_healthcheck | bool %}
+      ExecStopPost=-+{{ _timer_hc_ping_bin }} finish {{ timer_healthcheck_slug }}
+      {% endif %}
       {% for env in timer_envs | default([]) -%}
       Environment={{ env }}
       {% endfor -%}

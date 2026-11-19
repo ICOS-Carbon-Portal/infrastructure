@@ -5,6 +5,25 @@ timer_dest: "{{ timer_home }}/{{ timer_name }}"
 timer_desc: "{{ timer_name }}"
 timer_wdir:
 
+# Report runs to healthchecks and register the timer as a check there.
+# See README.md.
+timer_healthcheck: false
+# Seconds after the scheduled time, or after a run started, before the check
+# goes down. Any RandomizedDelaySec= in timer_conf is added to it.
+timer_healthcheck_grace: 3600
+# Checks created through the API get no integrations unless told otherwise;
+# "*" assigns every integration in the project.
+timer_healthcheck_channels: "*"
+timer_healthcheck_slug: "{{ inventory_hostname }}-{{ timer_name }}"
+timer_healthcheck_server_url: https://healthchecks.icos-cp.eu
+timer_healthcheck_api_key: "{{ vault_healthchecks_api_key }}"
+timer_healthcheck_ping_key: "{{ vault_healthchecks_ping_key }}"
+# Keep in sync with PING_BODY_LIMIT on the healthchecks server.
+timer_healthcheck_ping_body_limit: 100000
+
 # The paths to the systemd unit files.
 _timer_sysd_timer: "{{ timer_home }}/{{ timer_name }}.timer"
 _timer_sysd_service: "{{ timer_home }}/{{ timer_name }}.service"
+
+_timer_hc_ping_bin: /usr/local/sbin/icos-healthcheck-ping
+_timer_hc_ping_env_file: /etc/icos/healthcheck-ping.env
