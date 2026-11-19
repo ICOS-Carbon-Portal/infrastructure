@@ -1,6 +1,8 @@
 cpmeta_user: cpmeta
 cpmeta_home: /home/cpmeta
-cpmeta_rdfstorage_path: "./rdfStorage"
+# Absolute: the service runs in cpmeta_home, but Ansible's file task would
+# resolve a relative path from the SSH user's home.
+cpmeta_rdfstorage_path: "{{ cpmeta_home }}/rdfStorage"
 
 cpmeta_servicename: cpmeta
 

@@ -7,3 +7,4 @@
 
 - import_tasks: backup.yml
   tags: cpauth_backup
+  when: cpauth_backup_enable | default(true)

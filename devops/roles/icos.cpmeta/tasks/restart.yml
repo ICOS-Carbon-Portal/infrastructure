@@ -25,7 +25,14 @@
 
 - name: Check that the service responds
   uri:
-    url: "https://{{ cpmeta_domains | first }}/buildInfo"
+    # coreapp_check_local: ask the service itself instead of going through
+    # the public domain, e.g. on a new host before DNS points to it.
+    url: >-
+      {{ 'http://127.0.0.1:%s/buildInfo' % cpmeta_port
+         if coreapp_check_local | default(false)
+         else 'https://%s/buildInfo' % (cpmeta_domains | first) }}
+    headers:
+      Host: "{{ cpmeta_domains | first }}"
     return_content: yes
   register: r
   failed_when: r.failed

@@ -1,0 +1,21 @@
+# SITES core VM (vm-fsicos4-sites.yml). The applications are configured in
+# sites.inventory.
+
+# Admins log in as themselves and use sudo; Ansible connects as jonathan
+# (hosts.yml). Root keeps only fsicos4's key (qm/px tooling) and Jonathan's.
+user_conf:
+  create_users:
+    - "{{ admin_jonathan }}"
+    - "{{ admin_robert }}"
+root_keys: "{{ (vault_fsicos4_vms_root_keys.splitlines() | select('search', ' root@fsicos4$') | list
+  + vault_jonathan_ssh.splitlines()) | join('\n') }}"
+
+# Application ports that only fsicos4 (Caddy) may reach: doi, cpauth, cpdata,
+# cpmeta.
+sites_app_ports: [8079, 8080, 9011, 9094]
+
+# cpdata's files: a dataset on fsicos4 mounted over NFS; sites.inventory's
+# cpdata_filestorage_target is this mountpoint.
+sites_data_dataset: tank/sitesDataAppStorage
+sites_data_export: /tank/sitesDataAppStorage
+sites_data_mountpoint: /disk/data/dataAppStorage
