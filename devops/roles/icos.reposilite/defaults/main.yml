@@ -1,0 +1,78 @@
+reposilite_home: /docker/reposilite
+# https://hub.docker.com/r/dzikoysk/reposilite/tags
+reposilite_version: 3.6.7
+reposilite_port: 8080
+reposilite_java_opts: -Xmx2g
+
+# Temporary token with all permissions, recreated at every start. Ansible
+# uses it to manage the persistent tokens below; nobody else should.
+reposilite_admin_name: admin
+# reposilite_admin_secret:
+
+# Upstream repositories cached by the private "public" repository.
+reposilite_maven_upstreams:
+  - https://repo1.maven.org/maven2/
+  - https://artifacts.unidata.ucar.edu/repository/unidata-all/
+  - https://build.shibboleth.net/maven/releases/
+
+# Ivy-layout upstreams (sbt plugins and launchers), cached by the private
+# "ivy-releases" repository.
+reposilite_ivy_upstreams:
+  - https://scala.jfrog.io/artifactory/ivy-releases/
+  - https://scala.jfrog.io/artifactory/sbt-plugin-releases/
+
+# Persistent tokens, created or updated through the API. A route gives
+# read (r) and/or write (w) on every path below it.
+#   - name: deployment
+#     secret: "..."
+#     routes:
+#       - { path: /releases, permissions: [r, w] }
+reposilite_tokens: []
+
+# Lets the "public" repository read the private "thirdparty" repository.
+reposilite_loopback_name: loopback
+# reposilite_loopback_secret:
+
+# Repositories: names follow Nexus 2, so the old URLs map onto them by
+# dropping /content/groups/ or /content/repositories/ (done in fsicos4's
+# Caddy).
+reposilite_repositories:
+  # Our own artifacts: public.
+  - id: releases
+    visibility: PUBLIC
+    redeployment: false
+  - id: snapshots
+    visibility: PUBLIC
+    # sbt publishes non-unique snapshots, i.e. overwrites the same files.
+    redeployment: true
+  # Jars we could not get from a public repository. Private, because we may
+  # not be allowed to redistribute them.
+  - id: thirdparty
+    visibility: PRIVATE
+    redeployment: false
+  # What Nexus 2's "public" group was: our repositories plus a cache of the
+  # Maven upstreams. Private, so we are not a free mirror of Maven Central.
+  - id: public
+    visibility: PRIVATE
+    redeployment: false
+    resolutionCacheMaxEntries: 4096
+    proxied: "{{
+      [{'reference': 'releases'}, {'reference': 'snapshots'},
+       {'reference': 'thirdparty', 'authorization': {'method': 'LOOPBACK_LINK',
+          'login': reposilite_loopback_name, 'password': reposilite_loopback_secret}}]
+      + reposilite_maven_upstreams | map('community.general.dict_kv', 'reference')
+        | map('combine', {'store': true, 'readTimeout': 60}) | list }}"
+  - id: ivy-releases
+    visibility: PRIVATE
+    redeployment: false
+    resolutionCacheMaxEntries: 1024
+    # Ivy files (ivy.xml, ivys/...) do not have Maven's extensions, so allow
+    # every extension.
+    proxied: "{{ reposilite_ivy_upstreams | map('community.general.dict_kv', 'reference')
+      | map('combine', {'store': true, 'readTimeout': 60, 'allowedExtensions': []}) | list }}"
+
+reposilite_frontend:
+  id: icos-cp-repository
+  title: ICOS Carbon Portal repository
+  description: Maven artifacts published by the ICOS Carbon Portal
+  organizationWebsite: https://www.icos-cp.eu

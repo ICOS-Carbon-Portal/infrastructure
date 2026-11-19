@@ -1,0 +1,182 @@
+# Temporary test VM on fsicos4 (VM 130) for choosing what replaces Nexus 2
+# (repo.icos-cp.eu, unmaintained since June 2025). It runs both candidates
+# with the same accounts and access rules:
+#
+#   Nexus 3 Community Edition     https://nexus3-test.icos-cp.eu
+#     Maven, sbt/Ivy (raw), npm and Docker in one application.
+#   Reposilite + Verdaccio        https://reposilite-test.icos-cp.eu
+#     Maven and sbt/Ivy in Reposilite, npm in Verdaccio under /npm/.
+#     Docker stays on registry.icos-cp.eu.
+#
+# Our artifacts can be downloaded without logging in; the caches of outside
+# repositories (Maven Central, sbt, npmjs) and thirdparty need the "reader"
+# or "deployment" account. Passwords are in
+# production.inventory/host_vars/fsicos4-repotest/vault.yml.
+#
+#   icos play vm-fsicos4-repotest                  # everything
+#   icos play vm-fsicos4-repotest -t caddy,dhcp    # fsicos4 routing only
+#   icos play vm-fsicos4-repotest -t nexus3        # one system
+#   icos play vm-fsicos4-repotest -t import        # load the Nexus 2 artifacts
+#
+# The VM was created by hand with the steps of `px vm-create`, minus the DHCP
+# checks and `icos-auto-dnat run` (disabled on fsicos4): static IP through
+# cloud-init, SSH forwarded from fsicos4:60624 in /etc/iptables/rules.v4.
+#
+# The import tag expects a copy of Nexus 2's hosted repositories in
+# /srv/nexus2-import on the VM, made with (agent forwarding, read-only on
+# fsicos2):
+#
+#   ssh -A fsicos2 "tar -C /docker/nexus/volumes/storage/storage \
+#       --exclude=.nexus -c releases snapshots thirdparty \
+#     | ssh -p 60624 jonathan@fsicos4.icos-cp.eu \
+#       'sudo mkdir -p /srv/nexus2-import && sudo tar -C /srv/nexus2-import -x'"
+#
+# Delete the VM, its DNS records, the dnsmasq reservation and the SSH rule
+# once we have chosen.
+
+- hosts: fsicos4
+  vars:
+    repotest: "{{ hostvars['fsicos4-repotest'] }}"
+  tasks:
+    - name: Reserve the VM's static IP in dnsmasq
+      tags: dhcp
+      include_role:
+        name: icos.pve_server
+        tasks_from: dhcp_reservation
+        apply:
+          tags: dhcp
+      vars:
+        pve_reservation_name: repotest
+        pve_reservation_mac: "{{ repotest.vm_mac }}"
+        pve_reservation_ip: "{{ repotest.vm_ip }}"
+
+    - name: Configure repotest reverse proxy
+      tags: caddy
+      include_role:
+        name: icos.caddy
+        apply:
+          tags: caddy
+      vars:
+        caddy_name: repotest
+        caddy_conf: |
+          {% if repotest.repotest_dns_ready %}
+          {{ repotest.repotest_nexus3_domain }} {
+              # Nexus 2 URLs, as in our sbt project/repositories files.
+              uri path_regexp ^/content/(groups|repositories)/ /repository/
+
+              # docker login/push/pull go to the Docker connector.
+              reverse_proxy /v2/* {{ repotest.vm_ip }}:8082
+              reverse_proxy {{ repotest.vm_ip }}:8081
+          }
+
+          {{ repotest.repotest_reposilite_domain }} {
+              handle_path /npm/* {
+                  reverse_proxy {{ repotest.vm_ip }}:4873
+              }
+              handle {
+                  # Nexus 2 URLs, as in our sbt project/repositories files.
+                  uri path_regexp ^/content/(groups|repositories)/ /
+                  reverse_proxy {{ repotest.vm_ip }}:8080
+              }
+          }
+          {% endif %}
+
+
+- hosts: fsicos4-repotest
+  vars:
+    _repotest_reposilite_url: "https://{{ repotest_reposilite_domain }}"
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.nexus3
+      tags: nexus3
+      nexus3_admin_password: "{{ repotest_admin_password }}"
+      # Sonatype's Community Edition EULA, accepted for this test.
+      nexus3_accept_eula: true
+      nexus3_users:
+        - {userId: deployment, password: "{{ repotest_deployment_password }}", roles: [icos-deploy]}
+        - {userId: reader, password: "{{ repotest_reader_password }}", roles: [icos-read]}
+
+    - role: icos.reposilite
+      tags: reposilite
+      reposilite_admin_secret: "{{ repotest_admin_password }}"
+      reposilite_loopback_secret: "{{ vault_repotest_loopback_password }}"
+      reposilite_tokens:
+        - name: deployment
+          secret: "{{ repotest_deployment_password }}"
+          routes:
+            - {path: /releases, permissions: [r, w]}
+            - {path: /snapshots, permissions: [r, w]}
+            - {path: /thirdparty, permissions: [r, w]}
+            - {path: /public, permissions: [r]}
+            - {path: /ivy-releases, permissions: [r]}
+        - name: reader
+          secret: "{{ repotest_reader_password }}"
+          routes:
+            - {path: /thirdparty, permissions: [r]}
+            - {path: /public, permissions: [r]}
+            - {path: /ivy-releases, permissions: [r]}
+
+    - role: icos.verdaccio
+      tags: verdaccio
+      verdaccio_public_url: "{{ _repotest_reposilite_url }}"
+      verdaccio_url_prefix: /npm/
+      verdaccio_users:
+        - {name: deployment, password: "{{ repotest_deployment_password }}"}
+        - {name: reader, password: "{{ repotest_reader_password }}"}
+
+  tasks:
+    # After icos.pve_guest has created the admin accounts (user_conf).
+    # fsicos4's key must stay: the host's tooling logs in to its VMs as root.
+    - name: Check root's SSH keys
+      tags: users
+      assert:
+        that: "'root@fsicos4' in root_keys"
+
+    - name: Install root's SSH keys
+      tags: users
+      authorized_key:
+        user: root
+        key: "{{ root_keys }}"
+        exclusive: true
+
+    # Loads the copy of Nexus 2's hosted repositories (see the top of this
+    # file) into both systems. Reposilite reads plain directories; Nexus 3
+    # needs every file uploaded through its API.
+    - name: Import Nexus 2 artifacts
+      tags: [never, import]
+      block:
+        - name: Check the Nexus 2 copy
+          stat:
+            path: "/srv/nexus2-import/{{ item }}"
+          loop: [releases, snapshots, thirdparty]
+          register: _import_dirs
+          failed_when: not _import_dirs.stat.isdir | default(false)
+
+        - name: Copy Nexus 2 artifacts into Reposilite
+          command: >-
+            rsync -a --exclude=.nexus --chown=977:977
+            /srv/nexus2-import/{{ item }}/ /docker/reposilite/data/repositories/{{ item }}/
+          loop: [releases, snapshots, thirdparty]
+
+        - name: Install the Nexus 3 upload script
+          copy:
+            src: roles/icos.nexus3/files/nexus3-upload-maven
+            dest: /usr/local/bin/nexus3-upload-maven
+            mode: "0755"
+
+        - name: Upload Nexus 2 artifacts to Nexus 3
+          command: nexus3-upload-maven /srv/nexus2-import/{{ item }} http://127.0.0.1:8081/repository/{{ item }} deployment
+          environment:
+            NEXUS3_PASSWORD: "{{ repotest_deployment_password }}"
+          loop: [releases, snapshots, thirdparty]
+          register: _import_nexus3
+          changed_when: true
+
+        - name: Show Nexus 3 upload results
+          debug:
+            msg: "{{ _import_nexus3.results | map(attribute='stdout_lines') | map('last') }}"

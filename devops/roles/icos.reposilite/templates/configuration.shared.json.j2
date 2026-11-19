@@ -1,0 +1,15 @@
+{{ {
+  "authentication": {
+    "bruteForceProtection": {"enabled": true, "maxAttempts": 10, "banDurationSeconds": 300},
+    "ldap": {"enabled": false, "ssl": false, "hostname": "", "port": 389, "baseDn": "",
+             "searchUserDn": "", "searchUserPassword": "", "typeAttribute": "person",
+             "userAttribute": "cn", "userFilter": "", "userType": "PERSISTENT"}
+  },
+  "frontend": reposilite_frontend | combine({"organizationLogo": "logo.png", "privacyPolicy": "", "icpLicense": ""}),
+  "maven": {
+    "repositories": _reposilite_repositories
+  },
+  "javadoc": {"enabled": true, "suffixes": ["-javadoc.jar", "-groovydoc.jar"]},
+  "statistics": {"enabled": true, "resolvedRequestsInterval": "MONTHLY"},
+  "web": {"forwardedIp": "X-Forwarded-For", "forwardedPrefix": ""}
+} | to_nice_json(indent=2) }}

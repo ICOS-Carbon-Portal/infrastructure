@@ -1,0 +1,174 @@
+# Base system of the SITES core VM on fsicos4 (VM 131, Proxmox name "sites").
+# The applications (doi, and later cpmeta, cpdata, cpauth, rdflog, restheart,
+# postgis) are deployed with sites.inventory, where the same VM is called
+# "sites", e.g.:
+#
+#   ANSIBLE_INVENTORY=sites.inventory ansible-playbook core.yml -t java,doi_setup,doi_deploy -e doi_jar_file=/tmp/doi.jar
+#
+# Settings are in production.inventory/host_vars/fsicos4-sites/.
+#
+#   icos play vm-fsicos4-sites                    # everything
+#   icos play vm-fsicos4-sites -t users           # admin accounts, root keys
+#
+# The VM was created on 2026-11-13 with the steps of `px vm-create` from
+# template 926 (Ubuntu 26.04), minus the DHCP checks and `icos-auto-dnat run`
+# (disabled on fsicos4): static IP 10.10.10.25 through cloud-init, SSH
+# forwarded from fsicos4:60619 in /etc/iptables/rules.v4. It replaced VM 125
+# (Ubuntu 24.04, imported by hand), which kept the same IP and port.
+#
+# CPU type x86-64-v3 (qm set 131 --cpu x86-64-v3), not the template's
+# x86-64-v2-AES: restheart's MongoDB (5.0 and later) needs AVX and exits with
+# "Illegal instruction" (code 132) without it.
+
+- hosts: fsicos4-sites
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    # restheart, rdflog and postgis run in containers (sites.inventory).
+    - role: icos.docker2
+      tags: docker
+
+  tasks:
+    # The application ports listen on all interfaces so that fsicos4's Caddy
+    # can reach them; only fsicos4 (10.10.10.1) may. Other VMs on vmbr0 must
+    # not reach e.g. cpmeta's /admin endpoints. A table of its own, so that
+    # docker's rules are left alone (no nftables.service "flush ruleset").
+    - name: Install the application port firewall
+      tags: firewall
+      copy:
+        dest: /etc/icos-app-firewall.nft
+        content: |
+          table inet icos_apps
+          delete table inet icos_apps
+          table inet icos_apps {
+              chain input {
+                  type filter hook input priority filter; policy accept;
+                  iif "lo" accept
+                  tcp dport { {{ sites_app_ports | join(', ') }} } ip saddr != 10.10.10.1 drop
+              }
+          }
+      register: _fw_rules
+
+    - name: Load the application port firewall at boot
+      tags: firewall
+      copy:
+        dest: /etc/systemd/system/icos-app-firewall.service
+        content: |
+          [Unit]
+          Description=Only fsicos4 may reach the SITES application ports
+          Before=network-pre.target
+          Wants=network-pre.target
+
+          [Service]
+          Type=oneshot
+          RemainAfterExit=yes
+          ExecStart=/usr/sbin/nft -f /etc/icos-app-firewall.nft
+          ExecStop=/usr/sbin/nft delete table inet icos_apps
+
+          [Install]
+          WantedBy=multi-user.target
+      register: _fw_unit
+
+    - name: Start the application port firewall
+      tags: firewall
+      systemd:
+        name: icos-app-firewall.service
+        enabled: true
+        daemon_reload: "{{ _fw_unit.changed }}"
+        state: "{{ 'restarted' if _fw_rules.changed or _fw_unit.changed else 'started' }}"
+
+    # cpdata's files live on fsicos4 (ZFS dataset, see the play below). The
+    # user is created here, before the cpdata role does, so that the dataset
+    # can be given to its uid.
+    - name: Create the cpdata user
+      tags: data
+      user:
+        name: cpdata
+        home: /home/cpdata
+        shell: /bin/bash
+      register: sites_cpdata_user
+
+    - name: Install the NFS client
+      tags: data
+      apt:
+        name: nfs-common
+
+
+    # Any change to the Proxmox cloud-init settings gives a new instance-id,
+    # and cloud-init would then create new SSH host keys at the next boot.
+    - name: Keep the SSH host keys when cloud-init runs again
+      tags: guest
+      copy:
+        dest: /etc/cloud/cloud.cfg.d/99-icos-keep-hostkeys.cfg
+        content: |
+          ssh_deletekeys: false
+
+    # After icos.pve_guest has created the admin accounts (user_conf).
+    # fsicos4's key must stay: the host's tooling logs in to its VMs as root.
+    - name: Check root's SSH keys
+      tags: users
+      assert:
+        that: "'root@fsicos4' in root_keys"
+
+    - name: Install root's SSH keys
+      tags: users
+      authorized_key:
+        user: root
+        key: "{{ root_keys }}"
+        exclusive: true
+
+
+# cpdata's data files: a ZFS dataset on fsicos4, mounted on the VM over NFS
+# (decided 2026-11-13: data on the host rather than in a VM disk). The SITES
+# files were copied there from /tank/dataAppStorage, fsicos2's nightly mirror.
+- hosts: fsicos4
+  vars:
+    sites: "{{ hostvars['fsicos4-sites'] }}"
+  tasks:
+    - name: Create the SITES data dataset
+      tags: data
+      community.general.zfs:
+        name: "{{ sites.sites_data_dataset }}"
+        state: present
+        extra_zfs_properties:
+          mountpoint: "{{ sites.sites_data_export }}"
+          recordsize: 1M
+          compression: lz4
+          atime: "off"
+
+    # Owned by the VM's cpdata user (numeric ids), so that root on the VM is
+    # not needed (and squashed).
+    - name: Give the dataset to the VM's cpdata user
+      tags: data
+      file:
+        path: "{{ sites.sites_data_export }}"
+        owner: "{{ sites.sites_cpdata_user.uid }}"
+        group: "{{ sites.sites_cpdata_user.group }}"
+        mode: "0755"
+
+    - name: Export the dataset to the VM
+      tags: data
+      blockinfile:
+        path: /etc/exports
+        marker: "# {mark} SITES data (vm-fsicos4-sites.yml)"
+        block: |
+          {{ sites.sites_data_export }} {{ sites.vm_ip }}/32(rw,sync,no_subtree_check,root_squash)
+      register: _exports
+
+    - name: Reload the NFS exports
+      tags: data
+      command: exportfs -ra
+      when: _exports.changed
+
+
+- hosts: fsicos4-sites
+  tasks:
+    - name: Mount the SITES data
+      tags: data
+      ansible.posix.mount:
+        path: "{{ sites_data_mountpoint }}"
+        src: "10.10.10.1:{{ sites_data_export }}"
+        fstype: nfs
+        opts: nfsvers=4.2,hard,_netdev,x-systemd.automount
+        state: mounted

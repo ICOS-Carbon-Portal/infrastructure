@@ -1,0 +1,38 @@
+# An unprivileged account for an external web agency on a VM that runs one
+# icos.wordpress site. The account can edit the site's files, run wp-cli and
+# read the site's container logs, but has no root, no docker and no access
+# to fsicos4's internal networks (vmbr0, nebula). The site's containers are
+# kept off those networks too.
+#
+#   - role: icos.wordpress_collaborator
+#     wpc_user: sitsystech
+#     wpc_keys: "{{ vault_envri_sitsystech_ssh_key }}"
+#     wpc_site: envri
+
+# Login name, its description and its SSH public keys (one per line).
+wpc_user:
+wpc_comment: ""
+wpc_keys:
+
+# The icos.wordpress site name: its files are in
+# {{ wordpress_home }}/sites/<site>/html, its containers are wordpress_<site>
+# and wordpress_<site>_db.
+wpc_site:
+wpc_site_root: "{{ wordpress_home }}/sites/{{ wpc_site }}/html"
+
+# Name of the link to the site files in the user's home.
+wpc_home_link: "{{ wpc_site }}"
+
+# Directory wp-cli runs in, inside the container. Sites with a
+# document_root (e.g. Bedrock-style ericwp/web) need it here.
+wpc_wp_path: /var/www/html
+wpc_wp_image: wordpress:cli-php8.4
+
+# Let the user run git in the site files (owned by www-data), e.g. to pull
+# from the agency's repository with SSH agent forwarding.
+wpc_git: false
+
+# Networks the user's processes may not reach.
+wpc_blocked_networks:
+  - 10.10.10.0/24
+  - 100.100.0.0/22

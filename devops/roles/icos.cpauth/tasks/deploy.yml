@@ -40,7 +40,14 @@
 
 - name: Check that the service responds
   uri:
-    url: "https://{{ cpauth_domains | first }}/buildInfo"
+    # coreapp_check_local: ask the service itself instead of going through
+    # the public domain, e.g. on a new host before DNS points to it.
+    url: >-
+      {{ 'http://127.0.0.1:%s/buildInfo' % cpauth_port
+         if coreapp_check_local | default(false)
+         else 'https://%s/buildInfo' % (cpauth_domains | first) }}
+    headers:
+      Host: "{{ cpauth_domains | first }}"
     return_content: yes
   register: r
   failed_when: r.failed

@@ -1,0 +1,17 @@
+services:
+  reposilite:
+    image: dzikoysk/reposilite:{{ reposilite_version }}
+    container_name: reposilite
+    restart: unless-stopped
+    ports:
+      - "{{ reposilite_port }}:8080"
+    environment:
+      JAVA_OPTS: "{{ reposilite_java_opts }}"
+      REPOSILITE_OPTS: >-
+        --shared-configuration=configuration.shared.json
+        --token={{ reposilite_admin_name }}:${REPOSILITE_ADMIN_SECRET}
+        --disable-interactive-console
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - /etc/localtime:/etc/localtime:ro

@@ -1,0 +1,47 @@
+# Managed by Ansible (icos.verdaccio).
+storage: /verdaccio/storage/data
+plugins: /verdaccio/plugins
+
+url_prefix: {{ verdaccio_url_prefix }}
+
+web:
+  enable: true
+  title: {{ verdaccio_title }}
+  login: true
+
+auth:
+  htpasswd:
+    file: /verdaccio/conf/htpasswd
+    # No self-registration with `npm adduser`.
+    max_users: -1
+    algorithm: bcrypt
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    cache: true
+    timeout: 60s
+
+packages:
+{% for pattern in verdaccio_own_packages %}
+  '{{ pattern }}':
+    access: $all
+    publish: {{ verdaccio_publishers | join(' ') }}
+    unpublish: {{ verdaccio_publishers | join(' ') }}
+    proxy: npmjs
+{% endfor %}
+  # Everything else is a cache of npmjs, for logged-in users only. Nobody
+  # can publish such names here (no user is in the group "nobody").
+  '**':
+    access: $authenticated
+    publish: nobody
+    unpublish: nobody
+    proxy: npmjs
+
+server:
+  keepAliveTimeout: 60
+
+publish:
+  allow_offline: false
+
+log: { type: stdout, format: pretty, level: http }

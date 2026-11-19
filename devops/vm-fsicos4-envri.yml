@@ -1,0 +1,145 @@
+# envri.eu on its own VM on fsicos4 (VM 128), moved from the fsicos2
+# container wordpress-envri. It has its own VM because SITSYSTECH, the
+# site's web agency, logs in to it.
+#
+# Settings are in production.inventory/host_vars/fsicos4-envri/.
+#
+#   icos play vm-fsicos4-envri                    # everything
+#   icos play vm-fsicos4-envri caddy dhcp         # fsicos4 routing only
+#   icos play vm-fsicos4-envri collaborator       # SITSYSTECH's user
+#   icos play vm-fsicos4-envri users              # admin accounts, root keys
+#
+# The VM was created by hand with the steps of `px vm-create`, minus the DHCP
+# checks and `icos-auto-dnat run` (disabled on fsicos4): static IP through
+# cloud-init, SSH forwarded from fsicos4:60622 in /etc/iptables/rules.v4.
+
+- hosts: fsicos4
+  vars:
+    envri: "{{ hostvars['fsicos4-envri'] }}"
+  tasks:
+    - name: Reserve the VM's static IP in dnsmasq
+      tags: dhcp
+      include_role:
+        name: icos.pve_server
+        tasks_from: dhcp_reservation
+        apply:
+          tags: dhcp
+      vars:
+        pve_reservation_name: envri
+        pve_reservation_mac: "{{ envri.vm_mac }}"
+        pve_reservation_ip: "{{ envri.vm_ip }}"
+
+    - name: Configure envri reverse proxy
+      tags: caddy
+      include_role:
+        name: icos.caddy
+        apply:
+          tags: caddy
+      vars:
+        caddy_name: envri
+        caddy_conf: |
+          {% if envri.envri_live %}
+          {{ envri.envri_domain }} {
+              reverse_proxy {{ envri.vm_ip }}:80 {
+                  header_up X-Forwarded-For {remote_host}
+                  header_up X-Real-IP {remote_host}
+              }
+          }
+
+          {{ envri.envri_redirect_domains | join(', ') }} {
+              redir https://{{ envri.envri_domain }}{uri} permanent
+          }
+          {% endif %}
+
+
+- hosts: fsicos4-envri
+  vars:
+    wordpress_home: /docker/wordpress
+    wordpress_sites:
+      # www.envri.eu is redirected to the apex by the fsicos4 caddy config
+      # above, so it stays out of this list.
+      - name: envri
+        domains:
+          - "{{ envri_domain }}"
+        db_name: envri
+        db_user: envri
+        db_password: "{{ vault_wordpress_envri_db_password }}"
+        db_root_password: "{{ vault_wordpress_envri_db_root_password }}"
+  roles:
+    - role: icos.pve_guest
+      tags: guest
+
+    - role: icos.utils
+      tags: utils
+
+    - role: icos.docker2
+      tags: docker
+
+    - role: icos.nebula
+      tags: nebula
+
+    - role: icos.wordpress
+      tags: wordpress
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_name: fsicos4-envri
+      bbclient_home: /opt/bbclient-fsicos4-envri
+      bbclient_remotes:
+        - icos1
+      bbclient_timer_conf: |
+        OnCalendar=*-*-* 03:15:00
+        RandomizedDelaySec=30m
+      bbclient_timer_content: |
+        #!/bin/bash
+        set -Eueo pipefail
+
+        cd {{ wordpress_home }}
+
+        compose_down() {
+          for project in proxy sites/*; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose down)
+            fi
+          done
+        }
+
+        compose_up() {
+          for project in sites/* proxy; do
+            if [[ -f "$project/docker-compose.yml" ]]; then
+              (cd "$project" && docker compose up -d)
+            fi
+          done
+        }
+
+        trap compose_up EXIT
+
+        compose_down
+        {{ bbclient_all }} create --stats --verbose "::{now}" {{ wordpress_home }}
+        {{ bbclient_all }} prune --stats --list --keep-daily=14 --keep-weekly=50 --keep-monthly=36
+        {{ bbclient_all }} compact --verbose
+
+
+    # SITSYSTECH's account: site files, wp-cli and logs; no root or docker.
+    - role: icos.wordpress_collaborator
+      tags: collaborator
+      wpc_user: "{{ envri_collaborator }}"
+      wpc_comment: "SITSYSTECH (envri.eu web agency)"
+      wpc_keys: "{{ envri_collaborator_key }}"
+      wpc_site: envri
+      wpc_home_link: envri.eu
+
+  tasks:
+    # After icos.pve_guest has created the admin accounts (user_conf).
+    # fsicos4's key must stay: the host's tooling logs in to its VMs as root.
+    - name: Check root's SSH keys
+      tags: users
+      assert:
+        that: "'root@fsicos4' in root_keys"
+
+    - name: Install root's SSH keys
+      tags: users
+      authorized_key:
+        user: root
+        key: "{{ root_keys }}"
+        exclusive: true

@@ -1,0 +1,24 @@
+verdaccio_home: /docker/verdaccio
+# https://hub.docker.com/r/verdaccio/verdaccio/tags
+verdaccio_version: 7.1.0
+verdaccio_port: 4873
+
+# Public URL and path prefix, when Verdaccio sits behind a reverse proxy
+# under a path (the proxy strips the prefix).
+# verdaccio_public_url: https://repo.example.org
+verdaccio_url_prefix: /
+
+verdaccio_title: ICOS Carbon Portal npm
+
+# htpasswd users; self-registration is disabled.
+#   - { name: deployment, password: "..." }
+verdaccio_users: []
+
+# Who may publish our packages.
+verdaccio_publishers: [deployment]
+
+# Our packages: anyone can install them, only verdaccio_publishers can
+# publish. Versions already on npmjs stay visible through the npmjs uplink.
+verdaccio_own_packages:
+  - "icos-cp-*"
+  - "@icos-cp/*"

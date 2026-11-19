@@ -1,0 +1,272 @@
+- name: Check Nexus 3 admin password
+  assert:
+    that: nexus3_admin_password | default('') | length >= 16
+
+# The image runs Nexus as uid 200.
+- name: Create Nexus 3 data directory
+  file:
+    path: "{{ nexus3_home }}/data"
+    state: directory
+    owner: "200"
+    group: "200"
+
+- name: Copy Nexus 3 docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ nexus3_home }}/docker-compose.yml"
+  register: _nexus3_compose
+
+- name: Start Nexus 3
+  community.docker.docker_compose_v2:
+    project_src: "{{ nexus3_home }}"
+    state: present
+    pull: missing
+    recreate: "{{ 'always' if _nexus3_compose.changed else 'auto' }}"
+
+- name: Set Nexus 3 API facts
+  set_fact:
+    _nexus3_api: "http://127.0.0.1:{{ nexus3_port }}/service/rest/v1"
+
+# The first start takes a few minutes (database creation).
+- name: Wait for Nexus 3
+  uri:
+    url: "{{ _nexus3_api }}/status/writable"
+  register: _nexus3_up
+  until: _nexus3_up.status == 200
+  retries: 60
+  delay: 5
+  changed_when: false
+
+# At the first start, the admin password is random and in admin.password.
+- name: Check Nexus 3 admin password
+  uri:
+    url: "{{ _nexus3_api }}/status/check"
+    user: admin
+    password: "{{ nexus3_admin_password }}"
+    force_basic_auth: true
+    status_code: [200, 401]
+  register: _nexus3_admin_check
+  changed_when: false
+  no_log: true
+
+- name: Set Nexus 3 admin password
+  when: _nexus3_admin_check.status == 401
+  block:
+    - name: Read initial Nexus 3 admin password
+      slurp:
+        src: "{{ nexus3_home }}/data/admin.password"
+      register: _nexus3_initial_password
+
+    - name: Change Nexus 3 admin password
+      uri:
+        url: "{{ _nexus3_api }}/security/users/admin/change-password"
+        method: PUT
+        user: admin
+        password: "{{ _nexus3_initial_password.content | b64decode | trim }}"
+        force_basic_auth: true
+        headers:
+          Content-Type: text/plain
+        body: "{{ nexus3_admin_password }}"
+        status_code: 204
+      no_log: true
+
+- name: Set Nexus 3 API credentials
+  set_fact:
+    _nexus3_auth:
+      user: admin
+      password: "{{ nexus3_admin_password }}"
+      force_basic_auth: true
+  no_log: true
+
+- name: Check the Nexus 3 EULA
+  uri:
+    url: "{{ _nexus3_api }}/system/eula"
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    status_code: [200, 404]
+  register: _nexus3_eula
+  changed_when: false
+
+- name: Accept the Nexus 3 EULA
+  uri:
+    url: "{{ _nexus3_api }}/system/eula"
+    method: POST
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body: "{{ _nexus3_eula.json | combine({'accepted': true}) }}"
+    status_code: [200, 204]
+  when:
+    - _nexus3_eula.status == 200
+    - not _nexus3_eula.json.accepted
+    - nexus3_accept_eula | bool
+
+- name: Set Nexus 3 security realms
+  uri:
+    url: "{{ _nexus3_api }}/security/realms/active"
+    method: PUT
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body: "{{ nexus3_realms }}"
+    status_code: 204
+  changed_when: false
+
+- name: Enable Nexus 3 anonymous access
+  uri:
+    url: "{{ _nexus3_api }}/security/anonymous"
+    method: PUT
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      enabled: true
+      userId: anonymous
+      realmName: NexusAuthorizingRealm
+  changed_when: false
+
+- name: List Nexus 3 repositories
+  uri:
+    url: "{{ _nexus3_api }}/repositories"
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+  register: _nexus3_repos
+  changed_when: false
+
+- name: Remove unused Nexus 3 repositories
+  uri:
+    url: "{{ _nexus3_api }}/repositories/{{ item }}"
+    method: DELETE
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    status_code: 204
+  loop: "{{ nexus3_remove_repositories | intersect(_nexus3_repos.json | map(attribute='name')) }}"
+  changed_when: true
+
+# POST creates, PUT updates. Updating every time is harmless.
+- name: Create or update Nexus 3 repositories
+  uri:
+    url: "{{ _nexus3_api }}/repositories/{{ item.path }}{{ '/' ~ item.body.name if _exists else '' }}"
+    method: "{{ 'PUT' if _exists else 'POST' }}"
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body: "{{ item.body }}"
+    status_code: [201, 204]
+  loop: "{{ nexus3_repositories }}"
+  loop_control:
+    label: "{{ item.path }} {{ item.body.name }}"
+  vars:
+    _exists: "{{ item.body.name in _nexus3_repos.json | map(attribute='name') }}"
+  changed_when: not _exists
+
+- name: List Nexus 3 roles
+  uri:
+    url: "{{ _nexus3_api }}/security/roles"
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+  register: _nexus3_existing_roles
+  changed_when: false
+
+- name: Create or update Nexus 3 roles
+  uri:
+    url: "{{ _nexus3_api }}/security/roles{{ '/' ~ item.id if _exists else '' }}"
+    method: "{{ 'PUT' if _exists else 'POST' }}"
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body: "{{ item }}"
+    status_code: [200, 204]
+  loop: "{{ nexus3_roles }}"
+  loop_control:
+    label: "{{ item.id }}"
+  vars:
+    _exists: "{{ item.id in _nexus3_existing_roles.json | map(attribute='id') }}"
+  changed_when: not _exists
+
+- name: List Nexus 3 users
+  uri:
+    url: "{{ _nexus3_api }}/security/users"
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+  register: _nexus3_existing_users
+  changed_when: false
+
+# The default anonymous user has nx-anonymous, which can read every
+# repository, caches included.
+- name: Set the roles of the Nexus 3 anonymous user
+  uri:
+    url: "{{ _nexus3_api }}/security/users/anonymous"
+    method: PUT
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body: "{{ _anon | combine({'roles': nexus3_anonymous_roles}) }}"
+    status_code: 204
+  vars:
+    _anon: "{{ _nexus3_existing_users.json | selectattr('userId', 'eq', 'anonymous') | first }}"
+  changed_when: _anon.roles | sort != nexus3_anonymous_roles | sort
+
+- name: Create Nexus 3 users
+  uri:
+    url: "{{ _nexus3_api }}/security/users"
+    method: POST
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      userId: "{{ item.userId }}"
+      firstName: "{{ item.userId }}"
+      lastName: "{{ item.lastName | default('Account') }}"
+      emailAddress: "{{ item.emailAddress | default(item.userId ~ '@icos-cp.eu') }}"
+      password: "{{ item.password }}"
+      status: active
+      roles: "{{ item.roles }}"
+  loop: "{{ nexus3_users | rejectattr('userId', 'in', _nexus3_existing_users.json | map(attribute='userId')) }}"
+  loop_control:
+    label: "{{ item.userId }}"
+  no_log: true
+
+- name: Update Nexus 3 user roles
+  uri:
+    url: "{{ _nexus3_api }}/security/users/{{ item.userId }}"
+    method: PUT
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    body_format: json
+    body: "{{ _nexus3_existing_users.json | selectattr('userId', 'eq', item.userId) | first | combine({'roles': item.roles}) }}"
+    status_code: 204
+  loop: "{{ nexus3_users | selectattr('userId', 'in', _nexus3_existing_users.json | map(attribute='userId')) }}"
+  loop_control:
+    label: "{{ item.userId }}"
+  changed_when: false
+
+- name: Set Nexus 3 user passwords
+  uri:
+    url: "{{ _nexus3_api }}/security/users/{{ item.userId }}/change-password"
+    method: PUT
+    user: "{{ _nexus3_auth.user }}"
+    password: "{{ _nexus3_auth.password }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: text/plain
+    body: "{{ item.password }}"
+    status_code: 204
+  loop: "{{ nexus3_users }}"
+  loop_control:
+    label: "{{ item.userId }}"
+  changed_when: false
+  no_log: true

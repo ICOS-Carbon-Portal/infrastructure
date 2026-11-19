@@ -1,0 +1,200 @@
+nexus3_home: /docker/nexus3
+# https://hub.docker.com/r/sonatype/nexus3/tags
+nexus3_version: 3.98.1
+nexus3_port: 8081
+# Nexus serves each Docker repository on its own port ("connector").
+nexus3_docker_port: 8082
+nexus3_jvm_params: >-
+  -Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g
+  -Djava.util.prefs.userRoot=/nexus-data/javaprefs
+
+# nexus3_admin_password:
+
+# Community Edition shows a EULA that must be accepted before it can be
+# used. Setting this to true accepts it through the API.
+nexus3_accept_eula: false
+
+nexus3_realms:
+  - NexusAuthenticatingRealm
+  # `npm login` and `docker login`
+  - NpmToken
+  - DockerToken
+
+# Repositories created at the first start that we don't use.
+nexus3_remove_repositories:
+  - maven-central
+  - maven-public
+  - maven-releases
+  - maven-snapshots
+  - nuget-group
+  - nuget-hosted
+  - nuget.org-proxy
+
+_nexus3_storage: &storage
+  blobStoreName: default
+  strictContentTypeValidation: true
+
+_nexus3_proxy_common: &proxy_common
+  negativeCache: {enabled: true, timeToLive: 1440}
+  httpClient: {blocked: false, autoBlock: true}
+
+# Repositories, in creation order (groups after their members). "path" is
+# the format/type part of the REST API path, "body" what the API expects.
+# Names follow Nexus 2, so old URLs map onto them by replacing
+# /content/groups/ and /content/repositories/ with /repository/ (done in
+# fsicos4's Caddy).
+nexus3_repositories:
+  # Our own artifacts: public.
+  - path: maven/hosted
+    body:
+      name: releases
+      online: true
+      storage: {<<: *storage, writePolicy: ALLOW_ONCE}
+      # PERMISSIVE: sbt plugins use sbt's own layout (directory
+      # name_2.12_1.0, files name-1.0.jar), which STRICT rejects.
+      maven: {versionPolicy: RELEASE, layoutPolicy: PERMISSIVE, contentDisposition: INLINE}
+  - path: maven/hosted
+    body:
+      name: snapshots
+      online: true
+      # sbt publishes non-unique snapshots, i.e. overwrites the same files.
+      storage: {<<: *storage, writePolicy: ALLOW}
+      maven: {versionPolicy: SNAPSHOT, layoutPolicy: PERMISSIVE, contentDisposition: INLINE}
+  # Jars we could not get from a public repository. Private, because we may
+  # not be allowed to redistribute them.
+  - path: maven/hosted
+    body:
+      name: thirdparty
+      online: true
+      storage: {<<: *storage, writePolicy: ALLOW_ONCE}
+      maven: {versionPolicy: MIXED, layoutPolicy: PERMISSIVE, contentDisposition: INLINE}
+  # Caches: private.
+  - path: maven/proxy
+    body:
+      name: central
+      online: true
+      storage: *storage
+      proxy: {remoteUrl: "https://repo1.maven.org/maven2/", contentMaxAge: -1, metadataMaxAge: 1440}
+      <<: *proxy_common
+      maven: {versionPolicy: RELEASE, layoutPolicy: PERMISSIVE, contentDisposition: INLINE}
+  - path: maven/proxy
+    body:
+      name: unidata
+      online: true
+      storage: *storage
+      proxy: {remoteUrl: "https://artifacts.unidata.ucar.edu/repository/unidata-all/", contentMaxAge: 1440, metadataMaxAge: 1440}
+      <<: *proxy_common
+      maven: {versionPolicy: MIXED, layoutPolicy: PERMISSIVE, contentDisposition: INLINE}
+  - path: maven/proxy
+    body:
+      name: shibboleth
+      online: true
+      storage: *storage
+      proxy: {remoteUrl: "https://build.shibboleth.net/maven/releases/", contentMaxAge: -1, metadataMaxAge: 1440}
+      <<: *proxy_common
+      maven: {versionPolicy: RELEASE, layoutPolicy: PERMISSIVE, contentDisposition: INLINE}
+  # What builds point at: our repositories plus the caches. Private, so we
+  # are not a free mirror of Maven Central.
+  - path: maven/group
+    body:
+      name: public
+      online: true
+      storage: *storage
+      group: {memberNames: [releases, snapshots, thirdparty, central, unidata, shibboleth]}
+  # sbt's Ivy-layout repositories. Nexus 3 has no Ivy format; "raw" proxies
+  # pass any path through.
+  - path: raw/proxy
+    body:
+      name: typesafe
+      online: true
+      storage: *storage
+      proxy: {remoteUrl: "https://scala.jfrog.io/artifactory/ivy-releases/", contentMaxAge: 1440, metadataMaxAge: 1440}
+      <<: *proxy_common
+      raw: {contentDisposition: ATTACHMENT}
+  - path: raw/proxy
+    body:
+      name: sbt
+      online: true
+      storage: *storage
+      proxy: {remoteUrl: "https://scala.jfrog.io/artifactory/sbt-plugin-releases/", contentMaxAge: 1440, metadataMaxAge: 1440}
+      <<: *proxy_common
+      raw: {contentDisposition: ATTACHMENT}
+  - path: raw/group
+    body:
+      name: ivy-releases
+      online: true
+      storage: *storage
+      group: {memberNames: [typesafe, sbt]}
+  # npm: our packages public, the npmjs cache private.
+  - path: npm/hosted
+    body:
+      name: npm-hosted
+      online: true
+      storage: {<<: *storage, writePolicy: ALLOW_ONCE}
+  - path: npm/proxy
+    body:
+      name: npmjs
+      online: true
+      storage: *storage
+      proxy: {remoteUrl: "https://registry.npmjs.org/", contentMaxAge: 1440, metadataMaxAge: 1440}
+      <<: *proxy_common
+  - path: npm/group
+    body:
+      name: npm
+      online: true
+      storage: *storage
+      group: {memberNames: [npm-hosted, npmjs]}
+  # Docker: private, like today's registry.icos-cp.eu.
+  - path: docker/hosted
+    body:
+      name: docker-hosted
+      online: true
+      storage: {<<: *storage, writePolicy: ALLOW}
+      docker: {v1Enabled: false, forceBasicAuth: true, httpPort: "{{ nexus3_docker_port }}"}
+
+# Roles (privilege names: nx-repository-view-<format>-<repo>-<action>).
+nexus3_roles:
+  - id: icos-public
+    name: icos-public
+    description: Anonymous users. Our own artifacts only, no caches.
+    privileges:
+      - nx-healthcheck-read
+      - nx-search-read
+      - nx-repository-view-maven2-releases-browse
+      - nx-repository-view-maven2-releases-read
+      - nx-repository-view-maven2-snapshots-browse
+      - nx-repository-view-maven2-snapshots-read
+      - nx-repository-view-npm-npm-hosted-browse
+      - nx-repository-view-npm-npm-hosted-read
+    roles: []
+  - id: icos-read
+    name: icos-read
+    description: Team members and CI. Everything, read-only.
+    privileges:
+      - nx-healthcheck-read
+      - nx-search-read
+      - nx-apikey-all
+      - nx-repository-view-*-*-browse
+      - nx-repository-view-*-*-read
+    roles: []
+  - id: icos-deploy
+    name: icos-deploy
+    description: Publishing to our repositories.
+    privileges:
+      - nx-repository-view-maven2-releases-add
+      - nx-repository-view-maven2-releases-edit
+      - nx-repository-view-maven2-snapshots-add
+      - nx-repository-view-maven2-snapshots-edit
+      - nx-repository-view-maven2-snapshots-delete
+      - nx-repository-view-maven2-thirdparty-add
+      - nx-repository-view-maven2-thirdparty-edit
+      - nx-repository-view-npm-npm-hosted-add
+      - nx-repository-view-npm-npm-hosted-edit
+      - nx-repository-view-docker-docker-hosted-add
+      - nx-repository-view-docker-docker-hosted-edit
+    roles: [icos-read]
+
+nexus3_anonymous_roles: [icos-public]
+
+#   - { userId: deployment, password: "...", roles: [icos-deploy] }
+nexus3_users: []

@@ -1,0 +1,30 @@
+# envri.eu on its own VM (vm-fsicos4-envri.yml), moved from the fsicos2
+# container wordpress-envri (deleted 2026-11-18; its borg repos on fsicos2
+# and icos1 are kept).
+#
+# envri.eu is only routed here once envri_live is true; until then
+# the copy can be tested through the VM directly:
+#   curl -H 'Host: envri.eu' -H 'X-Forwarded-Proto: https' http://10.10.10.202/
+envri_live: true
+
+envri_domain: envri.eu
+envri_redirect_domains:
+  - www.envri.eu
+
+# SITSYSTECH maintains the site. Their user can edit the WordPress files and
+# run wp-cli, but has no root, no docker and no access to the internal
+# networks (vmbr0, nebula).
+envri_collaborator: sitsystech
+envri_collaborator_key: "{{ vault_envri_sitsystech_ssh_key }}"
+
+# Admins log in as themselves and use sudo; Ansible connects as jonathan
+# (hosts.yml). Root keeps only fsicos4's key (qm/px tooling) and, for now,
+# Jonathan's keys. Both lists are exclusive: other keys are removed.
+user_conf:
+  create_users:
+    - "{{ admin_jonathan }}"
+    - "{{ admin_robert }}"
+# vault_fsicos4_vms_root_keys is fsicos4's key plus the shared team list
+# (vault_root_keys); only fsicos4's key is taken from it.
+root_keys: "{{ (vault_fsicos4_vms_root_keys.splitlines() | select('search', ' root@fsicos4$') | list
+  + vault_jonathan_ssh.splitlines()) | join('\n') }}"

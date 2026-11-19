@@ -3,9 +3,21 @@ all:
     fsicos4_ip: 130.235.92.135
 
     # Separate SITES core VM on fsicos4.
-    cpauth_sites_domain: auth.fieldsites.se
-    cpmeta_sites_domain: meta.fieldsites.se
-    cpdata_sites_domain: data.fieldsites.se
+    #
+    # Until the cutover from fsicos2, the VM is tested under
+    # meta/data/auth.next.fieldsites.se (DNS: *.next.fieldsites.se points to
+    # fsicos4), with PID minting and B2SAFE in dry-run mode, search engines
+    # kept out and its own login cookie domain; see
+    # templates/application_sites_next_amendment.conf (also the test banner).
+    # At the cutover, set sites_next to false and redeploy cpmeta, cpdata,
+    # cpauth and the proxy.
+    # The object URIs stay https://meta.fieldsites.se/... either way.
+    sites_next: true
+    sites_domain: "{{ 'next.fieldsites.se' if sites_next else 'fieldsites.se' }}"
+
+    cpauth_sites_domain: "auth.{{ sites_domain }}"
+    cpmeta_sites_domain: "meta.{{ sites_domain }}"
+    cpdata_sites_domain: "data.{{ sites_domain }}"
 
     cpauth_domains:
       - "{{ cpauth_sites_domain }}"
@@ -32,42 +44,66 @@ all:
 
     # DOI application
     doi_envri: SITES
-    doi_meta_domain: "{{ cpmeta_sites_domain }}"
+    # The live doi.fieldsites.se: always production's cpmeta, also while
+    # cpmeta_sites_domain is the test name.
+    doi_meta_domain: meta.fieldsites.se
+    doi_auth_views_vars:
+      cpauth_sites_domain: auth.fieldsites.se
+      cpdata_sites_domain: data.fieldsites.se
 
   children:
     core_host:
       hosts:
+        # VM 131 on fsicos4 (fsicos4-sites in production.inventory, whose
+        # vm-fsicos4-sites.yml sets up the base system and admin accounts).
         sites:
           ansible_host: fsicos4.icos-cp.eu
           ansible_port: 60619
-          ansible_user: root
+          ansible_user: jonathan
+          ansible_become: true
 
       vars:
         # Services bind to all VM interfaces because the reverse proxy runs on the fsicos4 host.
+        # vm-fsicos4-sites.yml only lets fsicos4 (10.10.10.1) reach their ports.
         coreapp_bind_addr: 0.0.0.0
+
+        # The deploy checks ask the services on the VM itself rather than
+        # through the public names (the production ones point to fsicos2
+        # until the cutover).
+        coreapp_check_local: true
+
+        # While testing under *.next (sites_next, see above).
+        sites_next_config: "{{ ['sites.inventory/templates/application_sites_next_amendment.conf'] if sites_next else [] }}"
+
+        # Backups stay off while this is a test copy of the fsicos2 data. Before
+        # going live, enable them with bbclient names of their own: the
+        # defaults (cpmeta, rdflog, postgis, restheart) are fsicos2's repos.
 
         # cpmeta - application
         cpmeta_filestorage_target: /disk/data/metaAppStorage
-        cpmeta_backup_enable: true
-        cpmeta_config_files:
-          - application_production.conf
-          - application_production_sensitive.conf
+        cpmeta_backup_enable: false
+        cpmeta_config_files: "{{ ['application_production.conf', 'application_production_sensitive.conf'] + sites_next_config }}"
 
-        rdflog_backup_enable: true
-        rdflog_postgres_version: 10
+        rdflog_backup_enable: false
+        # fsicos2 still runs 10; the SITES tables are copied with pg_dump.
+        rdflog_postgres_version: 15
 
         # cpdata - application
         cpdata_filestorage_target: /disk/data/dataAppStorage
-        cpdata_config_files:
-          - application_production.conf
+        cpdata_config_files: "{{ ['application_production.conf'] + sites_next_config }}"
+        cpdata_b2safe_dry_run: "{{ sites_next }}"
 
         # cpauth - application
-        cpauth_config_files:
-          - application_production.conf
+        cpauth_backup_enable: false
+        # The vault's OAuth clients include ICOS's ENVRI-ID one (staging, #104),
+        # which the production cpauth jar does not know: it refuses to start.
+        # Drop it until SITES runs a jar that has it.
+        cpauth_oauth_conf: "{{ vault_cpauth_oauth_conf | regex_replace('(?s)\\s*envriId\\s*\\{[^}]*\\}', '') }}"
+        cpauth_config_files: "{{ ['application_production.conf'] + sites_next_config }}"
 
         postgis_db_port: 5438
         postgis_hostname: 127.0.0.1
-        postgis_backup_enable: true
+        postgis_backup_enable: false
 
         cpauth_envries:
           - name: SITES
@@ -88,7 +124,43 @@ all:
         coreapp_host_ip: "{{ fsicos4_ip }}"
 
         core_caddy_name: core-sites-fs4
+        # Like the nginx sites on fsicos2 (roles/icos.*/templates/*.conf),
+        # minus ICOS-only parts. Caddy sets X-Forwarded-For itself.
         core_caddy_conf: |
           {{ doi_domains | first }} {
                   reverse_proxy {{ coreapp_httpproxy_host }}:8079
+          }
+
+          {% if sites_next %}
+          (sites_next) {
+                  header X-Robots-Tag "noindex, nofollow"
+          }
+          {% endif %}
+
+          {{ cpmeta_domains | join(' ') }} {
+                  {{ 'import sites_next' if sites_next else '' }}
+                  request_body {
+                          max_size 60MB
+                  }
+                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpmeta_port }}
+          }
+
+          {{ cpdata_domains | join(' ') }} {
+                  {{ 'import sites_next' if sites_next else '' }}
+                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpdata_port }}
+          }
+
+          {{ cpauth_domains | join(' ') }} {
+                  {{ 'import sites_next' if sites_next else '' }}
+                  # Only for the services themselves (fsicos2: allow
+                  # coreapp_host_ip). From the VM, the request comes from its
+                  # bridge address.
+                  @downloads_log {
+                          path /logs/downloads*
+                          not remote_ip 127.0.0.1 {{ coreapp_host_ip }} 10.10.10.25
+                  }
+                  respond @downloads_log 403
+                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpauth_port }} {
+                          header_up X-Real-IP {remote_host}
+                  }
           }

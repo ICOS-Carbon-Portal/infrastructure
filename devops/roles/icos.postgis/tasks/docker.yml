@@ -32,8 +32,11 @@
     command: /bin/bash -c "apt-get update && apt-get -y install {{ postgis_package }}"
     chdir: /root
 
+# From apt rather than pip: newer distributions (Ubuntu 24.04+) refuse pip
+# installs into the system Python.
 - name: Install psycopg2 for Ansible to be able to create postgresql dbs and users
-  pip: name=psycopg2-binary
+  apt:
+    name: python3-psycopg2
   become: yes
 
 - name: Create postgis databases

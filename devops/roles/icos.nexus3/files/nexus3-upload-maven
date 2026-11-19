@@ -1,0 +1,46 @@
+#!/bin/bash
+# Upload a Maven repository directory (e.g. a copy of Nexus 2's
+# storage/releases) to a Nexus 3 hosted repository, file by file.
+#
+#   NEXUS3_PASSWORD=... nexus3-upload-maven DIR URL USER
+#   e.g. nexus3-upload-maven /srv/nexus2-import/releases http://127.0.0.1:8081/repository/releases deployment
+#
+# Nexus 3 computes checksums and maven-metadata.xml itself, so those are
+# skipped, as are Nexus 2's own files (.nexus, .meta, archetype-catalog.xml). Failed uploads are listed
+# at the end; running it again retries everything (ALLOW_ONCE repositories
+# then answer 409 for files already there, which counts as done).
+set -Eeuo pipefail
+
+dir=${1:?directory} url=${2:?repository URL} user=${3:?user}
+: "${NEXUS3_PASSWORD:?set NEXUS3_PASSWORD}"
+failed=$(mktemp)
+trap 'rm -f "$failed"' EXIT
+
+upload() {
+    local rel=$1 code
+    code=$(curl -sS -o /dev/null -w '%{http_code}' -u "$user:$NEXUS3_PASSWORD" \
+        --upload-file "$dir/$rel" "$url/$rel") || code=000
+    case $code in
+        201|204|200) ;;
+        400|409) # ALLOW_ONCE: already uploaded (or rejected: checked below)
+            curl -sfI -o /dev/null -u "$user:$NEXUS3_PASSWORD" "$url/$rel" || echo "$code $rel" ;;
+        *) echo "$code $rel" ;;
+    esac
+}
+export -f upload
+export dir url user NEXUS3_PASSWORD
+
+cd "$dir"
+total=$(find . -type f -not -path '*/.nexus/*' -not -path './.meta/*' -not -name archetype-catalog.xml -not -name 'maven-metadata.xml*' \
+    -not -name '*.md5' -not -name '*.sha1' -not -name '*.sha256' -not -name '*.sha512' | wc -l)
+echo "Uploading $total files from $dir to $url"
+find . -type f -not -path '*/.nexus/*' -not -path './.meta/*' -not -name archetype-catalog.xml -not -name 'maven-metadata.xml*' \
+    -not -name '*.md5' -not -name '*.sha1' -not -name '*.sha256' -not -name '*.sha512' -printf '%P\0' \
+    | sort -z | xargs -0 -n1 -P4 bash -c 'upload "$0"' > "$failed"
+
+if [[ -s $failed ]]; then
+    echo "$(wc -l < "$failed") of $total uploads failed:"
+    cat "$failed"
+    exit 1
+fi
+echo "All $total files uploaded"

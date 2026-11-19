@@ -1,0 +1,32 @@
+# Test VM for the replacement of Nexus 2 (vm-fsicos4-repotest.yml). It runs
+# both candidates side by side with the same accounts and the same rules:
+#
+#   - our own artifacts (Maven releases/snapshots, our npm packages) can be
+#     downloaded without logging in;
+#   - the caches of outside repositories (Maven Central, sbt/Ivy, npmjs) and
+#     thirdparty need a login (the "reader" account, or "deployment");
+#   - only "deployment" can publish.
+
+# fsicos4's Caddy only gets these sites once their DNS points at fsicos4
+# (130.235.92.135). Until then, *.icos-cp.eu resolves to fsicos2 and Caddy
+# would fail to get certificates. Test before that through the VM directly:
+#   curl http://10.10.10.204:8081/...   (from fsicos4)
+repotest_dns_ready: false
+
+repotest_nexus3_domain: nexus3-test.icos-cp.eu
+repotest_reposilite_domain: reposilite-test.icos-cp.eu
+
+# Same accounts on all three systems, so the client configuration only
+# differs by URL.
+repotest_admin_password: "{{ vault_repotest_admin_password }}"
+repotest_deployment_password: "{{ vault_repotest_deployment_password }}"
+repotest_reader_password: "{{ vault_repotest_reader_password }}"
+
+# Admins log in as themselves and use sudo; Ansible connects as jonathan
+# (hosts.yml). Root keeps only fsicos4's key (qm/px tooling) and Jonathan's.
+user_conf:
+  create_users:
+    - "{{ admin_jonathan }}"
+    - "{{ admin_robert }}"
+root_keys: "{{ (vault_fsicos4_vms_root_keys.splitlines() | select('search', ' root@fsicos4$') | list
+  + vault_jonathan_ssh.splitlines()) | join('\n') }}"

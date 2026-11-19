@@ -1,0 +1,106 @@
+- name: Check Reposilite secrets
+  assert:
+    that:
+      - reposilite_admin_secret | default('') | length >= 16
+      - reposilite_loopback_secret | default('') | length >= 16
+
+- name: Fill in Reposilite repository defaults
+  set_fact:
+    _reposilite_repositories: "{{ _reposilite_repositories | default([]) + [_reposilite_repo_defaults | combine(item)] }}"
+  loop: "{{ reposilite_repositories }}"
+  loop_control:
+    label: "{{ item.id }}"
+  vars:
+    _reposilite_repo_defaults:
+      preserveSnapshots: false
+      storageProvider: {type: fs, quota: "100%", mount: "", filePermissions: "600"}
+      storagePolicy: PRIORITIZE_UPSTREAM_METADATA
+      metadataMaxAge: 0
+      resolutionCacheMaxEntries: 0
+      proxied: []
+      parallelMetadataLookup: false
+      resolutionCacheLevel: NEGATIVE_CACHING
+
+- name: Create Reposilite directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    # The image runs Reposilite as uid/gid 977.
+    owner: "977"
+    group: "977"
+  loop:
+    - "{{ reposilite_home }}/data"
+
+- name: Copy Reposilite docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ reposilite_home }}/docker-compose.yml"
+  register: _reposilite_compose
+
+- name: Store Reposilite admin secret
+  copy:
+    dest: "{{ reposilite_home }}/.env"
+    content: |
+      REPOSILITE_ADMIN_SECRET={{ reposilite_admin_secret }}
+    mode: "0600"
+  register: _reposilite_env
+
+# With --shared-configuration the settings come from this file instead of
+# the database, and the web UI cannot change them.
+- name: Copy Reposilite shared configuration
+  template:
+    src: configuration.shared.json.j2
+    dest: "{{ reposilite_home }}/data/configuration.shared.json"
+    owner: "977"
+    group: "977"
+    # Contains the loopback secret.
+    mode: "0600"
+  register: _reposilite_shared
+
+- name: Start Reposilite
+  community.docker.docker_compose_v2:
+    project_src: "{{ reposilite_home }}"
+    state: present
+    pull: missing
+    recreate: "{{ 'always' if (_reposilite_compose.changed or _reposilite_env.changed or _reposilite_shared.changed) else 'auto' }}"
+
+- name: Wait for Reposilite
+  uri:
+    url: "http://127.0.0.1:{{ reposilite_port }}/api/tokens"
+    user: "{{ reposilite_admin_name }}"
+    password: "{{ reposilite_admin_secret }}"
+    force_basic_auth: true
+  register: _reposilite_up
+  until: _reposilite_up.status == 200
+  retries: 30
+  delay: 5
+  changed_when: false
+
+- name: Create or update Reposilite tokens
+  uri:
+    url: "http://127.0.0.1:{{ reposilite_port }}/api/tokens/{{ item.name }}"
+    method: PUT
+    user: "{{ reposilite_admin_name }}"
+    password: "{{ reposilite_admin_secret }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      type: PERSISTENT
+      secretType: RAW
+      secret: "{{ item.secret }}"
+      permissions: "{{ item.permissions | default([]) }}"
+      routes: "{{ item.routes }}"
+      description: "{{ item.description | default('Managed by Ansible') }}"
+  loop: "{{ reposilite_tokens + [_reposilite_loopback_token] }}"
+  loop_control:
+    label: "{{ item.name }}"
+  vars:
+    _reposilite_loopback_token:
+      name: "{{ reposilite_loopback_name }}"
+      secret: "{{ reposilite_loopback_secret }}"
+      description: Lets the public repository read thirdparty
+      routes:
+        - {path: /thirdparty, permissions: [r]}
+  # PUT replaces the token every time, so there is no change to detect.
+  changed_when: false
+  no_log: true

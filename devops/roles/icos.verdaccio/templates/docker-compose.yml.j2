@@ -1,0 +1,15 @@
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:{{ verdaccio_version }}
+    container_name: verdaccio
+    restart: unless-stopped
+    ports:
+      - "{{ verdaccio_port }}:4873"
+{% if verdaccio_public_url is defined %}
+    environment:
+      VERDACCIO_PUBLIC_URL: "{{ verdaccio_public_url }}"
+{% endif %}
+    volumes:
+      - ./conf:/verdaccio/conf
+      - ./storage:/verdaccio/storage
+      - /etc/localtime:/etc/localtime:ro
