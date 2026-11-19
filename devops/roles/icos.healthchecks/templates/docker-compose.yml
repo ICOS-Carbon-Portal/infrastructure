@@ -1,0 +1,36 @@
+services:
+  db:
+    image: {{ healthchecks_postgres_image }}
+    container_name: healthchecks-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "hc"]
+      interval: 10s
+      retries: 6
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  web:
+    image: {{ healthchecks_image }}
+    container_name: healthchecks
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "{{ healthchecks_port }}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

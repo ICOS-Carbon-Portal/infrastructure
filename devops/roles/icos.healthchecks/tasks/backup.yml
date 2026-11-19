@@ -1,0 +1,30 @@
+# To enable, uncomment the code below and the backup task in vm-healthchecks.yml.
+#
+# - name: Create healthchecks bbclient bin directory
+#   file:
+#     path: "/opt/bbclient-{{ healthchecks_backup_name }}/bin"
+#     state: directory
+#     mode: "0755"
+#
+# - include_role:
+#     name: icos.bbclient2
+#     public: yes
+#   vars:
+#     bbclient_name: "{{ healthchecks_backup_name }}"
+#     bbclient_home: "/opt/bbclient-{{ healthchecks_backup_name }}"
+#     bbclient_remotes: "{{ healthchecks_backup_remotes }}"
+#     bbclient_timer_conf: |
+#       OnCalendar=*-*-* 03:15:00
+#       RandomizedDelaySec=30m
+#     bbclient_timer_content: |
+#       #!/bin/bash
+#       set -Eueo pipefail
+#
+#       cd {{ healthchecks_home | quote }}
+#       mkdir -p backup
+#       docker compose exec -T db pg_dump -U postgres --format=custom hc > backup/hc.dump.tmp
+#       mv backup/hc.dump.tmp backup/hc.dump
+#
+#       {{ bbclient_all }} create --stats --verbose "::{now}" {{ healthchecks_home | quote }} --exclude {{ (healthchecks_home ~ '/db') | quote }}
+#       {{ bbclient_all }} prune --stats --list --keep-within=7d --keep-daily=30 --keep-weekly=52
+#       {{ bbclient_all }} compact --verbose

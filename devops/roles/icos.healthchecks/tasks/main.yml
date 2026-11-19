@@ -1,0 +1,51 @@
+- name: Include vault
+  include_vars: vault.yml
+
+- name: Create healthchecks directory
+  file:
+    path: "{{ healthchecks_home }}"
+    state: directory
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ healthchecks_home }}/docker-compose.yml"
+
+- name: Copy .env
+  template:
+    src: env
+    dest: "{{ healthchecks_home }}/.env"
+    mode: "0600"
+  diff: no
+
+- name: Start healthchecks
+  community.docker.docker_compose_v2:
+    project_src: "{{ healthchecks_home }}"
+    wait: true
+
+- name: Wait for healthchecks
+  uri:
+    url: "http://127.0.0.1:{{ healthchecks_port }}/api/v3/status/"
+    # Django rejects requests for hosts that aren't in ALLOWED_HOSTS, so change host name
+    headers:
+      Host: "{{ healthchecks_domain }}"
+  register: _healthchecks_status
+  until: _healthchecks_status.status == 200
+  retries: 12
+  delay: 10
+  when: not ansible_check_mode
+
+- name: Create superuser
+  command: >-
+    docker compose exec -T web /opt/healthchecks/manage.py createsuperuser
+    --email {{ healthchecks_admin_email | quote }}
+    --password {{ healthchecks_admin_password | quote }}
+  args:
+    chdir: "{{ healthchecks_home }}"
+  register: _healthchecks_superuser
+  no_log: true
+  changed_when: _healthchecks_superuser.rc == 0
+  failed_when:
+    - _healthchecks_superuser.rc != 0
+    - "'is already taken' not in _healthchecks_superuser.stderr"
+  when: not ansible_check_mode

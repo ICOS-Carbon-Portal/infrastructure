@@ -1,0 +1,31 @@
+healthchecks_version: v5.0.3
+healthchecks_image: "healthchecks/healthchecks:{{ healthchecks_version }}"
+healthchecks_postgres_image: postgres:16
+
+healthchecks_home: /docker/healthchecks
+healthchecks_port: 8000
+
+healthchecks_domain: healthchecks.icos-cp.eu
+healthchecks_site_root: "https://{{ healthchecks_domain }}"
+healthchecks_site_name: ICOS Healthchecks
+# Upstream's default is 10000 bytes; icos.timer sends up to 100 kB of job
+# output (timer_healthcheck_ping_body_limit).
+healthchecks_ping_body_limit: 100000
+
+healthchecks_secret_key: "{{ vault_healthchecks_secret_key }}"
+healthchecks_db_password: "{{ vault_healthchecks_db_password }}"
+
+healthchecks_admin_email: "{{ vault_healthchecks_admin_email }}"
+healthchecks_admin_password: "{{ vault_healthchecks_admin_password }}"
+
+healthchecks_smtp_host: "{{ vault_healthchecks_smtp_host }}"
+healthchecks_smtp_port: "{{ vault_healthchecks_smtp_port }}"
+healthchecks_smtp_user: "{{ vault_healthchecks_smtp_user }}"
+healthchecks_smtp_password: "{{ vault_healthchecks_smtp_password }}"
+healthchecks_smtp_from: "{{ vault_healthchecks_smtp_from }}"
+healthchecks_smtp_use_tls: true
+healthchecks_smtp_use_ssl: false
+
+healthchecks_backup_name: healthchecks
+healthchecks_backup_remotes:
+  - icos1

@@ -1,0 +1,23 @@
+DEBUG=False
+SECRET_KEY='{{ healthchecks_secret_key }}'
+SITE_ROOT={{ healthchecks_site_root }}
+SITE_NAME={{ healthchecks_site_name }}
+ALLOWED_HOSTS={{ healthchecks_domain }}
+REGISTRATION_OPEN=False
+SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
+PING_BODY_LIMIT={{ healthchecks_ping_body_limit }}
+
+DB=postgres
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=hc
+DB_USER=postgres
+DB_PASSWORD='{{ healthchecks_db_password }}'
+
+EMAIL_HOST={{ healthchecks_smtp_host }}
+EMAIL_PORT={{ healthchecks_smtp_port }}
+EMAIL_HOST_USER={{ healthchecks_smtp_user }}
+EMAIL_HOST_PASSWORD='{{ healthchecks_smtp_password }}'
+EMAIL_USE_TLS={{ healthchecks_smtp_use_tls | bool }}
+EMAIL_USE_SSL={{ healthchecks_smtp_use_ssl | bool }}
+DEFAULT_FROM_EMAIL={{ healthchecks_smtp_from }}
