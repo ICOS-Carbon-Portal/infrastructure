@@ -101,6 +101,9 @@
       OnCalendar={{ mapproxy_refresh_time }}
       Persistent=true
     timer_exec: /usr/bin/python3 {{ mapproxy_home }}/refresh.py {{ mapproxy_home }}/refresh.json
+    timer_healthcheck: true
+    # A refresh usually takes seconds, but up to 5 hours when there's a new map
+    timer_healthcheck_grace: 21600
 
 - name: Start mapproxy
   community.docker.docker_compose_v2:
