@@ -2,10 +2,8 @@
 # fsicos2 container wordpress-eric-forum-dev (deleted 2026-11-18; its borg
 # repos on fsicos2 and icos1 are kept).
 #
-# eric-forum.eu is only routed here once ericforum_live is true; until then
-# the copy can be tested through the VM directly:
+# Test the site on the VM directly, bypassing fsicos4's Caddy:
 #   curl -H 'Host: eric-forum.eu' -H 'X-Forwarded-Proto: https' http://10.10.10.203/
-ericforum_live: true
 
 ericforum_domain: eric-forum.eu
 # www is a CNAME of the apex in DNS; fsicos4 redirects it to the apex.

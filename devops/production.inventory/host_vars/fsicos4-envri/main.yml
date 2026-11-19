@@ -2,10 +2,8 @@
 # container wordpress-envri (deleted 2026-11-18; its borg repos on fsicos2
 # and icos1 are kept).
 #
-# envri.eu is only routed here once envri_live is true; until then
-# the copy can be tested through the VM directly:
+# Test the site on the VM directly, bypassing fsicos4's Caddy:
 #   curl -H 'Host: envri.eu' -H 'X-Forwarded-Proto: https' http://10.10.10.202/
-envri_live: true
 
 envri_domain: envri.eu
 envri_redirect_domains:

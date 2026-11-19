@@ -38,7 +38,6 @@
       vars:
         caddy_name: ericforum
         caddy_conf: |
-          {% if ericforum.ericforum_live %}
           {{ ericforum.ericforum_domain }} {
               reverse_proxy {{ ericforum.vm_ip }}:80 {
                   header_up X-Forwarded-For {remote_host}
@@ -49,7 +48,6 @@
           {{ ericforum.ericforum_redirect_domains | join(', ') }} {
               redir https://{{ ericforum.ericforum_domain }}{uri} permanent
           }
-          {% endif %}
 
 
 - hosts: fsicos4-ericforum

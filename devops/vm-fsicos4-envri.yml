@@ -38,7 +38,6 @@
       vars:
         caddy_name: envri
         caddy_conf: |
-          {% if envri.envri_live %}
           {{ envri.envri_domain }} {
               reverse_proxy {{ envri.vm_ip }}:80 {
                   header_up X-Forwarded-For {remote_host}
@@ -49,7 +48,6 @@
           {{ envri.envri_redirect_domains | join(', ') }} {
               redir https://{{ envri.envri_domain }}{uri} permanent
           }
-          {% endif %}
 
 
 - hosts: fsicos4-envri
