@@ -112,6 +112,16 @@
         mode: "0644"
         force: false
 
+# From here until the caches are warm again, visitors get the static
+# maintenance page instead of errors and half-updated pages. If the play fails
+# on the way, the page stays on until a rerun gets past the warm-up.
+- name: Show the maintenance page for {{ site.name }}
+  copy:
+    content: ""
+    dest: "{{ drupal_maintenance_dir }}/{{ site.name }}.on"
+    mode: "0644"
+  when: drupal_update | bool
+
 - name: Start {{ site.name }} containers
   community.docker.docker_compose_v2:
     project_src: "{{ _site_dir }}/docker"
@@ -247,6 +257,38 @@
 
     - name: Clear {{ site.name }} caches
       command: docker exec {{ _site_container }} drush cr
+
+    # The first page after a cache clear rebuilds Drupal's caches and can take
+    # a minute; let the play wait for it rather than a visitor.
+    - name: Load the {{ site.name }} home page to fill the caches
+      command:
+        argv:
+          - docker
+          - exec
+          - "{{ _site_container }}"
+          - curl
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "%{http_code}"
+          - --max-time
+          - "300"
+          - --header
+          - "Host: {{ site.domain }}"
+          - --header
+          - "X-Forwarded-Proto: https"
+          - http://localhost/
+      register: _site_warm
+      until: _site_warm.stdout == "200"
+      retries: 12
+      delay: 5
+      changed_when: false
+
+    - name: Hide the maintenance page for {{ site.name }}
+      file:
+        path: "{{ drupal_maintenance_dir }}/{{ site.name }}.on"
+        state: absent
 
     - name: Record {{ site.name }} as installed
       set_fact:
