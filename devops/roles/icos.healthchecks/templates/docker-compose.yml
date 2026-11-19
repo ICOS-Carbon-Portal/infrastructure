@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "{{ healthchecks_port }}:8000"
+      - "127.0.0.1:{{ healthchecks_port }}:8000"
     depends_on:
       db:
         condition: service_healthy

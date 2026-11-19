@@ -1,0 +1,33 @@
+# Healthchecks (https://healthchecks.icos-cp.eu) in Docker on cdb, behind cdb's
+# Caddy. The domain must point to cdb before Caddy can get a certificate. After
+# the first deploy, see roles/icos.healthchecks/README.md.
+#
+#   icos play healthchecks -DC                  # everything
+#   icos play healthchecks -t caddy -DC         # routing only
+#   icos play healthchecks -t healthchecks -DC  # the service only
+
+- hosts: cdb
+  vars:
+    healthchecks_domain: healthchecks.icos-cp.eu
+    healthchecks_port: 8095
+  roles:
+    - role: icos.healthchecks
+      tags: healthchecks
+
+    - role: icos.caddy
+      tags: caddy
+      caddy_name: healthchecks
+      caddy_conf: |
+        {{ healthchecks_domain }} {
+            reverse_proxy localhost:{{ healthchecks_port }}
+        }
+
+  # Backups are not enabled yet, see roles/icos.healthchecks/tasks/backup.yml.
+  # tasks:
+  #   - name: Install healthchecks Borg backup
+  #     tags: backup
+  #     include_role:
+  #       name: icos.healthchecks
+  #       tasks_from: backup
+  #       apply:
+  #         tags: backup

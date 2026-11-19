@@ -1,4 +1,4 @@
-# To enable, uncomment the code below and the backup task in vm-healthchecks.yml.
+# To enable, uncomment the code below and the backup task in healthchecks.yml.
 #
 # - name: Create healthchecks bbclient bin directory
 #   file:
