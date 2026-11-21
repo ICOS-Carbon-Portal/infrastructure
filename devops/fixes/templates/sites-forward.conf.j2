@@ -43,6 +43,10 @@ server {
 
         proxy_ssl_server_name on;
         proxy_ssl_name $host;
+        # All three names go to the same upstream address: a TLS session
+        # reused from another name brings that name's certificate, and the
+        # check below fails (502).
+        proxy_ssl_session_reuse off;
         proxy_ssl_verify on;
         proxy_ssl_verify_depth 3;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;

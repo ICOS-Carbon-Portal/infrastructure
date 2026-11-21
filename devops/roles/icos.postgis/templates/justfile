@@ -13,4 +13,4 @@ backup-last:
     while read repo; do
         echo -n "$repo -- "
         BORG_REPO="$repo" bbclient/bin/borg list --last 1
-    done < bbclient/repos
+    done < <(grep -v '^#' bbclient/repos)

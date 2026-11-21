@@ -12,7 +12,7 @@ all:
     # At the cutover, set sites_next to false and redeploy cpmeta, cpdata,
     # cpauth and the proxy.
     # The object URIs stay https://meta.fieldsites.se/... either way.
-    sites_next: true
+    sites_next: false
     sites_domain: "{{ 'next.fieldsites.se' if sites_next else 'fieldsites.se' }}"
 
     cpauth_sites_domain: "auth.{{ sites_domain }}"
