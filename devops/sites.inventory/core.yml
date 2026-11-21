@@ -159,7 +159,13 @@ all:
 
         core_caddy_name: core-sites-fs4
         # Like the nginx sites on fsicos2 (roles/icos.*/templates/*.conf),
-        # minus ICOS-only parts. Caddy sets X-Forwarded-For itself.
+        # minus ICOS-only parts.
+        #
+        # Client address: cpmeta and cpdata read X-Forwarded-For, cpauth reads
+        # X-Real-IP, and they take the whole header value as one address. So
+        # set both to {client_ip}: the peer, or the client that fsicos2 forwards
+        # for (trusted_proxies in host_vars/fsicos4.yml). Caddy's default would
+        # append the peer ("client, fsicos2") for a trusted proxy.
         core_caddy_conf: |
           # Access logs, one JSON file per service (fsicos2's nginx has them
           # too). Caddy leaves Cookie and Authorization headers out.
@@ -172,6 +178,11 @@ all:
                           }
                           format json
                   }
+          }
+
+          (client_ip) {
+                  header_up X-Forwarded-For {client_ip}
+                  header_up X-Real-IP {client_ip}
           }
 
           {{ doi_domains | first }} {
@@ -191,13 +202,17 @@ all:
                   request_body {
                           max_size 60MB
                   }
-                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpmeta_port }}
+                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpmeta_port }} {
+                          import client_ip
+                  }
           }
 
           {{ cpdata_domains | join(' ') }} {
                   {{ 'import sites_next' if sites_next else '' }}
                   import sites_log data
-                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpdata_port }}
+                  reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpdata_port }} {
+                          import client_ip
+                  }
           }
 
           # Like fsicos2's restheart.icos-cp.eu, minus the logged-in admin
@@ -230,6 +245,6 @@ all:
                   }
                   respond @downloads_log 403
                   reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpauth_port }} {
-                          header_up X-Real-IP {remote_host}
+                          import client_ip
                   }
           }

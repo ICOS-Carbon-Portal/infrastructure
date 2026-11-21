@@ -12,3 +12,20 @@ icosdata_exports: |
 
   # flexextract:
   /tank/flexextract 10.10.10.165/32(rw,async,no_subtree_check,no_root_squash) 10.10.10.145/32(rw,async,no_subtree_check,no_root_squash)
+
+# CADDY
+# fsicos2 forwards requests for names that moved here until their DNS has
+# switched (fixes/sites-forward-fsicos2.yml). Trusting it makes Caddy take the
+# client address from its X-Forwarded-For ({client_ip}, the access logs). fsicos2
+# must replace that header rather than append to it: Caddy 2.7 uses the first
+# entry and has no trusted_proxies_strict.
+caddy_global_conf: |
+  {
+    servers {
+      trusted_proxies static 194.47.223.139/32
+    }
+  }
+
+  :80 {
+    respond "Not found." 404
+  }

@@ -10,18 +10,19 @@ all:
     cpdata_icos_domain: data.icos-cp.eu
     cpdata_sites_domain: data.fieldsites.se
 
+    # nginx server names and certificates on fsicos2. The SITES names moved to
+    # the sites VM (sites.inventory); fsicos2 only forwards them until DNS has
+    # switched (fixes/sites-forward-fsicos2.yml). The *_sites_domain variables
+    # above are still used in the services' configuration.
     cpauth_domains:
       - "{{ cpauth_icos_domain }}"
-      - "{{ cpauth_sites_domain }}"
       - "{{ cpauth_cities_domain }}"
 
     cpmeta_domains:
       - "{{ cpmeta_icos_domain }}"
-      - "{{ cpmeta_sites_domain }}"
 
     cpdata_domains:
       - "{{ cpdata_icos_domain }}"
-      - "{{ cpdata_sites_domain }}"
 
     doi_domains:
       - doi.icos-cp.eu

@@ -1,0 +1,115 @@
+# SITES cutover: take meta/data/auth.fieldsites.se off fsicos2's ICOS nginx
+# sites and serve them from their own file instead (templates/sites-forward.conf.j2).
+#
+#   1. Before the cutover, get a certificate for the three names (needs DNS
+#      still pointing to fsicos2; changes no nginx config):
+#        icos play fixes/sites-forward-fsicos2 -t sites_forward_cert -e sites_forward_mode=maintenance
+#   2. Freeze, at the start of the cutover (503 for SITES, ICOS unaffected):
+#        icos play fixes/sites-forward-fsicos2 -e sites_forward_mode=maintenance
+#   3. When the VM is in production mode and Caddy has its certificates:
+#        icos play fixes/sites-forward-fsicos2 -e sites_forward_mode=proxy
+#
+# The live cpmeta.conf has hand-made parts (cache, rate limits) that the
+# icos.cpmeta role doesn't know about, so this only removes the SITES names
+# from the server_name lines instead of re-running the roles' proxy tasks.
+#
+# Rollback: restore the server_name lines (the roles' *_domains lists before
+# the cutover) and delete /etc/nginx/conf.d/sites-forward.conf.
+- hosts: fsicos2
+  vars:
+    sites_forward_target: "{{ fsicos4_ip }}"
+    sites_forward_cert: sites-forward
+    sites_forward_sites:
+      - name: meta.fieldsites.se
+        conf: cpmeta.conf
+      - name: data.fieldsites.se
+        conf: cpdata.conf
+      - name: auth.fieldsites.se
+        conf: cpauth.conf
+    sites_forward_maintenance_html: >-
+      <!doctype html><meta charset="utf-8"><title>SITES data portal: maintenance</title>
+      <h1>Maintenance</h1><p>The SITES data portal is moving to a new server
+      and will be back shortly.</p>
+
+  tasks:
+    - name: Check sites_forward_mode
+      assert:
+        that: sites_forward_mode | default('') in ['maintenance', 'proxy']
+        fail_msg: "Set sites_forward_mode to maintenance or proxy"
+      tags: always
+
+    - name: Look for the certificate
+      stat:
+        path: "/etc/letsencrypt/live/{{ sites_forward_cert }}/fullchain.pem"
+      register: _cert
+      tags: sites_forward_cert
+
+    # Only the first time: once DNS has switched, fsicos2 can no longer get
+    # certificates for these names, and doesn't need new ones.
+    - name: Get a certificate for the SITES names
+      include_role:
+        name: icos.certbot2
+        apply:
+          tags: sites_forward_cert
+      vars:
+        certbot_name: "{{ sites_forward_cert }}"
+        certbot_domains: "{{ sites_forward_sites | map(attribute='name') }}"
+      when: not _cert.stat.exists
+      tags: sites_forward_cert
+
+    - name: Update nginx
+      block:
+        - name: Remove the SITES names from the ICOS sites
+          replace:
+            path: "/etc/nginx/conf.d/{{ item.conf }}"
+            regexp: '^(\s*server_name\s[^;]*?)\s+{{ item.name | regex_escape }}(?=[\s;])'
+            replace: '\1'
+            backup: true
+          loop: "{{ sites_forward_sites }}"
+          register: _names
+
+        - name: Add the SITES forward site
+          template:
+            src: sites-forward.conf.j2
+            dest: /etc/nginx/conf.d/sites-forward.conf
+            backup: true
+          register: _forward
+
+        - name: Check nginx config
+          command: nginx -t
+          changed_when: false
+
+        - name: Reload nginx
+          systemd:
+            name: nginx
+            state: reloaded
+          when: _names is changed or _forward is changed
+
+      rescue:
+        - name: Restore the ICOS sites
+          copy:
+            remote_src: true
+            src: "{{ item.backup_file }}"
+            dest: "{{ item.invocation.module_args.path }}"
+          loop: "{{ _names.results | default([]) }}"
+          when: item.backup_file is defined
+
+        - name: Restore the previous forward site
+          copy:
+            remote_src: true
+            src: "{{ _forward.backup_file }}"
+            dest: /etc/nginx/conf.d/sites-forward.conf
+          when: _forward.backup_file is defined
+
+        - name: Remove a new, broken forward site
+          file:
+            path: /etc/nginx/conf.d/sites-forward.conf
+            state: absent
+          when:
+            - _forward is defined
+            - _forward is changed
+            - _forward.backup_file is not defined
+
+        - name: Stop here
+          fail:
+            msg: "nginx rejected the new config; the old one is back in place"
