@@ -112,7 +112,7 @@ all:
         # cpmeta - application
         cpmeta_filestorage_target: /disk/data/metaAppStorage
         cpmeta_backup_enable: "{{ sites_backup_enable }}"
-        cpmeta_config_files: "{{ ['application_production.conf', 'application_production_sensitive.conf'] + sites_next_config }}"
+        cpmeta_config_files: "{{ ['application_production.conf', 'application_production_sensitive.conf', 'sites.inventory/templates/application_sites_amendment.conf'] + sites_next_config }}"
 
         rdflog_backup_enable: "{{ sites_backup_enable }}"
         # fsicos2 still runs 10; the SITES tables are copied with pg_dump.
