@@ -29,6 +29,10 @@
     - role: icos.docker2
       tags: docker
 
+    # For the backups (borg over nebula to icos1 and fsicos2, sites.inventory).
+    - role: icos.nebula
+      tags: nebula
+
   tasks:
     # The application ports listen on all interfaces so that fsicos4's Caddy
     # can reach them; only fsicos4 (10.10.10.1) may. Other VMs on vmbr0 must
@@ -46,6 +50,14 @@
                   type filter hook input priority filter; policy accept;
                   iif "lo" accept
                   tcp dport { {{ sites_app_ports | join(', ') }} } ip saddr != 10.10.10.1 drop
+              }
+              # Ports published by docker are forwarded, not input. rdflog's:
+              # only from nebula, for the streaming replicas; restheart's:
+              # only from fsicos4 (Caddy).
+              chain forward {
+                  type filter hook forward priority filter; policy accept;
+                  ct direction original ct original proto-dst {{ sites_rdflog_port }} iifname != "nebula" drop
+                  ct direction original ct original proto-dst {{ sites_restheart_port }} ip saddr != 10.10.10.1 drop
               }
           }
       register: _fw_rules

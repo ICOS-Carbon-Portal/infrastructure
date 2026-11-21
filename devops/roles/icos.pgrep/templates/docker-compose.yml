@@ -27,7 +27,7 @@ services:
     # on the "host" being an LXD VM! Then an nginx reverse-proxy will connect
     # to this port.
     ports:
-      - "{{ pgrep_metric_port }}:{{ pgrep_metric_port }}"
+      - "{{ pgrep_metric_port }}:9187"
     restart: unless-stopped
     image: quay.io/prometheuscommunity/postgres-exporter
     volumes:

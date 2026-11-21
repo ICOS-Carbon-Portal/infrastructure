@@ -1,4 +1,23 @@
 
+# With rdflog_replication_enable, streaming replicas (icos.pgrep) can connect:
+# the port is published on all interfaces (the host's firewall must limit it,
+# e.g. to nebula), with SSL and a replication user (replication.yml).
+- name: Install postgres ssl key/certificate for replication
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ rdflog_home }}/ssl/"
+    # 999 is the postgres user in the image; the key must not be readable by
+    # others or postgres refuses it.
+    owner: "999"
+    group: "999"
+    mode: "{{ item.mode }}"
+  loop:
+    - name: server.crt
+      mode: "0644"
+    - name: server.key
+      mode: "0600"
+  when: rdflog_replication_enable
+
 - name: (Re-)install rdflog postgres container
   community.general.docker_container:
     name: rdflog
@@ -10,9 +29,15 @@
       POSTGRES_PASSWORD: "{{ rdflog_db_pass }}"
       POSTGRES_DB: "{{ rdflog_db_name }}"
     published_ports:
-      - 127.0.0.1:{{ rdflog_db_port }}:5432
-    volumes:
-      - "/docker/rdflog/volumes/data:/var/lib/postgresql/data"
+      - "{{ '0.0.0.0' if rdflog_replication_enable else '127.0.0.1' }}:{{ rdflog_db_port }}:5432"
+    volumes: "{{ ['/docker/rdflog/volumes/data:/var/lib/postgresql/data']
+                 + ([rdflog_home ~ '/ssl:/etc/rdflog-ssl:ro'] if rdflog_replication_enable else []) }}"
+    # SSL as command-line options rather than ALTER SYSTEM: replicas copy
+    # postgresql.auto.conf with their base backup, but have no certificate.
+    command: "{{ ['postgres', '-c', 'ssl=on',
+                  '-c', 'ssl_cert_file=/etc/rdflog-ssl/server.crt',
+                  '-c', 'ssl_key_file=/etc/rdflog-ssl/server.key']
+                 if rdflog_replication_enable else omit }}"
     restart_policy: always
 
 - name: Wait for rdflog db to become available
@@ -21,3 +46,6 @@
     port: "{{ rdflog_db_port }}"
     delay: 5
     timeout: 60
+
+- import_tasks: replication.yml
+  when: rdflog_replication_enable

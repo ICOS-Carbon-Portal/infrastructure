@@ -8,3 +8,9 @@ rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
 
 rdflog_rep_user: pgrepuser
 rdflog_rep_pass: "{{ vault_rdflog_rep_pass }}"
+
+# barebones.yml (core.yml's rdflog): let icos.pgrep replicas connect, from
+# these addresses only. Off by default; the host's firewall must also limit
+# the published port.
+rdflog_replication_enable: false
+rdflog_replication_cidr: 100.100.4.0/22

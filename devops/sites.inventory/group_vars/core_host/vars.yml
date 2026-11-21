@@ -10,3 +10,7 @@ doi_to_addresses: "{{ vault_doi_to_addresses }}"
 doi_from_address: "{{ vault_doi_from_address }}"
 doi_smtp_host: "{{ vault_doi_smtp_host }}"
 doi_smtp_username: "{{ vault_doi_smtp_username }}"
+
+cpmeta_sentry_dsn: "{{ vault_cpmeta_sentry_dsn }}"
+cpdata_sentry_backend_dsn: "{{ vault_cpdata_sentry_backend_dsn }}"
+cpdata_sentry_portal_dsn: "{{ vault_cpdata_sentry_portal_dsn }}"

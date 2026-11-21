@@ -29,3 +29,58 @@
 
     - role: icos.pgrep
       tags: pgrep
+
+
+# SITES: a second replica instance on pgrep1, of the SITES VM's rdflog
+# (fsicos4-sites, sites.inventory: rdflog_replication_enable). It connects
+# over nebula; the user, password and certificate are the same as fsicos2's.
+- hosts: pgrep_sites_rdflog
+  tags: sites_replica
+  roles:
+    - role: icos.pgrep
+      pgrep_name: sites-rdflog
+      pgrep_image: postgres:15
+      pgrep_metric_port: 9188
+      pgrep_peer_host: "{{ hostvars['fsicos4-sites'].nebula_ip }}"
+      pgrep_peer_port: 2345
+      pgrep_peer_slot: "{{ inventory_hostname }}"
+
+
+# NATIVE REPLICAS
+# PostgreSQL itself in an unprivileged LXD container (icos.pgreplica): no
+# Docker inside the container, so none of the nesting and AppArmor problems
+# of the pgrep replicas.
+- hosts: pgreplica_server
+  tags: pgreplica_vm
+  tasks:
+    # Hosts whose INPUT and FORWARD policies are DROP otherwise give their
+    # containers neither DHCP nor a way out. Inbound, only the DNAT'ed ssh
+    # forward (icos.lxd_forward) reaches them.
+    - name: Let LXD containers get addresses and reach the network
+      iptables_raw:
+        name: allow_lxdbr0
+        rules: |
+          -A INPUT -i lxdbr0 -p udp --dport 67 -j ACCEPT
+          -A INPUT -i lxdbr0 -p udp --dport 53 -j ACCEPT
+          -A INPUT -i lxdbr0 -p tcp --dport 53 -j ACCEPT
+          -A FORWARD -i lxdbr0 -j ACCEPT
+          -A FORWARD -o lxdbr0 -m conntrack --ctstate DNAT -j ACCEPT
+
+    - name: Create the replica container
+      include_role:
+        name: icos.lxd_vm
+      vars:
+        lxd_vm_name: "{{ pgreplica_vm_name }}"
+        lxd_vm_ubuntu_version: "24.04"
+        lxd_vm_config:
+          limits.cpu: "2"
+          limits.memory: 4GB
+
+- hosts: pgreplica
+  tags: pgreplica
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.pgreplica
+      tags: pgreplica

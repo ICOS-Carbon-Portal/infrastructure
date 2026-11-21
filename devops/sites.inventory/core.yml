@@ -52,6 +52,22 @@ all:
       cpdata_sites_domain: data.fieldsites.se
 
   children:
+    # The borg servers the backups go to (bbclient_remotes), as in
+    # production.inventory/borgbackup.yml. Only delegated to; no play runs
+    # on them from this inventory.
+    bbservers:
+      vars:
+        ansible_user: root
+        ansible_port: 60022
+        bbserver_host: "{{ inventory_hostname_short }}.nebula"
+        bbserver_user: bbserver
+        bbserver_port: 60022
+      hosts:
+        icos1:
+          bbserver_home: /pool/bbserver
+        fsicos2:
+          bbserver_home: /disk/data/bbserver
+
     core_host:
       hosts:
         # VM 131 on fsicos4 (fsicos4-sites in production.inventory, whose
@@ -66,6 +82,9 @@ all:
         # Services bind to all VM interfaces because the reverse proxy runs on the fsicos4 host.
         # vm-fsicos4-sites.yml only lets fsicos4 (10.10.10.1) reach their ports.
         coreapp_bind_addr: 0.0.0.0
+        # restheart is published by docker, so the VM's forward chain (not
+        # input) limits it to fsicos4.
+        restheart_bind_host: 0.0.0.0
 
         # The deploy checks ask the services on the VM itself rather than
         # through the public names (the production ones point to fsicos2
@@ -75,18 +94,33 @@ all:
         # While testing under *.next (sites_next, see above).
         sites_next_config: "{{ ['sites.inventory/templates/application_sites_next_amendment.conf'] if sites_next else [] }}"
 
-        # Backups stay off while this is a test copy of the fsicos2 data. Before
-        # going live, enable them with bbclient names of their own: the
-        # defaults (cpmeta, rdflog, postgis, restheart) are fsicos2's repos.
+        # Backups start at the cutover (off while this is a test copy of the
+        # fsicos2 data). The repos have names of their own: the defaults
+        # (cpmeta, rdflog, postgis, restheart, cpauth) are fsicos2's, and a
+        # bbserver keeps all clients' repos in one directory.
+        sites_backup_enable: "{{ not sites_next }}"
+        bbclient_remotes:
+          - icos1
+          - fsicos2
+        cpmeta_bbclient_name: sites-meta
+        rdflog_bbclient_name: sites-rdflog
+        postgis_bbclient_name: sites-postgis
+        restheart_bbclient_name: sites-restheart
+        cpauth_bbclient_name: sites-auth
+        restheart_backup_enable: "{{ sites_backup_enable }}"
 
         # cpmeta - application
         cpmeta_filestorage_target: /disk/data/metaAppStorage
-        cpmeta_backup_enable: false
+        cpmeta_backup_enable: "{{ sites_backup_enable }}"
         cpmeta_config_files: "{{ ['application_production.conf', 'application_production_sensitive.conf'] + sites_next_config }}"
 
-        rdflog_backup_enable: false
+        rdflog_backup_enable: "{{ sites_backup_enable }}"
         # fsicos2 still runs 10; the SITES tables are copied with pg_dump.
         rdflog_postgres_version: 15
+        # Streaming replicas (icos.pgrep, production.inventory/rdflog.yml)
+        # connect over nebula; vm-fsicos4-sites.yml only lets the published
+        # port in from the nebula interface.
+        rdflog_replication_enable: true
 
         # cpdata - application
         cpdata_filestorage_target: /disk/data/dataAppStorage
@@ -94,7 +128,7 @@ all:
         cpdata_b2safe_dry_run: "{{ sites_next }}"
 
         # cpauth - application
-        cpauth_backup_enable: false
+        cpauth_backup_enable: "{{ sites_backup_enable }}"
         # The vault's OAuth clients include ICOS's ENVRI-ID one (staging, #104),
         # which the production cpauth jar does not know: it refuses to start.
         # Drop it until SITES runs a jar that has it.
@@ -103,7 +137,7 @@ all:
 
         postgis_db_port: 5438
         postgis_hostname: 127.0.0.1
-        postgis_backup_enable: false
+        postgis_backup_enable: "{{ sites_backup_enable }}"
 
         cpauth_envries:
           - name: SITES
@@ -127,7 +161,21 @@ all:
         # Like the nginx sites on fsicos2 (roles/icos.*/templates/*.conf),
         # minus ICOS-only parts. Caddy sets X-Forwarded-For itself.
         core_caddy_conf: |
+          # Access logs, one JSON file per service (fsicos2's nginx has them
+          # too). Caddy leaves Cookie and Authorization headers out.
+          (sites_log) {
+                  log {
+                          output file /var/log/caddy/sites-{args[0]}.log {
+                                  roll_size 100MiB
+                                  roll_keep 20
+                                  roll_keep_for 2160h
+                          }
+                          format json
+                  }
+          }
+
           {{ doi_domains | first }} {
+                  import sites_log doi
                   reverse_proxy {{ coreapp_httpproxy_host }}:8079
           }
 
@@ -139,6 +187,7 @@ all:
 
           {{ cpmeta_domains | join(' ') }} {
                   {{ 'import sites_next' if sites_next else '' }}
+                  import sites_log meta
                   request_body {
                           max_size 60MB
                   }
@@ -147,11 +196,31 @@ all:
 
           {{ cpdata_domains | join(' ') }} {
                   {{ 'import sites_next' if sites_next else '' }}
+                  import sites_log data
                   reverse_proxy {{ coreapp_httpproxy_host }}:{{ cpdata_port }}
+          }
+
+          # Like fsicos2's restheart.icos-cp.eu, minus the logged-in admin
+          # access (use an ssh tunnel to the VM): only the stats app's
+          # aggregations are public. Not part of sites_next; the name is new
+          # and was never served by fsicos2.
+          restheart.fieldsites.se {
+                  import sites_log restheart
+                  @aggrs {
+                          method GET HEAD
+                          path /{{ restheart_sites_db_name }}/portaluse/_aggrs*
+                  }
+                  handle @aggrs {
+                          reverse_proxy {{ coreapp_httpproxy_host }}:{{ restheart_bind_port }}
+                  }
+                  handle {
+                          respond 403
+                  }
           }
 
           {{ cpauth_domains | join(' ') }} {
                   {{ 'import sites_next' if sites_next else '' }}
+                  import sites_log auth
                   # Only for the services themselves (fsicos2: allow
                   # coreapp_host_ip). From the VM, the request comes from its
                   # bridge address.

@@ -1,0 +1,22 @@
+# Streaming replicas run by PostgreSQL itself (Debian/Ubuntu packages from
+# apt.postgresql.org), one cluster per primary. Each item:
+#   name:      cluster name (postgresql@<version>-<name>.service)
+#   version:   major version; must match the primary's
+#   port:      local port of this cluster (listens on localhost only)
+#   peer_host: the primary's address
+#   peer_port: the primary's port
+#   slot:      the replication slot on the primary (created if missing)
+pgreplica_clusters: []
+
+# Replication login on the primaries, and the certificate that their SSL
+# certificate must be signed by (sslmode=verify-ca).
+pgreplica_peer_user: pgrepuser
+pgreplica_peer_pass:
+pgreplica_peer_cert:
+
+pgreplica_apt_url: https://apt.postgresql.org/pub/repos/apt
+pgreplica_apt_key_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+# Must be at least the primary's values, or the replica refuses to start.
+pgreplica_max_connections: 100
+pgreplica_shared_buffers: 256MB

@@ -23,6 +23,15 @@
       changed_when: _r.changed
       notify: reload caddy
 
+    # Validation runs as root and opens the log files of new "log" blocks,
+    # creating them owned by root; the caddy service then cannot open them
+    # and refuses the reload.
+    - name: Give caddy the log files that validation created
+      command: find /var/log/caddy -maxdepth 1 -type f -user root -exec chown caddy:caddy {} + -print
+      register: _caddy_logs
+      changed_when: _caddy_logs.stdout | length > 0
+      failed_when: false
+
   rescue:
     - name: Slurp failed file and add line numbers
       command: cat -n /etc/caddy/Caddyfile

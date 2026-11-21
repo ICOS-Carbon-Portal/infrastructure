@@ -1,0 +1,96 @@
+- name: Set facts for {{ cluster.version }}/{{ cluster.name }}
+  set_fact:
+    _pgr_bin: /usr/lib/postgresql/{{ cluster.version }}/bin
+    _pgr_data: /var/lib/postgresql/{{ cluster.version }}/{{ cluster.name }}
+    _pgr_etc: /etc/postgresql/{{ cluster.version }}/{{ cluster.name }}
+    _pgr_conninfo: >-
+      host={{ cluster.peer_host }} port={{ cluster.peer_port }}
+      dbname=postgres user={{ pgreplica_peer_user }} sslmode=verify-ca
+
+- name: Check whether {{ cluster.version }}/{{ cluster.name }} has data
+  stat:
+    path: "{{ _pgr_data }}/PG_VERSION"
+  register: _pgr_initialized
+
+- name: Copy the primary into {{ cluster.version }}/{{ cluster.name }}
+  when: not _pgr_initialized.stat.exists
+  block:
+    - name: Create the version directory
+      file:
+        path: "{{ _pgr_data | dirname }}"
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: "0755"
+
+    - name: Create the replication slot on the primary
+      command: >-
+        runuser -u postgres --
+        {{ _pgr_bin }}/psql -d "{{ _pgr_conninfo }}" -w -v ON_ERROR_STOP=1 -Atc
+        "select pg_create_physical_replication_slot('{{ cluster.slot }}')
+         where not exists (select 1 from pg_replication_slots
+                           where slot_name = '{{ cluster.slot }}')"
+
+    # -R writes primary_conninfo and standby.signal.
+    - name: Take a base backup of the primary
+      command: >-
+        runuser -u postgres --
+        {{ _pgr_bin }}/pg_basebackup -D {{ _pgr_data }} -R -X stream
+        -S {{ cluster.slot }} -d "{{ _pgr_conninfo }}" -w
+      args:
+        creates: "{{ _pgr_data }}/PG_VERSION"
+      async: 14400
+      poll: 30
+
+    # On an existing data directory, pg_createcluster only registers it and
+    # moves the configuration files (copied from the primary) to /etc; they
+    # are replaced below.
+    - name: Register the cluster with postgresql-common
+      command: >-
+        pg_createcluster {{ cluster.version }} {{ cluster.name }}
+        -d {{ _pgr_data }} -p {{ cluster.port }}
+
+- name: Create the conf.d directory of {{ cluster.version }}/{{ cluster.name }}
+  file:
+    path: "{{ _pgr_etc }}/conf.d"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: "0755"
+
+- name: Configure {{ cluster.version }}/{{ cluster.name }}
+  template:
+    src: "{{ item }}"
+    dest: "{{ _pgr_etc }}/{{ item }}"
+    owner: postgres
+    group: postgres
+    mode: "0644"
+  loop:
+    - postgresql.conf
+    - pg_hba.conf
+    - pg_ident.conf
+  notify: restart pgreplica clusters
+
+- name: Start {{ cluster.version }}/{{ cluster.name }}
+  systemd:
+    name: postgresql@{{ cluster.version }}-{{ cluster.name }}
+    state: started
+    enabled: true
+
+- name: Flush handlers
+  meta: flush_handlers
+
+# Only privileged roles see the receiver's columns (status etc.); a row means
+# the WAL receiver runs. The primary's pg_replication_slots says more.
+- name: Check that {{ cluster.version }}/{{ cluster.name }} is streaming
+  command: >-
+    runuser -u postgres --
+    {{ _pgr_bin }}/psql -p {{ cluster.port }} -U {{ pgreplica_peer_user }}
+    -d postgres -Atc "select count(*) from pg_stat_wal_receiver"
+  args:
+    chdir: /tmp
+  register: _pgr_status
+  until: _pgr_status.stdout == '1'
+  retries: 12
+  delay: 5
+  changed_when: false

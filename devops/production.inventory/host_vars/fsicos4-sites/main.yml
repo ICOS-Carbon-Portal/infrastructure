@@ -14,6 +14,14 @@ root_keys: "{{ (vault_fsicos4_vms_root_keys.splitlines() | select('search', ' ro
 # cpmeta.
 sites_app_ports: [8079, 8080, 9011, 9094]
 
+# rdflog (sites.inventory, rdflog_db_port): published on all interfaces for
+# its streaming replicas, which connect over nebula; nothing else may.
+sites_rdflog_port: 2345
+
+# restheart (sites.inventory, restheart_bind_port): published by docker on all
+# interfaces for fsicos4's Caddy (restheart.fieldsites.se); only fsicos4 may.
+sites_restheart_port: 8088
+
 # cpdata's files: a dataset on fsicos4 mounted over NFS; sites.inventory's
 # cpdata_filestorage_target is this mountpoint.
 sites_data_dataset: tank/sitesDataAppStorage

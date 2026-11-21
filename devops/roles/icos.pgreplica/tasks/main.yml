@@ -1,0 +1,64 @@
+- name: Install the PostgreSQL apt repository key
+  get_url:
+    url: "{{ pgreplica_apt_key_url }}"
+    dest: /etc/apt/keyrings/pgdg.asc
+    mode: "0644"
+
+- name: Add the PostgreSQL apt repository
+  copy:
+    dest: /etc/apt/sources.list.d/pgdg.list
+    content: >
+      deb [signed-by=/etc/apt/keyrings/pgdg.asc] {{ pgreplica_apt_url }}
+      {{ ansible_distribution_release }}-pgdg main
+
+- name: Install postgresql-common
+  apt:
+    name: postgresql-common
+    update_cache: true
+
+# Clusters are created from base backups of the primaries, never empty.
+- name: Do not create a "main" cluster when installing a server package
+  lineinfile:
+    path: /etc/postgresql-common/createcluster.conf
+    regexp: '^#?\s*create_main_cluster\s*='
+    line: create_main_cluster = false
+
+- name: Install the server packages
+  apt:
+    name: "{{ pgreplica_clusters | map(attribute='version')
+              | unique | map('regex_replace', '^', 'postgresql-') | list }}"
+
+- name: Create postgres's client configuration directory
+  file:
+    path: /var/lib/postgresql/.postgresql
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: "0700"
+
+- name: Install the certificate that verifies the primaries
+  copy:
+    src: "{{ pgreplica_peer_cert }}"
+    dest: /var/lib/postgresql/.postgresql/root.crt
+    owner: postgres
+    group: postgres
+    mode: "0644"
+
+- name: Install the replication password
+  copy:
+    dest: /var/lib/postgresql/.pgpass
+    owner: postgres
+    group: postgres
+    mode: "0600"
+    content: |
+      {% for c in pgreplica_clusters %}
+      {{ c.peer_host }}:{{ c.peer_port }}:*:{{ pgreplica_peer_user }}:{{ pgreplica_peer_pass }}
+      {% endfor %}
+  no_log: true
+
+- name: Set up the replica clusters
+  include_tasks: cluster.yml
+  loop: "{{ pgreplica_clusters }}"
+  loop_control:
+    loop_var: cluster
+    label: "{{ cluster.version }}/{{ cluster.name }}"

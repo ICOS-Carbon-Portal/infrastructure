@@ -1,0 +1,7 @@
+- name: restart pgreplica clusters
+  systemd:
+    name: "postgresql@{{ item.version }}-{{ item.name }}"
+    state: restarted
+  loop: "{{ pgreplica_clusters }}"
+  loop_control:
+    label: "{{ item.version }}/{{ item.name }}"

@@ -1,0 +1,71 @@
+# Lets icos.pgrep replicas stream from a barebones rdflog (see barebones.yml).
+# The replicas create their own replication slots on their first connection.
+
+- name: Wait for rdflog to accept queries
+  command: >-
+    docker exec rdflog psql -U {{ rdflog_db_user }} -d {{ rdflog_db_name }}
+    -Atc 'select 1'
+  register: _rdflog_ready
+  until: _rdflog_ready.rc == 0
+  retries: 12
+  delay: 5
+  changed_when: false
+
+- name: Create the replication user
+  command: >-
+    docker exec -i rdflog psql -U {{ rdflog_db_user }} -d {{ rdflog_db_name }}
+    -v ON_ERROR_STOP=1 -At
+  args:
+    stdin: |
+      \set pass '{{ rdflog_rep_pass }}'
+      select exists (select 1 from pg_roles where rolname = '{{ rdflog_rep_user }}') as had_role \gset
+      \if :had_role
+        alter role {{ rdflog_rep_user }} with replication login password :'pass';
+        select 'unchanged';
+      \else
+        create role {{ rdflog_rep_user }} with replication login password :'pass';
+        select 'created';
+      \endif
+  register: _rdflog_rep_user
+  changed_when: "'created' in _rdflog_rep_user.stdout"
+  no_log: true
+
+# SSL itself is set on the command line (barebones.yml). Earlier versions of
+# this file used ALTER SYSTEM, which replicas would copy; undo that.
+- name: Remove SSL settings from postgresql.auto.conf
+  command: >-
+    docker exec -i rdflog psql -U {{ rdflog_db_user }} -d {{ rdflog_db_name }}
+    -v ON_ERROR_STOP=1 -At
+  args:
+    stdin: |
+      select count(*) > 0 as todo from pg_file_settings
+      where sourcefile like '%postgresql.auto.conf' and name like 'ssl%' \gset
+      \if :todo
+        alter system reset ssl;
+        alter system reset ssl_cert_file;
+        alter system reset ssl_key_file;
+        select 'changed';
+      \endif
+  register: _rdflog_ssl
+  changed_when: "'changed' in _rdflog_ssl.stdout"
+
+# "all" in pg_hba does not match replication connections.
+- name: Allow replication connections over SSL
+  lineinfile:
+    path: /docker/rdflog/volumes/data/pg_hba.conf
+    line: "hostssl replication     {{ rdflog_rep_user }}       {{ rdflog_replication_cidr }}     scram-sha-256"
+  register: _rdflog_hba
+
+- name: Reload rdflog's configuration
+  command: >-
+    docker exec rdflog psql -U {{ rdflog_db_user }} -d {{ rdflog_db_name }}
+    -Atc 'select pg_reload_conf()'
+  when: _rdflog_ssl.changed or _rdflog_hba.changed
+
+- name: Check that SSL is on
+  command: >-
+    docker exec rdflog psql -U {{ rdflog_db_user }} -d {{ rdflog_db_name }}
+    -Atc 'show ssl'
+  register: _rdflog_ssl_on
+  changed_when: false
+  failed_when: _rdflog_ssl_on.stdout != 'on'

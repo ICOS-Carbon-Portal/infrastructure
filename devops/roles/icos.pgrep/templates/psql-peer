@@ -6,6 +6,6 @@ set -Eueo pipefail
 # a file and we must not have "-T".
 if [ -t 0 ] && [ -t 1 ]; then O=""; else O="-T"; fi
 
-docker-compose --project-directory "{{ pgrep_home }}" \
+docker compose --project-directory "{{ pgrep_home }}" \
                run $O --user=postgres --rm --entrypoint=/usr/bin/psql -- \
                db -d '{{ pgrep_conninfo }}' "$@"

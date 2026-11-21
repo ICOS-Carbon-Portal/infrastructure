@@ -20,8 +20,13 @@ pgrep_rdflog:
   vars:
     pgrep_name: rdflog
     pgrep_peer_user: pgrepuser
-    pgrep_peer_host: fsicos2
-    pgrep_peer_port: "{{ rdflog_ext_port }}"
+    # Over nebula (fsicos2's nebula address; the replicas' LXD containers
+    # are not nebula hosts themselves and do not resolve *.nebula). Until
+    # 2026-11 they pointed at the removed wg-fsicos2 WireGuard network and
+    # had not replicated since 2024-11. sslmode=verify-ca checks the server
+    # certificate, not the host name, so the address is fine.
+    pgrep_peer_host: 100.100.4.4
+    pgrep_peer_port: 2345
     pgrep_peer_pass: "{{ vault_rdflog_rep_pass }}"
     pgrep_peer_cert: roles/icos.rdflog/files/server.crt
   hosts:
@@ -29,3 +34,32 @@ pgrep_rdflog:
       pgrep_peer_slot: cdb
     pgrep1:
       pgrep_peer_slot: fsicos3
+
+# The VMs running replicas of the SITES rdflog (vm-rdflog.yml, sites_replica);
+# pgrep_rdflog's vars (user, password, certificate) apply as well.
+pgrep_sites_rdflog:
+  hosts:
+    pgrep1:
+
+# Replicas running PostgreSQL itself (icos.pgreplica) in an unprivileged LXD
+# container: no Docker, no nesting (vm-rdflog.yml, pgreplica tags). Each
+# cluster replicates one primary; ICOS will join once it runs PostgreSQL 15.
+pgreplica_server:
+  hosts:
+    icos1:
+      pgreplica_vm_name: pgrep3
+
+pgreplica:
+  vars:
+    pgreplica_peer_user: pgrepuser
+    pgreplica_peer_pass: "{{ vault_rdflog_rep_pass }}"
+    pgreplica_peer_cert: roles/icos.rdflog/files/server.crt
+  hosts:
+    pgrep3:
+      pgreplica_clusters:
+        - name: sites
+          version: 15
+          port: 5433
+          peer_host: "{{ hostvars['fsicos4-sites'].nebula_ip }}"
+          peer_port: 2345
+          slot: pgrep3
