@@ -81,7 +81,7 @@ drupal_sites:
   - name: cp
     live: true
     domain: www.icos-cp.eu
-    title: "ICOS Carbon Portal"
+    title: "ICOS"
     redirect_domains: [icos-cp.eu]
     modules: [bartik, better_exposed_filters, bootstrap, ckeditor5_plugin_pack, color_field, conflict, editor_advanced_link, honeypot, html_title, linkit, matomo, media_alias_display, media_bulk_upload, menu_breadcrumb, metatag, pathauto, readonlymode, redirect, scheduler, simple_sitemap, single_content_sync, smtp, toc_js, token, views_infinite_scroll, webform, webform_views]
     robots_txt: cp-robots.txt
@@ -96,7 +96,7 @@ drupal_sites:
   - name: demo
     live: true
     domain: demo.icos-cp.eu
-    title: "ICOS Carbon Portal (demo)"
+    title: "ICOS (demo)"
     copy_from: cp
     # Drupal 11 trial. The drupal repo's drupal-11 branch declares the
     # custom modules and themes compatible with it.
