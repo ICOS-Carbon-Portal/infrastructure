@@ -16,6 +16,8 @@ drupal_sites:
     live: true
     domain: test.icos-otc.org
     title: "ICOS OTC (test)"
+    drupal_version: "11.4"
+    php_version: "8.4"
     modules: [bartik, linkit, media_alias_display, pathauto, redirect, smtp]
     secrets: "{{ _drupal_legacy_secrets['otctest'] }}"
 
