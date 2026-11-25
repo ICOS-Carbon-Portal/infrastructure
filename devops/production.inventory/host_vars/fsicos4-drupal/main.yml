@@ -40,6 +40,8 @@ drupal_sites:
     live: true
     domain: www.actris.se
     title: "ACTRIS Sweden"
+    drupal_version: "11.4"
+    php_version: "8.4"
     redirect_domains: [actris.se]
     modules: [bartik]
     secrets: "{{ _drupal_legacy_secrets['ac'] }}"
