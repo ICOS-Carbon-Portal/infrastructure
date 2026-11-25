@@ -12,11 +12,8 @@
     state: directory
     mode: "0755"
 
-# From here until the caches are warm again, visitors get the static
-# maintenance page instead of errors and half-updated pages. The git pull
-# already changes the modules and themes the container mounts, so set it
-# first. If the play fails on the way, the page stays on until an update run
-# gets past the warm-up.
+# Before the git pull, which changes mounted code. A failed update leaves the
+# page on.
 - name: Show the maintenance page for {{ site.name }}
   copy:
     content: ""
@@ -260,8 +257,7 @@
     - name: Clear {{ site.name }} caches
       command: docker exec {{ _site_container }} drush cr
 
-    # The first page after a cache clear rebuilds Drupal's caches and can take
-    # a minute; let the play wait for it rather than a visitor.
+    # Rebuild the caches before visitors return.
     - name: Load the {{ site.name }} home page to fill the caches
       command:
         argv:
@@ -287,8 +283,7 @@
       delay: 10
       changed_when: false
 
-    # Only an update run clears the flag, so a plain deploy keeps a flag set
-    # by hand or left by a failed update.
+    # A plain deploy keeps a flag set by hand.
     - name: Hide the maintenance page for {{ site.name }}
       file:
         path: "{{ drupal_maintenance_dir }}/{{ site.name }}.on"

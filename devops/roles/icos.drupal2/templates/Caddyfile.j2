@@ -16,9 +16,7 @@
     respond @dotfiles 404
 }
 
-# Answer with the site's static maintenance page, maintenance/<site>.html,
-# without contacting Drupal. file_server only serves GET and HEAD, so treat
-# every request as GET; a form sent meanwhile gets the page, not a 405.
+# Static maintenance page. "method GET": file_server answers POST with 405.
 (maintenance_page) {
     method GET
     header Retry-After 120
@@ -41,7 +39,7 @@ http://{{ site.domain }} {
     {{ site.caddy_extra | indent(4) }}
 {% endif %}
 
-    # The play creates maintenance/{{ site.name }}.on while it updates the site.
+    # Set during updates.
     @maintenance file {
         root /srv/maintenance
         try_files {{ site.name }}.on
@@ -56,8 +54,7 @@ http://{{ site.domain }} {
         header_up X-Real-IP {http.request.header.X-Real-IP}
     }
 
-    # Caddy cannot reach Drupal (down or restarting). Errors that Drupal
-    # returns itself pass through unchanged.
+    # Drupal unreachable.
     handle_errors 502 504 {
         import maintenance_page {{ site.name }}
     }
