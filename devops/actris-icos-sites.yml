@@ -31,7 +31,7 @@
         shell: /bin/sh
         password: "!"
 
-    - name: Give the deploy user the web root
+    - name: Create the web root
       tags: files
       file:
         path: "{{ actris_icos_sites_root }}"
@@ -39,6 +39,15 @@
         owner: "{{ actris_icos_sites_user }}"
         group: "{{ actris_icos_sites_user }}"
         mode: "0755"
+
+    # No mode here: with recurse it would also apply to every file.
+    - name: Give the deploy user the web root
+      tags: files
+      file:
+        path: "{{ actris_icos_sites_root }}"
+        state: directory
+        owner: "{{ actris_icos_sites_user }}"
+        group: "{{ actris_icos_sites_user }}"
         recurse: yes
 
     - name: Install the deploy script
