@@ -27,7 +27,7 @@
     dest: "{{ matomo_home }}"
 
 - name: Run matomo docker compose
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ matomo_home }}"
     state: present
 
