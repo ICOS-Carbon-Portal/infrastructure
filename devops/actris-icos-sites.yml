@@ -1,10 +1,15 @@
 # Joint SITES / ICOS Sweden / ACTRIS Sweden landing page.
 #   icos play actris-icos-sites            # certificate, nginx config and site files
 #   icos play actris-icos-sites -t files   # only update the site files from GitHub
+#
+# Pushes to main are also deployed by CI, which logs in as
+# actris_icos_sites_user with a key that can only run the deploy script.
 - hosts: fsicos2
   vars:
     actris_icos_sites_root: /usr/share/nginx/actris-icos-sites
     actris_icos_sites_version: main
+    actris_icos_sites_user: actris-deploy
+    actris_icos_sites_deploy_script: /usr/local/bin/deploy-actris-icos-sites
 
   roles:
     - role: icos.nginxsite
@@ -17,8 +22,61 @@
           - www.actris-icos-sites.se
 
   tasks:
+    - name: Create the deploy user
+      tags: files
+      user:
+        name: "{{ actris_icos_sites_user }}"
+        system: yes
+        home: "/var/lib/{{ actris_icos_sites_user }}"
+        shell: /bin/sh
+        password: "!"
+
+    - name: Create the web root
+      tags: files
+      file:
+        path: "{{ actris_icos_sites_root }}"
+        state: directory
+        owner: "{{ actris_icos_sites_user }}"
+        group: "{{ actris_icos_sites_user }}"
+        mode: "0755"
+
+    # No mode here: with recurse it would also apply to every file.
+    - name: Give the deploy user the web root
+      tags: files
+      file:
+        path: "{{ actris_icos_sites_root }}"
+        state: directory
+        owner: "{{ actris_icos_sites_user }}"
+        group: "{{ actris_icos_sites_user }}"
+        recurse: yes
+
+    - name: Install the deploy script
+      tags: files
+      copy:
+        dest: "{{ actris_icos_sites_deploy_script }}"
+        mode: "0755"
+        content: |
+          #!/bin/sh
+          # Update {{ actris_icos_sites_root }} to the latest {{ actris_icos_sites_version }}.
+          # Managed by ansible (actris-icos-sites.yml).
+          set -eu
+          cd {{ actris_icos_sites_root }}
+          git fetch --quiet origin {{ actris_icos_sites_version }}
+          git reset --quiet --hard FETCH_HEAD
+          git log -1 --format='Deployed %h %s'
+
+    - name: Allow the CI key to run only the deploy script
+      tags: files
+      authorized_key:
+        user: "{{ actris_icos_sites_user }}"
+        key: "{{ lookup('file', 'files/actris-icos-sites-deploy.pub') }}"
+        key_options: 'restrict,command="{{ actris_icos_sites_deploy_script }}"'
+        exclusive: yes
+
     - name: Check out site files
       tags: files
+      become: yes
+      become_user: "{{ actris_icos_sites_user }}"
       git:
         repo: https://github.com/ICOS-Carbon-Portal/actris-icos-sites
         version: "{{ actris_icos_sites_version }}"
