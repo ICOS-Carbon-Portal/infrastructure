@@ -12,8 +12,6 @@
     state: directory
     mode: "0755"
 
-# Before the git pull, which changes mounted code. A failed update leaves the
-# page on.
 - name: Show the maintenance page for {{ site.name }}
   copy:
     content: ""
@@ -257,33 +255,16 @@
     - name: Clear {{ site.name }} caches
       command: docker exec {{ _site_container }} drush cr
 
-    # Rebuild the caches before visitors return.
     - name: Load the {{ site.name }} home page to fill the caches
-      command:
-        argv:
-          - docker
-          - exec
-          - "{{ _site_container }}"
-          - curl
-          - --silent
-          - --output
-          - /dev/null
-          - --write-out
-          - "%{http_code}"
-          - --max-time
-          - "120"
-          - --header
-          - "Host: {{ site.domain }}"
-          - --header
-          - "X-Forwarded-Proto: https"
-          - http://localhost/
+      command: >-
+        docker exec {{ _site_container }} curl -s -o /dev/null -w '%{http_code}' --max-time 120
+        -H 'Host: {{ site.domain }}' -H 'X-Forwarded-Proto: https' http://localhost/
       register: _site_warm
       until: _site_warm.stdout == "200"
       retries: 5
       delay: 10
       changed_when: false
 
-    # A plain deploy keeps a flag set by hand.
     - name: Hide the maintenance page for {{ site.name }}
       file:
         path: "{{ drupal_maintenance_dir }}/{{ site.name }}.on"
