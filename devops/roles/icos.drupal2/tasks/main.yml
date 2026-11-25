@@ -53,6 +53,8 @@
   loop_control:
     loop_var: site
     label: "{{ site.name }}"
+  # Each item holds the site's secrets, which a failure would print.
+  no_log: true
 
 - name: Create shared drupal network
   community.docker.docker_network:

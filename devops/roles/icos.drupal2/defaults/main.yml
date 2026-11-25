@@ -17,8 +17,9 @@ drupal_update: false
 drupal_only: []
 
 # Static maintenance pages, <site>.html. While <site>.on exists the proxy
-# answers every request for that site with the page (503). Updates create and
-# remove the flag; touch or remove it by hand to do the same.
+# answers every request for that site with the page (503). Update runs create
+# the flag and remove it once the site is back; a plain deploy leaves it as it
+# is. Touch or remove it by hand to do the same.
 drupal_maintenance_dir: "{{ drupal_home }}/proxy/maintenance"
 
 # Each site:

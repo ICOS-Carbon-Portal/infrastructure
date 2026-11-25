@@ -5,8 +5,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta http-equiv="refresh" content="60">
-<title>{{ site.title | default(site.domain) }} is being updated</title>
+<meta http-equiv="refresh" content="120">
+<title>{{ site.title | default(site.domain) | e }} is temporarily unavailable</title>
 <style>
   :root { color-scheme: light dark; --bg: #f5f6f7; --card: #fff; --text: #1d2327; --muted: #5b6770; --accent: #2a7ab0; }
   @media (prefers-color-scheme: dark) {
@@ -24,9 +24,9 @@
 </head>
 <body>
 <main>
-  <h1>{{ site.title | default(site.domain) }} is being updated</h1>
-  <p>The website is down for a few minutes while we install updates.</p>
-  <p class="muted">This page reloads by itself every minute.</p>
+  <h1>{{ site.title | default(site.domain) | e }} is temporarily unavailable</h1>
+  <p>The website is down for a few minutes, usually for maintenance. Please try again shortly.</p>
+  <p class="muted">This page reloads by itself every two minutes.</p>
 </main>
 </body>
 </html>

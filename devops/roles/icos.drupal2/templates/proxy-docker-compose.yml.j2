@@ -12,7 +12,7 @@ services:
       # atomically, which a single-file bind mount would not see.
       - ./conf:/etc/caddy:ro
       # Maintenance pages and the flag files that switch them on.
-      - ./maintenance:/srv/maintenance:ro
+      - {{ drupal_maintenance_dir }}:/srv/maintenance:ro
     # No DNS search domain. Otherwise, while a site container is being
     # recreated, "cp" resolves through the VM's search domain to
     # cp.icos-cp.eu (fsicos2), and Caddy keeps reusing those connections.

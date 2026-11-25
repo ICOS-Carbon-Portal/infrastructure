@@ -17,8 +17,10 @@
 }
 
 # Answer with the site's static maintenance page, maintenance/<site>.html,
-# without contacting Drupal.
+# without contacting Drupal. file_server only serves GET and HEAD, so treat
+# every request as GET; a form sent meanwhile gets the page, not a 405.
 (maintenance_page) {
+    method GET
     header Retry-After 120
     header Cache-Control no-store
     root * /srv/maintenance
@@ -54,7 +56,8 @@ http://{{ site.domain }} {
         header_up X-Real-IP {http.request.header.X-Real-IP}
     }
 
-    # Drupal is down or restarting.
+    # Caddy cannot reach Drupal (down or restarting). Errors that Drupal
+    # returns itself pass through unchanged.
     handle_errors 502 504 {
         import maintenance_page {{ site.name }}
     }
