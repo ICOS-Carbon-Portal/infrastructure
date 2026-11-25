@@ -8,3 +8,21 @@ timer_wdir:
 # The paths to the systemd unit files.
 _timer_sysd_timer: "{{ timer_home }}/{{ timer_name }}.timer"
 _timer_sysd_service: "{{ timer_home }}/{{ timer_name }}.service"
+
+# Set timer_sentry_monitor to true to create a monitor through Sentry Crons
+timer_sentry_monitor: false
+timer_sentry_monitor_slug: "{{ inventory_hostname }}-{{ timer_name }}"
+# Minutes after the scheduled time before a run counts as missed.
+timer_sentry_checkin_margin_minutes: 60
+timer_sentry_max_runtime_minutes: 60
+timer_sentry_url: https://sentry.icos-cp.eu
+timer_sentry_org: icos-cp
+timer_sentry_project: timers
+timer_sentry_project_id: 4
+timer_sentry_auth_token: "{{ vault_sentry_timer_auth_token }}"
+timer_sentry_public_key: "{{ vault_sentry_timer_public_key }}"
+
+_timer_sentry_checkin_bin: /usr/local/sbin/icos-sentry-checkin
+_timer_sentry_env_file: /etc/icos/sentry-checkin.env
+_timer_sentry_monitor_api_url: >-
+  {{ timer_sentry_url }}/api/0/projects/{{ timer_sentry_org }}/{{ timer_sentry_project }}/monitors/{{ timer_sentry_monitor_slug }}/

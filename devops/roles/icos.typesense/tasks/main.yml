@@ -155,11 +155,15 @@
         timer_name: "typesense-update-{{ website }}"
         timer_conf: |
           OnCalendar=*-*-* 1/4:17:00
+        timer_sentry_monitor: true
         timer_content: |
           #!/bin/bash
+          set -o pipefail
           cd {{ typesense_home }}/{{ website }}
-          {{ typesense_home }}/typesense-venv/bin/python3 update_documents.py >> collection.log 2>&1
-          {{ typesense_home }}/typesense-venv/bin/python3 update_stations.py >> collection.log 2>&1
+          rc=0
+          {{ typesense_home }}/typesense-venv/bin/python3 update_documents.py 2>&1 | tee -a collection.log || rc=1
+          {{ typesense_home }}/typesense-venv/bin/python3 update_stations.py 2>&1 | tee -a collection.log || rc=1
+          exit $rc
   tags:
     - initialize_collection
     - timer

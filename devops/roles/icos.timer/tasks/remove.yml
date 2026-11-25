@@ -1,7 +1,11 @@
 - name: Stop and disable timer
   command: "systemctl disable --now {{ timer_name }}.timer"
   register: r
-  changed_when: no
+  changed_when: false
   failed_when:
     - r.rc != 0
     - not r.stderr.endswith('does not exist.')
+
+- name: Remove Sentry monitor
+  include_tasks: sentry_monitor_remove.yml
+  when: timer_sentry_monitor | bool
