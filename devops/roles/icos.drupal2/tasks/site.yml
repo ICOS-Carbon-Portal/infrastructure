@@ -12,6 +12,13 @@
     state: directory
     mode: "0755"
 
+- name: Show the maintenance page for {{ site.name }}
+  copy:
+    content: ""
+    dest: "{{ drupal_maintenance_dir }}/{{ site.name }}.on"
+    mode: "0644"
+  when: drupal_update | bool
+
 - name: Pull {{ site.name }} source code from git
   git:
     repo: "{{ drupal_git_repo }}"
@@ -247,6 +254,22 @@
 
     - name: Clear {{ site.name }} caches
       command: docker exec {{ _site_container }} drush cr
+
+    - name: Load the {{ site.name }} home page to fill the caches
+      command: >-
+        docker exec {{ _site_container }} curl -s -o /dev/null -w '%{http_code}' --max-time 120
+        -H 'Host: {{ site.domain }}' -H 'X-Forwarded-Proto: https' http://localhost/
+      register: _site_warm
+      until: _site_warm.stdout == "200"
+      retries: 5
+      delay: 10
+      changed_when: false
+
+    - name: Hide the maintenance page for {{ site.name }}
+      file:
+        path: "{{ drupal_maintenance_dir }}/{{ site.name }}.on"
+        state: absent
+      when: drupal_update | bool
 
     - name: Record {{ site.name }} as installed
       set_fact:

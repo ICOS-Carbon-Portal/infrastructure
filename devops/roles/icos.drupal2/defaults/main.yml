@@ -16,9 +16,14 @@ drupal_update: false
 # Restrict a run to some sites: -e '{"drupal_only": ["otctest"]}'
 drupal_only: []
 
+# While <site>.on exists, the proxy answers with <site>.html (503). Update
+# runs set and clear it; it can also be set by hand.
+drupal_maintenance_dir: "{{ drupal_home }}/proxy/maintenance"
+
 # Each site:
 #   name:          short name, used for directories and container names
 #   domain:        canonical domain, the only one Drupal answers to
+#   title:         site name shown on the maintenance page (default: domain)
 #   modules:       contrib modules, used to build composer.json
 #   git_version:   branch/tag of drupal_git_repo (default: master)
 #   drupal_version: core version for this site (default: drupal_version);
