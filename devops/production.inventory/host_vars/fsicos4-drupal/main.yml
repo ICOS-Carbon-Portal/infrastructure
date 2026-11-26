@@ -86,6 +86,8 @@ drupal_sites:
     live: true
     domain: www.fieldsites.se
     title: "SITES"
+    drupal_version: "11.4"
+    php_version: "8.4"
     redirect_domains: [fieldsites.se, demo.fieldsites.se]
     database_name: sites
     database_user: sites
