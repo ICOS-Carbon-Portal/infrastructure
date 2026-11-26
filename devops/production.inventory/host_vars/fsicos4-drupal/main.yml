@@ -74,6 +74,8 @@ drupal_sites:
     live: true
     domain: www.icos-switzerland.ch
     title: "ICOS Switzerland"
+    drupal_version: "11.4"
+    php_version: "8.4"
     redirect_domains: [switzerland.icos-cp.eu]
     modules: [bartik, honeypot, linkit, pathauto, redirect, smtp, webform]
     secrets: "{{ _drupal_legacy_secrets['ch'] }}"
