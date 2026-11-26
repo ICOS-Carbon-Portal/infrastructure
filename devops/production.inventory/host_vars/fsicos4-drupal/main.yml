@@ -64,6 +64,8 @@ drupal_sites:
     live: true
     domain: www.icos-sweden.se
     title: "ICOS Sweden"
+    drupal_version: "11.4"
+    php_version: "8.4"
     redirect_domains: [icos-sweden.se, sweden.icos-cp.eu]
     modules: [bartik, honeypot, linkit, pathauto, redirect, restui, smtp, toc_js, webform]
     secrets: "{{ _drupal_legacy_secrets['se'] }}"
