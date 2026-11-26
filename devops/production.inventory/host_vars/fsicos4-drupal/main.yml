@@ -25,6 +25,8 @@ drupal_sites:
     live: true
     domain: no.icos-cp.eu
     title: "ICOS Norway"
+    drupal_version: "11.4"
+    php_version: "8.4"
     modules: [bartik, honeypot, linkit, media_alias_display, pathauto, redirect, smtp, webform]
     secrets: "{{ _drupal_legacy_secrets['no'] }}"
 
