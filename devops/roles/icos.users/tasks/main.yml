@@ -6,7 +6,7 @@
     shell: "{{ item.shell | default(omit) }}"
     groups: "{{ item.groups | default(omit) }}"
     # If item.groups is specified, append defaults to true.
-    append: "{{ item.groups | default(false) | bool }}"
+    append: "{{ item.groups is defined }}"
   loop: "{{ user_conf.create_users | default([]) }}"
 
 - name: Install public key

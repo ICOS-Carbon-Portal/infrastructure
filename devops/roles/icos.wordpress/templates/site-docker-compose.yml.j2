@@ -43,7 +43,10 @@ services:
       - -c
       - |
         set -e
-        sed -ri -e 's!/var/www/html!/var/www/html/{{ item.document_root }}!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+        # Runs on every container start, also restarts of the same container
+        # (reboot, docker restart), so only rewrite /var/www/html when it is
+        # not already followed by a path.
+        sed -ri -e 's!/var/www/html([^/]|$$)!/var/www/html/{{ item.document_root }}\1!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
         apache2-foreground
 {% endif %}
     volumes:

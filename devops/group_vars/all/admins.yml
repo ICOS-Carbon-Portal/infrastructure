@@ -1,0 +1,22 @@
+# Personal admin accounts: SSH key login and password-less sudo, created by
+# icos.users (icos.pve_guest runs it on fsicos4 VMs). Pick the people per
+# host instead of sharing root's authorized_keys, e.g. in host_vars:
+#
+#   user_conf:
+#     create_users:
+#       - "{{ admin_jonathan }}"
+#       - "{{ admin_robert }}"
+
+admin_jonathan:
+  name: jonathan
+  key: "{{ vault_jonathan_ssh }}"
+  shell: /bin/bash
+  groups: [sudo]
+  sudopwless: true
+
+admin_robert:
+  name: robert
+  key: "{{ vault_robert_ssh }}"
+  shell: /bin/bash
+  groups: [sudo]
+  sudopwless: true

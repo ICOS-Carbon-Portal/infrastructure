@@ -1,0 +1,31 @@
+# eric-forum.eu on its own VM (vm-fsicos4-ericforum.yml), moved from the
+# fsicos2 container wordpress-eric-forum-dev (deleted 2026-11-18; its borg
+# repos on fsicos2 and icos1 are kept).
+#
+# Test the site on the VM directly, bypassing fsicos4's Caddy:
+#   curl -H 'Host: eric-forum.eu' -H 'X-Forwarded-Proto: https' http://10.10.10.203/
+
+ericforum_domain: eric-forum.eu
+# www is a CNAME of the apex in DNS; fsicos4 redirects it to the apex.
+ericforum_redirect_domains:
+  - www.eric-forum.eu
+
+# Bluedrop maintains the site and deploys it with git from their GitLab
+# (html/ericwp is a clone of git@gitlab.bluedrop.fr:bluedrop/ericwp.git,
+# pulled with SSH agent forwarding). Their user can edit the files, run git,
+# wp-cli and read the logs, but has no root, no docker and no access to the
+# internal networks (vmbr0, nebula).
+ericforum_collaborator: bluedrop
+ericforum_collaborator_keys: "{{ vault_wordpress_ericforum_additional_ssh_keys }}"
+
+# Admins log in as themselves and use sudo; Ansible connects as jonathan
+# (hosts.yml). Root keeps only fsicos4's key (qm/px tooling) and, for now,
+# Jonathan's keys. Both lists are exclusive: other keys are removed.
+user_conf:
+  create_users:
+    - "{{ admin_jonathan }}"
+    - "{{ admin_robert }}"
+# vault_fsicos4_vms_root_keys is fsicos4's key plus the shared team list
+# (vault_root_keys); only fsicos4's key is taken from it.
+root_keys: "{{ (vault_fsicos4_vms_root_keys.splitlines() | select('search', ' root@fsicos4$') | list
+  + vault_jonathan_ssh.splitlines()) | join('\n') }}"
