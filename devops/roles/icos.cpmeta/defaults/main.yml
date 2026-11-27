@@ -21,3 +21,14 @@ cpmeta_bind_addr: "{{ coreapp_bind_addr }}"
 cpmeta_host: "{{ coreapp_httpproxy_host }}"
 cpmeta_port: 9094
 
+# Diagnostics are installed only by cpmeta-diagnostics.yml.
+# The directory is root's (state, incidents); the JVM writes GC logs to gc_dir.
+cpmeta_diagnostics_dir: /var/log/cpmeta-diagnostics
+cpmeta_diagnostics_gc_dir: "{{ cpmeta_diagnostics_dir }}/gc"
+cpmeta_diagnostics_probe_url: "http://127.0.0.1:{{ cpmeta_port }}/objects/BKoc22ZVRkaJnjd0KvuYQYdO"
+cpmeta_diagnostics_probe_host: "{{ cpmeta_host }}"
+cpmeta_diagnostics_retention_days: 7
+# No capture while the JVM is younger than this (startup, index rebuild).
+cpmeta_diagnostics_min_uptime: 600
+cpmeta_diagnostics_jcmd: /usr/bin/jcmd
+

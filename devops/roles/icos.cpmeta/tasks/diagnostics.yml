@@ -1,0 +1,131 @@
+- name: Install diagnostic utilities
+  apt:
+    name: [curl, python3, sysstat]
+    state: present
+
+- name: Check JDK diagnostic tool is installed
+  stat:
+    path: "{{ cpmeta_diagnostics_jcmd }}"
+  register: diagnostic_jcmd
+
+- name: Require jcmd (install a matching JDK before proceeding)
+  assert:
+    that: diagnostic_jcmd.stat.exists
+
+# root runs the collector, so cpmeta must not own the directory holding its
+# state and incidents (it could plant symlinks there). 0711 lets the JVM reach
+# its own GC log directory and nothing else.
+- name: Create diagnostic directory
+  file:
+    path: "{{ cpmeta_diagnostics_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0711'
+
+- name: Create GC log directory
+  file:
+    path: "{{ cpmeta_diagnostics_gc_dir }}"
+    state: directory
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
+    mode: '0700'
+
+- name: Install probe and incident collector
+  template:
+    src: diagnostics.py.j2
+    dest: /usr/local/sbin/cpmeta-diagnostics
+    owner: root
+    mode: '0755'
+
+- name: Create service override directories
+  file:
+    path: "/etc/systemd/system/{{ item }}.d"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ cpmeta_servicename }}.service"
+    - sysstat-collect.timer
+
+- name: Persist JVM logging for future starts (no service restart)
+  template:
+    src: diagnostics-gc.conf.j2
+    dest: "/etc/systemd/system/{{ cpmeta_servicename }}.service.d/diagnostics.conf"
+    mode: '0644'
+
+- name: Install diagnostic units
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: '0644'
+  loop:
+    - cpmeta-diagnostics.service
+    - cpmeta-diagnostics.timer
+
+- name: Sample host statistics every minute
+  copy:
+    dest: /etc/systemd/system/sysstat-collect.timer.d/diagnostics.conf
+    mode: '0644'
+    content: |
+      [Timer]
+      OnCalendar=
+      OnCalendar=*-*-* *:*:00
+      AccuracySec=1s
+  register: diagnostic_sysstat_timer
+
+- name: Enable sysstat collection
+  lineinfile:
+    path: /etc/default/sysstat
+    regexp: '^ENABLED='
+    line: 'ENABLED="true"'
+
+- name: Reload unit definitions without restarting cpmeta
+  systemd:
+    daemon_reload: true
+
+- name: Enable collection timers
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - sysstat-collect.timer
+    - cpmeta-diagnostics.timer
+  # In check mode the new timer unit isn't installed, so systemd can't find it.
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Apply changed sysstat schedule
+  systemd:
+    name: sysstat-collect.timer
+    state: restarted
+  when: diagnostic_sysstat_timer.changed
+
+- name: Get current cpmeta PID
+  command: "systemctl show {{ cpmeta_servicename }} --property=MainPID --value"
+  register: diagnostic_pid
+  changed_when: false
+  check_mode: false
+
+- name: List the running JVM's log outputs
+  become_user: "{{ cpmeta_user }}"
+  command:
+    argv: ["{{ cpmeta_diagnostics_jcmd }}", "{{ diagnostic_pid.stdout }}", VM.log, list]
+  register: diagnostic_vmlog
+  changed_when: false
+  check_mode: false
+  when: diagnostic_pid.stdout | int > 0
+
+- name: Enable GC and safepoint logging on running JVM
+  become_user: "{{ cpmeta_user }}"
+  command:
+    argv:
+      - "{{ cpmeta_diagnostics_jcmd }}"
+      - "{{ diagnostic_pid.stdout }}"
+      - VM.log
+      - "output={{ cpmeta_diagnostics_gc_dir }}/gc.log"
+      - what=gc*=info,safepoint=info
+      - decorators=time,uptime,level,tags
+      - output_options=filecount=5,filesize=20M
+  when:
+    - diagnostic_pid.stdout | int > 0
+    - (cpmeta_diagnostics_gc_dir ~ '/gc.log') not in diagnostic_vmlog.stdout
