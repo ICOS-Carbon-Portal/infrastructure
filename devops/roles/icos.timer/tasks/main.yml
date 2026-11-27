@@ -1,8 +1,12 @@
 - name: Don't create timer script in /etc/systemd/system
   assert:
     that: timer_home != "/etc/systemd/system"
-  changed_when: no
+  changed_when: false
   when: timer_content is defined
+
+- name: Install Sentry check-in helper and create or update monitor
+  include_tasks: sentry_monitor.yml
+  when: timer_sentry_monitor | bool
 
 - name: Create home directory
   when: timer_home != "/etc/systemd/system"
@@ -41,7 +45,13 @@
       [Service]
       User={{ timer_user }}
       Type=oneshot
+      {% if timer_sentry_monitor | bool %}
+      ExecStartPre=-+{{ _timer_sentry_checkin_bin }} {{ _timer_sentry_env_file }} start {{ timer_sentry_monitor_slug }}
+      {% endif %}
       ExecStart={{ timer_exec }}
+      {% if timer_sentry_monitor | bool %}
+      ExecStopPost=-+{{ _timer_sentry_checkin_bin }} {{ _timer_sentry_env_file }} finish {{ timer_sentry_monitor_slug }}
+      {% endif %}
       {% for env in timer_envs | default([]) -%}
       Environment={{ env }}
       {% endfor -%}
@@ -61,6 +71,6 @@
   when: not ansible_check_mode
   systemd:
     name: "{{ timer_name }}.timer"
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true

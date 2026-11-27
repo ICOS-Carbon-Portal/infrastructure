@@ -1,0 +1,22 @@
+# no_log hides the auth token, but also errors; the assert tasks report them.
+- name: Look up Sentry monitor
+  uri:
+    url: "{{ _timer_sentry_monitor_api_url }}"
+    headers:
+      Authorization: "Bearer {{ timer_sentry_auth_token }}"
+    status_code: [200, 404]
+  delegate_to: localhost
+  become: false
+  no_log: true
+  register: _timer_sentry_lookup
+  failed_when: false
+  check_mode: false
+
+- name: Ensure Sentry answered the lookup
+  assert:
+    that: _timer_sentry_lookup.status | default(0) in [200, 404]
+    fail_msg: >-
+      Looking up {{ timer_sentry_monitor_slug }} at {{ timer_sentry_url }}
+      failed with status {{ _timer_sentry_lookup.status | default('none') }}:
+      {{ _timer_sentry_lookup.json | default(_timer_sentry_lookup.msg | default('')) }}
+  changed_when: false

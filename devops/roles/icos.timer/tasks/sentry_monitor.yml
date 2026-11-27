@@ -1,0 +1,166 @@
+- name: Look up Sentry monitor
+  include_tasks: sentry_monitor_lookup.yml
+
+- name: Ensure Sentry monitor slug is valid
+  assert:
+    that:
+      - timer_sentry_monitor_slug is match('^[a-z0-9_-]{1,50}$')
+      - timer_sentry_monitor_slug is not match('^[0-9]+$')
+    fail_msg: >-
+      '{{ timer_sentry_monitor_slug }}' is not a valid Sentry monitor slug (a-z, 0-9,
+      hyphens and underscores, not only digits, at most 50 characters). Set
+      timer_sentry_monitor_slug.
+  changed_when: false
+
+- name: Extract OnCalendar and RandomizedDelaySec from timer_conf
+  set_fact:
+    _timer_sentry_oncalendar_lines: "{{ timer_conf | regex_findall('^\\s*OnCalendar\\s*=\\s*(.*?)\\s*$', multiline=True) }}"
+    _timer_sentry_randomized_delay_lines: "{{ timer_conf | regex_findall('^\\s*RandomizedDelaySec\\s*=\\s*(.*?)\\s*$', multiline=True) }}"
+
+- name: Ensure timer_conf has a single OnCalendar
+  assert:
+    that: _timer_sentry_oncalendar_lines | length == 1
+    fail_msg: >-
+      Found {{ _timer_sentry_oncalendar_lines | length }} OnCalendar lines in timer_conf
+      for {{ timer_name }}; timer_sentry_monitor requires exactly one.
+  changed_when: false
+
+- name: Normalize schedule
+  command: systemd-analyze calendar {{ _timer_sentry_oncalendar_lines[0] | quote }}
+  check_mode: false
+  changed_when: false
+  register: _timer_sentry_schedule_analyze
+
+- name: Convert RandomizedDelaySec to microseconds
+  command: systemd-analyze timespan {{ _timer_sentry_randomized_delay_lines[0] | quote }}
+  check_mode: false
+  changed_when: false
+  register: _timer_sentry_randomized_delay_timespan
+  when: _timer_sentry_randomized_delay_lines | length > 0
+
+- name: Get host timezone
+  command: timedatectl show --property=Timezone --value
+  check_mode: false
+  changed_when: false
+  register: _timer_sentry_timezone
+  failed_when: _timer_sentry_timezone.rc != 0 or not _timer_sentry_timezone.stdout
+
+- name: Convert schedule to cron expression and add RandomizedDelaySec to the check-in margin
+  vars:
+    _converted: >-
+      {{ _timer_sentry_schedule_analyze.stdout
+         | regex_search('Normalized form: (.*)', '\1') | first
+         | oncalendar_to_cron }}
+    # systemd-analyze timespan prints the span in microseconds on a "μs:" line
+    _randomized_delay_usec: >-
+      {{ (_timer_sentry_randomized_delay_timespan.stdout | default('')
+          | regex_search('^\s*\S*s: (\d+)\s*$', '\1', multiline=True)
+          | default(['0'], true)) | first }}
+  set_fact:
+    _timer_sentry_cron: "{{ _converted.cron }}"
+    _timer_sentry_tz: "{{ _converted.timezone or _timer_sentry_timezone.stdout }}"
+    _timer_sentry_margin: "{{ timer_sentry_checkin_margin_minutes | int + (_randomized_delay_usec | int / 60000000) | round(0, 'ceil') | int }}"
+
+- name: Ensure check-in margin and max runtime are within Sentry's limits
+  assert:
+    that:
+      - 1 <= _timer_sentry_margin | int <= 40320
+      - 1 <= timer_sentry_max_runtime_minutes | int <= 10080
+    fail_msg: >-
+      For {{ timer_name }}, the check-in margin must be 1..40320 minutes (got
+      {{ _timer_sentry_margin }}) and timer_sentry_max_runtime_minutes 1..10080 minutes (got
+      {{ timer_sentry_max_runtime_minutes }}).
+  changed_when: false
+
+- name: Build Sentry monitor request body
+  set_fact:
+    _timer_sentry_monitor_body: >-
+      {{ {
+           'project': timer_sentry_project,
+           'name': timer_sentry_monitor_slug,
+           'slug': timer_sentry_monitor_slug,
+           'config': {
+             'schedule_type': 'crontab',
+             'schedule': _timer_sentry_cron,
+             'checkin_margin': _timer_sentry_margin | int,
+             'max_runtime': timer_sentry_max_runtime_minutes | int,
+             'timezone': _timer_sentry_tz,
+           },
+         } }}
+
+- name: Install Sentry check-in env file directory
+  file:
+    path: "{{ _timer_sentry_env_file | dirname }}"
+    state: directory
+    mode: "0755"
+
+- name: Install Sentry check-in env file
+  copy:
+    dest: "{{ _timer_sentry_env_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+    content: |
+      SENTRY_ENVELOPE_URL={{ timer_sentry_url }}/api/{{ timer_sentry_project_id }}/envelope/
+      SENTRY_PUBLIC_KEY={{ timer_sentry_public_key }}
+  diff: false
+  no_log: true
+
+- name: Install Sentry check-in helper
+  copy:
+    src: icos-sentry-checkin.py
+    dest: "{{ _timer_sentry_checkin_bin }}"
+    mode: "0755"
+
+- name: Show Sentry monitor request body
+  debug:
+    var: _timer_sentry_monitor_body
+  when: ansible_check_mode
+
+- name: Decide whether the Sentry monitor needs creating or updating
+  vars:
+    _existing: "{{ _timer_sentry_lookup.json | default({}) }}"
+    _wanted_config: "{{ _timer_sentry_monitor_body.config }}"
+  set_fact:
+    _timer_sentry_monitor_action: >-
+      {{ 'create' if _timer_sentry_lookup.status == 404
+         else 'update' if (
+           _existing.name != _timer_sentry_monitor_body.name
+           or _existing.config | combine(_wanted_config) != _existing.config)
+         else 'none' }}
+
+- name: Report Sentry monitor change in check mode
+  debug:
+    msg: "Would {{ _timer_sentry_monitor_action }} Sentry monitor {{ timer_sentry_monitor_slug }}"
+  changed_when: true
+  when: ansible_check_mode and _timer_sentry_monitor_action != 'none'
+
+- name: Create or update Sentry monitor
+  uri:
+    url: >-
+      {{ timer_sentry_url ~ '/api/0/organizations/' ~ timer_sentry_org ~ '/monitors/'
+         if _timer_sentry_monitor_action == 'create' else _timer_sentry_monitor_api_url }}
+    method: "{{ 'POST' if _timer_sentry_monitor_action == 'create' else 'PUT' }}"
+    headers:
+      Authorization: "Bearer {{ timer_sentry_auth_token }}"
+    body_format: json
+    body: "{{ _timer_sentry_monitor_body }}"
+    status_code: [200, 201]
+  delegate_to: localhost
+  become: false
+  no_log: true
+  register: _timer_sentry_upsert_response
+  failed_when: false
+  changed_when: true
+  when: not ansible_check_mode and _timer_sentry_monitor_action != 'none'
+
+- name: Ensure Sentry accepted the monitor
+  assert:
+    that: _timer_sentry_upsert_response.status | default(0) in [200, 201]
+    fail_msg: >-
+      Trying to {{ _timer_sentry_monitor_action }} {{ timer_sentry_monitor_slug }} at
+      {{ timer_sentry_url }} failed with status
+      {{ _timer_sentry_upsert_response.status | default('none') }}:
+      {{ _timer_sentry_upsert_response.json | default(_timer_sentry_upsert_response.msg | default('')) }}
+  changed_when: false
+  when: not ansible_check_mode and _timer_sentry_monitor_action != 'none'
